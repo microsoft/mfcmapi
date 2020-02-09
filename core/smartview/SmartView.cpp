@@ -48,7 +48,7 @@ namespace smartview
 	_Check_return_ std::wstring PTI8ToSzString(LARGE_INTEGER liI8, bool bLabel);
 	// End: Functions to parse PT_LONG/PT-I2 properties
 
-	std::shared_ptr<smartViewParser> GetSmartViewParser(__ParsingTypeEnum iStructType, _In_opt_ LPMAPIPROP lpMAPIProp)
+	std::shared_ptr<smartViewParser> GetSmartViewParser(parserType iStructType, _In_opt_ LPMAPIPROP lpMAPIProp)
 	{
 		switch (iStructType)
 		{
@@ -184,7 +184,7 @@ namespace smartview
 		return NULL;
 	}
 
-	_Check_return_ __ParsingTypeEnum FindSmartViewParserForProp(
+	_Check_return_ parserType FindSmartViewParserForProp(
 		const ULONG ulPropTag,
 		const ULONG ulPropNameID,
 		_In_opt_ const LPCGUID lpguidNamedProp) noexcept
@@ -200,7 +200,7 @@ namespace smartview
 		return IDS_STNOPARSING;
 	}
 
-	_Check_return_ __ParsingTypeEnum FindSmartViewParserForProp(
+	_Check_return_ parserType FindSmartViewParserForProp(
 		const ULONG ulPropTag,
 		const ULONG ulPropNameID,
 		_In_opt_ const LPCGUID lpguidNamedProp,
@@ -212,7 +212,7 @@ namespace smartview
 		return FindSmartViewParserForProp(ulLookupPropTag, ulPropNameID, lpguidNamedProp);
 	}
 
-	_Check_return_ __ParsingTypeEnum FindSmartViewParserForProp(
+	_Check_return_ parserType FindSmartViewParserForProp(
 		_In_opt_ const _SPropValue* lpProp, // required property value
 		_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
 		_In_opt_ LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
@@ -365,7 +365,7 @@ namespace smartview
 	}
 
 	std::wstring
-	InterpretMVBinaryAsString(SBinaryArray myBinArray, __ParsingTypeEnum iStructType, _In_opt_ LPMAPIPROP lpMAPIProp)
+	InterpretMVBinaryAsString(SBinaryArray myBinArray, parserType iStructType, _In_opt_ LPMAPIPROP lpMAPIProp)
 	{
 		if (!registry::doSmartView) return L"";
 
@@ -527,8 +527,7 @@ namespace smartview
 		return strings::join(szArray, L"\r\n");
 	}
 
-	std::wstring
-	InterpretBinaryAsString(const SBinary myBin, __ParsingTypeEnum iStructType, _In_opt_ LPMAPIPROP lpMAPIProp)
+	std::wstring InterpretBinaryAsString(const SBinary myBin, parserType iStructType, _In_opt_ LPMAPIPROP lpMAPIProp)
 	{
 		if (!registry::doSmartView) return L"";
 		auto szResultString = addin::AddInSmartView(iStructType, myBin.cb, myBin.lpb);

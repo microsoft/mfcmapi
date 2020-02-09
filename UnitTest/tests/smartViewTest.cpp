@@ -12,7 +12,7 @@ namespace SmartViewTest
 	private:
 		struct SmartViewTestResource
 		{
-			__ParsingTypeEnum structType{};
+			parserType structType{};
 			bool parseAll{};
 			DWORD hex{};
 			DWORD expected{};
@@ -20,7 +20,7 @@ namespace SmartViewTest
 
 		struct SmartViewTestData
 		{
-			__ParsingTypeEnum structType{};
+			parserType structType{};
 			bool parseAll{};
 			std::wstring testName;
 			std::vector<BYTE> hex;
@@ -37,10 +37,9 @@ namespace SmartViewTest
 
 				if (data.parseAll)
 				{
-					for (ULONG iStruct = __ParsingTypeEnum::IDS_STNOPARSING; iStruct < __ParsingTypeEnum::IDS_STEND;
-						 iStruct++)
+					for (ULONG iStruct = parserType::IDS_STNOPARSING; iStruct < parserType::IDS_STEND; iStruct++)
 					{
-						const auto structType = static_cast<__ParsingTypeEnum>(iStruct);
+						const auto structType = static_cast<parserType>(iStruct);
 						try
 						{
 							actual = smartview::InterpretBinaryAsString(

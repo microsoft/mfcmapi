@@ -1,7 +1,7 @@
 #pragma once
 
 // Forward declarations
-enum __ParsingTypeEnum;
+enum parserType;
 struct NAME_ARRAY_ENTRY_V2;
 struct NAME_ARRAY_ENTRY;
 struct GUID_ARRAY_ENTRY;
@@ -20,8 +20,8 @@ namespace addin
 	void LoadAddIns();
 	void UnloadAddIns();
 	void MergeAddInArrays();
-	std::wstring AddInSmartView(__ParsingTypeEnum iStructType, ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
-	std::wstring AddInStructTypeToString(__ParsingTypeEnum iStructType);
+	std::wstring AddInSmartView(parserType iStructType, ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+	std::wstring AddInStructTypeToString(parserType iStructType);
 } // namespace addin
 
 extern std::vector<NAME_ARRAY_ENTRY_V2> PropTagArray;

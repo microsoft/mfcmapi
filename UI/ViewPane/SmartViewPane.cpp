@@ -159,11 +159,11 @@ namespace viewpane
 		}
 	}
 
-	void SmartViewPane::SetParser(const __ParsingTypeEnum iParser)
+	void SmartViewPane::SetParser(const parserType iParser)
 	{
 		for (size_t iDropNum = 0; iDropNum < SmartViewParserTypeArray.size(); iDropNum++)
 		{
-			if (iParser == static_cast<__ParsingTypeEnum>(SmartViewParserTypeArray[iDropNum].ulValue))
+			if (iParser == static_cast<parserType>(SmartViewParserTypeArray[iDropNum].ulValue))
 			{
 				SetSelection(iDropNum);
 				break;
@@ -179,7 +179,7 @@ namespace viewpane
 		// Clear the visual tree before we recompute treeData so we have nothing pointing to data in treeData
 		if (m_TreePane) m_TreePane->m_Tree.Refresh();
 
-		const auto iStructType = static_cast<__ParsingTypeEnum>(GetDropDownSelectionValue());
+		const auto iStructType = static_cast<parserType>(GetDropDownSelectionValue());
 		auto szSmartViewArray = std::vector<std::wstring>{};
 		treeData = std::make_shared<smartview::block>();
 		auto svp = smartview::GetSmartViewParser(iStructType, nullptr);

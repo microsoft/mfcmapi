@@ -17,7 +17,7 @@ void DoSmartView()
 	const auto ulSVParser = cli::switchParser.atULONG(0);
 	if (ulSVParser && ulSVParser < SmartViewParserTypeArray.size())
 	{
-		ulStructType = static_cast<__ParsingTypeEnum>(SmartViewParserTypeArray[ulSVParser].ulValue);
+		ulStructType = static_cast<parserType>(SmartViewParserTypeArray[ulSVParser].ulValue);
 	}
 
 	if (ulStructType)

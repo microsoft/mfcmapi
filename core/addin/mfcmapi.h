@@ -108,7 +108,7 @@ struct FLAG_ARRAY_ENTRY
 };
 typedef FLAG_ARRAY_ENTRY* LPFLAG_ARRAY_ENTRY;
 
-enum __ParsingTypeEnum
+enum parserType
 {
 	IDS_STNOPARSING,
 	IDS_STADDITIONALRENENTRYIDSEX,
@@ -151,14 +151,14 @@ enum __ParsingTypeEnum
 
 struct SMARTVIEW_PARSER_TYPE_ARRAY_ENTRY
 {
-	__ParsingTypeEnum ulValue;
+	parserType ulValue;
 	LPCWSTR lpszName;
 };
 
 struct SMARTVIEW_PARSER_ARRAY_ENTRY
 {
 	ULONG ulIndex;
-	__ParsingTypeEnum iStructType;
+	parserType iStructType;
 	bool bMV;
 };
 typedef SMARTVIEW_PARSER_ARRAY_ENTRY* LPSMARTVIEW_PARSER_ARRAY_ENTRY;

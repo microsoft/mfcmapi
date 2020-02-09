@@ -652,7 +652,7 @@ namespace addin
 				for (ULONG i = 0; i < addIn.ulSmartViewParserTypes; i++)
 				{
 					SMARTVIEW_PARSER_TYPE_ARRAY_ENTRY addinType{};
-					addinType.ulValue = (__ParsingTypeEnum) s_ulNextParser++;
+					addinType.ulValue = (parserType) s_ulNextParser++;
 					addinType.lpszName = addIn.lpSmartViewParserTypes[i];
 					SmartViewParserTypeArray.push_back(addinType);
 				}
@@ -719,7 +719,7 @@ namespace addin
 		}
 	}
 
-	std::wstring AddInStructTypeToString(__ParsingTypeEnum iStructType)
+	std::wstring AddInStructTypeToString(parserType iStructType)
 	{
 		for (const auto& smartViewParserType : SmartViewParserTypeArray)
 		{
@@ -732,7 +732,7 @@ namespace addin
 		return L"";
 	}
 
-	std::wstring AddInSmartView(__ParsingTypeEnum iStructType, ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
+	std::wstring AddInSmartView(parserType iStructType, ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 	{
 		// Don't let add-ins hijack our built in types
 		if (iStructType <= IDS_STEND - 1) return L"";
