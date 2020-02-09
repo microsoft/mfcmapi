@@ -17,7 +17,7 @@ namespace dialog
 			_In_ ui::CParentWnd* pParentWnd,
 			_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 			UINT uidTitle,
-			__mfcmapiCreateDialogEnum bCreateDialog,
+			createDialogType bCreateDialog,
 			_In_opt_ LPMAPIPROP lpContainer,
 			_In_opt_ LPMAPITABLE lpContentsTable,
 			_In_ LPSPropTagArray sptDefaultDisplayColumnTags,

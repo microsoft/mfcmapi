@@ -119,11 +119,11 @@ namespace dialog
 			ui::DrawStatus(
 				m_hWnd,
 				GetStatusHeight(),
-				m_StatusMessages[STATUSDATA1],
-				m_StatusWidth[STATUSDATA1],
-				m_StatusMessages[STATUSDATA2],
-				m_StatusWidth[STATUSDATA2],
-				m_StatusMessages[STATUSINFOTEXT]);
+				m_StatusMessages[statusPaneType::DATA1],
+				m_StatusWidth[statusPaneType::DATA1],
+				m_StatusMessages[statusPaneType::DATA2],
+				m_StatusWidth[statusPaneType::DATA2],
+				m_StatusMessages[statusPaneType::INFOTEXT]);
 			break;
 		}
 
@@ -134,9 +134,9 @@ namespace dialog
 	{
 		UpdateTitleBarText();
 
-		m_StatusWidth[STATUSDATA1] = 0;
-		m_StatusWidth[STATUSDATA2] = 0;
-		m_StatusWidth[STATUSINFOTEXT] = -1;
+		m_StatusWidth[statusPaneType::DATA1] = 0;
+		m_StatusWidth[statusPaneType::DATA2] = 0;
+		m_StatusWidth[statusPaneType::INFOTEXT] = -1;
 
 		SetIcon(m_hIcon, false); // Set small icon - large icon isn't used
 
@@ -270,12 +270,12 @@ namespace dialog
 	{
 		if (!m_bDisplayingMenuText)
 		{
-			m_szMenuDisplacedText = m_StatusMessages[STATUSINFOTEXT];
+			m_szMenuDisplacedText = m_StatusMessages[statusPaneType::INFOTEXT];
 		}
 
 		if (nItemID && !(nFlags & (MF_SEPARATOR | MF_POPUP)))
 		{
-			UpdateStatusBarText(STATUSINFOTEXT, nItemID); // This will LoadString the menu help text for us
+			UpdateStatusBarText(statusPaneType::INFOTEXT, nItemID); // This will LoadString the menu help text for us
 			m_bDisplayingMenuText = true;
 		}
 		else
@@ -284,7 +284,7 @@ namespace dialog
 		}
 		if (!m_bDisplayingMenuText)
 		{
-			UpdateStatusBarText(STATUSINFOTEXT, m_szMenuDisplacedText);
+			UpdateStatusBarText(statusPaneType::INFOTEXT, m_szMenuDisplacedText);
 		}
 	}
 
@@ -490,8 +490,8 @@ namespace dialog
 
 	void CBaseDialog::SetStatusWidths()
 	{
-		const auto iData1 = !m_StatusMessages[STATUSDATA1].empty();
-		const auto iData2 = !m_StatusMessages[STATUSDATA2].empty();
+		const auto iData1 = !m_StatusMessages[statusPaneType::DATA1].empty();
+		const auto iData2 = !m_StatusMessages[statusPaneType::DATA2].empty();
 
 		auto sizeData1 = SIZE{};
 		auto sizeData2 = SIZE{};
@@ -504,12 +504,12 @@ namespace dialog
 
 				if (iData1)
 				{
-					sizeData1 = ui::GetTextExtentPoint32(hdc, m_StatusMessages[STATUSDATA1]);
+					sizeData1 = ui::GetTextExtentPoint32(hdc, m_StatusMessages[statusPaneType::DATA1]);
 				}
 
 				if (iData2)
 				{
-					sizeData2 = ui::GetTextExtentPoint32(hdc, m_StatusMessages[STATUSDATA2]);
+					sizeData2 = ui::GetTextExtentPoint32(hdc, m_StatusMessages[statusPaneType::DATA2]);
 				}
 
 				SelectObject(hdc, hfontOld);
@@ -524,9 +524,9 @@ namespace dialog
 		if (sizeData1.cx) iWidthData1 = sizeData1.cx + 4 * nSpacing;
 		if (sizeData2.cx) iWidthData2 = sizeData2.cx + 4 * nSpacing;
 
-		m_StatusWidth[STATUSDATA1] = iWidthData1;
-		m_StatusWidth[STATUSDATA2] = iWidthData2;
-		m_StatusWidth[STATUSINFOTEXT] = -1;
+		m_StatusWidth[statusPaneType::DATA1] = iWidthData1;
+		m_StatusWidth[statusPaneType::DATA2] = iWidthData2;
+		m_StatusWidth[statusPaneType::INFOTEXT] = -1;
 		auto rcStatus = RECT{};
 		::GetClientRect(m_hWnd, &rcStatus);
 		rcStatus.top = rcStatus.bottom - GetStatusHeight();
@@ -560,26 +560,26 @@ namespace dialog
 		}
 	}
 
-	void CBaseDialog::UpdateStatusBarText(const __StatusPaneEnum nPos, _In_ const std::wstring& szMsg)
+	void CBaseDialog::UpdateStatusBarText(const statusPaneType nPos, _In_ const std::wstring& szMsg)
 	{
 		if (nPos < STATUSBARNUMPANES) m_StatusMessages[nPos] = szMsg;
 
 		SetStatusWidths();
 	}
 
-	void __cdecl CBaseDialog::UpdateStatusBarText(const __StatusPaneEnum nPos, const UINT uidMsg)
+	void __cdecl CBaseDialog::UpdateStatusBarText(const statusPaneType nPos, const UINT uidMsg)
 	{
 		UpdateStatusBarText(nPos, uidMsg, strings::emptystring, strings::emptystring, strings::emptystring);
 	}
 
-	void __cdecl CBaseDialog::UpdateStatusBarText(const __StatusPaneEnum nPos, UINT const uidMsg, ULONG const ulParam1)
+	void __cdecl CBaseDialog::UpdateStatusBarText(const statusPaneType nPos, UINT const uidMsg, ULONG const ulParam1)
 	{
 		auto szParam1 = std::to_wstring(ulParam1);
 		UpdateStatusBarText(nPos, uidMsg, szParam1, strings::emptystring, strings::emptystring);
 	}
 
 	void __cdecl CBaseDialog::UpdateStatusBarText(
-		__StatusPaneEnum const nPos,
+		statusPaneType const nPos,
 		UINT uidMsg,
 		std::wstring& szParam1,
 		std::wstring& szParam2,
@@ -627,7 +627,7 @@ namespace dialog
 		SetTitle(strings::formatmessage(IDS_TITLEBARPLAIN, m_szTitle.c_str()));
 	}
 
-	void CBaseDialog::UpdateStatus(HWND hWndHost, __StatusPaneEnum const pane, const std::wstring& status)
+	void CBaseDialog::UpdateStatus(HWND hWndHost, statusPaneType const pane, const std::wstring& status)
 	{
 		(void) ::SendMessage(hWndHost, WM_MFCMAPI_UPDATESTATUSBAR, pane, reinterpret_cast<LPARAM>(status.c_str()));
 	}
@@ -635,7 +635,7 @@ namespace dialog
 	// WM_MFCMAPI_UPDATESTATUSBAR
 	_Check_return_ LRESULT CBaseDialog::msgOnUpdateStatusBar(WPARAM wParam, LPARAM const lParam)
 	{
-		const auto iPane = static_cast<__StatusPaneEnum>(wParam);
+		const auto iPane = static_cast<statusPaneType>(wParam);
 		const std::wstring szStr = reinterpret_cast<LPWSTR>(lParam);
 		UpdateStatusBarText(iPane, szStr);
 

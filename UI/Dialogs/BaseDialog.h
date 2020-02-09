@@ -47,11 +47,11 @@ namespace dialog
 
 		void UpdateTitleBarText(_In_ const std::wstring& szMsg) const;
 		void UpdateTitleBarText() const;
-		void UpdateStatusBarText(__StatusPaneEnum nPos, _In_ const std::wstring& szMsg);
-		void __cdecl UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg);
-		void __cdecl UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg, ULONG ulParam1);
+		void UpdateStatusBarText(statusPaneType nPos, _In_ const std::wstring& szMsg);
+		void __cdecl UpdateStatusBarText(statusPaneType nPos, UINT uidMsg);
+		void __cdecl UpdateStatusBarText(statusPaneType nPos, UINT uidMsg, ULONG ulParam1);
 		void __cdecl UpdateStatusBarText(
-			__StatusPaneEnum nPos,
+			statusPaneType nPos,
 			UINT uidMsg,
 			std::wstring& szParam1,
 			std::wstring& szParam2,
@@ -60,7 +60,7 @@ namespace dialog
 		_Check_return_ ui::CParentWnd* GetParentWnd() const;
 		_Check_return_ std::shared_ptr<cache::CMapiObjects> GetMapiObjects() const;
 
-		static void UpdateStatus(HWND hWndHost, __StatusPaneEnum pane, const std::wstring& status);
+		static void UpdateStatus(HWND hWndHost, statusPaneType pane, const std::wstring& status);
 
 	protected:
 		// Overrides called by child classes

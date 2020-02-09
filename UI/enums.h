@@ -6,18 +6,18 @@ enum class modifyType
 	DO_NOT_REQUEST_MODIFY
 };
 
-enum __mfcmapiCreateDialogEnum
+enum createDialogType
 {
-	mfcmapiCALL_CREATE_DIALOG,
-	mfcmapiDO_NOT_CALL_CREATE_DIALOG
+	CALL_CREATE_DIALOG,
+	DO_NOT_CALL_CREATE_DIALOG
 };
 
-enum __StatusPaneEnum
+enum statusPaneType
 {
-	STATUSDATA1,
-	STATUSDATA2,
-	STATUSINFOTEXT,
-	STATUSBARNUMPANES
+	DATA1,
+	DATA2,
+	INFOTEXT,
+	NUMPANES
 };
 
 // Flags to indicate which contents/hierarchy tables to render
