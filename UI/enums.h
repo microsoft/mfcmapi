@@ -42,9 +42,9 @@ enum class tableDisplayFlags
 DEFINE_ENUM_FLAG_OPERATORS(tableDisplayFlags)
 DEFINE_ENUM_FLAG_CONTAINS_OPERATOR(tableDisplayFlags)
 
-enum __mfcmapiRestrictionTypeEnum
+enum class restrictionType
 {
-	mfcmapiNO_RESTRICTION,
-	mfcmapiNORMAL_RESTRICTION,
-	mfcmapiFINDROW_RESTRICTION
+	none,
+	normal,
+	findrow
 };

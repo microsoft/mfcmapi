@@ -60,8 +60,8 @@ namespace controls::sortlistctrl
 		void ClearLoading();
 		void SetRestriction(_In_opt_ const _SRestriction* lpRes);
 		_Check_return_ const _SRestriction* GetRestriction() const;
-		_Check_return_ __mfcmapiRestrictionTypeEnum GetRestrictionType() const;
-		void SetRestrictionType(__mfcmapiRestrictionTypeEnum RestrictionType);
+		_Check_return_ restrictionType GetRestrictionType() const;
+		void SetRestrictionType(restrictionType RestrictionType);
 		_Check_return_ ULONG GetContainerType() const;
 		_Check_return_ bool IsAdviseSet() const;
 		_Check_return_ bool IsContentsTableSet() const;
@@ -114,7 +114,7 @@ namespace controls::sortlistctrl
 		mapi::adviseSink* m_lpAdviseSink{};
 		LPMAPITABLE m_lpContentsTable{};
 
-		__mfcmapiRestrictionTypeEnum m_RestrictionType{mfcmapiNO_RESTRICTION};
+		restrictionType m_RestrictionType{restrictionType::none};
 
 		DECLARE_MESSAGE_MAP()
 	};

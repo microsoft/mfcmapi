@@ -38,7 +38,7 @@ namespace dialog
 
 		virtual void OnDisplayItem();
 
-		void SetRestrictionType(__mfcmapiRestrictionTypeEnum RestrictionType);
+		void SetRestrictionType(restrictionType RestrictionType);
 		_Check_return_ HRESULT OpenAttachmentsFromMessage(_In_ LPMESSAGE lpMessage);
 		_Check_return_ HRESULT OpenRecipientsFromMessage(_In_ LPMESSAGE lpMessage);
 

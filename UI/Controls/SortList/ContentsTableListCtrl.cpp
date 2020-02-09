@@ -452,12 +452,9 @@ namespace controls::sortlistctrl
 
 	_Check_return_ const _SRestriction* CContentsTableListCtrl::GetRestriction() const { return m_lpRes; }
 
-	_Check_return_ __mfcmapiRestrictionTypeEnum CContentsTableListCtrl::GetRestrictionType() const
-	{
-		return m_RestrictionType;
-	}
+	_Check_return_ restrictionType CContentsTableListCtrl::GetRestrictionType() const { return m_RestrictionType; }
 
-	void CContentsTableListCtrl::SetRestrictionType(__mfcmapiRestrictionTypeEnum RestrictionType)
+	void CContentsTableListCtrl::SetRestrictionType(restrictionType RestrictionType)
 	{
 		m_RestrictionType = RestrictionType;
 	}
@@ -470,7 +467,7 @@ namespace controls::sortlistctrl
 		output::DebugPrintEx(
 			output::dbgLevel::Generic, CLASS, L"ApplyRestriction", L"m_RestrictionType = 0x%X\n", m_RestrictionType);
 		// Apply our restrictions
-		if (mfcmapiNORMAL_RESTRICTION == m_RestrictionType)
+		if (m_RestrictionType == restrictionType::normal)
 		{
 			output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"ApplyRestriction", L"applying restriction:\n");
 
@@ -548,7 +545,7 @@ namespace controls::sortlistctrl
 			dialog::CBaseDialog::UpdateStatus(hWndHost, statusPane::infoText, strings::loadstring(IDS_ESCSTOPLOADING));
 			if (pRows) FreeProws(pRows);
 			pRows = nullptr;
-			if (mfcmapiFINDROW_RESTRICTION == resType && lpRes)
+			if (resType == restrictionType::findrow && lpRes)
 			{
 				output::DebugPrintEx(
 					output::dbgLevel::Generic, CLASS, L"DoFindRows", L"running FindRow with restriction:\n");

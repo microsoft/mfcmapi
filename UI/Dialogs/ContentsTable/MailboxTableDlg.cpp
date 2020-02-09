@@ -163,6 +163,6 @@ namespace dialog
 			CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_UNICODE), szString, MyData.GetHex(1), nullptr);
 		m_lpContentsTableListCtrl->SetRestriction(lpRes);
 
-		SetRestrictionType(mfcmapiNORMAL_RESTRICTION);
+		SetRestrictionType(restrictionType::normal);
 	}
 } // namespace dialog

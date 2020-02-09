@@ -80,13 +80,13 @@ namespace dialog
 		switch (wMenuSelect)
 		{
 		case ID_APPLYFINDROW:
-			SetRestrictionType(mfcmapiFINDROW_RESTRICTION);
+			SetRestrictionType(restrictionType::findrow);
 			return true;
 		case ID_APPLYRESTRICTION:
-			SetRestrictionType(mfcmapiNORMAL_RESTRICTION);
+			SetRestrictionType(restrictionType::normal);
 			return true;
 		case ID_CLEARRESTRICTION:
-			SetRestrictionType(mfcmapiNO_RESTRICTION);
+			SetRestrictionType(restrictionType::none);
 			return true;
 		}
 
@@ -183,9 +183,9 @@ namespace dialog
 			pMenu->EnableMenuItem(ID_DISPLAYSELECTEDITEM, DIMMSOK(iNumSel));
 
 			const auto RestrictionType = m_lpContentsTableListCtrl->GetRestrictionType();
-			pMenu->CheckMenuItem(ID_APPLYFINDROW, CHECK(mfcmapiFINDROW_RESTRICTION == RestrictionType));
-			pMenu->CheckMenuItem(ID_APPLYRESTRICTION, CHECK(mfcmapiNORMAL_RESTRICTION == RestrictionType));
-			pMenu->CheckMenuItem(ID_CLEARRESTRICTION, CHECK(mfcmapiNO_RESTRICTION == RestrictionType));
+			pMenu->CheckMenuItem(ID_APPLYFINDROW, CHECK(RestrictionType == restrictionType::findrow));
+			pMenu->CheckMenuItem(ID_APPLYRESTRICTION, CHECK(RestrictionType == restrictionType::normal));
+			pMenu->CheckMenuItem(ID_CLEARRESTRICTION, CHECK(RestrictionType == restrictionType::none));
 			pMenu->EnableMenuItem(
 				ID_TABLENOTIFICATIONON,
 				DIM(m_lpContentsTableListCtrl->IsContentsTableSet() && !m_lpContentsTableListCtrl->IsAdviseSet()));
@@ -245,7 +245,7 @@ namespace dialog
 		}
 	}
 
-	void CContentsTableDlg::SetRestrictionType(__mfcmapiRestrictionTypeEnum RestrictionType)
+	void CContentsTableDlg::SetRestrictionType(restrictionType RestrictionType)
 	{
 		if (m_lpContentsTableListCtrl) m_lpContentsTableListCtrl->SetRestrictionType(RestrictionType);
 		OnRefreshView();
@@ -303,11 +303,11 @@ namespace dialog
 
 				if (SearchEditor.GetCheck(editor::CSearchEditor::SearchFields::FINDROW))
 				{
-					SetRestrictionType(mfcmapiFINDROW_RESTRICTION);
+					SetRestrictionType(restrictionType::findrow);
 				}
 				else
 				{
-					SetRestrictionType(mfcmapiNORMAL_RESTRICTION);
+					SetRestrictionType(restrictionType::normal);
 				}
 			}
 		}
@@ -343,11 +343,11 @@ namespace dialog
 
 		if (MyData.GetCheck(1))
 		{
-			SetRestrictionType(mfcmapiFINDROW_RESTRICTION);
+			SetRestrictionType(restrictionType::findrow);
 		}
 		else
 		{
-			SetRestrictionType(mfcmapiNORMAL_RESTRICTION);
+			SetRestrictionType(restrictionType::normal);
 		}
 	}
 

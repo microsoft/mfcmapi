@@ -280,7 +280,7 @@ namespace dialog
 		const auto lpRes = mapi::ab::CreateANRRestriction(PR_ANR_W, MyData.GetStringW(0), nullptr);
 		m_lpContentsTableListCtrl->SetRestriction(lpRes);
 
-		SetRestrictionType(mfcmapiNORMAL_RESTRICTION);
+		SetRestrictionType(restrictionType::normal);
 	}
 
 	void CAbDlg::HandleAddInMenuSingle(

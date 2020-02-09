@@ -1839,7 +1839,7 @@ namespace dialog
 
 				m_lpContentsTableListCtrl->SetRestriction(lpRes);
 
-				SetRestrictionType(mfcmapiNORMAL_RESTRICTION);
+				SetRestrictionType(restrictionType::normal);
 				MAPIFreeBuffer(lpProps);
 			}
 
