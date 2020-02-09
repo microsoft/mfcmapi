@@ -645,8 +645,8 @@ namespace addin
 					SmartViewParserArray, addIn.lpSmartViewParsers, addIn.ulSmartViewParsers, CompareSmartViewParser);
 			}
 
-			// We add our new parsers to the end of the array, assigning ids starting with IDS_STEND
-			static auto s_nextParser = static_cast<int>(parserType::IDS_STEND);
+			// We add our new parsers to the end of the array, assigning ids starting with parserType::END
+			static auto s_nextParser = static_cast<int>(parserType::END);
 			if (addIn.ulSmartViewParserTypes)
 			{
 				for (ULONG i = 0; i < addIn.ulSmartViewParserTypes; i++)
@@ -736,7 +736,7 @@ namespace addin
 	std::wstring AddInSmartView(parserType iStructType, ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 	{
 		// Don't let add-ins hijack our built in types
-		if (iStructType < parserType::IDS_STEND) return L"";
+		if (iStructType < parserType::END) return L"";
 
 		auto szStructType = AddInStructTypeToString(iStructType);
 		if (szStructType.empty()) return L"";

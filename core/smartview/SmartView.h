@@ -6,7 +6,7 @@ enum class parserType;
 
 namespace smartview
 {
-	std::shared_ptr<smartViewParser> GetSmartViewParser(parserType parser, _In_opt_ LPMAPIPROP lpMAPIProp);
+	std::shared_ptr<smartViewParser> GetSmartViewParser(parserType type, _In_opt_ LPMAPIPROP lpMAPIProp);
 	_Check_return_ parserType FindSmartViewParserForProp(
 		_In_opt_ const _SPropValue* lpProp, // required property value
 		_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object

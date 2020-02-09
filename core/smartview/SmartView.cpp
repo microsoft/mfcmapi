@@ -48,89 +48,89 @@ namespace smartview
 	_Check_return_ std::wstring PTI8ToSzString(LARGE_INTEGER liI8, bool bLabel);
 	// End: Functions to parse PT_LONG/PT-I2 properties
 
-	std::shared_ptr<smartViewParser> GetSmartViewParser(parserType parser, _In_opt_ LPMAPIPROP lpMAPIProp)
+	std::shared_ptr<smartViewParser> GetSmartViewParser(parserType type, _In_opt_ LPMAPIPROP lpMAPIProp)
 	{
-		switch (parser)
+		switch (type)
 		{
-		case parserType::IDS_STNOPARSING:
+		case parserType::NOPARSING:
 			return nullptr;
-		case parserType::IDS_STTOMBSTONE:
+		case parserType::TOMBSTONE:
 			return std::make_shared<TombStone>();
-		case parserType::IDS_STPCL:
+		case parserType::PCL:
 			return std::make_shared<PCL>();
-		case parserType::IDS_STVERBSTREAM:
+		case parserType::VERBSTREAM:
 			return std::make_shared<VerbStream>();
-		case parserType::IDS_STNICKNAMECACHE:
+		case parserType::NICKNAMECACHE:
 			return std::make_shared<NickNameCache>();
-		case parserType::IDS_STFOLDERUSERFIELDS:
+		case parserType::FOLDERUSERFIELDS:
 			return std::make_shared<FolderUserFieldStream>();
-		case parserType::IDS_STRECIPIENTROWSTREAM:
+		case parserType::RECIPIENTROWSTREAM:
 			return std::make_shared<RecipientRowStream>();
-		case parserType::IDS_STWEBVIEWPERSISTSTREAM:
+		case parserType::WEBVIEWPERSISTSTREAM:
 			return std::make_shared<WebViewPersistStream>();
-		case parserType::IDS_STFLATENTRYLIST:
+		case parserType::FLATENTRYLIST:
 			return std::make_shared<FlatEntryList>();
-		case parserType::IDS_STADDITIONALRENENTRYIDSEX:
+		case parserType::ADDITIONALRENENTRYIDSEX:
 			return std::make_shared<AdditionalRenEntryIDs>();
-		case parserType::IDS_STPROPERTYDEFINITIONSTREAM:
+		case parserType::PROPERTYDEFINITIONSTREAM:
 			return std::make_shared<PropertyDefinitionStream>();
-		case parserType::IDS_STSEARCHFOLDERDEFINITION:
+		case parserType::SEARCHFOLDERDEFINITION:
 			return std::make_shared<SearchFolderDefinition>();
-		case parserType::IDS_STENTRYLIST:
+		case parserType::ENTRYLIST:
 			return std::make_shared<EntryList>();
-		case parserType::IDS_STRULECONDITION:
+		case parserType::RULECONDITION:
 		{
 			auto parser = std::make_shared<RuleCondition>();
 			if (parser) parser->Init(false);
 			return parser;
 		}
-		case parserType::IDS_STEXTENDEDRULECONDITION:
+		case parserType::EXTENDEDRULECONDITION:
 		{
 			auto parser = std::make_shared<RuleCondition>();
 			if (parser) parser->Init(true);
 			return parser;
 		}
-		case parserType::IDS_STRESTRICTION:
+		case parserType::RESTRICTION:
 		{
 			return std::make_shared<RestrictionStruct>(false, true);
 		}
-		case parserType::IDS_STPROPERTIES:
+		case parserType::PROPERTIES:
 			return std::make_shared<PropertiesStruct>();
-		case parserType::IDS_STENTRYID:
+		case parserType::ENTRYID:
 			return std::make_shared<EntryIdStruct>();
-		case parserType::IDS_STGLOBALOBJECTID:
+		case parserType::GLOBALOBJECTID:
 			return std::make_shared<GlobalObjectId>();
-		case parserType::IDS_STTASKASSIGNERS:
+		case parserType::TASKASSIGNERS:
 			return std::make_shared<TaskAssigners>();
-		case parserType::IDS_STCONVERSATIONINDEX:
+		case parserType::CONVERSATIONINDEX:
 			return std::make_shared<ConversationIndex>();
-		case parserType::IDS_STREPORTTAG:
+		case parserType::REPORTTAG:
 			return std::make_shared<ReportTag>();
-		case parserType::IDS_STTIMEZONEDEFINITION:
+		case parserType::TIMEZONEDEFINITION:
 			return std::make_shared<TimeZoneDefinition>();
-		case parserType::IDS_STTIMEZONE:
+		case parserType::TIMEZONE:
 			return std::make_shared<TimeZone>();
-		case parserType::IDS_STEXTENDEDFOLDERFLAGS:
+		case parserType::EXTENDEDFOLDERFLAGS:
 			return std::make_shared<ExtendedFlags>();
-		case parserType::IDS_STAPPOINTMENTRECURRENCEPATTERN:
+		case parserType::APPOINTMENTRECURRENCEPATTERN:
 			return std::make_shared<AppointmentRecurrencePattern>();
-		case parserType::IDS_STRECURRENCEPATTERN:
+		case parserType::RECURRENCEPATTERN:
 			return std::make_shared<RecurrencePattern>();
-		case parserType::IDS_STSID:
+		case parserType::SID:
 			return std::make_shared<SIDBin>();
-		case parserType::IDS_STSECURITYDESCRIPTOR:
+		case parserType::SECURITYDESCRIPTOR:
 		{
 			auto parser = std::make_shared<SDBin>();
 			if (parser) parser->Init(lpMAPIProp, false);
 			return parser;
 		}
-		case parserType::IDS_STFBSECURITYDESCRIPTOR:
+		case parserType::FBSECURITYDESCRIPTOR:
 		{
 			auto parser = std::make_shared<SDBin>();
 			if (parser) parser->Init(lpMAPIProp, true);
 			return parser;
 		}
-		case parserType::IDS_STXID:
+		case parserType::XID:
 			return std::make_shared<XID>();
 		}
 
@@ -197,7 +197,7 @@ namespace smartview
 			if (smartViewParser.ulIndex == ulIndex && smartViewParser.bMV == bMV) return smartViewParser.type;
 		}
 
-		return parserType::IDS_STNOPARSING;
+		return parserType::NOPARSING;
 	}
 
 	_Check_return_ parserType FindSmartViewParserForProp(
@@ -221,7 +221,7 @@ namespace smartview
 			bIsAB, // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
 		bool bMVRow) // did the row come from a MV prop?
 	{
-		if (!registry::doSmartView || !lpProp) return parserType::IDS_STNOPARSING;
+		if (!registry::doSmartView || !lpProp) return parserType::NOPARSING;
 
 		const auto npi = GetNamedPropInfo(lpProp->ulPropTag, lpMAPIProp, lpNameID, lpMappingSignature, bIsAB);
 		const auto ulPropNameID = npi.first;
@@ -236,7 +236,7 @@ namespace smartview
 
 			auto parser = FindSmartViewParserForProp(ulLookupPropTag, ulPropNameID, &propNameGUID);
 			// We special-case this property
-			if (parser != parserType::IDS_STNOPARSING && PR_ROAMING_BINARYSTREAM == ulLookupPropTag && lpMAPIProp)
+			if (parser != parserType::NOPARSING && PR_ROAMING_BINARYSTREAM == ulLookupPropTag && lpMAPIProp)
 			{
 				auto lpPropSubject = LPSPropValue{};
 
@@ -245,7 +245,7 @@ namespace smartview
 				if (strings::CheckStringProp(lpPropSubject, PT_UNICODE) &&
 					0 == wcscmp(lpPropSubject->Value.lpszW, L"IPM.Configuration.Autocomplete"))
 				{
-					parser = parserType::IDS_STNICKNAMECACHE;
+					parser = parserType::NICKNAMECACHE;
 				}
 
 				MAPIFreeBuffer(lpPropSubject);
@@ -258,7 +258,7 @@ namespace smartview
 			return FindSmartViewParserForProp(lpProp->ulPropTag, ulPropNameID, &propNameGUID);
 		}
 
-		return parserType::IDS_STNOPARSING;
+		return parserType::NOPARSING;
 	}
 
 	std::pair<ULONG, GUID> GetNamedPropInfo(
@@ -345,14 +345,14 @@ namespace smartview
 			ulLookupPropTag = lpProp->ulPropTag;
 			if (bMVRow) ulLookupPropTag |= MV_FLAG;
 
-			if (parser != parserType::IDS_STNOPARSING)
+			if (parser != parserType::NOPARSING)
 			{
 				return InterpretBinaryAsString(lpProp->Value.bin, parser, lpMAPIProp);
 			}
 
 			break;
 		case PT_MV_BINARY:
-			if (parser != parserType::IDS_STNOPARSING)
+			if (parser != parserType::NOPARSING)
 			{
 				return InterpretMVBinaryAsString(lpProp->Value.MVbin, parser, lpMAPIProp);
 			}
@@ -416,17 +416,17 @@ namespace smartview
 		const auto iParser = FindSmartViewParserForProp(ulPropTag, ulPropNameID, lpguidNamedProp);
 		switch (iParser)
 		{
-		case parserType::IDS_STLONGRTIME:
+		case parserType::LONGRTIME:
 			lpszResultString = RTimeToSzString(static_cast<DWORD>(val), bLabel);
 			break;
-		case parserType::IDS_STPTI8:
+		case parserType::PTI8:
 		{
 			auto li = LARGE_INTEGER{};
 			li.QuadPart = val;
 			lpszResultString = PTI8ToSzString(li, bLabel);
 		}
 		break;
-		case parserType::IDS_STSFIDMID:
+		case parserType::SFIDMID:
 			lpszResultString = FidMidToSzString(val, bLabel);
 			break;
 			// insert future parsers here
@@ -544,10 +544,10 @@ namespace smartview
 		// These parsers have some special casing
 		switch (parser)
 		{
-		case parserType::IDS_STDECODEENTRYID:
+		case parserType::DECODEENTRYID:
 			szResultString = mapi::DecodeID(myBin.cb, myBin.lpb);
 			break;
-		case parserType::IDS_STENCODEENTRYID:
+		case parserType::ENCODEENTRYID:
 			szResultString = mapi::EncodeID(myBin.cb, reinterpret_cast<LPENTRYID>(myBin.lpb));
 			break;
 		}
