@@ -27,7 +27,7 @@ namespace dialog
 			  pParentWnd,
 			  lpMapiObjects,
 			  IDS_MAILBOXTABLE,
-			  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+			  createDialogType::DO_NOT_CALL_CREATE_DIALOG,
 			  nullptr,
 			  lpMAPITable,
 			  &columns::sptMBXCols.tags,

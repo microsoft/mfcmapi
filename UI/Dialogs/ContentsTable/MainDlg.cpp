@@ -45,7 +45,7 @@ namespace dialog
 			  pParentWnd,
 			  lpMapiObjects,
 			  ID_PRODUCTNAME,
-			  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+			  createDialogType::DO_NOT_CALL_CREATE_DIALOG,
 			  nullptr,
 			  nullptr,
 			  &columns::sptSTORECols.tags,
@@ -608,7 +608,7 @@ namespace dialog
 
 		if (pStoresTbl)
 		{
-			m_lpContentsTableListCtrl->SetContentsTable(pStoresTbl, dfNormal, MAPI_STORE);
+			m_lpContentsTableListCtrl->SetContentsTable(pStoresTbl, tableDisplayFlags::dfNormal, MAPI_STORE);
 
 			pStoresTbl->Release();
 		}
@@ -745,7 +745,7 @@ namespace dialog
 		OnCloseAddressBook();
 
 		// We do this first to free up any stray session pointers
-		m_lpContentsTableListCtrl->SetContentsTable(nullptr, dfNormal, MAPI_STORE);
+		m_lpContentsTableListCtrl->SetContentsTable(nullptr, tableDisplayFlags::dfNormal, MAPI_STORE);
 
 		m_lpMapiObjects->Logoff(m_hWnd, MAPI_LOGOFF_UI);
 	}
@@ -764,7 +764,7 @@ namespace dialog
 		OnCloseAddressBook();
 
 		// We do this first to free up any stray session pointers
-		m_lpContentsTableListCtrl->SetContentsTable(nullptr, dfNormal, MAPI_STORE);
+		m_lpContentsTableListCtrl->SetContentsTable(nullptr, tableDisplayFlags::dfNormal, MAPI_STORE);
 
 		m_lpMapiObjects->Logoff(m_hWnd, MyData.GetHex(0));
 	}

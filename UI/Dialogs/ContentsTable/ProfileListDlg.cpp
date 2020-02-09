@@ -28,7 +28,7 @@ namespace dialog
 			  pParentWnd,
 			  lpMapiObjects,
 			  IDS_PROFILES,
-			  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+			  createDialogType::DO_NOT_CALL_CREATE_DIALOG,
 			  nullptr,
 			  lpMAPITable,
 			  &columns::sptPROFLISTCols.tags,
@@ -100,7 +100,7 @@ namespace dialog
 
 		// Wipe out current references to the profile table so the refresh will work
 		// If we don't do this, we get the old table back again.
-		m_lpContentsTableListCtrl->SetContentsTable(nullptr, dfNormal, NULL);
+		m_lpContentsTableListCtrl->SetContentsTable(nullptr, tableDisplayFlags::dfNormal, NULL);
 
 		LPPROFADMIN lpProfAdmin = nullptr;
 		EC_MAPI_S(MAPIAdminProfiles(0, &lpProfAdmin));
@@ -112,7 +112,7 @@ namespace dialog
 
 		if (lpProfTable)
 		{
-			m_lpContentsTableListCtrl->SetContentsTable(lpProfTable, dfNormal, NULL);
+			m_lpContentsTableListCtrl->SetContentsTable(lpProfTable, tableDisplayFlags::dfNormal, NULL);
 
 			lpProfTable->Release();
 		}

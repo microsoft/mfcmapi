@@ -222,7 +222,7 @@ namespace dialog::editor
 
 	void OnQSCheckSpecialFolders(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 	{
-		lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, IDS_STATUSTEXTCHECKINGSPECIALFOLDERS);
+		lpHostDlg->UpdateStatusBarText(statusPane::infoText, IDS_STATUSTEXTCHECKINGSPECIALFOLDERS);
 		(void) lpHostDlg->SendMessage(WM_PAINT, NULL, NULL); // force paint so we update the status now
 
 		auto lpMDB = OpenStoreForQuickStart(lpHostDlg, hwnd);
@@ -233,6 +233,6 @@ namespace dialog::editor
 			lpMDB->Release();
 		}
 
-		lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, strings::emptystring);
+		lpHostDlg->UpdateStatusBarText(statusPane::infoText, strings::emptystring);
 	}
 } // namespace dialog::editor

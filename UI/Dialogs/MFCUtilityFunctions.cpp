@@ -58,7 +58,8 @@ namespace dialog
 		switch (ulObjType)
 		{
 			// #define MAPI_STORE ((ULONG) 0x00000001) /* Message Store */
-		case MAPI_STORE: {
+		case MAPI_STORE:
+		{
 			lpHostDlg->OnUpdateSingleMAPIPropListCtrl(lpUnk, nullptr);
 			auto lpTempMDB = mapi::safe_cast<LPMDB>(lpUnk);
 
@@ -67,7 +68,11 @@ namespace dialog
 			lpMapiObjects->SetMDB(lpTempMDB);
 
 			new CMsgStoreDlg(
-				lpParentWnd, lpMapiObjects, lpUnk, nullptr, otStoreDeletedItems == tType ? dfDeleted : dfNormal);
+				lpParentWnd,
+				lpMapiObjects,
+				lpUnk,
+				nullptr,
+				otStoreDeletedItems == tType ? tableDisplayFlags::dfDeleted : tableDisplayFlags::dfNormal);
 
 			// restore the old MDB
 			lpMapiObjects->SetMDB(lpMDB); // ...we can put it back
@@ -76,14 +81,15 @@ namespace dialog
 			break;
 		}
 		// #define MAPI_FOLDER ((ULONG) 0x00000003) /* Folder */
-		case MAPI_FOLDER: {
+		case MAPI_FOLDER:
+		{
 			// There are two ways to display a folder...either the contents table or the hierarchy table.
 			if (otHierarchy == tType)
 			{
 				const auto lpMDB = lpMapiObjects->GetMDB(); // do not release
 				if (lpMDB)
 				{
-					new CMsgStoreDlg(lpParentWnd, lpMapiObjects, lpMDB, lpUnk, dfNormal);
+					new CMsgStoreDlg(lpParentWnd, lpMapiObjects, lpMDB, lpUnk, tableDisplayFlags::dfNormal);
 				}
 				else
 				{
@@ -96,7 +102,7 @@ namespace dialog
 						if (lpNewMDB)
 						{
 							lpMapiObjects->SetMDB(lpNewMDB);
-							new CMsgStoreDlg(lpParentWnd, lpMapiObjects, lpNewMDB, lpUnk, dfNormal);
+							new CMsgStoreDlg(lpParentWnd, lpMapiObjects, lpNewMDB, lpUnk, tableDisplayFlags::dfNormal);
 
 							// restore the old MDB
 							lpMapiObjects->SetMDB(nullptr);
@@ -107,7 +113,11 @@ namespace dialog
 			}
 			else if (otContents == tType || otAssocContents == tType)
 			{
-				new CFolderDlg(lpParentWnd, lpMapiObjects, lpUnk, otAssocContents == tType ? dfAssoc : dfNormal);
+				new CFolderDlg(
+					lpParentWnd,
+					lpMapiObjects,
+					lpUnk,
+					otAssocContents == tType ? tableDisplayFlags::dfAssoc : tableDisplayFlags::dfNormal);
 			}
 		}
 		break;
@@ -166,13 +176,14 @@ namespace dialog
 
 		switch (tType)
 		{
-		case otStatus: {
+		case otStatus:
+		{
 			if (!lpTable) return MAPI_E_INVALID_PARAMETER;
 			new CContentsTableDlg(
 				lpParentWnd,
 				lpMapiObjects,
 				IDS_STATUSTABLE,
-				mfcmapiCALL_CREATE_DIALOG,
+				createDialogType::CALL_CREATE_DIALOG,
 				nullptr,
 				lpTable,
 				&columns::sptSTATUSCols.tags,
@@ -181,13 +192,14 @@ namespace dialog
 				MENU_CONTEXT_STATUS_TABLE);
 			break;
 		}
-		case otReceive: {
+		case otReceive:
+		{
 			if (!lpTable) return MAPI_E_INVALID_PARAMETER;
 			new CContentsTableDlg(
 				lpParentWnd,
 				lpMapiObjects,
 				IDS_RECEIVEFOLDERTABLE,
-				mfcmapiCALL_CREATE_DIALOG,
+				createDialogType::CALL_CREATE_DIALOG,
 				nullptr,
 				lpTable,
 				&columns::sptRECEIVECols.tags,
@@ -196,13 +208,14 @@ namespace dialog
 				MENU_CONTEXT_RECIEVE_FOLDER_TABLE);
 			break;
 		}
-		case otHierarchy: {
+		case otHierarchy:
+		{
 			if (!lpTable) return MAPI_E_INVALID_PARAMETER;
 			new CContentsTableDlg(
 				lpParentWnd,
 				lpMapiObjects,
 				IDS_HIERARCHYTABLE,
-				mfcmapiCALL_CREATE_DIALOG,
+				createDialogType::CALL_CREATE_DIALOG,
 				nullptr,
 				lpTable,
 				&columns::sptHIERARCHYCols.tags,
@@ -212,14 +225,15 @@ namespace dialog
 			break;
 		}
 		default:
-		case otDefault: {
+		case otDefault:
+		{
 			if (!lpTable) return MAPI_E_INVALID_PARAMETER;
 			if (otDefault != tType) error::ErrDialog(__FILE__, __LINE__, IDS_EDDISPLAYTABLE, tType);
 			new CContentsTableDlg(
 				lpParentWnd,
 				lpMapiObjects,
 				IDS_CONTENTSTABLE,
-				mfcmapiCALL_CREATE_DIALOG,
+				createDialogType::CALL_CREATE_DIALOG,
 				nullptr,
 				lpTable,
 				&columns::sptDEFCols.tags,
@@ -249,7 +263,8 @@ namespace dialog
 			hRes = S_OK;
 			switch (PROP_ID(ulPropTag))
 			{
-			case PROP_ID(PR_MESSAGE_ATTACHMENTS): {
+			case PROP_ID(PR_MESSAGE_ATTACHMENTS):
+			{
 				auto lpMessage = mapi::safe_cast<LPMESSAGE>(lpMAPIProp);
 				if (lpMessage)
 				{
@@ -258,7 +273,8 @@ namespace dialog
 				}
 				break;
 			}
-			case PROP_ID(PR_MESSAGE_RECIPIENTS): {
+			case PROP_ID(PR_MESSAGE_RECIPIENTS):
+			{
 				auto lpMessage = mapi::safe_cast<LPMESSAGE>(lpMAPIProp);
 				if (lpMessage)
 				{
@@ -320,7 +336,8 @@ namespace dialog
 			case otRules:
 				new CRulesDlg(lpParentWnd, lpMapiObjects, lpExchTbl);
 				break;
-			case otACL: {
+			case otACL:
+			{
 				editor::CEditor MyData(
 					lpHostDlg, IDS_ACLTABLE, IDS_ACLTABLEPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
@@ -445,7 +462,8 @@ namespace dialog
 							lpMailboxTable =
 								mapi::store::GetMailboxTable3(lpMDB, szServerDN, MyData.GetHex(1), fMapiUnicode);
 							break;
-						case 2: {
+						case 2:
+						{
 							GUID MyGUID = {0};
 							auto bHaveGUID = false;
 
@@ -564,7 +582,8 @@ namespace dialog
 							lpPFTable = mapi::store::GetPublicFolderTable4(
 								lpMDB, szServerDN, MyData.GetHex(1), MyData.GetHex(2) | fMapiUnicode);
 							break;
-						case 2: {
+						case 2:
+						{
 							GUID MyGUID = {0};
 							auto bHaveGUID = false;
 

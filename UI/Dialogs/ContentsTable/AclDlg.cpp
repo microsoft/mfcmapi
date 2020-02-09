@@ -30,7 +30,7 @@ namespace dialog
 			  pParentWnd,
 			  lpMapiObjects,
 			  fFreeBusyVisible ? IDS_ACLFBTABLE : IDS_ACLTABLE,
-			  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+			  createDialogType::DO_NOT_CALL_CREATE_DIALOG,
 			  nullptr,
 			  nullptr,
 			  &columns::sptACLCols.tags,
@@ -106,7 +106,7 @@ namespace dialog
 
 			if (lpMAPITable)
 			{
-				m_lpContentsTableListCtrl->SetContentsTable(lpMAPITable, dfNormal, NULL);
+				m_lpContentsTableListCtrl->SetContentsTable(lpMAPITable, tableDisplayFlags::dfNormal, NULL);
 
 				lpMAPITable->Release();
 			}

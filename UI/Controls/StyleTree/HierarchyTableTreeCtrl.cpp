@@ -58,12 +58,12 @@ namespace controls
 		_In_ CWnd* pCreateParent,
 		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 		_In_ dialog::CHierarchyTableDlg* lpHostDlg,
-		const ULONG ulDisplayFlags,
+		const tableDisplayFlags displayFlags,
 		const UINT nIDContextMenu)
 	{
 		m_lpMapiObjects = lpMapiObjects;
 		m_lpHostDlg = lpHostDlg;
-		m_ulDisplayFlags = ulDisplayFlags;
+		m_displayFlags = displayFlags;
 		m_nIDContextMenu = nIDContextMenu;
 		m_bSortNodes = true;
 
@@ -337,7 +337,8 @@ namespace controls
 				// On the AB, something about this call triggers table reloads on the parent hierarchy table
 				// No idea why they're triggered - doesn't happen for all AB providers
 				WC_MAPI_S(lpMAPIContainer->GetHierarchyTable(
-					(m_ulDisplayFlags & dfDeleted ? SHOW_SOFT_DELETES : NULL) | fMapiUnicode, &lpHierarchyTable));
+					(m_displayFlags && tableDisplayFlags::dfDeleted ? SHOW_SOFT_DELETES : NULL) | fMapiUnicode,
+					&lpHierarchyTable));
 
 				if (lpHierarchyTable)
 				{
@@ -395,7 +396,7 @@ namespace controls
 
 	bool CHierarchyTableTreeCtrl::HasChildren(_In_ HTREEITEM hItem) const
 	{
-		if (m_ulDisplayFlags & dfDeleted)
+		if (m_displayFlags && tableDisplayFlags::dfDeleted)
 		{
 			return true;
 		}
@@ -463,7 +464,7 @@ namespace controls
 				lpMAPIContainer->GetProps(LPSPropTagArray(&sptHTCountCols), fMapiUnicode, &cVals, &lpProps));
 			if (lpProps)
 			{
-				if (!(m_ulDisplayFlags & dfDeleted))
+				if (!(m_displayFlags && tableDisplayFlags::dfDeleted))
 				{
 					uiMsg = IDS_STATUSTEXTCONTENTCOUNTS;
 					if (PT_ERROR == PROP_TYPE(lpProps[htcPR_CONTENT_COUNT].ulPropTag))
@@ -525,7 +526,7 @@ namespace controls
 			}
 		}
 
-		m_lpHostDlg->UpdateStatusBarText(STATUSDATA1, uiMsg, szParam1, szParam2, szParam3);
+		m_lpHostDlg->UpdateStatusBarText(statusPane::data1, uiMsg, szParam1, szParam2, szParam3);
 
 		m_lpHostDlg->OnUpdateSingleMAPIPropListCtrl(lpMAPIContainer, GetSortListData(hItem));
 
@@ -702,8 +703,9 @@ namespace controls
 				const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 				if (lpMDB)
 				{
-					ulFlags = (modifyType::REQUEST_MODIFY == bModify ? MAPI_MODIFY : NULL) |
-							  (m_ulDisplayFlags & dfDeleted ? SHOW_SOFT_DELETES | MAPI_NO_CACHE : NULL);
+					ulFlags =
+						(modifyType::REQUEST_MODIFY == bModify ? MAPI_MODIFY : NULL) |
+						(m_displayFlags && tableDisplayFlags::dfDeleted ? SHOW_SOFT_DELETES | MAPI_NO_CACHE : NULL);
 
 					lpContainer = mapi::CallOpenEntry<LPMAPICONTAINER>(
 						lpMDB,

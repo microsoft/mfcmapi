@@ -44,7 +44,7 @@ namespace dialog
 
 		controls::sortlistctrl::CContentsTableListCtrl* m_lpContentsTableListCtrl;
 		LPMAPITABLE m_lpContentsTable;
-		ULONG m_ulDisplayFlags;
+		tableDisplayFlags m_displayFlags;
 
 	private:
 		virtual void HandleAddInMenuSingle(

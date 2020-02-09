@@ -25,7 +25,7 @@ namespace dialog
 			  pParentWnd,
 			  lpMapiObjects,
 			  IDS_RULESTABLE,
-			  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+			  createDialogType::DO_NOT_CALL_CREATE_DIALOG,
 			  nullptr,
 			  nullptr,
 			  &columns::sptRULECols.tags,
@@ -86,7 +86,7 @@ namespace dialog
 			EC_MAPI_S(m_lpExchTbl->GetTable(0, &lpMAPITable));
 			if (lpMAPITable)
 			{
-				m_lpContentsTableListCtrl->SetContentsTable(lpMAPITable, dfDeleted, NULL);
+				m_lpContentsTableListCtrl->SetContentsTable(lpMAPITable, tableDisplayFlags::dfDeleted, NULL);
 
 				lpMAPITable->Release();
 			}

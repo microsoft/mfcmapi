@@ -155,7 +155,7 @@ namespace dialog
 		std::wstring szNicknames;
 		LPSPropValue lpsProp = nullptr;
 
-		lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, IDS_STATUSTEXTLOADINGNICKNAME);
+		lpHostDlg->UpdateStatusBarText(statusPane::infoText, IDS_STATUSTEXTLOADINGNICKNAME);
 		lpHostDlg->SendMessage(WM_PAINT, NULL, NULL); // force paint so we update the status now
 
 		auto lpMDB = OpenStoreForQuickStart(lpHostDlg, hwnd);
@@ -255,7 +255,7 @@ namespace dialog
 			MAPIFreeBuffer(lpsProp);
 		}
 
-		lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, strings::emptystring);
+		lpHostDlg->UpdateStatusBarText(statusPane::infoText, strings::emptystring);
 	}
 
 	enum
@@ -304,7 +304,7 @@ namespace dialog
 	{
 		std::wstring szQuotaString;
 
-		lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, IDS_STATUSTEXTLOADINGQUOTA);
+		lpHostDlg->UpdateStatusBarText(statusPane::infoText, IDS_STATUSTEXTLOADINGQUOTA);
 		lpHostDlg->SendMessage(WM_PAINT, NULL, NULL); // force paint so we update the status now
 
 		auto lpMDB = OpenStoreForQuickStart(lpHostDlg, hwnd);
@@ -372,7 +372,7 @@ namespace dialog
 			(void) MyResults.DisplayDialog();
 		}
 
-		lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, strings::emptystring);
+		lpHostDlg->UpdateStatusBarText(statusPane::infoText, strings::emptystring);
 	}
 
 	void OnQSOpenUser(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)

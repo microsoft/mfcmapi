@@ -37,7 +37,7 @@ namespace dialog
 
 		m_nIDContextMenu = nIDContextMenu;
 
-		m_ulDisplayFlags = dfNormal;
+		m_displayFlags = tableDisplayFlags::dfNormal;
 		m_lpContainer = mapi::safe_cast<LPMAPICONTAINER>(lpRootContainer);
 	}
 
@@ -208,7 +208,7 @@ namespace dialog
 		if (m_lpFakeSplitter)
 		{
 			m_lpHierarchyTableTreeCtrl.Create(
-				&m_lpFakeSplitter, m_lpMapiObjects, this, m_ulDisplayFlags, m_nIDContextMenu);
+				&m_lpFakeSplitter, m_lpMapiObjects, this, m_displayFlags, m_nIDContextMenu);
 			m_lpFakeSplitter.SetPaneOne(m_lpHierarchyTableTreeCtrl.GetSafeHwnd());
 
 			m_lpFakeSplitter.SetPercent(0.25);

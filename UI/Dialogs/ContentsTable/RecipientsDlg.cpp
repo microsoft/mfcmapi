@@ -24,7 +24,7 @@ namespace dialog
 			  pParentWnd,
 			  lpMapiObjects,
 			  IDS_RECIPIENTS,
-			  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+			  createDialogType::DO_NOT_CALL_CREATE_DIALOG,
 			  nullptr,
 			  lpMAPITable,
 			  &columns::sptDEFCols.tags,

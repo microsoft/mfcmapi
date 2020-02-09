@@ -25,7 +25,7 @@ namespace controls
 			_In_ CWnd* pCreateParent,
 			_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 			_In_ dialog::CHierarchyTableDlg* lpHostDlg,
-			ULONG ulDisplayFlags,
+			tableDisplayFlags displayFlags,
 			UINT nIDContextMenu);
 		void LoadHierarchyTable(_In_ LPMAPICONTAINER lpMAPIContainer);
 
@@ -73,7 +73,7 @@ namespace controls
 		std::shared_ptr<cache::CMapiObjects> m_lpMapiObjects{};
 		LPMAPICONTAINER m_lpContainer{};
 		ULONG m_ulContainerType{};
-		ULONG m_ulDisplayFlags{dfNormal};
+		tableDisplayFlags m_displayFlags{tableDisplayFlags::dfNormal};
 		UINT m_nIDContextMenu{};
 	};
 } // namespace controls

@@ -21,7 +21,7 @@ namespace dialog
 			  pParentWnd,
 			  lpMapiObjects,
 			  IDS_PUBLICFOLDERTABLE,
-			  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+			  createDialogType::DO_NOT_CALL_CREATE_DIALOG,
 			  nullptr,
 			  lpMAPITable,
 			  &columns::sptPFCols.tags,

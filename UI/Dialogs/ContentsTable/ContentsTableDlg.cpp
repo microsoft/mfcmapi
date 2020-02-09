@@ -49,7 +49,7 @@ namespace dialog
 		m_lpContainer = mapi::safe_cast<LPMAPICONTAINER>(lpContainer);
 		m_nIDContextMenu = nIDContextMenu;
 
-		m_ulDisplayFlags = dfNormal;
+		m_displayFlags = tableDisplayFlags::dfNormal;
 
 		m_lpContentsTable = lpContentsTable;
 		if (m_lpContentsTable) m_lpContentsTable->AddRef();
@@ -118,7 +118,7 @@ namespace dialog
 			// Get a property for the title bar
 			m_szTitle = mapi::GetTitle(m_lpContainer);
 
-			if (m_ulDisplayFlags & dfAssoc)
+			if (m_displayFlags && tableDisplayFlags::dfAssoc)
 			{
 				m_szTitle = strings::formatmessage(IDS_HIDDEN, m_szTitle.c_str());
 			}
@@ -128,8 +128,9 @@ namespace dialog
 
 			const auto unicodeFlag = registry::preferUnicodeProps ? MAPI_UNICODE : fMapiUnicode;
 
-			const auto ulFlags = (m_ulDisplayFlags & dfAssoc ? MAPI_ASSOCIATED : NULL) |
-								 (m_ulDisplayFlags & dfDeleted ? SHOW_SOFT_DELETES : NULL) | unicodeFlag;
+			const auto ulFlags = (m_displayFlags && tableDisplayFlags::dfAssoc ? MAPI_ASSOCIATED : NULL) |
+								 (m_displayFlags && tableDisplayFlags::dfDeleted ? SHOW_SOFT_DELETES : NULL) |
+								 unicodeFlag;
 
 			// Get the table of contents of the IMAPIContainer!!!
 			EC_MAPI_S(m_lpContainer->GetContentsTable(ulFlags, &m_lpContentsTable));
@@ -151,7 +152,7 @@ namespace dialog
 			const auto ulPropType = mapi::GetMAPIObjectType(m_lpContainer);
 
 			// Pass the contents table to the list control, but don't render yet - call BuildUIForContentsTable from CreateDialogAndMenu for that
-			m_lpContentsTableListCtrl->SetContentsTable(m_lpContentsTable, m_ulDisplayFlags, ulPropType);
+			m_lpContentsTableListCtrl->SetContentsTable(m_lpContentsTable, m_displayFlags, ulPropType);
 		}
 	}
 

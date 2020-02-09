@@ -353,11 +353,11 @@ namespace controls::sortlistctrl
 				// This flag may be set by a GetProps call, so we make this check AFTER we get our props
 				if (propertybag::propBagFlags::BackedByGetProps == m_lpPropBag->GetFlags())
 				{
-					m_lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, IDS_PROPSFROMGETPROPS);
+					m_lpHostDlg->UpdateStatusBarText(statusPane::infoText, IDS_PROPSFROMGETPROPS);
 				}
 				else
 				{
-					m_lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, IDS_PROPSFROMROW);
+					m_lpHostDlg->UpdateStatusBarText(statusPane::infoText, IDS_PROPSFROMROW);
 				}
 			}
 
@@ -563,7 +563,7 @@ namespace controls::sortlistctrl
 		// Turn redraw back on to update our view
 		MySetRedraw(true);
 
-		if (m_lpHostDlg) m_lpHostDlg->UpdateStatusBarText(STATUSDATA2, IDS_STATUSTEXTNUMPROPS, GetItemCount());
+		if (m_lpHostDlg) m_lpHostDlg->UpdateStatusBarText(statusPane::data2, IDS_STATUSTEXTNUMPROPS, GetItemCount());
 
 		return hRes;
 	}

@@ -25,7 +25,7 @@ namespace dialog
 			  pParentWnd,
 			  lpMapiObjects,
 			  IDS_SERVICES,
-			  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+			  createDialogType::DO_NOT_CALL_CREATE_DIALOG,
 			  nullptr,
 			  nullptr,
 			  &columns::sptSERVICECols.tags,
@@ -86,7 +86,7 @@ namespace dialog
 
 		// Clean up our table and admin in reverse order from which we obtained them
 		// Failure to do this leads to crashes in Outlook's profile code
-		m_lpContentsTableListCtrl->SetContentsTable(nullptr, dfNormal, NULL);
+		m_lpContentsTableListCtrl->SetContentsTable(nullptr, tableDisplayFlags::dfNormal, NULL);
 
 		if (m_lpServiceAdmin) m_lpServiceAdmin->Release();
 		m_lpServiceAdmin = nullptr;
@@ -112,7 +112,7 @@ namespace dialog
 
 				if (lpServiceTable)
 				{
-					m_lpContentsTableListCtrl->SetContentsTable(lpServiceTable, dfNormal, NULL);
+					m_lpContentsTableListCtrl->SetContentsTable(lpServiceTable, tableDisplayFlags::dfNormal, NULL);
 
 					lpServiceTable->Release();
 				}

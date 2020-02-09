@@ -89,7 +89,7 @@ namespace ui
 		{
 			const auto iPercent = MulDiv(ulValue - m_ulMin, 100, m_ulMax - m_ulMin);
 			dialog::CBaseDialog::UpdateStatus(
-				m_hWnd, STATUSINFOTEXT, strings::formatmessage(IDS_PERCENTLOADED, m_szContext.c_str(), iPercent));
+				m_hWnd, statusPane::infoText, strings::formatmessage(IDS_PERCENTLOADED, m_szContext.c_str(), iPercent));
 		}
 
 		return S_OK;

@@ -38,12 +38,12 @@ namespace dialog
 		_In_ ui::CParentWnd* pParentWnd,
 		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 		_In_ LPMAPIPROP lpMAPIFolder,
-		ULONG ulDisplayFlags)
+		tableDisplayFlags displayFlags)
 		: CContentsTableDlg(
 			  pParentWnd,
 			  lpMapiObjects,
 			  IDS_FOLDER,
-			  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+			  createDialogType::DO_NOT_CALL_CREATE_DIALOG,
 			  lpMAPIFolder,
 			  nullptr,
 			  &columns::sptMSGCols.tags,
@@ -52,7 +52,7 @@ namespace dialog
 			  MENU_CONTEXT_FOLDER_CONTENTS)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
-		m_ulDisplayFlags = ulDisplayFlags;
+		m_displayFlags = displayFlags;
 
 		m_lpFolder = mapi::safe_cast<LPMAPIFOLDER>(lpMAPIFolder);
 
@@ -313,8 +313,9 @@ namespace dialog
 			pMenu->EnableMenuItem(ID_SAVEFOLDERCONTENTSASTEXTFILES, DIM(m_lpFolder));
 			pMenu->EnableMenuItem(ID_EXPORTMESSAGES, DIM(m_lpFolder));
 
-			pMenu->EnableMenuItem(ID_CONTENTS, DIM(m_lpFolder && !(m_ulDisplayFlags == dfNormal)));
-			pMenu->EnableMenuItem(ID_HIDDENCONTENTS, DIM(m_lpFolder && !(m_ulDisplayFlags & dfAssoc)));
+			pMenu->EnableMenuItem(ID_CONTENTS, DIM(m_lpFolder && !(m_displayFlags == tableDisplayFlags::dfNormal)));
+			pMenu->EnableMenuItem(
+				ID_HIDDENCONTENTS, DIM(m_lpFolder && !(m_displayFlags && tableDisplayFlags::dfAssoc)));
 
 			pMenu->EnableMenuItem(
 				ID_CREATEMESSAGERESTRICTION,
@@ -333,15 +334,15 @@ namespace dialog
 		{
 			if (lpAddInMenu->ulFlags & MENU_FLAGS_FOLDER_ASSOC)
 			{
-				if (m_ulDisplayFlags & dfAssoc) uiEnable = MF_GRAYED;
+				if (m_displayFlags && tableDisplayFlags::dfAssoc) uiEnable = MF_GRAYED;
 			}
 			else if (lpAddInMenu->ulFlags & MENU_FLAGS_DELETED)
 			{
-				if (m_ulDisplayFlags & dfDeleted) uiEnable = MF_GRAYED;
+				if (m_displayFlags && tableDisplayFlags::dfDeleted) uiEnable = MF_GRAYED;
 			}
 			else if (lpAddInMenu->ulFlags & MENU_FLAGS_FOLDER_REG)
 			{
-				if (!(m_ulDisplayFlags == dfNormal)) uiEnable = MF_GRAYED;
+				if (!(m_displayFlags == tableDisplayFlags::dfNormal)) uiEnable = MF_GRAYED;
 			}
 		}
 
@@ -514,7 +515,9 @@ namespace dialog
 						{
 							LPMESSAGE lpNewMessage = nullptr;
 							EC_MAPI_S(m_lpFolder->CreateMessage(
-								nullptr, m_ulDisplayFlags & dfAssoc ? MAPI_ASSOCIATED : NULL, &lpNewMessage));
+								nullptr,
+								m_displayFlags && tableDisplayFlags::dfAssoc ? MAPI_ASSOCIATED : NULL,
+								&lpNewMessage));
 							if (lpNewMessage)
 							{
 								LPSPropProblemArray lpProblems = nullptr;
@@ -614,7 +617,7 @@ namespace dialog
 		auto bMove = false;
 		auto ulFlag = MESSAGE_DIALOG;
 
-		if (m_ulDisplayFlags & dfDeleted)
+		if (m_displayFlags && tableDisplayFlags::dfDeleted)
 		{
 			ulFlag |= DELETE_HARD_DELETE;
 			bDelete = true;
@@ -757,7 +760,7 @@ namespace dialog
 				{
 				case 0:
 					EC_MAPI_S(m_lpFolder->CreateMessage(
-						nullptr, m_ulDisplayFlags & dfAssoc ? MAPI_ASSOCIATED : NULL, &lpNewMessage));
+						nullptr, m_displayFlags && tableDisplayFlags::dfAssoc ? MAPI_ASSOCIATED : NULL, &lpNewMessage));
 
 					if (lpNewMessage)
 					{
@@ -926,8 +929,8 @@ namespace dialog
 	{
 		LPMESSAGE lpMessage = nullptr;
 
-		const auto hRes =
-			EC_MAPI(m_lpFolder->CreateMessage(nullptr, m_ulDisplayFlags & dfAssoc ? MAPI_ASSOCIATED : 0, &lpMessage));
+		const auto hRes = EC_MAPI(m_lpFolder->CreateMessage(
+			nullptr, m_displayFlags && tableDisplayFlags::dfAssoc ? MAPI_ASSOCIATED : 0, &lpMessage));
 
 		if (SUCCEEDED(hRes) && lpMessage)
 		{
@@ -1319,7 +1322,12 @@ namespace dialog
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		mapi::processor::SaveFolderContentsToTXT(
-			lpMDB, m_lpFolder, (m_ulDisplayFlags & dfAssoc) == 0, (m_ulDisplayFlags & dfAssoc) != 0, false, m_hWnd);
+			lpMDB,
+			m_lpFolder,
+			m_displayFlags && tableDisplayFlags::dfAssoc,
+			!(m_displayFlags && tableDisplayFlags::dfAssoc),
+			false,
+			m_hWnd);
 	}
 
 	void CFolderDlg::OnExportMessages()
@@ -1510,7 +1518,7 @@ namespace dialog
 				for (auto& lpszPath : files)
 				{
 					EC_MAPI_S(m_lpFolder->CreateMessage(
-						nullptr, m_ulDisplayFlags & dfAssoc ? MAPI_ASSOCIATED : 0, &lpNewMessage));
+						nullptr, m_displayFlags && tableDisplayFlags::dfAssoc ? MAPI_ASSOCIATED : 0, &lpNewMessage));
 
 					if (lpNewMessage)
 					{
@@ -1558,7 +1566,7 @@ namespace dialog
 				for (auto& lpszPath : files)
 				{
 					EC_MAPI_S(m_lpFolder->CreateMessage(
-						nullptr, m_ulDisplayFlags & dfAssoc ? MAPI_ASSOCIATED : 0, &lpNewMessage));
+						nullptr, m_displayFlags && tableDisplayFlags::dfAssoc ? MAPI_ASSOCIATED : 0, &lpNewMessage));
 
 					if (lpNewMessage)
 					{
@@ -1997,8 +2005,8 @@ namespace dialog
 			lpParams->lpFolder = m_lpFolder;
 			lpParams->lpMessage = mapi::safe_cast<LPMESSAGE>(lpMAPIProp);
 			// Add appropriate flag to context
-			if (m_ulDisplayFlags & dfAssoc) lpParams->ulCurrentFlags |= MENU_FLAGS_FOLDER_ASSOC;
-			if (m_ulDisplayFlags & dfDeleted) lpParams->ulCurrentFlags |= MENU_FLAGS_DELETED;
+			if (m_displayFlags && tableDisplayFlags::dfAssoc) lpParams->ulCurrentFlags |= MENU_FLAGS_FOLDER_ASSOC;
+			if (m_displayFlags && tableDisplayFlags::dfDeleted) lpParams->ulCurrentFlags |= MENU_FLAGS_DELETED;
 		}
 
 		ui::addinui::InvokeAddInMenu(lpParams);

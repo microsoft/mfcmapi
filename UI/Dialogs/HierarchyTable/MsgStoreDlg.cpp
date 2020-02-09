@@ -31,7 +31,7 @@ namespace dialog
 		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 		_In_opt_ LPMAPIPROP lpMDB,
 		_In_opt_ LPMAPIPROP lpRootFolder,
-		ULONG ulDisplayFlags)
+		tableDisplayFlags displayFlags)
 		: CHierarchyTableDlg(
 			  pParentWnd,
 			  lpMapiObjects,
@@ -43,7 +43,7 @@ namespace dialog
 		TRACE_CONSTRUCTOR(CLASS);
 
 		m_lpMDB = mapi::safe_cast<LPMDB>(lpMDB);
-		m_ulDisplayFlags = ulDisplayFlags;
+		m_displayFlags = displayFlags;
 
 		if (m_lpMapiObjects)
 		{
@@ -140,7 +140,8 @@ namespace dialog
 
 		pMenu->EnableMenuItem(ID_RESENDALLMESSAGES, DIM(bItemSelected));
 		pMenu->EnableMenuItem(ID_RESETPERMISSIONSONITEMS, DIM(bItemSelected));
-		pMenu->EnableMenuItem(ID_RESTOREDELETEDFOLDER, DIM(bItemSelected && m_ulDisplayFlags & dfDeleted));
+		pMenu->EnableMenuItem(
+			ID_RESTOREDELETEDFOLDER, DIM(bItemSelected && (m_displayFlags && tableDisplayFlags::dfDeleted)));
 
 		pMenu->EnableMenuItem(ID_COPY, DIM(bItemSelected));
 		pMenu->EnableMenuItem(ID_DELETESELECTEDITEM, DIM(bItemSelected));
@@ -649,7 +650,7 @@ namespace dialog
 				if (lpMAPIFolder)
 				{
 					// call the dialog
-					new CFolderDlg(m_lpParent, m_lpMapiObjects, lpMAPIFolder, dfDeleted);
+					new CFolderDlg(m_lpParent, m_lpMapiObjects, lpMAPIFolder, tableDisplayFlags::dfDeleted);
 
 					lpMAPIFolder->Release();
 				}
@@ -666,7 +667,7 @@ namespace dialog
 
 		if (lpFolder)
 		{
-			new CMsgStoreDlg(m_lpParent, m_lpMapiObjects, m_lpMDB, lpFolder, dfDeleted);
+			new CMsgStoreDlg(m_lpParent, m_lpMapiObjects, m_lpMDB, lpFolder, tableDisplayFlags::dfDeleted);
 			lpFolder->Release();
 		}
 	}

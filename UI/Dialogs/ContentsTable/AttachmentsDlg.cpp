@@ -30,7 +30,7 @@ namespace dialog
 			  pParentWnd,
 			  lpMapiObjects,
 			  IDS_ATTACHMENTS,
-			  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+			  createDialogType::DO_NOT_CALL_CREATE_DIALOG,
 			  nullptr,
 			  lpMAPITable,
 			  &columns::sptATTACHCols.tags,

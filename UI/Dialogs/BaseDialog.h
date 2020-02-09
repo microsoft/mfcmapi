@@ -47,11 +47,11 @@ namespace dialog
 
 		void UpdateTitleBarText(_In_ const std::wstring& szMsg) const;
 		void UpdateTitleBarText() const;
-		void UpdateStatusBarText(statusPaneType nPos, _In_ const std::wstring& szMsg);
-		void __cdecl UpdateStatusBarText(statusPaneType nPos, UINT uidMsg);
-		void __cdecl UpdateStatusBarText(statusPaneType nPos, UINT uidMsg, ULONG ulParam1);
+		void UpdateStatusBarText(statusPane nPos, _In_ const std::wstring& szMsg);
+		void __cdecl UpdateStatusBarText(statusPane nPos, UINT uidMsg);
+		void __cdecl UpdateStatusBarText(statusPane nPos, UINT uidMsg, ULONG ulParam1);
 		void __cdecl UpdateStatusBarText(
-			statusPaneType nPos,
+			statusPane nPos,
 			UINT uidMsg,
 			std::wstring& szParam1,
 			std::wstring& szParam2,
@@ -60,7 +60,7 @@ namespace dialog
 		_Check_return_ ui::CParentWnd* GetParentWnd() const;
 		_Check_return_ std::shared_ptr<cache::CMapiObjects> GetMapiObjects() const;
 
-		static void UpdateStatus(HWND hWndHost, statusPaneType pane, const std::wstring& status);
+		static void UpdateStatus(HWND hWndHost, statusPane pane, const std::wstring& status);
 
 	protected:
 		// Overrides called by child classes
@@ -116,8 +116,8 @@ namespace dialog
 
 		LONG m_cRef{1};
 		HICON m_hIcon{};
-		std::wstring m_StatusMessages[STATUSBARNUMPANES];
-		int m_StatusWidth[STATUSBARNUMPANES]{};
+		std::wstring m_StatusMessages[statusPane::numPanes];
+		int m_StatusWidth[statusPane::numPanes]{};
 		bool m_bDisplayingMenuText{};
 		std::wstring m_szMenuDisplacedText{};
 		mapi::adviseSink* m_lpBaseAdviseSink{};

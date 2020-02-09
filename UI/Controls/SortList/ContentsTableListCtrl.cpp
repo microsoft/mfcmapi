@@ -129,7 +129,7 @@ namespace controls::sortlistctrl
 
 	void CContentsTableListCtrl::SetContentsTable(
 		_In_opt_ LPMAPITABLE lpContentsTable,
-		ULONG ulDisplayFlags,
+		tableDisplayFlags displayFlags,
 		ULONG ulContainerType)
 	{
 		// If nothing to do, exit early
@@ -137,7 +137,7 @@ namespace controls::sortlistctrl
 
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		m_ulDisplayFlags = ulDisplayFlags;
+		m_displayFlags = displayFlags;
 		m_ulContainerType = ulContainerType;
 
 		output::DebugPrintEx(
@@ -513,7 +513,7 @@ namespace controls::sortlistctrl
 		(void) ::SendMessage(hWndHost, WM_MFCMAPI_CLEARSINGLEMAPIPROPLIST, NULL, NULL);
 		auto szCount = std::to_wstring(lpListCtrl->GetItemCount());
 		dialog::CBaseDialog::UpdateStatus(
-			hWndHost, STATUSDATA1, strings::formatmessage(IDS_STATUSTEXTNUMITEMS, szCount.c_str()));
+			hWndHost, statusPane::data1, strings::formatmessage(IDS_STATUSTEXTNUMITEMS, szCount.c_str()));
 
 		// potentially lengthy op - check abort before and after
 		if (!lpListCtrl->bAbortLoad())
@@ -534,7 +534,7 @@ namespace controls::sortlistctrl
 			if (ulTotal)
 			{
 				dialog::CBaseDialog::UpdateStatus(
-					hWndHost, STATUSDATA2, strings::formatmessage(IDS_LOADINGITEMS, 0, ulTotal));
+					hWndHost, statusPane::data2, strings::formatmessage(IDS_LOADINGITEMS, 0, ulTotal));
 			}
 		}
 
@@ -545,7 +545,7 @@ namespace controls::sortlistctrl
 		{
 			if (lpListCtrl->bAbortLoad()) break;
 			auto hRes = S_OK;
-			dialog::CBaseDialog::UpdateStatus(hWndHost, STATUSINFOTEXT, strings::loadstring(IDS_ESCSTOPLOADING));
+			dialog::CBaseDialog::UpdateStatus(hWndHost, statusPane::infoText, strings::loadstring(IDS_ESCSTOPLOADING));
 			if (pRows) FreeProws(pRows);
 			pRows = nullptr;
 			if (mfcmapiFINDROW_RESTRICTION == resType && lpRes)
@@ -585,7 +585,9 @@ namespace controls::sortlistctrl
 				if (ulTotal)
 				{
 					dialog::CBaseDialog::UpdateStatus(
-						hWndHost, STATUSDATA2, strings::formatmessage(IDS_LOADINGITEMS, iCurListBoxRow + 1, ulTotal));
+						hWndHost,
+						statusPane::data2,
+						strings::formatmessage(IDS_LOADINGITEMS, iCurListBoxRow + 1, ulTotal));
 				}
 
 				output::DebugPrintEx(
@@ -618,14 +620,15 @@ namespace controls::sortlistctrl
 
 		if (lpListCtrl->bAbortLoad())
 		{
-			dialog::CBaseDialog::UpdateStatus(hWndHost, STATUSINFOTEXT, strings::loadstring(IDS_TABLELOADCANCELLED));
+			dialog::CBaseDialog::UpdateStatus(
+				hWndHost, statusPane::infoText, strings::loadstring(IDS_TABLELOADCANCELLED));
 		}
 		else
 		{
-			dialog::CBaseDialog::UpdateStatus(hWndHost, STATUSINFOTEXT, strings::loadstring(IDS_TABLELOADED));
+			dialog::CBaseDialog::UpdateStatus(hWndHost, statusPane::infoText, strings::loadstring(IDS_TABLELOADED));
 		}
 
-		dialog::CBaseDialog::UpdateStatus(hWndHost, STATUSDATA2, strings::emptystring);
+		dialog::CBaseDialog::UpdateStatus(hWndHost, statusPane::data2, strings::emptystring);
 		output::DebugPrintEx(
 			output::dbgLevel::Generic, CLASS, L"ThreadFuncLoadTable", L"added %u items\n", iCurListBoxRow);
 		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"ThreadFuncLoadTable", L"Releasing pointers.\n");
@@ -903,7 +906,7 @@ namespace controls::sortlistctrl
 
 		RefreshItem(iRow, lpsRowToAdd, false);
 
-		if (m_lpHostDlg) m_lpHostDlg->UpdateStatusBarText(STATUSDATA1, IDS_STATUSTEXTNUMITEMS, GetItemCount());
+		if (m_lpHostDlg) m_lpHostDlg->UpdateStatusBarText(statusPane::data1, IDS_STATUSTEXTNUMITEMS, GetItemCount());
 	}
 
 	void CContentsTableListCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -1534,7 +1537,7 @@ namespace controls::sortlistctrl
 			m_lpHostDlg->OnUpdateSingleMAPIPropListCtrl(nullptr, nullptr);
 		}
 
-		m_lpHostDlg->UpdateStatusBarText(STATUSDATA1, IDS_STATUSTEXTNUMITEMS, iCount);
+		m_lpHostDlg->UpdateStatusBarText(statusPane::data1, IDS_STATUSTEXTNUMITEMS, iCount);
 		return hRes;
 	}
 

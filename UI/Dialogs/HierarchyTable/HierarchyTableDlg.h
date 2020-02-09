@@ -32,7 +32,7 @@ namespace dialog
 		void SetRootContainer(LPUNKNOWN container);
 
 		controls::CHierarchyTableTreeCtrl m_lpHierarchyTableTreeCtrl{};
-		ULONG m_ulDisplayFlags{};
+		tableDisplayFlags m_displayFlags{tableDisplayFlags::dfNormal};
 		LPMAPICONTAINER m_lpContainer{};
 
 	private:

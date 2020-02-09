@@ -36,7 +36,8 @@ namespace controls::sortlistctrl
 		virtual ~CContentsTableListCtrl();
 
 		// Initialization
-		void SetContentsTable(_In_opt_ LPMAPITABLE lpContentsTable, ULONG ulDisplayFlags, ULONG ulContainerType);
+		void
+		SetContentsTable(_In_opt_ LPMAPITABLE lpContentsTable, tableDisplayFlags displayFlags, ULONG ulContainerType);
 
 		// Selected item accessors
 		_Check_return_ LPENTRYLIST GetSelectedItemEIDs() const;
@@ -95,7 +96,7 @@ namespace controls::sortlistctrl
 		_Check_return_ LRESULT msgOnRefreshTable(WPARAM wParam, LPARAM lParam);
 		_Check_return_ LRESULT msgOnThreadAddItem(WPARAM wParam, LPARAM lParam);
 
-		ULONG m_ulDisplayFlags{dfNormal};
+		tableDisplayFlags m_displayFlags{tableDisplayFlags::dfNormal};
 		LONG volatile m_bAbortLoad{};
 		std::thread m_LoadThreadHandle{};
 		dialog::CContentsTableDlg* m_lpHostDlg{};
