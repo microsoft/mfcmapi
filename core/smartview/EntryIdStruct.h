@@ -7,21 +7,6 @@
 
 namespace smartview
 {
-	enum EIDStructType
-	{
-		eidtUnknown = 0,
-		eidtEphemeral,
-		eidtShortTerm,
-		eidtFolder,
-		eidtMessage,
-		eidtMessageDatabase,
-		eidtOneOff,
-		eidtAddressBook,
-		eidtContact,
-		eidtNewsGroupFolder,
-		eidtWAB,
-	};
-
 	struct MDB_STORE_EID_V2
 	{
 		static const size_t size = sizeof(ULONG) * 5;
@@ -155,11 +140,26 @@ namespace smartview
 		void parse() override;
 		void parseBlocks() override;
 
+		enum class EIDStructType
+		{
+			unknown = 0,
+			ephemeral,
+			shortTerm,
+			folder,
+			message,
+			messageDatabase,
+			oneOff,
+			addressBook,
+			contact,
+			newsGroupFolder,
+			WAB,
+		};
+
 		std::shared_ptr<blockT<byte>> m_abFlags0 = emptyT<byte>();
 		std::shared_ptr<blockT<byte>> m_abFlags1 = emptyT<byte>();
 		std::shared_ptr<blockBytes> m_abFlags23 = emptyBB(); // 2 bytes
 		std::shared_ptr<blockT<GUID>> m_ProviderUID = emptyT<GUID>();
-		EIDStructType m_ObjectType = eidtUnknown; // My own addition to simplify parsing
+		EIDStructType m_ObjectType = EIDStructType::unknown; // My own addition to simplify parsing
 		FolderOrMessage m_FolderOrMessage;
 		MessageDatabaseObject m_MessageDatabaseObject;
 		EphemeralObject m_EphemeralObject{};
