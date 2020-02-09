@@ -7,6 +7,7 @@ struct NAME_ARRAY_ENTRY;
 struct GUID_ARRAY_ENTRY;
 struct NAMEID_ARRAY_ENTRY;
 struct FLAG_ARRAY_ENTRY;
+struct SMARTVIEW_PARSER_TYPE_ARRAY_ENTRY;
 struct SMARTVIEW_PARSER_ARRAY_ENTRY;
 struct _AddIn;
 
@@ -29,5 +30,5 @@ extern std::vector<GUID_ARRAY_ENTRY> PropGuidArray;
 extern std::vector<NAMEID_ARRAY_ENTRY> NameIDArray;
 extern std::vector<FLAG_ARRAY_ENTRY> FlagArray;
 extern std::vector<SMARTVIEW_PARSER_ARRAY_ENTRY> SmartViewParserArray;
-extern std::vector<NAME_ARRAY_ENTRY> SmartViewParserTypeArray;
+extern std::vector<SMARTVIEW_PARSER_TYPE_ARRAY_ENTRY> SmartViewParserTypeArray;
 extern std::vector<_AddIn> g_lpMyAddins;

@@ -23,7 +23,7 @@ std::vector<GUID_ARRAY_ENTRY> PropGuidArray;
 std::vector<NAMEID_ARRAY_ENTRY> NameIDArray;
 std::vector<FLAG_ARRAY_ENTRY> FlagArray;
 std::vector<SMARTVIEW_PARSER_ARRAY_ENTRY> SmartViewParserArray;
-std::vector<NAME_ARRAY_ENTRY> SmartViewParserTypeArray;
+std::vector<SMARTVIEW_PARSER_TYPE_ARRAY_ENTRY> SmartViewParserTypeArray;
 std::vector<_AddIn> g_lpMyAddins;
 
 namespace addin
@@ -106,12 +106,16 @@ namespace addin
 					// Save off our add-in struct
 					addIn.lpMenu[ulMenu].lpAddIn = &addIn;
 					if (addIn.lpMenu[ulMenu].szMenu)
-						output::DebugPrint(output::dbgLevel::AddInPlumbing, L"Menu: %ws\n", addIn.lpMenu[ulMenu].szMenu);
+						output::DebugPrint(
+							output::dbgLevel::AddInPlumbing, L"Menu: %ws\n", addIn.lpMenu[ulMenu].szMenu);
 					if (addIn.lpMenu[ulMenu].szHelp)
-						output::DebugPrint(output::dbgLevel::AddInPlumbing, L"Help: %ws\n", addIn.lpMenu[ulMenu].szHelp);
+						output::DebugPrint(
+							output::dbgLevel::AddInPlumbing, L"Help: %ws\n", addIn.lpMenu[ulMenu].szHelp);
 					output::DebugPrint(output::dbgLevel::AddInPlumbing, L"ID: 0x%08X\n", addIn.lpMenu[ulMenu].ulID);
-					output::DebugPrint(output::dbgLevel::AddInPlumbing, L"Context: 0x%08X\n", addIn.lpMenu[ulMenu].ulContext);
-					output::DebugPrint(output::dbgLevel::AddInPlumbing, L"Flags: 0x%08X\n", addIn.lpMenu[ulMenu].ulFlags);
+					output::DebugPrint(
+						output::dbgLevel::AddInPlumbing, L"Context: 0x%08X\n", addIn.lpMenu[ulMenu].ulContext);
+					output::DebugPrint(
+						output::dbgLevel::AddInPlumbing, L"Flags: 0x%08X\n", addIn.lpMenu[ulMenu].ulFlags);
 				}
 			}
 		}
@@ -285,7 +289,8 @@ namespace addin
 				{
 					for (;;)
 					{
-						output::DebugPrint(output::dbgLevel::AddInPlumbing, L"Examining \"%ws\"\n", FindFileData.cFileName);
+						output::DebugPrint(
+							output::dbgLevel::AddInPlumbing, L"Examining \"%ws\"\n", FindFileData.cFileName);
 						HMODULE hMod = nullptr;
 
 						// If we know the Add-in is good, just load it.
@@ -351,7 +356,8 @@ namespace addin
 					FindClose(hFind);
 					if (dwRet != ERROR_NO_MORE_FILES)
 					{
-						output::DebugPrint(output::dbgLevel::AddInPlumbing, L"FindNextFile error. Error is %u.\n", dwRet);
+						output::DebugPrint(
+							output::dbgLevel::AddInPlumbing, L"FindNextFile error. Error is %u.\n", dwRet);
 					}
 				}
 			}
@@ -571,16 +577,19 @@ namespace addin
 		FlagArray = std::vector<FLAG_ARRAY_ENTRY>(std::begin(g_FlagArray), std::end(g_FlagArray));
 		SmartViewParserArray = std::vector<SMARTVIEW_PARSER_ARRAY_ENTRY>(
 			std::begin(smartview::g_SmartViewParserArray), std::end(smartview::g_SmartViewParserArray));
-		SmartViewParserTypeArray = std::vector<NAME_ARRAY_ENTRY>(
+		SmartViewParserTypeArray = std::vector<SMARTVIEW_PARSER_TYPE_ARRAY_ENTRY>(
 			std::begin(smartview::g_SmartViewParserTypeArray), std::end(smartview::g_SmartViewParserTypeArray));
 
 		output::DebugPrint(output::dbgLevel::AddInPlumbing, L"Found 0x%08X built in prop tags.\n", PropTagArray.size());
-		output::DebugPrint(output::dbgLevel::AddInPlumbing, L"Found 0x%08X built in prop types.\n", PropTypeArray.size());
+		output::DebugPrint(
+			output::dbgLevel::AddInPlumbing, L"Found 0x%08X built in prop types.\n", PropTypeArray.size());
 		output::DebugPrint(output::dbgLevel::AddInPlumbing, L"Found 0x%08X built in guids.\n", PropGuidArray.size());
 		output::DebugPrint(output::dbgLevel::AddInPlumbing, L"Found 0x%08X built in named ids.\n", NameIDArray.size());
 		output::DebugPrint(output::dbgLevel::AddInPlumbing, L"Found 0x%08X built in flags.\n", FlagArray.size());
 		output::DebugPrint(
-			output::dbgLevel::AddInPlumbing, L"Found 0x%08X built in Smart View parsers.\n", SmartViewParserArray.size());
+			output::dbgLevel::AddInPlumbing,
+			L"Found 0x%08X built in Smart View parsers.\n",
+			SmartViewParserArray.size());
 		output::DebugPrint(
 			output::dbgLevel::AddInPlumbing,
 			L"Found 0x%08X built in Smart View parser types.\n",
@@ -601,7 +610,9 @@ namespace addin
 			output::DebugPrint(
 				output::dbgLevel::AddInPlumbing, L"Found 0x%08X Smart View parsers.\n", addIn.ulSmartViewParsers);
 			output::DebugPrint(
-				output::dbgLevel::AddInPlumbing, L"Found 0x%08X Smart View parser types.\n", addIn.ulSmartViewParserTypes);
+				output::dbgLevel::AddInPlumbing,
+				L"Found 0x%08X Smart View parser types.\n",
+				addIn.ulSmartViewParserTypes);
 		}
 
 		// Second pass - merge our arrays to the hardcoded arrays
@@ -640,8 +651,8 @@ namespace addin
 			{
 				for (ULONG i = 0; i < addIn.ulSmartViewParserTypes; i++)
 				{
-					NAME_ARRAY_ENTRY addinType{};
-					addinType.ulValue = s_ulNextParser++;
+					SMARTVIEW_PARSER_TYPE_ARRAY_ENTRY addinType{};
+					addinType.ulValue = (__ParsingTypeEnum) s_ulNextParser++;
 					addinType.lpszName = addIn.lpSmartViewParserTypes[i];
 					SmartViewParserTypeArray.push_back(addinType);
 				}
@@ -712,7 +723,7 @@ namespace addin
 	{
 		for (const auto& smartViewParserType : SmartViewParserTypeArray)
 		{
-			if (smartViewParserType.ulValue == static_cast<ULONG>(iStructType))
+			if (smartViewParserType.ulValue == iStructType)
 			{
 				return smartViewParserType.lpszName;
 			}

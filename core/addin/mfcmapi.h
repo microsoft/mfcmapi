@@ -149,6 +149,12 @@ enum __ParsingTypeEnum
 	IDS_STEND // This must be the end of the enum
 };
 
+struct SMARTVIEW_PARSER_TYPE_ARRAY_ENTRY
+{
+	__ParsingTypeEnum ulValue;
+	LPCWSTR lpszName;
+};
+
 struct SMARTVIEW_PARSER_ARRAY_ENTRY
 {
 	ULONG ulIndex;

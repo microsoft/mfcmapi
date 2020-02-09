@@ -3,7 +3,7 @@
 namespace smartview
 {
 	// After 'No Parsing', these are in alphabetical order
-	static NAME_ARRAY_ENTRY g_SmartViewParserTypeArray[] = {
+	static SMARTVIEW_PARSER_TYPE_ARRAY_ENTRY g_SmartViewParserTypeArray[] = {
 		{IDS_STNOPARSING, L"Choose Smart View Parser"}, // STRING_OK
 		{IDS_STADDITIONALRENENTRYIDSEX, L"Additional Ren Entry IDs Ex"}, // STRING_OK
 		{IDS_STAPPOINTMENTRECURRENCEPATTERN, L"Appointment Recurrence Pattern"}, // STRING_OK
