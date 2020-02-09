@@ -10,8 +10,8 @@ namespace propertybag
 		mapiPropPropertyBag(LPMAPIPROP lpProp, sortlistdata::sortListData* lpListData);
 		~mapiPropPropertyBag();
 
-		ULONG GetFlags() const override;
-		propBagType GetType() const override { return pbMAPIProp; }
+		propBagFlags GetFlags() const override;
+		propBagType GetType() const override { return propBagType::MAPIProp; }
 		bool IsEqual(const std::shared_ptr<IMAPIPropertyBag> lpPropBag) const override;
 
 		// Returns the underlying MAPI prop object, if one exists. Does NOT ref count it.

@@ -15,10 +15,10 @@ namespace propertybag
 		}
 	}
 
-	ULONG rowPropertyBag::GetFlags() const
+	propBagFlags rowPropertyBag::GetFlags() const
 	{
-		ULONG ulFlags = pbNone;
-		if (m_bRowModified) ulFlags |= pbModified;
+		auto ulFlags = propBagFlags::None;
+		if (m_bRowModified) ulFlags |= propBagFlags::Modified;
 		return ulFlags;
 	}
 

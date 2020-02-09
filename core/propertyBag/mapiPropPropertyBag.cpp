@@ -20,10 +20,10 @@ namespace propertybag
 		if (m_lpProp) m_lpProp->Release();
 	}
 
-	ULONG mapiPropPropertyBag::GetFlags() const
+	propBagFlags mapiPropPropertyBag::GetFlags() const
 	{
-		ULONG ulFlags = pbNone;
-		if (m_bGetPropsSucceeded) ulFlags |= pbBackedByGetProps;
+		auto ulFlags = propBagFlags::None;
+		if (m_bGetPropsSucceeded) ulFlags |= propBagFlags::BackedByGetProps;
 		return ulFlags;
 	}
 

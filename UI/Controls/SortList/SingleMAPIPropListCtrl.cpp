@@ -205,7 +205,7 @@ namespace controls::sortlistctrl
 				}
 			}
 
-			if (!m_lpPropBag || m_lpPropBag->GetType() == propertybag::pbRow)
+			if (!m_lpPropBag || m_lpPropBag->GetType() == propertybag::propBagType::Row)
 			{
 				pMenu->EnableMenuItem(ID_DELETEPROPERTY, DIM(false));
 			}
@@ -351,7 +351,7 @@ namespace controls::sortlistctrl
 			if (m_lpHostDlg)
 			{
 				// This flag may be set by a GetProps call, so we make this check AFTER we get our props
-				if (propertybag::pbBackedByGetProps == m_lpPropBag->GetFlags())
+				if (propertybag::propBagFlags::BackedByGetProps == m_lpPropBag->GetFlags())
 				{
 					m_lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, IDS_PROPSFROMGETPROPS);
 				}
@@ -719,7 +719,7 @@ namespace controls::sortlistctrl
 
 	_Check_return_ bool CSingleMAPIPropListCtrl::IsModifiedPropVals() const
 	{
-		return propertybag::pbModified == (m_lpPropBag->GetFlags() & propertybag::pbModified);
+		return propertybag::propBagFlags::Modified == (m_lpPropBag->GetFlags() & propertybag::propBagFlags::Modified);
 	}
 
 	_Check_return_ HRESULT CSingleMAPIPropListCtrl::SetDataSource(
@@ -1038,7 +1038,10 @@ namespace controls::sortlistctrl
 		else
 		{
 			output::DebugPrintEx(
-				output::dbgLevel::NamedProp, CLASS, L"FindAllNamedProps", L"Exchange didn't support GetIDsFromNames(NULL).\n");
+				output::dbgLevel::NamedProp,
+				CLASS,
+				L"FindAllNamedProps",
+				L"Exchange didn't support GetIDsFromNames(NULL).\n");
 
 #define __LOWERBOUND 0x8000
 #define __UPPERBOUNDDEFAULT 0x8FFF
@@ -1233,7 +1236,7 @@ namespace controls::sortlistctrl
 	{
 		ULONG ulPropTag = NULL;
 
-		if (!m_lpPropBag || m_lpPropBag->GetType() == propertybag::pbRow) return;
+		if (!m_lpPropBag || m_lpPropBag->GetType() == propertybag::propBagType::Row) return;
 
 		GetSelectedPropTag(&ulPropTag);
 		if (!ulPropTag) return;
@@ -1885,7 +1888,7 @@ namespace controls::sortlistctrl
 			MyAddInMenuParams.lpAdrBook = m_lpMapiObjects->GetAddrBook(false); // do not release
 		}
 
-		if (m_lpPropBag && propertybag::pbRow == m_lpPropBag->GetType())
+		if (m_lpPropBag && propertybag::propBagType::Row == m_lpPropBag->GetType())
 		{
 			SRow MyRow = {0};
 			(void) m_lpPropBag->GetAllProps(&MyRow.cValues, &MyRow.lpProps);

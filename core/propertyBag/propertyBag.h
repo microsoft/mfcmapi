@@ -2,17 +2,18 @@
 
 namespace propertybag
 {
-	enum propBagFlags
+	enum class propBagFlags
 	{
-		pbNone = 0x0000, // None
-		pbModified = 0x0001, // The property bag has been modified
-		pbBackedByGetProps = 0x0002, // The property bag is rendering from a GetProps call
+		None = 0x0000, // None
+		Modified = 0x0001, // The property bag has been modified
+		BackedByGetProps = 0x0002, // The property bag is rendering from a GetProps call
 	};
+	DEFINE_ENUM_FLAG_OPERATORS(propBagFlags)
 
-	enum propBagType
+	enum class propBagType
 	{
-		pbMAPIProp,
-		pbRow,
+		MAPIProp,
+		Row,
 	};
 
 	// TODO - Annotate for sal
@@ -21,7 +22,7 @@ namespace propertybag
 	public:
 		virtual ~IMAPIPropertyBag() = default;
 
-		virtual ULONG GetFlags() const = 0;
+		virtual propBagFlags GetFlags() const = 0;
 		virtual propBagType GetType() const = 0;
 		virtual bool IsEqual(const std::shared_ptr<IMAPIPropertyBag> lpPropBag) const = 0;
 
