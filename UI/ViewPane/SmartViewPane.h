@@ -4,7 +4,7 @@
 #include <UI/ViewPane/TreePane.h>
 #include <core/smartview/smartViewParser.h>
 
-enum parserType;
+enum class parserType;
 
 namespace viewpane
 {
@@ -14,7 +14,7 @@ namespace viewpane
 		static std::shared_ptr<SmartViewPane> Create(int paneID, UINT uidLabel);
 
 		SmartViewPane();
-		void SetParser(parserType iParser);
+		void SetParser(parserType parser);
 		void Parse(const std::vector<BYTE>& myBin) { Parse(std::vector<std::vector<BYTE>>{myBin}); }
 		void Parse(const std::vector<std::vector<BYTE>>& myBins);
 		std::function<void(smartview::block*)> OnItemSelected = nullptr;

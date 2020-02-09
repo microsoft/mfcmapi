@@ -39,7 +39,7 @@ namespace viewpane
 
 		for (const auto& smartViewParserType : SmartViewParserTypeArray)
 		{
-			InsertDropString(smartViewParserType.lpszName, smartViewParserType.ulValue);
+			InsertDropString(smartViewParserType.lpszName, (ULONG) smartViewParserType.type);
 		}
 
 		DropDownPane::Initialize(pParent, hdc);
@@ -159,11 +159,11 @@ namespace viewpane
 		}
 	}
 
-	void SmartViewPane::SetParser(const parserType iParser)
+	void SmartViewPane::SetParser(const parserType parser)
 	{
 		for (size_t iDropNum = 0; iDropNum < SmartViewParserTypeArray.size(); iDropNum++)
 		{
-			if (iParser == static_cast<parserType>(SmartViewParserTypeArray[iDropNum].ulValue))
+			if (parser == static_cast<parserType>(SmartViewParserTypeArray[iDropNum].type))
 			{
 				SetSelection(iDropNum);
 				break;

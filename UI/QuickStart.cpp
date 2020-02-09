@@ -214,7 +214,7 @@ namespace dialog
 									{
 										// Get the string interpretation
 										szNicknames = smartview::InterpretBinaryAsString(
-											lpsProp->Value.bin, IDS_STNICKNAMECACHE, lpMSG);
+											lpsProp->Value.bin, parserType::IDS_STNICKNAMECACHE, lpMSG);
 									}
 
 									lpMSG->Release();

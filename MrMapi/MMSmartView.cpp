@@ -13,14 +13,14 @@ void DoSmartView()
 	// Ignore the reg key that disables smart view parsing
 	registry::doSmartView = true;
 
-	auto ulStructType = IDS_STNOPARSING;
+	auto ulStructType = parserType::IDS_STNOPARSING;
 	const auto ulSVParser = cli::switchParser.atULONG(0);
 	if (ulSVParser && ulSVParser < SmartViewParserTypeArray.size())
 	{
-		ulStructType = static_cast<parserType>(SmartViewParserTypeArray[ulSVParser].ulValue);
+		ulStructType = static_cast<parserType>(SmartViewParserTypeArray[ulSVParser].type);
 	}
 
-	if (ulStructType)
+	if (ulStructType != parserType::IDS_STNOPARSING)
 	{
 		FILE* fOut = nullptr;
 		const auto input = cli::switchInput[0];

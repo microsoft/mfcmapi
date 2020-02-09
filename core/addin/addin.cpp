@@ -450,8 +450,8 @@ namespace addin
 		if (lpParser1->ulIndex > lpParser2->ulIndex) return 1;
 		if (lpParser1->ulIndex == lpParser2->ulIndex)
 		{
-			if (lpParser1->iStructType > lpParser2->iStructType) return 1;
-			if (lpParser1->iStructType == lpParser2->iStructType)
+			if (lpParser1->type > lpParser2->type) return 1;
+			if (lpParser1->type == lpParser2->type)
 			{
 				if (lpParser1->bMV && !lpParser2->bMV) return 1;
 				if (!lpParser1->bMV && lpParser2->bMV) return -1;
@@ -646,15 +646,16 @@ namespace addin
 			}
 
 			// We add our new parsers to the end of the array, assigning ids starting with IDS_STEND
-			static ULONG s_ulNextParser = IDS_STEND;
+			static auto s_nextParser = static_cast<int>(parserType::IDS_STEND);
 			if (addIn.ulSmartViewParserTypes)
 			{
 				for (ULONG i = 0; i < addIn.ulSmartViewParserTypes; i++)
 				{
 					SMARTVIEW_PARSER_TYPE_ARRAY_ENTRY addinType{};
-					addinType.ulValue = (parserType) s_ulNextParser++;
+					addinType.type = static_cast<parserType>(s_nextParser);
 					addinType.lpszName = addIn.lpSmartViewParserTypes[i];
 					SmartViewParserTypeArray.push_back(addinType);
+					s_nextParser++;
 				}
 			}
 
@@ -719,11 +720,11 @@ namespace addin
 		}
 	}
 
-	std::wstring AddInStructTypeToString(parserType iStructType)
+	std::wstring AddInStructTypeToString(parserType parser)
 	{
 		for (const auto& smartViewParserType : SmartViewParserTypeArray)
 		{
-			if (smartViewParserType.ulValue == iStructType)
+			if (smartViewParserType.type == parser)
 			{
 				return smartViewParserType.lpszName;
 			}
@@ -735,7 +736,7 @@ namespace addin
 	std::wstring AddInSmartView(parserType iStructType, ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 	{
 		// Don't let add-ins hijack our built in types
-		if (iStructType <= IDS_STEND - 1) return L"";
+		if (iStructType < parserType::IDS_STEND) return L"";
 
 		auto szStructType = AddInStructTypeToString(iStructType);
 		if (szStructType.empty()) return L"";
