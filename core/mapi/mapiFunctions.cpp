@@ -518,7 +518,7 @@ namespace mapi
 	_Check_return_ LPSBinary CopySBinary(_In_ const _SBinary* src)
 	{
 		if (!src) return nullptr;
-		const auto dst = mapi::allocate<LPSBinary>(static_cast<ULONG>(sizeof(SBinary)));
+		const auto dst = mapi::allocate<LPSBinary>(ULONG{sizeof(SBinary)});
 		if (dst)
 		{
 			*dst = CopySBinary(*src, dst);

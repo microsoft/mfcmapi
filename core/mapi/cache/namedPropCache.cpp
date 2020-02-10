@@ -632,7 +632,10 @@ namespace cache
 		if (lpNameID->ulKind == MNID_ID)
 		{
 			output::DebugPrint(
-				output::dbgLevel::NamedProp, L"lpNameID->Kind.lID = 0x%04X = %d\n", lpNameID->Kind.lID, lpNameID->Kind.lID);
+				output::dbgLevel::NamedProp,
+				L"lpNameID->Kind.lID = 0x%04X = %d\n",
+				lpNameID->Kind.lID,
+				lpNameID->Kind.lID);
 			auto pidlids = NameIDToPropNames(lpNameID);
 
 			if (!pidlids.empty())

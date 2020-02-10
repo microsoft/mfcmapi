@@ -360,7 +360,7 @@ namespace mapi::ab
 							// already exists in the Address book, this will always be 1.
 
 							lpAdrList->aEntries->rgPropVals =
-								mapi::allocate<LPSPropValue>(static_cast<ULONG>(abNUM_COLS * sizeof(SPropValue)));
+								mapi::allocate<LPSPropValue>(ULONG{abNUM_COLS * sizeof(SPropValue)});
 							if (!lpAdrList->aEntries->rgPropVals) continue;
 
 							// We are setting 5 properties below. If this changes, modify these two lines.
