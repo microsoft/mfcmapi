@@ -18,7 +18,7 @@ enum class modifyType
 	DO_NOT_REQUEST_MODIFY
 };
 
-enum createDialogType
+enum class createDialogType
 {
 	CALL_CREATE_DIALOG,
 	DO_NOT_CALL_CREATE_DIALOG
