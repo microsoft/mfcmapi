@@ -24,7 +24,7 @@ enum class createDialogType
 	DO_NOT_CALL_CREATE_DIALOG
 };
 
-enum statusPane
+enum class statusPane
 {
 	data1,
 	data2,

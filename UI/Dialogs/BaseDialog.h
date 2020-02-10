@@ -60,7 +60,7 @@ namespace dialog
 		_Check_return_ ui::CParentWnd* GetParentWnd() const;
 		_Check_return_ std::shared_ptr<cache::CMapiObjects> GetMapiObjects() const;
 
-		static void UpdateStatus(HWND hWndHost, statusPane pane, const std::wstring& status);
+		static void UpdateStatus(HWND hWndHost, const statusPane pane, const std::wstring& status);
 
 	protected:
 		// Overrides called by child classes
@@ -114,10 +114,24 @@ namespace dialog
 		_Check_return_ LRESULT msgOnUpdateStatusBar(WPARAM wParam, LPARAM lParam);
 		_Check_return_ LRESULT msgOnClearSingleMAPIPropList(WPARAM wParam, LPARAM lParam);
 
+		inline std::wstring getStatusMessage(statusPane pane) const noexcept
+		{
+			return m_StatusMessages[static_cast<int>(pane)];
+		}
+		inline void setStatusMessage(statusPane pane, std::wstring message) noexcept
+		{
+			m_StatusMessages[static_cast<int>(pane)] = message;
+		}
+		inline int getStatusWidth(statusPane pane) const noexcept { return m_StatusWidth[static_cast<int>(pane)]; }
+		inline void setStatusWidth(statusPane pane, int width) noexcept
+		{
+			m_StatusWidth[static_cast<int>(pane)] = width;
+		}
+
 		LONG m_cRef{1};
 		HICON m_hIcon{};
-		std::wstring m_StatusMessages[statusPane::numPanes];
-		int m_StatusWidth[statusPane::numPanes]{};
+		std::wstring m_StatusMessages[static_cast<int>(statusPane::numPanes)];
+		int m_StatusWidth[static_cast<int>(statusPane::numPanes)]{};
 		bool m_bDisplayingMenuText{};
 		std::wstring m_szMenuDisplacedText{};
 		mapi::adviseSink* m_lpBaseAdviseSink{};
