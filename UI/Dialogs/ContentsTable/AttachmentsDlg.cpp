@@ -107,7 +107,7 @@ namespace dialog
 				auto lpMessage = OpenEmbeddedMessage();
 				if (lpMessage)
 				{
-					WC_H_S(DisplayObject(lpMessage, MAPI_MESSAGE, otDefault, this));
+					WC_H_S(DisplayObject(lpMessage, MAPI_MESSAGE, ObjectType::otDefault, this));
 					lpMessage->Release();
 				}
 			}

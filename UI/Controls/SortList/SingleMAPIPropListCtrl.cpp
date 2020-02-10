@@ -1376,7 +1376,7 @@ namespace controls::sortlistctrl
 
 		if (PT_OBJECT == PROP_TYPE(ulPropTag))
 		{
-			EC_H_S(DisplayTable(m_lpPropBag->GetMAPIProp(), ulPropTag, dialog::otDefault, m_lpHostDlg));
+			EC_H_S(DisplayTable(m_lpPropBag->GetMAPIProp(), ulPropTag, dialog::ObjectType::otDefault, m_lpHostDlg));
 			return;
 		}
 
@@ -1694,7 +1694,8 @@ namespace controls::sortlistctrl
 		{
 			if (m_lpPropBag && PT_OBJECT == PROP_TYPE(lpProp->ulPropTag))
 			{
-				EC_H_S(DisplayTable(m_lpPropBag->GetMAPIProp(), lpProp->ulPropTag, dialog::otDefault, m_lpHostDlg));
+				EC_H_S(DisplayTable(
+					m_lpPropBag->GetMAPIProp(), lpProp->ulPropTag, dialog::ObjectType::otDefault, m_lpHostDlg));
 			}
 			else if (PT_BINARY == PROP_TYPE(lpProp->ulPropTag) || PT_MV_BINARY == PROP_TYPE(lpProp->ulPropTag))
 			{
@@ -1800,7 +1801,7 @@ namespace controls::sortlistctrl
 			EC_H_S(DisplayExchangeTable(
 				m_lpPropBag->GetMAPIProp(),
 				CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_OBJECT),
-				dialog::otDefault,
+				dialog::ObjectType::otDefault,
 				m_lpHostDlg));
 		}
 		else
@@ -1808,7 +1809,7 @@ namespace controls::sortlistctrl
 			EC_H_S(DisplayTable(
 				m_lpPropBag->GetMAPIProp(),
 				CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_OBJECT),
-				dialog::otDefault,
+				dialog::ObjectType::otDefault,
 				m_lpHostDlg));
 		}
 	}

@@ -750,7 +750,7 @@ namespace dialog
 				auto lpTemp = mapi::safe_cast<LPMAPIPROP>(lpUnk);
 				if (lpTemp)
 				{
-					WC_H_S(DisplayObject(lpTemp, ulObjType, otHierarchy, this));
+					WC_H_S(DisplayObject(lpTemp, ulObjType, ObjectType::otHierarchy, this));
 					lpTemp->Release();
 				}
 

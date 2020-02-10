@@ -5,7 +5,7 @@
 
 namespace dialog
 {
-	enum ObjectType
+	enum class ObjectType
 	{
 		otDefault,
 		otAssocContents,

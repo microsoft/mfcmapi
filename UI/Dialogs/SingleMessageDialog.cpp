@@ -73,14 +73,14 @@ namespace dialog
 	{
 		if (!m_lpMessage) return;
 
-		EC_H_S(DisplayTable(m_lpMessage, PR_MESSAGE_ATTACHMENTS, otDefault, this));
+		EC_H_S(DisplayTable(m_lpMessage, PR_MESSAGE_ATTACHMENTS, ObjectType::otDefault, this));
 	}
 
 	void SingleMessageDialog::OnRecipientProperties()
 	{
 		if (!m_lpMessage) return;
 
-		EC_H_S(DisplayTable(m_lpMessage, PR_MESSAGE_RECIPIENTS, otDefault, this));
+		EC_H_S(DisplayTable(m_lpMessage, PR_MESSAGE_RECIPIENTS, ObjectType::otDefault, this));
 	}
 
 	void SingleMessageDialog::OnRTFSync()
@@ -100,7 +100,10 @@ namespace dialog
 			if (m_lpMessage)
 			{
 				output::DebugPrint(
-					output::dbgLevel::Generic, L"Calling RTFSync on %p with flags 0x%X\n", m_lpMessage, MyData.GetHex(0));
+					output::dbgLevel::Generic,
+					L"Calling RTFSync on %p with flags 0x%X\n",
+					m_lpMessage,
+					MyData.GetHex(0));
 				hRes = EC_MAPI(RTFSync(m_lpMessage, MyData.GetHex(0), &bMessageUpdated));
 				output::DebugPrint(output::dbgLevel::Generic, L"RTFSync returned %d\n", bMessageUpdated);
 

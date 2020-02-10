@@ -72,7 +72,7 @@ namespace dialog
 				lpMapiObjects,
 				lpUnk,
 				nullptr,
-				otStoreDeletedItems == tType ? tableDisplayFlags::dfDeleted : tableDisplayFlags::dfNormal);
+				ObjectType::otStoreDeletedItems == tType ? tableDisplayFlags::dfDeleted : tableDisplayFlags::dfNormal);
 
 			// restore the old MDB
 			lpMapiObjects->SetMDB(lpMDB); // ...we can put it back
@@ -84,7 +84,7 @@ namespace dialog
 		case MAPI_FOLDER:
 		{
 			// There are two ways to display a folder...either the contents table or the hierarchy table.
-			if (otHierarchy == tType)
+			if (tType == ObjectType::otHierarchy)
 			{
 				const auto lpMDB = lpMapiObjects->GetMDB(); // do not release
 				if (lpMDB)
@@ -111,13 +111,13 @@ namespace dialog
 					}
 				}
 			}
-			else if (otContents == tType || otAssocContents == tType)
+			else if (tType == ObjectType::otContents || tType == ObjectType::otAssocContents)
 			{
 				new CFolderDlg(
 					lpParentWnd,
 					lpMapiObjects,
 					lpUnk,
-					otAssocContents == tType ? tableDisplayFlags::dfAssoc : tableDisplayFlags::dfNormal);
+					tType == ObjectType::otAssocContents ? tableDisplayFlags::dfAssoc : tableDisplayFlags::dfNormal);
 			}
 		}
 		break;
@@ -176,7 +176,7 @@ namespace dialog
 
 		switch (tType)
 		{
-		case otStatus:
+		case ObjectType::otStatus:
 		{
 			if (!lpTable) return MAPI_E_INVALID_PARAMETER;
 			new CContentsTableDlg(
@@ -192,7 +192,7 @@ namespace dialog
 				MENU_CONTEXT_STATUS_TABLE);
 			break;
 		}
-		case otReceive:
+		case ObjectType::otReceive:
 		{
 			if (!lpTable) return MAPI_E_INVALID_PARAMETER;
 			new CContentsTableDlg(
@@ -208,7 +208,7 @@ namespace dialog
 				MENU_CONTEXT_RECIEVE_FOLDER_TABLE);
 			break;
 		}
-		case otHierarchy:
+		case ObjectType::otHierarchy:
 		{
 			if (!lpTable) return MAPI_E_INVALID_PARAMETER;
 			new CContentsTableDlg(
@@ -225,10 +225,10 @@ namespace dialog
 			break;
 		}
 		default:
-		case otDefault:
+		case ObjectType::otDefault:
 		{
 			if (!lpTable) return MAPI_E_INVALID_PARAMETER;
-			if (otDefault != tType) error::ErrDialog(__FILE__, __LINE__, IDS_EDDISPLAYTABLE, tType);
+			if (tType != ObjectType::otDefault) error::ErrDialog(__FILE__, __LINE__, IDS_EDDISPLAYTABLE, tType);
 			new CContentsTableDlg(
 				lpParentWnd,
 				lpMapiObjects,
@@ -333,10 +333,10 @@ namespace dialog
 		{
 			switch (tType)
 			{
-			case otRules:
+			case ObjectType::otRules:
 				new CRulesDlg(lpParentWnd, lpMapiObjects, lpExchTbl);
 				break;
-			case otACL:
+			case ObjectType::otACL:
 			{
 				editor::CEditor MyData(
 					lpHostDlg, IDS_ACLTABLE, IDS_ACLTABLEPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
