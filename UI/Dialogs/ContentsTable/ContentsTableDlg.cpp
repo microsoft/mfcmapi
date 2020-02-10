@@ -110,7 +110,7 @@ namespace dialog
 		{
 			m_lpFakeSplitter.SetPaneOne(m_lpContentsTableListCtrl->GetSafeHwnd());
 			m_lpFakeSplitter.SetPercent(static_cast<FLOAT>(0.40));
-			m_lpFakeSplitter.SetSplitType(controls::SplitVertical);
+			m_lpFakeSplitter.SetSplitType(controls::splitType::vertical);
 		}
 
 		if (m_lpContainer)

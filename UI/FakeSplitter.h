@@ -9,10 +9,10 @@ namespace dialog
 
 namespace controls
 {
-	enum SplitType
+	enum class splitType
 	{
-		SplitVertical = 0,
-		SplitHorizontal = 1
+		vertical = 0,
+		horizontal = 1
 	};
 
 	// Implementation of a lite Splitter class.
@@ -42,7 +42,7 @@ namespace controls
 		void SetPaneTwo(std::shared_ptr<viewpane::ViewPane> paneTwo) { m_ViewPaneTwo = paneTwo; }
 
 		void SetPercent(FLOAT iNewPercent);
-		void SetSplitType(SplitType stSplitType);
+		void SetSplitType(splitType stSplitType);
 		void OnSize(UINT nType, int cx, int cy);
 		void DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height);
 		int GetSplitWidth() const { return m_iSplitWidth; }
@@ -71,7 +71,7 @@ namespace controls
 		std::shared_ptr<viewpane::ViewPane> m_ViewPaneTwo{};
 		int m_iSplitWidth{};
 		int m_iSplitPos{1};
-		SplitType m_SplitType{SplitHorizontal};
+		splitType m_SplitType{splitType::horizontal};
 		HCURSOR m_hSplitCursorV{};
 		HCURSOR m_hSplitCursorH{};
 

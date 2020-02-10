@@ -139,7 +139,7 @@ namespace viewpane
 		if (m_lpSplitter)
 		{
 			m_lpSplitter->Init(pParent->GetSafeHwnd());
-			m_lpSplitter->SetSplitType(m_bVertical ? controls::SplitVertical : controls::SplitHorizontal);
+			m_lpSplitter->SetSplitType(m_bVertical ? controls::splitType::vertical : controls::splitType::horizontal);
 			m_PaneOne->Initialize(m_lpSplitter.get(), hdc);
 			m_PaneTwo->Initialize(m_lpSplitter.get(), hdc);
 			m_lpSplitter->SetPaneOne(m_PaneOne);
@@ -167,7 +167,12 @@ namespace viewpane
 		_In_ const int height)
 	{
 		output::DebugPrint(
-			output::dbgLevel::Draw, L"SplitterPane::DeferWindowPos x:%d y:%d width:%d height: %d\n", x, y, width, height);
+			output::dbgLevel::Draw,
+			L"SplitterPane::DeferWindowPos x:%d y:%d width:%d height: %d\n",
+			x,
+			y,
+			width,
+			height);
 
 		auto curY = y;
 		const auto labelHeight = GetLabelHeight();

@@ -144,7 +144,7 @@ namespace controls
 		if (m_PaneOne || m_ViewPaneOne)
 		{
 			CRect r1;
-			if (SplitHorizontal == m_SplitType)
+			if (m_SplitType == splitType::horizontal)
 			{
 				r1.SetRect(x, y, m_iSplitPos, height);
 			}
@@ -167,7 +167,7 @@ namespace controls
 		if (m_PaneTwo || m_ViewPaneTwo)
 		{
 			CRect r2;
-			if (SplitHorizontal == m_SplitType)
+			if (m_SplitType == splitType::horizontal)
 			{
 				r2.SetRect(
 					x + m_iSplitPos + m_iSplitWidth, // new x
@@ -208,7 +208,7 @@ namespace controls
 		int iCurSpan;
 		CRect rect;
 		GetClientRect(rect);
-		if (SplitHorizontal == m_SplitType)
+		if (m_SplitType == splitType::horizontal)
 		{
 			iCurSpan = rect.Width();
 		}
@@ -255,7 +255,7 @@ namespace controls
 		OnSize(0, rect.Width(), rect.Height());
 	}
 
-	void CFakeSplitter::SetSplitType(const SplitType stSplitType) { m_SplitType = stSplitType; }
+	void CFakeSplitter::SetSplitType(const splitType stSplitType) { m_SplitType = stSplitType; }
 
 	_Check_return_ int CFakeSplitter::HitTest(const LONG x, const LONG y) const
 	{
@@ -263,7 +263,7 @@ namespace controls
 
 		LONG lTestPos;
 
-		if (SplitHorizontal == m_SplitType)
+		if (m_SplitType == splitType::horizontal)
 		{
 			lTestPos = x;
 		}
@@ -287,7 +287,7 @@ namespace controls
 		if (SplitterHit == HitTest(point.x, point.y))
 		{
 			// This looks backwards, but it is not. A horizontal split needs the vertical cursor
-			SetCursor(SplitHorizontal == m_SplitType ? m_hSplitCursorV : m_hSplitCursorH);
+			SetCursor(m_SplitType == splitType::horizontal ? m_hSplitCursorV : m_hSplitCursorH);
 		}
 
 		if (m_bTracking)
@@ -296,7 +296,7 @@ namespace controls
 			FLOAT flNewPercent;
 			GetWindowRect(Rect);
 
-			if (SplitHorizontal == m_SplitType)
+			if (m_SplitType == splitType::horizontal)
 			{
 				flNewPercent = point.x / static_cast<FLOAT>(Rect.Width());
 			}
@@ -358,7 +358,7 @@ namespace controls
 			FillRect(hdc, &rcSplitter, GetSysBrush(ui::uiColor::Background));
 
 			POINT pts[2]; // 0 is left top, 1 is right bottom
-			if (SplitHorizontal == m_SplitType)
+			if (m_SplitType == splitType::horizontal)
 			{
 				pts[0].x = m_iSplitPos + m_iSplitWidth / 2;
 				pts[0].y = rcSplitter.top;
