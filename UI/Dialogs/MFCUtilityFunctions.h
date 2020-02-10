@@ -1,5 +1,5 @@
 #pragma once
-// Common functions for MFC MAPI
+// Common functions for MFCMAPI
 
 #include <UI/Dialogs/BaseDialog.h>
 
@@ -7,16 +7,16 @@ namespace dialog
 {
 	enum class objectType
 	{
-		otDefault,
-		otAssocContents,
-		otContents,
-		otHierarchy,
-		otACL,
-		otStatus,
-		otReceive,
-		otRules,
-		otStore,
-		otStoreDeletedItems,
+		default,
+		assocContents,
+		contents,
+		hierarchy,
+		ACL,
+		status,
+		receive,
+		rules,
+		store,
+		storeDeletedItems,
 	};
 
 	_Check_return_ HRESULT
@@ -37,7 +37,8 @@ namespace dialog
 	_Check_return_ bool bShouldCancel(_In_opt_ CWnd* cWnd, HRESULT hResPrev);
 
 	void DisplayMailboxTable(_In_ ui::CParentWnd* lpParent, _In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects);
-	void DisplayPublicFolderTable(_In_ ui::CParentWnd* lpParent, _In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects);
+	void
+	DisplayPublicFolderTable(_In_ ui::CParentWnd* lpParent, _In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects);
 	void ResolveMessageClass(
 		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 		_In_opt_ LPMAPIFOLDER lpMAPIFolder,

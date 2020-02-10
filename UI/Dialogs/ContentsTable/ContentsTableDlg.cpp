@@ -262,7 +262,7 @@ namespace dialog
 
 			if (lpMAPIProp)
 			{
-				EC_H_S(DisplayObject(lpMAPIProp, NULL, objectType::otHierarchy, this));
+				EC_H_S(DisplayObject(lpMAPIProp, NULL, objectType::hierarchy, this));
 				lpMAPIProp->Release();
 			}
 		} while (iItem != -1);
@@ -516,12 +516,12 @@ namespace dialog
 	{
 		if (lpMessage == nullptr) return MAPI_E_INVALID_PARAMETER;
 
-		return DisplayTable(lpMessage, PR_MESSAGE_ATTACHMENTS, objectType::otDefault, this);
+		return DisplayTable(lpMessage, PR_MESSAGE_ATTACHMENTS, objectType::default, this);
 	}
 
 	_Check_return_ HRESULT CContentsTableDlg::OpenRecipientsFromMessage(_In_ LPMESSAGE lpMessage)
 	{
-		return DisplayTable(lpMessage, PR_MESSAGE_RECIPIENTS, objectType::otDefault, this);
+		return DisplayTable(lpMessage, PR_MESSAGE_RECIPIENTS, objectType::default, this);
 	}
 
 	_Check_return_ bool CContentsTableDlg::HandleAddInMenu(WORD wMenuSelect)

@@ -314,7 +314,7 @@ namespace dialog
 				nullptr, lpAddrBook, nullptr, nullptr, cbEID, lpEID, nullptr, MAPI_MODIFY, &ulObjType);
 			if (lpDefaultDir)
 			{
-				EC_H_S(DisplayObject(lpDefaultDir, ulObjType, objectType::otDefault, this));
+				EC_H_S(DisplayObject(lpDefaultDir, ulObjType, objectType::default, this));
 
 				lpDefaultDir->Release();
 			}
@@ -343,7 +343,7 @@ namespace dialog
 				nullptr, lpAddrBook, nullptr, nullptr, cbEID, lpEID, nullptr, MAPI_MODIFY, &ulObjType);
 			if (lpPAB)
 			{
-				EC_H_S(DisplayObject(lpPAB, ulObjType, objectType::otDefault, this));
+				EC_H_S(DisplayObject(lpPAB, ulObjType, objectType::default, this));
 
 				lpPAB->Release();
 			}
@@ -446,7 +446,7 @@ namespace dialog
 							false);
 						if (lpAdminMDB)
 						{
-							EC_H_S(DisplayObject(lpAdminMDB, NULL, objectType::otStore, this));
+							EC_H_S(DisplayObject(lpAdminMDB, NULL, objectType::store, this));
 							lpAdminMDB->Release();
 						}
 					}
@@ -509,7 +509,7 @@ namespace dialog
 				}
 				else
 				{
-					EC_H_S(DisplayObject(lpMDB, NULL, objectType::otStore, this));
+					EC_H_S(DisplayObject(lpMDB, NULL, objectType::store, this));
 				}
 			}
 		}
@@ -532,7 +532,7 @@ namespace dialog
 		auto lpMDB = mapi::store::OpenPublicMessageStore(lpMAPISession, L"", MyPrompt.GetHex(0));
 		if (lpMDB)
 		{
-			EC_H_S(DisplayObject(lpMDB, NULL, objectType::otStore, this));
+			EC_H_S(DisplayObject(lpMDB, NULL, objectType::store, this));
 
 			lpMDB->Release();
 		}
@@ -556,7 +556,7 @@ namespace dialog
 		auto lpMDB = mapi::store::OpenPublicMessageStore(lpMAPISession, MyPrompt.GetStringW(0), MyPrompt.GetHex(1));
 		if (lpMDB)
 		{
-			EC_H_S(DisplayObject(lpMDB, NULL, objectType::otStore, this));
+			EC_H_S(DisplayObject(lpMDB, NULL, objectType::store, this));
 
 			lpMDB->Release();
 		}
@@ -584,7 +584,7 @@ namespace dialog
 				OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP);
 			if (lpOtherMDB)
 			{
-				EC_H_S(DisplayObject(lpOtherMDB, NULL, objectType::otStore, this));
+				EC_H_S(DisplayObject(lpOtherMDB, NULL, objectType::store, this));
 
 				lpOtherMDB->Release();
 			}
@@ -627,7 +627,7 @@ namespace dialog
 			auto lpMailboxMDB = ui::mapiui::OpenOtherUsersMailboxFromGal(lpMAPISession, lpAddrBook);
 			if (lpMailboxMDB)
 			{
-				EC_H_S(DisplayObject(lpMailboxMDB, NULL, objectType::otStore, this));
+				EC_H_S(DisplayObject(lpMailboxMDB, NULL, objectType::store, this));
 
 				lpMailboxMDB->Release();
 			}
@@ -659,7 +659,7 @@ namespace dialog
 
 						if (lpMDB)
 						{
-							EC_H_S(DisplayObject(lpMDB, NULL, objectType::otStoreDeletedItems, this));
+							EC_H_S(DisplayObject(lpMDB, NULL, objectType::storeDeletedItems, this));
 
 							lpMDB->Release();
 						}
@@ -1290,7 +1290,7 @@ namespace dialog
 		if (lpMAPITable)
 		{
 
-			EC_H_S(DisplayTable(lpMAPITable, objectType::otStatus, this));
+			EC_H_S(DisplayTable(lpMAPITable, objectType::status, this));
 			lpMAPITable->Release();
 		}
 	}
@@ -1332,7 +1332,7 @@ namespace dialog
 			auto lpNewMessage = file::LoadMSGToMessage(file);
 			if (lpNewMessage)
 			{
-				WC_H_S(DisplayObject(lpNewMessage, MAPI_MESSAGE, objectType::otDefault, this));
+				WC_H_S(DisplayObject(lpNewMessage, MAPI_MESSAGE, objectType::default, this));
 				lpNewMessage->Release();
 			}
 		}

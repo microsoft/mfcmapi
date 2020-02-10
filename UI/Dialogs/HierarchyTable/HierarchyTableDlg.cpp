@@ -104,7 +104,7 @@ namespace dialog
 			return;
 		}
 
-		EC_H_S(DisplayObject(lpMAPIContainer, NULL, objectType::otContents, this));
+		EC_H_S(DisplayObject(lpMAPIContainer, NULL, objectType::contents, this));
 
 		lpMAPIContainer->Release();
 	}
@@ -133,7 +133,7 @@ namespace dialog
 
 				if (lpMAPITable)
 				{
-					EC_H_S(DisplayTable(lpMAPITable, objectType::otHierarchy, this));
+					EC_H_S(DisplayTable(lpMAPITable, objectType::hierarchy, this));
 					lpMAPITable->Release();
 				}
 			}

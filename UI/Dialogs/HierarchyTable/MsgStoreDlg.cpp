@@ -173,7 +173,7 @@ namespace dialog
 		auto lpFolder = mapi::OpenDefaultFolder(ulFolder, m_lpMDB);
 		if (lpFolder)
 		{
-			EC_H_S(DisplayObject(lpFolder, NULL, objectType::otHierarchy, this));
+			EC_H_S(DisplayObject(lpFolder, NULL, objectType::hierarchy, this));
 
 			lpFolder->Release();
 		}
@@ -197,7 +197,7 @@ namespace dialog
 		EC_MAPI_S(m_lpMDB->GetReceiveFolderTable(fMapiUnicode, &lpMAPITable));
 		if (lpMAPITable)
 		{
-			EC_H_S(DisplayTable(lpMAPITable, objectType::otReceive, this));
+			EC_H_S(DisplayTable(lpMAPITable, objectType::receive, this));
 			lpMAPITable->Release();
 		}
 	}
@@ -211,7 +211,7 @@ namespace dialog
 		EC_MAPI_S(m_lpMDB->GetOutgoingQueue(NULL, &lpMAPITable));
 		if (lpMAPITable)
 		{
-			EC_H_S(DisplayTable(lpMAPITable, objectType::otDefault, this));
+			EC_H_S(DisplayTable(lpMAPITable, objectType::default, this));
 			lpMAPITable->Release();
 		}
 	}
@@ -224,7 +224,7 @@ namespace dialog
 
 		if (lpMAPIFolder)
 		{
-			EC_H_S(DisplayExchangeTable(lpMAPIFolder, PR_RULES_TABLE, objectType::otRules, this));
+			EC_H_S(DisplayExchangeTable(lpMAPIFolder, PR_RULES_TABLE, objectType::rules, this));
 			lpMAPIFolder->Release();
 		}
 	}
@@ -606,7 +606,7 @@ namespace dialog
 
 		if (lpMAPIFolder)
 		{
-			EC_H_S(DisplayExchangeTable(lpMAPIFolder, PR_ACL_TABLE, objectType::otACL, this));
+			EC_H_S(DisplayExchangeTable(lpMAPIFolder, PR_ACL_TABLE, objectType::ACL, this));
 			lpMAPIFolder->Release();
 		}
 	}
@@ -620,7 +620,7 @@ namespace dialog
 
 		if (lpMAPIFolder)
 		{
-			(void) DisplayObject(lpMAPIFolder, NULL, objectType::otAssocContents, this);
+			(void) DisplayObject(lpMAPIFolder, NULL, objectType::assocContents, this);
 
 			lpMAPIFolder->Release();
 		}
