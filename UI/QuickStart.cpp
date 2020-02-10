@@ -74,7 +74,7 @@ namespace dialog
 			auto lpFolder = mapi::OpenDefaultFolder(ulFolder, lpMDB);
 			if (lpFolder)
 			{
-				WC_H_S(DisplayObject(lpFolder, NULL, ObjectType::otContents, lpHostDlg));
+				WC_H_S(DisplayObject(lpFolder, NULL, objectType::otContents, lpHostDlg));
 
 				lpFolder->Release();
 			}
@@ -88,7 +88,7 @@ namespace dialog
 		_In_ HWND hwnd,
 		_In_ ULONG ulFolder,
 		_In_ ULONG ulProp,
-		_In_ ObjectType tType)
+		_In_ objectType tType)
 	{
 		auto lpMDB = OpenStoreForQuickStart(lpHostDlg, hwnd);
 		if (lpMDB)
@@ -123,7 +123,7 @@ namespace dialog
 
 			if (lpDefaultDir)
 			{
-				WC_H_S(DisplayObject(lpDefaultDir, ulObjType, ObjectType::otDefault, lpHostDlg));
+				WC_H_S(DisplayObject(lpDefaultDir, ulObjType, objectType::otDefault, lpHostDlg));
 
 				lpDefaultDir->Release();
 			}
@@ -390,7 +390,7 @@ namespace dialog
 			auto lpMailUser = mapi::ab::SelectUser(lpAdrBook, hwnd, &ulObjType);
 			if (lpMailUser)
 			{
-				EC_H_S(DisplayObject(lpMailUser, ulObjType, ObjectType::otDefault, lpHostDlg));
+				EC_H_S(DisplayObject(lpMailUser, ulObjType, objectType::otDefault, lpHostDlg));
 
 				lpMailUser->Release();
 			}
@@ -508,7 +508,7 @@ namespace dialog
 			OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_JUNKMAIL);
 			return true;
 		case ID_QSRULES:
-			OnQSDisplayTable(lpHostDlg, hwnd, mapi::DEFAULT_INBOX, PR_RULES_TABLE, ObjectType::otRules);
+			OnQSDisplayTable(lpHostDlg, hwnd, mapi::DEFAULT_INBOX, PR_RULES_TABLE, objectType::otRules);
 			return true;
 		case ID_QSDEFAULTDIR:
 			OnQSDisplayDefaultDir(lpHostDlg, hwnd);
@@ -517,7 +517,7 @@ namespace dialog
 			OnQSDisplayAB(lpHostDlg, hwnd);
 			return true;
 		case ID_QSCALPERM:
-			OnQSDisplayTable(lpHostDlg, hwnd, mapi::DEFAULT_CALENDAR, PR_ACL_TABLE, ObjectType::otACL);
+			OnQSDisplayTable(lpHostDlg, hwnd, mapi::DEFAULT_CALENDAR, PR_ACL_TABLE, objectType::otACL);
 			return true;
 		case ID_QSNICKNAME:
 			OnQSDisplayNicknameCache(lpHostDlg, hwnd);

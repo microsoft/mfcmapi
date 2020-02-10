@@ -108,7 +108,7 @@ namespace dialog
 							if (lpNewMDB)
 							{
 								EC_H_S(
-									DisplayObject(static_cast<LPMAPIPROP>(lpNewMDB), NULL, ObjectType::otStore, this));
+									DisplayObject(static_cast<LPMAPIPROP>(lpNewMDB), NULL, objectType::otStore, this));
 								lpNewMDB->Release();
 								lpNewMDB = nullptr;
 							}

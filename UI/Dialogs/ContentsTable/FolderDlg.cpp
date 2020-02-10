@@ -74,7 +74,7 @@ namespace dialog
 		case ID_DISPLAYACLTABLE:
 			if (m_lpFolder)
 			{
-				EC_H_S(DisplayExchangeTable(m_lpFolder, PR_ACL_TABLE, ObjectType::otACL, this));
+				EC_H_S(DisplayExchangeTable(m_lpFolder, PR_ACL_TABLE, objectType::otACL, this));
 			}
 
 			return true;
@@ -249,7 +249,7 @@ namespace dialog
 
 			if (lpMAPIProp)
 			{
-				EC_H_S(DisplayObject(lpMAPIProp, NULL, ObjectType::otDefault, this));
+				EC_H_S(DisplayObject(lpMAPIProp, NULL, objectType::otDefault, this));
 				lpMAPIProp->Release();
 			}
 		} while (iItem != -1);
@@ -1978,17 +1978,17 @@ namespace dialog
 
 	void CFolderDlg::OnDisplayFolder(WORD wMenuSelect)
 	{
-		auto otType = ObjectType::otDefault;
+		auto otType = objectType::otDefault;
 		switch (wMenuSelect)
 		{
 		case ID_HIERARCHY:
-			otType = ObjectType::otHierarchy;
+			otType = objectType::otHierarchy;
 			break;
 		case ID_CONTENTS:
-			otType = ObjectType::otContents;
+			otType = objectType::otContents;
 			break;
 		case ID_HIDDENCONTENTS:
-			otType = ObjectType::otAssocContents;
+			otType = objectType::otAssocContents;
 			break;
 		}
 

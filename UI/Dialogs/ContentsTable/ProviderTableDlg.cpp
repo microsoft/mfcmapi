@@ -99,7 +99,7 @@ namespace dialog
 			auto lpTemp = mapi::safe_cast<LPMAPIPROP>(lpProfSect);
 			if (lpTemp)
 			{
-				EC_H_S(DisplayObject(lpTemp, MAPI_PROFSECT, ObjectType::otContents, this));
+				EC_H_S(DisplayObject(lpTemp, MAPI_PROFSECT, objectType::otContents, this));
 				lpTemp->Release();
 			}
 

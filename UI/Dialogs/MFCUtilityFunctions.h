@@ -5,7 +5,7 @@
 
 namespace dialog
 {
-	enum class ObjectType
+	enum class objectType
 	{
 		otDefault,
 		otAssocContents,
@@ -20,19 +20,19 @@ namespace dialog
 	};
 
 	_Check_return_ HRESULT
-	DisplayObject(_In_ LPMAPIPROP lpUnk, ULONG ulObjType, ObjectType tType, _In_ dialog::CBaseDialog* lpHostDlg);
+	DisplayObject(_In_ LPMAPIPROP lpUnk, ULONG ulObjType, objectType tType, _In_ dialog::CBaseDialog* lpHostDlg);
 
 	_Check_return_ HRESULT DisplayExchangeTable(
 		_In_ LPMAPIPROP lpMAPIProp,
 		ULONG ulPropTag,
-		ObjectType tType,
+		objectType tType,
 		_In_ dialog::CBaseDialog* lpHostDlg);
 
 	_Check_return_ HRESULT
-	DisplayTable(_In_ LPMAPITABLE lpTable, ObjectType tType, _In_ dialog::CBaseDialog* lpHostDlg);
+	DisplayTable(_In_ LPMAPITABLE lpTable, objectType tType, _In_ dialog::CBaseDialog* lpHostDlg);
 
 	_Check_return_ HRESULT
-	DisplayTable(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, ObjectType tType, _In_ dialog::CBaseDialog* lpHostDlg);
+	DisplayTable(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, objectType tType, _In_ dialog::CBaseDialog* lpHostDlg);
 
 	_Check_return_ bool bShouldCancel(_In_opt_ CWnd* cWnd, HRESULT hResPrev);
 

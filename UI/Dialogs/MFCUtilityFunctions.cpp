@@ -29,7 +29,7 @@
 namespace dialog
 {
 	_Check_return_ HRESULT
-	DisplayObject(_In_ LPMAPIPROP lpUnk, ULONG ulObjType, ObjectType tType, _In_ CBaseDialog* lpHostDlg)
+	DisplayObject(_In_ LPMAPIPROP lpUnk, ULONG ulObjType, objectType tType, _In_ CBaseDialog* lpHostDlg)
 	{
 		if (!lpHostDlg || !lpUnk) return MAPI_E_INVALID_PARAMETER;
 
@@ -48,7 +48,7 @@ namespace dialog
 		auto szFlags = smartview::InterpretNumberAsStringProp(ulObjType, PR_OBJECT_TYPE);
 		output::DebugPrint(
 			output::dbgLevel::Generic,
-			L"DisplayObject asked to display %p, with ObjectType of 0x%08X and MAPI type of 0x%08X = %ws\n",
+			L"DisplayObject asked to display %p, with objectType of 0x%08X and MAPI type of 0x%08X = %ws\n",
 			lpUnk,
 			tType,
 			ulObjType,
@@ -72,7 +72,7 @@ namespace dialog
 				lpMapiObjects,
 				lpUnk,
 				nullptr,
-				ObjectType::otStoreDeletedItems == tType ? tableDisplayFlags::dfDeleted : tableDisplayFlags::dfNormal);
+				objectType::otStoreDeletedItems == tType ? tableDisplayFlags::dfDeleted : tableDisplayFlags::dfNormal);
 
 			// restore the old MDB
 			lpMapiObjects->SetMDB(lpMDB); // ...we can put it back
@@ -84,7 +84,7 @@ namespace dialog
 		case MAPI_FOLDER:
 		{
 			// There are two ways to display a folder...either the contents table or the hierarchy table.
-			if (tType == ObjectType::otHierarchy)
+			if (tType == objectType::otHierarchy)
 			{
 				const auto lpMDB = lpMapiObjects->GetMDB(); // do not release
 				if (lpMDB)
@@ -111,13 +111,13 @@ namespace dialog
 					}
 				}
 			}
-			else if (tType == ObjectType::otContents || tType == ObjectType::otAssocContents)
+			else if (tType == objectType::otContents || tType == objectType::otAssocContents)
 			{
 				new CFolderDlg(
 					lpParentWnd,
 					lpMapiObjects,
 					lpUnk,
-					tType == ObjectType::otAssocContents ? tableDisplayFlags::dfAssoc : tableDisplayFlags::dfNormal);
+					tType == objectType::otAssocContents ? tableDisplayFlags::dfAssoc : tableDisplayFlags::dfNormal);
 			}
 		}
 		break;
@@ -162,7 +162,7 @@ namespace dialog
 		return S_OK;
 	}
 
-	_Check_return_ HRESULT DisplayTable(_In_ LPMAPITABLE lpTable, ObjectType tType, _In_ CBaseDialog* lpHostDlg)
+	_Check_return_ HRESULT DisplayTable(_In_ LPMAPITABLE lpTable, objectType tType, _In_ CBaseDialog* lpHostDlg)
 	{
 		if (!lpHostDlg) return MAPI_E_INVALID_PARAMETER;
 
@@ -176,7 +176,7 @@ namespace dialog
 
 		switch (tType)
 		{
-		case ObjectType::otStatus:
+		case objectType::otStatus:
 		{
 			if (!lpTable) return MAPI_E_INVALID_PARAMETER;
 			new CContentsTableDlg(
@@ -192,7 +192,7 @@ namespace dialog
 				MENU_CONTEXT_STATUS_TABLE);
 			break;
 		}
-		case ObjectType::otReceive:
+		case objectType::otReceive:
 		{
 			if (!lpTable) return MAPI_E_INVALID_PARAMETER;
 			new CContentsTableDlg(
@@ -208,7 +208,7 @@ namespace dialog
 				MENU_CONTEXT_RECIEVE_FOLDER_TABLE);
 			break;
 		}
-		case ObjectType::otHierarchy:
+		case objectType::otHierarchy:
 		{
 			if (!lpTable) return MAPI_E_INVALID_PARAMETER;
 			new CContentsTableDlg(
@@ -225,10 +225,10 @@ namespace dialog
 			break;
 		}
 		default:
-		case ObjectType::otDefault:
+		case objectType::otDefault:
 		{
 			if (!lpTable) return MAPI_E_INVALID_PARAMETER;
-			if (tType != ObjectType::otDefault) error::ErrDialog(__FILE__, __LINE__, IDS_EDDISPLAYTABLE, tType);
+			if (tType != objectType::otDefault) error::ErrDialog(__FILE__, __LINE__, IDS_EDDISPLAYTABLE, tType);
 			new CContentsTableDlg(
 				lpParentWnd,
 				lpMapiObjects,
@@ -248,7 +248,7 @@ namespace dialog
 	}
 
 	_Check_return_ HRESULT
-	DisplayTable(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, ObjectType tType, _In_ CBaseDialog* lpHostDlg)
+	DisplayTable(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, objectType tType, _In_ CBaseDialog* lpHostDlg)
 	{
 		LPMAPITABLE lpTable = nullptr;
 
@@ -308,7 +308,7 @@ namespace dialog
 	}
 
 	_Check_return_ HRESULT
-	DisplayExchangeTable(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, ObjectType tType, _In_ CBaseDialog* lpHostDlg)
+	DisplayExchangeTable(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, objectType tType, _In_ CBaseDialog* lpHostDlg)
 	{
 		LPEXCHANGEMODIFYTABLE lpExchTbl = nullptr;
 		LPMAPITABLE lpMAPITable = nullptr;
@@ -333,10 +333,10 @@ namespace dialog
 		{
 			switch (tType)
 			{
-			case ObjectType::otRules:
+			case objectType::otRules:
 				new CRulesDlg(lpParentWnd, lpMapiObjects, lpExchTbl);
 				break;
-			case ObjectType::otACL:
+			case objectType::otACL:
 			{
 				editor::CEditor MyData(
 					lpHostDlg, IDS_ACLTABLE, IDS_ACLTABLEPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
