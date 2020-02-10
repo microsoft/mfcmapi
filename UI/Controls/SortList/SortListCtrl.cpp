@@ -268,11 +268,11 @@ namespace controls::sortlistctrl
 
 	_Check_return_ sortlistdata::sortListData* CSortListCtrl::InsertRow(int iRow, const std::wstring& szText) const
 	{
-		return InsertRow(iRow, szText, 0, slIconDefault);
+		return InsertRow(iRow, szText, 0, sortIcon::default);
 	}
 
 	_Check_return_ sortlistdata::sortListData*
-	CSortListCtrl::InsertRow(int iRow, const std::wstring& szText, int iIndent, __SortListIconNames iImage) const
+	CSortListCtrl::InsertRow(int iRow, const std::wstring& szText, int iIndent, sortIcon iImage) const
 	{
 		auto lpData = new (std::nothrow) sortlistdata::sortListData();
 
@@ -282,7 +282,7 @@ namespace controls::sortlistctrl
 		lvItem.mask = LVIF_TEXT | LVIF_PARAM | LVIF_INDENT | LVIF_IMAGE;
 		lvItem.pszText = const_cast<LPWSTR>(szText.c_str());
 		lvItem.iIndent = iIndent;
-		lvItem.iImage = iImage;
+		lvItem.iImage = static_cast<int>(iImage);
 		lvItem.lParam = reinterpret_cast<LPARAM>(lpData);
 		::SendMessage(m_hWnd, LVM_INSERTITEMW, 0, reinterpret_cast<LPARAM>(&lvItem));
 

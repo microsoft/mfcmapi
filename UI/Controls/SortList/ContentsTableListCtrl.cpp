@@ -797,25 +797,25 @@ namespace controls::sortlistctrl
 	}
 
 	static TypeIcon _ObjTypeIcons[] = {
-		{MAPI_STORE, slIconMAPI_STORE},
-		{MAPI_ADDRBOOK, slIconMAPI_ADDRBOOK},
-		{MAPI_FOLDER, slIconMAPI_FOLDER},
-		{MAPI_ABCONT, slIconMAPI_ABCONT},
-		{MAPI_MESSAGE, slIconMAPI_MESSAGE},
-		{MAPI_MAILUSER, slIconMAPI_MAILUSER},
-		{MAPI_ATTACH, slIconMAPI_ATTACH},
-		{MAPI_DISTLIST, slIconMAPI_DISTLIST},
-		{MAPI_PROFSECT, slIconMAPI_PROFSECT},
-		{MAPI_STATUS, slIconMAPI_STATUS},
-		{MAPI_SESSION, slIconMAPI_SESSION},
-		{MAPI_FORMINFO, slIconMAPI_FORMINFO},
+		{MAPI_STORE, sortIcon::mapiStore},
+		{MAPI_ADDRBOOK, sortIcon::mapiAddrBook},
+		{MAPI_FOLDER, sortIcon::mapiFolder},
+		{MAPI_ABCONT, sortIcon::mapiAbcont},
+		{MAPI_MESSAGE, sortIcon::mapiMessage},
+		{MAPI_MAILUSER, sortIcon::mapiMailUser},
+		{MAPI_ATTACH, sortIcon::mapiAttach},
+		{MAPI_DISTLIST, sortIcon::mapiDistList},
+		{MAPI_PROFSECT, sortIcon::mapiProfSect},
+		{MAPI_STATUS, sortIcon::mapiStatus},
+		{MAPI_SESSION, sortIcon::mapiSession},
+		{MAPI_FORMINFO, sortIcon::mapiFormInfo},
 	};
 
-	__SortListIconNames GetImage(_In_ LPSRow lpsRowData)
+	sortIcon GetImage(_In_ LPSRow lpsRowData)
 	{
-		if (!lpsRowData) return slIconDefault;
+		if (!lpsRowData) return sortIcon::default;
 
-		__SortListIconNames ulImage = slIconDefault;
+		sortIcon ulImage = sortIcon::default;
 
 		const auto lpRowType = PpropFindProp(lpsRowData->lpProps, lpsRowData->cValues, PR_ROW_TYPE);
 		if (lpRowType && PR_ROW_TYPE == lpRowType->ulPropTag)
@@ -826,15 +826,15 @@ namespace controls::sortlistctrl
 				break;
 			case TBL_EMPTY_CATEGORY:
 			case TBL_COLLAPSED_CATEGORY:
-				ulImage = slIconNodeCollapsed;
+				ulImage = sortIcon::nodeCollapsed;
 				break;
 			case TBL_EXPANDED_CATEGORY:
-				ulImage = slIconNodeExpanded;
+				ulImage = sortIcon::nodeExpanded;
 				break;
 			}
 		}
 
-		if (slIconDefault == ulImage)
+		if (sortIcon::default == ulImage)
 		{
 			const auto lpObjType = PpropFindProp(lpsRowData->lpProps, lpsRowData->cValues, PR_OBJECT_TYPE);
 			if (lpObjType && PR_OBJECT_TYPE == lpObjType->ulPropTag)
@@ -851,7 +851,7 @@ namespace controls::sortlistctrl
 		}
 
 		// We still don't have a good icon - make some heuristic guesses
-		if (slIconDefault == ulImage)
+		if (ulImage == sortIcon::default)
 		{
 			auto lpProp = PpropFindProp(lpsRowData->lpProps, lpsRowData->cValues, PR_SERVICE_UID);
 			if (!lpProp)
@@ -861,7 +861,7 @@ namespace controls::sortlistctrl
 
 			if (lpProp)
 			{
-				ulImage = slIconMAPI_PROFSECT;
+				ulImage = sortIcon::mapiProfSect;
 			}
 		}
 
@@ -1387,7 +1387,7 @@ namespace controls::sortlistctrl
 
 				FreeProws(lpRowSet);
 				contents->m_ulRowType = TBL_EXPANDED_CATEGORY;
-				lvItem.iImage = slIconNodeExpanded;
+				lvItem.iImage = static_cast<int>(sortIcon::nodeExpanded);
 				bDidWork = true;
 			}
 		}
@@ -1412,7 +1412,7 @@ namespace controls::sortlistctrl
 				}
 
 				contents->m_ulRowType = TBL_COLLAPSED_CATEGORY;
-				lvItem.iImage = slIconNodeCollapsed;
+				lvItem.iImage = static_cast<int>(sortIcon::nodeCollapsed);
 				bDidWork = true;
 			}
 

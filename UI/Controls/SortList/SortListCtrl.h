@@ -6,60 +6,60 @@ namespace controls::sortlistctrl
 {
 	// This enum maps to icons.bmp
 	// Reorder at your own risk!!!
-	enum __SortListIconNames
+	enum class sortIcon
 	{
-		slIconDefault = 0,
-		slIconNodeCollapsed,
-		slIconNodeExpanded,
-		slIconUNSPECIFIED,
-		slIconNULL,
-		slIconI2,
-		slIconLONG,
-		slIconR4,
-		slIconDOUBLE,
-		slIconCURRENCY,
-		slIconAPPTIME,
-		slIconERROR,
-		slIconBOOLEAN,
-		slIconOBJECT,
-		slIconI8,
-		slIconSTRING8,
-		slIconUNICODE,
-		slIconSYSTIME,
-		slIconCLSID,
-		slIconBINARY,
-		slIconMV_I2,
-		slIconMV_LONG,
-		slIconMV_R4,
-		slIconMV_DOUBLE,
-		slIconMV_CURRENCY,
-		slIconMV_APPTIME,
-		slIconMV_SYSTIME,
-		slIconMV_STRING8,
-		slIconMV_BINARY,
-		slIconMV_UNICODE,
-		slIconMV_CLSID,
-		slIconMV_I8,
-		slIconSRESTRICTION,
-		slIconACTIONS,
-		slIconMAPI_STORE,
-		slIconMAPI_ADDRBOOK,
-		slIconMAPI_FOLDER,
-		slIconMAPI_ABCONT,
-		slIconMAPI_MESSAGE,
-		slIconMAPI_MAILUSER,
-		slIconMAPI_ATTACH,
-		slIconMAPI_DISTLIST,
-		slIconMAPI_PROFSECT,
-		slIconMAPI_STATUS,
-		slIconMAPI_SESSION,
-		slIconMAPI_FORMINFO,
+		default = 0,
+		nodeCollapsed,
+		nodeExpanded,
+		ptUnspecified,
+		ptNull,
+		ptI2,
+		ptLong,
+		ptR4,
+		ptDouble,
+		ptCurrency,
+		ptAppTime,
+		ptError,
+		ptBoolean,
+		ptObject,
+		ptI8,
+		ptString8,
+		ptUnicode,
+		ptSysTime,
+		ptClsid,
+		ptBinary,
+		mvI2,
+		mvLong,
+		mvR4,
+		mvDouble,
+		mvCurrency,
+		mvAppTime,
+		mvSysTime,
+		mvString8,
+		mvBinary,
+		mvUnicode,
+		mvClsid,
+		mvI8,
+		sRestriction,
+		actions,
+		mapiStore,
+		mapiAddrBook,
+		mapiFolder,
+		mapiAbcont,
+		mapiMessage,
+		mapiMailUser,
+		mapiAttach,
+		mapiDistList,
+		mapiProfSect,
+		mapiStatus,
+		mapiSession,
+		mapiFormInfo,
 	};
 
 	struct TypeIcon
 	{
 		ULONG objType{};
-		__SortListIconNames image{};
+		sortIcon image{};
 	};
 
 	class CSortListCtrl : public CListCtrl
@@ -86,7 +86,7 @@ namespace controls::sortlistctrl
 	protected:
 		void MySetRedraw(bool bRedraw);
 		_Check_return_ sortlistdata::sortListData*
-		InsertRow(int iRow, const std::wstring& szText, int iIndent, __SortListIconNames iImage) const;
+		InsertRow(int iRow, const std::wstring& szText, int iIndent, sortIcon iImage) const;
 		void FakeClickColumn(int iColumn, bool bSortUp);
 
 		// protected since derived classes need to call the base implementation

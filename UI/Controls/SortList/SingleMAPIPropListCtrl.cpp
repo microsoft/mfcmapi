@@ -601,37 +601,37 @@ namespace controls::sortlistctrl
 	}
 
 	static TypeIcon _PropTypeIcons[] = {
-		{PT_UNSPECIFIED, slIconUNSPECIFIED},
-		{PT_NULL, slIconNULL},
-		{PT_I2, slIconI2},
-		{PT_LONG, slIconLONG},
-		{PT_R4, slIconR4},
-		{PT_DOUBLE, slIconDOUBLE},
-		{PT_CURRENCY, slIconCURRENCY},
-		{PT_APPTIME, slIconAPPTIME},
-		{PT_ERROR, slIconERROR},
-		{PT_BOOLEAN, slIconBOOLEAN},
-		{PT_OBJECT, slIconOBJECT},
-		{PT_I8, slIconI8},
-		{PT_STRING8, slIconSTRING8},
-		{PT_UNICODE, slIconUNICODE},
-		{PT_SYSTIME, slIconSYSTIME},
-		{PT_CLSID, slIconCLSID},
-		{PT_BINARY, slIconBINARY},
-		{PT_MV_I2, slIconMV_I2},
-		{PT_MV_LONG, slIconMV_LONG},
-		{PT_MV_R4, slIconMV_R4},
-		{PT_MV_DOUBLE, slIconMV_DOUBLE},
-		{PT_MV_CURRENCY, slIconMV_CURRENCY},
-		{PT_MV_APPTIME, slIconMV_APPTIME},
-		{PT_MV_SYSTIME, slIconMV_SYSTIME},
-		{PT_MV_STRING8, slIconMV_STRING8},
-		{PT_MV_BINARY, slIconMV_BINARY},
-		{PT_MV_UNICODE, slIconMV_UNICODE},
-		{PT_MV_CLSID, slIconMV_CLSID},
-		{PT_MV_I8, slIconMV_I8},
-		{PT_SRESTRICTION, slIconSRESTRICTION},
-		{PT_ACTIONS, slIconACTIONS},
+		{PT_UNSPECIFIED, sortIcon::ptUnspecified},
+		{PT_NULL, sortIcon::ptNull},
+		{PT_I2, sortIcon::ptI2},
+		{PT_LONG, sortIcon::ptLong},
+		{PT_R4, sortIcon::ptR4},
+		{PT_DOUBLE, sortIcon::ptDouble},
+		{PT_CURRENCY, sortIcon::ptCurrency},
+		{PT_APPTIME, sortIcon::ptAppTime},
+		{PT_ERROR, sortIcon::ptError},
+		{PT_BOOLEAN, sortIcon::ptBoolean},
+		{PT_OBJECT, sortIcon::ptObject},
+		{PT_I8, sortIcon::ptI8},
+		{PT_STRING8, sortIcon::ptString8},
+		{PT_UNICODE, sortIcon::ptUnicode},
+		{PT_SYSTIME, sortIcon::ptSysTime},
+		{PT_CLSID, sortIcon::ptClsid},
+		{PT_BINARY, sortIcon::ptBinary},
+		{PT_MV_I2, sortIcon::mvI2},
+		{PT_MV_LONG, sortIcon::mvLong},
+		{PT_MV_R4, sortIcon::mvR4},
+		{PT_MV_DOUBLE, sortIcon::mvDouble},
+		{PT_MV_CURRENCY, sortIcon::mvCurrency},
+		{PT_MV_APPTIME, sortIcon::mvAppTime},
+		{PT_MV_SYSTIME, sortIcon::mvSysTime},
+		{PT_MV_STRING8, sortIcon::mvString8},
+		{PT_MV_BINARY, sortIcon::mvBinary},
+		{PT_MV_UNICODE, sortIcon::mvUnicode},
+		{PT_MV_CLSID, sortIcon::mvClsid},
+		{PT_MV_I8, sortIcon::mvI8},
+		{PT_SRESTRICTION, sortIcon::sRestriction},
+		{PT_ACTIONS, sortIcon::actions},
 	};
 
 	// Crack open the given SPropValue and render it to the given row in the list.
@@ -642,10 +642,10 @@ namespace controls::sortlistctrl
 		_In_opt_ LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
 		_In_ LPSPropValue lpsPropToAdd)
 	{
-		auto image = slIconDefault;
+		auto image = sortIcon::default;
 		if (lpsPropToAdd)
 		{
-			for (auto& _PropTypeIcon : _PropTypeIcons)
+			for (const auto& _PropTypeIcon : _PropTypeIcons)
 			{
 				if (_PropTypeIcon.objType == PROP_TYPE(lpsPropToAdd->ulPropTag))
 				{
