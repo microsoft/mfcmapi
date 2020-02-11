@@ -26,7 +26,7 @@ int ListStoresTable(IMAPISession* pSession)
 {
 	HRESULT hr = S_OK;
 	CComPtr<IMAPITable> spTable;
-	SRowSet* pmrows = NULL;
+	SRowSet* pmrows = nullptr;
 
 	enum MAPIColumns
 	{
@@ -46,16 +46,16 @@ int ListStoresTable(IMAPISession* pSession)
 	CORg(pSession->GetMsgStoresTable(0, &spTable));
 
 	CORg(spTable->SetColumns((LPSPropTagArray) &mcols, TBL_BATCH));
-	CORg(spTable->SeekRow(BOOKMARK_BEGINNING, 0, 0));
+	CORg(spTable->SeekRow(BOOKMARK_BEGINNING, 0, nullptr));
 
 	CORg(spTable->QueryRows(50, 0, &pmrows));
 
 	std::wcout << L"Found " << pmrows->cRows << L" stores in MAPI profile:" << std::endl;
 	for (UINT i = 0; i != pmrows->cRows; i++)
 	{
-		SRow* prow = pmrows->aRow + i;
-		LPCWSTR pwz = NULL;
-		LPCSTR pwzA = NULL;
+		const auto prow = pmrows->aRow + i;
+		LPCWSTR pwz = nullptr;
+		LPCSTR pwzA = nullptr;
 		if (PR_DISPLAY_NAME_W == prow->lpProps[COL_DISPLAYNAME_W].ulPropTag)
 			pwz = prow->lpProps[COL_DISPLAYNAME_W].Value.lpszW;
 		if (PR_DISPLAY_NAME_A == prow->lpProps[COL_DISPLAYNAME_A].ulPropTag)
@@ -71,7 +71,7 @@ Error:
 	return 0;
 }
 
-void TestSimpleMapi()
+void TestSimpleMapi() noexcept
 {
 	MapiMessage msg = {0};
 	MapiRecipDesc recip = {0};
@@ -104,7 +104,7 @@ int __cdecl main()
 
 	{ // IMAPISession Smart Pointer Context
 		CComPtr<IMAPISession> spSession;
-		CORg(MAPILogonEx(NULL, NULL, NULL, MAPI_UNICODE | MAPI_LOGON_UI, &spSession));
+		CORg(MAPILogonEx(NULL, nullptr, nullptr, MAPI_UNICODE | MAPI_LOGON_UI, &spSession));
 
 		ListStoresTable(spSession);
 	}

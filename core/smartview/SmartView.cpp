@@ -618,7 +618,7 @@ namespace smartview
 
 	_Check_return_ std::wstring FidMidToSzString(LONGLONG llID, bool bLabel)
 	{
-		const auto pid = reinterpret_cast<ID*>(&llID);
+		const auto pid = reinterpret_cast<const ID*>(&llID);
 		if (bLabel)
 		{
 			return strings::formatmessage(IDS_FIDMIDFORMATLABEL, WGetReplId(*pid), UllGetIdGlobcnt(*pid));

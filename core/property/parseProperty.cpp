@@ -245,7 +245,7 @@ namespace property
 			case PT_ACTIONS:
 				if (lpProp->Value.lpszA)
 				{
-					const auto actions = reinterpret_cast<ACTIONS*>(lpProp->Value.lpszA);
+					const auto actions = reinterpret_cast<const ACTIONS*>(lpProp->Value.lpszA);
 					szTmp = ActionsToString(*actions);
 				}
 				else
