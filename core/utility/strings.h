@@ -27,6 +27,10 @@ namespace strings
 	std::wstring LPCSTRToWstring(LPCSTR src);
 	LPCWSTR wstringToLPCWSTR(const std::wstring& src) noexcept;
 	std::wstring wstringToLower(const std::wstring& src);
+	inline bool compareInsensitive(const std::wstring& lhs, const std::wstring& rhs) noexcept
+	{
+		return wstringToLower(lhs) == wstringToLower(rhs);
+	}
 	bool
 	tryWstringToUlong(ULONG& out, const std::wstring& src, int radix, bool rejectInvalidCharacters = true) noexcept;
 	ULONG wstringToUlong(const std::wstring& src, int radix, bool rejectInvalidCharacters = true) noexcept;

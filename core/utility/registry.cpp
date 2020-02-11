@@ -215,7 +215,7 @@ namespace registry
 		_In_ const std::wstring& szValue,
 		_In_ const std::wstring& szDefaultValue)
 	{
-		if (strings::wstringToLower(szValue) != strings::wstringToLower(szDefaultValue))
+		if (!strings::compareInsensitive(szValue, szDefaultValue))
 		{
 			WriteStringToRegistry(hKey, szValueName, szValue);
 		}

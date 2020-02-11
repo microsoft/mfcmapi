@@ -104,7 +104,7 @@ struct FLAG_ARRAY_ENTRY
 	ULONG ulFlagName;
 	LONG lFlagValue;
 	ULONG ulFlagType;
-	LPCWSTR lpszName;
+	std::wstring lpszName;
 };
 typedef FLAG_ARRAY_ENTRY* LPFLAG_ARRAY_ENTRY;
 

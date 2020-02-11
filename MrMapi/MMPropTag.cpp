@@ -614,9 +614,9 @@ void DoFlagSearch()
 	const auto lpszFlagName = cli::switchFlag[0];
 	for (const auto& flag : FlagArray)
 	{
-		if (!_wcsicmp(flag.lpszName, lpszFlagName.c_str()))
+		if (strings::compareInsensitive(flag.lpszName, lpszFlagName))
 		{
-			printf("%ws = 0x%08lX\n", flag.lpszName, flag.lFlagValue);
+			printf("%ws = 0x%08lX\n", flag.lpszName.c_str(), flag.lFlagValue);
 			break;
 		}
 	}

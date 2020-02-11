@@ -244,7 +244,7 @@ namespace addin
 			if (szDLL.empty()) return true;
 			for (const auto& dll : m_lpList)
 			{
-				if (strings::wstringToLower(dll) == strings::wstringToLower(szDLL)) return true;
+				if (strings::compareInsensitive(dll, szDLL)) return true;
 			}
 
 			return false;
@@ -520,7 +520,7 @@ namespace addin
 			// Assumes lpTarget is sorted
 			if (target[iTarget].ulFlagName != source.ulFlagName) break;
 			if (target[iTarget].lFlagValue == source.lFlagValue && target[iTarget].ulFlagType == source.ulFlagType &&
-				!wcscmp(target[iTarget].lpszName, source.lpszName))
+				strings::compareInsensitive(target[iTarget].lpszName, source.lpszName))
 			{
 				return;
 			}
