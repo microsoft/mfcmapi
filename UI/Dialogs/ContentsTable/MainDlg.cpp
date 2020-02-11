@@ -807,8 +807,7 @@ namespace dialog
 	{
 		if (!m_lpMapiObjects || !m_lpPropDisplay) return;
 
-		LPMAPIFORMINFO lpMAPIFormInfo = nullptr;
-		ResolveMessageClass(m_lpMapiObjects, nullptr, &lpMAPIFormInfo);
+		auto lpMAPIFormInfo = ResolveMessageClass(m_lpMapiObjects, nullptr);
 		if (lpMAPIFormInfo)
 		{
 			EC_H_S(m_lpPropDisplay->SetDataSource(lpMAPIFormInfo, nullptr, false));

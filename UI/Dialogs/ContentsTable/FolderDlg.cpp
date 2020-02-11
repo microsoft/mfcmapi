@@ -794,8 +794,7 @@ namespace dialog
 	{
 		if (!m_lpMapiObjects) return;
 
-		LPMAPIFORMINFO lpMAPIFormInfo = nullptr;
-		ResolveMessageClass(m_lpMapiObjects, m_lpFolder, &lpMAPIFormInfo);
+		auto lpMAPIFormInfo = ResolveMessageClass(m_lpMapiObjects, m_lpFolder);
 		if (lpMAPIFormInfo)
 		{
 			OnUpdateSingleMAPIPropListCtrl(lpMAPIFormInfo, nullptr);

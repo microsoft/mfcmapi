@@ -237,8 +237,7 @@ namespace dialog
 
 		if (lpMAPIFolder)
 		{
-			LPMAPIFORMINFO lpMAPIFormInfo = nullptr;
-			ResolveMessageClass(m_lpMapiObjects, lpMAPIFolder, &lpMAPIFormInfo);
+			auto lpMAPIFormInfo = ResolveMessageClass(m_lpMapiObjects, lpMAPIFolder);
 			if (lpMAPIFormInfo)
 			{
 				EC_H_S(m_lpPropDisplay->SetDataSource(lpMAPIFormInfo, NULL, false));
