@@ -399,8 +399,8 @@ namespace addin
 	// Compare type arrays.
 	int _cdecl CompareTypes(_In_ const void* a1, _In_ const void* a2) noexcept
 	{
-		const auto lpType1 = reinterpret_cast<const NAME_ARRAY_ENTRY*>(a1);
-		const auto lpType2 = reinterpret_cast<const NAME_ARRAY_ENTRY*>(a2);
+		const auto lpType1 = static_cast<const NAME_ARRAY_ENTRY*>(a1);
+		const auto lpType2 = static_cast<const NAME_ARRAY_ENTRY*>(a2);
 
 		if (lpType1->ulValue > lpType2->ulValue) return 1;
 		if (lpType1->ulValue == lpType2->ulValue)
@@ -414,8 +414,8 @@ namespace addin
 	// Compare tag arrays. Pay no attention to sort order - we'll sort on sort order during output.
 	int _cdecl CompareTags(_In_ const void* a1, _In_ const void* a2) noexcept
 	{
-		const auto lpTag1 = reinterpret_cast<const NAME_ARRAY_ENTRY_V2*>(a1);
-		const auto lpTag2 = reinterpret_cast<const NAME_ARRAY_ENTRY_V2*>(a2);
+		const auto lpTag1 = static_cast<const NAME_ARRAY_ENTRY_V2*>(a1);
+		const auto lpTag2 = static_cast<const NAME_ARRAY_ENTRY_V2*>(a2);
 
 		if (lpTag1->ulValue > lpTag2->ulValue) return 1;
 		if (lpTag1->ulValue == lpTag2->ulValue)
@@ -428,8 +428,8 @@ namespace addin
 
 	int _cdecl CompareNameID(_In_ const void* a1, _In_ const void* a2) noexcept
 	{
-		const auto lpID1 = reinterpret_cast<const NAMEID_ARRAY_ENTRY*>(a1);
-		const auto lpID2 = reinterpret_cast<const NAMEID_ARRAY_ENTRY*>(a2);
+		const auto lpID1 = static_cast<const NAMEID_ARRAY_ENTRY*>(a1);
+		const auto lpID2 = static_cast<const NAMEID_ARRAY_ENTRY*>(a2);
 
 		if (lpID1->lValue > lpID2->lValue) return 1;
 		if (lpID1->lValue == lpID2->lValue)
@@ -444,8 +444,8 @@ namespace addin
 
 	int _cdecl CompareSmartViewParser(_In_ const void* a1, _In_ const void* a2) noexcept
 	{
-		const auto lpParser1 = reinterpret_cast<const SMARTVIEW_PARSER_ARRAY_ENTRY*>(a1);
-		const auto lpParser2 = reinterpret_cast<const SMARTVIEW_PARSER_ARRAY_ENTRY*>(a2);
+		const auto lpParser1 = static_cast<const SMARTVIEW_PARSER_ARRAY_ENTRY*>(a1);
+		const auto lpParser2 = static_cast<const SMARTVIEW_PARSER_ARRAY_ENTRY*>(a2);
 
 		if (lpParser1->ulIndex > lpParser2->ulIndex) return 1;
 		if (lpParser1->ulIndex == lpParser2->ulIndex)
