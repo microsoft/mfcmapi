@@ -78,7 +78,7 @@ namespace sid
 		const auto subAuthorityCount = buf.size() >= 2 ? buf[1] : 0;
 		if (buf.size() < sizeof(SID) - sizeof(DWORD) + sizeof(DWORD) * subAuthorityCount) return {};
 
-		return GetTextualSid(static_cast<PSID>(buf.data()));
+		return GetTextualSid(buf.data());
 	}
 
 	_Check_return_ SidAccount LookupAccountSid(PSID SidStart)
@@ -123,7 +123,7 @@ namespace sid
 		const auto subAuthorityCount = buf.size() >= 2 ? buf[1] : 0;
 		if (buf.size() < sizeof(SID) - sizeof(DWORD) + sizeof(DWORD) * subAuthorityCount) return {};
 
-		return LookupAccountSid(static_cast<PSID>(buf.data()));
+		return LookupAccountSid(buf.data());
 	}
 
 	std::wstring ACEToString(_In_opt_ void* pACE, aceType acetype)

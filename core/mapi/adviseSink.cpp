@@ -27,7 +27,7 @@ namespace mapi
 		*ppvObj = nullptr;
 		if (riid == IID_IMAPIAdviseSink || riid == IID_IUnknown)
 		{
-			*ppvObj = static_cast<LPVOID>(this);
+			*ppvObj = this;
 			AddRef();
 			return S_OK;
 		}

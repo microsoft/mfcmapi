@@ -415,7 +415,7 @@ namespace mapi::processor
 	{
 		if (!lpMessage || !lpData) return;
 
-		*lpData = static_cast<LPVOID>(new (MessageData));
+		*lpData = new (std::nothrow) MessageData;
 		if (!*lpData) return;
 
 		auto lpMsgData = static_cast<LPMESSAGEDATA>(*lpData);
