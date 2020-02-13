@@ -21,7 +21,7 @@ namespace controls
 	{
 	public:
 		CFakeSplitter() = default;
-		virtual ~CFakeSplitter();
+		~CFakeSplitter();
 
 		void Init(HWND hWnd);
 		void SetPaneOne(HWND paneOne);

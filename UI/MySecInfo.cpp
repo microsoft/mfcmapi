@@ -90,6 +90,7 @@ namespace mapi::mapiui
 
 	STDMETHODIMP CMySecInfo::QueryInterface(_In_ REFIID riid, _Deref_out_opt_ LPVOID* ppvObj)
 	{
+		if (!ppvObj) return MAPI_E_INVALID_PARAMETER;
 		*ppvObj = nullptr;
 		if (riid == IID_ISecurityInformation || riid == IID_IUnknown)
 		{
@@ -142,8 +143,8 @@ namespace mapi::mapiui
 
 		if (bAllowEdits)
 		{
-			pObjectInfo->dwFlags = SI_EDIT_PERMS | SI_EDIT_OWNER | SI_ADVANCED |
-								   (sid::aceType::Container == m_acetype ? SI_CONTAINER : 0);
+			pObjectInfo->dwFlags =
+				SI_EDIT_PERMS | SI_EDIT_OWNER | SI_ADVANCED | (sid::aceType::Container == m_acetype ? SI_CONTAINER : 0);
 		}
 		else
 		{
@@ -151,7 +152,7 @@ namespace mapi::mapiui
 				SI_READONLY | SI_ADVANCED | (sid::aceType::Container == m_acetype ? SI_CONTAINER : 0);
 		}
 
-		pObjectInfo->pszObjectName = LPWSTR(m_wszObject.c_str()); // Object being edited
+		pObjectInfo->pszObjectName = const_cast<LPWSTR>(m_wszObject.c_str()); // Object being edited
 		pObjectInfo->pszServerName = nullptr; // specify DC for lookups
 		return S_OK;
 	}
@@ -162,6 +163,7 @@ namespace mapi::mapiui
 		BOOL /*fDefault*/)
 	{
 		output::DebugPrint(output::dbgLevel::Generic, L"CMySecInfo::GetSecurity\n");
+		if (!ppSecurityDescriptor) return MAPI_E_INVALID_PARAMETER;
 
 		*ppSecurityDescriptor = nullptr;
 
@@ -204,7 +206,8 @@ namespace mapi::mapiui
 
 				// Dump our SD
 				auto sd = SDToString(std::vector<BYTE>(lpSDBuffer, lpSDBuffer + cbSBBuffer), m_acetype);
-				output::DebugPrint(output::dbgLevel::Generic, L"sdInfo: %ws\nszDACL: %ws\n", sd.info.c_str(), sd.dacl.c_str());
+				output::DebugPrint(
+					output::dbgLevel::Generic, L"sdInfo: %ws\nszDACL: %ws\n", sd.info.c_str(), sd.dacl.c_str());
 			}
 		}
 
@@ -264,6 +267,7 @@ namespace mapi::mapiui
 		ULONG* piDefaultAccess)
 	{
 		output::DebugPrint(output::dbgLevel::Generic, L"CMySecInfo::GetAccessRights\n");
+		if (!ppAccess || !pcAccesses || !piDefaultAccess) return MAPI_E_INVALID_PARAMETER;
 
 		switch (m_acetype)
 		{
@@ -313,7 +317,10 @@ namespace mapi::mapiui
 	STDMETHODIMP CMySecInfo::PropertySheetPageCallback(HWND /*hwnd*/, const UINT uMsg, const SI_PAGE_TYPE uPage)
 	{
 		output::DebugPrint(
-			output::dbgLevel::Generic, L"CMySecInfo::PropertySheetPageCallback, uMsg = 0x%X, uPage = 0x%X\n", uMsg, uPage);
+			output::dbgLevel::Generic,
+			L"CMySecInfo::PropertySheetPageCallback, uMsg = 0x%X, uPage = 0x%X\n",
+			uMsg,
+			uPage);
 		return S_OK;
 	}
 

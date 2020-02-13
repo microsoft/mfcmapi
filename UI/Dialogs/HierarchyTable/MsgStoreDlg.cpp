@@ -237,8 +237,7 @@ namespace dialog
 
 		if (lpMAPIFolder)
 		{
-			LPMAPIFORMINFO lpMAPIFormInfo = nullptr;
-			ResolveMessageClass(m_lpMapiObjects, lpMAPIFolder, &lpMAPIFormInfo);
+			auto lpMAPIFormInfo = ResolveMessageClass(m_lpMapiObjects, lpMAPIFolder);
 			if (lpMAPIFormInfo)
 			{
 				EC_H_S(m_lpPropDisplay->SetDataSource(lpMAPIFormInfo, NULL, false));
@@ -251,14 +250,12 @@ namespace dialog
 
 	void CMsgStoreDlg::OnSelectForm()
 	{
-		LPMAPIFORMINFO lpMAPIFormInfo = nullptr;
-
 		if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl || !m_lpPropDisplay) return;
 
 		auto lpMAPIFolder = GetSelectedFolder(modifyType::REQUEST_MODIFY);
 		if (lpMAPIFolder)
 		{
-			SelectForm(m_hWnd, m_lpMapiObjects, lpMAPIFolder, &lpMAPIFormInfo);
+			auto lpMAPIFormInfo = SelectForm(m_hWnd, m_lpMapiObjects, lpMAPIFolder);
 			if (lpMAPIFormInfo)
 			{
 				EC_H_S(m_lpPropDisplay->SetDataSource(lpMAPIFormInfo, NULL, false));

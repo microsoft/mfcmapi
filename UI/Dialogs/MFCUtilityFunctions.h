@@ -39,13 +39,10 @@ namespace dialog
 	void DisplayMailboxTable(_In_ ui::CParentWnd* lpParent, _In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects);
 	void
 	DisplayPublicFolderTable(_In_ ui::CParentWnd* lpParent, _In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects);
-	void ResolveMessageClass(
-		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
-		_In_opt_ LPMAPIFOLDER lpMAPIFolder,
-		_Out_ LPMAPIFORMINFO* lppMAPIFormInfo);
-	void SelectForm(
+	_Check_return_ LPMAPIFORMINFO
+	ResolveMessageClass(_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects, _In_opt_ LPMAPIFOLDER lpMAPIFolder);
+	_Check_return_ LPMAPIFORMINFO SelectForm(
 		_In_ HWND hWnd,
 		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
-		_In_opt_ LPMAPIFOLDER lpMAPIFolder,
-		_Out_ LPMAPIFORMINFO* lppMAPIFormInfo);
+		_In_opt_ LPMAPIFOLDER lpMAPIFolder);
 } // namespace dialog

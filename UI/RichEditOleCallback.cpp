@@ -17,6 +17,7 @@ namespace ui
 
 	STDMETHODIMP CRichEditOleCallback::QueryInterface(REFIID riid, LPVOID* ppvObj)
 	{
+		if (!ppvObj) return MAPI_E_INVALID_PARAMETER;
 		*ppvObj = nullptr;
 		if (riid == IID_IRichEditOleCallback || riid == IID_IUnknown)
 		{

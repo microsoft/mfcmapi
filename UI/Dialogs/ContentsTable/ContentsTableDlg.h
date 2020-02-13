@@ -24,7 +24,7 @@ namespace dialog
 			_In_ const std::vector<columns::TagNames>& lpDefaultDisplayColumns,
 			ULONG nIDContextMenu,
 			ULONG ulAddInContext);
-		virtual ~CContentsTableDlg();
+		~CContentsTableDlg();
 
 		_Check_return_ virtual LPMAPIPROP OpenItemProp(int iSelectedItem, modifyType bModify);
 

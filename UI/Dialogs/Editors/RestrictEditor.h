@@ -7,7 +7,7 @@ namespace dialog::editor
 	{
 	public:
 		CRestrictEditor(_In_ CWnd* pParentWnd, _In_opt_ LPVOID lpAllocParent, _In_opt_ const _SRestriction* lpRes);
-		virtual ~CRestrictEditor();
+		~CRestrictEditor();
 
 		_Check_return_ LPSRestriction DetachModifiedSRestriction();
 
@@ -45,7 +45,7 @@ namespace dialog::editor
 			_In_ const _SRestriction* lpRes,
 			_In_ LPENTRYLIST lpEntryList,
 			ULONG ulSearchState);
-		virtual ~CCriteriaEditor();
+		~CCriteriaEditor();
 
 		_Check_return_ LPSRestriction DetachModifiedSRestriction();
 		_Check_return_ LPENTRYLIST DetachModifiedEntryList();

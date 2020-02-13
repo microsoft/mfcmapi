@@ -21,7 +21,7 @@ namespace dialog
 			_In_opt_ LPMAPIPROP lpRootContainer,
 			ULONG nIDContextMenu,
 			ULONG ulAddInContext);
-		virtual ~CHierarchyTableDlg();
+		~CHierarchyTableDlg();
 
 	protected:
 		// Overrides from base class

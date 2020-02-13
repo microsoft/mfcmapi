@@ -66,7 +66,7 @@ namespace controls::sortlistctrl
 	{
 	public:
 		CSortListCtrl();
-		virtual ~CSortListCtrl();
+		~CSortListCtrl();
 
 		STDMETHODIMP_(ULONG) AddRef();
 		STDMETHODIMP_(ULONG) Release();

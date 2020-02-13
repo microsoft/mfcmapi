@@ -22,7 +22,7 @@ namespace controls::sortlistctrl
 			_In_ dialog::CBaseDialog* lpHostDlg,
 			_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 			bool bIsAB);
-		virtual ~CSingleMAPIPropListCtrl();
+		~CSingleMAPIPropListCtrl();
 
 		// Initialization
 		_Check_return_ HRESULT

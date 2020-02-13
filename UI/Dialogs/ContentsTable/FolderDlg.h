@@ -18,7 +18,7 @@ namespace dialog
 			_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 			_In_ LPMAPIPROP lpMAPIFolder,
 			tableDisplayFlags displayFlags);
-		virtual ~CFolderDlg();
+		~CFolderDlg();
 
 	private:
 		// Overrides from base class

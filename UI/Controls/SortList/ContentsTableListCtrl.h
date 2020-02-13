@@ -33,7 +33,7 @@ namespace controls::sortlistctrl
 			UINT nIDContextMenu,
 			bool bIsAB,
 			_In_ dialog::CContentsTableDlg* lpHostDlg);
-		virtual ~CContentsTableListCtrl();
+		~CContentsTableListCtrl();
 
 		// Initialization
 		void

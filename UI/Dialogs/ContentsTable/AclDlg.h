@@ -12,7 +12,7 @@ namespace dialog
 			_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 			_In_ LPEXCHANGEMODIFYTABLE lpExchTbl,
 			bool bFreeBusyVisible);
-		virtual ~CAclDlg();
+		~CAclDlg();
 
 	private:
 		// Overrides from base class

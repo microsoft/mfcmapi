@@ -15,7 +15,7 @@ namespace dialog::editor
 			bool bIsAB,
 			_In_opt_ LPMAPIPROP lpMAPIProp,
 			_In_ CWnd* pParentWnd);
-		virtual ~CPropertyTagEditor();
+		~CPropertyTagEditor();
 
 		_Check_return_ ULONG GetPropertyTag() const;
 

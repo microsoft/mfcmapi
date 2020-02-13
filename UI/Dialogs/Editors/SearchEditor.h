@@ -17,7 +17,7 @@ namespace dialog::editor
 		};
 
 		CSearchEditor(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpMAPIProp, _In_ CWnd* pParentWnd);
-		virtual ~CSearchEditor();
+		~CSearchEditor();
 
 		_Check_return_ const _SRestriction* GetRestriction() const;
 
