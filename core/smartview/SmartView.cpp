@@ -602,9 +602,9 @@ namespace smartview
 		BYTE globcnt[cbGlobcnt];
 	};
 
-	_Check_return_ WORD WGetReplId(ID id) noexcept { return id.replid; }
+	_Check_return_ constexpr WORD WGetReplId(ID id) noexcept { return id.replid; }
 
-	_Check_return_ ULONGLONG UllGetIdGlobcnt(ID id) noexcept
+	_Check_return_ constexpr ULONGLONG UllGetIdGlobcnt(ID id) noexcept
 	{
 		ULONGLONG ul = 0;
 		for (const auto i : id.globcnt)

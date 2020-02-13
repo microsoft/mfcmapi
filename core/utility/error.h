@@ -67,7 +67,7 @@ namespace error
 	};
 	typedef ERROR_ARRAY_ENTRY* LPERROR_ARRAY_ENTRY;
 
-	inline _Check_return_ HRESULT CheckMe(const HRESULT hRes) noexcept { return hRes; }
+	inline _Check_return_ constexpr HRESULT CheckMe(const HRESULT hRes) noexcept { return hRes; }
 
 	std::wstring ProblemArrayToString(_In_ const SPropProblemArray& problems);
 	std::wstring MAPIErrToString(ULONG ulFlags, _In_ const MAPIERROR& err);
