@@ -817,10 +817,9 @@ namespace dialog
 
 	void CMainDlg::OnSelectForm()
 	{
-		LPMAPIFORMINFO lpMAPIFormInfo = nullptr;
-
 		if (!m_lpMapiObjects || !m_lpPropDisplay) return;
-		SelectForm(m_hWnd, m_lpMapiObjects, nullptr, &lpMAPIFormInfo);
+
+		auto lpMAPIFormInfo = SelectForm(m_hWnd, m_lpMapiObjects, nullptr);
 		if (lpMAPIFormInfo)
 		{
 			// TODO: Put some code in here which works with the returned Form Info pointer

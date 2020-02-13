@@ -804,11 +804,9 @@ namespace dialog
 
 	void CFolderDlg::OnSelectForm()
 	{
-		LPMAPIFORMINFO lpMAPIFormInfo = nullptr;
-
 		if (!m_lpMapiObjects) return;
 
-		SelectForm(m_hWnd, m_lpMapiObjects, m_lpFolder, &lpMAPIFormInfo);
+		auto lpMAPIFormInfo = SelectForm(m_hWnd, m_lpMapiObjects, m_lpFolder);
 		if (lpMAPIFormInfo)
 		{
 			OnUpdateSingleMAPIPropListCtrl(lpMAPIFormInfo, nullptr);

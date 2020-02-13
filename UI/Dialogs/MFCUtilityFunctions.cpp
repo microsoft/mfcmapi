@@ -638,7 +638,7 @@ namespace dialog
 		if (lpPrivateMDB) lpPrivateMDB->Release();
 	}
 
-	LPMAPIFORMINFO
+	_Check_return_ LPMAPIFORMINFO
 	ResolveMessageClass(_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects, _In_opt_ LPMAPIFOLDER lpMAPIFolder)
 	{
 		LPMAPIFORMMGR lpMAPIFormMgr = nullptr;
@@ -684,26 +684,23 @@ namespace dialog
 		return lpMAPIFormInfo;
 	}
 
-	void SelectForm(
+	_Check_return_ LPMAPIFORMINFO SelectForm(
 		_In_ HWND hWnd,
 		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
-		_In_opt_ LPMAPIFOLDER lpMAPIFolder,
-		_Out_ LPMAPIFORMINFO* lppMAPIFormInfo)
+		_In_opt_ LPMAPIFOLDER lpMAPIFolder)
 	{
 		LPMAPIFORMMGR lpMAPIFormMgr = nullptr;
+		LPMAPIFORMINFO lpMAPIFormInfo = nullptr;
 
-		if (!lpMapiObjects || !lppMAPIFormInfo) return;
-
-		*lppMAPIFormInfo = nullptr;
+		if (!lpMapiObjects) return nullptr;
 
 		const auto lpMAPISession = lpMapiObjects->GetSession(); // do not release
-		if (!lpMAPISession) return;
+		if (!lpMAPISession) return nullptr;
 
 		EC_MAPI_S(MAPIOpenFormMgr(lpMAPISession, &lpMAPIFormMgr));
 
 		if (lpMAPIFormMgr)
 		{
-			LPMAPIFORMINFO lpMAPIFormInfo = nullptr;
 			// Apparently, SelectForm doesn't support unicode
 			auto szTitle = strings::wstringTostring(strings::loadstring(IDS_SELECTFORMPROPS));
 			EC_H_CANCEL_S(lpMAPIFormMgr->SelectForm(
@@ -716,10 +713,11 @@ namespace dialog
 			if (lpMAPIFormInfo)
 			{
 				output::outputFormInfo(output::dbgLevel::Forms, nullptr, lpMAPIFormInfo);
-				*lppMAPIFormInfo = lpMAPIFormInfo;
 			}
 
 			lpMAPIFormMgr->Release();
 		}
+
+		return lpMAPIFormInfo;
 	}
 } // namespace dialog
