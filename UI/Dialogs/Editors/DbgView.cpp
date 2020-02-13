@@ -11,7 +11,7 @@ namespace dialog::editor
 	{
 	public:
 		CDbgView(_In_ ui::CParentWnd* pParentWnd);
-		virtual ~CDbgView();
+		~CDbgView();
 		void AppendText(const std::wstring& szMsg) const;
 
 	private:

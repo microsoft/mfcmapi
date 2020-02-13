@@ -14,7 +14,7 @@ namespace dialog::editor
 			_In_opt_ LPSPropTagArray lpTagArray,
 			bool bIsAB,
 			_In_opt_ LPMAPIPROP lpMAPIProp);
-		virtual ~CTagArrayEditor();
+		~CTagArrayEditor();
 
 		_Check_return_ LPSPropTagArray DetachModifiedTagArray();
 		_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ sortlistdata::sortListData* lpData) override;

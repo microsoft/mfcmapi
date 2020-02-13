@@ -13,7 +13,7 @@ namespace dialog::editor
 	{
 	public:
 		COptions(_In_ CWnd* pWnd);
-		virtual ~COptions();
+		~COptions();
 		bool NeedPropRefresh() const;
 
 	private:

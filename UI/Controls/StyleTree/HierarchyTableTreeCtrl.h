@@ -18,7 +18,7 @@ namespace controls
 	class CHierarchyTableTreeCtrl : public StyleTreeCtrl
 	{
 	public:
-		virtual ~CHierarchyTableTreeCtrl();
+		~CHierarchyTableTreeCtrl();
 
 		// Initialization
 		void Create(

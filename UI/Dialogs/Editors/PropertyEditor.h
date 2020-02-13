@@ -29,7 +29,7 @@ namespace dialog::editor
 			_In_opt_ LPMAPIPROP lpMAPIProp,
 			ULONG ulPropTag,
 			_In_opt_ const _SPropValue* lpsPropValue);
-		virtual ~CPropertyEditor();
+		~CPropertyEditor();
 
 		// Get values after we've done the DisplayDialog
 		_Check_return_ LPSPropValue DetachModifiedSPropValue();

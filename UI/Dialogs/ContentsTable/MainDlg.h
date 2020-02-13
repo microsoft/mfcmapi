@@ -12,7 +12,7 @@ namespace dialog
 	{
 	public:
 		CMainDlg(_In_ ui::CParentWnd* pParentWnd, _In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects);
-		virtual ~CMainDlg();
+		~CMainDlg();
 
 		// public so CBaseDialog can call it
 		void OnOpenMessageStoreTable();

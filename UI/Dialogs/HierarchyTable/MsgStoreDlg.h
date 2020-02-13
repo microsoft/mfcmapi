@@ -19,7 +19,7 @@ namespace dialog
 			_In_opt_ LPMAPIPROP lpMDB,
 			_In_opt_ LPMAPIPROP lpRootFolder,
 			tableDisplayFlags displayFlags);
-		virtual ~CMsgStoreDlg();
+		~CMsgStoreDlg();
 
 	private:
 		// Overrides from base class

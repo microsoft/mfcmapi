@@ -19,7 +19,7 @@ namespace dialog::editor
 			ULONG ulRTFFlags,
 			ULONG ulInCodePage,
 			ULONG ulOutCodePage);
-		virtual ~CStreamEditor();
+		~CStreamEditor();
 
 		void DisableSave();
 
