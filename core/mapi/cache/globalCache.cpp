@@ -7,7 +7,7 @@ namespace cache
 {
 	static std::wstring GCCLASS = L"CGlobalCache"; // STRING_OK
 
-	CGlobalCache::CGlobalCache()
+	CGlobalCache::CGlobalCache() noexcept
 	{
 		TRACE_CONSTRUCTOR(GCCLASS);
 		m_bMAPIInitialized = false;

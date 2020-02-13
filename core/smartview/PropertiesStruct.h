@@ -26,7 +26,7 @@ namespace smartview
 		size_t getOffset() const { return cb->getOffset() ? cb->getOffset() : lpb->getOffset(); }
 
 		SBinaryBlock(const std::shared_ptr<binaryParser>& parser);
-		SBinaryBlock(){};
+		SBinaryBlock() noexcept {};
 	};
 
 	struct SBinaryArrayBlock

@@ -24,7 +24,7 @@ namespace cache
 		}
 
 	private:
-		CGlobalCache();
+		CGlobalCache() noexcept;
 		virtual ~CGlobalCache();
 
 	public:
