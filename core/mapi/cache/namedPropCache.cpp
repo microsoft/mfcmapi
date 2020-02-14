@@ -502,7 +502,6 @@ namespace cache
 						}
 					}
 
-					const ULONG ulUncachedTags = 0;
 					LPSPropTagArray lpUncachedTags = nullptr;
 
 					EC_H_GETPROPS_S(
@@ -510,7 +509,7 @@ namespace cache
 					if (lpUncachedTags && lpUncachedTags->cValues == ulMisses)
 					{
 						// Cache the results
-						AddMapping(cbSig, lpSig, ulUncachedTags, lppUncachedPropNames, lpUncachedTags);
+						AddMapping(cbSig, lpSig, lpUncachedTags->cValues, lppUncachedPropNames, lpUncachedTags);
 
 						// Copy our results over
 						// Loop over the target array, looking for empty slots
