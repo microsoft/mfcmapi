@@ -16,7 +16,7 @@ namespace ui
 		{
 			const auto pProgress = new (std::nothrow) CMAPIProgress(lpszContext, hWnd);
 
-			return static_cast<LPMAPIPROGRESS>(pProgress);
+			return pProgress;
 		}
 
 		return nullptr;
@@ -49,7 +49,7 @@ namespace ui
 		*ppvObj = nullptr;
 		if (riid == IID_IMAPIProgress || riid == IID_IUnknown)
 		{
-			*ppvObj = static_cast<LPVOID>(this);
+			*ppvObj = this;
 			AddRef();
 			return S_OK;
 		}

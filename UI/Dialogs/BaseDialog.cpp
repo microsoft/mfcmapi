@@ -709,7 +709,7 @@ namespace dialog
 
 		if (MyEID.GetCheck(8) && lpAB) // Do IAddrBook->Details here
 		{
-			auto ulUIParam = reinterpret_cast<ULONG_PTR>(static_cast<void*>(m_hWnd));
+			auto ulUIParam = reinterpret_cast<ULONG_PTR>(m_hWnd);
 
 			EC_H_CANCEL_S(lpAB->Details(
 				&ulUIParam,

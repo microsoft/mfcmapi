@@ -96,7 +96,7 @@ namespace ui
 		*ppvObj = nullptr;
 		if (riid == IID_IUnknown)
 		{
-			*ppvObj = static_cast<LPVOID>(this);
+			*ppvObj = this;
 			AddRef();
 			return S_OK;
 		}

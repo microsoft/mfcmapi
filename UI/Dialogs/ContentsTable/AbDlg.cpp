@@ -102,7 +102,7 @@ namespace dialog
 			{
 				for (ULONG i = 0; i < lpEIDs->cValues; i++)
 				{
-					auto ulUIParam = reinterpret_cast<ULONG_PTR>(static_cast<void*>(m_hWnd));
+					auto ulUIParam = reinterpret_cast<ULONG_PTR>(m_hWnd);
 
 					// Have to pass DIALOG_MODAL according to
 					// http://support.microsoft.com/kb/171637

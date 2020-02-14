@@ -21,7 +21,7 @@ namespace ui
 		*ppvObj = nullptr;
 		if (riid == IID_IRichEditOleCallback || riid == IID_IUnknown)
 		{
-			*ppvObj = static_cast<IRichEditOleCallback*>(this);
+			*ppvObj = this;
 			AddRef();
 			return S_OK;
 		}

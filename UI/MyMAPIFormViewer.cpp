@@ -99,7 +99,7 @@ namespace mapi::mapiui
 		if (riid == IID_IMAPIMessageSite)
 		{
 			output::DebugPrint(output::dbgLevel::FormViewer, L"Requested IID_IMAPIMessageSite\n");
-			*ppvObj = static_cast<IMAPIMessageSite*>(this);
+			*ppvObj = this;
 			AddRef();
 			return S_OK;
 		}
@@ -107,7 +107,7 @@ namespace mapi::mapiui
 		if (riid == IID_IMAPIViewContext)
 		{
 			output::DebugPrint(output::dbgLevel::FormViewer, L"Requested IID_IMAPIViewContext\n");
-			*ppvObj = static_cast<IMAPIViewContext*>(this);
+			*ppvObj = this;
 			AddRef();
 			return S_OK;
 		}
@@ -115,7 +115,7 @@ namespace mapi::mapiui
 		if (riid == IID_IMAPIViewAdviseSink)
 		{
 			output::DebugPrint(output::dbgLevel::FormViewer, L"Requested IID_IMAPIViewAdviseSink\n");
-			*ppvObj = static_cast<IMAPIViewAdviseSink*>(this);
+			*ppvObj = this;
 			AddRef();
 			return S_OK;
 		}
@@ -123,7 +123,7 @@ namespace mapi::mapiui
 		if (riid == IID_IUnknown)
 		{
 			output::DebugPrint(output::dbgLevel::FormViewer, L"Requested IID_IUnknown\n");
-			*ppvObj = static_cast<LPUNKNOWN>(static_cast<IMAPIMessageSite*>(this));
+			*ppvObj = this;
 			AddRef();
 			return S_OK;
 		}
@@ -254,7 +254,7 @@ namespace mapi::mapiui
 				if (lpMAPIFormViewer) // not going to release this because we're returning it in ppMessageSite
 				{
 					hRes = EC_H(lpMAPIFormViewer->SetPersist(nullptr, pPersistMessage));
-					*ppMessageSite = static_cast<LPMAPIMESSAGESITE>(lpMAPIFormViewer);
+					*ppMessageSite = lpMAPIFormViewer;
 				}
 			}
 		}
