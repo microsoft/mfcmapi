@@ -222,7 +222,7 @@ namespace mapi::mapiui
 		_In_ LPMDB lpMDB,
 		_In_ LPMESSAGE lpMessage)
 	{
-		ULONG cValuesShow;
+		ULONG cValuesShow = 0;
 		LPSPropValue lpspvaShow = nullptr;
 		ULONG_PTR Token = NULL;
 		ULONG ulMessageStatus = NULL;

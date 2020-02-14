@@ -477,7 +477,7 @@ namespace controls::sortlistctrl
 			// Let's get each extra property one at a time
 			ULONG cExtraProps = 0;
 			LPSPropValue pExtraProps = nullptr;
-			SPropValue ExtraPropForList;
+			SPropValue extraPropForList = {};
 			SPropTagArray pNewTag;
 			pNewTag.cValues = 1;
 
@@ -491,7 +491,7 @@ namespace controls::sortlistctrl
 
 				if (pExtraProps)
 				{
-					ExtraPropForList.dwAlignPad = pExtraProps[0].dwAlignPad;
+					extraPropForList.dwAlignPad = pExtraProps[0].dwAlignPad;
 
 					if (PROP_TYPE(pNewTag.aulPropTag[0]) == NULL)
 					{
@@ -501,15 +501,15 @@ namespace controls::sortlistctrl
 					}
 
 					// We want to give our parser the tag that came back from GetProps
-					ExtraPropForList.ulPropTag = pExtraProps[0].ulPropTag;
+					extraPropForList.ulPropTag = pExtraProps[0].ulPropTag;
 
-					ExtraPropForList.Value = pExtraProps[0].Value;
+					extraPropForList.Value = pExtraProps[0].Value;
 				}
 				else
 				{
-					ExtraPropForList.dwAlignPad = NULL;
-					ExtraPropForList.ulPropTag = CHANGE_PROP_TYPE(pNewTag.aulPropTag[0], PT_ERROR);
-					ExtraPropForList.Value.err = hRes;
+					extraPropForList .dwAlignPad = NULL;
+					extraPropForList .ulPropTag = CHANGE_PROP_TYPE(pNewTag.aulPropTag[0], PT_ERROR);
+					extraPropForList .Value.err = hRes;
 				}
 
 				// Add the property to the list
@@ -518,7 +518,7 @@ namespace controls::sortlistctrl
 					pNewTag.aulPropTag[0], // Tag to use in the UI
 					nullptr, // Let AddPropToListBox look up any named prop information it needs
 					lpMappingSig ? &lpMappingSig->Value.bin : nullptr,
-					&ExtraPropForList); // Tag + Value to parse - may differ in case of errors or NULL type.
+					&extraPropForList); // Tag + Value to parse - may differ in case of errors or NULL type.
 
 				ulCurListBoxRow++;
 

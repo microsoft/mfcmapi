@@ -205,7 +205,7 @@ namespace controls
 			return;
 		}
 
-		int iCurSpan;
+		int iCurSpan = 0;
 		CRect rect;
 		GetClientRect(rect);
 		if (m_SplitType == splitType::horizontal)
@@ -261,7 +261,7 @@ namespace controls
 	{
 		if (!m_PaneOne && !m_ViewPaneOne) return noHit;
 
-		LONG lTestPos;
+		LONG lTestPos = 0;
 
 		if (m_SplitType == splitType::horizontal)
 		{
@@ -293,7 +293,7 @@ namespace controls
 		if (m_bTracking)
 		{
 			CRect Rect;
-			FLOAT flNewPercent;
+			FLOAT flNewPercent = {};
 			GetWindowRect(Rect);
 
 			if (m_SplitType == splitType::horizontal)
@@ -357,7 +357,7 @@ namespace controls
 			auto rcSplitter = rcWin;
 			FillRect(hdc, &rcSplitter, GetSysBrush(ui::uiColor::Background));
 
-			POINT pts[2]; // 0 is left top, 1 is right bottom
+			POINT pts[2] = {}; // 0 is left top, 1 is right bottom
 			if (m_SplitType == splitType::horizontal)
 			{
 				pts[0].x = m_iSplitPos + m_iSplitWidth / 2;

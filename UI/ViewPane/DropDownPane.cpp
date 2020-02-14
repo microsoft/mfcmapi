@@ -126,7 +126,7 @@ namespace viewpane
 		const auto dropHeight = ulDrops * (pParent ? ui::GetEditHeight(pParent->m_hWnd) : 0x1e);
 
 		// m_bReadOnly means you can't type...
-		DWORD dwDropStyle;
+		DWORD dwDropStyle = 0;
 		if (m_bReadOnly)
 		{
 			dwDropStyle = CBS_DROPDOWNLIST; // does not allow typing

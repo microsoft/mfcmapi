@@ -1120,18 +1120,8 @@ namespace ui
 				tri[2].y = (rcTriangle.top + rcTriangle.bottom) / 2;
 			}
 
-			uiColor cEdge;
-			uiColor cFill;
-			if (bGlow)
-			{
-				cEdge = uiColor::Glow;
-				cFill = uiColor::Glow;
-			}
-			else
-			{
-				cEdge = bExpanded ? uiColor::FrameSelected : uiColor::Arrow;
-				cFill = bExpanded ? uiColor::FrameSelected : uiColor::Background;
-			}
+			auto cEdge = bGlow ? uiColor::Glow : bExpanded ? uiColor::FrameSelected : uiColor::Arrow;
+			auto cFill = bGlow ? uiColor::Glow : bExpanded ? uiColor::FrameSelected : uiColor::Background;
 
 			DrawFilledPolygon(hdc, tri, _countof(tri), MyGetSysColor(cEdge), GetSysBrush(cFill));
 		}

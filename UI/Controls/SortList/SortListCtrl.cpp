@@ -406,7 +406,7 @@ namespace controls::sortlistctrl
 
 		// szText will be filled out by our LVM_GETITEMW calls
 		// There's little point in getting more than 128 characters for sorting
-		WCHAR szText[128];
+		WCHAR szText[128] = {};
 
 		m_bHaveSorted = true;
 		auto lpMyHeader = GetHeaderCtrl();

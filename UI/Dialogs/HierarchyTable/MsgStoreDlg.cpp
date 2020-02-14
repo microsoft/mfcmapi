@@ -402,7 +402,7 @@ namespace dialog
 	void CMsgStoreDlg::OnPasteFolder()
 	{
 		auto hRes = S_OK;
-		ULONG cProps;
+		ULONG cProps = 0;
 		LPSPropValue lpProps = nullptr;
 
 		enum
@@ -949,7 +949,7 @@ namespace dialog
 	// Copy selected folder back to the land of the living
 	void CMsgStoreDlg::OnRestoreDeletedFolder()
 	{
-		ULONG cProps;
+		ULONG cProps = 0;
 		LPSPropValue lpProps = nullptr;
 
 		if (!m_lpMDB || !m_lpHierarchyTableTreeCtrl) return;
