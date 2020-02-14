@@ -32,7 +32,6 @@ namespace ui::addinui
 		if (!lpDialog) return MAPI_E_INVALID_PARAMETER;
 		// Reject any flags except CEDITOR_BUTTON_OK and CEDITOR_BUTTON_CANCEL
 		if (lpDialog->ulButtonFlags & ~(CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)) return MAPI_E_INVALID_PARAMETER;
-		auto hRes = S_OK;
 
 		dialog::editor::CEditor MyComplexDialog(nullptr, NULL, NULL, lpDialog->ulButtonFlags);
 		MyComplexDialog.SetAddInTitle(lpDialog->szTitle);
@@ -152,17 +151,12 @@ namespace ui::addinui
 						}
 					}
 
-					if (SUCCEEDED(hRes))
-					{
-						*lppDialogResult = lpResults;
-					}
-					else
-						FreeDialogResult(lpResults);
+					*lppDialogResult = lpResults;
 				}
 			}
 		}
 
-		return hRes;
+		return S_OK;
 	}
 
 	__declspec(dllexport) void __cdecl FreeDialogResult(_In_ LPADDINDIALOGRESULT lpDialogResult)

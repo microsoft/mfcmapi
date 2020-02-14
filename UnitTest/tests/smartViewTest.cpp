@@ -39,12 +39,12 @@ namespace SmartViewTest
 				{
 					for (auto parser : SmartViewParserTypeArray)
 					{
-						auto structType = parser.type;
+						const auto structType = parser.type;
 						try
 						{
 							actual = smartview::InterpretBinaryAsString(
 								{static_cast<ULONG>(data.hex.size()), data.hex.data()}, structType, nullptr);
-						} catch (int exception)
+						} catch (const int exception)
 						{
 							Logger::WriteMessage(strings::format(
 													 L"Testing %ws failed at %ws with error 0x%08X\n",

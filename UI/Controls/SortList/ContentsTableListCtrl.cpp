@@ -502,7 +502,7 @@ namespace controls::sortlistctrl
 		}
 
 		ULONG ulTotal = 0;
-		ULONG ulThrottleLevel = registry::throttleLevel;
+		const ULONG ulThrottleLevel = registry::throttleLevel;
 		const auto rowCount = ulThrottleLevel ? ulThrottleLevel : CContentsTableListCtrl::NUMROWSPERLOOP;
 		LPSRowSet pRows = nullptr;
 		ULONG iCurListBoxRow = 0;
@@ -839,7 +839,7 @@ namespace controls::sortlistctrl
 			const auto lpObjType = PpropFindProp(lpsRowData->lpProps, lpsRowData->cValues, PR_OBJECT_TYPE);
 			if (lpObjType && PR_OBJECT_TYPE == lpObjType->ulPropTag)
 			{
-				for (auto& _ObjTypeIcon : _ObjTypeIcons)
+				for (const auto& _ObjTypeIcon : _ObjTypeIcons)
 				{
 					if (_ObjTypeIcon.objType == lpObjType->Value.ul)
 					{
@@ -880,8 +880,8 @@ namespace controls::sortlistctrl
 		}
 		else
 		{
-			auto ulDepth = GetDepth(lpsRowData);
-			auto ulImage = GetImage(lpsRowData);
+			const auto ulDepth = GetDepth(lpsRowData);
+			const auto ulImage = GetImage(lpsRowData);
 
 			lpData = InsertRow(iRow, L"TempRefreshItem", ulDepth, ulImage); // STRING_OK
 		}

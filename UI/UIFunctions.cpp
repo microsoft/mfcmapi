@@ -545,7 +545,7 @@ namespace ui
 		case uiPen::DashedPen:
 		{
 			lbr.lbColor = MyGetSysColor(uiColor::FrameSelected);
-			DWORD rgStyle[2] = {1, 3};
+			const DWORD rgStyle[2] = {1, 3};
 			g_Pens[static_cast<int>(uiPen::DashedPen)] = ExtCreatePen(PS_GEOMETRIC | PS_USERSTYLE, 1, &lbr, 2, rgStyle);
 			return g_Pens[static_cast<int>(uiPen::DashedPen)];
 		}
@@ -1472,7 +1472,7 @@ namespace ui
 		db.Begin(hdc, lpDrawItemStruct->rcItem);
 
 		// Draw background
-		auto rcItem = lpDrawItemStruct->rcItem;
+		const auto rcItem = lpDrawItemStruct->rcItem;
 		auto rcText = rcItem;
 
 		if (!lpMenuEntry->m_bOnMenuBar)
@@ -2119,7 +2119,7 @@ namespace ui
 	{
 		auto hwndRet = HWND{};
 		static auto currentPid = GetCurrentProcessId();
-		auto enumProc = [](auto hwnd, auto lParam) {
+		const auto enumProc = [](auto hwnd, auto lParam) {
 			// Use of BOOL return type forced by WNDENUMPROC signature
 			if (!lParam) return FALSE;
 			const auto ret = reinterpret_cast<HWND*>(lParam);

@@ -559,7 +559,7 @@ namespace dialog::editor
 
 				(void) lpPrompt->GetLine(i, const_cast<TCHAR*>(szLine.c_str()), len);
 
-				int iWidth = LOWORD(::GetTabbedTextExtent(hdc, szLine.c_str(), len, 0, nullptr));
+				const int iWidth = LOWORD(::GetTabbedTextExtent(hdc, szLine.c_str(), len, 0, nullptr));
 				cx = max(cx, iWidth);
 			}
 		}
@@ -671,8 +671,8 @@ namespace dialog::editor
 		CRect rcMaxScreen;
 		EC_B_S(
 			SystemParametersInfo(SPI_GETWORKAREA, NULL, static_cast<LPVOID>(static_cast<LPRECT>(rcMaxScreen)), NULL));
-		auto cxFullScreen = rcMaxScreen.Width();
-		auto cyFullScreen = rcMaxScreen.Height();
+		const auto cxFullScreen = rcMaxScreen.Width();
+		const auto cyFullScreen = rcMaxScreen.Height();
 
 		const SIZE sScreen = {cxFullScreen, cyFullScreen};
 		auto sArea = ComputeWorkArea(sScreen);

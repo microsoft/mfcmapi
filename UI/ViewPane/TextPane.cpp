@@ -450,7 +450,7 @@ namespace viewpane
 		::SendMessage(m_EditBox.GetSafeHwnd(), WM_SETREDRAW, false, 0);
 
 		// Grab the original range so we can restore it later
-		auto originalRange = CHARRANGE{};
+		const auto originalRange = CHARRANGE{};
 		::SendMessage(m_EditBox.GetSafeHwnd(), EM_EXGETSEL, 0, reinterpret_cast<LPARAM>(&originalRange));
 
 		// Select the entire range
