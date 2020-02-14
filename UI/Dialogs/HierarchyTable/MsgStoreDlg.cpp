@@ -584,7 +584,7 @@ namespace dialog
 					MyData.GetHex(1),
 					LPTSTR(MyData.GetStringW(0).c_str()),
 					LPTSTR(MyData.GetStringW(2).c_str()),
-					NULL, // interface
+					nullptr, // interface
 					MAPI_UNICODE | (MyData.GetCheck(3) ? OPEN_IF_EXISTS : 0),
 					&lpMAPISubFolder));
 
@@ -899,7 +899,7 @@ namespace dialog
 		{
 			if (MyData.GetCheck(1))
 			{
-				EC_MAPI_S(m_lpMDB->SetReceiveFolder(LPTSTR(MyData.GetStringW(0).c_str()), MAPI_UNICODE, NULL, NULL));
+				EC_MAPI_S(m_lpMDB->SetReceiveFolder(LPTSTR(MyData.GetStringW(0).c_str()), MAPI_UNICODE, NULL, nullptr));
 			}
 			else if (lpEID)
 			{

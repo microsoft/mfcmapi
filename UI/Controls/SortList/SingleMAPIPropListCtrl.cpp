@@ -423,9 +423,9 @@ namespace controls::sortlistctrl
 								// Get the names
 								hRes = WC_H_GETPROPS(cache::GetNamesFromIDs(
 									m_lpPropBag->GetMAPIProp(),
-									lpMappingSig ? &lpMappingSig->Value.bin : NULL,
+									lpMappingSig ? &lpMappingSig->Value.bin : nullptr,
 									&lpTag,
-									NULL,
+									nullptr,
 									NULL,
 									&ulPropNames,
 									&lppPropNames));
@@ -507,9 +507,9 @@ namespace controls::sortlistctrl
 				}
 				else
 				{
-					extraPropForList .dwAlignPad = NULL;
-					extraPropForList .ulPropTag = CHANGE_PROP_TYPE(pNewTag.aulPropTag[0], PT_ERROR);
-					extraPropForList .Value.err = hRes;
+					extraPropForList.dwAlignPad = NULL;
+					extraPropForList.ulPropTag = CHANGE_PROP_TYPE(pNewTag.aulPropTag[0], PT_ERROR);
+					extraPropForList.Value.err = hRes;
 				}
 
 				// Add the property to the list
@@ -1093,7 +1093,7 @@ namespace controls::sortlistctrl
 						tag.aulPropTag[0] = PROP_TAG(NULL, iTag);
 
 						hRes = WC_H(cache::GetNamesFromIDs(
-							m_lpPropBag->GetMAPIProp(), &lptag, NULL, NULL, &ulPropNames, &lppPropNames));
+							m_lpPropBag->GetMAPIProp(), &lptag, nullptr, NULL, &ulPropNames, &lppPropNames));
 						if (hRes == S_OK && ulPropNames == 1 && lppPropNames && *lppPropNames)
 						{
 							output::DebugPrintEx(
@@ -1143,7 +1143,7 @@ namespace controls::sortlistctrl
 			tag.aulPropTag[0] = PROP_TAG(NULL, ulCurrent);
 
 			hRes = WC_H(
-				cache::GetNamesFromIDs(m_lpPropBag->GetMAPIProp(), &lptag, NULL, NULL, &ulPropNames, &lppPropNames));
+				cache::GetNamesFromIDs(m_lpPropBag->GetMAPIProp(), &lptag, nullptr, NULL, &ulPropNames, &lppPropNames));
 			if (hRes == S_OK && ulPropNames == 1 && lppPropNames && *lppPropNames)
 			{
 				// Found a named property, reset lower bound
@@ -1189,7 +1189,7 @@ namespace controls::sortlistctrl
 			tag.aulPropTag[0] = PROP_TAG(NULL, ulHighestKnown);
 
 			hRes = WC_H(
-				cache::GetNamesFromIDs(m_lpPropBag->GetMAPIProp(), &lptag, NULL, NULL, &ulPropNames, &lppPropNames));
+				cache::GetNamesFromIDs(m_lpPropBag->GetMAPIProp(), &lptag, nullptr, NULL, &ulPropNames, &lppPropNames));
 			if (hRes == S_OK && ulPropNames == 1 && lppPropNames && *lppPropNames)
 			{
 				output::DebugPrintEx(
@@ -1426,12 +1426,12 @@ namespace controls::sortlistctrl
 				IDS_PROPEDITOR,
 				NULL,
 				m_bIsAB,
-				NULL,
+				nullptr,
 				lpSourceObj,
 				ulPropTag,
 				false,
 				lpEditProp,
-				lpSourceObj ? NULL : &lpModProp));
+				lpSourceObj ? nullptr : &lpModProp));
 
 			// If we didn't have a source object, we need to shove our results back in to the property bag
 			if (hRes == S_OK && !lpSourceObj && lpModProp)
@@ -1661,7 +1661,7 @@ namespace controls::sortlistctrl
 		if (!lpSourcePropObj) return;
 
 		const auto hRes = EC_H(mapi::CopyTo(
-			m_lpHostDlg->m_hWnd, lpSourcePropObj, m_lpPropBag->GetMAPIProp(), &IID_IMAPIProp, NULL, m_bIsAB, true));
+			m_lpHostDlg->m_hWnd, lpSourcePropObj, m_lpPropBag->GetMAPIProp(), &IID_IMAPIProp, nullptr, m_bIsAB, true));
 		if (SUCCEEDED(hRes))
 		{
 			EC_H_S(m_lpPropBag->Commit());

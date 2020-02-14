@@ -301,7 +301,7 @@ namespace dialog::editor
 			lpTagArray->aulPropTag[0] = m_ulPropTag;
 
 			const auto hRes = WC_H_GETPROPS(
-				cache::GetNamesFromIDs(m_lpMAPIProp, &lpTagArray, NULL, NULL, &ulPropNames, &lppPropNames));
+				cache::GetNamesFromIDs(m_lpMAPIProp, &lpTagArray, nullptr, NULL, &ulPropNames, &lppPropNames));
 			if (SUCCEEDED(hRes) && ulPropNames == lpTagArray->cValues && lppPropNames && lppPropNames[0])
 			{
 				if (MNID_STRING == lppPropNames[0]->ulKind)

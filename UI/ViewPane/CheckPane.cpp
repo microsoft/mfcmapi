@@ -42,7 +42,7 @@ namespace viewpane
 		ViewPane::Initialize(pParent, hdc);
 
 		EC_B_S(m_Check.Create(
-			NULL,
+			nullptr,
 			WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE | BS_AUTOCHECKBOX | (m_bReadOnly ? WS_DISABLED : 0),
 			CRect(0, 0, 0, 0),
 			pParent,

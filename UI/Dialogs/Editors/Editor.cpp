@@ -467,7 +467,7 @@ namespace dialog::editor
 
 		// Size according to our defaults, respecting minimums
 		EC_B_S(SetWindowPos(
-			NULL, 0, 0, max(MIN_WIDTH, m_iMinWidth), max(MIN_HEIGHT, m_iMinHeight), SWP_NOZORDER | SWP_NOMOVE));
+			nullptr, 0, 0, max(MIN_WIDTH, m_iMinWidth), max(MIN_HEIGHT, m_iMinHeight), SWP_NOZORDER | SWP_NOMOVE));
 
 		return bRet;
 	}

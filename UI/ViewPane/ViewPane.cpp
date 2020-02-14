@@ -56,7 +56,7 @@ namespace viewpane
 
 			// Assign a nID to the collapse button that is IDD_COLLAPSE more than the control's nID
 			EC_B_S(m_CollapseButton.Create(
-				NULL,
+				nullptr,
 				WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE,
 				CRect(0, 0, 0, 0),
 				pParent,

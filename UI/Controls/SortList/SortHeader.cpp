@@ -47,16 +47,16 @@ namespace controls::sortlistctrl
 				CreateWindowEx(
 					WS_EX_TOPMOST,
 					TOOLTIPS_CLASS,
-					NULL,
+					nullptr,
 					TTS_NOPREFIX | TTS_ALWAYSTIP,
 					CW_USEDEFAULT,
 					CW_USEDEFAULT,
 					CW_USEDEFAULT,
 					CW_USEDEFAULT,
 					m_hWnd,
-					NULL,
+					nullptr,
 					AfxGetInstanceHandle(),
-					NULL));
+					nullptr));
 
 			if (m_hwndTip)
 			{

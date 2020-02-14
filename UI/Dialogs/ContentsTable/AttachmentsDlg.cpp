@@ -118,10 +118,10 @@ namespace dialog
 	{
 		LPATTACH lpAttach = nullptr;
 
-		const auto hRes = WC_MAPI(m_lpMessage->OpenAttach(ulAttachNum, NULL, MAPI_MODIFY, &lpAttach));
+		const auto hRes = WC_MAPI(m_lpMessage->OpenAttach(ulAttachNum, nullptr, MAPI_MODIFY, &lpAttach));
 		if (hRes == MAPI_E_NO_ACCESS)
 		{
-			WC_MAPI_S(m_lpMessage->OpenAttach(ulAttachNum, NULL, MAPI_BEST_ACCESS, &lpAttach));
+			WC_MAPI_S(m_lpMessage->OpenAttach(ulAttachNum, nullptr, MAPI_BEST_ACCESS, &lpAttach));
 		}
 
 		return lpAttach;
@@ -260,12 +260,12 @@ namespace dialog
 				LPSPropProblemArray lpProblems = nullptr;
 
 				// Open the attachment source
-				EC_MAPI_S(lpSourceMessage->OpenAttach(ulAtt, NULL, MAPI_DEFERRED_ERRORS, &lpAttSrc));
+				EC_MAPI_S(lpSourceMessage->OpenAttach(ulAtt, nullptr, MAPI_DEFERRED_ERRORS, &lpAttSrc));
 				if (lpAttSrc)
 				{
 					ULONG ulAttNum = NULL;
 					// Create the attachment destination
-					EC_MAPI_S(m_lpMessage->CreateAttach(NULL, MAPI_DEFERRED_ERRORS, &ulAttNum, &lpAttDst));
+					EC_MAPI_S(m_lpMessage->CreateAttach(nullptr, MAPI_DEFERRED_ERRORS, &ulAttNum, &lpAttDst));
 					if (lpAttDst)
 					{
 						auto lpProgress = mapi::mapiui::GetMAPIProgress(L"IAttach::CopyTo", m_hWnd); // STRING_OK
@@ -273,7 +273,7 @@ namespace dialog
 						// Copy from source to destination
 						EC_MAPI_S(lpAttSrc->CopyTo(
 							0,
-							NULL,
+							nullptr,
 							nullptr,
 							lpProgress ? reinterpret_cast<ULONG_PTR>(m_hWnd) : NULL,
 							lpProgress,
@@ -393,7 +393,7 @@ namespace dialog
 					const auto ulAttachNum = contents->m_ulAttachNum;
 
 					EC_MAPI_S(m_lpMessage->OpenAttach(
-						ulAttachNum, NULL, MAPI_BEST_ACCESS, static_cast<LPATTACH*>(&lpAttach)));
+						ulAttachNum, nullptr, MAPI_BEST_ACCESS, static_cast<LPATTACH*>(&lpAttach)));
 
 					if (lpAttach)
 					{
@@ -422,7 +422,7 @@ namespace dialog
 			LPATTACH lpAttachment = nullptr;
 			ULONG ulAttachNum = 0;
 
-			auto hRes = EC_MAPI(m_lpMessage->CreateAttach(NULL, NULL, &ulAttachNum, &lpAttachment));
+			auto hRes = EC_MAPI(m_lpMessage->CreateAttach(nullptr, NULL, &ulAttachNum, &lpAttachment));
 
 			if (SUCCEEDED(hRes) && lpAttachment)
 			{
@@ -436,7 +436,7 @@ namespace dialog
 				spvAttach[3].ulPropTag = PR_DISPLAY_NAME_W;
 				spvAttach[3].Value.lpszW = LPWSTR(szAttachName.c_str());
 
-				hRes = EC_MAPI(lpAttachment->SetProps(_countof(spvAttach), spvAttach, NULL));
+				hRes = EC_MAPI(lpAttachment->SetProps(_countof(spvAttach), spvAttach, nullptr));
 				if (SUCCEEDED(hRes))
 				{
 					LPSTREAM pStreamFile = nullptr;
@@ -460,7 +460,7 @@ namespace dialog
 
 							if (SUCCEEDED(hRes))
 							{
-								hRes = EC_MAPI(pStreamFile->CopyTo(pStreamAtt, StatInfo.cbSize, NULL, NULL));
+								hRes = EC_MAPI(pStreamFile->CopyTo(pStreamAtt, StatInfo.cbSize, nullptr, nullptr));
 							}
 
 							if (SUCCEEDED(hRes))

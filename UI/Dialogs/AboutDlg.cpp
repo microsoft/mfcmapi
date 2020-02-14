@@ -93,7 +93,7 @@ namespace dialog
 		rcCheck.bottom = rcCheck.top + iCheckHeight;
 
 		EC_B_S(m_DisplayAboutCheck.Create(
-			NULL,
+			nullptr,
 			WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE | BS_AUTOCHECKBOX,
 			rcCheck,
 			this,

@@ -30,7 +30,7 @@ namespace output
 		{
 			LPSRowSet lpRows = nullptr;
 
-			EC_MAPI_S(HrQueryAllRows(lpProfTable, LPSPropTagArray(&rgPropTag), NULL, NULL, 0, &lpRows));
+			EC_MAPI_S(HrQueryAllRows(lpProfTable, LPSPropTagArray(&rgPropTag), nullptr, nullptr, 0, &lpRows));
 
 			if (lpRows)
 			{

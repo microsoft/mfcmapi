@@ -35,7 +35,7 @@ _Check_return_ LPMAPISESSION MrMAPILogonEx(const std::wstring& lpszProfile)
 	// TODO: profile parameter should be ansi in ansi builds
 	LPMAPISESSION lpSession = nullptr;
 	const auto hRes = WC_MAPI(
-		MAPILogonEx(NULL, LPTSTR((lpszProfile.empty() ? NULL : lpszProfile.c_str())), NULL, ulFlags, &lpSession));
+		MAPILogonEx(NULL, LPTSTR((lpszProfile.empty() ? nullptr : lpszProfile.c_str())), nullptr, ulFlags, &lpSession));
 	if (FAILED(hRes)) printf("MAPILogonEx returned an error: 0x%08lx\n", hRes);
 	return lpSession;
 }

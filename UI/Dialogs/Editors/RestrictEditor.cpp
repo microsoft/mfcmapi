@@ -1444,7 +1444,7 @@ namespace dialog::editor
 
 		if (!m_lpNewRes && m_lpSourceRes)
 		{
-			EC_H_S(mapi::HrCopyRestriction(m_lpSourceRes, NULL, &m_lpNewRes));
+			EC_H_S(mapi::HrCopyRestriction(m_lpSourceRes, nullptr, &m_lpNewRes));
 		}
 
 		m_ulNewSearchFlags = GetHex(2);

@@ -25,7 +25,7 @@ LPMDB OpenStore(_In_ LPMAPISESSION lpMAPISession, ULONG ulIndex)
 		if (SUCCEEDED(hRes))
 		{
 			LPSRowSet lpRow = nullptr;
-			hRes = WC_MAPI(lpStoreTable->SeekRow(BOOKMARK_BEGINNING, ulIndex, NULL));
+			hRes = WC_MAPI(lpStoreTable->SeekRow(BOOKMARK_BEGINNING, ulIndex, nullptr));
 			if (SUCCEEDED(hRes))
 			{
 				hRes = WC_MAPI(lpStoreTable->QueryRows(1, NULL, &lpRow));

@@ -108,13 +108,13 @@ namespace dialog
 					// http://support.microsoft.com/kb/171637
 					const auto hRes = EC_H_CANCEL(lpAddrBook->Details(
 						&ulUIParam,
-						NULL,
-						NULL,
+						nullptr,
+						nullptr,
 						lpEIDs->lpbin[i].cb,
 						reinterpret_cast<LPENTRYID>(lpEIDs->lpbin[i].lpb),
-						NULL,
-						NULL,
-						NULL,
+						nullptr,
+						nullptr,
+						nullptr,
 						DIALOG_MODAL)); // API doesn't like Unicode
 					if (lpEIDs->cValues > i + 1 && bShouldCancel(this, hRes)) break;
 				}
