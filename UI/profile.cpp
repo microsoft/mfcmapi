@@ -15,7 +15,7 @@ namespace ui::profile
 	std::wstring LaunchProfileWizard(_In_ HWND hParentWnd, ULONG ulFlags, _In_ const std::wstring& szServiceNameToAdd)
 	{
 		CHAR szProfName[80] = {0};
-		const ULONG cchProfName = _countof(szProfName);
+		constexpr ULONG cchProfName = _countof(szProfName);
 		const auto szServiceNameToAddA = strings::wstringTostring(szServiceNameToAdd);
 		LPCSTR szServices[] = {szServiceNameToAddA.c_str(), nullptr};
 

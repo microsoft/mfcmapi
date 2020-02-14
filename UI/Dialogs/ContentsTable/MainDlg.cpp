@@ -775,8 +775,8 @@ namespace dialog
 		if (!m_lpMapiObjects) return;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		const ULONG ulFlags = MAPI_EXTENDED | MAPI_ALLOW_OTHERS | MAPI_NEW_SESSION | MAPI_LOGON_UI |
-							  MAPI_EXPLICIT_PROFILE; // display a profile picker box
+		constexpr ULONG ulFlags = MAPI_EXTENDED | MAPI_ALLOW_OTHERS | MAPI_NEW_SESSION | MAPI_LOGON_UI |
+								  MAPI_EXPLICIT_PROFILE; // display a profile picker box
 		m_lpMapiObjects->MAPILogonEx(m_hWnd, nullptr, ulFlags);
 	}
 

@@ -102,5 +102,5 @@ typedef ULONG(STDAPICALLTYPE FREEBUFFER)(LPVOID lpBuffer);
 
 namespace cache
 {
-	const ULONG ulNoMatch = 0xffffffff;
+	constexpr ULONG ulNoMatch = 0xffffffff;
 }

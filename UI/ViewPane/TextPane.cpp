@@ -408,7 +408,7 @@ namespace viewpane
 	void TextPane::SetBinaryStream(_In_ LPSTREAM lpStreamIn)
 	{
 		EDITSTREAM es = {0, 0, EditStreamReadCallBack};
-		const UINT uFormat = SF_TEXT;
+		constexpr UINT uFormat = SF_TEXT;
 
 		es.dwCookie = reinterpret_cast<DWORD_PTR>(lpStreamIn);
 

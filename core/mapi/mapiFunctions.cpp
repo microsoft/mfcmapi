@@ -257,7 +257,7 @@ namespace mapi
 		return ulObjType;
 	}
 
-	const WORD kwBaseOffset = 0xAC00; // Hangul char range (AC00-D7AF)
+	constexpr WORD kwBaseOffset = 0xAC00; // Hangul char range (AC00-D7AF)
 	_Check_return_ std::wstring EncodeID(ULONG cbEID, _In_ LPENTRYID rgbID)
 	{
 		auto pbSrc = reinterpret_cast<LPBYTE>(rgbID);

@@ -644,8 +644,6 @@ namespace mapi::mapiui
 
 	STDMETHODIMP CMyMAPIFormViewer::GetViewStatus(LPULONG lpulStatus)
 	{
-		const auto hRes = S_OK;
-
 		output::DebugPrintEx(output::dbgLevel::FormViewer, CLASS, L"GetViewStatus", L"\n");
 		*lpulStatus = NULL;
 		*lpulStatus |= VCSTATUS_INTERACTIVE;
@@ -664,7 +662,7 @@ namespace mapi::mapiui
 		}
 
 		output::DebugPrintEx(output::dbgLevel::FormViewer, CLASS, L"GetViewStatus", L"Returning 0x%X\n", *lpulStatus);
-		return hRes;
+		return S_OK;
 	}
 
 	_Check_return_ HRESULT CMyMAPIFormViewer::GetNextMessage(

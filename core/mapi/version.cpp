@@ -163,7 +163,7 @@ namespace version
 		// Check for Centennial Office
 		const auto familyName = L"Microsoft.Office.Desktop_8wekyb3d8bbwe";
 
-		const UINT32 filter =
+		constexpr UINT32 filter =
 			PACKAGE_FILTER_BUNDLE | PACKAGE_FILTER_HEAD | PACKAGE_PROPERTY_BUNDLE | PACKAGE_PROPERTY_RESOURCE;
 		auto fullName = GetFullName(familyName, filter);
 

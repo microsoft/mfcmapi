@@ -232,8 +232,8 @@ namespace dialog::editor
 
 		if (bWrite)
 		{
-			const auto ulStgFlags = STGM_READWRITE;
-			const auto ulFlags = MAPI_CREATE | MAPI_MODIFY;
+			constexpr auto ulStgFlags = STGM_READWRITE;
+			constexpr auto ulFlags = MAPI_CREATE | MAPI_MODIFY;
 			ulRTFFlags |= MAPI_MODIFY;
 
 			if (m_bDocFile)
@@ -249,8 +249,8 @@ namespace dialog::editor
 		}
 		else
 		{
-			const auto ulStgFlags = STGM_READ;
-			const auto ulFlags = NULL;
+			constexpr auto ulStgFlags = STGM_READ;
+			constexpr auto ulFlags = NULL;
 			hRes = WC_MAPI(m_lpMAPIProp->OpenProperty(
 				m_ulPropTag, &IID_IStream, ulStgFlags, ulFlags, reinterpret_cast<LPUNKNOWN*>(&lpTmpStream)));
 

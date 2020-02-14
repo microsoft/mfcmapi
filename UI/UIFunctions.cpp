@@ -646,7 +646,7 @@ namespace ui
 	// Lighten the colors of the base, being careful not to overflow
 	COLORREF LightColor(const COLORREF crBase)
 	{
-		const auto f = .20;
+		constexpr auto f = .20;
 		auto bRed = static_cast<BYTE>(GetRValue(crBase) + 255 * f);
 		auto bGreen = static_cast<BYTE>(GetGValue(crBase) + 255 * f);
 		auto bBlue = static_cast<BYTE>(GetBValue(crBase) + 255 * f);

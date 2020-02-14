@@ -80,7 +80,7 @@ namespace dialog::editor
 
 	void SpecialFolderEditor::LoadFolders() const
 	{
-		const ULONG ulListNum = 0;
+		constexpr ULONG ulListNum = 0;
 
 		static const SizedSPropTagArray(12, lptaFolderProps) = {
 			12,
