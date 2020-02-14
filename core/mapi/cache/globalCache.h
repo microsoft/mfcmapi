@@ -24,7 +24,7 @@ namespace cache
 		}
 
 	private:
-		CGlobalCache();
+		CGlobalCache() noexcept;
 		virtual ~CGlobalCache();
 
 	public:
@@ -32,21 +32,21 @@ namespace cache
 		void operator=(CGlobalCache const&) = delete;
 
 		void MAPIInitialize(ULONG ulFlags);
-		void MAPIUninitialize();
-		_Check_return_ bool bMAPIInitialized() const;
+		void MAPIUninitialize() noexcept;
+		_Check_return_ bool bMAPIInitialized() const noexcept;
 
 		void SetABEntriesToCopy(_In_ LPENTRYLIST lpEBEntriesToCopy);
-		_Check_return_ LPENTRYLIST GetABEntriesToCopy() const;
+		_Check_return_ LPENTRYLIST GetABEntriesToCopy() const noexcept;
 
 		void SetMessagesToCopy(_In_ LPENTRYLIST lpMessagesToCopy, _In_ LPMAPIFOLDER lpSourceParent);
-		_Check_return_ LPENTRYLIST GetMessagesToCopy() const;
+		_Check_return_ LPENTRYLIST GetMessagesToCopy() const noexcept;
 
 		void SetFolderToCopy(_In_ LPMAPIFOLDER lpFolderToCopy, _In_ LPMAPIFOLDER lpSourceParent);
-		_Check_return_ LPMAPIFOLDER GetFolderToCopy() const;
+		_Check_return_ LPMAPIFOLDER GetFolderToCopy() const noexcept;
 
 		void SetPropertyToCopy(ULONG ulPropTag, _In_ LPMAPIPROP lpSourcePropObject);
-		_Check_return_ ULONG GetPropertyToCopy() const;
-		_Check_return_ LPMAPIPROP GetSourcePropObject() const;
+		_Check_return_ ULONG GetPropertyToCopy() const noexcept;
+		_Check_return_ LPMAPIPROP GetSourcePropObject() const noexcept;
 
 		void SetAttachmentsToCopy(_In_ LPMESSAGE lpMessage, _In_ const std::vector<ULONG>& attNumList);
 		_Check_return_ std::vector<ULONG> GetAttachmentsToCopy() const;
@@ -54,12 +54,12 @@ namespace cache
 		void SetProfileToCopy(_In_ const std::wstring& szProfileName);
 		_Check_return_ std::wstring GetProfileToCopy() const;
 
-		_Check_return_ LPMAPIFOLDER GetSourceParentFolder() const;
+		_Check_return_ LPMAPIFOLDER GetSourceParentFolder() const noexcept;
 
 		_Check_return_ ULONG GetBufferStatus() const;
 
 	private:
-		void EmptyBuffer();
+		void EmptyBuffer() noexcept;
 
 		LPENTRYLIST m_lpAddressEntriesToCopy;
 		LPENTRYLIST m_lpMessagesToCopy;

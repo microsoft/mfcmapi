@@ -7,7 +7,7 @@ namespace dialog
 	{
 	public:
 		CAbContDlg(_In_ ui::CParentWnd* pParentWnd, _In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects);
-		virtual ~CAbContDlg();
+		~CAbContDlg();
 
 	private:
 		// Overrides from base class

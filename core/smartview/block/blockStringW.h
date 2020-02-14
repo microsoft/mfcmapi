@@ -10,7 +10,7 @@ namespace smartview
 		blockStringW(const blockStringW&) = delete;
 		blockStringW& operator=(const blockStringW&) = delete;
 
-		virtual bool isSet() const { return set; }
+		bool isSet() const noexcept override { return set; }
 
 		// Mimic std::wstring
 		operator const std::wstring&() const { return data; }

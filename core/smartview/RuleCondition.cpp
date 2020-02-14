@@ -20,7 +20,7 @@ namespace smartview
 		}
 	}
 
-	void RuleCondition::Init(bool bExtended) { m_bExtended = bExtended; }
+	void RuleCondition::Init(bool bExtended) noexcept { m_bExtended = bExtended; }
 
 	void RuleCondition::parse()
 	{

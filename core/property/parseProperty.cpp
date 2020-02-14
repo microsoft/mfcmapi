@@ -245,7 +245,7 @@ namespace property
 			case PT_ACTIONS:
 				if (lpProp->Value.lpszA)
 				{
-					const auto actions = reinterpret_cast<ACTIONS*>(lpProp->Value.lpszA);
+					const auto actions = reinterpret_cast<const ACTIONS*>(lpProp->Value.lpszA);
 					szTmp = ActionsToString(*actions);
 				}
 				else
@@ -563,7 +563,7 @@ namespace property
 		}
 		case OP_DEFER_ACTION:
 		{
-			auto sBin = SBinary{action.actDeferAction.cbData, static_cast<LPBYTE>(action.actDeferAction.pbData)};
+			auto sBin = SBinary{action.actDeferAction.cbData, action.actDeferAction.pbData};
 
 			actstring += strings::formatmessage(
 				IDS_ACTIONOPDEFER,

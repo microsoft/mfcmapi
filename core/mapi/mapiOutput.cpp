@@ -18,7 +18,7 @@
 
 namespace output
 {
-	void outputBinary(DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile, _In_ const SBinary& bin)
+	void outputBinary(dbgLevel ulDbgLvl, _In_opt_ FILE* fFile, _In_ const SBinary& bin)
 	{
 		if (earlyExit(ulDbgLvl, fFile)) return;
 
@@ -27,7 +27,7 @@ namespace output
 		Output(ulDbgLvl, fFile, false, L"\n");
 	}
 
-	void outputEntryList(DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPENTRYLIST lpEntryList)
+	void outputEntryList(dbgLevel ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPENTRYLIST lpEntryList)
 	{
 		if (earlyExit(ulDbgLvl, fFile)) return;
 		if (!lpEntryList) return;
@@ -46,7 +46,7 @@ namespace output
 		Outputf(ulDbgLvl, fFile, true, L"End dumping entry list.\n");
 	}
 
-	void outputFormPropArray(DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPIFORMPROPARRAY lpMAPIFormPropArray)
+	void outputFormPropArray(dbgLevel ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPIFORMPROPARRAY lpMAPIFormPropArray)
 	{
 		Outputf(ulDbgLvl, fFile, true, L"\t0x%X Properties:\n", lpMAPIFormPropArray->cProps);
 		for (ULONG i = 0; i < lpMAPIFormPropArray->cProps; i++)
@@ -109,7 +109,7 @@ namespace output
 		}
 	}
 
-	void outputNamedPropID(DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPINAMEID lpName)
+	void outputNamedPropID(dbgLevel ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPINAMEID lpName)
 	{
 		if (earlyExit(ulDbgLvl, fFile)) return;
 
@@ -138,7 +138,7 @@ namespace output
 		Output(ulDbgLvl, fFile, false, L"\n");
 	}
 
-	void outputPropTagArray(DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropTagArray lpTagsToDump)
+	void outputPropTagArray(dbgLevel ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropTagArray lpTagsToDump)
 	{
 		if (earlyExit(ulDbgLvl, fFile)) return;
 		if (!lpTagsToDump) return;
@@ -163,7 +163,7 @@ namespace output
 		Output(ulDbgLvl, fFile, true, L"\tEnd Prop Tag List\n");
 	}
 
-	void outputFormInfo(DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPIFORMINFO lpMAPIFormInfo)
+	void outputFormInfo(dbgLevel ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPIFORMINFO lpMAPIFormInfo)
 	{
 		if (earlyExit(ulDbgLvl, fFile)) return;
 		if (!lpMAPIFormInfo) return;
@@ -231,7 +231,7 @@ namespace output
 		}
 	}
 
-	void outputTable(DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPITABLE lpMAPITable)
+	void outputTable(dbgLevel ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPITABLE lpMAPITable)
 	{
 		if (earlyExit(ulDbgLvl, fFile)) return;
 		if (!lpMAPITable) return;
@@ -265,7 +265,7 @@ namespace output
 	}
 
 	void outputNotifications(
-		DBGLEVEL ulDbgLvl,
+		dbgLevel ulDbgLvl,
 		_In_opt_ FILE* fFile,
 		ULONG cNotify,
 		_In_count_(cNotify) LPNOTIFICATION lpNotifications,
@@ -498,7 +498,7 @@ namespace output
 	}
 
 	void outputProperty(
-		DBGLEVEL ulDbgLvl,
+		dbgLevel ulDbgLvl,
 		_In_opt_ FILE* fFile,
 		_In_ LPSPropValue lpProp,
 		_In_opt_ LPMAPIPROP lpObj,
@@ -509,7 +509,7 @@ namespace output
 		if (!lpProp) return;
 
 		LPSPropValue lpLargeProp = nullptr;
-		const auto iIndent = 2;
+		constexpr auto iIndent = 2;
 
 		if (PROP_TYPE(lpProp->ulPropTag) == PT_ERROR && lpProp->Value.err == MAPI_E_NOT_ENOUGH_MEMORY && lpObj &&
 			bRetryStreamProps)
@@ -587,7 +587,7 @@ namespace output
 	}
 
 	void outputProperties(
-		DBGLEVEL ulDbgLvl,
+		dbgLevel ulDbgLvl,
 		_In_opt_ FILE* fFile,
 		ULONG cProps,
 		_In_opt_count_(cProps) LPSPropValue lpProps,
@@ -635,7 +635,7 @@ namespace output
 		MAPIFreeBuffer(lpSortedProps);
 	}
 
-	void outputSRow(DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile, _In_ const _SRow* lpSRow, _In_opt_ LPMAPIPROP lpObj)
+	void outputSRow(dbgLevel ulDbgLvl, _In_opt_ FILE* fFile, _In_ const _SRow* lpSRow, _In_opt_ LPMAPIPROP lpObj)
 	{
 		if (earlyExit(ulDbgLvl, fFile)) return;
 
@@ -654,7 +654,7 @@ namespace output
 		outputProperties(ulDbgLvl, fFile, lpSRow->cValues, lpSRow->lpProps, lpObj, false);
 	}
 
-	void outputSRowSet(DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSRowSet lpRowSet, _In_opt_ LPMAPIPROP lpObj)
+	void outputSRowSet(dbgLevel ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSRowSet lpRowSet, _In_opt_ LPMAPIPROP lpObj)
 	{
 		if (earlyExit(ulDbgLvl, fFile)) return;
 
@@ -674,7 +674,7 @@ namespace output
 	}
 
 	void outputRestriction(
-		DBGLEVEL ulDbgLvl,
+		dbgLevel ulDbgLvl,
 		_In_opt_ FILE* fFile,
 		_In_opt_ const _SRestriction* lpRes,
 		_In_opt_ LPMAPIPROP lpObj)

@@ -33,7 +33,7 @@ namespace controls
 			wc.style = 0; // not passing CS_VREDRAW | CS_HREDRAW fixes flicker
 			wc.lpszClassName = _T("FakeSplitter"); // STRING_OK
 			wc.lpfnWndProc = ::DefWindowProc;
-			wc.hbrBackground = GetSysBrush(ui::cBackground); // helps spot flashing
+			wc.hbrBackground = GetSysBrush(ui::uiColor::Background); // helps spot flashing
 
 			RegisterClassEx(&wc);
 		}
@@ -144,7 +144,7 @@ namespace controls
 		if (m_PaneOne || m_ViewPaneOne)
 		{
 			CRect r1;
-			if (SplitHorizontal == m_SplitType)
+			if (m_SplitType == splitType::horizontal)
 			{
 				r1.SetRect(x, y, m_iSplitPos, height);
 			}
@@ -167,7 +167,7 @@ namespace controls
 		if (m_PaneTwo || m_ViewPaneTwo)
 		{
 			CRect r2;
-			if (SplitHorizontal == m_SplitType)
+			if (m_SplitType == splitType::horizontal)
 			{
 				r2.SetRect(
 					x + m_iSplitPos + m_iSplitWidth, // new x
@@ -205,10 +205,10 @@ namespace controls
 			return;
 		}
 
-		int iCurSpan;
+		int iCurSpan = 0;
 		CRect rect;
 		GetClientRect(rect);
-		if (SplitHorizontal == m_SplitType)
+		if (m_SplitType == splitType::horizontal)
 		{
 			iCurSpan = rect.Width();
 		}
@@ -255,15 +255,15 @@ namespace controls
 		OnSize(0, rect.Width(), rect.Height());
 	}
 
-	void CFakeSplitter::SetSplitType(const SplitType stSplitType) { m_SplitType = stSplitType; }
+	void CFakeSplitter::SetSplitType(const splitType stSplitType) { m_SplitType = stSplitType; }
 
 	_Check_return_ int CFakeSplitter::HitTest(const LONG x, const LONG y) const
 	{
 		if (!m_PaneOne && !m_ViewPaneOne) return noHit;
 
-		LONG lTestPos;
+		LONG lTestPos = 0;
 
-		if (SplitHorizontal == m_SplitType)
+		if (m_SplitType == splitType::horizontal)
 		{
 			lTestPos = x;
 		}
@@ -287,16 +287,16 @@ namespace controls
 		if (SplitterHit == HitTest(point.x, point.y))
 		{
 			// This looks backwards, but it is not. A horizontal split needs the vertical cursor
-			SetCursor(SplitHorizontal == m_SplitType ? m_hSplitCursorV : m_hSplitCursorH);
+			SetCursor(m_SplitType == splitType::horizontal ? m_hSplitCursorV : m_hSplitCursorH);
 		}
 
 		if (m_bTracking)
 		{
 			CRect Rect;
-			FLOAT flNewPercent;
+			FLOAT flNewPercent = {};
 			GetWindowRect(Rect);
 
-			if (SplitHorizontal == m_SplitType)
+			if (m_SplitType == splitType::horizontal)
 			{
 				flNewPercent = point.x / static_cast<FLOAT>(Rect.Width());
 			}
@@ -355,10 +355,10 @@ namespace controls
 			db.Begin(hdc, rcWin);
 
 			auto rcSplitter = rcWin;
-			FillRect(hdc, &rcSplitter, GetSysBrush(ui::cBackground));
+			FillRect(hdc, &rcSplitter, GetSysBrush(ui::uiColor::Background));
 
-			POINT pts[2]; // 0 is left top, 1 is right bottom
-			if (SplitHorizontal == m_SplitType)
+			POINT pts[2] = {}; // 0 is left top, 1 is right bottom
+			if (m_SplitType == splitType::horizontal)
 			{
 				pts[0].x = m_iSplitPos + m_iSplitWidth / 2;
 				pts[0].y = rcSplitter.top;
@@ -374,7 +374,7 @@ namespace controls
 			}
 
 			// Draw the splitter bar
-			const auto hpenOld = SelectObject(hdc, GetPen(m_bTracking ? ui::cSolidPen : ui::cDashedPen));
+			const auto hpenOld = SelectObject(hdc, GetPen(m_bTracking ? ui::uiPen::SolidPen : ui::uiPen::DashedPen));
 			MoveToEx(hdc, pts[0].x, pts[0].y, nullptr);
 			LineTo(hdc, pts[1].x, pts[1].y);
 			(void) SelectObject(hdc, hpenOld);

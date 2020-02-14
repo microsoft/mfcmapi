@@ -26,7 +26,7 @@ namespace smartview
 		size_t getOffset() const { return cb->getOffset() ? cb->getOffset() : lpb->getOffset(); }
 
 		SBinaryBlock(const std::shared_ptr<binaryParser>& parser);
-		SBinaryBlock(){};
+		SBinaryBlock() noexcept {};
 	};
 
 	struct SBinaryArrayBlock
@@ -229,10 +229,10 @@ namespace smartview
 	{
 	public:
 		void parse(const std::shared_ptr<binaryParser>& parser, DWORD cValues, bool bRuleCondition);
-		void SetMaxEntries(DWORD maxEntries) { m_MaxEntries = maxEntries; }
-		void EnableNickNameParsing() { m_NickName = true; }
-		void EnableRuleConditionParsing() { m_RuleCondition = true; }
-		_Check_return_ std::vector<std::shared_ptr<SPropValueStruct>>& Props() { return m_Props; }
+		void SetMaxEntries(DWORD maxEntries) noexcept { m_MaxEntries = maxEntries; }
+		void EnableNickNameParsing() noexcept { m_NickName = true; }
+		void EnableRuleConditionParsing() noexcept { m_RuleCondition = true; }
+		_Check_return_ std::vector<std::shared_ptr<SPropValueStruct>>& Props() noexcept { return m_Props; }
 
 	private:
 		void parse() override;

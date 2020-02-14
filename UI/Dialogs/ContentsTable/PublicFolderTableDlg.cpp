@@ -21,7 +21,7 @@ namespace dialog
 			  pParentWnd,
 			  lpMapiObjects,
 			  IDS_PUBLICFOLDERTABLE,
-			  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+			  createDialogType::DO_NOT_CALL_CREATE_DIALOG,
 			  nullptr,
 			  lpMAPITable,
 			  &columns::sptPFCols.tags,
@@ -38,7 +38,8 @@ namespace dialog
 
 	void CPublicFolderTableDlg::CreateDialogAndMenu(UINT nIDMenuResource)
 	{
-		output::DebugPrintEx(output::DBGCreateDialog, CLASS, L"CreateDialogAndMenu", L"id = 0x%X\n", nIDMenuResource);
+		output::DebugPrintEx(
+			output::dbgLevel::CreateDialog, CLASS, L"CreateDialogAndMenu", L"id = 0x%X\n", nIDMenuResource);
 		CContentsTableDlg::CreateDialogAndMenu(nIDMenuResource);
 
 		ui::UpdateMenuString(m_hWnd, ID_CREATEPROPERTYSTRINGRESTRICTION, IDS_PFRESMENU);
@@ -46,8 +47,7 @@ namespace dialog
 
 	void CPublicFolderTableDlg::OnDisplayItem() {}
 
-	_Check_return_ LPMAPIPROP
-	CPublicFolderTableDlg::OpenItemProp(int /*iSelectedItem*/, __mfcmapiModifyEnum /*bModify*/)
+	_Check_return_ LPMAPIPROP CPublicFolderTableDlg::OpenItemProp(int /*iSelectedItem*/, modifyType /*bModify*/)
 	{
 		return nullptr;
 	}
@@ -80,6 +80,6 @@ namespace dialog
 			CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_UNICODE), szString, MyData.GetHex(1), nullptr);
 		m_lpContentsTableListCtrl->SetRestriction(lpRes);
 
-		SetRestrictionType(mfcmapiNORMAL_RESTRICTION);
+		SetRestrictionType(restrictionType::normal);
 	}
 } // namespace dialog

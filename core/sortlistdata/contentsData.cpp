@@ -40,14 +40,14 @@ namespace sortlistdata
 		lpProp = PpropFindProp(lpsRowData->lpProps, lpsRowData->cValues, PR_ATTACH_NUM);
 		if (lpProp && PR_ATTACH_NUM == lpProp->ulPropTag)
 		{
-			output::DebugPrint(output::DBGGeneric, L"\tPR_ATTACH_NUM = %d\n", lpProp->Value.l);
+			output::DebugPrint(output::dbgLevel::Generic, L"\tPR_ATTACH_NUM = %d\n", lpProp->Value.l);
 			m_ulAttachNum = lpProp->Value.l;
 		}
 
 		lpProp = PpropFindProp(lpsRowData->lpProps, lpsRowData->cValues, PR_ATTACH_METHOD);
 		if (lpProp && PR_ATTACH_METHOD == lpProp->ulPropTag)
 		{
-			output::DebugPrint(output::DBGGeneric, L"\tPR_ATTACH_METHOD = %d\n", lpProp->Value.l);
+			output::DebugPrint(output::dbgLevel::Generic, L"\tPR_ATTACH_METHOD = %d\n", lpProp->Value.l);
 			m_ulAttachMethod = lpProp->Value.l;
 		}
 
@@ -55,7 +55,7 @@ namespace sortlistdata
 		lpProp = PpropFindProp(lpsRowData->lpProps, lpsRowData->cValues, PR_ROWID);
 		if (lpProp && PR_ROWID == lpProp->ulPropTag)
 		{
-			output::DebugPrint(output::DBGGeneric, L"\tPR_ROWID = %d\n", lpProp->Value.l);
+			output::DebugPrint(output::dbgLevel::Generic, L"\tPR_ROWID = %d\n", lpProp->Value.l);
 			m_ulRowID = lpProp->Value.l;
 		}
 
@@ -63,7 +63,7 @@ namespace sortlistdata
 		lpProp = PpropFindProp(lpsRowData->lpProps, lpsRowData->cValues, PR_ROW_TYPE);
 		if (lpProp && PR_ROW_TYPE == lpProp->ulPropTag)
 		{
-			output::DebugPrint(output::DBGGeneric, L"\tPR_ROW_TYPE = %d\n", lpProp->Value.l);
+			output::DebugPrint(output::dbgLevel::Generic, L"\tPR_ROW_TYPE = %d\n", lpProp->Value.l);
 			m_ulRowType = lpProp->Value.l;
 		}
 
@@ -103,7 +103,7 @@ namespace sortlistdata
 		if (strings::CheckStringProp(lpProp, PT_STRING8))
 		{
 			m_szProfileDisplayName = strings::LPCSTRToWstring(lpProp->Value.lpszA);
-			output::DebugPrint(output::DBGGeneric, L"\tPR_DISPLAY_NAME_A = %ws\n", m_szProfileDisplayName.c_str());
+			output::DebugPrint(output::dbgLevel::Generic, L"\tPR_DISPLAY_NAME_A = %ws\n", m_szProfileDisplayName.c_str());
 		}
 
 		// Save the e-mail address (if it exists on the object) into lpData
@@ -111,7 +111,7 @@ namespace sortlistdata
 		if (strings::CheckStringProp(lpProp, PT_TSTRING))
 		{
 			m_szDN = strings::LPCTSTRToWstring(lpProp->Value.LPSZ);
-			output::DebugPrint(output::DBGGeneric, L"\tPR_EMAIL_ADDRESS = %ws\n", m_szDN.c_str());
+			output::DebugPrint(output::dbgLevel::Generic, L"\tPR_EMAIL_ADDRESS = %ws\n", m_szDN.c_str());
 		}
 	}
 

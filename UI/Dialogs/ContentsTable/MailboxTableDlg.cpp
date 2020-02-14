@@ -27,7 +27,7 @@ namespace dialog
 			  pParentWnd,
 			  lpMapiObjects,
 			  IDS_MAILBOXTABLE,
-			  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+			  createDialogType::DO_NOT_CALL_CREATE_DIALOG,
 			  nullptr,
 			  lpMAPITable,
 			  &columns::sptMBXCols.tags,
@@ -62,7 +62,8 @@ namespace dialog
 
 	void CMailboxTableDlg::CreateDialogAndMenu(UINT nIDMenuResource)
 	{
-		output::DebugPrintEx(output::DBGCreateDialog, CLASS, L"CreateDialogAndMenu", L"id = 0x%X\n", nIDMenuResource);
+		output::DebugPrintEx(
+			output::dbgLevel::CreateDialog, CLASS, L"CreateDialogAndMenu", L"id = 0x%X\n", nIDMenuResource);
 		CContentsTableDlg::CreateDialogAndMenu(nIDMenuResource);
 
 		ui::UpdateMenuString(m_hWnd, ID_CREATEPROPERTYSTRINGRESTRICTION, IDS_MBRESMENU);
@@ -106,7 +107,8 @@ namespace dialog
 								false);
 							if (lpNewMDB)
 							{
-								EC_H_S(DisplayObject(static_cast<LPMAPIPROP>(lpNewMDB), NULL, otStore, this));
+								EC_H_S(
+									DisplayObject(static_cast<LPMAPIPROP>(lpNewMDB), NULL, objectType::store, this));
 								lpNewMDB->Release();
 								lpNewMDB = nullptr;
 							}
@@ -162,6 +164,6 @@ namespace dialog
 			CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_UNICODE), szString, MyData.GetHex(1), nullptr);
 		m_lpContentsTableListCtrl->SetRestriction(lpRes);
 
-		SetRestrictionType(mfcmapiNORMAL_RESTRICTION);
+		SetRestrictionType(restrictionType::normal);
 	}
 } // namespace dialog

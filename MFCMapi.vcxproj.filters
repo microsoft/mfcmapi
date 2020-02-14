@@ -5,9 +5,6 @@
       <UniqueIdentifier>{2b3c935c-0f37-418a-9fb7-5fea0dff0c7e}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Source Files\PropertyBag">
-      <UniqueIdentifier>{2c5ab9e0-50d2-4325-acd6-2e6c967ba7ee}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\UI">
       <UniqueIdentifier>{26979dfe-c4a7-434b-8635-acbd45f82c20}</UniqueIdentifier>
     </Filter>
@@ -32,14 +29,14 @@
     <Filter Include="Source Files\UI\Dialogs\HierarchyTable">
       <UniqueIdentifier>{79d3d5f7-6568-44ea-92cc-8bf5d15e2b83}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\UI\Controls\StyleTree">
+      <UniqueIdentifier>{2a1b6e1f-562f-4579-876b-5146fc79b8d9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="UI\FakeSplitter.h">
-      <Filter>Source Files\UI\Controls</Filter>
-    </ClInclude>
     <ClInclude Include="UI\Dialogs\MFCUtilityFunctions.h">
       <Filter>Source Files\UI\Dialogs</Filter>
     </ClInclude>
@@ -64,30 +61,38 @@
     <ClInclude Include="UI\CMAPIProgress.h">
       <Filter>Source Files\UI</Filter>
     </ClInclude>
-    <ClInclude Include="UI\Controls\SortList\SortHeader.h" />
-    <ClInclude Include="UI\Controls\SortList\SortListCtrl.h" />
-    <ClInclude Include="UI\OnNotify.h" />
-    <ClInclude Include="UI\Controls\SortList\ContentsTableListCtrl.h">
-      <Filter>Source Files\UI\Controls</Filter>
+    <ClInclude Include="UI\ViewPane\getpane.h">
+      <Filter>Source Files\UI</Filter>
     </ClInclude>
-    <ClInclude Include="UI\Controls\SortList\SingleMAPIPropListCtrl.h">
-      <Filter>Source Files\UI\Controls</Filter>
+    <ClInclude Include="UI\OnNotify.h">
+      <Filter>Source Files\UI</Filter>
     </ClInclude>
-    <ClInclude Include="UI\Controls\StyleTree\HierarchyTableTreeCtrl.h">
-      <Filter>Source Files\UI\Controls</Filter>
+    <ClInclude Include="UI\Controls\SortList\SortHeader.h">
+      <Filter>Source Files\UI\Controls\SortList</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Controls\SortList\SortListCtrl.h">
+      <Filter>Source Files\UI\Controls\SortList</Filter>
     </ClInclude>
     <ClInclude Include="UI\Controls\StyleTree\StyleTreeCtrl.h">
-      <Filter>Source Files\UI\Controls</Filter>
+      <Filter>Source Files\UI\Controls\StyleTree</Filter>
     </ClInclude>
-    <ClInclude Include="UI\ViewPane\getpane.h" />
+    <ClInclude Include="UI\Controls\StyleTree\HierarchyTableTreeCtrl.h">
+      <Filter>Source Files\UI\Controls\StyleTree</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Controls\SortList\ContentsTableListCtrl.h">
+      <Filter>Source Files\UI\Controls\SortList</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Controls\SortList\SingleMAPIPropListCtrl.h">
+      <Filter>Source Files\UI\Controls\SortList</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\FakeSplitter.h">
+      <Filter>Source Files\UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StdAfx.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClCompile Include="UI\FakeSplitter.cpp">
-      <Filter>Source Files\UI\Controls</Filter>
-    </ClCompile>
     <ClCompile Include="UI\Dialogs\MFCUtilityFunctions.cpp">
       <Filter>Source Files\UI\Dialogs</Filter>
     </ClCompile>
@@ -112,25 +117,28 @@
       <Filter>Source Files\UI</Filter>
     </ClCompile>
     <ClCompile Include="UI\Controls\SortList\SortHeader.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\UI\Controls\SortList</Filter>
     </ClCompile>
     <ClCompile Include="UI\Controls\SortList\SortListCtrl.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\UI\Controls\SortList</Filter>
     </ClCompile>
     <ClCompile Include="UI\OnNotify.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Controls\SortList\ContentsTableListCtrl.cpp">
-      <Filter>Source Files\UI\Controls</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Controls\SortList\SingleMAPIPropListCtrl.cpp">
-      <Filter>Source Files\UI\Controls</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Controls\StyleTree\HierarchyTableTreeCtrl.cpp">
-      <Filter>Source Files\UI\Controls</Filter>
+      <Filter>Source Files\UI</Filter>
     </ClCompile>
     <ClCompile Include="UI\Controls\StyleTree\StyleTreeCtrl.cpp">
-      <Filter>Source Files\UI\Controls</Filter>
+      <Filter>Source Files\UI\Controls\StyleTree</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Controls\StyleTree\HierarchyTableTreeCtrl.cpp">
+      <Filter>Source Files\UI\Controls\StyleTree</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Controls\SortList\ContentsTableListCtrl.cpp">
+      <Filter>Source Files\UI\Controls\SortList</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Controls\SortList\SingleMAPIPropListCtrl.cpp">
+      <Filter>Source Files\UI\Controls\SortList</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\FakeSplitter.cpp">
+      <Filter>Source Files\UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -48,7 +48,7 @@ namespace ui
 		registry::ReadFromRegistry();
 		// After this call we may output to the debug file
 		output::OpenDebugFile();
-		output::outputVersion(output::DBGVersionBanner, nullptr);
+		output::outputVersion(output::dbgLevel::VersionBanner, nullptr);
 		// Force the system riched20 so we don't load office's version.
 		(void) import::LoadFromSystemDir(L"riched20.dll"); // STRING_OK
 		// Second part is to load rundll32.exe
@@ -96,7 +96,7 @@ namespace ui
 		*ppvObj = nullptr;
 		if (riid == IID_IUnknown)
 		{
-			*ppvObj = static_cast<LPVOID>(this);
+			*ppvObj = this;
 			AddRef();
 			return S_OK;
 		}

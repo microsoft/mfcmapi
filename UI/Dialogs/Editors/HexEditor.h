@@ -4,27 +4,24 @@
 #include <UI/ParentWnd.h>
 #include <core/mapi/cache/mapiObjects.h>
 
-namespace dialog
+namespace dialog::editor
 {
-	namespace editor
+	class CHexEditor : public CEditor
 	{
-		class CHexEditor : public CEditor
-		{
-		public:
-			CHexEditor(_In_ ui::CParentWnd* pParentWnd, _In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects);
+	public:
+		CHexEditor(_In_ ui::CParentWnd* pParentWnd, _In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects);
 
-		private:
-			_Check_return_ ULONG HandleChange(UINT nID) override;
-			void OnEditAction1() override;
-			void OnEditAction2() override;
-			void OnEditAction3() override;
-			void UpdateParser() const;
+	private:
+		_Check_return_ ULONG HandleChange(UINT nID) override;
+		void OnEditAction1() override;
+		void OnEditAction2() override;
+		void OnEditAction3() override;
+		void UpdateParser() const;
 
-			void OnOK() override;
-			void OnCancel() override;
-			void SetHex(_In_opt_count_(cb) LPBYTE lpb, size_t cb) const;
+		void OnOK() override;
+		void OnCancel() override;
+		void SetHex(_In_opt_count_(cb) LPBYTE lpb, size_t cb) const;
 
-			std::shared_ptr<cache::CMapiObjects> m_lpMapiObjects{};
-		};
-	} // namespace editor
-} // namespace dialog
+		std::shared_ptr<cache::CMapiObjects> m_lpMapiObjects{};
+	};
+} // namespace dialog::editor

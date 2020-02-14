@@ -108,7 +108,7 @@ namespace smartview
 
 	std::shared_ptr<block> PackedAnsiString::toBlock(_In_ const std::wstring& szFieldName)
 	{
-		auto& data = cchLength;
+		const auto& data = cchLength;
 
 		if (*cchLength == 0xFF)
 		{
@@ -132,7 +132,7 @@ namespace smartview
 
 	std::shared_ptr<block> PackedUnicodeString::toBlock(_In_ const std::wstring& szFieldName)
 	{
-		auto& data = cchLength;
+		const auto& data = cchLength;
 
 		if (*cchLength == 0xFF)
 		{

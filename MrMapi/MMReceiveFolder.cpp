@@ -38,7 +38,12 @@ void PrintReceiveFolderTable(_In_ LPMDB lpMDB)
 			{
 				printf("<properties index=\"%lu\">\n", iRow);
 				output::outputProperties(
-					output::DBGNoDebug, stdout, lpRows->aRow[i].cValues, lpRows->aRow[i].lpProps, nullptr, false);
+					output::dbgLevel::NoDebug,
+					stdout,
+					lpRows->aRow[i].cValues,
+					lpRows->aRow[i].lpProps,
+					nullptr,
+					false);
 				printf("</properties>\n");
 				iRow++;
 			}

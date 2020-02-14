@@ -100,14 +100,14 @@ namespace viewpane
 
 		*pcb = 0;
 
-		output::DebugPrint(output::DBGStream, L"EditStreamReadCallBack: cb = %d\n", cb);
+		output::DebugPrint(output::dbgLevel::Stream, L"EditStreamReadCallBack: cb = %d\n", cb);
 
 		const ULONG cbTemp = cb / 2;
 		ULONG cbTempRead = 0;
 		auto buffer = std::vector<BYTE>(cbTemp);
 
 		EC_MAPI_S(stmData->Read(buffer.data(), cbTemp, &cbTempRead));
-		output::DebugPrint(output::DBGStream, L"EditStreamReadCallBack: read %u bytes\n", cbTempRead);
+		output::DebugPrint(output::dbgLevel::Stream, L"EditStreamReadCallBack: read %u bytes\n", cbTempRead);
 
 		memset(pbBuff, 0, cbTempRead * 2);
 		ULONG iBinPos = 0;
@@ -286,7 +286,7 @@ namespace viewpane
 		// read the 'text stream' into control
 		const auto lBytesRead = m_EditBox.StreamIn(SF_TEXT | SF_UNICODE, es);
 		output::DebugPrintEx(
-			output::DBGStream, CLASS, L"SetEditBoxText", L"read %d bytes from the stream\n", lBytesRead);
+			output::dbgLevel::Stream, CLASS, L"SetEditBoxText", L"read %d bytes from the stream\n", lBytesRead);
 
 		// Clear the modify bit so this stream appears untouched
 		m_EditBox.SetModify(false);
@@ -333,7 +333,7 @@ namespace viewpane
 
 	void TextPane::SetReadOnly()
 	{
-		m_EditBox.SetBackgroundColor(false, MyGetSysColor(ui::cBackgroundReadOnly));
+		m_EditBox.SetBackgroundColor(false, MyGetSysColor(ui::uiColor::BackgroundReadOnly));
 		m_EditBox.SetReadOnly();
 	}
 
@@ -408,14 +408,14 @@ namespace viewpane
 	void TextPane::SetBinaryStream(_In_ LPSTREAM lpStreamIn)
 	{
 		EDITSTREAM es = {0, 0, EditStreamReadCallBack};
-		const UINT uFormat = SF_TEXT;
+		constexpr UINT uFormat = SF_TEXT;
 
 		es.dwCookie = reinterpret_cast<DWORD_PTR>(lpStreamIn);
 
 		// read the 'text' stream into control
 		const auto lBytesRead = m_EditBox.StreamIn(uFormat, es);
 		output::DebugPrintEx(
-			output::DBGStream, CLASS, L"InitEditFromStream", L"read %d bytes from the stream\n", lBytesRead);
+			output::dbgLevel::Stream, CLASS, L"InitEditFromStream", L"read %d bytes from the stream\n", lBytesRead);
 
 		// Clear the modify bit so this stream appears untouched
 		m_EditBox.SetModify(false);
@@ -430,7 +430,11 @@ namespace viewpane
 			ULONG cbWritten = 0;
 			const auto hRes = EC_MAPI(lpStreamOut->Write(bin.data(), static_cast<ULONG>(bin.size()), &cbWritten));
 			output::DebugPrintEx(
-				output::DBGStream, CLASS, L"WriteToBinaryStream", L"wrote 0x%X bytes to the stream\n", cbWritten);
+				output::dbgLevel::Stream,
+				CLASS,
+				L"WriteToBinaryStream",
+				L"wrote 0x%X bytes to the stream\n",
+				cbWritten);
 
 			if (SUCCEEDED(hRes))
 			{
@@ -446,7 +450,7 @@ namespace viewpane
 		::SendMessage(m_EditBox.GetSafeHwnd(), WM_SETREDRAW, false, 0);
 
 		// Grab the original range so we can restore it later
-		auto originalRange = CHARRANGE{};
+		const auto originalRange = CHARRANGE{};
 		::SendMessage(m_EditBox.GetSafeHwnd(), EM_EXGETSEL, 0, reinterpret_cast<LPARAM>(&originalRange));
 
 		// Select the entire range
@@ -468,8 +472,8 @@ namespace viewpane
 			auto charrange = CHARRANGE{static_cast<LONG>(range.start), static_cast<LONG>(range.end)};
 			::SendMessage(m_EditBox.GetSafeHwnd(), EM_EXSETSEL, 0, reinterpret_cast<LPARAM>(&charrange));
 
-			charformat.crTextColor = MyGetSysColor(ui::cTextHighlight);
-			charformat.crBackColor = MyGetSysColor(ui::cTextHighlightBackground);
+			charformat.crTextColor = MyGetSysColor(ui::uiColor::TextHighlight);
+			charformat.crBackColor = MyGetSysColor(ui::uiColor::TextHighlightBackground);
 			::SendMessage(
 				m_EditBox.GetSafeHwnd(), EM_SETCHARFORMAT, SCF_SELECTION, reinterpret_cast<LPARAM>(&charformat));
 		}

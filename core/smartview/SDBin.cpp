@@ -12,7 +12,7 @@ namespace smartview
 		if (m_lpMAPIProp) m_lpMAPIProp->Release();
 	}
 
-	void SDBin::Init(_In_opt_ LPMAPIPROP lpMAPIProp, bool bFB)
+	void SDBin::Init(_In_opt_ LPMAPIPROP lpMAPIProp, bool bFB) noexcept
 	{
 		if (m_lpMAPIProp) m_lpMAPIProp->Release();
 		m_lpMAPIProp = lpMAPIProp;
@@ -24,18 +24,18 @@ namespace smartview
 
 	void SDBin::parseBlocks()
 	{
-		auto acetype = sid::acetypeMessage;
+		auto acetype = sid::aceType::Message;
 		switch (mapi::GetMAPIObjectType(m_lpMAPIProp))
 		{
 		case MAPI_STORE:
 		case MAPI_ADDRBOOK:
 		case MAPI_FOLDER:
 		case MAPI_ABCONT:
-			acetype = sid::acetypeContainer;
+			acetype = sid::aceType::Container;
 			break;
 		}
 
-		if (m_bFB) acetype = sid::acetypeFreeBusy;
+		if (m_bFB) acetype = sid::aceType::FreeBusy;
 
 		if (m_SDbin)
 		{

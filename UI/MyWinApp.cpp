@@ -57,7 +57,7 @@ namespace ui
 		auto pWnd = new CParentWnd();
 		if (pWnd)
 		{
-			m_pMainWnd = static_cast<CWnd*>(pWnd);
+			m_pMainWnd = pWnd;
 			new dialog::CMainDlg(pWnd, std::make_shared<cache::CMapiObjects>(nullptr));
 			pWnd->Release();
 		}

@@ -5,63 +5,63 @@
 
 namespace ui
 {
-	enum uiColor
+	enum class uiColor
 	{
-		cBackground,
-		cBackgroundReadOnly,
-		cGlow,
-		cGlowBackground,
-		cGlowText,
-		cFrameSelected,
-		cFrameUnselected,
-		cSelectedBackground,
-		cArrow,
-		cText,
-		cTextDisabled,
-		cTextReadOnly,
-		cBitmapTransBack,
-		cBitmapTransFore,
-		cStatus,
-		cStatusText,
-		cPaneHeaderBackground,
-		cPaneHeaderText,
-		cTextHighlightBackground,
-		cTextHighlight,
-		cTestPink,
-		cTestLavender,
-		cUIEnd
+		Background,
+		BackgroundReadOnly,
+		Glow,
+		GlowBackground,
+		GlowText,
+		FrameSelected,
+		FrameUnselected,
+		SelectedBackground,
+		Arrow,
+		Text,
+		TextDisabled,
+		TextReadOnly,
+		BitmapTransBack,
+		BitmapTransFore,
+		Status,
+		StatusText,
+		PaneHeaderBackground,
+		PaneHeaderText,
+		TextHighlightBackground,
+		TextHighlight,
+		TestPink,
+		TestLavender,
+		UIEnd
 	};
 
-	enum uiPen
+	enum class uiPen
 	{
-		cSolidPen,
-		cSolidGreyPen,
-		cDashedPen,
-		cPenEnd
+		SolidPen,
+		SolidGreyPen,
+		DashedPen,
+		PenEnd
 	};
 
-	enum uiBitmap
+	enum class uiBitmap
 	{
-		cNotify,
-		cClose,
-		cMinimize,
-		cMaximize,
-		cRestore,
-		cBitmapEnd
+		Notify,
+		Close,
+		Minimize,
+		Maximize,
+		Restore,
+		BitmapEnd
 	};
 
-	enum uiButtonStyle
+	enum class uiButtonStyle
 	{
-		bsUnstyled,
-		bsUpArrow,
-		bsDownArrow
+		Unstyled,
+		UpArrow,
+		DownArrow
 	};
 
-	enum uiLabelStyle
+	enum class uiLabelStyle
 	{
-		lsUnstyled,
-		lsPaneHeaderLabel,
-		lsPaneHeaderText,
+		Unstyled,
+		PaneHeaderLabel,
+		PaneHeaderText,
 	};
 
 	void InitializeGDI() noexcept;
@@ -95,7 +95,7 @@ namespace ui
 	};
 
 	SCALE GetDPIScale();
-	HBITMAP ScaleBitmap(HBITMAP hBitmap, SCALE& scale);
+	HBITMAP ScaleBitmap(HBITMAP hBitmap, const SCALE& scale);
 
 	void ClearEditFormatting(_In_ HWND hWnd, bool bReadOnly);
 

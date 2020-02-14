@@ -2,11 +2,11 @@
 
 namespace sid
 {
-	enum eAceType
+	enum class aceType
 	{
-		acetypeContainer,
-		acetypeMessage,
-		acetypeFreeBusy
+		Container,
+		Message,
+		FreeBusy
 	};
 
 	struct SidAccount
@@ -33,5 +33,5 @@ namespace sid
 	_Check_return_ std::wstring GetTextualSid(std::vector<BYTE> buf);
 	_Check_return_ SidAccount LookupAccountSid(PSID SidStart);
 	_Check_return_ SidAccount LookupAccountSid(std::vector<BYTE> buf);
-	_Check_return_ SecurityDescriptor SDToString(const std::vector<BYTE>& buf, eAceType acetype);
+	_Check_return_ SecurityDescriptor SDToString(const std::vector<BYTE>& buf, aceType acetype);
 } // namespace sid

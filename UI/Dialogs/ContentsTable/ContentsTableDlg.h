@@ -3,13 +3,10 @@
 #include <core/mapi/columnTags.h>
 #include <core/addin/mfcmapi.h>
 
-namespace controls
+namespace controls::sortlistctrl
 {
-	namespace sortlistctrl
-	{
-		class CContentsTableListCtrl;
-	}
-} // namespace controls
+	class CContentsTableListCtrl;
+} // namespace controls::sortlistctrl
 
 namespace dialog
 {
@@ -20,16 +17,16 @@ namespace dialog
 			_In_ ui::CParentWnd* pParentWnd,
 			_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 			UINT uidTitle,
-			__mfcmapiCreateDialogEnum bCreateDialog,
+			createDialogType bCreateDialog,
 			_In_opt_ LPMAPIPROP lpContainer,
 			_In_opt_ LPMAPITABLE lpContentsTable,
 			_In_ LPSPropTagArray sptDefaultDisplayColumnTags,
 			_In_ const std::vector<columns::TagNames>& lpDefaultDisplayColumns,
 			ULONG nIDContextMenu,
 			ULONG ulAddInContext);
-		virtual ~CContentsTableDlg();
+		~CContentsTableDlg();
 
-		_Check_return_ virtual LPMAPIPROP OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify);
+		_Check_return_ virtual LPMAPIPROP OpenItemProp(int iSelectedItem, modifyType bModify);
 
 	protected:
 		// Overrides from base class
@@ -41,13 +38,13 @@ namespace dialog
 
 		virtual void OnDisplayItem();
 
-		void SetRestrictionType(__mfcmapiRestrictionTypeEnum RestrictionType);
+		void SetRestrictionType(restrictionType RestrictionType);
 		_Check_return_ HRESULT OpenAttachmentsFromMessage(_In_ LPMESSAGE lpMessage);
 		_Check_return_ HRESULT OpenRecipientsFromMessage(_In_ LPMESSAGE lpMessage);
 
 		controls::sortlistctrl::CContentsTableListCtrl* m_lpContentsTableListCtrl;
 		LPMAPITABLE m_lpContentsTable;
-		ULONG m_ulDisplayFlags;
+		tableDisplayFlags m_displayFlags;
 
 	private:
 		virtual void HandleAddInMenuSingle(

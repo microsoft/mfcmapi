@@ -45,7 +45,7 @@ namespace dialog
 			  pParentWnd,
 			  lpMapiObjects,
 			  ID_PRODUCTNAME,
-			  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+			  createDialogType::DO_NOT_CALL_CREATE_DIALOG,
 			  nullptr,
 			  nullptr,
 			  &columns::sptSTORECols.tags,
@@ -120,7 +120,7 @@ namespace dialog
 
 	void CMainDlg::AddLoadMAPIMenus() const
 	{
-		output::DebugPrint(output::DBGLoadMAPI, L"AddLoadMAPIMenus - Extending menus\n");
+		output::DebugPrint(output::dbgLevel::LoadMAPI, L"AddLoadMAPIMenus - Extending menus\n");
 
 		// Find the submenu with ID_LOADMAPI on it
 		const auto hAddInMenu = ui::LocateSubmenu(::GetMenu(m_hWnd), ID_LOADMAPI);
@@ -134,7 +134,7 @@ namespace dialog
 			{
 				if (uidCurMenu > ID_LOADMAPIMENUMAX) break;
 
-				output::DebugPrint(output::DBGLoadMAPI, L"Found MAPI path %ws\n", szPath.c_str());
+				output::DebugPrint(output::dbgLevel::LoadMAPI, L"Found MAPI path %ws\n", szPath.c_str());
 				const auto lpMenu = ui::CreateMenuEntry(szPath);
 
 				EC_B_S(
@@ -142,13 +142,13 @@ namespace dialog
 			}
 		}
 
-		output::DebugPrint(output::DBGLoadMAPI, L"Done extending menus\n");
+		output::DebugPrint(output::dbgLevel::LoadMAPI, L"Done extending menus\n");
 	}
 
 	bool CMainDlg::InvokeLoadMAPIMenu(WORD wMenuSelect) const
 	{
 		if (wMenuSelect < ID_LOADMAPIMENUMIN || wMenuSelect > ID_LOADMAPIMENUMAX) return false;
-		output::DebugPrint(output::DBGLoadMAPI, L"InvokeLoadMAPIMenu - got menu item %u\n", wMenuSelect);
+		output::DebugPrint(output::dbgLevel::LoadMAPI, L"InvokeLoadMAPIMenu - got menu item %u\n", wMenuSelect);
 
 		MENUITEMINFOW subMenu = {0};
 		subMenu.cbSize = sizeof(MENUITEMINFO);
@@ -158,7 +158,7 @@ namespace dialog
 		if (subMenu.dwItemData)
 		{
 			const auto lme = reinterpret_cast<ui::LPMENUENTRY>(subMenu.dwItemData);
-			output::DebugPrint(output::DBGLoadMAPI, L"Loading MAPI from %ws\n", lme->m_pName.c_str());
+			output::DebugPrint(output::dbgLevel::LoadMAPI, L"Loading MAPI from %ws\n", lme->m_pName.c_str());
 			const auto hMAPI = EC_D(HMODULE, import::MyLoadLibraryW(lme->m_pName));
 			mapistub::SetMAPIHandle(hMAPI);
 		}
@@ -169,7 +169,7 @@ namespace dialog
 	_Check_return_ bool CMainDlg::HandleMenu(WORD wMenuSelect)
 	{
 		output::DebugPrint(
-			output::DBGMenu, L"CMainDlg::HandleMenu wMenuSelect = 0x%X = %u\n", wMenuSelect, wMenuSelect);
+			output::dbgLevel::Menu, L"CMainDlg::HandleMenu wMenuSelect = 0x%X = %u\n", wMenuSelect, wMenuSelect);
 		if (HandleQuickStart(wMenuSelect, this, m_hWnd)) return true;
 		if (InvokeLoadMAPIMenu(wMenuSelect)) return true;
 
@@ -314,7 +314,7 @@ namespace dialog
 				nullptr, lpAddrBook, nullptr, nullptr, cbEID, lpEID, nullptr, MAPI_MODIFY, &ulObjType);
 			if (lpDefaultDir)
 			{
-				EC_H_S(DisplayObject(lpDefaultDir, ulObjType, otDefault, this));
+				EC_H_S(DisplayObject(lpDefaultDir, ulObjType, objectType::default, this));
 
 				lpDefaultDir->Release();
 			}
@@ -343,7 +343,7 @@ namespace dialog
 				nullptr, lpAddrBook, nullptr, nullptr, cbEID, lpEID, nullptr, MAPI_MODIFY, &ulObjType);
 			if (lpPAB)
 			{
-				EC_H_S(DisplayObject(lpPAB, ulObjType, otDefault, this));
+				EC_H_S(DisplayObject(lpPAB, ulObjType, objectType::default, this));
 
 				lpPAB->Release();
 			}
@@ -362,10 +362,11 @@ namespace dialog
 		OnOpenMessageStoreTable();
 	}
 
-	_Check_return_ LPMAPIPROP CMainDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify)
+	_Check_return_ LPMAPIPROP CMainDlg::OpenItemProp(int iSelectedItem, modifyType bModify)
 	{
 		if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return nullptr;
-		output::DebugPrintEx(output::DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
+		output::DebugPrintEx(
+			output::dbgLevel::OpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
 
 		const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 		if (!lpMAPISession) return nullptr;
@@ -382,7 +383,7 @@ namespace dialog
 				if (lpEntryID)
 				{
 					ULONG ulFlags = NULL;
-					if (mfcmapiREQUEST_MODIFY == bModify) ulFlags |= MDB_WRITE;
+					if (modifyType::REQUEST_MODIFY == bModify) ulFlags |= MDB_WRITE;
 
 					lpMDB = mapi::store::CallOpenMsgStore(
 						lpMAPISession, reinterpret_cast<ULONG_PTR>(m_hWnd), lpEntryID, ulFlags);
@@ -445,7 +446,7 @@ namespace dialog
 							false);
 						if (lpAdminMDB)
 						{
-							EC_H_S(DisplayObject(lpAdminMDB, NULL, otStore, this));
+							EC_H_S(DisplayObject(lpAdminMDB, NULL, objectType::store, this));
 							lpAdminMDB->Release();
 						}
 					}
@@ -508,7 +509,7 @@ namespace dialog
 				}
 				else
 				{
-					EC_H_S(DisplayObject(lpMDB, NULL, otStore, this));
+					EC_H_S(DisplayObject(lpMDB, NULL, objectType::store, this));
 				}
 			}
 		}
@@ -531,7 +532,7 @@ namespace dialog
 		auto lpMDB = mapi::store::OpenPublicMessageStore(lpMAPISession, L"", MyPrompt.GetHex(0));
 		if (lpMDB)
 		{
-			EC_H_S(DisplayObject(lpMDB, NULL, otStore, this));
+			EC_H_S(DisplayObject(lpMDB, NULL, objectType::store, this));
 
 			lpMDB->Release();
 		}
@@ -555,7 +556,7 @@ namespace dialog
 		auto lpMDB = mapi::store::OpenPublicMessageStore(lpMAPISession, MyPrompt.GetStringW(0), MyPrompt.GetHex(1));
 		if (lpMDB)
 		{
-			EC_H_S(DisplayObject(lpMDB, NULL, otStore, this));
+			EC_H_S(DisplayObject(lpMDB, NULL, objectType::store, this));
 
 			lpMDB->Release();
 		}
@@ -583,7 +584,7 @@ namespace dialog
 				OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP);
 			if (lpOtherMDB)
 			{
-				EC_H_S(DisplayObject(lpOtherMDB, NULL, otStore, this));
+				EC_H_S(DisplayObject(lpOtherMDB, NULL, objectType::store, this));
 
 				lpOtherMDB->Release();
 			}
@@ -607,7 +608,7 @@ namespace dialog
 
 		if (pStoresTbl)
 		{
-			m_lpContentsTableListCtrl->SetContentsTable(pStoresTbl, dfNormal, MAPI_STORE);
+			m_lpContentsTableListCtrl->SetContentsTable(pStoresTbl, tableDisplayFlags::dfNormal, MAPI_STORE);
 
 			pStoresTbl->Release();
 		}
@@ -626,7 +627,7 @@ namespace dialog
 			auto lpMailboxMDB = ui::mapiui::OpenOtherUsersMailboxFromGal(lpMAPISession, lpAddrBook);
 			if (lpMailboxMDB)
 			{
-				EC_H_S(DisplayObject(lpMailboxMDB, NULL, otStore, this));
+				EC_H_S(DisplayObject(lpMailboxMDB, NULL, objectType::store, this));
 
 				lpMailboxMDB->Release();
 			}
@@ -658,7 +659,7 @@ namespace dialog
 
 						if (lpMDB)
 						{
-							EC_H_S(DisplayObject(lpMDB, NULL, otStoreDeletedItems, this));
+							EC_H_S(DisplayObject(lpMDB, NULL, objectType::storeDeletedItems, this));
 
 							lpMDB->Release();
 						}
@@ -744,7 +745,7 @@ namespace dialog
 		OnCloseAddressBook();
 
 		// We do this first to free up any stray session pointers
-		m_lpContentsTableListCtrl->SetContentsTable(nullptr, dfNormal, MAPI_STORE);
+		m_lpContentsTableListCtrl->SetContentsTable(nullptr, tableDisplayFlags::dfNormal, MAPI_STORE);
 
 		m_lpMapiObjects->Logoff(m_hWnd, MAPI_LOGOFF_UI);
 	}
@@ -763,7 +764,7 @@ namespace dialog
 		OnCloseAddressBook();
 
 		// We do this first to free up any stray session pointers
-		m_lpContentsTableListCtrl->SetContentsTable(nullptr, dfNormal, MAPI_STORE);
+		m_lpContentsTableListCtrl->SetContentsTable(nullptr, tableDisplayFlags::dfNormal, MAPI_STORE);
 
 		m_lpMapiObjects->Logoff(m_hWnd, MyData.GetHex(0));
 	}
@@ -774,8 +775,8 @@ namespace dialog
 		if (!m_lpMapiObjects) return;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		const ULONG ulFlags = MAPI_EXTENDED | MAPI_ALLOW_OTHERS | MAPI_NEW_SESSION | MAPI_LOGON_UI |
-							  MAPI_EXPLICIT_PROFILE; // display a profile picker box
+		constexpr ULONG ulFlags = MAPI_EXTENDED | MAPI_ALLOW_OTHERS | MAPI_NEW_SESSION | MAPI_LOGON_UI |
+								  MAPI_EXPLICIT_PROFILE; // display a profile picker box
 		m_lpMapiObjects->MAPILogonEx(m_hWnd, nullptr, ulFlags);
 	}
 
@@ -798,7 +799,7 @@ namespace dialog
 		}
 		else
 		{
-			output::DebugPrint(output::DBGGeneric, L"MAPILogonEx call cancelled.\n");
+			output::DebugPrint(output::dbgLevel::Generic, L"MAPILogonEx call cancelled.\n");
 		}
 	}
 
@@ -806,8 +807,7 @@ namespace dialog
 	{
 		if (!m_lpMapiObjects || !m_lpPropDisplay) return;
 
-		LPMAPIFORMINFO lpMAPIFormInfo = nullptr;
-		ResolveMessageClass(m_lpMapiObjects, nullptr, &lpMAPIFormInfo);
+		auto lpMAPIFormInfo = ResolveMessageClass(m_lpMapiObjects, nullptr);
 		if (lpMAPIFormInfo)
 		{
 			EC_H_S(m_lpPropDisplay->SetDataSource(lpMAPIFormInfo, nullptr, false));
@@ -817,10 +817,9 @@ namespace dialog
 
 	void CMainDlg::OnSelectForm()
 	{
-		LPMAPIFORMINFO lpMAPIFormInfo = nullptr;
-
 		if (!m_lpMapiObjects || !m_lpPropDisplay) return;
-		SelectForm(m_hWnd, m_lpMapiObjects, nullptr, &lpMAPIFormInfo);
+
+		auto lpMAPIFormInfo = SelectForm(m_hWnd, m_lpMapiObjects, nullptr);
 		if (lpMAPIFormInfo)
 		{
 			// TODO: Put some code in here which works with the returned Form Info pointer
@@ -946,7 +945,7 @@ namespace dialog
 
 	void CMainDlg::OnDisplayMAPIPath()
 	{
-		output::DebugPrint(output::DBGGeneric, L"OnDisplayMAPIPath()\n");
+		output::DebugPrint(output::dbgLevel::Generic, L"OnDisplayMAPIPath()\n");
 		const auto hMAPI = mapistub::GetMAPIHandle();
 
 		editor::CEditor MyData(this, IDS_MAPIPATHTITLE, NULL, CEDITOR_BUTTON_OK);
@@ -1040,7 +1039,7 @@ namespace dialog
 			&lpOptions));
 		if (lpOptions)
 		{
-			output::outputProperties(output::DBGGeneric, nullptr, cValues, lpOptions, nullptr, false);
+			output::outputProperties(output::dbgLevel::Generic, nullptr, cValues, lpOptions, nullptr, false);
 
 			editor::CEditor MyResult(this, IDS_QUERYDEFMSGOPT, IDS_RESULTOFCALLPROMPT, CEDITOR_BUTTON_OK);
 			MyResult.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_COUNTOPTIONS, true));
@@ -1094,7 +1093,7 @@ namespace dialog
 
 		if (lpOptions)
 		{
-			output::outputProperties(output::DBGGeneric, nullptr, cValues, lpOptions, nullptr, false);
+			output::outputProperties(output::dbgLevel::Generic, nullptr, cValues, lpOptions, nullptr, false);
 
 			editor::CEditor MyResult(this, IDS_QUERYDEFRECIPOPT, IDS_RESULTOFCALLPROMPT, CEDITOR_BUTTON_OK);
 			MyResult.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_COUNTOPTIONS, true));
@@ -1289,7 +1288,7 @@ namespace dialog
 		if (lpMAPITable)
 		{
 
-			EC_H_S(DisplayTable(lpMAPITable, otStatus, this));
+			EC_H_S(DisplayTable(lpMAPITable, objectType::status, this));
 			lpMAPITable->Release();
 		}
 	}
@@ -1331,7 +1330,7 @@ namespace dialog
 			auto lpNewMessage = file::LoadMSGToMessage(file);
 			if (lpNewMessage)
 			{
-				WC_H_S(DisplayObject(lpNewMessage, MAPI_MESSAGE, otDefault, this));
+				WC_H_S(DisplayObject(lpNewMessage, MAPI_MESSAGE, objectType::default, this));
 				lpNewMessage->Release();
 			}
 		}
@@ -1521,11 +1520,11 @@ namespace dialog
 							lpMAPISession, reinterpret_cast<LPMAPIUID>(lpServiceUID->lpb), &emsmdbUID));
 						if (SUCCEEDED(hRes))
 						{
-							if (fIsSet(output::DBGGeneric))
+							if (fIsSet(output::dbgLevel::Generic))
 							{
 								auto szGUID = guid::GUIDToString(reinterpret_cast<LPCGUID>(&emsmdbUID));
 								output::DebugPrint(
-									output::DBGGeneric,
+									output::dbgLevel::Generic,
 									L"CMainDlg::OnComputeGivenStoreHash, emsmdbUID from PR_EMSMDB_SECTION_UID = %ws\n",
 									szGUID.c_str());
 							}
@@ -1559,15 +1558,15 @@ namespace dialog
 						}
 
 						output::DebugPrint(
-							output::DBGGeneric,
+							output::dbgLevel::Generic,
 							L"CMainDlg::OnComputeGivenStoreHash, fPrivateExchangeStore = %d\n",
 							fPrivateExchangeStore);
 						output::DebugPrint(
-							output::DBGGeneric,
+							output::dbgLevel::Generic,
 							L"CMainDlg::OnComputeGivenStoreHash, fPublicExchangeStore = %d\n",
 							fPublicExchangeStore);
 						output::DebugPrint(
-							output::DBGGeneric, L"CMainDlg::OnComputeGivenStoreHash, fCached = %d\n", fCached);
+							output::dbgLevel::Generic, L"CMainDlg::OnComputeGivenStoreHash, fCached = %d\n", fCached);
 
 						if (fCached)
 						{
@@ -1583,7 +1582,7 @@ namespace dialog
 								{
 									wzPath = lpPathPropW->Value.lpszW;
 									output::DebugPrint(
-										output::DBGGeneric,
+										output::dbgLevel::Generic,
 										L"CMainDlg::OnComputeGivenStoreHash, PR_PROFILE_OFFLINE_STORE_PATH_W = %ws\n",
 										wzPath);
 								}
@@ -1591,7 +1590,7 @@ namespace dialog
 								{
 									szPath = lpPathPropA->Value.lpszA;
 									output::DebugPrint(
-										output::DBGGeneric,
+										output::dbgLevel::Generic,
 										L"CMainDlg::OnComputeGivenStoreHash, PR_PROFILE_OFFLINE_STORE_PATH_A = %hs\n",
 										szPath);
 								}
@@ -1629,10 +1628,12 @@ namespace dialog
 					}
 
 					output::DebugPrint(
-						output::DBGGeneric, L"CMainDlg::OnComputeGivenStoreHash, Entry ID hash = 0x%08X\n", dwEIDHash);
+						output::dbgLevel::Generic,
+						L"CMainDlg::OnComputeGivenStoreHash, Entry ID hash = 0x%08X\n",
+						dwEIDHash);
 					if (dwSigHash)
 						output::DebugPrint(
-							output::DBGGeneric,
+							output::dbgLevel::Generic,
 							L"CMainDlg::OnComputeGivenStoreHash, Mapping Signature hash = 0x%08X\n",
 							dwSigHash);
 

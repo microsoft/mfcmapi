@@ -6,7 +6,7 @@ namespace sortlistdata
 {
 	sortListData::~sortListData() { clean(); }
 
-	void sortListData::clean()
+	void sortListData::clean() noexcept
 	{
 		lpData = nullptr;
 

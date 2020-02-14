@@ -9,7 +9,7 @@ namespace smartview
 {
 	void EntryIdStruct::parse()
 	{
-		m_ObjectType = eidtUnknown;
+		m_ObjectType = EIDStructType::unknown;
 		if (m_Parser->getSize() < 4) return;
 		m_abFlags0 = blockT<byte>::parse(m_Parser);
 		m_abFlags1 = blockT<byte>::parse(m_Parser);
@@ -19,31 +19,31 @@ namespace smartview
 		// Ephemeral entry ID:
 		if (*m_abFlags0 == EPHEMERAL)
 		{
-			m_ObjectType = eidtEphemeral;
+			m_ObjectType = EIDStructType::ephemeral;
 		}
 		// One Off Recipient
 		else if (*m_ProviderUID == guid::muidOOP)
 		{
-			m_ObjectType = eidtOneOff;
+			m_ObjectType = EIDStructType::oneOff;
 		}
 		// Address Book Recipient
 		else if (*m_ProviderUID == guid::muidEMSAB)
 		{
-			m_ObjectType = eidtAddressBook;
+			m_ObjectType = EIDStructType::addressBook;
 		}
 		// Contact Address Book / Personal Distribution List (PDL)
 		else if (*m_ProviderUID == guid::muidContabDLL)
 		{
-			m_ObjectType = eidtContact;
+			m_ObjectType = EIDStructType::contact;
 		}
 		// message store objects
 		else if (*m_ProviderUID == guid::muidStoreWrap)
 		{
-			m_ObjectType = eidtMessageDatabase;
+			m_ObjectType = EIDStructType::messageDatabase;
 		}
 		else if (*m_ProviderUID == guid::WAB_GUID)
 		{
-			m_ObjectType = eidtWAB;
+			m_ObjectType = EIDStructType::WAB;
 		}
 		// We can recognize Exchange message store folder and message entry IDs by their size
 		else
@@ -52,25 +52,25 @@ namespace smartview
 
 			if (sizeof(WORD) + sizeof(GUID) + 6 * sizeof(BYTE) + 2 * sizeof(BYTE) == ulRemainingBytes)
 			{
-				m_ObjectType = eidtFolder;
+				m_ObjectType = EIDStructType::folder;
 			}
 			else if (sizeof(WORD) + 2 * sizeof(GUID) + 12 * sizeof(BYTE) + 4 * sizeof(BYTE) == ulRemainingBytes)
 			{
-				m_ObjectType = eidtMessage;
+				m_ObjectType = EIDStructType::message;
 			}
 		}
 
-		if (eidtUnknown != m_ObjectType)
+		if (EIDStructType::unknown != m_ObjectType)
 		{
 			switch (m_ObjectType)
 			{
 				// Ephemeral Recipient
-			case eidtEphemeral:
+			case EIDStructType::ephemeral:
 				m_EphemeralObject.Version = blockT<DWORD>::parse(m_Parser);
 				m_EphemeralObject.Type = blockT<DWORD>::parse(m_Parser);
 				break;
 				// One Off Recipient
-			case eidtOneOff:
+			case EIDStructType::oneOff:
 				m_OneOffRecipientObject.Bitmask = blockT<DWORD>::parse(m_Parser);
 				if (*m_OneOffRecipientObject.Bitmask & MAPI_UNICODE)
 				{
@@ -86,13 +86,13 @@ namespace smartview
 				}
 				break;
 				// Address Book Recipient
-			case eidtAddressBook:
+			case EIDStructType::addressBook:
 				m_AddressBookObject.Version = blockT<DWORD>::parse(m_Parser);
 				m_AddressBookObject.Type = blockT<DWORD>::parse(m_Parser);
 				m_AddressBookObject.X500DN = blockStringA::parse(m_Parser);
 				break;
 				// Contact Address Book / Personal Distribution List (PDL)
-			case eidtContact:
+			case EIDStructType::contact:
 			{
 				m_ContactAddressBookObject.Version = blockT<DWORD>::parse(m_Parser);
 				m_ContactAddressBookObject.Type = blockT<DWORD>::parse(m_Parser);
@@ -121,16 +121,16 @@ namespace smartview
 					std::make_shared<EntryIdStruct>(m_Parser, cbRemainingBytes, false);
 			}
 			break;
-			case eidtWAB:
+			case EIDStructType::WAB:
 			{
-				m_ObjectType = eidtWAB;
+				m_ObjectType = EIDStructType::WAB;
 
 				m_WAB.Type = blockT<byte>::parse(m_Parser);
 				m_WAB.lpEntryID = std::make_shared<EntryIdStruct>(m_Parser, false);
 			}
 			break;
 			// message store objects
-			case eidtMessageDatabase:
+			case EIDStructType::messageDatabase:
 				m_MessageDatabaseObject.Version = blockT<byte>::parse(m_Parser);
 				m_MessageDatabaseObject.Flag = blockT<byte>::parse(m_Parser);
 				m_MessageDatabaseObject.DLLFileName = blockStringA::parse(m_Parser);
@@ -224,14 +224,14 @@ namespace smartview
 				}
 				break;
 				// Exchange message store folder
-			case eidtFolder:
+			case EIDStructType::folder:
 				m_FolderOrMessage.Type = blockT<WORD>::parse(m_Parser);
 				m_FolderOrMessage.FolderObject.DatabaseGUID = blockT<GUID>::parse(m_Parser);
 				m_FolderOrMessage.FolderObject.GlobalCounter = blockBytes::parse(m_Parser, 6);
 				m_FolderOrMessage.FolderObject.Pad = blockBytes::parse(m_Parser, 2);
 				break;
 				// Exchange message store message
-			case eidtMessage:
+			case EIDStructType::message:
 				m_FolderOrMessage.Type = blockT<WORD>::parse(m_Parser);
 				m_FolderOrMessage.MessageObject.FolderDatabaseGUID = blockT<GUID>::parse(m_Parser);
 				m_FolderOrMessage.MessageObject.FolderGlobalCounter = blockBytes::parse(m_Parser, 6);
@@ -245,41 +245,42 @@ namespace smartview
 		}
 
 		// Check if we have an unidentified short term entry ID:
-		if (eidtUnknown == m_ObjectType && *m_abFlags0 & MAPI_SHORTTERM) m_ObjectType = eidtShortTerm;
+		if (EIDStructType::unknown == m_ObjectType && *m_abFlags0 & MAPI_SHORTTERM)
+			m_ObjectType = EIDStructType::shortTerm;
 	}
 
 	void EntryIdStruct::parseBlocks()
 	{
 		switch (m_ObjectType)
 		{
-		case eidtUnknown:
+		case EIDStructType::unknown:
 			setRoot(L"Entry ID:\r\n");
 			break;
-		case eidtEphemeral:
+		case EIDStructType::ephemeral:
 			setRoot(L"Ephemeral Entry ID:\r\n");
 			break;
-		case eidtShortTerm:
+		case EIDStructType::shortTerm:
 			setRoot(L"Short Term Entry ID:\r\n");
 			break;
-		case eidtFolder:
+		case EIDStructType::folder:
 			setRoot(L"Exchange Folder Entry ID:\r\n");
 			break;
-		case eidtMessage:
+		case EIDStructType::message:
 			setRoot(L"Exchange Message Entry ID:\r\n");
 			break;
-		case eidtMessageDatabase:
+		case EIDStructType::messageDatabase:
 			setRoot(L"MAPI Message Store Entry ID:\r\n");
 			break;
-		case eidtOneOff:
+		case EIDStructType::oneOff:
 			setRoot(L"MAPI One Off Recipient Entry ID:\r\n");
 			break;
-		case eidtAddressBook:
+		case EIDStructType::addressBook:
 			setRoot(L"Exchange Address Entry ID:\r\n");
 			break;
-		case eidtContact:
+		case EIDStructType::contact:
 			setRoot(L"Contact Address Book / PDL Entry ID:\r\n");
 			break;
-		case eidtWAB:
+		case EIDStructType::WAB:
 			setRoot(L"Wrapped Entry ID:\r\n");
 			break;
 		}
@@ -322,7 +323,7 @@ namespace smartview
 
 		addChild(m_ProviderUID, L"Provider GUID = %1!ws!", guid::GUIDToStringAndName(*m_ProviderUID).c_str());
 
-		if (eidtEphemeral == m_ObjectType)
+		if (EIDStructType::ephemeral == m_ObjectType)
 		{
 			terminateBlock();
 
@@ -340,7 +341,7 @@ namespace smartview
 				m_EphemeralObject.Type->getData(),
 				szType.c_str());
 		}
-		else if (eidtOneOff == m_ObjectType)
+		else if (EIDStructType::oneOff == m_ObjectType)
 		{
 			auto szFlags = flags::InterpretFlags(flagOneOffEntryId, *m_OneOffRecipientObject.Bitmask);
 			if (*m_OneOffRecipientObject.Bitmask & MAPI_UNICODE)
@@ -386,7 +387,7 @@ namespace smartview
 					m_OneOffRecipientObject.ANSI.EmailAddress->c_str());
 			}
 		}
-		else if (eidtAddressBook == m_ObjectType)
+		else if (EIDStructType::addressBook == m_ObjectType)
 		{
 			terminateBlock();
 			auto szVersion = flags::InterpretFlags(flagExchangeABVersion, *m_AddressBookObject.Version);
@@ -404,7 +405,7 @@ namespace smartview
 			addChild(m_AddressBookObject.X500DN, L"X500DN = %1!hs!", m_AddressBookObject.X500DN->c_str());
 		}
 		// Contact Address Book / Personal Distribution List (PDL)
-		else if (eidtContact == m_ObjectType)
+		else if (EIDStructType::contact == m_ObjectType)
 		{
 			terminateBlock();
 			auto szVersion = flags::InterpretFlags(flagContabVersion, *m_ContactAddressBookObject.Version);
@@ -449,7 +450,7 @@ namespace smartview
 
 			addChild(m_ContactAddressBookObject.lpEntryID->getBlock());
 		}
-		else if (eidtWAB == m_ObjectType)
+		else if (EIDStructType::WAB == m_ObjectType)
 		{
 			terminateBlock();
 			addChild(
@@ -460,7 +461,7 @@ namespace smartview
 
 			addChild(m_WAB.lpEntryID->getBlock());
 		}
-		else if (eidtMessageDatabase == m_ObjectType)
+		else if (EIDStructType::messageDatabase == m_ObjectType)
 		{
 			terminateBlock();
 			auto szVersion = flags::InterpretFlags(flagMDBVersion, *m_MessageDatabaseObject.Version);
@@ -578,7 +579,7 @@ namespace smartview
 			break;
 			}
 		}
-		else if (eidtFolder == m_ObjectType)
+		else if (EIDStructType::folder == m_ObjectType)
 		{
 			terminateBlock();
 			auto szType = flags::InterpretFlags(flagMessageDatabaseObjectType, *m_FolderOrMessage.Type);
@@ -596,7 +597,7 @@ namespace smartview
 
 			addLabledChild(L"Pad = ", m_FolderOrMessage.FolderObject.Pad);
 		}
-		else if (eidtMessage == m_ObjectType)
+		else if (EIDStructType::message == m_ObjectType)
 		{
 			terminateBlock();
 			auto szType = flags::InterpretFlags(flagMessageDatabaseObjectType, *m_FolderOrMessage.Type);

@@ -24,7 +24,7 @@ namespace dialog
 			  pParentWnd,
 			  lpMapiObjects,
 			  IDS_RECIPIENTS,
-			  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+			  createDialogType::DO_NOT_CALL_CREATE_DIALOG,
 			  nullptr,
 			  lpMAPITable,
 			  &columns::sptDEFCols.tags,
@@ -78,10 +78,11 @@ namespace dialog
 		CContentsTableDlg::OnInitMenu(pMenu);
 	}
 
-	_Check_return_ LPMAPIPROP CRecipientsDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify)
+	_Check_return_ LPMAPIPROP CRecipientsDlg::OpenItemProp(int iSelectedItem, modifyType bModify)
 	{
 		if (!m_lpContentsTableListCtrl) return nullptr;
-		output::DebugPrintEx(output::DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
+		output::DebugPrintEx(
+			output::dbgLevel::OpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
 
 		if (m_bViewRecipientABEntry)
 		{
@@ -138,7 +139,7 @@ namespace dialog
 						}
 
 						output::DebugPrintEx(
-							output::DBGDeleteSelectedItem,
+							output::dbgLevel::DeleteSelectedItem,
 							CLASS,
 							L"OnDeleteSelectedItem",
 							L"Deleting row 0x%08X\n",
@@ -190,7 +191,10 @@ namespace dialog
 			if (SUCCEEDED(hRes))
 			{
 				output::DebugPrintEx(
-					output::DBGGeneric, CLASS, L"OnModifyRecipients", L"Committing changes for current selection\n");
+					output::dbgLevel::Generic,
+					CLASS,
+					L"OnModifyRecipients",
+					L"Committing changes for current selection\n");
 				EC_MAPI_S(m_lpMessage->ModifyRecipients(MODRECIP_MODIFY, &adrList));
 			}
 
@@ -221,7 +225,7 @@ namespace dialog
 				adrEntry.ulReserved1 = 0;
 				adrEntry.cValues = cProps;
 				adrEntry.rgPropVals = lpProps;
-				output::DebugPrintEx(output::DBGGeneric, CLASS, L"OnRecipOptions", L"Calling RecipOptions\n");
+				output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"OnRecipOptions", L"Calling RecipOptions\n");
 
 				hRes = EC_MAPI(lpAB->RecipOptions(reinterpret_cast<ULONG_PTR>(m_hWnd), NULL, &adrEntry));
 
@@ -248,13 +252,13 @@ namespace dialog
 					const auto szAdrList = property::AdrListToString(adrList);
 
 					output::DebugPrintEx(
-						output::DBGGeneric,
+						output::dbgLevel::Generic,
 						CLASS,
 						L"OnRecipOptions",
 						L"RecipOptions returned the following ADRLIST:\n");
 					// Note - debug output may be truncated due to limitations of OutputDebugString,
 					// but output to file is complete
-					output::Output(output::DBGGeneric, nullptr, false, szAdrList);
+					output::Output(output::dbgLevel::Generic, nullptr, false, szAdrList);
 
 					EC_MAPI_S(m_lpMessage->ModifyRecipients(MODRECIP_MODIFY, &adrList));
 

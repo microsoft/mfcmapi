@@ -67,7 +67,7 @@ namespace version
 	{
 		if (!import::pfnFindPackagesByPackageFamily)
 		{
-			output::DebugPrint(output::DBGGeneric, L"LookupFamilyName: FindPackagesByPackageFamily not found\n");
+			output::DebugPrint(output::dbgLevel::Generic, L"LookupFamilyName: FindPackagesByPackageFamily not found\n");
 			return L"";
 		}
 
@@ -78,13 +78,13 @@ namespace version
 			import::pfnFindPackagesByPackageFamily(familyName, filter, &count, nullptr, &length, nullptr, nullptr);
 		if (rc == ERROR_SUCCESS)
 		{
-			output::DebugPrint(output::DBGGeneric, L"LookupFamilyName: No packages found\n");
+			output::DebugPrint(output::dbgLevel::Generic, L"LookupFamilyName: No packages found\n");
 			return L"";
 		}
 
 		if (rc != ERROR_INSUFFICIENT_BUFFER)
 		{
-			output::DebugPrint(output::DBGGeneric, L"LookupFamilyName: Error %ld in FindPackagesByPackageFamily\n", rc);
+			output::DebugPrint(output::dbgLevel::Generic, L"LookupFamilyName: Error %ld in FindPackagesByPackageFamily\n", rc);
 			return L"";
 		}
 
@@ -98,7 +98,7 @@ namespace version
 			if (rc != ERROR_SUCCESS)
 			{
 				output::DebugPrint(
-					output::DBGGeneric, L"LookupFamilyName: Error %d looking up Full Names from Family Names\n", rc);
+					output::dbgLevel::Generic, L"LookupFamilyName: Error %d looking up Full Names from Family Names\n", rc);
 			}
 		}
 
@@ -122,13 +122,13 @@ namespace version
 		auto rc = import::pfnPackageIdFromFullName(fullname, 0, &length, nullptr);
 		if (rc == ERROR_SUCCESS)
 		{
-			output::DebugPrint(output::DBGGeneric, L"GetPackageId: Package not found\n");
+			output::DebugPrint(output::dbgLevel::Generic, L"GetPackageId: Package not found\n");
 			return strings::emptystring;
 		}
 
 		if (rc != ERROR_INSUFFICIENT_BUFFER)
 		{
-			output::DebugPrint(output::DBGGeneric, L"GetPackageId: Error %ld in PackageIdFromFullName\n", rc);
+			output::DebugPrint(output::dbgLevel::Generic, L"GetPackageId: Error %ld in PackageIdFromFullName\n", rc);
 			return strings::emptystring;
 		}
 
@@ -140,7 +140,7 @@ namespace version
 			if (rc != ERROR_SUCCESS)
 			{
 				output::DebugPrint(
-					output::DBGGeneric, L"PackageIdFromFullName: Error %d looking up ID from full name\n", rc);
+					output::dbgLevel::Generic, L"PackageIdFromFullName: Error %d looking up ID from full name\n", rc);
 			}
 			else
 			{
@@ -163,7 +163,7 @@ namespace version
 		// Check for Centennial Office
 		const auto familyName = L"Microsoft.Office.Desktop_8wekyb3d8bbwe";
 
-		const UINT32 filter =
+		constexpr UINT32 filter =
 			PACKAGE_FILTER_BUNDLE | PACKAGE_FILTER_HEAD | PACKAGE_PROPERTY_BUNDLE | PACKAGE_PROPERTY_RESOURCE;
 		auto fullName = GetFullName(familyName, filter);
 

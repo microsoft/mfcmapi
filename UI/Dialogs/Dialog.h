@@ -9,7 +9,7 @@ namespace dialog
 	public:
 		CMyDialog();
 		CMyDialog(UINT nIDTemplate, CWnd* pParentWnd = nullptr);
-		virtual ~CMyDialog();
+		~CMyDialog();
 		void DisplayParentedDialog(ui::CParentWnd* lpNonModalParent, UINT iAutoCenterWidth);
 
 	protected:

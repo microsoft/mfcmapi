@@ -37,7 +37,7 @@ namespace dialog
 
 		m_nIDContextMenu = nIDContextMenu;
 
-		m_ulDisplayFlags = dfNormal;
+		m_displayFlags = tableDisplayFlags::dfNormal;
 		m_lpContainer = mapi::safe_cast<LPMAPICONTAINER>(lpRootContainer);
 	}
 
@@ -97,14 +97,14 @@ namespace dialog
 
 	void CHierarchyTableDlg::OnDisplayItem()
 	{
-		auto lpMAPIContainer = m_lpHierarchyTableTreeCtrl.GetSelectedContainer(mfcmapiREQUEST_MODIFY);
+		auto lpMAPIContainer = m_lpHierarchyTableTreeCtrl.GetSelectedContainer(modifyType::REQUEST_MODIFY);
 		if (!lpMAPIContainer)
 		{
 			WARNHRESMSG(MAPI_E_NOT_FOUND, IDS_NOITEMSELECTED);
 			return;
 		}
 
-		EC_H_S(DisplayObject(lpMAPIContainer, NULL, otContents, this));
+		EC_H_S(DisplayObject(lpMAPIContainer, NULL, objectType::contents, this));
 
 		lpMAPIContainer->Release();
 	}
@@ -115,7 +115,7 @@ namespace dialog
 
 		if (!m_lpHierarchyTableTreeCtrl) return;
 
-		auto lpContainer = m_lpHierarchyTableTreeCtrl.GetSelectedContainer(mfcmapiREQUEST_MODIFY);
+		auto lpContainer = m_lpHierarchyTableTreeCtrl.GetSelectedContainer(modifyType::REQUEST_MODIFY);
 
 		if (lpContainer)
 		{
@@ -133,7 +133,7 @@ namespace dialog
 
 				if (lpMAPITable)
 				{
-					EC_H_S(DisplayTable(lpMAPITable, otHierarchy, this));
+					EC_H_S(DisplayTable(lpMAPITable, objectType::hierarchy, this));
 					lpMAPITable->Release();
 				}
 			}
@@ -147,7 +147,7 @@ namespace dialog
 		if (!m_lpHierarchyTableTreeCtrl) return;
 
 		// Find the highlighted item
-		auto container = m_lpHierarchyTableTreeCtrl.GetSelectedContainer(mfcmapiREQUEST_MODIFY);
+		auto container = m_lpHierarchyTableTreeCtrl.GetSelectedContainer(modifyType::REQUEST_MODIFY);
 		if (!container) return;
 		auto lpMAPIFolder = mapi::safe_cast<LPMAPIFOLDER>(container);
 		container->Release();
@@ -155,7 +155,7 @@ namespace dialog
 		if (lpMAPIFolder)
 		{
 			output::DebugPrintEx(
-				output::DBGGeneric,
+				output::dbgLevel::Generic,
 				CLASS,
 				L"OnEditSearchCriteria",
 				L"Calling GetSearchCriteria on %p.\n",
@@ -169,7 +169,7 @@ namespace dialog
 				WC_MAPI(lpMAPIFolder->GetSearchCriteria(fMapiUnicode, &lpRes, &lpEntryList, &ulSearchState));
 			if (hRes == MAPI_E_NOT_INITIALIZED)
 			{
-				output::DebugPrint(output::DBGGeneric, L"No search criteria has been set on this folder.\n");
+				output::DebugPrint(output::dbgLevel::Generic, L"No search criteria has been set on this folder.\n");
 			}
 			else
 				CHECKHRESMSG(hRes, IDS_GETSEARCHCRITERIAFAILED);
@@ -208,7 +208,7 @@ namespace dialog
 		if (m_lpFakeSplitter)
 		{
 			m_lpHierarchyTableTreeCtrl.Create(
-				&m_lpFakeSplitter, m_lpMapiObjects, this, m_ulDisplayFlags, m_nIDContextMenu);
+				&m_lpFakeSplitter, m_lpMapiObjects, this, m_displayFlags, m_nIDContextMenu);
 			m_lpFakeSplitter.SetPaneOne(m_lpHierarchyTableTreeCtrl.GetSafeHwnd());
 
 			m_lpFakeSplitter.SetPercent(0.25);
@@ -221,7 +221,8 @@ namespace dialog
 
 	void CHierarchyTableDlg::CreateDialogAndMenu(const UINT nIDMenuResource, const UINT uiClassMenuResource)
 	{
-		output::DebugPrintEx(output::DBGCreateDialog, CLASS, L"CreateDialogAndMenu", L"id = 0x%X\n", nIDMenuResource);
+		output::DebugPrintEx(
+			output::dbgLevel::CreateDialog, CLASS, L"CreateDialogAndMenu", L"id = 0x%X\n", nIDMenuResource);
 		CBaseDialog::CreateDialogAndMenu(nIDMenuResource, uiClassMenuResource, IDS_HIERARCHYTABLE);
 
 		if (m_lpHierarchyTableTreeCtrl)
@@ -232,7 +233,7 @@ namespace dialog
 
 	void CHierarchyTableDlg::OnRefreshView()
 	{
-		output::DebugPrintEx(output::DBGGeneric, CLASS, L"OnRefreshView", L"\n");
+		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"OnRefreshView", L"\n");
 		if (m_lpHierarchyTableTreeCtrl) m_lpHierarchyTableTreeCtrl.Refresh();
 	}
 
@@ -250,7 +251,7 @@ namespace dialog
 		const auto ulFlags = lpAddInMenu->ulFlags;
 
 		const auto fRequestModify =
-			ulFlags & MENU_FLAGS_REQUESTMODIFY ? mfcmapiREQUEST_MODIFY : mfcmapiDO_NOT_REQUEST_MODIFY;
+			ulFlags & MENU_FLAGS_REQUESTMODIFY ? modifyType::REQUEST_MODIFY : modifyType::DO_NOT_REQUEST_MODIFY;
 
 		// Get the stuff we need for any case
 		_AddInMenuParams MyAddInMenuParams = {nullptr};

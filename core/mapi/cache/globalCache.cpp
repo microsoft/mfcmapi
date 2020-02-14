@@ -7,7 +7,7 @@ namespace cache
 {
 	static std::wstring GCCLASS = L"CGlobalCache"; // STRING_OK
 
-	CGlobalCache::CGlobalCache()
+	CGlobalCache::CGlobalCache() noexcept
 	{
 		TRACE_CONSTRUCTOR(GCCLASS);
 		m_bMAPIInitialized = false;
@@ -46,7 +46,7 @@ namespace cache
 		}
 	}
 
-	void CGlobalCache::MAPIUninitialize()
+	void CGlobalCache::MAPIUninitialize() noexcept
 	{
 		if (m_bMAPIInitialized)
 		{
@@ -55,9 +55,9 @@ namespace cache
 		}
 	}
 
-	_Check_return_ bool CGlobalCache::bMAPIInitialized() const { return m_bMAPIInitialized; }
+	_Check_return_ bool CGlobalCache::bMAPIInitialized() const noexcept { return m_bMAPIInitialized; }
 
-	void CGlobalCache::EmptyBuffer()
+	void CGlobalCache::EmptyBuffer() noexcept
 	{
 		if (m_lpAddressEntriesToCopy) MAPIFreeBuffer(m_lpAddressEntriesToCopy);
 		if (m_lpMessagesToCopy) MAPIFreeBuffer(m_lpMessagesToCopy);
@@ -81,7 +81,7 @@ namespace cache
 		m_lpAddressEntriesToCopy = lpEBEntriesToCopy;
 	}
 
-	_Check_return_ LPENTRYLIST CGlobalCache::GetABEntriesToCopy() const { return m_lpAddressEntriesToCopy; }
+	_Check_return_ LPENTRYLIST CGlobalCache::GetABEntriesToCopy() const noexcept { return m_lpAddressEntriesToCopy; }
 
 	void CGlobalCache::SetMessagesToCopy(_In_ LPENTRYLIST lpMessagesToCopy, _In_ LPMAPIFOLDER lpSourceParent)
 	{
@@ -91,7 +91,7 @@ namespace cache
 		if (m_lpSourceParent) m_lpSourceParent->AddRef();
 	}
 
-	_Check_return_ LPENTRYLIST CGlobalCache::GetMessagesToCopy() const { return m_lpMessagesToCopy; }
+	_Check_return_ LPENTRYLIST CGlobalCache::GetMessagesToCopy() const noexcept { return m_lpMessagesToCopy; }
 
 	void CGlobalCache::SetFolderToCopy(_In_ LPMAPIFOLDER lpFolderToCopy, _In_ LPMAPIFOLDER lpSourceParent)
 	{
@@ -102,13 +102,13 @@ namespace cache
 		if (m_lpSourceParent) m_lpSourceParent->AddRef();
 	}
 
-	_Check_return_ LPMAPIFOLDER CGlobalCache::GetFolderToCopy() const
+	_Check_return_ LPMAPIFOLDER CGlobalCache::GetFolderToCopy() const noexcept
 	{
 		if (m_lpFolderToCopy) m_lpFolderToCopy->AddRef();
 		return m_lpFolderToCopy;
 	}
 
-	_Check_return_ LPMAPIFOLDER CGlobalCache::GetSourceParentFolder() const
+	_Check_return_ LPMAPIFOLDER CGlobalCache::GetSourceParentFolder() const noexcept
 	{
 		if (m_lpSourceParent) m_lpSourceParent->AddRef();
 		return m_lpSourceParent;
@@ -122,9 +122,9 @@ namespace cache
 		if (m_lpSourcePropObject) m_lpSourcePropObject->AddRef();
 	}
 
-	_Check_return_ ULONG CGlobalCache::GetPropertyToCopy() const { return m_ulPropTagToCopy; }
+	_Check_return_ ULONG CGlobalCache::GetPropertyToCopy() const noexcept { return m_ulPropTagToCopy; }
 
-	_Check_return_ LPMAPIPROP CGlobalCache::GetSourcePropObject() const
+	_Check_return_ LPMAPIPROP CGlobalCache::GetSourcePropObject() const noexcept
 	{
 		if (m_lpSourcePropObject) m_lpSourcePropObject->AddRef();
 		return m_lpSourcePropObject;

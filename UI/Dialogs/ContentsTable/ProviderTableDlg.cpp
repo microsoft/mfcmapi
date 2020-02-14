@@ -25,7 +25,7 @@ namespace dialog
 			  pParentWnd,
 			  lpMapiObjects,
 			  IDS_PROVIDERS,
-			  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+			  createDialogType::DO_NOT_CALL_CREATE_DIALOG,
 			  nullptr,
 			  lpMAPITable,
 			  &columns::sptPROVIDERCols.tags,
@@ -54,10 +54,11 @@ namespace dialog
 	ON_COMMAND(ID_OPENPROFILESECTION, OnOpenProfileSection)
 	END_MESSAGE_MAP()
 
-	_Check_return_ LPMAPIPROP CProviderTableDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum /*bModify*/)
+	_Check_return_ LPMAPIPROP CProviderTableDlg::OpenItemProp(int iSelectedItem, modifyType /*bModify*/)
 	{
 		if (!m_lpContentsTableListCtrl || !m_lpProviderAdmin) return nullptr;
-		output::DebugPrintEx(output::DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
+		output::DebugPrintEx(
+			output::dbgLevel::OpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
 
 		LPPROFSECT lpProfSect = nullptr;
 		const auto lpListData = m_lpContentsTableListCtrl->GetSortListData(iSelectedItem);
@@ -98,7 +99,7 @@ namespace dialog
 			auto lpTemp = mapi::safe_cast<LPMAPIPROP>(lpProfSect);
 			if (lpTemp)
 			{
-				EC_H_S(DisplayObject(lpTemp, MAPI_PROFSECT, otContents, this));
+				EC_H_S(DisplayObject(lpTemp, MAPI_PROFSECT, objectType::contents, this));
 				lpTemp->Release();
 			}
 

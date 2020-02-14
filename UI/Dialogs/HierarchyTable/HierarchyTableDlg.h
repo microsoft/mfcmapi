@@ -21,7 +21,7 @@ namespace dialog
 			_In_opt_ LPMAPIPROP lpRootContainer,
 			ULONG nIDContextMenu,
 			ULONG ulAddInContext);
-		virtual ~CHierarchyTableDlg();
+		~CHierarchyTableDlg();
 
 	protected:
 		// Overrides from base class
@@ -32,7 +32,7 @@ namespace dialog
 		void SetRootContainer(LPUNKNOWN container);
 
 		controls::CHierarchyTableTreeCtrl m_lpHierarchyTableTreeCtrl{};
-		ULONG m_ulDisplayFlags{};
+		tableDisplayFlags m_displayFlags{tableDisplayFlags::dfNormal};
 		LPMAPICONTAINER m_lpContainer{};
 
 	private:

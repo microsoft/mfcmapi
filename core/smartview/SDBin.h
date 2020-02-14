@@ -9,7 +9,7 @@ namespace smartview
 	public:
 		~SDBin();
 
-		void Init(_In_opt_ LPMAPIPROP lpMAPIProp, bool bFB);
+		void Init(_In_opt_ LPMAPIPROP lpMAPIProp, bool bFB) noexcept;
 
 	private:
 		void parse() override;

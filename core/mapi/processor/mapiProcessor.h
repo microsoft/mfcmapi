@@ -1,11 +1,9 @@
 #pragma once
 #include <deque>
 
-namespace mapi
+namespace mapi::processor
 {
-	namespace processor
-	{
-		/*
+	/*
 		mapiProcessor
 
 		Generic class for processing MAPI objects
@@ -14,113 +12,109 @@ namespace mapi
 		These worker functions are intended to be overridden by specialized classes inheriting from this class
 		*/
 
-		struct FolderNode final
-		{
-			LPSBinary lpFolderEID{};
-			std::wstring szFolderOffsetPath;
-		};
+	struct FolderNode final
+	{
+		LPSBinary lpFolderEID{};
+		std::wstring szFolderOffsetPath;
+	};
 
-		class mapiProcessor
-		{
-		public:
-			mapiProcessor();
-			virtual ~mapiProcessor();
+	class mapiProcessor
+	{
+	public:
+		mapiProcessor() noexcept;
+		virtual ~mapiProcessor();
 
-			// Initialization
-			void InitSession(_In_ LPMAPISESSION lpSession);
-			void InitMDB(_In_ LPMDB lpMDB);
-			void InitFolder(_In_ LPMAPIFOLDER lpFolder);
-			void InitFolderContentsRestriction(_In_opt_ LPSRestriction lpRes);
-			void InitMaxOutput(_In_ ULONG ulCount);
-			void InitSortOrder(_In_ const _SSortOrderSet* lpSort);
+		// Initialization
+		void InitSession(_In_ LPMAPISESSION lpSession) noexcept;
+		void InitMDB(_In_ LPMDB lpMDB) noexcept;
+		void InitFolder(_In_ LPMAPIFOLDER lpFolder);
+		void InitFolderContentsRestriction(_In_opt_ LPSRestriction lpRes) noexcept;
+		void InitMaxOutput(_In_ ULONG ulCount) noexcept;
+		void InitSortOrder(_In_ const _SSortOrderSet* lpSort) noexcept;
 
-			// Processing functions
-			void ProcessMailboxTable(_In_ const std::wstring& szExchangeServerName);
-			void ProcessStore();
-			void ProcessFolders(bool bDoRegular, bool bDoAssociated, bool bDoDescent);
-			void ProcessMessage(_In_ LPMESSAGE lpMessage, bool bHasAttach, _In_opt_ LPVOID lpParentMessageData);
+		// Processing functions
+		void ProcessMailboxTable(_In_ const std::wstring& szExchangeServerName);
+		void ProcessStore();
+		void ProcessFolders(bool bDoRegular, bool bDoAssociated, bool bDoDescent);
+		void ProcessMessage(_In_ LPMESSAGE lpMessage, bool bHasAttach, _In_opt_ LPVOID lpParentMessageData);
 
-		protected:
-			LPMAPISESSION m_lpSession;
-			LPMDB m_lpMDB;
-			LPMAPIFOLDER m_lpFolder;
-			std::wstring m_szFolderOffset; // Offset to the folder, including trailing slash
+	protected:
+		LPMAPISESSION m_lpSession;
+		LPMDB m_lpMDB;
+		LPMAPIFOLDER m_lpFolder;
+		std::wstring m_szFolderOffset; // Offset to the folder, including trailing slash
 
-		private:
-			// Worker functions (dump messages, scan for something, etc)
-			virtual void BeginMailboxTableWork(_In_ const std::wstring& szExchangeServerName);
-			virtual void DoMailboxTablePerRowWork(_In_ LPMDB lpMDB, _In_ const _SRow* lpSRow, ULONG ulCurRow);
-			virtual void EndMailboxTableWork();
+	private:
+		// Worker functions (dump messages, scan for something, etc)
+		virtual void BeginMailboxTableWork(_In_ const std::wstring& szExchangeServerName);
+		virtual void DoMailboxTablePerRowWork(_In_ LPMDB lpMDB, _In_ const _SRow* lpSRow, ULONG ulCurRow);
+		virtual void EndMailboxTableWork();
 
-			virtual void BeginStoreWork();
-			virtual void EndStoreWork();
+		virtual void BeginStoreWork() noexcept;
+		virtual void EndStoreWork() noexcept;
 
-			virtual bool ContinueProcessingFolders();
-			virtual bool ShouldProcessContentsTable();
-			virtual void BeginProcessFoldersWork();
-			virtual void DoProcessFoldersPerFolderWork();
-			virtual void EndProcessFoldersWork();
+		virtual bool ContinueProcessingFolders();
+		virtual bool ShouldProcessContentsTable();
+		virtual void BeginProcessFoldersWork() noexcept;
+		virtual void DoProcessFoldersPerFolderWork() noexcept;
+		virtual void EndProcessFoldersWork() noexcept;
 
-			virtual void BeginFolderWork();
-			virtual void DoFolderPerHierarchyTableRowWork(_In_ const _SRow* lpSRow);
-			virtual void EndFolderWork();
+		virtual void BeginFolderWork();
+		virtual void DoFolderPerHierarchyTableRowWork(_In_ const _SRow* lpSRow);
+		virtual void EndFolderWork();
 
-			virtual void BeginContentsTableWork(ULONG ulFlags, ULONG ulCountRows);
-			// Called from ProcessContentsTable. If true is returned, ProcessContentsTable will continue
-			// processing the message, calling OpenEntry and ProcessMessage. If false is returned,
-			// ProcessContentsTable will stop processing the message.
-			virtual bool DoContentsTablePerRowWork(_In_ const _SRow* lpSRow, ULONG ulCurRow);
-			virtual void EndContentsTableWork();
+		virtual void BeginContentsTableWork(ULONG ulFlags, ULONG ulCountRows);
+		// Called from ProcessContentsTable. If true is returned, ProcessContentsTable will continue
+		// processing the message, calling OpenEntry and ProcessMessage. If false is returned,
+		// ProcessContentsTable will stop processing the message.
+		virtual bool DoContentsTablePerRowWork(_In_ const _SRow* lpSRow, ULONG ulCurRow);
+		virtual void EndContentsTableWork();
 
-			// lpData is allocated and returned by BeginMessageWork
-			// If used, it should be cleaned up EndMessageWork
-			// This allows implementations of these functions to avoid global variables
-			// The Begin functions return true if work should continue
-			// Do and End functions will only be called if Begin returned true
-			// If BeginMessageWork returns false, we'll never call the recipient or attachment functions
-			virtual bool BeginMessageWork(
-				_In_ LPMESSAGE lpMessage,
-				_In_opt_ LPVOID lpParentMessageData,
-				_Deref_out_opt_ LPVOID* lpData);
-			virtual bool BeginRecipientWork(_In_ LPMESSAGE lpMessage, _In_opt_ LPVOID lpData);
-			virtual void DoMessagePerRecipientWork(
-				_In_opt_ LPMESSAGE lpMessage,
-				_In_opt_ LPVOID lpData,
-				_In_opt_ const _SRow* lpSRow,
-				ULONG ulCurRow);
-			virtual void EndRecipientWork(_In_opt_ LPMESSAGE lpMessage, _In_opt_ LPVOID lpData);
-			virtual bool BeginAttachmentWork(_In_ LPMESSAGE lpMessage, _In_opt_ LPVOID lpData);
-			virtual void DoMessagePerAttachmentWork(
-				_In_opt_ LPMESSAGE lpMessage,
-				_In_opt_ LPVOID lpData,
-				_In_opt_ const _SRow* lpSRow,
-				_In_opt_ LPATTACH lpAttach,
-				ULONG ulCurRow);
-			virtual void EndAttachmentWork(_In_ LPMESSAGE lpMessage, _In_opt_ LPVOID lpData);
-			virtual void EndMessageWork(_In_ LPMESSAGE lpMessage, _In_opt_ LPVOID lpData);
+		// lpData is allocated and returned by BeginMessageWork
+		// If used, it should be cleaned up EndMessageWork
+		// This allows implementations of these functions to avoid global variables
+		// The Begin functions return true if work should continue
+		// Do and End functions will only be called if Begin returned true
+		// If BeginMessageWork returns false, we'll never call the recipient or attachment functions
+		virtual bool
+		BeginMessageWork(_In_ LPMESSAGE lpMessage, _In_opt_ LPVOID lpParentMessageData, _Deref_out_opt_ LPVOID* lpData);
+		virtual bool BeginRecipientWork(_In_ LPMESSAGE lpMessage, _In_opt_ LPVOID lpData);
+		virtual void DoMessagePerRecipientWork(
+			_In_opt_ LPMESSAGE lpMessage,
+			_In_opt_ LPVOID lpData,
+			_In_opt_ const _SRow* lpSRow,
+			ULONG ulCurRow);
+		virtual void EndRecipientWork(_In_opt_ LPMESSAGE lpMessage, _In_opt_ LPVOID lpData);
+		virtual bool BeginAttachmentWork(_In_ LPMESSAGE lpMessage, _In_opt_ LPVOID lpData);
+		virtual void DoMessagePerAttachmentWork(
+			_In_opt_ LPMESSAGE lpMessage,
+			_In_opt_ LPVOID lpData,
+			_In_opt_ const _SRow* lpSRow,
+			_In_opt_ LPATTACH lpAttach,
+			ULONG ulCurRow);
+		virtual void EndAttachmentWork(_In_ LPMESSAGE lpMessage, _In_opt_ LPVOID lpData);
+		virtual void EndMessageWork(_In_ LPMESSAGE lpMessage, _In_opt_ LPVOID lpData);
 
-			void ProcessFolder(bool bDoRegular, bool bDoAssociated, bool bDoDescent);
-			void ProcessContentsTable(ULONG ulFlags);
-			void ProcessRecipients(_In_ LPMESSAGE lpMessage, _In_opt_ LPVOID lpData);
-			void ProcessAttachments(_In_ LPMESSAGE lpMessage, bool bHasAttach, _In_opt_ LPVOID lpData);
+		void ProcessFolder(bool bDoRegular, bool bDoAssociated, bool bDoDescent);
+		void ProcessContentsTable(ULONG ulFlags);
+		void ProcessRecipients(_In_ LPMESSAGE lpMessage, _In_opt_ LPVOID lpData);
+		void ProcessAttachments(_In_ LPMESSAGE lpMessage, bool bHasAttach, _In_opt_ LPVOID lpData);
 
-			// FolderList functions
-			// Add a new node to the end of the folder list
-			void
-			AddFolderToFolderList(_In_opt_ const _SBinary* lpFolderEID, _In_ const std::wstring& szFolderOffsetPath);
+		// FolderList functions
+		// Add a new node to the end of the folder list
+		void AddFolderToFolderList(_In_opt_ const _SBinary* lpFolderEID, _In_ const std::wstring& szFolderOffsetPath);
 
-			// Call OpenEntry on the first folder in the list, remove it from the list
-			void OpenFirstFolderInList();
+		// Call OpenEntry on the first folder in the list, remove it from the list
+		void OpenFirstFolderInList();
 
-			// Clean up the list
-			void FreeFolderList() const;
+		// Clean up the list
+		void FreeFolderList() const;
 
-			// Folder list
-			std::deque<FolderNode> m_List;
+		// Folder list
+		std::deque<FolderNode> m_List;
 
-			LPSRestriction m_lpResFolderContents;
-			const _SSortOrderSet* m_lpSort;
-			ULONG m_ulCount; // Limit on the number of messages processed per folder
-		};
-	} // namespace processor
-} // namespace mapi
+		LPSRestriction m_lpResFolderContents;
+		const _SSortOrderSet* m_lpSort;
+		ULONG m_ulCount; // Limit on the number of messages processed per folder
+	};
+} // namespace mapi::processor

@@ -13,7 +13,7 @@ namespace cache
 	CMapiObjects::CMapiObjects(_In_opt_ std::shared_ptr<CMapiObjects> oldMapiObjects)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
-		output::DebugPrintEx(output::DBGConDes, CLASS, CLASS, L"OldMapiObjects = %p\n", &oldMapiObjects);
+		output::DebugPrintEx(output::dbgLevel::ConDes, CLASS, CLASS, L"OldMapiObjects = %p\n", &oldMapiObjects);
 
 		// If we were passed a valid object, make copies of its interfaces.
 		if (oldMapiObjects)
@@ -39,7 +39,7 @@ namespace cache
 
 	void CMapiObjects::MAPILogonEx(_In_ HWND hwnd, _In_opt_z_ LPTSTR szProfileName, ULONG ulFlags)
 	{
-		output::DebugPrint(output::DBGGeneric, L"Logging on with MAPILogonEx, ulFlags = 0x%X\n", ulFlags);
+		output::DebugPrint(output::dbgLevel::Generic, L"Logging on with MAPILogonEx, ulFlags = 0x%X\n", ulFlags);
 
 		CGlobalCache::getInstance().MAPIInitialize(NULL);
 		if (!CGlobalCache::getInstance().bMAPIInitialized()) return;
@@ -50,12 +50,13 @@ namespace cache
 		EC_H_CANCEL_S(
 			::MAPILogonEx(reinterpret_cast<ULONG_PTR>(hwnd), szProfileName, nullptr, ulFlags, &m_lpMAPISession));
 
-		output::DebugPrint(output::DBGGeneric, L"\tm_lpMAPISession set to %p\n", m_lpMAPISession);
+		output::DebugPrint(output::dbgLevel::Generic, L"\tm_lpMAPISession set to %p\n", m_lpMAPISession);
 	}
 
 	void CMapiObjects::Logoff(_In_ HWND hwnd, ULONG ulFlags)
 	{
-		output::DebugPrint(output::DBGGeneric, L"Logging off of %p, ulFlags = 0x%08X\n", m_lpMAPISession, ulFlags);
+		output::DebugPrint(
+			output::dbgLevel::Generic, L"Logging off of %p, ulFlags = 0x%08X\n", m_lpMAPISession, ulFlags);
 
 		if (m_lpMAPISession)
 		{
@@ -65,7 +66,7 @@ namespace cache
 		}
 	}
 
-	_Check_return_ LPMAPISESSION CMapiObjects::GetSession() const { return m_lpMAPISession; }
+	_Check_return_ LPMAPISESSION CMapiObjects::GetSession() const noexcept { return m_lpMAPISession; }
 
 	_Check_return_ LPMAPISESSION CMapiObjects::LogonGetSession(_In_ HWND hWnd)
 	{
@@ -78,18 +79,18 @@ namespace cache
 
 	void CMapiObjects::SetMDB(_In_opt_ LPMDB lpMDB)
 	{
-		output::DebugPrintEx(output::DBGGeneric, CLASS, L"SetMDB", L"replacing %p with %p\n", m_lpMDB, lpMDB);
+		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"SetMDB", L"replacing %p with %p\n", m_lpMDB, lpMDB);
 		if (m_lpMDB) m_lpMDB->Release();
 		m_lpMDB = lpMDB;
 		if (m_lpMDB) m_lpMDB->AddRef();
 	}
 
-	_Check_return_ LPMDB CMapiObjects::GetMDB() const { return m_lpMDB; }
+	_Check_return_ LPMDB CMapiObjects::GetMDB() const noexcept { return m_lpMDB; }
 
 	void CMapiObjects::SetAddrBook(_In_opt_ LPADRBOOK lpAddrBook)
 	{
 		output::DebugPrintEx(
-			output::DBGGeneric, CLASS, L"SetAddrBook", L"replacing %p with %p\n", m_lpAddrBook, lpAddrBook);
+			output::dbgLevel::Generic, CLASS, L"SetAddrBook", L"replacing %p with %p\n", m_lpAddrBook, lpAddrBook);
 		if (m_lpAddrBook) m_lpAddrBook->Release();
 		m_lpAddrBook = lpAddrBook;
 		if (m_lpAddrBook) m_lpAddrBook->AddRef();

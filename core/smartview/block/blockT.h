@@ -18,18 +18,18 @@ namespace smartview
 			setOffset(_offset);
 		}
 
-		virtual bool isSet() const { return set; }
+		bool isSet() const noexcept override { return set; }
 
 		// Mimic type T
 		void setData(const T& _data) { data = _data; }
 		T getData() const { return data; }
-		operator T&() { return data; }
-		operator T() const { return data; }
+		operator T&() noexcept { return data; }
+		operator T() const noexcept { return data; }
 
 		// Fill out object of type T, reading from type SOURCE_U
 		template <typename SOURCE_U> void parse(const std::shared_ptr<binaryParser>& parser)
 		{
-			static const size_t sizeU = sizeof SOURCE_U;
+			static constexpr size_t sizeU = sizeof SOURCE_U;
 			// TODO: Consider what a failure block really looks like
 			if (!parser->checkSize(sizeU)) return;
 

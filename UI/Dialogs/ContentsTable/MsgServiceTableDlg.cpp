@@ -25,7 +25,7 @@ namespace dialog
 			  pParentWnd,
 			  lpMapiObjects,
 			  IDS_SERVICES,
-			  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+			  createDialogType::DO_NOT_CALL_CREATE_DIALOG,
 			  nullptr,
 			  nullptr,
 			  &columns::sptSERVICECols.tags,
@@ -76,7 +76,7 @@ namespace dialog
 	// Clear the current list and get a new one with whatever code we've got in LoadMAPIPropList
 	void CMsgServiceTableDlg::OnRefreshView()
 	{
-		output::DebugPrintEx(output::DBGGeneric, CLASS, L"OnRefreshView", L"\n");
+		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"OnRefreshView", L"\n");
 
 		// Make sure we've got something to work with
 		if (m_szProfileName.empty() || !m_lpContentsTableListCtrl || !m_lpMapiObjects) return;
@@ -86,7 +86,7 @@ namespace dialog
 
 		// Clean up our table and admin in reverse order from which we obtained them
 		// Failure to do this leads to crashes in Outlook's profile code
-		m_lpContentsTableListCtrl->SetContentsTable(nullptr, dfNormal, NULL);
+		m_lpContentsTableListCtrl->SetContentsTable(nullptr, tableDisplayFlags::dfNormal, NULL);
 
 		if (m_lpServiceAdmin) m_lpServiceAdmin->Release();
 		m_lpServiceAdmin = nullptr;
@@ -112,7 +112,7 @@ namespace dialog
 
 				if (lpServiceTable)
 				{
-					m_lpContentsTableListCtrl->SetContentsTable(lpServiceTable, dfNormal, NULL);
+					m_lpContentsTableListCtrl->SetContentsTable(lpServiceTable, tableDisplayFlags::dfNormal, NULL);
 
 					lpServiceTable->Release();
 				}
@@ -197,11 +197,12 @@ namespace dialog
 		}
 	}
 
-	_Check_return_ LPMAPIPROP CMsgServiceTableDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum /*bModify*/)
+	_Check_return_ LPMAPIPROP CMsgServiceTableDlg::OpenItemProp(int iSelectedItem, modifyType /*bModify*/)
 	{
 		if (!m_lpServiceAdmin || !m_lpContentsTableListCtrl) return nullptr;
 
-		output::DebugPrintEx(output::DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
+		output::DebugPrintEx(
+			output::dbgLevel::OpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
 
 		LPPROFSECT lpProfSect = nullptr;
 		const auto lpListData = m_lpContentsTableListCtrl->GetSortListData(iSelectedItem);
@@ -242,7 +243,7 @@ namespace dialog
 			auto lpTemp = mapi::safe_cast<LPMAPIPROP>(lpProfSect);
 			if (lpTemp)
 			{
-				EC_H_S(DisplayObject(lpTemp, MAPI_PROFSECT, otContents, this));
+				EC_H_S(DisplayObject(lpTemp, MAPI_PROFSECT, objectType::contents, this));
 				lpTemp->Release();
 			}
 
@@ -265,7 +266,7 @@ namespace dialog
 			if (!contents) break;
 
 			output::DebugPrintEx(
-				output::DBGDeleteSelectedItem,
+				output::dbgLevel::DeleteSelectedItem,
 				CLASS,
 				L"OnDeleteSelectedItem",
 				L"Deleting service from \"%hs\"\n",

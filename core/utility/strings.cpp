@@ -8,7 +8,7 @@ namespace strings
 
 	std::wstring formatV(LPCWSTR szMsg, va_list argList)
 	{
-		auto len = _vscwprintf(szMsg, argList);
+		const auto len = _vscwprintf(szMsg, argList);
 		if (0 != len)
 		{
 			auto buffer = std::wstring(len + 1, '\0'); // Include extra since _vsnwprintf_s writes a null terminator
@@ -41,7 +41,7 @@ namespace strings
 	// This will try to load the string from the executable, which is fine for MFCMAPI and MrMAPI
 	// In our unit tests, we must load strings from UnitTest.dll, so we use setTestInstance
 	// to populate an appropriate HINSTANCE
-	void setTestInstance(HINSTANCE hInstance) { g_testInstance = hInstance; }
+	void setTestInstance(HINSTANCE hInstance) noexcept { g_testInstance = hInstance; }
 
 	std::wstring loadstring(DWORD dwID)
 	{
@@ -71,7 +71,7 @@ namespace strings
 		if (dw)
 		{
 			auto ret = std::wstring(buffer);
-			(void) LocalFree(buffer);
+			static_cast<void>(LocalFree(buffer));
 			return ret;
 		}
 
@@ -92,7 +92,7 @@ namespace strings
 		if (dw)
 		{
 			auto ret = std::wstring(buffer);
-			(void) LocalFree(buffer);
+			static_cast<void>(LocalFree(buffer));
 			return ret;
 		}
 
@@ -166,7 +166,7 @@ namespace strings
 	}
 
 	// Converts wstring to LPCWSTR allocated with new
-	LPCWSTR wstringToLPCWSTR(const std::wstring& src)
+	LPCWSTR wstringToLPCWSTR(const std::wstring& src) noexcept
 	{
 		const auto cch = src.length() + 1;
 		const auto cb = cch * sizeof WCHAR;
@@ -188,7 +188,7 @@ namespace strings
 		return dst;
 	}
 
-	bool tryWstringToUlong(ULONG& out, const std::wstring& src, int radix, bool rejectInvalidCharacters)
+	bool tryWstringToUlong(ULONG& out, const std::wstring& src, int radix, bool rejectInvalidCharacters) noexcept
 	{
 		// Default our out to 0 for failures
 		out = 0;
@@ -211,7 +211,7 @@ namespace strings
 	}
 
 	// Converts a std::wstring to a ulong. Will return 0 if string is empty or contains non-numeric data.
-	ULONG wstringToUlong(const std::wstring& src, int radix, bool rejectInvalidCharacters)
+	ULONG wstringToUlong(const std::wstring& src, int radix, bool rejectInvalidCharacters) noexcept
 	{
 		ULONG ulArg{};
 		if (tryWstringToUlong(ulArg, src, radix, rejectInvalidCharacters))
@@ -223,7 +223,7 @@ namespace strings
 	}
 
 	// Converts a std::wstring to a long. Will return 0 if string is empty or contains non-numeric data.
-	long wstringToLong(const std::wstring& src, int radix)
+	long wstringToLong(const std::wstring& src, int radix) noexcept
 	{
 		if (src.empty()) return 0;
 
@@ -240,7 +240,7 @@ namespace strings
 	}
 
 	// Converts a std::wstring to a double. Will return 0 if string is empty or contains non-numeric data.
-	double wstringToDouble(const std::wstring& src)
+	double wstringToDouble(const std::wstring& src) noexcept
 	{
 		if (src.empty()) return 0;
 
@@ -256,7 +256,7 @@ namespace strings
 		return dArg;
 	}
 
-	__int64 wstringToInt64(const std::wstring& src)
+	__int64 wstringToInt64(const std::wstring& src) noexcept
 	{
 		if (src.empty()) return 0;
 
@@ -338,7 +338,7 @@ namespace strings
 	std::wstring indent(int iIndent) { return std::wstring(iIndent, L'\t'); }
 
 	// Find valid printable Unicode characters
-	bool InvalidCharacter(ULONG chr, bool bMultiLine)
+	bool InvalidCharacter(ULONG chr, bool bMultiLine) noexcept
 	{
 		// Remove range of control characters
 		if (chr >= 0x80 && chr <= 0x9F) return true;
@@ -367,7 +367,7 @@ namespace strings
 		std::replace_if(
 			szBin.begin(),
 			szBin.end(),
-			[bMultiLine](const char& chr) { return InvalidCharacter(0xFF & chr, bMultiLine); },
+			[bMultiLine](const char& chr) noexcept { return InvalidCharacter(0xFF & chr, bMultiLine); },
 			'.');
 
 		if (nullTerminated) szBin.back() = '\0';
@@ -382,7 +382,7 @@ namespace strings
 		std::replace_if(
 			szBin.begin(),
 			szBin.end(),
-			[bMultiLine](const WCHAR& chr) { return InvalidCharacter(chr, bMultiLine); },
+			[bMultiLine](const WCHAR& chr) noexcept { return InvalidCharacter(chr, bMultiLine); },
 			L'.');
 
 		if (nullTerminated) szBin.back() = L'\0';
@@ -522,7 +522,7 @@ namespace strings
 	}
 
 	// Converts vector<BYTE> to LPBYTE allocated with new
-	LPBYTE ByteVectorToLPBYTE(const std::vector<BYTE>& bin)
+	LPBYTE ByteVectorToLPBYTE(const std::vector<BYTE>& bin) noexcept
 	{
 		if (bin.empty()) return nullptr;
 
@@ -797,44 +797,44 @@ namespace strings
 		if (ulPropType != PT_STRING8 && ulPropType != PT_UNICODE)
 		{
 			output::DebugPrint(
-				output::DBGGeneric, L"CheckStringProp: Called with invalid ulPropType of 0x%X\n", ulPropType);
+				output::dbgLevel::Generic, L"CheckStringProp: Called with invalid ulPropType of 0x%X\n", ulPropType);
 			return false;
 		}
 
 		if (!lpProp)
 		{
-			output::DebugPrint(output::DBGGeneric, L"CheckStringProp: lpProp is NULL\n");
+			output::DebugPrint(output::dbgLevel::Generic, L"CheckStringProp: lpProp is NULL\n");
 			return false;
 		}
 
 		if (PROP_TYPE(lpProp->ulPropTag) == PT_ERROR)
 		{
-			output::DebugPrint(output::DBGGeneric, L"CheckStringProp: lpProp->ulPropTag is of type PT_ERROR\n");
+			output::DebugPrint(output::dbgLevel::Generic, L"CheckStringProp: lpProp->ulPropTag is of type PT_ERROR\n");
 			return false;
 		}
 
 		if (ulPropType != PROP_TYPE(lpProp->ulPropTag))
 		{
 			output::DebugPrint(
-				output::DBGGeneric, L"CheckStringProp: lpProp->ulPropTag is not of type 0x%X\n", ulPropType);
+				output::dbgLevel::Generic, L"CheckStringProp: lpProp->ulPropTag is not of type 0x%X\n", ulPropType);
 			return false;
 		}
 
 		if (lpProp->Value.LPSZ == nullptr)
 		{
-			output::DebugPrint(output::DBGGeneric, L"CheckStringProp: lpProp->Value.LPSZ is NULL\n");
+			output::DebugPrint(output::dbgLevel::Generic, L"CheckStringProp: lpProp->Value.LPSZ is NULL\n");
 			return false;
 		}
 
 		if (ulPropType == PT_STRING8 && lpProp->Value.lpszA[0] == NULL)
 		{
-			output::DebugPrint(output::DBGGeneric, L"CheckStringProp: lpProp->Value.lpszA[0] is NULL\n");
+			output::DebugPrint(output::dbgLevel::Generic, L"CheckStringProp: lpProp->Value.lpszA[0] is NULL\n");
 			return false;
 		}
 
 		if (ulPropType == PT_UNICODE && lpProp->Value.lpszW[0] == NULL)
 		{
-			output::DebugPrint(output::DBGGeneric, L"CheckStringProp: lpProp->Value.lpszW[0] is NULL\n");
+			output::DebugPrint(output::dbgLevel::Generic, L"CheckStringProp: lpProp->Value.lpszW[0] is NULL\n");
 			return false;
 		}
 

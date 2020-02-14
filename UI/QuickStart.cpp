@@ -74,7 +74,7 @@ namespace dialog
 			auto lpFolder = mapi::OpenDefaultFolder(ulFolder, lpMDB);
 			if (lpFolder)
 			{
-				WC_H_S(DisplayObject(lpFolder, NULL, dialog::otContents, lpHostDlg));
+				WC_H_S(DisplayObject(lpFolder, NULL, objectType::contents, lpHostDlg));
 
 				lpFolder->Release();
 			}
@@ -88,7 +88,7 @@ namespace dialog
 		_In_ HWND hwnd,
 		_In_ ULONG ulFolder,
 		_In_ ULONG ulProp,
-		_In_ ObjectType tType)
+		_In_ objectType tType)
 	{
 		auto lpMDB = OpenStoreForQuickStart(lpHostDlg, hwnd);
 		if (lpMDB)
@@ -123,7 +123,7 @@ namespace dialog
 
 			if (lpDefaultDir)
 			{
-				WC_H_S(DisplayObject(lpDefaultDir, ulObjType, dialog::otDefault, lpHostDlg));
+				WC_H_S(DisplayObject(lpDefaultDir, ulObjType, objectType::default, lpHostDlg));
 
 				lpDefaultDir->Release();
 			}
@@ -155,7 +155,7 @@ namespace dialog
 		std::wstring szNicknames;
 		LPSPropValue lpsProp = nullptr;
 
-		lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, IDS_STATUSTEXTLOADINGNICKNAME);
+		lpHostDlg->UpdateStatusBarText(statusPane::infoText, IDS_STATUSTEXTLOADINGNICKNAME);
 		lpHostDlg->SendMessage(WM_PAINT, NULL, NULL); // force paint so we update the status now
 
 		auto lpMDB = OpenStoreForQuickStart(lpHostDlg, hwnd);
@@ -175,7 +175,7 @@ namespace dialog
 					sRes.res.resProperty.relop = RELOP_EQ;
 					sRes.res.resProperty.lpProp = &sPV;
 					sPV.ulPropTag = sRes.res.resProperty.ulPropTag;
-					sPV.Value.LPSZ = const_cast<LPTSTR>(_T("IPM.Configuration.Autocomplete")); // STRING_OK
+					sPV.Value.LPSZ = _T("IPM.Configuration.Autocomplete"); // STRING_OK
 					auto hRes = WC_MAPI(lpTable->Restrict(&sRes, TBL_BATCH));
 					if (SUCCEEDED(hRes))
 					{
@@ -214,7 +214,7 @@ namespace dialog
 									{
 										// Get the string interpretation
 										szNicknames = smartview::InterpretBinaryAsString(
-											lpsProp->Value.bin, IDS_STNICKNAMECACHE, lpMSG);
+											lpsProp->Value.bin, parserType::NICKNAMECACHE, lpMSG);
 									}
 
 									lpMSG->Release();
@@ -255,7 +255,7 @@ namespace dialog
 			MAPIFreeBuffer(lpsProp);
 		}
 
-		lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, strings::emptystring);
+		lpHostDlg->UpdateStatusBarText(statusPane::infoText, strings::emptystring);
 	}
 
 	enum
@@ -304,7 +304,7 @@ namespace dialog
 	{
 		std::wstring szQuotaString;
 
-		lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, IDS_STATUSTEXTLOADINGQUOTA);
+		lpHostDlg->UpdateStatusBarText(statusPane::infoText, IDS_STATUSTEXTLOADINGQUOTA);
 		lpHostDlg->SendMessage(WM_PAINT, NULL, NULL); // force paint so we update the status now
 
 		auto lpMDB = OpenStoreForQuickStart(lpHostDlg, hwnd);
@@ -372,7 +372,7 @@ namespace dialog
 			(void) MyResults.DisplayDialog();
 		}
 
-		lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, strings::emptystring);
+		lpHostDlg->UpdateStatusBarText(statusPane::infoText, strings::emptystring);
 	}
 
 	void OnQSOpenUser(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
@@ -390,7 +390,7 @@ namespace dialog
 			auto lpMailUser = mapi::ab::SelectUser(lpAdrBook, hwnd, &ulObjType);
 			if (lpMailUser)
 			{
-				EC_H_S(DisplayObject(lpMailUser, ulObjType, dialog::otDefault, lpHostDlg));
+				EC_H_S(DisplayObject(lpMailUser, ulObjType, objectType::default, lpHostDlg));
 
 				lpMailUser->Release();
 			}
@@ -508,7 +508,7 @@ namespace dialog
 			OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_JUNKMAIL);
 			return true;
 		case ID_QSRULES:
-			OnQSDisplayTable(lpHostDlg, hwnd, mapi::DEFAULT_INBOX, PR_RULES_TABLE, otRules);
+			OnQSDisplayTable(lpHostDlg, hwnd, mapi::DEFAULT_INBOX, PR_RULES_TABLE, objectType::rules);
 			return true;
 		case ID_QSDEFAULTDIR:
 			OnQSDisplayDefaultDir(lpHostDlg, hwnd);
@@ -517,7 +517,7 @@ namespace dialog
 			OnQSDisplayAB(lpHostDlg, hwnd);
 			return true;
 		case ID_QSCALPERM:
-			OnQSDisplayTable(lpHostDlg, hwnd, mapi::DEFAULT_CALENDAR, PR_ACL_TABLE, otACL);
+			OnQSDisplayTable(lpHostDlg, hwnd, mapi::DEFAULT_CALENDAR, PR_ACL_TABLE, objectType::ACL);
 			return true;
 		case ID_QSNICKNAME:
 			OnQSDisplayNicknameCache(lpHostDlg, hwnd);

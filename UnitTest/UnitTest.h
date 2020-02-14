@@ -5,31 +5,25 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-namespace Microsoft
+namespace Microsoft::VisualStudio::CppUnitTestFramework
 {
-	namespace VisualStudio
+	template <> inline std::wstring ToString<std::vector<BYTE>>(const std::vector<BYTE>& q)
 	{
-		namespace CppUnitTestFramework
-		{
-			template <> inline std::wstring ToString<std::vector<BYTE>>(const std::vector<BYTE>& q)
-			{
-				RETURN_WIDE_STRING(q.data());
-			}
-			template <> inline std::wstring ToString<GUID>(const GUID& q) { return guid::GUIDToString(q); }
-			template <> inline std::wstring ToString<std::deque<std::wstring>>(const std::deque<std::wstring>& q)
-			{
-				return strings::join({q.begin(), q.end()}, L",");
-			}
-		} // namespace CppUnitTestFramework
-	} // namespace VisualStudio
-} // namespace Microsoft
+		RETURN_WIDE_STRING(q.data());
+	}
+	template <> inline std::wstring ToString<GUID>(const GUID& q) { return guid::GUIDToString(q); }
+	template <> inline std::wstring ToString<std::deque<std::wstring>>(const std::deque<std::wstring>& q)
+	{
+		return strings::join({q.begin(), q.end()}, L",");
+	}
+} // namespace Microsoft::VisualStudio::CppUnitTestFramework
 
 namespace unittest
 {
-	static const bool parse_all = true;
-	static const bool assert_on_failure = true;
-	static const bool limit_output = true;
-	static const bool ignore_trailing_whitespace = false;
+	static constexpr bool parse_all = true;
+	static constexpr bool assert_on_failure = true;
+	static constexpr bool limit_output = true;
+	static constexpr bool ignore_trailing_whitespace = false;
 
 	void init();
 

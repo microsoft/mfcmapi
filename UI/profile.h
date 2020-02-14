@@ -1,17 +1,13 @@
 // Stand alone MAPI profile functions
 #pragma once
 
-namespace ui
+namespace ui::profile
 {
-	namespace profile
-	{
-		std::wstring
-		LaunchProfileWizard(_In_ HWND hParentWnd, ULONG ulFlags, _In_ const std::wstring& szServiceNameToAdd);
+	std::wstring LaunchProfileWizard(_In_ HWND hParentWnd, ULONG ulFlags, _In_ const std::wstring& szServiceNameToAdd);
 
-		void DisplayMAPISVCPath(_In_ CWnd* pParentWnd);
-		std::wstring GetMAPISVCPath();
+	void DisplayMAPISVCPath(_In_ CWnd* pParentWnd);
+	std::wstring GetMAPISVCPath();
 
-		void AddServicesToMapiSvcInf();
-		void RemoveServicesFromMapiSvcInf();
-	} // namespace profile
-} // namespace ui
+	void AddServicesToMapiSvcInf();
+	void RemoveServicesFromMapiSvcInf();
+} // namespace ui::profile

@@ -80,13 +80,13 @@ namespace proptags
 			namePropNames.guid.c_str(),
 			namePropNames.dasl.c_str());
 
-		if (fIsSet(output::DBGTest))
+		if (fIsSet(output::dbgLevel::Test))
 		{
 			static size_t cchMaxBuff = 0;
-			auto cchBuff = szRet.length();
+			const auto cchBuff = szRet.length();
 			cchMaxBuff = max(cchBuff, cchMaxBuff);
 			output::DebugPrint(
-				output::DBGTest,
+				output::dbgLevel::Test,
 				L"TagToString parsing 0x%08X returned %u chars - max %u\n",
 				ulPropTag,
 				static_cast<UINT>(cchBuff),
@@ -153,7 +153,7 @@ namespace proptags
 	}
 
 	// Compare tag sort order.
-	bool CompareTagsSortOrder(int a1, int a2)
+	bool CompareTagsSortOrder(int a1, int a2) noexcept
 	{
 		const auto lpTag1 = &PropTagArray[a1];
 		const auto lpTag2 = &PropTagArray[a2];

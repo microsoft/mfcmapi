@@ -19,7 +19,7 @@ namespace dialog
 			_In_ ui::CParentWnd* pParentWnd,
 			_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 			_In_ const std::wstring& szProfileName);
-		virtual ~CMsgServiceTableDlg();
+		~CMsgServiceTableDlg();
 
 	private:
 		// Overrides from base class
@@ -30,7 +30,7 @@ namespace dialog
 		void OnDeleteSelectedItem() override;
 		void OnDisplayItem() override;
 		void OnRefreshView() override;
-		_Check_return_ LPMAPIPROP OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify) override;
+		_Check_return_ LPMAPIPROP OpenItemProp(int iSelectedItem, modifyType bModify) override;
 		void OnInitMenu(_In_ CMenu* pMenu) override;
 
 		// Menu items

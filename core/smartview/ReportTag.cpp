@@ -37,7 +37,7 @@ namespace smartview
 	void ReportTag::addEID(
 		const std::wstring& label,
 		const std::shared_ptr<blockT<ULONG>>& cb,
-		std::shared_ptr<blockBytes>& eid)
+		const std::shared_ptr<blockBytes>& eid)
 	{
 		if (*cb)
 		{

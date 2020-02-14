@@ -1,12 +1,13 @@
 #pragma once
 
 // Forward declarations
-enum __ParsingTypeEnum;
+enum class parserType;
 struct NAME_ARRAY_ENTRY_V2;
 struct NAME_ARRAY_ENTRY;
 struct GUID_ARRAY_ENTRY;
 struct NAMEID_ARRAY_ENTRY;
 struct FLAG_ARRAY_ENTRY;
+struct SMARTVIEW_PARSER_TYPE_ARRAY_ENTRY;
 struct SMARTVIEW_PARSER_ARRAY_ENTRY;
 struct _AddIn;
 
@@ -19,8 +20,8 @@ namespace addin
 	void LoadAddIns();
 	void UnloadAddIns();
 	void MergeAddInArrays();
-	std::wstring AddInSmartView(__ParsingTypeEnum iStructType, ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
-	std::wstring AddInStructTypeToString(__ParsingTypeEnum iStructType);
+	std::wstring AddInSmartView(parserType iStructType, ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+	std::wstring AddInStructTypeToString(parserType parser);
 } // namespace addin
 
 extern std::vector<NAME_ARRAY_ENTRY_V2> PropTagArray;
@@ -29,5 +30,5 @@ extern std::vector<GUID_ARRAY_ENTRY> PropGuidArray;
 extern std::vector<NAMEID_ARRAY_ENTRY> NameIDArray;
 extern std::vector<FLAG_ARRAY_ENTRY> FlagArray;
 extern std::vector<SMARTVIEW_PARSER_ARRAY_ENTRY> SmartViewParserArray;
-extern std::vector<NAME_ARRAY_ENTRY> SmartViewParserTypeArray;
+extern std::vector<SMARTVIEW_PARSER_TYPE_ARRAY_ENTRY> SmartViewParserTypeArray;
 extern std::vector<_AddIn> g_lpMyAddins;

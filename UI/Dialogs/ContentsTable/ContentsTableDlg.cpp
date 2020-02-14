@@ -26,7 +26,7 @@ namespace dialog
 		_In_ ui::CParentWnd* pParentWnd,
 		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 		UINT uidTitle,
-		__mfcmapiCreateDialogEnum bCreateDialog,
+		createDialogType bCreateDialog,
 		_In_opt_ LPMAPIPROP lpContainer,
 		_In_opt_ LPMAPITABLE lpContentsTable,
 		_In_ LPSPropTagArray sptDefaultDisplayColumnTags,
@@ -49,7 +49,7 @@ namespace dialog
 		m_lpContainer = mapi::safe_cast<LPMAPICONTAINER>(lpContainer);
 		m_nIDContextMenu = nIDContextMenu;
 
-		m_ulDisplayFlags = dfNormal;
+		m_displayFlags = tableDisplayFlags::dfNormal;
 
 		m_lpContentsTable = lpContentsTable;
 		if (m_lpContentsTable) m_lpContentsTable->AddRef();
@@ -57,7 +57,7 @@ namespace dialog
 		m_sptDefaultDisplayColumnTags = sptDefaultDisplayColumnTags;
 		m_lpDefaultDisplayColumns = lpDefaultDisplayColumns;
 
-		if (mfcmapiCALL_CREATE_DIALOG == bCreateDialog)
+		if (createDialogType::CALL_CREATE_DIALOG == bCreateDialog)
 		{
 			CContentsTableDlg::CreateDialogAndMenu(NULL);
 		}
@@ -73,17 +73,20 @@ namespace dialog
 	_Check_return_ bool CContentsTableDlg::HandleMenu(WORD wMenuSelect)
 	{
 		output::DebugPrint(
-			output::DBGMenu, L"CContentsTableDlg::HandleMenu wMenuSelect = 0x%X = %u\n", wMenuSelect, wMenuSelect);
+			output::dbgLevel::Menu,
+			L"CContentsTableDlg::HandleMenu wMenuSelect = 0x%X = %u\n",
+			wMenuSelect,
+			wMenuSelect);
 		switch (wMenuSelect)
 		{
 		case ID_APPLYFINDROW:
-			SetRestrictionType(mfcmapiFINDROW_RESTRICTION);
+			SetRestrictionType(restrictionType::findrow);
 			return true;
 		case ID_APPLYRESTRICTION:
-			SetRestrictionType(mfcmapiNORMAL_RESTRICTION);
+			SetRestrictionType(restrictionType::normal);
 			return true;
 		case ID_CLEARRESTRICTION:
-			SetRestrictionType(mfcmapiNO_RESTRICTION);
+			SetRestrictionType(restrictionType::none);
 			return true;
 		}
 
@@ -107,7 +110,7 @@ namespace dialog
 		{
 			m_lpFakeSplitter.SetPaneOne(m_lpContentsTableListCtrl->GetSafeHwnd());
 			m_lpFakeSplitter.SetPercent(static_cast<FLOAT>(0.40));
-			m_lpFakeSplitter.SetSplitType(controls::SplitVertical);
+			m_lpFakeSplitter.SetSplitType(controls::splitType::vertical);
 		}
 
 		if (m_lpContainer)
@@ -115,7 +118,7 @@ namespace dialog
 			// Get a property for the title bar
 			m_szTitle = mapi::GetTitle(m_lpContainer);
 
-			if (m_ulDisplayFlags & dfAssoc)
+			if (m_displayFlags && tableDisplayFlags::dfAssoc)
 			{
 				m_szTitle = strings::formatmessage(IDS_HIDDEN, m_szTitle.c_str());
 			}
@@ -125,8 +128,9 @@ namespace dialog
 
 			const auto unicodeFlag = registry::preferUnicodeProps ? MAPI_UNICODE : fMapiUnicode;
 
-			const auto ulFlags = (m_ulDisplayFlags & dfAssoc ? MAPI_ASSOCIATED : NULL) |
-								 (m_ulDisplayFlags & dfDeleted ? SHOW_SOFT_DELETES : NULL) | unicodeFlag;
+			const auto ulFlags = (m_displayFlags && tableDisplayFlags::dfAssoc ? MAPI_ASSOCIATED : NULL) |
+								 (m_displayFlags && tableDisplayFlags::dfDeleted ? SHOW_SOFT_DELETES : NULL) |
+								 unicodeFlag;
 
 			// Get the table of contents of the IMAPIContainer!!!
 			EC_MAPI_S(m_lpContainer->GetContentsTable(ulFlags, &m_lpContentsTable));
@@ -139,7 +143,8 @@ namespace dialog
 
 	void CContentsTableDlg::CreateDialogAndMenu(UINT nIDMenuResource)
 	{
-		output::DebugPrintEx(output::DBGCreateDialog, CLASS, L"CreateDialogAndMenu", L"id = 0x%X\n", nIDMenuResource);
+		output::DebugPrintEx(
+			output::dbgLevel::CreateDialog, CLASS, L"CreateDialogAndMenu", L"id = 0x%X\n", nIDMenuResource);
 		CBaseDialog::CreateDialogAndMenu(nIDMenuResource, IDR_MENU_TABLE, IDS_TABLEMENU);
 
 		if (m_lpContentsTableListCtrl && m_lpContentsTable)
@@ -147,7 +152,7 @@ namespace dialog
 			const auto ulPropType = mapi::GetMAPIObjectType(m_lpContainer);
 
 			// Pass the contents table to the list control, but don't render yet - call BuildUIForContentsTable from CreateDialogAndMenu for that
-			m_lpContentsTableListCtrl->SetContentsTable(m_lpContentsTable, m_ulDisplayFlags, ulPropType);
+			m_lpContentsTableListCtrl->SetContentsTable(m_lpContentsTable, m_displayFlags, ulPropType);
 		}
 	}
 
@@ -178,9 +183,9 @@ namespace dialog
 			pMenu->EnableMenuItem(ID_DISPLAYSELECTEDITEM, DIMMSOK(iNumSel));
 
 			const auto RestrictionType = m_lpContentsTableListCtrl->GetRestrictionType();
-			pMenu->CheckMenuItem(ID_APPLYFINDROW, CHECK(mfcmapiFINDROW_RESTRICTION == RestrictionType));
-			pMenu->CheckMenuItem(ID_APPLYRESTRICTION, CHECK(mfcmapiNORMAL_RESTRICTION == RestrictionType));
-			pMenu->CheckMenuItem(ID_CLEARRESTRICTION, CHECK(mfcmapiNO_RESTRICTION == RestrictionType));
+			pMenu->CheckMenuItem(ID_APPLYFINDROW, CHECK(RestrictionType == restrictionType::findrow));
+			pMenu->CheckMenuItem(ID_APPLYRESTRICTION, CHECK(RestrictionType == restrictionType::normal));
+			pMenu->CheckMenuItem(ID_CLEARRESTRICTION, CHECK(RestrictionType == restrictionType::none));
 			pMenu->EnableMenuItem(
 				ID_TABLENOTIFICATIONON,
 				DIM(m_lpContentsTableListCtrl->IsContentsTableSet() && !m_lpContentsTableListCtrl->IsAdviseSet()));
@@ -220,7 +225,7 @@ namespace dialog
 
 	void CContentsTableDlg::OnCancel()
 	{
-		output::DebugPrintEx(output::DBGGeneric, CLASS, L"OnCancel", L"\n");
+		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"OnCancel", L"\n");
 		// get rid of the window before we start our cleanup
 		ShowWindow(SW_HIDE);
 
@@ -233,14 +238,14 @@ namespace dialog
 
 	void CContentsTableDlg::OnEscHit()
 	{
-		output::DebugPrintEx(output::DBGGeneric, CLASS, L"OnEscHit", L"\n");
+		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"OnEscHit", L"\n");
 		if (m_lpContentsTableListCtrl)
 		{
 			m_lpContentsTableListCtrl->OnCancelTableLoad();
 		}
 	}
 
-	void CContentsTableDlg::SetRestrictionType(__mfcmapiRestrictionTypeEnum RestrictionType)
+	void CContentsTableDlg::SetRestrictionType(restrictionType RestrictionType)
 	{
 		if (m_lpContentsTableListCtrl) m_lpContentsTableListCtrl->SetRestrictionType(RestrictionType);
 		OnRefreshView();
@@ -253,11 +258,11 @@ namespace dialog
 
 		do
 		{
-			auto lpMAPIProp = m_lpContentsTableListCtrl->OpenNextSelectedItemProp(&iItem, mfcmapiREQUEST_MODIFY);
+			auto lpMAPIProp = m_lpContentsTableListCtrl->OpenNextSelectedItemProp(&iItem, modifyType::REQUEST_MODIFY);
 
 			if (lpMAPIProp)
 			{
-				EC_H_S(DisplayObject(lpMAPIProp, NULL, otHierarchy, this));
+				EC_H_S(DisplayObject(lpMAPIProp, NULL, objectType::hierarchy, this));
 				lpMAPIProp->Release();
 			}
 		} while (iItem != -1);
@@ -267,7 +272,7 @@ namespace dialog
 	void CContentsTableDlg::OnRefreshView()
 	{
 		if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
-		output::DebugPrintEx(output::DBGGeneric, CLASS, L"OnRefreshView", L"\n");
+		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"OnRefreshView", L"\n");
 		if (m_lpContentsTableListCtrl->IsLoading()) m_lpContentsTableListCtrl->OnCancelTableLoad();
 		m_lpContentsTableListCtrl->RefreshTable();
 	}
@@ -298,11 +303,11 @@ namespace dialog
 
 				if (SearchEditor.GetCheck(editor::CSearchEditor::SearchFields::FINDROW))
 				{
-					SetRestrictionType(mfcmapiFINDROW_RESTRICTION);
+					SetRestrictionType(restrictionType::findrow);
 				}
 				else
 				{
-					SetRestrictionType(mfcmapiNORMAL_RESTRICTION);
+					SetRestrictionType(restrictionType::normal);
 				}
 			}
 		}
@@ -338,11 +343,11 @@ namespace dialog
 
 		if (MyData.GetCheck(1))
 		{
-			SetRestrictionType(mfcmapiFINDROW_RESTRICTION);
+			SetRestrictionType(restrictionType::findrow);
 		}
 		else
 		{
-			SetRestrictionType(mfcmapiNORMAL_RESTRICTION);
+			SetRestrictionType(restrictionType::normal);
 		}
 	}
 
@@ -371,7 +376,8 @@ namespace dialog
 			this);
 		if (!szFileName.empty())
 		{
-			output::DebugPrintEx(output::DBGGeneric, CLASS, L"OnOutputTable", L"saving to %ws\n", szFileName.c_str());
+			output::DebugPrintEx(
+				output::dbgLevel::Generic, CLASS, L"OnOutputTable", L"saving to %ws\n", szFileName.c_str());
 			m_lpContentsTableListCtrl->OnOutputTable(szFileName);
 		}
 	}
@@ -489,10 +495,11 @@ namespace dialog
 
 	// Since the strategy for opening the selected property may vary depending on the table we're displaying,
 	// this virtual function allows us to override the default method with the method used by the table we've written a special class for.
-	_Check_return_ LPMAPIPROP CContentsTableDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify)
+	_Check_return_ LPMAPIPROP CContentsTableDlg::OpenItemProp(int iSelectedItem, modifyType bModify)
 	{
 		if (!m_lpContentsTableListCtrl) return nullptr;
-		output::DebugPrintEx(output::DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
+		output::DebugPrintEx(
+			output::dbgLevel::OpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
 
 		if (-1 == iSelectedItem)
 		{
@@ -509,12 +516,12 @@ namespace dialog
 	{
 		if (lpMessage == nullptr) return MAPI_E_INVALID_PARAMETER;
 
-		return DisplayTable(lpMessage, PR_MESSAGE_ATTACHMENTS, otDefault, this);
+		return DisplayTable(lpMessage, PR_MESSAGE_ATTACHMENTS, objectType::default, this);
 	}
 
 	_Check_return_ HRESULT CContentsTableDlg::OpenRecipientsFromMessage(_In_ LPMESSAGE lpMessage)
 	{
-		return DisplayTable(lpMessage, PR_MESSAGE_RECIPIENTS, otDefault, this);
+		return DisplayTable(lpMessage, PR_MESSAGE_RECIPIENTS, objectType::default, this);
 	}
 
 	_Check_return_ bool CContentsTableDlg::HandleAddInMenu(WORD wMenuSelect)
@@ -530,7 +537,7 @@ namespace dialog
 		const auto ulFlags = lpAddInMenu->ulFlags;
 
 		const auto fRequestModify =
-			(ulFlags & MENU_FLAGS_REQUESTMODIFY) ? mfcmapiREQUEST_MODIFY : mfcmapiDO_NOT_REQUEST_MODIFY;
+			(ulFlags & MENU_FLAGS_REQUESTMODIFY) ? modifyType::REQUEST_MODIFY : modifyType::DO_NOT_REQUEST_MODIFY;
 
 		// Get the stuff we need for any case
 		_AddInMenuParams MyAddInMenuParams = {nullptr};
@@ -620,7 +627,8 @@ namespace dialog
 	// Returns true if we reset columns, false otherwise
 	_Check_return_ LRESULT CContentsTableDlg::msgOnResetColumns(WPARAM /*wParam*/, LPARAM /*lParam*/)
 	{
-		output::DebugPrintEx(output::DBGGeneric, CLASS, L"msgOnResetColumns", L"Received message reset columns\n");
+		output::DebugPrintEx(
+			output::dbgLevel::Generic, CLASS, L"msgOnResetColumns", L"Received message reset columns\n");
 
 		if (m_lpContentsTableListCtrl)
 		{

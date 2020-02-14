@@ -21,7 +21,7 @@ namespace sortlistdata
 			lpData = _lpData;
 		}
 		~sortListData();
-		void clean();
+		void clean() noexcept;
 
 		template <typename T> std::shared_ptr<T> cast() { return std::dynamic_pointer_cast<T>(lpData); }
 

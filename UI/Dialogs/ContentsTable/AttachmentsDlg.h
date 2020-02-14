@@ -11,7 +11,7 @@ namespace dialog
 			_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 			_In_ LPMAPITABLE lpMAPITable,
 			_In_ LPMAPIPROP lpMessage);
-		virtual ~CAttachmentsDlg();
+		~CAttachmentsDlg();
 
 	private:
 		// Overrides from base class
@@ -26,7 +26,7 @@ namespace dialog
 		void OnInitMenu(_In_ CMenu* pMenu) override;
 		_Check_return_ LPATTACH OpenAttach(ULONG ulAttachNum) const;
 		_Check_return_ LPMESSAGE CAttachmentsDlg::OpenEmbeddedMessage() const;
-		_Check_return_ LPMAPIPROP OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify) override;
+		_Check_return_ LPMAPIPROP OpenItemProp(int iSelectedItem, modifyType bModify) override;
 
 		// Menu items
 		void OnModifySelectedItem();

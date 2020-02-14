@@ -19,12 +19,15 @@ namespace dialog
 {
 	static std::wstring CLASS = L"CAbDlg";
 
-	CAbDlg::CAbDlg(_In_ ui::CParentWnd* pParentWnd, _In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects, _In_ LPMAPIPROP lpAbCont)
+	CAbDlg::CAbDlg(
+		_In_ ui::CParentWnd* pParentWnd,
+		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
+		_In_ LPMAPIPROP lpAbCont)
 		: CContentsTableDlg(
 			  pParentWnd,
 			  lpMapiObjects,
 			  IDS_AB,
-			  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+			  createDialogType::DO_NOT_CALL_CREATE_DIALOG,
 			  lpAbCont,
 			  nullptr,
 			  &columns::sptABCols.tags,
@@ -57,7 +60,8 @@ namespace dialog
 
 	void CAbDlg::CreateDialogAndMenu(UINT nIDMenuResource)
 	{
-		output::DebugPrintEx(output::DBGCreateDialog, CLASS, L"CreateDialogAndMenu", L"id = 0x%X\n", nIDMenuResource);
+		output::DebugPrintEx(
+			output::dbgLevel::CreateDialog, CLASS, L"CreateDialogAndMenu", L"id = 0x%X\n", nIDMenuResource);
 		CContentsTableDlg::CreateDialogAndMenu(nIDMenuResource);
 
 		ui::UpdateMenuString(m_hWnd, ID_CREATEPROPERTYSTRINGRESTRICTION, IDS_ABRESMENU);
@@ -85,7 +89,7 @@ namespace dialog
 	void CAbDlg::OnDisplayDetails()
 	{
 		output::DebugPrintEx(
-			output::DBGGeneric, CLASS, L"OnDisplayDetails", L"displaying Address Book entry details\n");
+			output::dbgLevel::Generic, CLASS, L"OnDisplayDetails", L"displaying Address Book entry details\n");
 
 		if (!m_lpMapiObjects) return;
 		auto lpAddrBook = m_lpMapiObjects->GetAddrBook(false); // do not release
@@ -98,19 +102,19 @@ namespace dialog
 			{
 				for (ULONG i = 0; i < lpEIDs->cValues; i++)
 				{
-					auto ulUIParam = reinterpret_cast<ULONG_PTR>(static_cast<void*>(m_hWnd));
+					auto ulUIParam = reinterpret_cast<ULONG_PTR>(m_hWnd);
 
 					// Have to pass DIALOG_MODAL according to
 					// http://support.microsoft.com/kb/171637
 					const auto hRes = EC_H_CANCEL(lpAddrBook->Details(
 						&ulUIParam,
-						NULL,
-						NULL,
+						nullptr,
+						nullptr,
 						lpEIDs->lpbin[i].cb,
 						reinterpret_cast<LPENTRYID>(lpEIDs->lpbin[i].lpb),
-						NULL,
-						NULL,
-						NULL,
+						nullptr,
+						nullptr,
+						nullptr,
 						DIALOG_MODAL)); // API doesn't like Unicode
 					if (lpEIDs->cValues > i + 1 && bShouldCancel(this, hRes)) break;
 				}
@@ -139,7 +143,7 @@ namespace dialog
 					nullptr, nullptr, nullptr, lpSession, cb, reinterpret_cast<LPENTRYID>(lpb), nullptr, NULL, nullptr);
 				if (lpProp)
 				{
-					EC_H_S(DisplayObject(lpProp, NULL, otDefault, this));
+					EC_H_S(DisplayObject(lpProp, NULL, objectType::default, this));
 					if (lpProp) lpProp->Release();
 				}
 			}
@@ -157,14 +161,14 @@ namespace dialog
 
 		do
 		{
-			auto lpMailUser = m_lpContentsTableListCtrl->OpenNextSelectedItemProp(&iItem, mfcmapiREQUEST_MODIFY);
+			auto lpMailUser = m_lpContentsTableListCtrl->OpenNextSelectedItemProp(&iItem, modifyType::REQUEST_MODIFY);
 
 			if (lpMailUser)
 			{
 				EC_H_S(DisplayTable(
 					lpMailUser,
 					PR_EMS_AB_MANAGER_O,
-					otDefault, // oType,
+					objectType::default, // oType,
 					this));
 
 				lpMailUser->Release();
@@ -181,14 +185,14 @@ namespace dialog
 
 		do
 		{
-			auto lpMailUser = m_lpContentsTableListCtrl->OpenNextSelectedItemProp(&iItem, mfcmapiREQUEST_MODIFY);
+			auto lpMailUser = m_lpContentsTableListCtrl->OpenNextSelectedItemProp(&iItem, modifyType::REQUEST_MODIFY);
 
 			if (lpMailUser)
 			{
 				EC_H_S(DisplayTable(
 					lpMailUser,
 					PR_EMS_AB_OWNER_O,
-					otDefault, // oType,
+					objectType::default, // oType,
 					this));
 
 				lpMailUser->Release();
@@ -204,7 +208,8 @@ namespace dialog
 			this, IDS_DELETEABENTRY, IDS_DELETEABENTRYPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		if (!Query.DisplayDialog()) return;
 
-		output::DebugPrintEx(output::DBGGeneric, CLASS, L"OnDeleteSelectedItem", L"deleting address Book entries\n");
+		output::DebugPrintEx(
+			output::dbgLevel::Generic, CLASS, L"OnDeleteSelectedItem", L"deleting address Book entries\n");
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		const auto lpEIDs = m_lpContentsTableListCtrl->GetSelectedItemEIDs();
@@ -216,7 +221,7 @@ namespace dialog
 	{
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		output::DebugPrintEx(output::DBGGeneric, CLASS, L"HandleCopy", L"\n");
+		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"HandleCopy", L"\n");
 		if (!m_lpContentsTableListCtrl) return;
 
 		const auto lpEIDs = m_lpContentsTableListCtrl->GetSelectedItemEIDs();
@@ -231,7 +236,7 @@ namespace dialog
 
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		output::DebugPrintEx(output::DBGGeneric, CLASS, L"HandlePaste", L"pasting address Book entries\n");
+		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"HandlePaste", L"pasting address Book entries\n");
 		if (!m_lpAbCont) return false;
 
 		const auto lpEIDs = cache::CGlobalCache::getInstance().GetABEntriesToCopy();
@@ -275,7 +280,7 @@ namespace dialog
 		const auto lpRes = mapi::ab::CreateANRRestriction(PR_ANR_W, MyData.GetStringW(0), nullptr);
 		m_lpContentsTableListCtrl->SetRestriction(lpRes);
 
-		SetRestrictionType(mfcmapiNORMAL_RESTRICTION);
+		SetRestrictionType(restrictionType::normal);
 	}
 
 	void CAbDlg::HandleAddInMenuSingle(

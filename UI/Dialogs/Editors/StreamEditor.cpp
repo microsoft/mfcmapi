@@ -11,494 +11,482 @@
 #include <core/interpret/proptags.h>
 #include <core/utility/output.h>
 
-namespace dialog
+namespace dialog::editor
 {
-	namespace editor
+	enum __StreamEditorTypes
 	{
-		enum __StreamEditorTypes
+		EDITOR_RTF,
+		EDITOR_STREAM_BINARY,
+		EDITOR_STREAM_ANSI,
+		EDITOR_STREAM_UNICODE,
+	};
+
+	static std::wstring CLASS = L"CStreamEditor";
+
+	ULONG PreferredStreamType(ULONG ulPropTag)
+	{
+		auto ulPropType = PROP_TYPE(ulPropTag);
+
+		if (PT_ERROR != ulPropType && PT_UNSPECIFIED != ulPropType) return ulPropTag;
+
+		const auto ulPropID = PROP_ID(ulPropTag);
+
+		switch (ulPropID)
 		{
-			EDITOR_RTF,
-			EDITOR_STREAM_BINARY,
-			EDITOR_STREAM_ANSI,
-			EDITOR_STREAM_UNICODE,
-		};
-
-		static std::wstring CLASS = L"CStreamEditor";
-
-		ULONG PreferredStreamType(ULONG ulPropTag)
-		{
-			auto ulPropType = PROP_TYPE(ulPropTag);
-
-			if (PT_ERROR != ulPropType && PT_UNSPECIFIED != ulPropType) return ulPropTag;
-
-			const auto ulPropID = PROP_ID(ulPropTag);
-
-			switch (ulPropID)
-			{
-			case PROP_ID(PR_BODY):
-				ulPropType = PT_TSTRING;
-				break;
-			case PROP_ID(PR_BODY_HTML):
-				ulPropType = PT_TSTRING;
-				break;
-			case PROP_ID(PR_RTF_COMPRESSED):
-				ulPropType = PT_BINARY;
-				break;
-			case PROP_ID(PR_ROAMING_BINARYSTREAM):
-				ulPropType = PT_BINARY;
-				break;
-			default:
-				ulPropType = PT_BINARY;
-				break;
-			}
-
-			ulPropTag = CHANGE_PROP_TYPE(ulPropTag, ulPropType);
-			return ulPropTag;
+		case PROP_ID(PR_BODY):
+			ulPropType = PT_TSTRING;
+			break;
+		case PROP_ID(PR_BODY_HTML):
+			ulPropType = PT_TSTRING;
+			break;
+		case PROP_ID(PR_RTF_COMPRESSED):
+			ulPropType = PT_BINARY;
+			break;
+		case PROP_ID(PR_ROAMING_BINARYSTREAM):
+			ulPropType = PT_BINARY;
+			break;
+		default:
+			ulPropType = PT_BINARY;
+			break;
 		}
 
-		// Create an editor for a MAPI property - can be used to initialize stream and rtf stream editing as well
-		// Takes LPMAPIPROP and ulPropTag as input - will pull SPropValue from the LPMAPIPROP
-		CStreamEditor::CStreamEditor(
-			_In_ CWnd* pParentWnd,
-			UINT uidTitle,
-			UINT uidPrompt,
-			_In_ LPMAPIPROP lpMAPIProp,
-			ULONG ulPropTag,
-			bool bGuessType,
-			bool bIsAB,
-			bool bEditPropAsRTF,
-			bool bUseWrapEx,
-			ULONG ulRTFFlags,
-			ULONG ulInCodePage,
-			ULONG ulOutCodePage)
-			: CEditor(pParentWnd, uidTitle, uidPrompt, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)
+		ulPropTag = CHANGE_PROP_TYPE(ulPropTag, ulPropType);
+		return ulPropTag;
+	}
+
+	// Create an editor for a MAPI property - can be used to initialize stream and rtf stream editing as well
+	// Takes LPMAPIPROP and ulPropTag as input - will pull SPropValue from the LPMAPIPROP
+	CStreamEditor::CStreamEditor(
+		_In_ CWnd* pParentWnd,
+		UINT uidTitle,
+		UINT uidPrompt,
+		_In_ LPMAPIPROP lpMAPIProp,
+		ULONG ulPropTag,
+		bool bGuessType,
+		bool bIsAB,
+		bool bEditPropAsRTF,
+		bool bUseWrapEx,
+		ULONG ulRTFFlags,
+		ULONG ulInCodePage,
+		ULONG ulOutCodePage)
+		: CEditor(pParentWnd, uidTitle, uidPrompt, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)
+	{
+		TRACE_CONSTRUCTOR(CLASS);
+
+		m_lpMAPIProp = lpMAPIProp;
+		m_ulPropTag = ulPropTag;
+		m_bAllowTypeGuessing = bGuessType;
+
+		if (m_bAllowTypeGuessing)
 		{
-			TRACE_CONSTRUCTOR(CLASS);
+			m_ulPropTag = PreferredStreamType(m_ulPropTag);
 
-			m_lpMAPIProp = lpMAPIProp;
-			m_ulPropTag = ulPropTag;
-			m_bAllowTypeGuessing = bGuessType;
-
-			if (m_bAllowTypeGuessing)
+			// If we're guessing and happen to be handed PR_RTF_COMPRESSED, turn on our RTF editor
+			if (PR_RTF_COMPRESSED == m_ulPropTag)
 			{
-				m_ulPropTag = PreferredStreamType(m_ulPropTag);
-
-				// If we're guessing and happen to be handed PR_RTF_COMPRESSED, turn on our RTF editor
-				if (PR_RTF_COMPRESSED == m_ulPropTag)
-				{
-					bEditPropAsRTF = true;
-				}
+				bEditPropAsRTF = true;
 			}
+		}
 
-			m_bIsAB = bIsAB;
-			m_bUseWrapEx = bUseWrapEx;
-			m_ulRTFFlags = ulRTFFlags;
-			m_ulInCodePage = ulInCodePage;
-			m_ulOutCodePage = ulOutCodePage;
-			m_ulStreamFlags = NULL;
-			m_bDocFile = false;
-			m_lpStream = nullptr;
-			m_StreamError = S_OK;
-			m_bDisableSave = false;
+		m_bIsAB = bIsAB;
+		m_bUseWrapEx = bUseWrapEx;
+		m_ulRTFFlags = ulRTFFlags;
+		m_ulInCodePage = ulInCodePage;
+		m_ulOutCodePage = ulOutCodePage;
+		m_ulStreamFlags = NULL;
+		m_bDocFile = false;
+		m_lpStream = nullptr;
+		m_StreamError = S_OK;
+		m_bDisableSave = false;
 
-			m_iTextBox = 0;
-			if (bUseWrapEx)
+		m_iTextBox = 0;
+		if (bUseWrapEx)
+		{
+			m_iFlagBox = 1;
+			m_iCodePageBox = 2;
+			m_iBinBox = 3;
+		}
+		else
+		{
+			m_iFlagBox = 0xFFFFFFFF;
+			m_iCodePageBox = 0xFFFFFFFF;
+			m_iBinBox = 1;
+		}
+
+		m_iSmartViewBox = 0xFFFFFFFF;
+		m_bDoSmartView = false;
+
+		// Go ahead and open our property stream in case we decide to change our stream type
+		// This way we can pick the right display elements
+		OpenPropertyStream(false, bEditPropAsRTF);
+
+		if (!m_bUseWrapEx && PT_BINARY == PROP_TYPE(m_ulPropTag))
+		{
+			m_bDoSmartView = true;
+			m_iSmartViewBox = m_iBinBox + 1;
+		}
+
+		if (bEditPropAsRTF)
+			m_ulEditorType = EDITOR_RTF;
+		else
+		{
+			switch (PROP_TYPE(m_ulPropTag))
 			{
-				m_iFlagBox = 1;
-				m_iCodePageBox = 2;
-				m_iBinBox = 3;
+			case PT_STRING8:
+				m_ulEditorType = EDITOR_STREAM_ANSI;
+				break;
+			case PT_UNICODE:
+				m_ulEditorType = EDITOR_STREAM_UNICODE;
+				break;
+			case PT_BINARY:
+			default:
+				m_ulEditorType = EDITOR_STREAM_BINARY;
+				break;
+			}
+		}
+
+		const auto szPromptPostFix = strings::format(
+			L"\r\n%ws", proptags::TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, false).c_str()); // STRING_OK
+		SetPromptPostFix(szPromptPostFix);
+
+		// Let's crack our property open and see what kind of controls we'll need for it
+		// One control for text stream, one for binary
+		AddPane(viewpane::TextPane::CreateCollapsibleTextPane(m_iTextBox, IDS_STREAMTEXT, false));
+		if (bUseWrapEx)
+		{
+			AddPane(viewpane::TextPane::CreateSingleLinePane(m_iFlagBox, IDS_STREAMFLAGS, true));
+			AddPane(viewpane::TextPane::CreateSingleLinePane(m_iCodePageBox, IDS_CODEPAGE, true));
+		}
+
+		AddPane(viewpane::CountedTextPane::Create(m_iBinBox, IDS_STREAMBIN, false, IDS_CB));
+		if (m_bDoSmartView)
+		{
+			auto smartViewPane = viewpane::SmartViewPane::Create(m_iSmartViewBox, IDS_SMARTVIEW);
+			AddPane(smartViewPane);
+			smartViewPane->OnItemSelected = [&](auto _1) { return HighlightHex(m_iBinBox, _1); };
+		}
+	}
+
+	CStreamEditor::~CStreamEditor()
+	{
+		TRACE_DESTRUCTOR(CLASS);
+		if (m_lpStream) m_lpStream->Release();
+	}
+
+	// Used to call functions which need to be called AFTER controls are created
+	BOOL CStreamEditor::OnInitDialog()
+	{
+		const auto bRet = CEditor::OnInitDialog();
+
+		ReadTextStreamFromProperty();
+
+		if (m_bDoSmartView)
+		{
+			// Load initial smart view here
+			auto lpSmartView = std::dynamic_pointer_cast<viewpane::SmartViewPane>(GetPane(m_iSmartViewBox));
+			if (lpSmartView)
+			{
+				SPropValue sProp = {};
+				sProp.ulPropTag = CHANGE_PROP_TYPE(m_ulPropTag, PT_BINARY);
+				auto bin = GetBinary(m_iBinBox);
+				sProp.Value.bin.lpb = bin.data();
+				sProp.Value.bin.cb = ULONG(bin.size());
+
+				// TODO: pass in named prop stuff to make this work
+				lpSmartView->SetParser(
+					smartview::FindSmartViewParserForProp(&sProp, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, false));
+				lpSmartView->Parse(bin);
+			}
+		}
+
+		return bRet;
+	}
+
+	void CStreamEditor::OnOK()
+	{
+		WriteTextStreamToProperty();
+		CMyDialog::OnOK(); // don't need to call CEditor::OnOK
+	}
+
+	void CStreamEditor::OpenPropertyStream(bool bWrite, bool bRTF)
+	{
+		if (!m_lpMAPIProp) return;
+
+		// Clear the previous stream if we have one
+		if (m_lpStream) m_lpStream->Release();
+		m_lpStream = nullptr;
+
+		auto hRes = S_OK;
+		LPSTREAM lpTmpStream = nullptr;
+		auto ulRTFFlags = m_ulRTFFlags;
+
+		output::DebugPrintEx(
+			output::dbgLevel::Stream,
+			CLASS,
+			L"OpenPropertyStream",
+			L"opening property 0x%X (= %ws) from %p, bWrite = 0x%X\n",
+			m_ulPropTag,
+			proptags::TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, true).c_str(),
+			m_lpMAPIProp,
+			bWrite);
+
+		if (bWrite)
+		{
+			constexpr auto ulStgFlags = STGM_READWRITE;
+			constexpr auto ulFlags = MAPI_CREATE | MAPI_MODIFY;
+			ulRTFFlags |= MAPI_MODIFY;
+
+			if (m_bDocFile)
+			{
+				hRes = EC_MAPI(m_lpMAPIProp->OpenProperty(
+					m_ulPropTag, &IID_IStreamDocfile, ulStgFlags, ulFlags, reinterpret_cast<LPUNKNOWN*>(&lpTmpStream)));
 			}
 			else
 			{
-				m_iFlagBox = 0xFFFFFFFF;
-				m_iCodePageBox = 0xFFFFFFFF;
-				m_iBinBox = 1;
+				hRes = EC_MAPI(m_lpMAPIProp->OpenProperty(
+					m_ulPropTag, &IID_IStream, ulStgFlags, ulFlags, reinterpret_cast<LPUNKNOWN*>(&lpTmpStream)));
 			}
+		}
+		else
+		{
+			constexpr auto ulStgFlags = STGM_READ;
+			constexpr auto ulFlags = NULL;
+			hRes = WC_MAPI(m_lpMAPIProp->OpenProperty(
+				m_ulPropTag, &IID_IStream, ulStgFlags, ulFlags, reinterpret_cast<LPUNKNOWN*>(&lpTmpStream)));
 
-			m_iSmartViewBox = 0xFFFFFFFF;
-			m_bDoSmartView = false;
-
-			// Go ahead and open our property stream in case we decide to change our stream type
-			// This way we can pick the right display elements
-			OpenPropertyStream(false, bEditPropAsRTF);
-
-			if (!m_bUseWrapEx && PT_BINARY == PROP_TYPE(m_ulPropTag))
+			// If we're guessing types, try again as a different type
+			if (hRes == MAPI_E_NOT_FOUND && m_bAllowTypeGuessing)
 			{
-				m_bDoSmartView = true;
-				m_iSmartViewBox = m_iBinBox + 1;
-			}
-
-			if (bEditPropAsRTF)
-				m_ulEditorType = EDITOR_RTF;
-			else
-			{
-				switch (PROP_TYPE(m_ulPropTag))
+				auto ulPropTag = m_ulPropTag;
+				switch (PROP_TYPE(ulPropTag))
 				{
 				case PT_STRING8:
-					m_ulEditorType = EDITOR_STREAM_ANSI;
-					break;
 				case PT_UNICODE:
-					m_ulEditorType = EDITOR_STREAM_UNICODE;
+					ulPropTag = CHANGE_PROP_TYPE(ulPropTag, PT_BINARY);
 					break;
 				case PT_BINARY:
-				default:
-					m_ulEditorType = EDITOR_STREAM_BINARY;
+					ulPropTag = CHANGE_PROP_TYPE(ulPropTag, PT_TSTRING);
 					break;
 				}
-			}
 
-			const auto szPromptPostFix = strings::format(
-				L"\r\n%ws", proptags::TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, false).c_str()); // STRING_OK
-			SetPromptPostFix(szPromptPostFix);
-
-			// Let's crack our property open and see what kind of controls we'll need for it
-			// One control for text stream, one for binary
-			AddPane(viewpane::TextPane::CreateCollapsibleTextPane(m_iTextBox, IDS_STREAMTEXT, false));
-			if (bUseWrapEx)
-			{
-				AddPane(viewpane::TextPane::CreateSingleLinePane(m_iFlagBox, IDS_STREAMFLAGS, true));
-				AddPane(viewpane::TextPane::CreateSingleLinePane(m_iCodePageBox, IDS_CODEPAGE, true));
-			}
-
-			AddPane(viewpane::CountedTextPane::Create(m_iBinBox, IDS_STREAMBIN, false, IDS_CB));
-			if (m_bDoSmartView)
-			{
-				auto smartViewPane = viewpane::SmartViewPane::Create(m_iSmartViewBox, IDS_SMARTVIEW);
-				AddPane(smartViewPane);
-				smartViewPane->OnItemSelected = [&](auto _1) { return HighlightHex(m_iBinBox, _1); };
-			}
-		}
-
-		CStreamEditor::~CStreamEditor()
-		{
-			TRACE_DESTRUCTOR(CLASS);
-			if (m_lpStream) m_lpStream->Release();
-		}
-
-		// Used to call functions which need to be called AFTER controls are created
-		BOOL CStreamEditor::OnInitDialog()
-		{
-			const auto bRet = CEditor::OnInitDialog();
-
-			ReadTextStreamFromProperty();
-
-			if (m_bDoSmartView)
-			{
-				// Load initial smart view here
-				auto lpSmartView = std::dynamic_pointer_cast<viewpane::SmartViewPane>(GetPane(m_iSmartViewBox));
-				if (lpSmartView)
+				if (ulPropTag != m_ulPropTag)
 				{
-					SPropValue sProp = {};
-					sProp.ulPropTag = CHANGE_PROP_TYPE(m_ulPropTag, PT_BINARY);
-					auto bin = GetBinary(m_iBinBox);
-					sProp.Value.bin.lpb = bin.data();
-					sProp.Value.bin.cb = ULONG(bin.size());
-
-					// TODO: pass in named prop stuff to make this work
-					lpSmartView->SetParser(
-						smartview::FindSmartViewParserForProp(&sProp, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, false));
-					lpSmartView->Parse(bin);
-				}
-			}
-
-			return bRet;
-		}
-
-		void CStreamEditor::OnOK()
-		{
-			WriteTextStreamToProperty();
-			CMyDialog::OnOK(); // don't need to call CEditor::OnOK
-		}
-
-		void CStreamEditor::OpenPropertyStream(bool bWrite, bool bRTF)
-		{
-			if (!m_lpMAPIProp) return;
-
-			// Clear the previous stream if we have one
-			if (m_lpStream) m_lpStream->Release();
-			m_lpStream = nullptr;
-
-			auto hRes = S_OK;
-			LPSTREAM lpTmpStream = nullptr;
-			auto ulRTFFlags = m_ulRTFFlags;
-
-			output::DebugPrintEx(
-				output::DBGStream,
-				CLASS,
-				L"OpenPropertyStream",
-				L"opening property 0x%X (= %ws) from %p, bWrite = 0x%X\n",
-				m_ulPropTag,
-				proptags::TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, true).c_str(),
-				m_lpMAPIProp,
-				bWrite);
-
-			if (bWrite)
-			{
-				const auto ulStgFlags = STGM_READWRITE;
-				const auto ulFlags = MAPI_CREATE | MAPI_MODIFY;
-				ulRTFFlags |= MAPI_MODIFY;
-
-				if (m_bDocFile)
-				{
-					hRes = EC_MAPI(m_lpMAPIProp->OpenProperty(
+					output::DebugPrintEx(
+						output::dbgLevel::Stream,
+						CLASS,
+						L"OpenPropertyStream",
+						L"Retrying as 0x%X (= %ws)\n",
 						m_ulPropTag,
-						&IID_IStreamDocfile,
-						ulStgFlags,
-						ulFlags,
-						reinterpret_cast<LPUNKNOWN*>(&lpTmpStream)));
+						proptags::TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, true).c_str());
+					hRes = WC_MAPI(m_lpMAPIProp->OpenProperty(
+						ulPropTag, &IID_IStream, ulStgFlags, ulFlags, reinterpret_cast<LPUNKNOWN*>(&lpTmpStream)));
+					if (SUCCEEDED(hRes))
+					{
+						m_ulPropTag = ulPropTag;
+					}
 				}
-				else
+			}
+
+			// It's possible our stream was actually an docfile - give it a try
+			if (FAILED(hRes))
+			{
+				hRes = WC_MAPI(m_lpMAPIProp->OpenProperty(
+					CHANGE_PROP_TYPE(m_ulPropTag, PT_OBJECT),
+					&IID_IStreamDocfile,
+					ulStgFlags,
+					ulFlags,
+					reinterpret_cast<LPUNKNOWN*>(&lpTmpStream)));
+				if (SUCCEEDED(hRes))
 				{
-					hRes = EC_MAPI(m_lpMAPIProp->OpenProperty(
-						m_ulPropTag, &IID_IStream, ulStgFlags, ulFlags, reinterpret_cast<LPUNKNOWN*>(&lpTmpStream)));
+					m_bDocFile = true;
+					m_ulPropTag = CHANGE_PROP_TYPE(m_ulPropTag, PT_OBJECT);
 				}
+			}
+		}
+
+		if (!bRTF)
+		{
+			m_lpStream = lpTmpStream;
+			lpTmpStream = nullptr;
+		}
+		else if (lpTmpStream)
+		{
+			hRes = EC_H(mapi::WrapStreamForRTF(
+				lpTmpStream, m_bUseWrapEx, ulRTFFlags, m_ulInCodePage, m_ulOutCodePage, &m_lpStream, &m_ulStreamFlags));
+		}
+
+		if (lpTmpStream) lpTmpStream->Release();
+
+		// Save off any error we got to display later
+		m_StreamError = hRes;
+	}
+
+	void CStreamEditor::ReadTextStreamFromProperty() const
+	{
+		if (!m_lpMAPIProp) return;
+
+		output::DebugPrintEx(
+			output::dbgLevel::Stream,
+			CLASS,
+			L"ReadTextStreamFromProperty",
+			L"opening property 0x%X (= %ws) from %p\n",
+			m_ulPropTag,
+			proptags::TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, true).c_str(),
+			m_lpMAPIProp);
+
+		// If we don't have a stream to display, put up an error instead
+		if (FAILED(m_StreamError) || !m_lpStream)
+		{
+			const auto szStreamErr = strings::formatmessage(
+				IDS_CANNOTOPENSTREAM, error::ErrorNameFromErrorCode(m_StreamError).c_str(), m_StreamError);
+			SetStringW(m_iTextBox, szStreamErr);
+			SetEditReadOnly(m_iTextBox);
+			SetEditReadOnly(m_iBinBox);
+			return;
+		}
+
+		if (m_bUseWrapEx) // if m_bUseWrapEx, we're read only
+		{
+			SetEditReadOnly(m_iTextBox);
+			SetEditReadOnly(m_iBinBox);
+		}
+
+		if (m_lpStream)
+		{
+			auto lpPane = std::dynamic_pointer_cast<viewpane::TextPane>(GetPane(m_iBinBox));
+			if (lpPane)
+			{
+				return lpPane->SetBinaryStream(m_lpStream);
+			}
+		}
+	}
+
+	// this will not work if we're using WrapCompressedRTFStreamEx
+	void CStreamEditor::WriteTextStreamToProperty()
+	{
+		// If we couldn't get a read stream, we won't be able to get a write stream
+		if (!m_lpStream) return;
+		if (!m_lpMAPIProp) return;
+		if (!IsDirty(m_iBinBox) && !IsDirty(m_iTextBox)) return; // If we didn't change it, don't write
+		if (m_bUseWrapEx) return;
+
+		// Reopen the property stream as writeable
+		OpenPropertyStream(true, EDITOR_RTF == m_ulEditorType);
+
+		// We started with a binary stream, pull binary back into the stream
+		if (m_lpStream)
+		{
+			// We used to use EDITSTREAM here, but instead, just use GetBinary and write it out.
+			ULONG cbWritten = 0;
+
+			auto bin = GetBinary(m_iBinBox);
+
+			const auto hRes = EC_MAPI(m_lpStream->Write(bin.data(), static_cast<ULONG>(bin.size()), &cbWritten));
+			output::DebugPrintEx(
+				output::dbgLevel::Stream, CLASS, L"WriteTextStreamToProperty", L"wrote 0x%X\n", cbWritten);
+
+			if (SUCCEEDED(hRes))
+			{
+				EC_MAPI_S(m_lpStream->Commit(STGC_DEFAULT));
+			}
+
+			if (m_bDisableSave)
+			{
+				output::DebugPrintEx(
+					output::dbgLevel::Stream, CLASS, L"WriteTextStreamToProperty", L"Save was disabled.\n");
 			}
 			else
 			{
-				const auto ulStgFlags = STGM_READ;
-				const auto ulFlags = NULL;
-				hRes = WC_MAPI(m_lpMAPIProp->OpenProperty(
-					m_ulPropTag, &IID_IStream, ulStgFlags, ulFlags, reinterpret_cast<LPUNKNOWN*>(&lpTmpStream)));
-
-				// If we're guessing types, try again as a different type
-				if (hRes == MAPI_E_NOT_FOUND && m_bAllowTypeGuessing)
-				{
-					auto ulPropTag = m_ulPropTag;
-					switch (PROP_TYPE(ulPropTag))
-					{
-					case PT_STRING8:
-					case PT_UNICODE:
-						ulPropTag = CHANGE_PROP_TYPE(ulPropTag, PT_BINARY);
-						break;
-					case PT_BINARY:
-						ulPropTag = CHANGE_PROP_TYPE(ulPropTag, PT_TSTRING);
-						break;
-					}
-
-					if (ulPropTag != m_ulPropTag)
-					{
-						output::DebugPrintEx(
-							output::DBGStream,
-							CLASS,
-							L"OpenPropertyStream",
-							L"Retrying as 0x%X (= %ws)\n",
-							m_ulPropTag,
-							proptags::TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, true).c_str());
-						hRes = WC_MAPI(m_lpMAPIProp->OpenProperty(
-							ulPropTag, &IID_IStream, ulStgFlags, ulFlags, reinterpret_cast<LPUNKNOWN*>(&lpTmpStream)));
-						if (SUCCEEDED(hRes))
-						{
-							m_ulPropTag = ulPropTag;
-						}
-					}
-				}
-
-				// It's possible our stream was actually an docfile - give it a try
-				if (FAILED(hRes))
-				{
-					hRes = WC_MAPI(m_lpMAPIProp->OpenProperty(
-						CHANGE_PROP_TYPE(m_ulPropTag, PT_OBJECT),
-						&IID_IStreamDocfile,
-						ulStgFlags,
-						ulFlags,
-						reinterpret_cast<LPUNKNOWN*>(&lpTmpStream)));
-					if (SUCCEEDED(hRes))
-					{
-						m_bDocFile = true;
-						m_ulPropTag = CHANGE_PROP_TYPE(m_ulPropTag, PT_OBJECT);
-					}
-				}
-			}
-
-			if (!bRTF)
-			{
-				m_lpStream = lpTmpStream;
-				lpTmpStream = nullptr;
-			}
-			else if (lpTmpStream)
-			{
-				hRes = EC_H(mapi::WrapStreamForRTF(
-					lpTmpStream,
-					m_bUseWrapEx,
-					ulRTFFlags,
-					m_ulInCodePage,
-					m_ulOutCodePage,
-					&m_lpStream,
-					&m_ulStreamFlags));
-			}
-
-			if (lpTmpStream) lpTmpStream->Release();
-
-			// Save off any error we got to display later
-			m_StreamError = hRes;
-		}
-
-		void CStreamEditor::ReadTextStreamFromProperty() const
-		{
-			if (!m_lpMAPIProp) return;
-
-			output::DebugPrintEx(
-				output::DBGStream,
-				CLASS,
-				L"ReadTextStreamFromProperty",
-				L"opening property 0x%X (= %ws) from %p\n",
-				m_ulPropTag,
-				proptags::TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, true).c_str(),
-				m_lpMAPIProp);
-
-			// If we don't have a stream to display, put up an error instead
-			if (FAILED(m_StreamError) || !m_lpStream)
-			{
-				const auto szStreamErr = strings::formatmessage(
-					IDS_CANNOTOPENSTREAM, error::ErrorNameFromErrorCode(m_StreamError).c_str(), m_StreamError);
-				SetStringW(m_iTextBox, szStreamErr);
-				SetEditReadOnly(m_iTextBox);
-				SetEditReadOnly(m_iBinBox);
-				return;
-			}
-
-			if (m_bUseWrapEx) // if m_bUseWrapEx, we're read only
-			{
-				SetEditReadOnly(m_iTextBox);
-				SetEditReadOnly(m_iBinBox);
-			}
-
-			if (m_lpStream)
-			{
-				auto lpPane = std::dynamic_pointer_cast<viewpane::TextPane>(GetPane(m_iBinBox));
-				if (lpPane)
-				{
-					return lpPane->SetBinaryStream(m_lpStream);
-				}
+				EC_MAPI_S(m_lpMAPIProp->SaveChanges(KEEP_OPEN_READWRITE));
 			}
 		}
 
-		// this will not work if we're using WrapCompressedRTFStreamEx
-		void CStreamEditor::WriteTextStreamToProperty()
+		output::DebugPrintEx(
+			output::dbgLevel::Stream, CLASS, L"WriteTextStreamToProperty", L"Wrote out this stream:\n");
+		output::outputStream(output::dbgLevel::Stream, nullptr, m_lpStream);
+	}
+
+	_Check_return_ ULONG CStreamEditor::HandleChange(UINT nID)
+	{
+		const auto paneID = CEditor::HandleChange(nID);
+
+		if (paneID == static_cast<ULONG>(-1)) return static_cast<ULONG>(-1);
+
+		auto lpBinPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(GetPane(m_iBinBox));
+		if (m_iTextBox == paneID && lpBinPane)
 		{
-			// If we couldn't get a read stream, we won't be able to get a write stream
-			if (!m_lpStream) return;
-			if (!m_lpMAPIProp) return;
-			if (!IsDirty(m_iBinBox) && !IsDirty(m_iTextBox)) return; // If we didn't change it, don't write
-			if (m_bUseWrapEx) return;
-
-			// Reopen the property stream as writeable
-			OpenPropertyStream(true, EDITOR_RTF == m_ulEditorType);
-
-			// We started with a binary stream, pull binary back into the stream
-			if (m_lpStream)
+			ClearHighlight(m_iBinBox);
+			switch (m_ulEditorType)
 			{
-				// We used to use EDITSTREAM here, but instead, just use GetBinary and write it out.
-				ULONG cbWritten = 0;
+			case EDITOR_STREAM_ANSI:
+			case EDITOR_RTF:
+			case EDITOR_STREAM_BINARY:
+			default:
+			{
+				auto lpszA = GetStringA(m_iTextBox);
 
-				auto bin = GetBinary(m_iBinBox);
-
-				const auto hRes = EC_MAPI(m_lpStream->Write(bin.data(), static_cast<ULONG>(bin.size()), &cbWritten));
-				output::DebugPrintEx(
-					output::DBGStream, CLASS, L"WriteTextStreamToProperty", L"wrote 0x%X\n", cbWritten);
-
-				if (SUCCEEDED(hRes))
-				{
-					EC_MAPI_S(m_lpStream->Commit(STGC_DEFAULT));
-				}
-
-				if (m_bDisableSave)
-				{
-					output::DebugPrintEx(
-						output::DBGStream, CLASS, L"WriteTextStreamToProperty", L"Save was disabled.\n");
-				}
-				else
-				{
-					EC_MAPI_S(m_lpMAPIProp->SaveChanges(KEEP_OPEN_READWRITE));
-				}
+				lpBinPane->SetBinary(LPBYTE(lpszA.c_str()), lpszA.length() * sizeof(CHAR));
+				lpBinPane->SetCount(lpszA.length() * sizeof(CHAR));
+				break;
 			}
+			case EDITOR_STREAM_UNICODE:
+				auto lpszW = GetStringW(m_iTextBox);
 
-			output::DebugPrintEx(output::DBGStream, CLASS, L"WriteTextStreamToProperty", L"Wrote out this stream:\n");
-			output::outputStream(output::DBGStream, nullptr, m_lpStream);
+				lpBinPane->SetBinary(LPBYTE(lpszW.c_str()), lpszW.length() * sizeof(WCHAR));
+				lpBinPane->SetCount(lpszW.length() * sizeof(WCHAR));
+				break;
+			}
 		}
-
-		_Check_return_ ULONG CStreamEditor::HandleChange(UINT nID)
+		else if (m_iBinBox == paneID)
 		{
-			const auto paneID = CEditor::HandleChange(nID);
-
-			if (paneID == static_cast<ULONG>(-1)) return static_cast<ULONG>(-1);
-
-			auto lpBinPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(GetPane(m_iBinBox));
-			if (m_iTextBox == paneID && lpBinPane)
+			ClearHighlight(m_iBinBox);
+			auto bin = GetBinary(m_iBinBox);
 			{
-				ClearHighlight(m_iBinBox);
 				switch (m_ulEditorType)
 				{
 				case EDITOR_STREAM_ANSI:
 				case EDITOR_RTF:
 				case EDITOR_STREAM_BINARY:
 				default:
-				{
-					auto lpszA = GetStringA(m_iTextBox);
-
-					lpBinPane->SetBinary(LPBYTE(lpszA.c_str()), lpszA.length() * sizeof(CHAR));
-					lpBinPane->SetCount(lpszA.length() * sizeof(CHAR));
+					SetStringA(m_iTextBox, std::string(LPCSTR(bin.data()), bin.size() / sizeof(CHAR)));
+					if (lpBinPane) lpBinPane->SetCount(bin.size());
 					break;
-				}
 				case EDITOR_STREAM_UNICODE:
-					auto lpszW = GetStringW(m_iTextBox);
-
-					lpBinPane->SetBinary(LPBYTE(lpszW.c_str()), lpszW.length() * sizeof(WCHAR));
-					lpBinPane->SetCount(lpszW.length() * sizeof(WCHAR));
+					SetStringW(m_iTextBox, std::wstring(LPWSTR(bin.data()), bin.size() / sizeof(WCHAR)));
+					if (lpBinPane) lpBinPane->SetCount(bin.size());
 					break;
 				}
 			}
-			else if (m_iBinBox == paneID)
-			{
-				ClearHighlight(m_iBinBox);
-				auto bin = GetBinary(m_iBinBox);
-				{
-					switch (m_ulEditorType)
-					{
-					case EDITOR_STREAM_ANSI:
-					case EDITOR_RTF:
-					case EDITOR_STREAM_BINARY:
-					default:
-						SetStringA(m_iTextBox, std::string(LPCSTR(bin.data()), bin.size() / sizeof(CHAR)));
-						if (lpBinPane) lpBinPane->SetCount(bin.size());
-						break;
-					case EDITOR_STREAM_UNICODE:
-						SetStringW(m_iTextBox, std::wstring(LPWSTR(bin.data()), bin.size() / sizeof(WCHAR)));
-						if (lpBinPane) lpBinPane->SetCount(bin.size());
-						break;
-					}
-				}
-			}
-
-			if (m_bDoSmartView)
-			{
-				auto lpSmartView = std::dynamic_pointer_cast<viewpane::SmartViewPane>(GetPane(m_iSmartViewBox));
-				if (lpSmartView)
-				{
-					lpSmartView->Parse(GetBinary(m_iBinBox));
-				}
-			}
-
-			if (m_bUseWrapEx)
-			{
-				auto szFlags = flags::InterpretFlags(flagStreamFlag, m_ulStreamFlags);
-				SetStringf(m_iFlagBox, L"0x%08X = %ws", m_ulStreamFlags, szFlags.c_str()); // STRING_OK
-				SetStringW(m_iCodePageBox, strings::formatmessage(IDS_CODEPAGES, m_ulInCodePage, m_ulOutCodePage));
-			}
-
-			OnRecalcLayout();
-			return paneID;
 		}
 
-		void CStreamEditor::SetEditReadOnly(ULONG id) const
+		if (m_bDoSmartView)
 		{
-			auto lpPane = std::dynamic_pointer_cast<viewpane::TextPane>(GetPane(id));
-			if (lpPane)
+			auto lpSmartView = std::dynamic_pointer_cast<viewpane::SmartViewPane>(GetPane(m_iSmartViewBox));
+			if (lpSmartView)
 			{
-				lpPane->SetReadOnly();
+				lpSmartView->Parse(GetBinary(m_iBinBox));
 			}
 		}
 
-		void CStreamEditor::DisableSave() { m_bDisableSave = true; }
-	} // namespace editor
-} // namespace dialog
+		if (m_bUseWrapEx)
+		{
+			auto szFlags = flags::InterpretFlags(flagStreamFlag, m_ulStreamFlags);
+			SetStringf(m_iFlagBox, L"0x%08X = %ws", m_ulStreamFlags, szFlags.c_str()); // STRING_OK
+			SetStringW(m_iCodePageBox, strings::formatmessage(IDS_CODEPAGES, m_ulInCodePage, m_ulOutCodePage));
+		}
+
+		OnRecalcLayout();
+		return paneID;
+	}
+
+	void CStreamEditor::SetEditReadOnly(ULONG id) const
+	{
+		auto lpPane = std::dynamic_pointer_cast<viewpane::TextPane>(GetPane(id));
+		if (lpPane)
+		{
+			lpPane->SetReadOnly();
+		}
+	}
+
+	void CStreamEditor::DisableSave() { m_bDisableSave = true; }
+} // namespace dialog::editor

@@ -72,7 +72,7 @@ namespace cache
 				// lpSrcName is LPWSTR which means it's ALWAYS unicode
 				// But some folks get it wrong and stuff ANSI data in there
 				// So we check the string length both ways to make our best guess
-				const auto cchShortLen = strnlen_s(LPCSTR(src.Kind.lpwstrName), RSIZE_MAX);
+				const auto cchShortLen = strnlen_s(reinterpret_cast<LPCSTR>(src.Kind.lpwstrName), RSIZE_MAX);
 				const auto cchWideLen = wcsnlen_s(src.Kind.lpwstrName, RSIZE_MAX);
 				auto cbName = size_t();
 
@@ -93,7 +93,7 @@ namespace cache
 					dst.Kind.lpwstrName = mapi::allocate<LPWSTR>(static_cast<ULONG>(cbName), lpMAPIParent);
 				}
 				else
-					dst.Kind.lpwstrName = LPWSTR(new BYTE[cbName]);
+					dst.Kind.lpwstrName = reinterpret_cast<LPWSTR>(new (std::nothrow) BYTE[cbName]);
 
 				if (dst.Kind.lpwstrName)
 				{
@@ -132,7 +132,7 @@ namespace cache
 
 	// Given a signature and property ID (ulPropID), finds the named prop mapping in the cache
 	_Check_return_ std::shared_ptr<NamedPropCacheEntry>
-	FindCacheEntry(ULONG cbSig, _In_count_(cbSig) LPBYTE lpSig, ULONG ulPropID)
+	FindCacheEntry(ULONG cbSig, _In_count_(cbSig) LPBYTE lpSig, ULONG ulPropID) noexcept
 	{
 		const auto entry = find_if(
 			begin(g_lpNamedPropCache),
@@ -210,13 +210,13 @@ namespace cache
 		{
 			if (lppPropNames[ulSource])
 			{
-				if (fIsSet(output::DBGNamedPropCacheMisses) && lppPropNames[ulSource]->ulKind == MNID_ID)
+				if (fIsSet(output::dbgLevel::NamedPropCacheMisses) && lppPropNames[ulSource]->ulKind == MNID_ID)
 				{
 					auto names = NameIDToPropNames(lppPropNames[ulSource]);
 					if (names.empty())
 					{
 						output::DebugPrint(
-							output::DBGNamedPropCacheMisses,
+							output::dbgLevel::NamedPropCacheMisses,
 							L"AddMapping: Caching unknown property 0x%08X %ws\n",
 							lppPropNames[ulSource]->Kind.lID,
 							guid::GUIDToStringAndName(lppPropNames[ulSource]->lpguid).c_str());
@@ -502,7 +502,6 @@ namespace cache
 						}
 					}
 
-					const ULONG ulUncachedTags = 0;
 					LPSPropTagArray lpUncachedTags = nullptr;
 
 					EC_H_GETPROPS_S(
@@ -510,7 +509,7 @@ namespace cache
 					if (lpUncachedTags && lpUncachedTags->cValues == ulMisses)
 					{
 						// Cache the results
-						AddMapping(cbSig, lpSig, ulUncachedTags, lppUncachedPropNames, lpUncachedTags);
+						AddMapping(cbSig, lpSig, lpUncachedTags->cValues, lppUncachedPropNames, lpUncachedTags);
 
 						// Copy our results over
 						// Loop over the target array, looking for empty slots
@@ -615,24 +614,27 @@ namespace cache
 			if (!lpNamedPropCacheEntry)
 			{
 				output::DebugPrint(
-					output::DBGNamedProp,
+					output::dbgLevel::NamedProp,
 					L"NameIDToStrings: Failed to find cache entry for ulPropTag = 0x%08X\n",
 					ulPropTag);
 				return namePropNames;
 			}
 		}
 
-		output::DebugPrint(output::DBGNamedProp, L"Parsing named property\n");
-		output::DebugPrint(output::DBGNamedProp, L"ulPropTag = 0x%08x\n", ulPropTag);
+		output::DebugPrint(output::dbgLevel::NamedProp, L"Parsing named property\n");
+		output::DebugPrint(output::dbgLevel::NamedProp, L"ulPropTag = 0x%08x\n", ulPropTag);
 		namePropNames.guid = guid::GUIDToStringAndName(lpNameID->lpguid);
-		output::DebugPrint(output::DBGNamedProp, L"lpNameID->lpguid = %ws\n", namePropNames.guid.c_str());
+		output::DebugPrint(output::dbgLevel::NamedProp, L"lpNameID->lpguid = %ws\n", namePropNames.guid.c_str());
 
 		auto szDASLGuid = guid::GUIDToString(lpNameID->lpguid);
 
 		if (lpNameID->ulKind == MNID_ID)
 		{
 			output::DebugPrint(
-				output::DBGNamedProp, L"lpNameID->Kind.lID = 0x%04X = %d\n", lpNameID->Kind.lID, lpNameID->Kind.lID);
+				output::dbgLevel::NamedProp,
+				L"lpNameID->Kind.lID = 0x%04X = %d\n",
+				lpNameID->Kind.lID,
+				lpNameID->Kind.lID);
 			auto pidlids = NameIDToPropNames(lpNameID);
 
 			if (!pidlids.empty())
@@ -672,14 +674,14 @@ namespace cache
 			// lpwstrName is LPWSTR which means it's ALWAYS unicode
 			// But some folks get it wrong and stuff ANSI data in there
 			// So we check the string length both ways to make our best guess
-			const auto cchShortLen = strnlen_s(LPCSTR(lpNameID->Kind.lpwstrName), RSIZE_MAX);
+			const auto cchShortLen = strnlen_s(reinterpret_cast<LPCSTR>(lpNameID->Kind.lpwstrName), RSIZE_MAX);
 			const auto cchWideLen = wcsnlen_s(lpNameID->Kind.lpwstrName, RSIZE_MAX);
 
 			if (cchShortLen < cchWideLen)
 			{
 				// this is the *proper* case
 				output::DebugPrint(
-					output::DBGNamedProp, L"lpNameID->Kind.lpwstrName = \"%ws\"\n", lpNameID->Kind.lpwstrName);
+					output::dbgLevel::NamedProp, L"lpNameID->Kind.lpwstrName = \"%ws\"\n", lpNameID->Kind.lpwstrName);
 				namePropNames.name = lpNameID->Kind.lpwstrName;
 
 				namePropNames.dasl = strings::format(
@@ -691,11 +693,11 @@ namespace cache
 			{
 				// this is the case where ANSI data was shoved into a unicode string.
 				output::DebugPrint(
-					output::DBGNamedProp,
+					output::dbgLevel::NamedProp,
 					L"Warning: ANSI data was found in a unicode field. This is a bug on the part of the creator of "
 					L"this named property\n");
 				output::DebugPrint(
-					output::DBGNamedProp,
+					output::dbgLevel::NamedProp,
 					L"lpNameID->Kind.lpwstrName = \"%hs\"\n",
 					reinterpret_cast<LPCSTR>(lpNameID->Kind.lpwstrName));
 

@@ -93,7 +93,7 @@ namespace dialog
 		rcCheck.bottom = rcCheck.top + iCheckHeight;
 
 		EC_B_S(m_DisplayAboutCheck.Create(
-			NULL,
+			nullptr,
 			WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE | BS_AUTOCHECKBOX,
 			rcCheck,
 			this,
@@ -154,7 +154,7 @@ namespace dialog
 		{
 			RECT rect = {0};
 			::GetClientRect(m_hWnd, &rect);
-			const auto hOld = SelectObject(reinterpret_cast<HDC>(wParam), GetSysBrush(ui::cBackground));
+			const auto hOld = SelectObject(reinterpret_cast<HDC>(wParam), GetSysBrush(ui::uiColor::Background));
 			const auto bRet =
 				PatBlt(reinterpret_cast<HDC>(wParam), 0, 0, rect.right - rect.left, rect.bottom - rect.top, PATCOPY);
 			SelectObject(reinterpret_cast<HDC>(wParam), hOld);

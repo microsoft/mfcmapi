@@ -1,50 +1,48 @@
 #pragma once
-// Common functions for MFC MAPI
+// Common functions for MFCMAPI
 
 #include <UI/Dialogs/BaseDialog.h>
 
 namespace dialog
 {
-	enum ObjectType
+	enum class objectType
 	{
-		otDefault,
-		otAssocContents,
-		otContents,
-		otHierarchy,
-		otACL,
-		otStatus,
-		otReceive,
-		otRules,
-		otStore,
-		otStoreDeletedItems,
+		default,
+		assocContents,
+		contents,
+		hierarchy,
+		ACL,
+		status,
+		receive,
+		rules,
+		store,
+		storeDeletedItems,
 	};
 
 	_Check_return_ HRESULT
-	DisplayObject(_In_ LPMAPIPROP lpUnk, ULONG ulObjType, ObjectType tType, _In_ dialog::CBaseDialog* lpHostDlg);
+	DisplayObject(_In_ LPMAPIPROP lpUnk, ULONG ulObjType, objectType tType, _In_ dialog::CBaseDialog* lpHostDlg);
 
 	_Check_return_ HRESULT DisplayExchangeTable(
 		_In_ LPMAPIPROP lpMAPIProp,
 		ULONG ulPropTag,
-		ObjectType tType,
+		objectType tType,
 		_In_ dialog::CBaseDialog* lpHostDlg);
 
 	_Check_return_ HRESULT
-	DisplayTable(_In_ LPMAPITABLE lpTable, ObjectType tType, _In_ dialog::CBaseDialog* lpHostDlg);
+	DisplayTable(_In_ LPMAPITABLE lpTable, objectType tType, _In_ dialog::CBaseDialog* lpHostDlg);
 
 	_Check_return_ HRESULT
-	DisplayTable(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, ObjectType tType, _In_ dialog::CBaseDialog* lpHostDlg);
+	DisplayTable(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, objectType tType, _In_ dialog::CBaseDialog* lpHostDlg);
 
 	_Check_return_ bool bShouldCancel(_In_opt_ CWnd* cWnd, HRESULT hResPrev);
 
 	void DisplayMailboxTable(_In_ ui::CParentWnd* lpParent, _In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects);
-	void DisplayPublicFolderTable(_In_ ui::CParentWnd* lpParent, _In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects);
-	void ResolveMessageClass(
-		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
-		_In_opt_ LPMAPIFOLDER lpMAPIFolder,
-		_Out_ LPMAPIFORMINFO* lppMAPIFormInfo);
-	void SelectForm(
+	void
+	DisplayPublicFolderTable(_In_ ui::CParentWnd* lpParent, _In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects);
+	_Check_return_ LPMAPIFORMINFO
+	ResolveMessageClass(_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects, _In_opt_ LPMAPIFOLDER lpMAPIFolder);
+	_Check_return_ LPMAPIFORMINFO SelectForm(
 		_In_ HWND hWnd,
 		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
-		_In_opt_ LPMAPIFOLDER lpMAPIFolder,
-		_Out_ LPMAPIFORMINFO* lppMAPIFormInfo);
+		_In_opt_ LPMAPIFOLDER lpMAPIFolder);
 } // namespace dialog

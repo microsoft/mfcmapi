@@ -546,8 +546,8 @@ void DoPropTags()
 	auto propName = cli::switchUnswitched[0];
 	const auto lpszPropName = propName.empty() ? nullptr : propName.c_str();
 	const auto ulPropNum = strings::wstringToUlong(propName, cli::switchDecimal.isSet() ? 10 : 16);
-	if (lpszPropName) output::DebugPrint(output::DBGGeneric, L"lpszPropName = %ws\n", lpszPropName);
-	output::DebugPrint(output::DBGGeneric, L"ulPropNum = 0x%08X\n", ulPropNum);
+	if (lpszPropName) output::DebugPrint(output::dbgLevel::Generic, L"lpszPropName = %ws\n", lpszPropName);
+	output::DebugPrint(output::dbgLevel::Generic, L"ulPropNum = 0x%08X\n", ulPropNum);
 	const auto ulTypeNum =
 		cli::switchType.empty() ? cache::ulNoMatch : proptype::PropTypeNameToPropType(cli::switchType[0]);
 
@@ -614,9 +614,9 @@ void DoFlagSearch()
 	const auto lpszFlagName = cli::switchFlag[0];
 	for (const auto& flag : FlagArray)
 	{
-		if (!_wcsicmp(flag.lpszName, lpszFlagName.c_str()))
+		if (strings::compareInsensitive(flag.lpszName, lpszFlagName))
 		{
-			printf("%ws = 0x%08lX\n", flag.lpszName, flag.lFlagValue);
+			printf("%ws = 0x%08lX\n", flag.lpszName.c_str(), flag.lFlagValue);
 			break;
 		}
 	}
