@@ -53,9 +53,9 @@ namespace dialog
 		void __cdecl UpdateStatusBarText(
 			statusPane nPos,
 			UINT uidMsg,
-			std::wstring& szParam1,
-			std::wstring& szParam2,
-			std::wstring& szParam3);
+			const std::wstring& szParam1,
+			const std::wstring& szParam2,
+			const std::wstring& szParam3);
 		void OnOpenEntryID(_In_opt_ LPSBinary lpBin);
 		_Check_return_ ui::CParentWnd* GetParentWnd() const;
 		_Check_return_ std::shared_ptr<cache::CMapiObjects> GetMapiObjects() const;

@@ -574,7 +574,7 @@ namespace ui
 		return {dpiX, dpiY, 96};
 	}
 
-	HBITMAP ScaleBitmap(HBITMAP hBitmap, SCALE& scale)
+	HBITMAP ScaleBitmap(HBITMAP hBitmap, const SCALE& scale)
 	{
 		auto bm = BITMAP{};
 		::GetObject(hBitmap, sizeof(BITMAP), &bm);

@@ -95,7 +95,7 @@ namespace ui
 	};
 
 	SCALE GetDPIScale();
-	HBITMAP ScaleBitmap(HBITMAP hBitmap, SCALE& scale);
+	HBITMAP ScaleBitmap(HBITMAP hBitmap, const SCALE& scale);
 
 	void ClearEditFormatting(_In_ HWND hWnd, bool bReadOnly);
 

@@ -581,9 +581,9 @@ namespace dialog
 	void __cdecl CBaseDialog::UpdateStatusBarText(
 		statusPane const nPos,
 		UINT uidMsg,
-		std::wstring& szParam1,
-		std::wstring& szParam2,
-		std::wstring& szParam3)
+		const std::wstring& szParam1,
+		const std::wstring& szParam2,
+		const std::wstring& szParam3)
 	{
 		std::wstring szStatBarString;
 
