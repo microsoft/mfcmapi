@@ -42,7 +42,7 @@ namespace output
 				{
 					for (ULONG i = 0; i < lpRows->cRows; i++)
 					{
-						printf("%2d ", i);
+						printf("%2ul ", i);
 						if (PR_DEFAULT_PROFILE == lpRows->aRow[i].lpProps[0].ulPropTag &&
 							lpRows->aRow[i].lpProps[0].Value.b)
 						{

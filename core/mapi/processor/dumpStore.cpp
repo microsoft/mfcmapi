@@ -411,7 +411,7 @@ namespace mapi::processor
 		_In_ const std::wstring& szMessageFileName,
 		_In_ const std::wstring& szFolderPath,
 		bool bRetryStreamProps,
-		_Deref_out_ LPVOID* lpData)
+		_Deref_out_opt_ LPVOID* lpData)
 	{
 		if (!lpMessage || !lpData) return;
 

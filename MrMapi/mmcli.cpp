@@ -141,12 +141,12 @@ namespace cli
 			}
 
 			printf("MrMAPI currently knows:\n");
-			printf("%6u property tags\n", static_cast<int>(PropTagArray.size()));
-			printf("%6u dispids\n", static_cast<int>(NameIDArray.size()));
-			printf("%6u types\n", static_cast<int>(PropTypeArray.size()));
-			printf("%6u guids\n", static_cast<int>(PropGuidArray.size()));
+			printf("%6u property tags\n", static_cast<UINT>(PropTagArray.size()));
+			printf("%6u dispids\n", static_cast<UINT>(NameIDArray.size()));
+			printf("%6u types\n", static_cast<UINT>(PropTypeArray.size()));
+			printf("%6u guids\n", static_cast<UINT>(PropGuidArray.size()));
 			printf("%6lu errors\n", error::g_ulErrorArray);
-			printf("%6u smart view parsers\n", static_cast<int>(SmartViewParserTypeArray.size()) - 1);
+			printf("%6u smart view parsers\n", static_cast<UINT>(SmartViewParserTypeArray.size()) - 1);
 			printf("\n");
 		}
 
