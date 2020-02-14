@@ -1442,14 +1442,13 @@ namespace mapi
 		return nullptr;
 	}
 
-	ULONG aulOneOffIDs[] = {dispidFormStorage,
-							dispidPageDirStream,
-							dispidFormPropStream,
-							dispidScriptStream,
-							dispidPropDefStream, // dispidPropDefStream must remain next to last in list
-							dispidCustomFlag}; // dispidCustomFlag must remain last in list
-
-#define ulNumOneOffIDs (_countof(aulOneOffIDs))
+	const ULONG aulOneOffIDs[] = {dispidFormStorage,
+								  dispidPageDirStream,
+								  dispidFormPropStream,
+								  dispidScriptStream,
+								  dispidPropDefStream, // dispidPropDefStream must remain next to last in list
+								  dispidCustomFlag}; // dispidCustomFlag must remain last in list
+	constexpr ULONG ulNumOneOffIDs = _countof(aulOneOffIDs);
 
 	_Check_return_ HRESULT RemoveOneOff(_In_ LPMESSAGE lpMessage, bool bRemovePropDef)
 	{
