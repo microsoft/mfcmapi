@@ -168,9 +168,9 @@ namespace file
 
 		BOOL bResult = false;
 		if (bOpenFileDialog)
-			bResult = GetOpenFileNameW(static_cast<OPENFILENAMEW*>(&ofn));
+			bResult = GetOpenFileNameW(&ofn);
 		else
-			bResult = GetSaveFileNameW(static_cast<OPENFILENAMEW*>(&ofn));
+			bResult = GetSaveFileNameW(&ofn);
 
 		if (bResult)
 		{
