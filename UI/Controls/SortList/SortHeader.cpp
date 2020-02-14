@@ -67,7 +67,7 @@ namespace controls::sortlistctrl
 				m_ti.hwnd = m_hWnd;
 				m_ti.uId = reinterpret_cast<UINT_PTR>(m_hWnd);
 				m_ti.hinst = AfxGetInstanceHandle();
-				m_ti.lpszText = const_cast<LPWSTR>(L"");
+				m_ti.lpszText = L"";
 
 				EC_B_S(::SendMessage(m_hwndTip, TTM_ADDTOOL, 0, LPARAM(&m_ti)));
 				EC_B_S(::SendMessage(m_hwndTip, TTM_SETMAXTIPWIDTH, 0, LPARAM(500)));

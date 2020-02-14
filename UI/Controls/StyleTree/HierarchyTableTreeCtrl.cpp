@@ -151,7 +151,7 @@ namespace controls
 			}
 		}
 
-		delete reinterpret_cast<sortlistdata::sortListData*>(lpNodeData);
+		delete lpNodeData;
 	}
 
 	void CHierarchyTableTreeCtrl::OnItemAdded(HTREEITEM hItem) const

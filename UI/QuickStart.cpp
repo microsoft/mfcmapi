@@ -175,7 +175,7 @@ namespace dialog
 					sRes.res.resProperty.relop = RELOP_EQ;
 					sRes.res.resProperty.lpProp = &sPV;
 					sPV.ulPropTag = sRes.res.resProperty.ulPropTag;
-					sPV.Value.LPSZ = const_cast<LPTSTR>(_T("IPM.Configuration.Autocomplete")); // STRING_OK
+					sPV.Value.LPSZ = _T("IPM.Configuration.Autocomplete"); // STRING_OK
 					auto hRes = WC_MAPI(lpTable->Restrict(&sRes, TBL_BATCH));
 					if (SUCCEEDED(hRes))
 					{

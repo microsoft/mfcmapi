@@ -42,7 +42,7 @@ namespace dialog
 		// If we weren't passed an object type, go get one - careful! Some objects lie!
 		if (!ulObjType)
 		{
-			ulObjType = mapi::GetMAPIObjectType(static_cast<LPMAPIPROP>(lpUnk));
+			ulObjType = mapi::GetMAPIObjectType(lpUnk);
 		}
 
 		auto szFlags = smartview::InterpretNumberAsStringProp(ulObjType, PR_OBJECT_TYPE);
@@ -97,8 +97,7 @@ namespace dialog
 					const auto lpMAPISession = lpMapiObjects->GetSession(); // do not release
 					if (lpMAPISession)
 					{
-						auto lpNewMDB =
-							mapi::store::OpenStoreFromMAPIProp(lpMAPISession, static_cast<LPMAPIPROP>(lpUnk));
+						auto lpNewMDB = mapi::store::OpenStoreFromMAPIProp(lpMAPISession, lpUnk);
 						if (lpNewMDB)
 						{
 							lpMapiObjects->SetMDB(lpNewMDB);

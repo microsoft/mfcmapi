@@ -48,7 +48,7 @@ namespace mapi::profile
 							{
 								SPropValue PropVal;
 								PropVal.ulPropTag = PR_MARKER;
-								PropVal.Value.lpszA = const_cast<LPSTR>(MARKER_STRING);
+								PropVal.Value.lpszA = MARKER_STRING;
 								EC_MAPI_S(lpSect->SetProps(1, &PropVal, nullptr));
 							}
 							else

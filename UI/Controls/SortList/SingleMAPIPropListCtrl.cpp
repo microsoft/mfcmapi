@@ -78,7 +78,7 @@ namespace controls::sortlistctrl
 					order[i] = registry::propertyColumnOrder[i] - L'a';
 				}
 
-				if (SetColumnOrderArray(static_cast<int>(order.size()), const_cast<int*>(order.data())))
+				if (SetColumnOrderArray(static_cast<int>(order.size()), order.data()))
 				{
 					bSetCols = true;
 				}
