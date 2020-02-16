@@ -45,15 +45,8 @@ namespace cache
 			}
 		}
 
-	private:
-		MAPINAMEID mapiNameId{}; // guid, kind, value
-		std::vector<BYTE> sig{}; // Value of PR_MAPPING_SIGNATURE
-		NamePropNames namePropNames{};
-		bool bStringsCached{}; // We have cached strings
-
 	public:
-		ULONG ulPropID{}; // MAPI ID (ala PROP_ID) for a named property
-
+		ULONG getPropID() const noexcept { return ulPropID; }
 		NamePropNames getNamePropNames() const noexcept { return namePropNames; }
 		void setNamePropNames(const NamePropNames& _namePropNames) noexcept
 		{
@@ -310,7 +303,13 @@ namespace cache
 		}
 
 	private:
-		// Go through all the details of copying allocated data to or from a cache entry
+		ULONG ulPropID{}; // MAPI ID (ala PROP_ID) for a named property
+		MAPINAMEID mapiNameId{}; // guid, kind, value
+		std::vector<BYTE> sig{}; // Value of PR_MAPPING_SIGNATURE
+		NamePropNames namePropNames{};
+		bool bStringsCached{}; // We have cached strings
+
+							   // Go through all the details of copying allocated data to or from a cache entry
 		static void CopyCacheData(
 			const MAPINAMEID& src,
 			MAPINAMEID& dst,
@@ -482,7 +481,7 @@ namespace cache
 				if (lpEntry)
 				{
 					// We have a hit - copy the data over
-					lpPropTags->aulPropTag[ulTarget] = PROP_TAG(PT_UNSPECIFIED, lpEntry->ulPropID);
+					lpPropTags->aulPropTag[ulTarget] = PROP_TAG(PT_UNSPECIFIED, lpEntry->getPropID());
 
 					// Got a hit, decrement the miss counter
 					ulMisses--;
