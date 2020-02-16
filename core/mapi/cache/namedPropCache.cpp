@@ -12,7 +12,7 @@
 namespace cache
 {
 	class NamedPropCacheEntry;
-		// We keep a list of named prop cache entries
+	// We keep a list of named prop cache entries
 	static std::list<std::shared_ptr<NamedPropCacheEntry>> g_lpNamedPropCache;
 
 	class NamedPropCacheEntry
@@ -50,73 +50,6 @@ namespace cache
 		std::vector<BYTE> sig{}; // Value of PR_MAPPING_SIGNATURE
 		bool bStringsCached{}; // We have cached strings
 		NamePropNames namePropNames{};
-
-		// Go through all the details of copying allocated data to or from a cache entry
-		static void CopyCacheData(
-			const MAPINAMEID& src,
-			MAPINAMEID& dst,
-			_In_opt_ LPVOID lpMAPIParent) // If passed, allocate using MAPI with this as a parent
-		{
-			dst.lpguid = nullptr;
-			dst.Kind.lID = MNID_ID;
-
-			if (src.lpguid)
-			{
-				if (lpMAPIParent)
-				{
-					dst.lpguid = mapi::allocate<LPGUID>(sizeof(GUID), lpMAPIParent);
-				}
-				else
-					dst.lpguid = new (std::nothrow) GUID;
-
-				if (dst.lpguid)
-				{
-					memcpy(dst.lpguid, src.lpguid, sizeof GUID);
-				}
-			}
-
-			dst.ulKind = src.ulKind;
-			if (MNID_ID == src.ulKind)
-			{
-				dst.Kind.lID = src.Kind.lID;
-			}
-			else if (MNID_STRING == src.ulKind)
-			{
-				if (src.Kind.lpwstrName)
-				{
-					// lpSrcName is LPWSTR which means it's ALWAYS unicode
-					// But some folks get it wrong and stuff ANSI data in there
-					// So we check the string length both ways to make our best guess
-					const auto cchShortLen = strnlen_s(reinterpret_cast<LPCSTR>(src.Kind.lpwstrName), RSIZE_MAX);
-					const auto cchWideLen = wcsnlen_s(src.Kind.lpwstrName, RSIZE_MAX);
-					auto cbName = size_t();
-
-					if (cchShortLen < cchWideLen)
-					{
-						// this is the *proper* case
-						cbName = (cchWideLen + 1) * sizeof WCHAR;
-					}
-					else
-					{
-						// This is the case where ANSI data was shoved into a unicode string.
-						// Add a couple extra NULL in case we read this as unicode again.
-						cbName = (cchShortLen + 3) * sizeof CHAR;
-					}
-
-					if (lpMAPIParent)
-					{
-						dst.Kind.lpwstrName = mapi::allocate<LPWSTR>(static_cast<ULONG>(cbName), lpMAPIParent);
-					}
-					else
-						dst.Kind.lpwstrName = reinterpret_cast<LPWSTR>(new (std::nothrow) BYTE[cbName]);
-
-					if (dst.Kind.lpwstrName)
-					{
-						memcpy(dst.Kind.lpwstrName, src.Kind.lpwstrName, cbName);
-					}
-				}
-			}
-		}
 
 		// Given a signature and property ID (ulPropID), finds the named prop mapping in the cache
 		_Check_return_ static std::shared_ptr<NamedPropCacheEntry>
@@ -363,6 +296,74 @@ namespace cache
 			}
 
 			return hRes;
+		}
+
+	private:
+		// Go through all the details of copying allocated data to or from a cache entry
+		static void CopyCacheData(
+			const MAPINAMEID& src,
+			MAPINAMEID& dst,
+			_In_opt_ LPVOID lpMAPIParent) // If passed, allocate using MAPI with this as a parent
+		{
+			dst.lpguid = nullptr;
+			dst.Kind.lID = MNID_ID;
+
+			if (src.lpguid)
+			{
+				if (lpMAPIParent)
+				{
+					dst.lpguid = mapi::allocate<LPGUID>(sizeof(GUID), lpMAPIParent);
+				}
+				else
+					dst.lpguid = new (std::nothrow) GUID;
+
+				if (dst.lpguid)
+				{
+					memcpy(dst.lpguid, src.lpguid, sizeof GUID);
+				}
+			}
+
+			dst.ulKind = src.ulKind;
+			if (MNID_ID == src.ulKind)
+			{
+				dst.Kind.lID = src.Kind.lID;
+			}
+			else if (MNID_STRING == src.ulKind)
+			{
+				if (src.Kind.lpwstrName)
+				{
+					// lpSrcName is LPWSTR which means it's ALWAYS unicode
+					// But some folks get it wrong and stuff ANSI data in there
+					// So we check the string length both ways to make our best guess
+					const auto cchShortLen = strnlen_s(reinterpret_cast<LPCSTR>(src.Kind.lpwstrName), RSIZE_MAX);
+					const auto cchWideLen = wcsnlen_s(src.Kind.lpwstrName, RSIZE_MAX);
+					auto cbName = size_t();
+
+					if (cchShortLen < cchWideLen)
+					{
+						// this is the *proper* case
+						cbName = (cchWideLen + 1) * sizeof WCHAR;
+					}
+					else
+					{
+						// This is the case where ANSI data was shoved into a unicode string.
+						// Add a couple extra NULL in case we read this as unicode again.
+						cbName = (cchShortLen + 3) * sizeof CHAR;
+					}
+
+					if (lpMAPIParent)
+					{
+						dst.Kind.lpwstrName = mapi::allocate<LPWSTR>(static_cast<ULONG>(cbName), lpMAPIParent);
+					}
+					else
+						dst.Kind.lpwstrName = reinterpret_cast<LPWSTR>(new (std::nothrow) BYTE[cbName]);
+
+					if (dst.Kind.lpwstrName)
+					{
+						memcpy(dst.Kind.lpwstrName, src.Kind.lpwstrName, cbName);
+					}
+				}
+			}
 		}
 	};
 
