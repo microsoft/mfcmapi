@@ -11,6 +11,8 @@
 
 namespace cache
 {
+	void CopyCacheData(const MAPINAMEID& src, MAPINAMEID& dst, _In_opt_ LPVOID lpMAPIParent);
+
 	class NamedPropCacheEntry
 	{
 	public:
@@ -32,6 +34,33 @@ namespace cache
 		bool bStringsCached{}; // We have cached strings
 		NamePropNames namePropNames{};
 	};
+
+	NamedPropCacheEntry::NamedPropCacheEntry(
+		ULONG _cbSig,
+		_In_opt_count_(_cbSig) LPBYTE lpSig,
+		LPMAPINAMEID lpPropName,
+		ULONG _ulPropID)
+		: ulPropID(_ulPropID)
+	{
+		if (lpPropName)
+		{
+			CopyCacheData(*lpPropName, mapiNameId, nullptr);
+		}
+
+		if (_cbSig && lpSig)
+		{
+			sig.assign(lpSig, lpSig + _cbSig);
+		}
+	}
+
+	NamedPropCacheEntry::~NamedPropCacheEntry()
+	{
+		delete mapiNameId.lpguid;
+		if (MNID_STRING == mapiNameId.ulKind)
+		{
+			delete[] mapiNameId.Kind.lpwstrName;
+		}
+	}
 
 	// We keep a list of named prop cache entries
 	std::list<std::shared_ptr<NamedPropCacheEntry>> g_lpNamedPropCache;
@@ -100,33 +129,6 @@ namespace cache
 					memcpy(dst.Kind.lpwstrName, src.Kind.lpwstrName, cbName);
 				}
 			}
-		}
-	}
-
-	NamedPropCacheEntry::NamedPropCacheEntry(
-		ULONG _cbSig,
-		_In_opt_count_(_cbSig) LPBYTE lpSig,
-		LPMAPINAMEID lpPropName,
-		ULONG _ulPropID)
-		: ulPropID(_ulPropID)
-	{
-		if (lpPropName)
-		{
-			CopyCacheData(*lpPropName, mapiNameId, nullptr);
-		}
-
-		if (_cbSig && lpSig)
-		{
-			sig.assign(lpSig, lpSig + _cbSig);
-		}
-	}
-
-	NamedPropCacheEntry::~NamedPropCacheEntry()
-	{
-		delete mapiNameId.lpguid;
-		if (MNID_STRING == mapiNameId.ulKind)
-		{
-			delete[] mapiNameId.Kind.lpwstrName;
 		}
 	}
 
