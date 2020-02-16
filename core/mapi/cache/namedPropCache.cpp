@@ -16,17 +16,32 @@ namespace cache
 	class NamedPropCacheEntry
 	{
 	public:
-		NamedPropCacheEntry::NamedPropCacheEntry(
-			ULONG _cbSig,
-			_In_opt_count_(_cbSig) LPBYTE lpSig,
-			LPMAPINAMEID lpPropName,
-			ULONG _ulPropID);
+		NamedPropCacheEntry(ULONG _cbSig, _In_opt_count_(_cbSig) LPBYTE lpSig, LPMAPINAMEID lpPropName, ULONG _ulPropID)
+			: ulPropID(_ulPropID)
+		{
+			if (lpPropName)
+			{
+				CopyCacheData(*lpPropName, mapiNameId, nullptr);
+			}
+
+			if (_cbSig && lpSig)
+			{
+				sig.assign(lpSig, lpSig + _cbSig);
+			}
+		}
 
 		// Disables making copies of NamedPropCacheEntry
 		NamedPropCacheEntry(const NamedPropCacheEntry&) = delete;
 		NamedPropCacheEntry& operator=(const NamedPropCacheEntry&) = delete;
 
-		~NamedPropCacheEntry();
+		~NamedPropCacheEntry()
+		{
+			delete mapiNameId.lpguid;
+			if (MNID_STRING == mapiNameId.ulKind)
+			{
+				delete[] mapiNameId.Kind.lpwstrName;
+			}
+		}
 
 		ULONG ulPropID{}; // MAPI ID (ala PROP_ID) for a named property
 		MAPINAMEID mapiNameId{}; // guid, kind, value
@@ -34,33 +49,6 @@ namespace cache
 		bool bStringsCached{}; // We have cached strings
 		NamePropNames namePropNames{};
 	};
-
-	NamedPropCacheEntry::NamedPropCacheEntry(
-		ULONG _cbSig,
-		_In_opt_count_(_cbSig) LPBYTE lpSig,
-		LPMAPINAMEID lpPropName,
-		ULONG _ulPropID)
-		: ulPropID(_ulPropID)
-	{
-		if (lpPropName)
-		{
-			CopyCacheData(*lpPropName, mapiNameId, nullptr);
-		}
-
-		if (_cbSig && lpSig)
-		{
-			sig.assign(lpSig, lpSig + _cbSig);
-		}
-	}
-
-	NamedPropCacheEntry::~NamedPropCacheEntry()
-	{
-		delete mapiNameId.lpguid;
-		if (MNID_STRING == mapiNameId.ulKind)
-		{
-			delete[] mapiNameId.Kind.lpwstrName;
-		}
-	}
 
 	// We keep a list of named prop cache entries
 	std::list<std::shared_ptr<NamedPropCacheEntry>> g_lpNamedPropCache;
