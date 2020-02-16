@@ -45,9 +45,12 @@ namespace cache
 			}
 		}
 
-		ULONG ulPropID{}; // MAPI ID (ala PROP_ID) for a named property
+	private:
 		MAPINAMEID mapiNameId{}; // guid, kind, value
 		std::vector<BYTE> sig{}; // Value of PR_MAPPING_SIGNATURE
+
+	public:
+		ULONG ulPropID{}; // MAPI ID (ala PROP_ID) for a named property
 		bool bStringsCached{}; // We have cached strings
 		NamePropNames namePropNames{};
 
