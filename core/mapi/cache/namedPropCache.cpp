@@ -48,11 +48,19 @@ namespace cache
 	private:
 		MAPINAMEID mapiNameId{}; // guid, kind, value
 		std::vector<BYTE> sig{}; // Value of PR_MAPPING_SIGNATURE
+		NamePropNames namePropNames{};
+		bool bStringsCached{}; // We have cached strings
 
 	public:
 		ULONG ulPropID{}; // MAPI ID (ala PROP_ID) for a named property
-		bool bStringsCached{}; // We have cached strings
-		NamePropNames namePropNames{};
+
+		NamePropNames getNamePropNames() const noexcept { return namePropNames; }
+		void setNamePropNames(const NamePropNames& _namePropNames) noexcept
+		{
+			namePropNames = _namePropNames;
+			bStringsCached = true;
+		}
+		bool hasCachedStrings() const noexcept { return bStringsCached; }
 
 		// Given a signature and property ID (ulPropID), finds the named prop mapping in the cache
 		_Check_return_ static std::shared_ptr<NamedPropCacheEntry>
@@ -593,7 +601,7 @@ namespace cache
 		NamePropNames namePropNames;
 
 		// Can't generate strings without a MAPINAMEID structure
-		if (!lpNameID) return namePropNames;
+		if (!lpNameID) return {};
 
 		auto lpNamedPropCacheEntry = std::shared_ptr<NamedPropCacheEntry>{};
 
@@ -602,10 +610,9 @@ namespace cache
 		{
 			lpNamedPropCacheEntry = NamedPropCacheEntry::FindCacheEntry(
 				PROP_ID(ulPropTag), lpNameID->lpguid, lpNameID->ulKind, lpNameID->Kind.lID, lpNameID->Kind.lpwstrName);
-			if (lpNamedPropCacheEntry && lpNamedPropCacheEntry->bStringsCached)
+			if (lpNamedPropCacheEntry && lpNamedPropCacheEntry->hasCachedStrings())
 			{
-				namePropNames = lpNamedPropCacheEntry->namePropNames;
-				return namePropNames;
+				return lpNamedPropCacheEntry->getNamePropNames();
 			}
 
 			// We shouldn't ever get here without a cached entry
@@ -713,8 +720,7 @@ namespace cache
 		// We've built our strings - if we're caching, put them in the cache
 		if (lpNamedPropCacheEntry)
 		{
-			lpNamedPropCacheEntry->namePropNames = namePropNames;
-			lpNamedPropCacheEntry->bStringsCached = true;
+			lpNamedPropCacheEntry->setNamePropNames(namePropNames);
 		}
 
 		return namePropNames;
