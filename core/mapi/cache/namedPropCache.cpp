@@ -309,7 +309,7 @@ namespace cache
 		NamePropNames namePropNames{};
 		bool bStringsCached{}; // We have cached strings
 
-							   // Go through all the details of copying allocated data to or from a cache entry
+		// Go through all the details of copying allocated data to or from a cache entry
 		static void CopyCacheData(
 			const MAPINAMEID& src,
 			MAPINAMEID& dst,
