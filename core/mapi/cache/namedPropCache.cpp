@@ -137,7 +137,7 @@ namespace cache
 		const auto entry = find_if(
 			begin(g_lpNamedPropCache),
 			end(g_lpNamedPropCache),
-			[&](std::shared_ptr<NamedPropCacheEntry>& namedPropCacheEntry) {
+			[&](std::shared_ptr<NamedPropCacheEntry>& namedPropCacheEntry) noexcept {
 				if (namedPropCacheEntry->ulPropID != ulPropID) return false;
 				if (namedPropCacheEntry->sig.size() != cbSig) return false;
 				if (cbSig && memcmp(lpSig, namedPropCacheEntry->sig.data(), cbSig) != 0) return false;
@@ -160,7 +160,7 @@ namespace cache
 		const auto entry = find_if(
 			begin(g_lpNamedPropCache),
 			end(g_lpNamedPropCache),
-			[&](std::shared_ptr<NamedPropCacheEntry>& namedPropCacheEntry) {
+			[&](std::shared_ptr<NamedPropCacheEntry>& namedPropCacheEntry) noexcept {
 				if (namedPropCacheEntry->mapiNameId.ulKind != ulKind) return false;
 				if (MNID_ID == ulKind && namedPropCacheEntry->mapiNameId.Kind.lID != lID) return false;
 				if (MNID_STRING == ulKind && 0 != lstrcmpW(namedPropCacheEntry->mapiNameId.Kind.lpwstrName, lpwstrName))
@@ -182,7 +182,7 @@ namespace cache
 		const auto entry = find_if(
 			begin(g_lpNamedPropCache),
 			end(g_lpNamedPropCache),
-			[&](std::shared_ptr<NamedPropCacheEntry>& namedPropCacheEntry) {
+			[&](std::shared_ptr<NamedPropCacheEntry>& namedPropCacheEntry) noexcept {
 				if (namedPropCacheEntry->ulPropID != ulPropID) return false;
 				if (namedPropCacheEntry->mapiNameId.ulKind != ulKind) return false;
 				if (MNID_ID == ulKind && namedPropCacheEntry->mapiNameId.Kind.lID != lID) return false;
@@ -236,7 +236,7 @@ namespace cache
 	void AddMappingWithoutSignature(
 		ULONG ulNumProps, // Number of mapped names
 		_In_count_(ulNumProps) LPMAPINAMEID* lppPropNames, // Output from GetNamesFromIDs, input for GetIDsFromNames
-		_In_ LPSPropTagArray lpTag) // Input for GetNamesFromIDs, output from GetIDsFromNames
+		_In_ const SPropTagArray* lpTag) // Input for GetNamesFromIDs, output from GetIDsFromNames
 	{
 		if (!ulNumProps || !lppPropNames || !lpTag) return;
 		if (ulNumProps != lpTag->cValues) return; // Wouldn't know what to do with this
