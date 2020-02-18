@@ -162,43 +162,13 @@ namespace cache
 	class namedPropCache
 	{
 	public:
-		// Given a signature and property ID (ulPropID), finds the named prop mapping in the cache
 		_Check_return_ static std::shared_ptr<NamedPropCacheEntry>
-		FindCacheEntry(ULONG cbSig, _In_count_(cbSig) LPBYTE lpSig, ULONG ulPropID) noexcept
+		FindCacheEntry(const std::function<bool(const std::shared_ptr<NamedPropCacheEntry>&)>& compare) noexcept
 		{
 			const auto entry = find_if(
-				begin(g_lpNamedPropCache), end(g_lpNamedPropCache), [&](const auto& namedPropCacheEntry) noexcept {
-					return namedPropCacheEntry->match(cbSig, lpSig, ulPropID);
-				});
-
-			return entry != end(g_lpNamedPropCache) ? *entry : nullptr;
-		}
-
-		// Given a signature, guid, kind, and value, finds the named prop mapping in the cache
-		_Check_return_ static std::shared_ptr<NamedPropCacheEntry> FindCacheEntry(
-			ULONG cbSig,
-			_In_count_(cbSig) LPBYTE lpSig,
-			_In_ LPGUID lpguid,
-			ULONG ulKind,
-			LONG lID,
-			_In_z_ LPWSTR lpwstrName)
-		{
-			const auto entry = find_if(
-				begin(g_lpNamedPropCache), end(g_lpNamedPropCache), [&](const auto& namedPropCacheEntry) noexcept {
-					return namedPropCacheEntry->match(cbSig, lpSig, lpguid, ulKind, lID, lpwstrName);
-				});
-
-			return entry != end(g_lpNamedPropCache) ? *entry : nullptr;
-		}
-
-		// Given a tag, guid, kind, and value, finds the named prop mapping in the cache
-		_Check_return_ static std::shared_ptr<NamedPropCacheEntry>
-		FindCacheEntry(ULONG ulPropID, _In_ LPGUID lpguid, ULONG ulKind, LONG lID, _In_z_ LPWSTR lpwstrName)
-		{
-			const auto entry = find_if(
-				begin(g_lpNamedPropCache), end(g_lpNamedPropCache), [&](const auto& namedPropCacheEntry) noexcept {
-					return namedPropCacheEntry->match(ulPropID, lpguid, ulKind, lID, lpwstrName);
-				});
+				begin(g_lpNamedPropCache),
+				end(g_lpNamedPropCache),
+				[compare](const auto& namedPropCacheEntry) noexcept { return compare(namedPropCacheEntry); });
 
 			return entry != end(g_lpNamedPropCache) ? *entry : nullptr;
 		}
@@ -254,12 +224,14 @@ namespace cache
 			{
 				if (lppPropNames[ulProp])
 				{
-					const auto lpNamedPropCacheEntry = FindCacheEntry(
-						PROP_ID(lpTag->aulPropTag[ulProp]),
-						lppPropNames[ulProp]->lpguid,
-						lppPropNames[ulProp]->ulKind,
-						lppPropNames[ulProp]->Kind.lID,
-						lppPropNames[ulProp]->Kind.lpwstrName);
+					const auto lpNamedPropCacheEntry = FindCacheEntry([&](const auto& entry) noexcept {
+						return entry->match(
+							PROP_ID(lpTag->aulPropTag[ulProp]),
+							lppPropNames[ulProp]->lpguid,
+							lppPropNames[ulProp]->ulKind,
+							lppPropNames[ulProp]->Kind.lID,
+							lppPropNames[ulProp]->Kind.lpwstrName);
+					});
 					if (!lpNamedPropCacheEntry)
 					{
 						sptaTag.aulPropTag[0] = lpTag->aulPropTag[ulProp];
@@ -357,7 +329,9 @@ namespace cache
 				for (ULONG ulTarget = 0; ulTarget < lpPropTags->cValues; ulTarget++)
 				{
 					// ...check the cache
-					const auto lpEntry = FindCacheEntry(cbSig, lpSig, PROP_ID(lpPropTags->aulPropTag[ulTarget]));
+					const auto lpEntry = FindCacheEntry([&](const auto& entry) noexcept {
+						return entry->match(cbSig, lpSig, PROP_ID(lpPropTags->aulPropTag[ulTarget]));
+					});
 
 					if (lpEntry)
 					{
@@ -531,13 +505,15 @@ namespace cache
 			for (ULONG ulTarget = 0; ulTarget < cPropNames; ulTarget++)
 			{
 				// ...check the cache
-				const auto lpEntry = namedPropCache::FindCacheEntry(
-					cbSig,
-					lpSig,
-					lppPropNames[ulTarget]->lpguid,
-					lppPropNames[ulTarget]->ulKind,
-					lppPropNames[ulTarget]->Kind.lID,
-					lppPropNames[ulTarget]->Kind.lpwstrName);
+				const auto lpEntry = namedPropCache::FindCacheEntry([&](const auto& entry) noexcept {
+					return entry->match(
+						cbSig,
+						lpSig,
+						lppPropNames[ulTarget]->lpguid,
+						lppPropNames[ulTarget]->ulKind,
+						lppPropNames[ulTarget]->Kind.lID,
+						lppPropNames[ulTarget]->Kind.lpwstrName);
+				});
 
 				if (lpEntry)
 				{
@@ -668,8 +644,14 @@ namespace cache
 		// If we're using the cache, look up the answer there and return
 		if (registry::cacheNamedProps)
 		{
-			lpNamedPropCacheEntry = namedPropCache::FindCacheEntry(
-				PROP_ID(ulPropTag), lpNameID->lpguid, lpNameID->ulKind, lpNameID->Kind.lID, lpNameID->Kind.lpwstrName);
+			lpNamedPropCacheEntry = namedPropCache::FindCacheEntry([&](const auto& entry) noexcept {
+				return entry->match(
+					PROP_ID(ulPropTag),
+					lpNameID->lpguid,
+					lpNameID->ulKind,
+					lpNameID->Kind.lID,
+					lpNameID->Kind.lpwstrName);
+			});
 			if (lpNamedPropCacheEntry && lpNamedPropCacheEntry->hasCachedStrings())
 			{
 				return lpNamedPropCacheEntry->getNamePropNames();
