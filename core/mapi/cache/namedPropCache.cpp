@@ -23,7 +23,7 @@ namespace cache
 		{
 			if (lpPropName)
 			{
-				CopyToCacheData(*lpPropName, mapiNameId);
+				CopyToCacheData(*lpPropName);
 			}
 
 			if (_cbSig && lpSig)
@@ -45,7 +45,6 @@ namespace cache
 			}
 		}
 
-	public:
 		ULONG getPropID() const noexcept { return ulPropID; }
 		NamePropNames getNamePropNames() const noexcept { return namePropNames; }
 		void setNamePropNames(const NamePropNames& _namePropNames) noexcept
@@ -304,24 +303,24 @@ namespace cache
 		bool bStringsCached{}; // We have cached strings
 
 		// Go through all the details of copying allocated data to a cache entry
-		static void CopyToCacheData(const MAPINAMEID& src, MAPINAMEID& dst)
+		void CopyToCacheData(const MAPINAMEID& src)
 		{
-			dst.lpguid = nullptr;
-			dst.Kind.lID = MNID_ID;
+			mapiNameId.lpguid = nullptr;
+			mapiNameId.Kind.lID = MNID_ID;
 
 			if (src.lpguid)
 			{
-				dst.lpguid = new (std::nothrow) GUID;
-				if (dst.lpguid)
+				mapiNameId.lpguid = new (std::nothrow) GUID;
+				if (mapiNameId.lpguid)
 				{
-					memcpy(dst.lpguid, src.lpguid, sizeof GUID);
+					memcpy(mapiNameId.lpguid, src.lpguid, sizeof GUID);
 				}
 			}
 
-			dst.ulKind = src.ulKind;
+			mapiNameId.ulKind = src.ulKind;
 			if (MNID_ID == src.ulKind)
 			{
-				dst.Kind.lID = src.Kind.lID;
+				mapiNameId.Kind.lID = src.Kind.lID;
 			}
 			else if (MNID_STRING == src.ulKind)
 			{
@@ -346,11 +345,11 @@ namespace cache
 						cbName = (cchShortLen + 3) * sizeof CHAR;
 					}
 
-					dst.Kind.lpwstrName = reinterpret_cast<LPWSTR>(new (std::nothrow) BYTE[cbName]);
+					mapiNameId.Kind.lpwstrName = reinterpret_cast<LPWSTR>(new (std::nothrow) BYTE[cbName]);
 
-					if (dst.Kind.lpwstrName)
+					if (mapiNameId.Kind.lpwstrName)
 					{
-						memcpy(dst.Kind.lpwstrName, src.Kind.lpwstrName, cbName);
+						memcpy(mapiNameId.Kind.lpwstrName, src.Kind.lpwstrName, cbName);
 					}
 				}
 			}
