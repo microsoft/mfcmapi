@@ -50,7 +50,51 @@ namespace cache
 		}
 		bool hasCachedStrings() const noexcept { return bStringsCached; }
 		MAPINAMEID getMapiNameId() const noexcept { return mapiNameId; }
-		const std::vector<BYTE>& getSig() const noexcept { return sig; }
+
+		// Compare given a signature, guid, kind, and value
+		_Check_return_ bool match(
+			ULONG cbSig,
+			_In_count_(cbSig) LPBYTE lpSig,
+			_In_ LPGUID lpguid,
+			ULONG ulKind,
+			LONG lID,
+			_In_z_ LPWSTR lpwstrName) const noexcept
+		{
+			if (cbSig != sig.size()) return false;
+			if (cbSig && memcmp(lpSig, sig.data(), cbSig) != 0) return false;
+
+			if (mapiNameId.ulKind != ulKind) return false;
+			if (MNID_ID == ulKind && mapiNameId.Kind.lID != lID) return false;
+			if (MNID_STRING == ulKind && 0 != lstrcmpW(mapiNameId.Kind.lpwstrName, lpwstrName)) return false;
+			if (0 != memcmp(mapiNameId.lpguid, lpguid, sizeof(GUID))) return false;
+
+			return true;
+		}
+
+		// Compare given a signature and property ID (ulPropID)
+		_Check_return_ bool match(ULONG cbSig, _In_count_(cbSig) LPBYTE lpSig, ULONG _ulPropID) const noexcept
+		{
+			if (sig.size() != cbSig) return false;
+			if (cbSig && memcmp(lpSig, sig.data(), cbSig) != 0) return false;
+
+			if (ulPropID != _ulPropID) return false;
+
+			return true;
+		}
+
+		// Compare given a tag, guid, kind, and value
+		_Check_return_ bool
+		match(ULONG _ulPropID, _In_ LPGUID lpguid, ULONG ulKind, LONG lID, _In_z_ LPWSTR lpwstrName) const noexcept
+		{
+			if (ulPropID != _ulPropID) return false;
+
+			if (mapiNameId.ulKind != ulKind) return false;
+			if (MNID_ID == ulKind && mapiNameId.Kind.lID != lID) return false;
+			if (MNID_STRING == ulKind && 0 != lstrcmpW(mapiNameId.Kind.lpwstrName, lpwstrName)) return false;
+			if (0 != memcmp(mapiNameId.lpguid, lpguid, sizeof(GUID))) return false;
+
+			return true;
+		}
 
 	private:
 		ULONG ulPropID{}; // MAPI ID (ala PROP_ID) for a named property
@@ -123,15 +167,8 @@ namespace cache
 		FindCacheEntry(ULONG cbSig, _In_count_(cbSig) LPBYTE lpSig, ULONG ulPropID) noexcept
 		{
 			const auto entry = find_if(
-				begin(g_lpNamedPropCache),
-				end(g_lpNamedPropCache),
-				[&](std::shared_ptr<NamedPropCacheEntry>& namedPropCacheEntry) noexcept {
-					if (namedPropCacheEntry->getPropID() != ulPropID) return false;
-					const auto sig = namedPropCacheEntry->getSig();
-					if (sig.size() != cbSig) return false;
-					if (cbSig && memcmp(lpSig, sig.data(), cbSig) != 0) return false;
-
-					return true;
+				begin(g_lpNamedPropCache), end(g_lpNamedPropCache), [&](const auto& namedPropCacheEntry) noexcept {
+					return namedPropCacheEntry->match(cbSig, lpSig, ulPropID);
 				});
 
 			return entry != end(g_lpNamedPropCache) ? *entry : nullptr;
@@ -147,19 +184,8 @@ namespace cache
 			_In_z_ LPWSTR lpwstrName)
 		{
 			const auto entry = find_if(
-				begin(g_lpNamedPropCache),
-				end(g_lpNamedPropCache),
-				[&](std::shared_ptr<NamedPropCacheEntry>& namedPropCacheEntry) noexcept {
-					const auto mapiNameId = namedPropCacheEntry->getMapiNameId();
-					if (mapiNameId.ulKind != ulKind) return false;
-					if (MNID_ID == ulKind && mapiNameId.Kind.lID != lID) return false;
-					if (MNID_STRING == ulKind && 0 != lstrcmpW(mapiNameId.Kind.lpwstrName, lpwstrName)) return false;
-					if (0 != memcmp(mapiNameId.lpguid, lpguid, sizeof(GUID))) return false;
-					const auto sig = namedPropCacheEntry->getSig();
-					if (cbSig != sig.size()) return false;
-					if (cbSig && memcmp(lpSig, sig.data(), cbSig) != 0) return false;
-
-					return true;
+				begin(g_lpNamedPropCache), end(g_lpNamedPropCache), [&](const auto& namedPropCacheEntry) noexcept {
+					return namedPropCacheEntry->match(cbSig, lpSig, lpguid, ulKind, lID, lpwstrName);
 				});
 
 			return entry != end(g_lpNamedPropCache) ? *entry : nullptr;
@@ -170,17 +196,8 @@ namespace cache
 		FindCacheEntry(ULONG ulPropID, _In_ LPGUID lpguid, ULONG ulKind, LONG lID, _In_z_ LPWSTR lpwstrName)
 		{
 			const auto entry = find_if(
-				begin(g_lpNamedPropCache),
-				end(g_lpNamedPropCache),
-				[&](std::shared_ptr<NamedPropCacheEntry>& namedPropCacheEntry) noexcept {
-					if (namedPropCacheEntry->getPropID() != ulPropID) return false;
-					const auto mapiNameId = namedPropCacheEntry->getMapiNameId();
-					if (mapiNameId.ulKind != ulKind) return false;
-					if (MNID_ID == ulKind && mapiNameId.Kind.lID != lID) return false;
-					if (MNID_STRING == ulKind && 0 != lstrcmpW(mapiNameId.Kind.lpwstrName, lpwstrName)) return false;
-					if (0 != memcmp(mapiNameId.lpguid, lpguid, sizeof(GUID))) return false;
-
-					return true;
+				begin(g_lpNamedPropCache), end(g_lpNamedPropCache), [&](const auto& namedPropCacheEntry) noexcept {
+					return namedPropCacheEntry->match(ulPropID, lpguid, ulKind, lID, lpwstrName);
 				});
 
 			return entry != end(g_lpNamedPropCache) ? *entry : nullptr;
