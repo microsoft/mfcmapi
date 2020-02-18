@@ -437,6 +437,7 @@ namespace cache
 		}
 	};
 
+	// GetNamesFromIDs without a mapping signature
 	_Check_return_ HRESULT GetNamesFromIDs(
 		_In_ LPMAPIPROP lpMAPIProp,
 		_In_ LPSPropTagArray* lppPropTags,
