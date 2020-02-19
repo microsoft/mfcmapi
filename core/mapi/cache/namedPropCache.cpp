@@ -161,7 +161,7 @@ namespace cache
 		void CopyToCacheData(const MAPINAMEID& src)
 		{
 			mapiNameId.lpguid = nullptr;
-			mapiNameId.Kind.lID = MNID_ID;
+			mapiNameId.Kind.lID = 0;
 
 			if (src.lpguid)
 			{
