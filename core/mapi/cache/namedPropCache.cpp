@@ -92,10 +92,6 @@ namespace cache
 		NamedPropCacheEntry(const NamedPropCacheEntry&) = delete;
 		NamedPropCacheEntry& operator=(const NamedPropCacheEntry&) = delete;
 
-		~NamedPropCacheEntry()
-		{
-		}
-
 		ULONG getPropID() const noexcept { return ulPropID; }
 		const NamePropNames& getNamePropNames() const noexcept { return namePropNames; }
 		void setNamePropNames(const NamePropNames& _namePropNames) noexcept
@@ -104,10 +100,7 @@ namespace cache
 			bStringsCached = true;
 		}
 		bool hasCachedStrings() const noexcept { return bStringsCached; }
-		MAPINAMEID* getMapiNameId(_In_ LPVOID lpMAPIParent) const noexcept
-		{
-			return CopyMapiNameId(mapiNameId, lpMAPIParent);
-		}
+		const MAPINAMEID* getMapiNameId() const noexcept { return &mapiNameId; }
 
 		// Compare given a signature, guid, kind, and value
 		_Check_return_ bool match(
@@ -336,7 +329,7 @@ namespace cache
 					if (lpEntry)
 					{
 						// We have a hit - copy the data over
-						lppNameIDs[ulTarget] = lpEntry->getMapiNameId(lppNameIDs);
+						lppNameIDs[ulTarget] = const_cast<MAPINAMEID*>(lpEntry->getMapiNameId());
 
 						// Got a hit, decrement the miss counter
 						ulMisses--;
