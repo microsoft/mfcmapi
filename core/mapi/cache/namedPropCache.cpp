@@ -336,7 +336,7 @@ namespace cache
 					if (lpEntry)
 					{
 						// We have a hit - copy the data over
-						lppNameIDs[ulTarget] = &lpEntry->getMapiNameId();
+						lppNameIDs[ulTarget] = CopyMapiNameId(lpEntry->getMapiNameId(), lppNameIDs);
 
 						// Got a hit, decrement the miss counter
 						ulMisses--;
