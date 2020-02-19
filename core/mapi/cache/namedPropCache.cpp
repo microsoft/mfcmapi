@@ -11,6 +11,66 @@
 
 namespace cache
 {
+	// Go through all the details of copying allocated data from a MAPINAMEID
+	static MAPINAMEID* CopyMapiNameId(
+		const MAPINAMEID& src,
+		_In_ LPVOID lpMAPIParent) // Allocate using MAPI with this as a parent
+	{
+		const auto dst = mapi::allocate<LPMAPINAMEID>(sizeof(MAPINAMEID), lpMAPIParent);
+		if (dst)
+		{
+			dst->lpguid = nullptr;
+			dst->Kind.lID = MNID_ID;
+
+			if (src.lpguid)
+			{
+				dst->lpguid = mapi::allocate<LPGUID>(sizeof(GUID), lpMAPIParent);
+				if (dst->lpguid)
+				{
+					memcpy(dst->lpguid, src.lpguid, sizeof GUID);
+				}
+			}
+
+			dst->ulKind = src.ulKind;
+			if (MNID_ID == src.ulKind)
+			{
+				dst->Kind.lID = src.Kind.lID;
+			}
+			else if (MNID_STRING == src.ulKind)
+			{
+				if (src.Kind.lpwstrName)
+				{
+					// lpSrcName is LPWSTR which means it's ALWAYS unicode
+					// But some folks get it wrong and stuff ANSI data in there
+					// So we check the string length both ways to make our best guess
+					const auto cchShortLen = strnlen_s(reinterpret_cast<LPCSTR>(src.Kind.lpwstrName), RSIZE_MAX);
+					const auto cchWideLen = wcsnlen_s(src.Kind.lpwstrName, RSIZE_MAX);
+					auto cbName = size_t();
+
+					if (cchShortLen < cchWideLen)
+					{
+						// this is the *proper* case
+						cbName = (cchWideLen + 1) * sizeof WCHAR;
+					}
+					else
+					{
+						// This is the case where ANSI data was shoved into a unicode string.
+						// Add a couple extra NULL in case we read this as unicode again.
+						cbName = (cchShortLen + 3) * sizeof CHAR;
+					}
+
+					dst->Kind.lpwstrName = mapi::allocate<LPWSTR>(static_cast<ULONG>(cbName), lpMAPIParent);
+					if (dst->Kind.lpwstrName)
+					{
+						memcpy(dst->Kind.lpwstrName, src.Kind.lpwstrName, cbName);
+					}
+				}
+			}
+		}
+
+		return dst;
+	}
+
 	class NamedPropCacheEntry
 	{
 	public:
@@ -49,7 +109,10 @@ namespace cache
 			bStringsCached = true;
 		}
 		bool hasCachedStrings() const noexcept { return bStringsCached; }
-		MAPINAMEID getMapiNameId() const noexcept { return mapiNameId; }
+		MAPINAMEID* getMapiNameId(_In_ LPVOID lpMAPIParent) const noexcept
+		{
+			return CopyMapiNameId(mapiNameId, lpMAPIParent);
+		}
 
 		// Compare given a signature, guid, kind, and value
 		_Check_return_ bool match(
@@ -248,66 +311,6 @@ namespace cache
 			}
 		}
 
-		// Go through all the details of copying allocated data from a MAPINAMEID
-		static MAPINAMEID* CopyMapiNameId(
-			const MAPINAMEID& src,
-			_In_ LPVOID lpMAPIParent) // Allocate using MAPI with this as a parent
-		{
-			const auto dst = mapi::allocate<LPMAPINAMEID>(sizeof(MAPINAMEID), lpMAPIParent);
-			if (dst)
-			{
-				dst->lpguid = nullptr;
-				dst->Kind.lID = MNID_ID;
-
-				if (src.lpguid)
-				{
-					dst->lpguid = mapi::allocate<LPGUID>(sizeof(GUID), lpMAPIParent);
-					if (dst->lpguid)
-					{
-						memcpy(dst->lpguid, src.lpguid, sizeof GUID);
-					}
-				}
-
-				dst->ulKind = src.ulKind;
-				if (MNID_ID == src.ulKind)
-				{
-					dst->Kind.lID = src.Kind.lID;
-				}
-				else if (MNID_STRING == src.ulKind)
-				{
-					if (src.Kind.lpwstrName)
-					{
-						// lpSrcName is LPWSTR which means it's ALWAYS unicode
-						// But some folks get it wrong and stuff ANSI data in there
-						// So we check the string length both ways to make our best guess
-						const auto cchShortLen = strnlen_s(reinterpret_cast<LPCSTR>(src.Kind.lpwstrName), RSIZE_MAX);
-						const auto cchWideLen = wcsnlen_s(src.Kind.lpwstrName, RSIZE_MAX);
-						auto cbName = size_t();
-
-						if (cchShortLen < cchWideLen)
-						{
-							// this is the *proper* case
-							cbName = (cchWideLen + 1) * sizeof WCHAR;
-						}
-						else
-						{
-							// This is the case where ANSI data was shoved into a unicode string.
-							// Add a couple extra NULL in case we read this as unicode again.
-							cbName = (cchShortLen + 3) * sizeof CHAR;
-						}
-
-						dst->Kind.lpwstrName = mapi::allocate<LPWSTR>(static_cast<ULONG>(cbName), lpMAPIParent);
-						if (dst->Kind.lpwstrName)
-						{
-							memcpy(dst->Kind.lpwstrName, src.Kind.lpwstrName, cbName);
-						}
-					}
-				}
-			}
-
-			return dst;
-		}
-
 		_Check_return_ static HRESULT CacheGetNamesFromIDs(
 			_In_ LPMAPIPROP lpMAPIProp,
 			ULONG cbSig,
@@ -343,7 +346,7 @@ namespace cache
 					if (lpEntry)
 					{
 						// We have a hit - copy the data over
-						lppNameIDs[ulTarget] = CopyMapiNameId(lpEntry->getMapiNameId(), lppNameIDs);
+						lppNameIDs[ulTarget] = lpEntry->getMapiNameId(lppNameIDs);
 
 						// Got a hit, decrement the miss counter
 						ulMisses--;
