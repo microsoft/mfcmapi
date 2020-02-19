@@ -94,10 +94,6 @@ namespace cache
 
 		~NamedPropCacheEntry()
 		{
-			if (MNID_STRING == mapiNameId.ulKind)
-			{
-				delete[] mapiNameId.Kind.lpwstrName;
-			}
 		}
 
 		ULONG getPropID() const noexcept { return ulPropID; }
@@ -163,6 +159,7 @@ namespace cache
 		ULONG ulPropID{}; // MAPI ID (ala PROP_ID) for a named property
 		MAPINAMEID mapiNameId{}; // guid, kind, value
 		GUID guid;
+		std::wstring name;
 		std::vector<BYTE> sig{}; // Value of PR_MAPPING_SIGNATURE
 		NamePropNames namePropNames{};
 		bool bStringsCached{}; // We have cached strings
@@ -207,12 +204,8 @@ namespace cache
 						cbName = (cchShortLen + 3) * sizeof CHAR;
 					}
 
-					mapiNameId.Kind.lpwstrName = reinterpret_cast<LPWSTR>(new (std::nothrow) BYTE[cbName]);
-
-					if (mapiNameId.Kind.lpwstrName)
-					{
-						memcpy(mapiNameId.Kind.lpwstrName, src.Kind.lpwstrName, cbName);
-					}
+					name = std::wstring(src.Kind.lpwstrName, cbName / sizeof WCHAR);
+					mapiNameId.Kind.lpwstrName = name.data();
 				}
 			}
 		}
