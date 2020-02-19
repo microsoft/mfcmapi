@@ -54,11 +54,11 @@ namespace cache
 		// Compare given a signature, guid, kind, and value
 		_Check_return_ bool match(
 			ULONG cbSig,
-			_In_count_(cbSig) LPBYTE lpSig,
-			_In_ LPGUID lpguid,
+			_In_count_(cbSig) const BYTE* lpSig,
+			_In_ const GUID* lpguid,
 			ULONG ulKind,
 			LONG lID,
-			_In_z_ LPWSTR lpwstrName) const noexcept
+			_In_z_ LPCWSTR lpwstrName) const noexcept
 		{
 			if (cbSig != sig.size()) return false;
 			if (cbSig && memcmp(lpSig, sig.data(), cbSig) != 0) return false;
@@ -72,7 +72,7 @@ namespace cache
 		}
 
 		// Compare given a signature and property ID (ulPropID)
-		_Check_return_ bool match(ULONG cbSig, _In_count_(cbSig) LPBYTE lpSig, ULONG _ulPropID) const noexcept
+		_Check_return_ bool match(ULONG cbSig, _In_count_(cbSig) const BYTE* lpSig, ULONG _ulPropID) const noexcept
 		{
 			if (sig.size() != cbSig) return false;
 			if (cbSig && memcmp(lpSig, sig.data(), cbSig) != 0) return false;
@@ -84,7 +84,8 @@ namespace cache
 
 		// Compare given a tag, guid, kind, and value
 		_Check_return_ bool
-		match(ULONG _ulPropID, _In_ LPGUID lpguid, ULONG ulKind, LONG lID, _In_z_ LPWSTR lpwstrName) const noexcept
+		match(ULONG _ulPropID, _In_ const GUID* lpguid, ULONG ulKind, LONG lID, _In_z_ LPCWSTR lpwstrName) const
+			noexcept
 		{
 			if (ulPropID != _ulPropID) return false;
 
@@ -183,7 +184,7 @@ namespace cache
 			_In_opt_count_(cbSig) LPBYTE lpSig, // Signature
 			ULONG ulNumProps, // Number of mapped names
 			_In_count_(ulNumProps) LPMAPINAMEID* lppPropNames, // Output from GetNamesFromIDs, input for GetIDsFromNames
-			_In_ LPSPropTagArray lpTag) // Input for GetNamesFromIDs, output from GetIDsFromNames
+			_In_ const SPropTagArray* lpTag) // Input for GetNamesFromIDs, output from GetIDsFromNames
 		{
 			if (!ulNumProps || !lppPropNames || !lpTag) return;
 			if (ulNumProps != lpTag->cValues) return; // Wouldn't know what to do with this
