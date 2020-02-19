@@ -94,7 +94,6 @@ namespace cache
 
 		~NamedPropCacheEntry()
 		{
-			delete mapiNameId.lpguid;
 			if (MNID_STRING == mapiNameId.ulKind)
 			{
 				delete[] mapiNameId.Kind.lpwstrName;
@@ -163,6 +162,7 @@ namespace cache
 	private:
 		ULONG ulPropID{}; // MAPI ID (ala PROP_ID) for a named property
 		MAPINAMEID mapiNameId{}; // guid, kind, value
+		GUID guid;
 		std::vector<BYTE> sig{}; // Value of PR_MAPPING_SIGNATURE
 		NamePropNames namePropNames{};
 		bool bStringsCached{}; // We have cached strings
@@ -175,11 +175,8 @@ namespace cache
 
 			if (src.lpguid)
 			{
-				mapiNameId.lpguid = new (std::nothrow) GUID;
-				if (mapiNameId.lpguid)
-				{
-					memcpy(mapiNameId.lpguid, src.lpguid, sizeof GUID);
-				}
+				guid = *src.lpguid;
+				mapiNameId.lpguid = &guid;
 			}
 
 			mapiNameId.ulKind = src.ulKind;
