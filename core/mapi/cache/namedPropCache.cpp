@@ -45,7 +45,7 @@ namespace cache
 					// So we check the string length both ways to make our best guess
 					const auto cchShortLen = strnlen_s(reinterpret_cast<LPCSTR>(src.Kind.lpwstrName), RSIZE_MAX);
 					const auto cchWideLen = wcsnlen_s(src.Kind.lpwstrName, RSIZE_MAX);
-					auto cbName = size_t();
+					auto cbName = ULONG();
 
 					if (cchShortLen < cchWideLen)
 					{
@@ -59,7 +59,7 @@ namespace cache
 						cbName = (cchShortLen + 3) * sizeof CHAR;
 					}
 
-					dst->Kind.lpwstrName = mapi::allocate<LPWSTR>(static_cast<ULONG>(cbName), lpMAPIParent);
+					dst->Kind.lpwstrName = mapi::allocate<LPWSTR>(cbName, lpMAPIParent);
 					if (dst->Kind.lpwstrName)
 					{
 						memcpy(dst->Kind.lpwstrName, src.Kind.lpwstrName, cbName);
