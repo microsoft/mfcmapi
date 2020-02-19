@@ -157,20 +157,25 @@ namespace cache
 		}
 	};
 
-	// We keep a list of named prop cache entries
-	static std::list<std::shared_ptr<NamedPropCacheEntry>> g_lpNamedPropCache;
 	class namedPropCache
 	{
 	public:
+		static std::list<std::shared_ptr<NamedPropCacheEntry>>& getCache() noexcept
+		{
+			// We keep a list of named prop cache entries
+			static std::list<std::shared_ptr<NamedPropCacheEntry>> cache;
+			return cache;
+		}
+
 		_Check_return_ static std::shared_ptr<NamedPropCacheEntry>
 		FindCacheEntry(const std::function<bool(const std::shared_ptr<NamedPropCacheEntry>&)>& compare) noexcept
 		{
-			const auto entry = find_if(
-				begin(g_lpNamedPropCache),
-				end(g_lpNamedPropCache),
-				[compare](const auto& namedPropCacheEntry) noexcept { return compare(namedPropCacheEntry); });
+			const auto& cache = getCache();
+			const auto entry = find_if(cache.begin(), cache.end(), [compare](const auto& namedPropCacheEntry) noexcept {
+				return compare(namedPropCacheEntry);
+			});
 
-			return entry != end(g_lpNamedPropCache) ? *entry : nullptr;
+			return entry != cache.end() ? *entry : nullptr;
 		}
 
 		static void AddMapping(
@@ -183,6 +188,7 @@ namespace cache
 			if (!ulNumProps || !lppPropNames || !lpTag) return;
 			if (ulNumProps != lpTag->cValues) return; // Wouldn't know what to do with this
 
+			auto& cache = getCache();
 			for (ULONG ulSource = 0; ulSource < ulNumProps; ulSource++)
 			{
 				if (lppPropNames[ulSource])
@@ -200,7 +206,7 @@ namespace cache
 						}
 					}
 
-					g_lpNamedPropCache.emplace_back(std::make_shared<NamedPropCacheEntry>(
+					cache.emplace_back(std::make_shared<NamedPropCacheEntry>(
 						cbSig, lpSig, lppPropNames[ulSource], PROP_ID(lpTag->aulPropTag[ulSource])));
 				}
 			}
