@@ -1,5 +1,6 @@
 #include <core/stdafx.h>
 #include <core/mapi/cache/namedPropCache.h>
+#include <core/mapi/cache/namedPropCacheEntry.h>
 #include <core/interpret/guid.h>
 #include <core/mapi/mapiMemory.h>
 #include <core/utility/registry.h>
@@ -77,122 +78,6 @@ namespace cache
 
 		return dst;
 	}
-
-	class NamedPropCacheEntry
-	{
-	public:
-		NamedPropCacheEntry(ULONG _cbSig, _In_opt_count_(_cbSig) LPBYTE lpSig, LPMAPINAMEID lpPropName, ULONG _ulPropID)
-			: ulPropID(_ulPropID)
-		{
-			if (lpPropName)
-			{
-				CopyToCacheData(*lpPropName);
-			}
-
-			if (_cbSig && lpSig)
-			{
-				sig.assign(lpSig, lpSig + _cbSig);
-			}
-		}
-
-		// Disables making copies of NamedPropCacheEntry
-		NamedPropCacheEntry(const NamedPropCacheEntry&) = delete;
-		NamedPropCacheEntry& operator=(const NamedPropCacheEntry&) = delete;
-
-		ULONG getPropID() const noexcept { return ulPropID; }
-		const NamePropNames& getNamePropNames() const noexcept { return namePropNames; }
-		void setNamePropNames(const NamePropNames& _namePropNames) noexcept
-		{
-			namePropNames = _namePropNames;
-			bStringsCached = true;
-		}
-		bool hasCachedStrings() const noexcept { return bStringsCached; }
-		const MAPINAMEID* getMapiNameId() const noexcept { return &mapiNameId; }
-
-		// Compare given a signature, guid, kind, and value
-		_Check_return_ bool match(
-			ULONG cbSig,
-			_In_count_(cbSig) const BYTE* lpSig,
-			_In_ const GUID* lpguid,
-			ULONG ulKind,
-			LONG lID,
-			_In_z_ LPCWSTR lpwstrName) const noexcept
-		{
-			if (cbSig != sig.size()) return false;
-			if (cbSig && memcmp(lpSig, sig.data(), cbSig) != 0) return false;
-
-			if (mapiNameId.ulKind != ulKind) return false;
-			if (MNID_ID == ulKind && mapiNameId.Kind.lID != lID) return false;
-			if (MNID_STRING == ulKind && 0 != lstrcmpW(mapiNameId.Kind.lpwstrName, lpwstrName)) return false;
-			if (0 != memcmp(mapiNameId.lpguid, lpguid, sizeof(GUID))) return false;
-
-			return true;
-		}
-
-		// Compare given a signature and property ID (ulPropID)
-		_Check_return_ bool match(ULONG cbSig, _In_count_(cbSig) const BYTE* lpSig, ULONG _ulPropID) const noexcept
-		{
-			if (sig.size() != cbSig) return false;
-			if (cbSig && memcmp(lpSig, sig.data(), cbSig) != 0) return false;
-
-			if (ulPropID != _ulPropID) return false;
-
-			return true;
-		}
-
-		// Compare given a tag, guid, kind, and value
-		_Check_return_ bool
-		match(ULONG _ulPropID, _In_ const GUID* lpguid, ULONG ulKind, LONG lID, _In_z_ LPCWSTR lpwstrName) const
-			noexcept
-		{
-			if (ulPropID != _ulPropID) return false;
-
-			if (mapiNameId.ulKind != ulKind) return false;
-			if (MNID_ID == ulKind && mapiNameId.Kind.lID != lID) return false;
-			if (MNID_STRING == ulKind && 0 != lstrcmpW(mapiNameId.Kind.lpwstrName, lpwstrName)) return false;
-			if (0 != memcmp(mapiNameId.lpguid, lpguid, sizeof(GUID))) return false;
-
-			return true;
-		}
-
-	private:
-		ULONG ulPropID{}; // MAPI ID (ala PROP_ID) for a named property
-		MAPINAMEID mapiNameId{}; // guid, kind, value
-		GUID guid;
-		std::wstring name;
-		std::vector<BYTE> sig{}; // Value of PR_MAPPING_SIGNATURE
-		NamePropNames namePropNames{};
-		bool bStringsCached{}; // We have cached strings
-
-		// Go through all the details of copying allocated data to a cache entry
-		void CopyToCacheData(const MAPINAMEID& src)
-		{
-			mapiNameId.lpguid = nullptr;
-			mapiNameId.Kind.lID = 0;
-
-			if (src.lpguid)
-			{
-				guid = *src.lpguid;
-				mapiNameId.lpguid = &guid;
-			}
-
-			mapiNameId.ulKind = src.ulKind;
-			if (MNID_ID == src.ulKind)
-			{
-				mapiNameId.Kind.lID = src.Kind.lID;
-			}
-			else if (MNID_STRING == src.ulKind)
-			{
-				if (src.Kind.lpwstrName)
-				{
-					const auto cbName = cbPropName(src.Kind.lpwstrName);
-
-					name = std::wstring(src.Kind.lpwstrName, cbName / sizeof WCHAR);
-					mapiNameId.Kind.lpwstrName = name.data();
-				}
-			}
-		}
-	};
 
 	class namedPropCache
 	{

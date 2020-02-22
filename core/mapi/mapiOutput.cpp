@@ -12,6 +12,7 @@
 #include <core/smartview/SmartView.h>
 #include <core/mapi/columnTags.h>
 #include <core/mapi/cache/namedPropCache.h>
+#include <core/mapi/cache/namedPropCacheEntry.h>
 #include <core/mapi/mapiMemory.h>
 #include <core/interpret/flags.h>
 #include <core/property/parseProperty.h>

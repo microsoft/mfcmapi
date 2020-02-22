@@ -9,6 +9,7 @@
 #include <core/utility/import.h>
 #include <core/mapi/mapiProgress.h>
 #include <core/mapi/cache/namedPropCache.h>
+#include <core/mapi/cache/namedPropCacheEntry.h>
 #include <core/smartview/SmartView.h>
 #include <core/PropertyBag/PropertyBag.h>
 #include <core/PropertyBag/MAPIPropPropertyBag.h>

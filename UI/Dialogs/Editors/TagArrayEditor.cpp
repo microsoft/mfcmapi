@@ -3,6 +3,7 @@
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
 #include <core/sortlistdata/propListData.h>
 #include <core/mapi/cache/namedPropCache.h>
+#include <core/mapi/cache/namedPropCacheEntry.h>
 #include <core/mapi/mapiMemory.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>

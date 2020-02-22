@@ -3,14 +3,8 @@
 
 namespace cache
 {
-	struct NamePropNames
-	{
-		std::wstring name;
-		std::wstring guid;
-		std::wstring dasl;
-		std::wstring bestPidLid;
-		std::wstring otherPidLid;
-	};
+	struct NamePropNames;
+	ULONG cbPropName(LPCWSTR lpwstrName) noexcept;
 
 	_Check_return_ HRESULT GetNamesFromIDs(
 		_In_ LPMAPIPROP lpMAPIProp,
