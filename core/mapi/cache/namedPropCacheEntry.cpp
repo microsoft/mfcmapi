@@ -22,12 +22,6 @@ namespace cache
 		}
 	}
 
-	void NamedPropCacheEntry::setNamePropNames(const NamePropNames& _namePropNames) noexcept
-	{
-		namePropNames = _namePropNames;
-		bStringsCached = true;
-	}
-
 	// Compare given a signature, guid, kind, and value
 	_Check_return_ bool NamedPropCacheEntry::match(
 		ULONG cbSig,

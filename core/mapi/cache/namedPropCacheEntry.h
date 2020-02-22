@@ -27,7 +27,11 @@ namespace cache
 
 		ULONG getPropID() const noexcept { return ulPropID; }
 		const NamePropNames& getNamePropNames() const noexcept { return namePropNames; }
-		void setNamePropNames(const NamePropNames& _namePropNames) noexcept;
+		void setNamePropNames(const NamePropNames& _namePropNames) noexcept
+		{
+			namePropNames = _namePropNames;
+			bStringsCached = true;
+		}
 		bool hasCachedStrings() const noexcept { return bStringsCached; }
 		const MAPINAMEID* getMapiNameId() const noexcept { return &mapiNameId; }
 
