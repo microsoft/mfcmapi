@@ -1,14 +1,6 @@
 #include <core/stdafx.h>
 #include <core/mapi/cache/namedPropCacheEntry.h>
 #include <core/mapi/cache/namedPropCache.h>
-//#include <core/interpret/guid.h>
-//#include <core/mapi/mapiMemory.h>
-//#include <core/utility/registry.h>
-//#include <core/utility/strings.h>
-//#include <core/utility/output.h>
-//#include <core/addin/mfcmapi.h>
-//#include <core/addin/addin.h>
-//#include <core/utility/error.h>
 
 namespace cache
 {
