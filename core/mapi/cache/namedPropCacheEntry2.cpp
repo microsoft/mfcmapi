@@ -6,21 +6,23 @@
 
 namespace cache2
 {
-	NamedPropCacheEntry::NamedPropCacheEntry(
-		ULONG _cbSig,
-		_In_opt_count_(_cbSig) LPBYTE lpSig,
-		LPMAPINAMEID lpPropName,
-		ULONG _ulPropID)
-		: ulPropID(_ulPropID)
+	NamedPropCacheEntry::NamedPropCacheEntry(LPMAPINAMEID lpPropName, ULONG _ulPropID) : ulPropID(_ulPropID)
 	{
 		if (lpPropName)
 		{
 			CopyToCacheData(*lpPropName);
 		}
+	}
 
-		if (_cbSig && lpSig)
+	NamedPropCacheEntry::NamedPropCacheEntry(
+		_In_ const std::vector<BYTE>& _sig,
+		LPMAPINAMEID lpPropName,
+		ULONG _ulPropID)
+		: ulPropID(_ulPropID), sig(_sig)
+	{
+		if (lpPropName)
 		{
-			sig.assign(lpSig, lpSig + _cbSig);
+			CopyToCacheData(*lpPropName);
 		}
 	}
 

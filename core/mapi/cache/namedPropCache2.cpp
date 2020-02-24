@@ -113,7 +113,7 @@ namespace cache2
 				{
 					auto ulPropTag = ULONG{};
 					if (lppPropTags && *lppPropTags) ulPropTag = (*lppPropTags)->aulPropTag[i];
-					ids.emplace_back(std::make_shared<NamedPropCacheEntry>(0, nullptr, lppPropNames[i], ulPropTag));
+					ids.emplace_back(std::make_shared<NamedPropCacheEntry>(lppPropNames[i], ulPropTag));
 				}
 			}
 
@@ -306,8 +306,7 @@ namespace cache2
 
 		static _Check_return_ std::vector<ULONG> CacheGetIDsFromNames(
 			_In_ LPMAPIPROP lpMAPIProp,
-			ULONG cbSig,
-			_In_count_(cbSig) LPBYTE lpSig,
+			_In_ const std::vector<BYTE>& sig,
 			ULONG cPropNames,
 			_In_count_(cPropNames) LPMAPINAMEID* lppPropNames,
 			ULONG ulFlags)
@@ -324,7 +323,7 @@ namespace cache2
 			{
 				const auto lpEntry = FindCacheEntry([&](const auto& entry) noexcept {
 					return entry->match(
-						{lpSig, lpSig + cbSig},
+						sig,
 						lppPropNames[ulTarget]->lpguid,
 						lppPropNames[ulTarget]->ulKind,
 						lppPropNames[ulTarget]->Kind.lID,
@@ -347,10 +346,10 @@ namespace cache2
 					auto toCache = std::vector<std::shared_ptr<NamedPropCacheEntry>>{};
 					for (ULONG i = 0; i < misses.size(); i++)
 					{
-						toCache.emplace_back(std::make_shared<NamedPropCacheEntry>(cbSig, lpSig, misses[i], missed[i]));
+						toCache.emplace_back(std::make_shared<NamedPropCacheEntry>(sig, misses[i], missed[i]));
 					}
 
-					AddMapping(toCache, {lpSig, lpSig + cbSig});
+					AddMapping(toCache, sig);
 				}
 			}
 
@@ -360,7 +359,7 @@ namespace cache2
 			{
 				const auto lpEntry = FindCacheEntry([&](const auto& entry) noexcept {
 					return entry->match(
-						{lpSig, lpSig + cbSig},
+						sig,
 						lppPropNames[ulTarget]->lpguid,
 						lppPropNames[ulTarget]->ulKind,
 						lppPropNames[ulTarget]->Kind.lID,
@@ -458,8 +457,8 @@ namespace cache2
 
 		if (lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag))
 		{
-			propTags = namedPropCache::CacheGetIDsFromNames(
-				lpMAPIProp, lpProp->Value.bin.cb, lpProp->Value.bin.lpb, cPropNames, lppPropNames, ulFlags);
+			auto sig = std::vector<BYTE>{lpProp->Value.bin.lpb, lpProp->Value.bin.lpb + lpProp->Value.bin.cb};
+			propTags = namedPropCache::CacheGetIDsFromNames(lpMAPIProp, sig, cPropNames, lppPropNames, ulFlags);
 		}
 		else
 		{
@@ -470,7 +469,7 @@ namespace cache2
 				auto ids = std::vector<std::shared_ptr<NamedPropCacheEntry>>{};
 				for (ULONG i = 0; i < propTags.size(); i++)
 				{
-					ids.emplace_back(std::make_shared<NamedPropCacheEntry>(0, nullptr, lppPropNames[i], propTags[i]));
+					ids.emplace_back(std::make_shared<NamedPropCacheEntry>(lppPropNames[i], propTags[i]));
 				}
 
 				namedPropCache::AddMappingWithoutSignature(ids);
