@@ -252,11 +252,10 @@ namespace cache2
 
 		_Check_return_ static std::vector<std::shared_ptr<NamedPropCacheEntry>> CacheGetNamesFromIDs(
 			_In_ LPMAPIPROP lpMAPIProp,
-			ULONG cbSig,
-			_In_count_(cbSig) LPBYTE lpSig,
+			const std::vector<BYTE>& sig,
 			_In_ LPSPropTagArray* lppPropTags)
 		{
-			if (!lpMAPIProp || !lppPropTags || !*lppPropTags || !cbSig || !lpSig) return {};
+			if (!lpMAPIProp || !lppPropTags || !*lppPropTags || sig.empty()) return {};
 
 			// We're going to walk the cache, looking for the values we need. As soon as we have all the values we need, we're done
 			// If we reach the end of the cache and don't have everything, we set up to make a GetNamesFromIDs call.
@@ -272,7 +271,7 @@ namespace cache2
 				auto ulPropId = PROP_ID(lpPropTags->aulPropTag[ulTarget]);
 				// ...check the cache
 				const auto lpEntry =
-					FindCacheEntry([&](const auto& entry) noexcept { return entry->match(cbSig, lpSig, ulPropId); });
+					FindCacheEntry([&](const auto& entry) noexcept { return entry->match(sig, ulPropId); });
 
 				if (lpEntry)
 				{
@@ -285,7 +284,7 @@ namespace cache2
 			{
 				auto missed = GetNamesFromIDs(lpMAPIProp, misses, nullptr, NULL);
 				// Cache the results
-				AddMapping(missed, {lpSig, lpSig + cbSig});
+				AddMapping(missed, sig);
 			}
 
 			// Second pass, do our lookup with a populated cache
@@ -294,7 +293,7 @@ namespace cache2
 				auto ulPropId = PROP_ID(lpPropTags->aulPropTag[ulTarget]);
 				// ...check the cache
 				const auto lpEntry =
-					FindCacheEntry([&](const auto& entry) noexcept { return entry->match(cbSig, lpSig, ulPropId); });
+					FindCacheEntry([&](const auto& entry) noexcept { return entry->match(sig, ulPropId); });
 
 				if (lpEntry)
 				{
@@ -303,6 +302,78 @@ namespace cache2
 			}
 
 			return results;
+		}
+
+		static _Check_return_ std::vector<ULONG> CacheGetIDsFromNames(
+			_In_ LPMAPIPROP lpMAPIProp,
+			ULONG cbSig,
+			_In_count_(cbSig) LPBYTE lpSig,
+			ULONG cPropNames,
+			_In_count_(cPropNames) LPMAPINAMEID* lppPropNames,
+			ULONG ulFlags)
+		{
+			if (!lpMAPIProp || !cPropNames || !*lppPropNames) return {};
+
+			// We're going to walk the cache, looking for the values we need. As soon as we have all the values we need, we're done
+			// If we reach the end of the cache and don't have everything, we set up to make a GetIDsFromNames call.
+
+			auto misses = std::vector<MAPINAMEID*>{};
+
+			// First pass, find the tags we don't have cached
+			for (ULONG ulTarget = 0; ulTarget < cPropNames; ulTarget++)
+			{
+				const auto lpEntry = FindCacheEntry([&](const auto& entry) noexcept {
+					return entry->match(
+						{lpSig, lpSig + cbSig},
+						lppPropNames[ulTarget]->lpguid,
+						lppPropNames[ulTarget]->ulKind,
+						lppPropNames[ulTarget]->Kind.lID,
+						lppPropNames[ulTarget]->Kind.lpwstrName);
+				});
+
+				if (!lpEntry)
+				{
+					misses.emplace_back(lppPropNames[ulTarget]);
+				}
+			}
+
+			// Go to MAPI with whatever's left.
+			if (!misses.empty())
+			{
+				auto missed = GetIDsFromNames(lpMAPIProp, misses, ulFlags);
+				if (misses.size() == missed.size())
+				{
+					// Cache the results
+					auto toCache = std::vector<std::shared_ptr<NamedPropCacheEntry>>{};
+					for (ULONG i = 0; i < misses.size(); i++)
+					{
+						toCache.emplace_back(std::make_shared<NamedPropCacheEntry>(cbSig, lpSig, misses[i], missed[i]));
+					}
+
+					AddMapping(toCache, {lpSig, lpSig + cbSig});
+				}
+			}
+
+			auto ids = std::vector<ULONG>{};
+			// Second pass, do our lookup with a populated cache
+			for (ULONG ulTarget = 0; ulTarget < cPropNames; ulTarget++)
+			{
+				const auto lpEntry = FindCacheEntry([&](const auto& entry) noexcept {
+					return entry->match(
+						{lpSig, lpSig + cbSig},
+						lppPropNames[ulTarget]->lpguid,
+						lppPropNames[ulTarget]->ulKind,
+						lppPropNames[ulTarget]->Kind.lID,
+						lppPropNames[ulTarget]->Kind.lpwstrName);
+				});
+
+				if (lpEntry)
+				{
+					ids.emplace_back(lpEntry->getPropID());
+				}
+			}
+
+			return ids;
 		}
 	};
 
@@ -352,7 +423,7 @@ namespace cache2
 		if (lpMappingSignature)
 		{
 			return namedPropCache::CacheGetNamesFromIDs(
-				lpMAPIProp, lpMappingSignature->cb, lpMappingSignature->lpb, lppPropTags);
+				lpMAPIProp, {lpMappingSignature->lpb, lpMappingSignature->lpb + lpMappingSignature->cb}, lppPropTags);
 		}
 		else
 		{
@@ -361,80 +432,6 @@ namespace cache2
 			namedPropCache::AddMappingWithoutSignature(names);
 			return names;
 		}
-	}
-
-	_Check_return_ std::vector<ULONG> CacheGetIDsFromNames(
-		_In_ LPMAPIPROP lpMAPIProp,
-		ULONG cbSig,
-		_In_count_(cbSig) LPBYTE lpSig,
-		ULONG cPropNames,
-		_In_count_(cPropNames) LPMAPINAMEID* lppPropNames,
-		ULONG ulFlags)
-	{
-		if (!lpMAPIProp || !cPropNames || !*lppPropNames) return {};
-
-		// We're going to walk the cache, looking for the values we need. As soon as we have all the values we need, we're done
-		// If we reach the end of the cache and don't have everything, we set up to make a GetIDsFromNames call.
-
-		auto misses = std::vector<MAPINAMEID*>{};
-
-		// First pass, find the tags we don't have cached
-		for (ULONG ulTarget = 0; ulTarget < cPropNames; ulTarget++)
-		{
-			const auto lpEntry = namedPropCache::FindCacheEntry([&](const auto& entry) noexcept {
-				return entry->match(
-					cbSig,
-					lpSig,
-					lppPropNames[ulTarget]->lpguid,
-					lppPropNames[ulTarget]->ulKind,
-					lppPropNames[ulTarget]->Kind.lID,
-					lppPropNames[ulTarget]->Kind.lpwstrName);
-			});
-
-			if (!lpEntry)
-			{
-				misses.emplace_back(lppPropNames[ulTarget]);
-			}
-		}
-
-		// Go to MAPI with whatever's left.
-		if (!misses.empty())
-		{
-			auto missed = namedPropCache::GetIDsFromNames(lpMAPIProp, misses, ulFlags);
-			if (misses.size() == missed.size())
-			{
-				// Cache the results
-				auto toCache = std::vector<std::shared_ptr<NamedPropCacheEntry>>{};
-				for (ULONG i = 0; i < misses.size(); i++)
-				{
-					toCache.emplace_back(std::make_shared<NamedPropCacheEntry>(cbSig, lpSig, misses[i], missed[i]));
-				}
-
-				namedPropCache::AddMapping(toCache, {lpSig, lpSig + cbSig});
-			}
-		}
-
-		auto ids = std::vector<ULONG>{};
-		// Second pass, do our lookup with a populated cache
-		for (ULONG ulTarget = 0; ulTarget < cPropNames; ulTarget++)
-		{
-			const auto lpEntry = namedPropCache::FindCacheEntry([&](const auto& entry) noexcept {
-				return entry->match(
-					cbSig,
-					lpSig,
-					lppPropNames[ulTarget]->lpguid,
-					lppPropNames[ulTarget]->ulKind,
-					lppPropNames[ulTarget]->Kind.lID,
-					lppPropNames[ulTarget]->Kind.lpwstrName);
-			});
-
-			if (lpEntry)
-			{
-				ids.emplace_back(lpEntry->getPropID());
-			}
-		}
-
-		return ids;
 	}
 
 	_Check_return_ std::vector<ULONG> GetIDsFromNames(
@@ -461,7 +458,7 @@ namespace cache2
 
 		if (lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag))
 		{
-			propTags = CacheGetIDsFromNames(
+			propTags = namedPropCache::CacheGetIDsFromNames(
 				lpMAPIProp, lpProp->Value.bin.cb, lpProp->Value.bin.lpb, cPropNames, lppPropNames, ulFlags);
 		}
 		else

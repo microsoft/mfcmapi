@@ -41,15 +41,14 @@ namespace cache2
 
 		// Compare given a signature, guid, kind, and value
 		_Check_return_ bool match(
-			ULONG cbSig,
-			_In_count_(cbSig) const BYTE* lpSig,
+			_In_ const std::vector<BYTE>& _sig,
 			_In_ const GUID* lpguid,
 			ULONG ulKind,
 			LONG lID,
-			_In_z_ LPCWSTR lpwstrName) const noexcept;
+			_In_z_ LPCWSTR lpwstrName) const;
 
 		// Compare given a signature and property ID (ulPropID)
-		_Check_return_ bool match(ULONG cbSig, _In_count_(cbSig) const BYTE* lpSig, ULONG _ulPropID) const noexcept;
+		_Check_return_ bool match(_In_ const std::vector<BYTE>& _sig, ULONG _ulPropID) const;
 
 		// Compare given a tag, guid, kind, and value
 		_Check_return_ bool

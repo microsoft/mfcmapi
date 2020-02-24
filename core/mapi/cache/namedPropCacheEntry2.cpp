@@ -46,15 +46,13 @@ namespace cache2
 
 	// Compare given a signature, guid, kind, and value
 	_Check_return_ bool NamedPropCacheEntry::match(
-		ULONG cbSig,
-		_In_count_(cbSig) const BYTE* lpSig,
+		_In_ const std::vector<BYTE>& _sig,
 		_In_ const GUID* lpguid,
 		ULONG ulKind,
 		LONG lID,
-		_In_z_ LPCWSTR lpwstrName) const noexcept
+		_In_z_ LPCWSTR lpwstrName) const
 	{
-		if (cbSig != sig.size()) return false;
-		if (cbSig && memcmp(lpSig, sig.data(), cbSig) != 0) return false;
+		if (sig != _sig) return false;
 
 		if (mapiNameId.ulKind != ulKind) return false;
 		if (MNID_ID == ulKind && mapiNameId.Kind.lID != lID) return false;
@@ -65,12 +63,9 @@ namespace cache2
 	}
 
 	// Compare given a signature and property ID (ulPropID)
-	_Check_return_ bool
-	NamedPropCacheEntry::match(ULONG cbSig, _In_count_(cbSig) const BYTE* lpSig, ULONG _ulPropID) const noexcept
+	_Check_return_ bool NamedPropCacheEntry::match(_In_ const std::vector<BYTE>& _sig, ULONG _ulPropID) const
 	{
-		if (sig.size() != cbSig) return false;
-		if (cbSig && memcmp(lpSig, sig.data(), cbSig) != 0) return false;
-
+		if (sig != _sig) return false;
 		if (ulPropID != _ulPropID) return false;
 
 		return true;
