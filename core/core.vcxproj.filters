@@ -300,6 +300,12 @@
     <ClInclude Include="mapi\cache\namedPropCacheEntry.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="mapi\cache\namedPropCache2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mapi\cache\namedPropCacheEntry2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="utility\strings.cpp">
@@ -522,6 +528,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="mapi\cache\namedPropCacheEntry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mapi\cache\namedPropCache2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mapi\cache\namedPropCacheEntry2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
