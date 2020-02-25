@@ -172,7 +172,7 @@ namespace cache2
 		static void AddMappingWithoutSignature(std::vector<std::shared_ptr<NamedPropCacheEntry>>& entries)
 		{
 			auto& cache = getCache();
-			for (auto entry : entries)
+			for (const auto entry : entries)
 			{
 				const auto match = FindCacheEntry(
 					[&](const auto& _entry) noexcept { return entry->match(_entry, false, true, true); });
@@ -223,7 +223,7 @@ namespace cache2
 			// Second pass, do our lookup with a populated cache
 			for (ULONG ulTarget = 0; ulTarget < lpPropTags->cValues; ulTarget++)
 			{
-				auto ulPropId = PROP_ID(lpPropTags->aulPropTag[ulTarget]);
+				const auto ulPropId = PROP_ID(lpPropTags->aulPropTag[ulTarget]);
 				// ...check the cache
 				const auto lpEntry =
 					FindCacheEntry([&](const auto& entry) noexcept { return entry->match(sig, ulPropId); });
@@ -338,24 +338,28 @@ namespace cache2
 			return GetNamesFromIDs(lpMAPIProp, lppPropTags, lpPropSetGuid, ulFlags);
 		}
 
-		auto hRes = S_OK;
-		LPSPropValue lpProp = nullptr;
-
-		if (!lpMappingSignature)
+		auto sig = std::vector<BYTE>{};
+		if (lpMappingSignature)
 		{
+			sig = {lpMappingSignature->lpb, lpMappingSignature->lpb + lpMappingSignature->cb};
+		}
+		else
+		{
+			LPSPropValue lpProp = nullptr;
 			// This error is too chatty to log - ignore it.
-			hRes = HrGetOneProp(lpMAPIProp, PR_MAPPING_SIGNATURE, &lpProp);
+			const auto hRes = HrGetOneProp(lpMAPIProp, PR_MAPPING_SIGNATURE, &lpProp);
 
 			if (SUCCEEDED(hRes) && lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag))
 			{
-				lpMappingSignature = &lpProp->Value.bin;
+				sig = {lpProp->Value.bin.lpb, lpProp->Value.bin.lpb + lpProp->Value.bin.cb};
 			}
+
+			MAPIFreeBuffer(lpProp);
 		}
 
 		if (lpMappingSignature)
 		{
-			return namedPropCache::CacheGetNamesFromIDs(
-				lpMAPIProp, {lpMappingSignature->lpb, lpMappingSignature->lpb + lpMappingSignature->cb}, lppPropTags);
+			return namedPropCache::CacheGetNamesFromIDs(lpMAPIProp, sig, lppPropTags);
 		}
 		else
 		{
