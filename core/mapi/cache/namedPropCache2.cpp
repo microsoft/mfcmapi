@@ -422,8 +422,6 @@ namespace cache2
 	// We don't compute a DASL string for non-named props as FormatMessage in TagToString can handle those
 	NamePropNames NameIDToStrings(_In_ const MAPINAMEID* lpNameID, ULONG ulPropTag)
 	{
-		NamePropNames namePropNames;
-
 		// Can't generate strings without a MAPINAMEID structure
 		if (!lpNameID) return {};
 
@@ -452,12 +450,13 @@ namespace cache2
 					output::dbgLevel::NamedProp,
 					L"NameIDToStrings: Failed to find cache entry for ulPropTag = 0x%08X\n",
 					ulPropTag);
-				return namePropNames;
+				return {};
 			}
 		}
 
 		output::DebugPrint(output::dbgLevel::NamedProp, L"Parsing named property\n");
 		output::DebugPrint(output::dbgLevel::NamedProp, L"ulPropTag = 0x%08x\n", ulPropTag);
+		NamePropNames namePropNames;
 		namePropNames.guid = guid::GUIDToStringAndName(lpNameID->lpguid);
 		output::DebugPrint(output::dbgLevel::NamedProp, L"lpNameID->lpguid = %ws\n", namePropNames.guid.c_str());
 
