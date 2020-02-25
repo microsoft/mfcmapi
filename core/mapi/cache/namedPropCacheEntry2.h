@@ -31,7 +31,7 @@ namespace cache2
 		}
 		bool hasCachedStrings() const noexcept { return bStringsCached; }
 		const MAPINAMEID* getMapiNameId() const noexcept { return &mapiNameId; }
-		void setSig(const std::vector<BYTE>& _sig) noexcept { sig = _sig; }
+		void setSig(const std::vector<BYTE>& _sig) { sig = _sig; }
 
 		_Check_return_ bool
 		match(const std::shared_ptr<namedPropCacheEntry>& entry, bool bMatchSig, bool bMatchID, bool bMatchName) const;
@@ -55,8 +55,8 @@ namespace cache2
 	private:
 		ULONG ulPropID{}; // MAPI ID (ala PROP_ID) for a named property
 		MAPINAMEID mapiNameId{}; // guid, kind, value
-		GUID guid;
-		std::wstring name;
+		GUID guid{};
+		std::wstring name{};
 		std::vector<BYTE> sig{}; // Value of PR_MAPPING_SIGNATURE
 		NamePropNames namePropNames{};
 		bool bStringsCached{}; // We have cached strings
