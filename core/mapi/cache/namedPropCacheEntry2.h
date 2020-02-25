@@ -12,15 +12,15 @@ namespace cache2
 		std::wstring otherPidLid;
 	};
 
-	class NamedPropCacheEntry
+	class namedPropCacheEntry
 	{
 	public:
-		NamedPropCacheEntry(LPMAPINAMEID lpPropName, ULONG _ulPropID);
-		NamedPropCacheEntry(_In_ const std::vector<BYTE>& _sig, LPMAPINAMEID lpPropName, ULONG _ulPropID);
+		namedPropCacheEntry(LPMAPINAMEID lpPropName, ULONG _ulPropID);
+		namedPropCacheEntry(_In_ const std::vector<BYTE>& _sig, LPMAPINAMEID lpPropName, ULONG _ulPropID);
 
 		// Disables making copies of NamedPropCacheEntry
-		NamedPropCacheEntry(const NamedPropCacheEntry&) = delete;
-		NamedPropCacheEntry& operator=(const NamedPropCacheEntry&) = delete;
+		namedPropCacheEntry(const namedPropCacheEntry&) = delete;
+		namedPropCacheEntry& operator=(const namedPropCacheEntry&) = delete;
 
 		ULONG getPropID() const noexcept { return ulPropID; }
 		const NamePropNames& getNamePropNames() const noexcept { return namePropNames; }
@@ -34,7 +34,7 @@ namespace cache2
 		void setSig(const std::vector<BYTE>& _sig) noexcept { sig = _sig; }
 
 		_Check_return_ bool
-		match(const std::shared_ptr<NamedPropCacheEntry>& entry, bool bMatchSig, bool bMatchID, bool bMatchName) const;
+		match(const std::shared_ptr<namedPropCacheEntry>& entry, bool bMatchSig, bool bMatchID, bool bMatchName) const;
 
 		// Compare given a signature, guid, kind, and value
 		_Check_return_ bool match(

@@ -15,16 +15,16 @@ namespace cache2
 	class namedPropCache
 	{
 	public:
-		static std::list<std::shared_ptr<NamedPropCacheEntry>>& getCache() noexcept
+		static std::list<std::shared_ptr<namedPropCacheEntry>>& getCache() noexcept
 		{
 			// We keep a list of named prop cache entries
-			static std::list<std::shared_ptr<NamedPropCacheEntry>> cache;
+			static std::list<std::shared_ptr<namedPropCacheEntry>> cache;
 			return cache;
 		}
 
 		// Returns a vector of NamedPropCacheEntry for the input tags
 		// Sourced directly from MAPI
-		static _Check_return_ std::vector<std::shared_ptr<NamedPropCacheEntry>> GetNamesFromIDs(
+		static _Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>> GetNamesFromIDs(
 			_In_ LPMAPIPROP lpMAPIProp,
 			_In_ LPSPropTagArray* lppPropTags,
 			_In_opt_ LPGUID lpPropSetGuid,
@@ -38,7 +38,7 @@ namespace cache2
 			WC_H_GETPROPS_S(
 				lpMAPIProp->GetNamesFromIDs(lppPropTags, lpPropSetGuid, ulFlags, &ulPropNames, &lppPropNames));
 
-			auto ids = std::vector<std::shared_ptr<NamedPropCacheEntry>>{};
+			auto ids = std::vector<std::shared_ptr<namedPropCacheEntry>>{};
 
 			if (ulPropNames && lppPropNames)
 			{
@@ -46,7 +46,7 @@ namespace cache2
 				{
 					auto ulPropTag = ULONG{};
 					if (lppPropTags && *lppPropTags) ulPropTag = (*lppPropTags)->aulPropTag[i];
-					ids.emplace_back(std::make_shared<NamedPropCacheEntry>(lppPropNames[i], ulPropTag));
+					ids.emplace_back(std::make_shared<namedPropCacheEntry>(lppPropNames[i], ulPropTag));
 				}
 			}
 
@@ -56,7 +56,7 @@ namespace cache2
 
 		// Returns a vector of NamedPropCacheEntry for the input tags
 		// Sourced directly from MAPI
-		static _Check_return_ std::vector<std::shared_ptr<NamedPropCacheEntry>> GetNamesFromIDs(
+		static _Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>> GetNamesFromIDs(
 			_In_ LPMAPIPROP lpMAPIProp,
 			_In_ const std::vector<ULONG> tags,
 			_In_opt_ LPGUID lpPropSetGuid,
@@ -64,7 +64,7 @@ namespace cache2
 		{
 			if (!lpMAPIProp) return {};
 
-			auto ids = std::vector<std::shared_ptr<NamedPropCacheEntry>>{};
+			auto ids = std::vector<std::shared_ptr<namedPropCacheEntry>>{};
 			auto ulPropTags = mapi::allocate<LPSPropTagArray>(CbNewSPropTagArray(tags.size()));
 			if (ulPropTags)
 			{
@@ -135,8 +135,8 @@ namespace cache2
 			return ids;
 		}
 
-		_Check_return_ static std::shared_ptr<NamedPropCacheEntry>
-		FindCacheEntry(const std::function<bool(const std::shared_ptr<NamedPropCacheEntry>&)>& compare) noexcept
+		_Check_return_ static std::shared_ptr<namedPropCacheEntry>
+		FindCacheEntry(const std::function<bool(const std::shared_ptr<namedPropCacheEntry>&)>& compare) noexcept
 		{
 			const auto& cache = getCache();
 			const auto entry = find_if(cache.begin(), cache.end(), [compare](const auto& namedPropCacheEntry) noexcept {
@@ -149,12 +149,12 @@ namespace cache2
 		// Add a mapping to the cache if it doesn't already exist
 		// If given a signature, we include it in our search.
 		// If not, we search without it
-		static void AddMapping(std::vector<std::shared_ptr<NamedPropCacheEntry>>& entries, const std::vector<BYTE>& sig)
+		static void AddMapping(std::vector<std::shared_ptr<namedPropCacheEntry>>& entries, const std::vector<BYTE>& sig)
 		{
 			auto& cache = getCache();
 			for (auto& entry : entries)
 			{
-				auto match = std::shared_ptr<NamedPropCacheEntry>{};
+				auto match = std::shared_ptr<namedPropCacheEntry>{};
 				if (sig.empty())
 				{
 					match = FindCacheEntry(
@@ -186,7 +186,7 @@ namespace cache2
 			}
 		}
 
-		_Check_return_ static std::vector<std::shared_ptr<NamedPropCacheEntry>> CacheGetNamesFromIDs(
+		_Check_return_ static std::vector<std::shared_ptr<namedPropCacheEntry>> CacheGetNamesFromIDs(
 			_In_ LPMAPIPROP lpMAPIProp,
 			const std::vector<BYTE>& sig,
 			_In_ LPSPropTagArray* lppPropTags)
@@ -196,7 +196,7 @@ namespace cache2
 			// We're going to walk the cache, looking for the values we need. As soon as we have all the values we need, we're done
 			// If we reach the end of the cache and don't have everything, we set up to make a GetNamesFromIDs call.
 
-			auto results = std::vector<std::shared_ptr<NamedPropCacheEntry>>{};
+			auto results = std::vector<std::shared_ptr<namedPropCacheEntry>>{};
 			const auto lpPropTags = *lppPropTags;
 
 			auto misses = std::vector<ULONG>{};
@@ -279,10 +279,10 @@ namespace cache2
 				if (misses.size() == missed.size())
 				{
 					// Cache the results
-					auto toCache = std::vector<std::shared_ptr<NamedPropCacheEntry>>{};
+					auto toCache = std::vector<std::shared_ptr<namedPropCacheEntry>>{};
 					for (ULONG i = 0; i < misses.size(); i++)
 					{
-						toCache.emplace_back(std::make_shared<NamedPropCacheEntry>(sig, misses[i], missed[i]));
+						toCache.emplace_back(std::make_shared<namedPropCacheEntry>(sig, misses[i], missed[i]));
 					}
 
 					AddMapping(toCache, sig);
@@ -313,7 +313,7 @@ namespace cache2
 	};
 
 	// No signature form: look up and use signature if possible
-	_Check_return_ std::vector<std::shared_ptr<NamedPropCacheEntry>> GetNamesFromIDs(
+	_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>> GetNamesFromIDs(
 		_In_ LPMAPIPROP lpMAPIProp,
 		_In_ LPSPropTagArray* lppPropTags,
 		_In_opt_ LPGUID lpPropSetGuid,
@@ -334,7 +334,7 @@ namespace cache2
 	}
 
 	// Signature form: if signature not passed then do not use a signature
-	_Check_return_ std::vector<std::shared_ptr<NamedPropCacheEntry>> GetNamesFromIDs(
+	_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>> GetNamesFromIDs(
 		_In_ LPMAPIPROP lpMAPIProp,
 		_In_opt_ const std::vector<BYTE>& sig,
 		_In_ LPSPropTagArray* lppPropTags,
@@ -389,10 +389,10 @@ namespace cache2
 			if (cPropNames == propTags.size())
 			{
 				// Cache the results
-				auto ids = std::vector<std::shared_ptr<NamedPropCacheEntry>>{};
+				auto ids = std::vector<std::shared_ptr<namedPropCacheEntry>>{};
 				for (ULONG i = 0; i < propTags.size(); i++)
 				{
-					ids.emplace_back(std::make_shared<NamedPropCacheEntry>(lppPropNames[i], propTags[i]));
+					ids.emplace_back(std::make_shared<namedPropCacheEntry>(lppPropNames[i], propTags[i]));
 				}
 
 				namedPropCache::AddMapping(ids, {});
@@ -411,7 +411,7 @@ namespace cache2
 		// Can't generate strings without a MAPINAMEID structure
 		if (!lpNameID) return {};
 
-		auto lpNamedPropCacheEntry = std::shared_ptr<NamedPropCacheEntry>{};
+		auto lpNamedPropCacheEntry = std::shared_ptr<namedPropCacheEntry>{};
 
 		// If we're using the cache, look up the answer there and return
 		if (registry::cacheNamedProps)

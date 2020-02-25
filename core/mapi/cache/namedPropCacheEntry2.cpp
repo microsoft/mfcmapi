@@ -6,7 +6,7 @@
 
 namespace cache2
 {
-	NamedPropCacheEntry::NamedPropCacheEntry(LPMAPINAMEID lpPropName, ULONG _ulPropID) : ulPropID(_ulPropID)
+	namedPropCacheEntry::namedPropCacheEntry(LPMAPINAMEID lpPropName, ULONG _ulPropID) : ulPropID(_ulPropID)
 	{
 		if (lpPropName)
 		{
@@ -14,7 +14,7 @@ namespace cache2
 		}
 	}
 
-	NamedPropCacheEntry::NamedPropCacheEntry(
+	namedPropCacheEntry::namedPropCacheEntry(
 		_In_ const std::vector<BYTE>& _sig,
 		LPMAPINAMEID lpPropName,
 		ULONG _ulPropID)
@@ -26,8 +26,8 @@ namespace cache2
 		}
 	}
 
-	_Check_return_ bool NamedPropCacheEntry::match(
-		const std::shared_ptr<NamedPropCacheEntry>& entry,
+	_Check_return_ bool namedPropCacheEntry::match(
+		const std::shared_ptr<namedPropCacheEntry>& entry,
 		bool bMatchSig,
 		bool bMatchID,
 		bool bMatchName) const
@@ -47,7 +47,7 @@ namespace cache2
 	}
 
 	// Compare given a signature, guid, kind, and value
-	_Check_return_ bool NamedPropCacheEntry::match(
+	_Check_return_ bool namedPropCacheEntry::match(
 		_In_ const std::vector<BYTE>& _sig,
 		_In_ const GUID* lpguid,
 		ULONG ulKind,
@@ -65,7 +65,7 @@ namespace cache2
 	}
 
 	// Compare given a signature and property ID (ulPropID)
-	_Check_return_ bool NamedPropCacheEntry::match(_In_ const std::vector<BYTE>& _sig, ULONG _ulPropID) const
+	_Check_return_ bool namedPropCacheEntry::match(_In_ const std::vector<BYTE>& _sig, ULONG _ulPropID) const
 	{
 		if (sig != _sig) return false;
 		if (ulPropID != _ulPropID) return false;
@@ -74,7 +74,7 @@ namespace cache2
 	}
 
 	// Compare given a tag, guid, kind, and value
-	_Check_return_ bool NamedPropCacheEntry::match(
+	_Check_return_ bool namedPropCacheEntry::match(
 		ULONG _ulPropID,
 		_In_ const GUID* lpguid,
 		ULONG ulKind,
@@ -116,7 +116,7 @@ namespace cache2
 	}
 
 	// Go through all the details of copying allocated data to a cache entry
-	void NamedPropCacheEntry::CopyToCacheData(const MAPINAMEID& src)
+	void namedPropCacheEntry::CopyToCacheData(const MAPINAMEID& src)
 	{
 		mapiNameId.lpguid = nullptr;
 		mapiNameId.Kind.lID = 0;
