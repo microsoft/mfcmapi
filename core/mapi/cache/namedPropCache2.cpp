@@ -142,11 +142,31 @@ namespace cache2
 			return entry != cache.end() ? *entry : nullptr;
 		}
 
+		// Add a mapping to the cache if it doesn't already exist
+		// If given a signature, we include it in our search.
+		// If not, we search without it
 		static void AddMapping(std::vector<std::shared_ptr<NamedPropCacheEntry>>& entries, const std::vector<BYTE>& sig)
 		{
 			auto& cache = getCache();
 			for (auto& entry : entries)
 			{
+				auto match = std::shared_ptr<NamedPropCacheEntry>{};
+				if (sig.empty())
+				{
+					match = FindCacheEntry(
+						[&](const auto& _entry) noexcept { return entry->match(_entry, false, true, true); });
+				}
+				else
+				{
+					entry->setSig(sig);
+					match = FindCacheEntry(
+						[&](const auto& _entry) noexcept { return entry->match(_entry, true, true, true); });
+				}
+
+				if (!match)
+				{
+					cache.emplace_back(entry);
+				}
 				//if (fIsSet(output::dbgLevel::NamedPropCacheMisses) && entry->->ulKind == MNID_ID)
 				//{
 				//	auto names = NameIDToPropNames(lppPropNames[ulSource]);
@@ -159,27 +179,6 @@ namespace cache2
 				//			guid::GUIDToStringAndName(lppPropNames[ulSource]->lpguid).c_str());
 				//	}
 				//}
-
-				entry->setSig(sig);
-				cache.emplace_back(entry);
-			}
-		}
-
-		// Add to the cache entries that don't have a mapping signature
-		// For each one, we have to check that the item isn't already in the cache
-		// Since this function should rarely be hit, we'll do it the slow but easy way...
-		// One entry at a time
-		static void AddMappingWithoutSignature(std::vector<std::shared_ptr<NamedPropCacheEntry>>& entries)
-		{
-			auto& cache = getCache();
-			for (const auto entry : entries)
-			{
-				const auto match = FindCacheEntry(
-					[&](const auto& _entry) noexcept { return entry->match(_entry, false, true, true); });
-				if (!match)
-				{
-					cache.emplace_back(entry);
-				}
 			}
 		}
 
@@ -309,19 +308,31 @@ namespace cache2
 		}
 	};
 
-	// GetNamesFromIDs without a mapping signature
+	// No signature form: look up and use signature if possible
 	_Check_return_ std::vector<std::shared_ptr<NamedPropCacheEntry>> GetNamesFromIDs(
 		_In_ LPMAPIPROP lpMAPIProp,
 		_In_ LPSPropTagArray* lppPropTags,
 		_In_opt_ LPGUID lpPropSetGuid,
 		ULONG ulFlags)
 	{
-		return GetNamesFromIDs(lpMAPIProp, nullptr, lppPropTags, lpPropSetGuid, ulFlags);
+		auto sig = std::vector<BYTE>{};
+		LPSPropValue lpProp = nullptr;
+		// This error is too chatty to log - ignore it.
+		const auto hRes = HrGetOneProp(lpMAPIProp, PR_MAPPING_SIGNATURE, &lpProp);
+		if (SUCCEEDED(hRes) && lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag))
+		{
+			sig = {lpProp->Value.bin.lpb, lpProp->Value.bin.lpb + lpProp->Value.bin.cb};
+		}
+
+		MAPIFreeBuffer(lpProp);
+
+		return GetNamesFromIDs(lpMAPIProp, sig, lppPropTags, lpPropSetGuid, ulFlags);
 	}
 
+	// Signature form: if signature not passed then do not use a signature
 	_Check_return_ std::vector<std::shared_ptr<NamedPropCacheEntry>> GetNamesFromIDs(
 		_In_ LPMAPIPROP lpMAPIProp,
-		_In_opt_ const _SBinary* lpMappingSignature,
+		_In_opt_ const std::vector<BYTE>& sig,
 		_In_ LPSPropTagArray* lppPropTags,
 		_In_opt_ LPGUID lpPropSetGuid,
 		ULONG ulFlags)
@@ -338,36 +349,7 @@ namespace cache2
 			return GetNamesFromIDs(lpMAPIProp, lppPropTags, lpPropSetGuid, ulFlags);
 		}
 
-		auto sig = std::vector<BYTE>{};
-		if (lpMappingSignature)
-		{
-			sig = {lpMappingSignature->lpb, lpMappingSignature->lpb + lpMappingSignature->cb};
-		}
-		else
-		{
-			LPSPropValue lpProp = nullptr;
-			// This error is too chatty to log - ignore it.
-			const auto hRes = HrGetOneProp(lpMAPIProp, PR_MAPPING_SIGNATURE, &lpProp);
-
-			if (SUCCEEDED(hRes) && lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag))
-			{
-				sig = {lpProp->Value.bin.lpb, lpProp->Value.bin.lpb + lpProp->Value.bin.cb};
-			}
-
-			MAPIFreeBuffer(lpProp);
-		}
-
-		if (lpMappingSignature)
-		{
-			return namedPropCache::CacheGetNamesFromIDs(lpMAPIProp, sig, lppPropTags);
-		}
-		else
-		{
-			auto names = GetNamesFromIDs(lpMAPIProp, lppPropTags, lpPropSetGuid, ulFlags);
-			// Cache the results
-			namedPropCache::AddMappingWithoutSignature(names);
-			return names;
-		}
+		return namedPropCache::CacheGetNamesFromIDs(lpMAPIProp, sig, lppPropTags);
 	}
 
 	_Check_return_ std::vector<ULONG> GetIDsFromNames(
@@ -409,7 +391,7 @@ namespace cache2
 					ids.emplace_back(std::make_shared<NamedPropCacheEntry>(lppPropNames[i], propTags[i]));
 				}
 
-				namedPropCache::AddMappingWithoutSignature(ids);
+				namedPropCache::AddMapping(ids, {});
 			}
 		}
 
@@ -559,10 +541,8 @@ namespace cache2
 		ULONG ulPropTag, // optional 'original' prop tag
 		_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
 		_In_opt_ const MAPINAMEID* lpNameID, // optional named property information to avoid GetNamesFromIDs call
-		_In_opt_ const _SBinary*
-			lpMappingSignature, // optional mapping signature for object to speed named prop lookups
-		bool
-			bIsAB) // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
+		_In_opt_ const std::vector<BYTE>& sig, // optional mapping signature for object to speed named prop lookups
+		bool bIsAB) // true for an address book property (they can be > 8000 and not named props)
 	{
 		// If we weren't passed named property information and we need it, look it up
 		// We check bIsAB here - some address book providers return garbage which will crash us
@@ -576,7 +556,7 @@ namespace cache2
 			tag.cValues = 1;
 			tag.aulPropTag[0] = ulPropTag;
 
-			const auto names = GetNamesFromIDs(lpMAPIProp, lpMappingSignature, &lpTag, nullptr, NULL);
+			const auto names = GetNamesFromIDs(lpMAPIProp, sig, &lpTag, nullptr, NULL);
 			if (names.size() == 1)
 			{
 				return NameIDToStrings(names[0]->getMapiNameId(), ulPropTag);
