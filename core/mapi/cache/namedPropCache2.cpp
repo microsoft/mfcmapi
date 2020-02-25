@@ -36,49 +36,6 @@ namespace cache2
 		return cbName;
 	}
 
-	// Go through all the details of copying allocated data from a MAPINAMEID
-	MAPINAMEID* CopyMapiNameId(
-		const MAPINAMEID& src,
-		_In_ LPVOID lpMAPIParent) // Allocate using MAPI with this as a parent
-	{
-		const auto dst = mapi::allocate<LPMAPINAMEID>(sizeof(MAPINAMEID), lpMAPIParent);
-		if (dst)
-		{
-			dst->lpguid = nullptr;
-			dst->Kind.lID = MNID_ID;
-
-			if (src.lpguid)
-			{
-				dst->lpguid = mapi::allocate<LPGUID>(sizeof(GUID), lpMAPIParent);
-				if (dst->lpguid)
-				{
-					memcpy(dst->lpguid, src.lpguid, sizeof GUID);
-				}
-			}
-
-			dst->ulKind = src.ulKind;
-			if (MNID_ID == src.ulKind)
-			{
-				dst->Kind.lID = src.Kind.lID;
-			}
-			else if (MNID_STRING == src.ulKind)
-			{
-				if (src.Kind.lpwstrName)
-				{
-					const auto cbName = cbPropName(src.Kind.lpwstrName);
-
-					dst->Kind.lpwstrName = mapi::allocate<LPWSTR>(cbName, lpMAPIParent);
-					if (dst->Kind.lpwstrName)
-					{
-						memcpy(dst->Kind.lpwstrName, src.Kind.lpwstrName, cbName);
-					}
-				}
-			}
-		}
-
-		return dst;
-	}
-
 	class namedPropCache
 	{
 	public:
