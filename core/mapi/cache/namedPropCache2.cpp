@@ -40,6 +40,7 @@ namespace cache2
 					if (lppPropTags && *lppPropTags) ulPropTag = (*lppPropTags)->aulPropTag[i];
 					ids.emplace_back(std::make_shared<namedPropCacheEntry>(lppPropNames[i], ulPropTag));
 					// TODO: Figure out what misses look like here
+					// lppPropNames[i]* will be null...
 				}
 			}
 
@@ -172,20 +173,31 @@ namespace cache2
 
 				if (!match)
 				{
+					if (fIsSet(output::dbgLevel::NamedPropCacheMisses))
+					{
+						const auto mni = entry->getMapiNameId();
+						auto names = NameIDToPropNames(mni);
+						if (names.empty())
+						{
+							output::DebugPrint(
+								output::dbgLevel::NamedPropCacheMisses,
+								L"add: Caching unknown property 0x%08X %ws\n",
+								mni->Kind.lID,
+								guid::GUIDToStringAndName(mni->lpguid).c_str());
+						}
+						else
+						{
+							output::DebugPrint(
+								output::dbgLevel::NamedPropCacheMisses,
+								L"add: Caching property 0x%08X %ws = %ws\n",
+								mni->Kind.lID,
+								guid::GUIDToStringAndName(mni->lpguid).c_str(),
+								names[0].c_str());
+						}
+					}
+
 					cache.emplace_back(entry);
 				}
-				//if (fIsSet(output::dbgLevel::NamedPropCacheMisses) && entry->->ulKind == MNID_ID)
-				//{
-				//	auto names = NameIDToPropNames(lppPropNames[ulSource]);
-				//	if (names.empty())
-				//	{
-				//		output::DebugPrint(
-				//			output::dbgLevel::NamedPropCacheMisses,
-				//			L"add: Caching unknown property 0x%08X %ws\n",
-				//			lppPropNames[ulSource]->Kind.lID,
-				//			guid::GUIDToStringAndName(lppPropNames[ulSource]->lpguid).c_str());
-				//	}
-				//}
 			}
 		}
 
