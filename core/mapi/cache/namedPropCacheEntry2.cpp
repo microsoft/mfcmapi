@@ -47,6 +47,7 @@ namespace cache2
 	}
 
 	// Compare given a signature, guid, kind, and value
+	// If signature is empty then do not use a signature
 	_Check_return_ bool namedPropCacheEntry::match(
 		_In_ const std::vector<BYTE>& _sig,
 		_In_ const GUID* lpguid,
@@ -54,7 +55,7 @@ namespace cache2
 		LONG lID,
 		_In_z_ LPCWSTR lpwstrName) const
 	{
-		if (sig != _sig) return false;
+		if (!_sig.empty() && sig != _sig) return false;
 
 		if (mapiNameId.ulKind != ulKind) return false;
 		if (MNID_ID == ulKind && mapiNameId.Kind.lID != lID) return false;
@@ -65,9 +66,10 @@ namespace cache2
 	}
 
 	// Compare given a signature and property ID (ulPropID)
+	// If signature is empty then do not use a signature
 	_Check_return_ bool namedPropCacheEntry::match(_In_ const std::vector<BYTE>& _sig, ULONG _ulPropID) const
 	{
-		if (sig != _sig) return false;
+		if (!_sig.empty() && sig != _sig) return false;
 		if (ulPropID != _ulPropID) return false;
 
 		return true;

@@ -186,6 +186,7 @@ namespace cache2
 			}
 		}
 
+		// If signature is empty then do not use a signature
 		_Check_return_ static std::vector<std::shared_ptr<namedPropCacheEntry>> CacheGetNamesFromIDs(
 			_In_ LPMAPIPROP lpMAPIProp,
 			const std::vector<BYTE>& sig,
@@ -235,11 +236,13 @@ namespace cache2
 				{
 					results.emplace_back(lpEntry);
 				}
+				// TODO: on missed we need some kind of blank entry
 			}
 
 			return results;
 		}
 
+		// If signature is empty then do not use a signature
 		static _Check_return_ std::vector<ULONG> CacheGetIDsFromNames(
 			_In_ LPMAPIPROP lpMAPIProp,
 			_In_ const std::vector<BYTE>& sig,
@@ -306,6 +309,7 @@ namespace cache2
 				{
 					ids.emplace_back(lpEntry->getPropID());
 				}
+				// TODO: on missed we need some kind of blank entry
 			}
 
 			return ids;
@@ -333,7 +337,7 @@ namespace cache2
 		return GetNamesFromIDs(lpMAPIProp, sig, lppPropTags, lpPropSetGuid, ulFlags);
 	}
 
-	// Signature form: if signature not passed then do not use a signature
+	// Signature form: if signature is empty then do not use a signature
 	_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>> GetNamesFromIDs(
 		_In_ LPMAPIPROP lpMAPIProp,
 		_In_opt_ const std::vector<BYTE>& sig,
@@ -364,7 +368,6 @@ namespace cache2
 	{
 		if (!lpMAPIProp) return {};
 
-		auto propTags = std::vector<ULONG>{};
 		// Check if we're bypassing the cache:
 		if (!registry::cacheNamedProps ||
 			// If no names were passed, we have to bypass the cache
@@ -374,34 +377,19 @@ namespace cache2
 			return namedPropCache::GetIDsFromNames(lpMAPIProp, cPropNames, lppPropNames, ulFlags);
 		}
 
+		// Get a signature if we can.
 		LPSPropValue lpProp = nullptr;
-
+		auto sig = std::vector<BYTE>{};
 		WC_MAPI_S(HrGetOneProp(lpMAPIProp, PR_MAPPING_SIGNATURE, &lpProp));
 
 		if (lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag))
 		{
-			auto sig = std::vector<BYTE>{lpProp->Value.bin.lpb, lpProp->Value.bin.lpb + lpProp->Value.bin.cb};
-			propTags = namedPropCache::CacheGetIDsFromNames(lpMAPIProp, sig, cPropNames, lppPropNames, ulFlags);
-		}
-		else
-		{
-			propTags = namedPropCache::GetIDsFromNames(lpMAPIProp, cPropNames, lppPropNames, ulFlags);
-			if (cPropNames == propTags.size())
-			{
-				// Cache the results
-				auto ids = std::vector<std::shared_ptr<namedPropCacheEntry>>{};
-				for (ULONG i = 0; i < propTags.size(); i++)
-				{
-					ids.emplace_back(std::make_shared<namedPropCacheEntry>(lppPropNames[i], propTags[i]));
-				}
-
-				namedPropCache::AddMapping(ids, {});
-			}
+			sig = std::vector<BYTE>{lpProp->Value.bin.lpb, lpProp->Value.bin.lpb + lpProp->Value.bin.cb};
 		}
 
 		MAPIFreeBuffer(lpProp);
 
-		return propTags;
+		return namedPropCache::CacheGetIDsFromNames(lpMAPIProp, sig, cPropNames, lppPropNames, ulFlags);
 	}
 
 	// TagToString will prepend the http://schemas.microsoft.com/MAPI/ for us since it's a constant
