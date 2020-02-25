@@ -561,8 +561,6 @@ namespace cache2
 		bool
 			bIsAB) // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
 	{
-		NamePropNames namePropNames;
-
 		// If we weren't passed named property information and we need it, look it up
 		// We check bIsAB here - some address book providers return garbage which will crash us
 		if (!lpNameID && lpMAPIProp && // if we have an object
@@ -570,7 +568,7 @@ namespace cache2
 			(registry::getPropNamesOnAllProps ||
 			 PROP_ID(ulPropTag) >= 0x8000)) // and it's either a named prop or we're doing all props
 		{
-			SPropTagArray tag = {0};
+			SPropTagArray tag = {};
 			auto lpTag = &tag;
 			tag.cValues = 1;
 			tag.aulPropTag[0] = ulPropTag;
@@ -578,11 +576,11 @@ namespace cache2
 			const auto names = GetNamesFromIDs(lpMAPIProp, lpMappingSignature, &lpTag, nullptr, NULL);
 			if (names.size() == 1)
 			{
-				namePropNames = NameIDToStrings(names[0]->getMapiNameId(), ulPropTag);
+				return NameIDToStrings(names[0]->getMapiNameId(), ulPropTag);
 			}
 		}
 
-		return namePropNames;
+		return {};
 	}
 
 	// Returns string built from NameIDArray
