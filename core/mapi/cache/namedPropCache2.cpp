@@ -12,16 +12,8 @@
 
 namespace cache2
 {
-	class namedPropCache
+	namespace directMapi
 	{
-	public:
-		static std::list<std::shared_ptr<namedPropCacheEntry>>& getCache() noexcept
-		{
-			// We keep a list of named prop cache entries
-			static std::list<std::shared_ptr<namedPropCacheEntry>> cache;
-			return cache;
-		}
-
 		// Returns a vector of NamedPropCacheEntry for the input tags
 		// Sourced directly from MAPI
 		static _Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>> GetNamesFromIDs(
@@ -47,6 +39,7 @@ namespace cache2
 					auto ulPropTag = ULONG{};
 					if (lppPropTags && *lppPropTags) ulPropTag = (*lppPropTags)->aulPropTag[i];
 					ids.emplace_back(std::make_shared<namedPropCacheEntry>(lppPropNames[i], ulPropTag));
+					// TODO: Figure out what misses look like here
 				}
 			}
 
@@ -104,6 +97,7 @@ namespace cache2
 				for (ULONG i = 0; i < cPropNames; i++)
 				{
 					tags.emplace_back(lpTags->aulPropTag[i]);
+					// TODO: Figure out what misses look like here
 				}
 			}
 
@@ -124,7 +118,7 @@ namespace cache2
 				ULONG i = 0;
 				for (auto name : names)
 				{
-					lppNames[i] = name;
+					lppNames[i++] = name;
 				}
 			}
 
@@ -133,6 +127,17 @@ namespace cache2
 			MAPIFreeBuffer(lppNames);
 
 			return ids;
+		}
+	} // namespace directMapi
+
+	class namedPropCache
+	{
+	public:
+		static std::list<std::shared_ptr<namedPropCacheEntry>>& getCache() noexcept
+		{
+			// We keep a list of named prop cache entries
+			static std::list<std::shared_ptr<namedPropCacheEntry>> cache;
+			return cache;
 		}
 
 		_Check_return_ static std::shared_ptr<namedPropCacheEntry>
@@ -219,7 +224,7 @@ namespace cache2
 			// Go to MAPI with whatever's left. We set up for a single call to GetNamesFromIDs.
 			if (!misses.empty())
 			{
-				auto missed = GetNamesFromIDs(lpMAPIProp, misses, nullptr, NULL);
+				auto missed = directMapi::GetNamesFromIDs(lpMAPIProp, misses, nullptr, NULL);
 				// Cache the results
 				AddMapping(missed, sig);
 			}
@@ -278,7 +283,7 @@ namespace cache2
 			// Go to MAPI with whatever's left.
 			if (!misses.empty())
 			{
-				auto missed = GetIDsFromNames(lpMAPIProp, misses, ulFlags);
+				auto missed = directMapi::GetIDsFromNames(lpMAPIProp, misses, ulFlags);
 				if (misses.size() == missed.size())
 				{
 					// Cache the results
@@ -374,7 +379,7 @@ namespace cache2
 			// Should we cache results?
 			!cPropNames || !lppPropNames || !*lppPropNames)
 		{
-			return namedPropCache::GetIDsFromNames(lpMAPIProp, cPropNames, lppPropNames, ulFlags);
+			return directMapi::GetIDsFromNames(lpMAPIProp, cPropNames, lppPropNames, ulFlags);
 		}
 
 		// Get a signature if we can.
