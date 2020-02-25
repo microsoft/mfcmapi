@@ -141,7 +141,7 @@ namespace cache2
 		}
 
 		_Check_return_ static std::shared_ptr<namedPropCacheEntry>
-		FindCacheEntry(const std::function<bool(const std::shared_ptr<namedPropCacheEntry>&)>& compare) noexcept
+		find(const std::function<bool(const std::shared_ptr<namedPropCacheEntry>&)>& compare) noexcept
 		{
 			const auto& cache = getCache();
 			const auto entry = find_if(cache.begin(), cache.end(), [compare](const auto& namedPropCacheEntry) noexcept {
@@ -154,7 +154,7 @@ namespace cache2
 		// Add a mapping to the cache if it doesn't already exist
 		// If given a signature, we include it in our search.
 		// If not, we search without it
-		static void AddMapping(std::vector<std::shared_ptr<namedPropCacheEntry>>& entries, const std::vector<BYTE>& sig)
+		static void add(std::vector<std::shared_ptr<namedPropCacheEntry>>& entries, const std::vector<BYTE>& sig)
 		{
 			auto& cache = getCache();
 			for (auto& entry : entries)
@@ -162,14 +162,12 @@ namespace cache2
 				auto match = std::shared_ptr<namedPropCacheEntry>{};
 				if (sig.empty())
 				{
-					match = FindCacheEntry(
-						[&](const auto& _entry) noexcept { return entry->match(_entry, false, true, true); });
+					match = find([&](const auto& _entry) noexcept { return entry->match(_entry, false, true, true); });
 				}
 				else
 				{
 					entry->setSig(sig);
-					match = FindCacheEntry(
-						[&](const auto& _entry) noexcept { return entry->match(_entry, true, true, true); });
+					match = find([&](const auto& _entry) noexcept { return entry->match(_entry, true, true, true); });
 				}
 
 				if (!match)
@@ -183,7 +181,7 @@ namespace cache2
 				//	{
 				//		output::DebugPrint(
 				//			output::dbgLevel::NamedPropCacheMisses,
-				//			L"AddMapping: Caching unknown property 0x%08X %ws\n",
+				//			L"add: Caching unknown property 0x%08X %ws\n",
 				//			lppPropNames[ulSource]->Kind.lID,
 				//			guid::GUIDToStringAndName(lppPropNames[ulSource]->lpguid).c_str());
 				//	}
@@ -192,10 +190,8 @@ namespace cache2
 		}
 
 		// If signature is empty then do not use a signature
-		_Check_return_ static std::vector<std::shared_ptr<namedPropCacheEntry>> CacheGetNamesFromIDs(
-			_In_ LPMAPIPROP lpMAPIProp,
-			const std::vector<BYTE>& sig,
-			_In_ LPSPropTagArray* lppPropTags)
+		_Check_return_ static std::vector<std::shared_ptr<namedPropCacheEntry>>
+		GetNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp, const std::vector<BYTE>& sig, _In_ LPSPropTagArray* lppPropTags)
 		{
 			if (!lpMAPIProp || !lppPropTags || !*lppPropTags || sig.empty()) return {};
 
@@ -212,8 +208,7 @@ namespace cache2
 			{
 				auto ulPropId = PROP_ID(lpPropTags->aulPropTag[ulTarget]);
 				// ...check the cache
-				const auto lpEntry =
-					FindCacheEntry([&](const auto& entry) noexcept { return entry->match(sig, ulPropId); });
+				const auto lpEntry = find([&](const auto& entry) noexcept { return entry->match(sig, ulPropId); });
 
 				if (lpEntry)
 				{
@@ -226,7 +221,7 @@ namespace cache2
 			{
 				auto missed = directMapi::GetNamesFromIDs(lpMAPIProp, misses, nullptr, NULL);
 				// Cache the results
-				AddMapping(missed, sig);
+				add(missed, sig);
 			}
 
 			// Second pass, do our lookup with a populated cache
@@ -234,8 +229,7 @@ namespace cache2
 			{
 				const auto ulPropId = PROP_ID(lpPropTags->aulPropTag[ulTarget]);
 				// ...check the cache
-				const auto lpEntry =
-					FindCacheEntry([&](const auto& entry) noexcept { return entry->match(sig, ulPropId); });
+				const auto lpEntry = find([&](const auto& entry) noexcept { return entry->match(sig, ulPropId); });
 
 				if (lpEntry)
 				{
@@ -248,7 +242,7 @@ namespace cache2
 		}
 
 		// If signature is empty then do not use a signature
-		static _Check_return_ std::vector<ULONG> CacheGetIDsFromNames(
+		static _Check_return_ std::vector<ULONG> GetIDsFromNames(
 			_In_ LPMAPIPROP lpMAPIProp,
 			_In_ const std::vector<BYTE>& sig,
 			ULONG cPropNames,
@@ -265,7 +259,7 @@ namespace cache2
 			// First pass, find the tags we don't have cached
 			for (ULONG ulTarget = 0; ulTarget < cPropNames; ulTarget++)
 			{
-				const auto lpEntry = FindCacheEntry([&](const auto& entry) noexcept {
+				const auto lpEntry = find([&](const auto& entry) noexcept {
 					return entry->match(
 						sig,
 						lppPropNames[ulTarget]->lpguid,
@@ -293,7 +287,7 @@ namespace cache2
 						toCache.emplace_back(std::make_shared<namedPropCacheEntry>(sig, misses[i], missed[i]));
 					}
 
-					AddMapping(toCache, sig);
+					add(toCache, sig);
 				}
 			}
 
@@ -301,7 +295,7 @@ namespace cache2
 			// Second pass, do our lookup with a populated cache
 			for (ULONG ulTarget = 0; ulTarget < cPropNames; ulTarget++)
 			{
-				const auto lpEntry = FindCacheEntry([&](const auto& entry) noexcept {
+				const auto lpEntry = find([&](const auto& entry) noexcept {
 					return entry->match(
 						sig,
 						lppPropNames[ulTarget]->lpguid,
@@ -362,7 +356,7 @@ namespace cache2
 			return directMapi::GetNamesFromIDs(lpMAPIProp, lppPropTags, lpPropSetGuid, ulFlags);
 		}
 
-		return namedPropCache::CacheGetNamesFromIDs(lpMAPIProp, sig, lppPropTags);
+		return namedPropCache::GetNamesFromIDs(lpMAPIProp, sig, lppPropTags);
 	}
 
 	_Check_return_ std::vector<ULONG> GetIDsFromNames(
@@ -394,7 +388,7 @@ namespace cache2
 
 		MAPIFreeBuffer(lpProp);
 
-		return namedPropCache::CacheGetIDsFromNames(lpMAPIProp, sig, cPropNames, lppPropNames, ulFlags);
+		return namedPropCache::GetIDsFromNames(lpMAPIProp, sig, cPropNames, lppPropNames, ulFlags);
 	}
 
 	// TagToString will prepend the http://schemas.microsoft.com/MAPI/ for us since it's a constant
@@ -409,7 +403,7 @@ namespace cache2
 		// If we're using the cache, look up the answer there and return
 		if (registry::cacheNamedProps)
 		{
-			lpNamedPropCacheEntry = namedPropCache::FindCacheEntry([&](const auto& entry) noexcept {
+			lpNamedPropCacheEntry = namedPropCache::find([&](const auto& entry) noexcept {
 				return entry->match(
 					PROP_ID(ulPropTag),
 					lpNameID->lpguid,
