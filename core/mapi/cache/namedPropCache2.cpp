@@ -555,7 +555,7 @@ namespace cache2
 	NamePropNames NameIDToStrings(
 		ULONG ulPropTag, // optional 'original' prop tag
 		_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
-		_In_opt_ LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
+		_In_opt_ const MAPINAMEID* lpNameID, // optional named property information to avoid GetNamesFromIDs call
 		_In_opt_ const _SBinary*
 			lpMappingSignature, // optional mapping signature for object to speed named prop lookups
 		bool
