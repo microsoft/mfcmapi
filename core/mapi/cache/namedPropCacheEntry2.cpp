@@ -91,6 +91,30 @@ namespace cache2
 		return true;
 	}
 
+	static ULONG cbPropName(LPCWSTR lpwstrName) noexcept
+	{
+		// lpwstrName is LPWSTR which means it's ALWAYS unicode
+		// But some folks get it wrong and stuff ANSI data in there
+		// So we check the string length both ways to make our best guess
+		const auto cchShortLen = strnlen_s(reinterpret_cast<LPCSTR>(lpwstrName), RSIZE_MAX);
+		const auto cchWideLen = wcsnlen_s(lpwstrName, RSIZE_MAX);
+		auto cbName = ULONG();
+
+		if (cchShortLen < cchWideLen)
+		{
+			// this is the *proper* case
+			cbName = (cchWideLen + 1) * sizeof WCHAR;
+		}
+		else
+		{
+			// This is the case where ANSI data was shoved into a unicode string.
+			// Add a couple extra NULL in case we read this as unicode again.
+			cbName = (cchShortLen + 3) * sizeof CHAR;
+		}
+
+		return cbName;
+	}
+
 	// Go through all the details of copying allocated data to a cache entry
 	void NamedPropCacheEntry::CopyToCacheData(const MAPINAMEID& src)
 	{

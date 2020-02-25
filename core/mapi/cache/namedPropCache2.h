@@ -4,7 +4,6 @@
 namespace cache2
 {
 	struct NamePropNames;
-	ULONG cbPropName(LPCWSTR lpwstrName) noexcept;
 
 	_Check_return_ std::vector<std::shared_ptr<NamedPropCacheEntry>> GetNamesFromIDs(
 		_In_ LPMAPIPROP lpMAPIProp,
