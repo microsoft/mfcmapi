@@ -54,6 +54,8 @@ namespace cache2
 			return ids;
 		}
 
+		// Returns a vector of NamedPropCacheEntry for the input tags
+		// Sourced directly from MAPI
 		static _Check_return_ std::vector<std::shared_ptr<NamedPropCacheEntry>> GetNamesFromIDs(
 			_In_ LPMAPIPROP lpMAPIProp,
 			_In_ const std::vector<ULONG> tags,
@@ -109,6 +111,8 @@ namespace cache2
 			return tags;
 		}
 
+		// Returns a vector of tags for the input names
+		// Sourced directly from MAPI
 		static _Check_return_ std::vector<ULONG>
 		GetIDsFromNames(_In_ LPMAPIPROP lpMAPIProp, _In_ const std::vector<MAPINAMEID*>& names, ULONG ulFlags)
 		{
