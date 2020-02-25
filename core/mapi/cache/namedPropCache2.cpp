@@ -359,7 +359,7 @@ namespace cache2
 			// None of my code uses these flags, but bypass the cache if we see them
 			ulFlags || lpPropSetGuid)
 		{
-			return GetNamesFromIDs(lpMAPIProp, lppPropTags, lpPropSetGuid, ulFlags);
+			return directMapi::GetNamesFromIDs(lpMAPIProp, lppPropTags, lpPropSetGuid, ulFlags);
 		}
 
 		return namedPropCache::CacheGetNamesFromIDs(lpMAPIProp, sig, lppPropTags);
