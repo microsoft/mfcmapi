@@ -138,9 +138,8 @@ namespace cache2
 		find(const std::function<bool(const std::shared_ptr<namedPropCacheEntry>&)>& compare) noexcept
 		{
 			const auto& cache = getCache();
-			const auto entry = find_if(cache.begin(), cache.end(), [compare](const auto& namedPropCacheEntry) noexcept {
-				return compare(namedPropCacheEntry);
-			});
+			const auto entry =
+				find_if(cache.begin(), cache.end(), [compare](const auto& _entry) noexcept { return compare(_entry); });
 
 			return entry != cache.end() ? *entry : nullptr;
 		}
