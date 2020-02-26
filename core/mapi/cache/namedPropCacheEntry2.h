@@ -60,8 +60,5 @@ namespace cache2
 		std::vector<BYTE> sig{}; // Value of PR_MAPPING_SIGNATURE
 		NamePropNames namePropNames{};
 		bool bStringsCached{}; // We have cached strings
-
-		// Go through all the details of copying allocated data to a cache entry
-		void CopyToCacheData(const MAPINAMEID& src);
 	};
 } // namespace cache2

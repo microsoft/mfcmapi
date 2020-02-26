@@ -6,12 +6,33 @@
 
 namespace cache2
 {
-	namedPropCacheEntry::namedPropCacheEntry(const MAPINAMEID* lpPropName, ULONG _ulPropID) : ulPropID(_ulPropID)
+	static ULONG cbPropName(LPCWSTR lpwstrName) noexcept
 	{
-		if (lpPropName)
+		// lpwstrName is LPWSTR which means it's ALWAYS unicode
+		// But some folks get it wrong and stuff ANSI data in there
+		// So we check the string length both ways to make our best guess
+		const auto cchShortLen = strnlen_s(reinterpret_cast<LPCSTR>(lpwstrName), RSIZE_MAX);
+		const auto cchWideLen = wcsnlen_s(lpwstrName, RSIZE_MAX);
+		auto cbName = ULONG();
+
+		if (cchShortLen < cchWideLen)
 		{
-			CopyToCacheData(*lpPropName);
+			// this is the *proper* case
+			cbName = (cchWideLen + 1) * sizeof WCHAR;
 		}
+		else
+		{
+			// This is the case where ANSI data was shoved into a unicode string.
+			// Add a couple extra NULL in case we read this as unicode again.
+			cbName = (cchShortLen + 3) * sizeof CHAR;
+		}
+
+		return cbName;
+	}
+
+	namedPropCacheEntry::namedPropCacheEntry(const MAPINAMEID* lpPropName, ULONG _ulPropID)
+		: namedPropCacheEntry({}, lpPropName, _ulPropID)
+	{
 	}
 
 	namedPropCacheEntry::namedPropCacheEntry(
@@ -22,7 +43,26 @@ namespace cache2
 	{
 		if (lpPropName)
 		{
-			CopyToCacheData(*lpPropName);
+			if (lpPropName->lpguid)
+			{
+				guid = *lpPropName->lpguid;
+				mapiNameId.lpguid = &guid;
+			}
+
+			mapiNameId.ulKind = lpPropName->ulKind;
+			if (lpPropName->ulKind == MNID_ID)
+			{
+				mapiNameId.Kind.lID = lpPropName->Kind.lID;
+			}
+			else if (lpPropName->ulKind == MNID_STRING)
+			{
+				if (lpPropName->Kind.lpwstrName)
+				{
+					const auto cbName = cbPropName(lpPropName->Kind.lpwstrName);
+					name = std::wstring(lpPropName->Kind.lpwstrName, cbName / sizeof WCHAR);
+					mapiNameId.Kind.lpwstrName = name.data();
+				}
+			}
 		}
 	}
 
@@ -91,58 +131,5 @@ namespace cache2
 		if (0 != memcmp(mapiNameId.lpguid, lpguid, sizeof(GUID))) return false;
 
 		return true;
-	}
-
-	static ULONG cbPropName(LPCWSTR lpwstrName) noexcept
-	{
-		// lpwstrName is LPWSTR which means it's ALWAYS unicode
-		// But some folks get it wrong and stuff ANSI data in there
-		// So we check the string length both ways to make our best guess
-		const auto cchShortLen = strnlen_s(reinterpret_cast<LPCSTR>(lpwstrName), RSIZE_MAX);
-		const auto cchWideLen = wcsnlen_s(lpwstrName, RSIZE_MAX);
-		auto cbName = ULONG();
-
-		if (cchShortLen < cchWideLen)
-		{
-			// this is the *proper* case
-			cbName = (cchWideLen + 1) * sizeof WCHAR;
-		}
-		else
-		{
-			// This is the case where ANSI data was shoved into a unicode string.
-			// Add a couple extra NULL in case we read this as unicode again.
-			cbName = (cchShortLen + 3) * sizeof CHAR;
-		}
-
-		return cbName;
-	}
-
-	// Go through all the details of copying allocated data to a cache entry
-	void namedPropCacheEntry::CopyToCacheData(const MAPINAMEID& src)
-	{
-		mapiNameId.lpguid = nullptr;
-		mapiNameId.Kind.lID = 0;
-
-		if (src.lpguid)
-		{
-			guid = *src.lpguid;
-			mapiNameId.lpguid = &guid;
-		}
-
-		mapiNameId.ulKind = src.ulKind;
-		if (MNID_ID == src.ulKind)
-		{
-			mapiNameId.Kind.lID = src.Kind.lID;
-		}
-		else if (MNID_STRING == src.ulKind)
-		{
-			if (src.Kind.lpwstrName)
-			{
-				const auto cbName = cbPropName(src.Kind.lpwstrName);
-
-				name = std::wstring(src.Kind.lpwstrName, cbName / sizeof WCHAR);
-				mapiNameId.Kind.lpwstrName = name.data();
-			}
-		}
 	}
 } // namespace cache2
