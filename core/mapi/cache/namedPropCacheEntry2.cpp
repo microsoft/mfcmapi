@@ -11,7 +11,10 @@ namespace cache2
 		// lpwstrName is LPWSTR which means it's ALWAYS unicode
 		// But some folks get it wrong and stuff ANSI data in there
 		// So we check the string length both ways to make our best guess
+#pragma warning(push)
+#pragma warning(disable : 26490) // warning C26490: Don't use reinterpret_cast (type.1).
 		const auto cchShortLen = strnlen_s(reinterpret_cast<LPCSTR>(lpwstrName), RSIZE_MAX);
+#pragma warning(pop)
 		const auto cchWideLen = wcsnlen_s(lpwstrName, RSIZE_MAX);
 		auto cbName = ULONG();
 
@@ -61,11 +64,8 @@ namespace cache2
 		}
 	}
 
-	_Check_return_ bool namedPropCacheEntry::match(
-		const namedPropCacheEntry* entry,
-		bool bMatchSig,
-		bool bMatchID,
-		bool bMatchName) const
+	_Check_return_ bool
+	namedPropCacheEntry::match(const namedPropCacheEntry* entry, bool bMatchSig, bool bMatchID, bool bMatchName) const
 	{
 		if (!bMatchSig && entry->sig != sig) return false;
 		if (!bMatchID && entry->ulPropID != ulPropID) return false;
