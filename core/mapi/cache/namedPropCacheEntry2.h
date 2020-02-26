@@ -15,8 +15,10 @@ namespace cache2
 	class namedPropCacheEntry
 	{
 	public:
-		namedPropCacheEntry(_In_ const MAPINAMEID* lpPropName, ULONG _ulPropID);
-		namedPropCacheEntry(_In_ const std::vector<BYTE>& _sig, const MAPINAMEID* lpPropName, ULONG _ulPropID);
+		namedPropCacheEntry::namedPropCacheEntry(
+			const MAPINAMEID* lpPropName,
+			ULONG _ulPropID,
+			_In_ const std::vector<BYTE>& _sig = {});
 
 		// Disables making copies of NamedPropCacheEntry
 		namedPropCacheEntry(const namedPropCacheEntry&) = delete;

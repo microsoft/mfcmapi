@@ -243,7 +243,7 @@ namespace cache2
 				}
 				else
 				{
-					results.emplace_back(std::make_shared<namedPropCacheEntry>(sig, nullptr, ulPropId));
+					results.emplace_back(std::make_shared<namedPropCacheEntry>(nullptr, ulPropId, sig));
 				}
 			}
 
@@ -293,7 +293,7 @@ namespace cache2
 					auto toCache = std::vector<std::shared_ptr<namedPropCacheEntry>>{};
 					for (ULONG i = 0; i < misses.size(); i++)
 					{
-						toCache.emplace_back(std::make_shared<namedPropCacheEntry>(sig, misses[i], missed[i]));
+						toCache.emplace_back(std::make_shared<namedPropCacheEntry>(misses[i], missed[i], sig));
 					}
 
 					add(toCache, sig);

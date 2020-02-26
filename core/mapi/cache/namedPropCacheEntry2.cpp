@@ -30,15 +30,10 @@ namespace cache2
 		return cbName;
 	}
 
-	namedPropCacheEntry::namedPropCacheEntry(const MAPINAMEID* lpPropName, ULONG _ulPropID)
-		: namedPropCacheEntry({}, lpPropName, _ulPropID)
-	{
-	}
-
 	namedPropCacheEntry::namedPropCacheEntry(
-		_In_ const std::vector<BYTE>& _sig,
 		const MAPINAMEID* lpPropName,
-		ULONG _ulPropID)
+		ULONG _ulPropID,
+		_In_ const std::vector<BYTE>& _sig)
 		: ulPropID(_ulPropID), sig(_sig)
 	{
 		if (lpPropName)
