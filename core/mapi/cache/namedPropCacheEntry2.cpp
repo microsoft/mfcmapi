@@ -6,7 +6,7 @@
 
 namespace cache2
 {
-	namedPropCacheEntry::namedPropCacheEntry(LPMAPINAMEID lpPropName, ULONG _ulPropID) : ulPropID(_ulPropID)
+	namedPropCacheEntry::namedPropCacheEntry(const MAPINAMEID* lpPropName, ULONG _ulPropID) : ulPropID(_ulPropID)
 	{
 		if (lpPropName)
 		{
@@ -16,7 +16,7 @@ namespace cache2
 
 	namedPropCacheEntry::namedPropCacheEntry(
 		_In_ const std::vector<BYTE>& _sig,
-		LPMAPINAMEID lpPropName,
+		const MAPINAMEID* lpPropName,
 		ULONG _ulPropID)
 		: ulPropID(_ulPropID), sig(_sig)
 	{

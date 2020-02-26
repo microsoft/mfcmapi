@@ -310,7 +310,7 @@ namespace cache2
 			// Second pass, do our lookup with a populated cache
 			for (ULONG ulTarget = 0; ulTarget < cPropNames; ulTarget++)
 			{
-				const auto nameid = lppPropNames[ulTarget];
+				const MAPINAMEID* nameid = lppPropNames[ulTarget];
 				const auto lpEntry = find([&](const auto& entry) noexcept {
 					return entry->match(sig, nameid->lpguid, nameid->ulKind, nameid->Kind.lID, nameid->Kind.lpwstrName);
 				});
@@ -321,7 +321,7 @@ namespace cache2
 				}
 				else
 				{
-					results.emplace_back(std::make_shared<namedPropCacheEntry>(sig, nameid, 0));
+					results.emplace_back(0);
 				}
 			}
 
