@@ -135,11 +135,11 @@ namespace cache2
 		}
 
 		_Check_return_ static std::shared_ptr<namedPropCacheEntry>
-		find(const std::function<bool(const std::shared_ptr<namedPropCacheEntry>&)>& compare) noexcept
+		find(const std::function<bool(const std::shared_ptr<namedPropCacheEntry>&)>& compare)
 		{
 			const auto& cache = getCache();
-			const auto entry = find_if(
-				cache.begin(), cache.end(), [compare](const std::shared_ptr<namedPropCacheEntry>& _entry) noexcept {
+			const auto entry =
+				find_if(cache.begin(), cache.end(), [compare](const std::shared_ptr<namedPropCacheEntry>& _entry) {
 					return compare(_entry);
 				});
 
@@ -157,15 +157,15 @@ namespace cache2
 				auto match = std::shared_ptr<namedPropCacheEntry>{};
 				if (sig.empty())
 				{
-					match = find([&](const std::shared_ptr<namedPropCacheEntry>& _entry) noexcept {
-						return entry->match(_entry, false, true, true);
+					match = find([&](const std::shared_ptr<namedPropCacheEntry>& _entry) {
+						return entry->match(_entry.get(), false, true, true);
 					});
 				}
 				else
 				{
 					entry->setSig(sig);
-					match = find([&](const std::shared_ptr<namedPropCacheEntry>& _entry) noexcept {
-						return entry->match(_entry, true, true, true);
+					match = find([&](const std::shared_ptr<namedPropCacheEntry>& _entry) {
+						return entry->match(_entry.get(), true, true, true);
 					});
 				}
 
@@ -428,13 +428,13 @@ namespace cache2
 		{
 			lpNamedPropCacheEntry =
 				namedPropCache::find([&](const std::shared_ptr<namedPropCacheEntry>& entry) noexcept {
-				return entry->match(
-					PROP_ID(ulPropTag),
-					lpNameID->lpguid,
-					lpNameID->ulKind,
-					lpNameID->Kind.lID,
-					lpNameID->Kind.lpwstrName);
-			});
+					return entry->match(
+						PROP_ID(ulPropTag),
+						lpNameID->lpguid,
+						lpNameID->ulKind,
+						lpNameID->Kind.lID,
+						lpNameID->Kind.lpwstrName);
+				});
 			if (lpNamedPropCacheEntry && lpNamedPropCacheEntry->hasCachedStrings())
 			{
 				return lpNamedPropCacheEntry->getNamePropNames();

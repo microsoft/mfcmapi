@@ -62,7 +62,7 @@ namespace cache2
 	}
 
 	_Check_return_ bool namedPropCacheEntry::match(
-		const std::shared_ptr<namedPropCacheEntry>& entry,
+		const namedPropCacheEntry* entry,
 		bool bMatchSig,
 		bool bMatchID,
 		bool bMatchName) const
