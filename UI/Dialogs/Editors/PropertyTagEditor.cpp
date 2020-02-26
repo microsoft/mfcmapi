@@ -3,6 +3,8 @@
 #include <core/utility/strings.h>
 #include <core/mapi/cache/namedPropCache.h>
 #include <core/mapi/cache/namedPropCacheEntry.h>
+#include <core/mapi/cache/namedPropCacheEntry2.h>
+#include <core/mapi/cache/namedPropCache2.h>
 #include <core/interpret/guid.h>
 #include <UI/Dialogs/Editors/PropertySelector.h>
 #include <core/addin/addin.h>
@@ -293,30 +295,21 @@ namespace dialog::editor
 		// And never for Address Books
 		if (m_lpMAPIProp && !m_bIsAB && (PROPTAG_TAG == ulSkipField || PROPTAG_ID == ulSkipField))
 		{
-			ULONG ulPropNames = 0;
-			SPropTagArray sTagArray = {0};
-			auto lpTagArray = &sTagArray;
-			LPMAPINAMEID* lppPropNames = nullptr;
-
-			lpTagArray->cValues = 1;
-			lpTagArray->aulPropTag[0] = m_ulPropTag;
-
-			const auto hRes = WC_H_GETPROPS(
-				cache::GetNamesFromIDs(m_lpMAPIProp, &lpTagArray, nullptr, NULL, &ulPropNames, &lppPropNames));
-			if (SUCCEEDED(hRes) && ulPropNames == lpTagArray->cValues && lppPropNames && lppPropNames[0])
+			const auto name = cache2::GetNameFromID(m_lpMAPIProp, m_ulPropTag, NULL);
+			if (name)
 			{
-				if (MNID_STRING == lppPropNames[0]->ulKind)
+				const auto mnid = name->getMapiNameId();
+				if (mnid->ulKind == MNID_STRING)
 				{
 					if (PROPTAG_NAMEPROPKIND != ulSkipField)
 						SetDropDownSelection(PROPTAG_NAMEPROPKIND, L"MNID_STRING"); // STRING_OK
-					if (PROPTAG_NAMEPROPNAME != ulSkipField)
-						SetStringW(PROPTAG_NAMEPROPNAME, lppPropNames[0]->Kind.lpwstrName);
+					if (PROPTAG_NAMEPROPNAME != ulSkipField) SetStringW(PROPTAG_NAMEPROPNAME, mnid->Kind.lpwstrName);
 				}
-				else if (MNID_ID == lppPropNames[0]->ulKind)
+				else if (mnid->ulKind == MNID_ID)
 				{
 					if (PROPTAG_NAMEPROPKIND != ulSkipField)
 						SetDropDownSelection(PROPTAG_NAMEPROPKIND, L"MNID_ID"); // STRING_OK
-					if (PROPTAG_NAMEPROPNAME != ulSkipField) SetHex(PROPTAG_NAMEPROPNAME, lppPropNames[0]->Kind.lID);
+					if (PROPTAG_NAMEPROPNAME != ulSkipField) SetHex(PROPTAG_NAMEPROPNAME, mnid->Kind.lID);
 				}
 				else
 				{
@@ -325,7 +318,7 @@ namespace dialog::editor
 
 				if (PROPTAG_NAMEPROPGUID != ulSkipField)
 				{
-					SetDropDownSelection(PROPTAG_NAMEPROPGUID, guid::GUIDToString(lppPropNames[0]->lpguid));
+					SetDropDownSelection(PROPTAG_NAMEPROPGUID, guid::GUIDToString(mnid->lpguid));
 				}
 			}
 			else
@@ -338,7 +331,6 @@ namespace dialog::editor
 					SetDropDownSelection(PROPTAG_NAMEPROPGUID, strings::emptystring);
 				}
 			}
-			MAPIFreeBuffer(lppPropNames);
 		}
 	}
 

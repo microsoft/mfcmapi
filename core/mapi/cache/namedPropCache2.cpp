@@ -16,19 +16,15 @@ namespace cache2
 	{
 		// Returns a vector of NamedPropCacheEntry for the input tags
 		// Sourced directly from MAPI
-		static _Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>> GetNamesFromIDs(
-			_In_ LPMAPIPROP lpMAPIProp,
-			_In_ LPSPropTagArray* lppPropTags,
-			_In_opt_ LPGUID lpPropSetGuid,
-			ULONG ulFlags)
+		static _Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>>
+		GetNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp, _In_ LPSPropTagArray* lppPropTags, ULONG ulFlags)
 		{
 			if (!lpMAPIProp) return {};
 
 			LPMAPINAMEID* lppPropNames = nullptr;
 			auto ulPropNames = ULONG{};
 
-			WC_H_GETPROPS_S(
-				lpMAPIProp->GetNamesFromIDs(lppPropTags, lpPropSetGuid, ulFlags, &ulPropNames, &lppPropNames));
+			WC_H_GETPROPS_S(lpMAPIProp->GetNamesFromIDs(lppPropTags, nullptr, ulFlags, &ulPropNames, &lppPropNames));
 
 			auto ids = std::vector<std::shared_ptr<namedPropCacheEntry>>{};
 
@@ -36,9 +32,9 @@ namespace cache2
 			{
 				for (ULONG i = 0; i < ulPropNames; i++)
 				{
-					auto ulPropTag = ULONG{};
-					if (lppPropTags && *lppPropTags) ulPropTag = (*lppPropTags)->aulPropTag[i];
-					ids.emplace_back(std::make_shared<namedPropCacheEntry>(lppPropNames[i], ulPropTag));
+					auto ulPropID = ULONG{};
+					if (lppPropTags && *lppPropTags) ulPropID = PROP_ID((*lppPropTags)->aulPropTag[i]);
+					ids.emplace_back(std::make_shared<namedPropCacheEntry>(lppPropNames[i], ulPropID));
 					// TODO: Figure out what misses look like here
 					// lppPropNames[i]* will be null...
 				}
@@ -50,11 +46,8 @@ namespace cache2
 
 		// Returns a vector of NamedPropCacheEntry for the input tags
 		// Sourced directly from MAPI
-		static _Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>> GetNamesFromIDs(
-			_In_ LPMAPIPROP lpMAPIProp,
-			_In_ const std::vector<ULONG> tags,
-			_In_opt_ LPGUID lpPropSetGuid,
-			ULONG ulFlags)
+		static _Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>>
+		GetNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp, _In_ const std::vector<ULONG> tags, ULONG ulFlags)
 		{
 			if (!lpMAPIProp) return {};
 
@@ -69,7 +62,7 @@ namespace cache2
 					ulPropTags->aulPropTag[i++] = tag;
 				}
 
-				ids = GetNamesFromIDs(lpMAPIProp, &ulPropTags, lpPropSetGuid, ulFlags);
+				ids = GetNamesFromIDs(lpMAPIProp, &ulPropTags, ulFlags);
 			}
 
 			MAPIFreeBuffer(ulPropTags);
@@ -205,7 +198,7 @@ namespace cache2
 		_Check_return_ static std::vector<std::shared_ptr<namedPropCacheEntry>>
 		GetNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp, const std::vector<BYTE>& sig, _In_ LPSPropTagArray* lppPropTags)
 		{
-			if (!lpMAPIProp || !lppPropTags || !*lppPropTags || sig.empty()) return {};
+			if (!lpMAPIProp || !lppPropTags || !*lppPropTags) return {};
 
 			// We're going to walk the cache, looking for the values we need. As soon as we have all the values we need, we're done
 			// If we reach the end of the cache and don't have everything, we set up to make a GetNamesFromIDs call.
@@ -218,20 +211,21 @@ namespace cache2
 			// First pass, find any misses we might have
 			for (ULONG ulTarget = 0; ulTarget < lpPropTags->cValues; ulTarget++)
 			{
-				auto ulPropId = PROP_ID(lpPropTags->aulPropTag[ulTarget]);
+				const auto ulPropTag = lpPropTags->aulPropTag[ulTarget];
+				const auto ulPropId = PROP_ID(ulPropTag);
 				// ...check the cache
 				const auto lpEntry = find([&](const auto& entry) noexcept { return entry->match(sig, ulPropId); });
 
 				if (!lpEntry)
 				{
-					misses.emplace_back(ulPropId);
+					misses.emplace_back(ulPropTag);
 				}
 			}
 
 			// Go to MAPI with whatever's left. We set up for a single call to GetNamesFromIDs.
 			if (!misses.empty())
 			{
-				auto missed = directMapi::GetNamesFromIDs(lpMAPIProp, misses, nullptr, NULL);
+				auto missed = directMapi::GetNamesFromIDs(lpMAPIProp, misses, NULL);
 				// Cache the results
 				add(missed, sig);
 			}
@@ -329,12 +323,19 @@ namespace cache2
 		}
 	};
 
+	_Check_return_ std::shared_ptr<namedPropCacheEntry>
+	GetNameFromID(_In_ LPMAPIPROP lpMAPIProp, _In_ ULONG ulPropTag, ULONG ulFlags)
+	{
+		auto tag = SPropTagArray{1, ulPropTag};
+		auto lptag = &tag;
+		const auto names = GetNamesFromIDs(lpMAPIProp, &lptag, ulFlags);
+		if (names.size() == 1) return names[0];
+		return {};
+	}
+
 	// No signature form: look up and use signature if possible
-	_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>> GetNamesFromIDs(
-		_In_ LPMAPIPROP lpMAPIProp,
-		_In_ LPSPropTagArray* lppPropTags,
-		_In_opt_ LPGUID lpPropSetGuid,
-		ULONG ulFlags)
+	_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>>
+	GetNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp, _In_ LPSPropTagArray* lppPropTags, ULONG ulFlags)
 	{
 		auto sig = std::vector<BYTE>{};
 		LPSPropValue lpProp = nullptr;
@@ -347,7 +348,7 @@ namespace cache2
 
 		MAPIFreeBuffer(lpProp);
 
-		return GetNamesFromIDs(lpMAPIProp, sig, lppPropTags, lpPropSetGuid, ulFlags);
+		return GetNamesFromIDs(lpMAPIProp, sig, lppPropTags, ulFlags);
 	}
 
 	// Signature form: if signature is empty then do not use a signature
@@ -355,7 +356,6 @@ namespace cache2
 		_In_ LPMAPIPROP lpMAPIProp,
 		_In_opt_ const std::vector<BYTE>& sig,
 		_In_ LPSPropTagArray* lppPropTags,
-		_In_opt_ LPGUID lpPropSetGuid,
 		ULONG ulFlags)
 	{
 		if (!lpMAPIProp) return {};
@@ -365,9 +365,9 @@ namespace cache2
 			// Assume an array was passed - none of my calling code passes a NULL tag array
 			!lppPropTags || !*lppPropTags ||
 			// None of my code uses these flags, but bypass the cache if we see them
-			ulFlags || lpPropSetGuid)
+			ulFlags)
 		{
-			return directMapi::GetNamesFromIDs(lpMAPIProp, lppPropTags, lpPropSetGuid, ulFlags);
+			return directMapi::GetNamesFromIDs(lpMAPIProp, lppPropTags, ulFlags);
 		}
 
 		return namedPropCache::GetNamesFromIDs(lpMAPIProp, sig, lppPropTags);
@@ -561,7 +561,7 @@ namespace cache2
 			tag.cValues = 1;
 			tag.aulPropTag[0] = ulPropTag;
 
-			const auto names = GetNamesFromIDs(lpMAPIProp, sig, &lpTag, nullptr, NULL);
+			const auto names = GetNamesFromIDs(lpMAPIProp, sig, &lpTag, NULL);
 			if (names.size() == 1)
 			{
 				return NameIDToStrings(names[0]->getMapiNameId(), ulPropTag);
