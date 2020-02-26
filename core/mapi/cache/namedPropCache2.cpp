@@ -139,9 +139,7 @@ namespace cache2
 		{
 			const auto& cache = getCache();
 			const auto entry =
-				find_if(cache.begin(), cache.end(), [compare](const std::shared_ptr<namedPropCacheEntry>& _entry) {
-					return compare(_entry);
-				});
+				find_if(cache.begin(), cache.end(), [compare](const auto& _entry) { return compare(_entry); });
 
 			return entry != cache.end() ? *entry : nullptr;
 		}
@@ -157,16 +155,12 @@ namespace cache2
 				auto match = std::shared_ptr<namedPropCacheEntry>{};
 				if (sig.empty())
 				{
-					match = find([&](const std::shared_ptr<namedPropCacheEntry>& _entry) {
-						return entry->match(_entry.get(), false, true, true);
-					});
+					match = find([&](const auto& _entry) { return entry->match(_entry.get(), false, true, true); });
 				}
 				else
 				{
 					entry->setSig(sig);
-					match = find([&](const std::shared_ptr<namedPropCacheEntry>& _entry) {
-						return entry->match(_entry.get(), true, true, true);
-					});
+					match = find([&](const auto& _entry) { return entry->match(_entry.get(), true, true, true); });
 				}
 
 				if (!match)
@@ -219,9 +213,7 @@ namespace cache2
 				const auto ulPropTag = lpPropTags->aulPropTag[ulTarget];
 				const auto ulPropId = PROP_ID(ulPropTag);
 				// ...check the cache
-				const auto lpEntry = find([&](const std::shared_ptr<namedPropCacheEntry>& entry) noexcept {
-					return entry->match(sig, ulPropId);
-				});
+				const auto lpEntry = find([&](const auto& entry) noexcept { return entry->match(sig, ulPropId); });
 
 				if (!lpEntry)
 				{
@@ -242,9 +234,7 @@ namespace cache2
 			{
 				const auto ulPropId = PROP_ID(lpPropTags->aulPropTag[ulTarget]);
 				// ...check the cache
-				const auto lpEntry = find([&](const std::shared_ptr<namedPropCacheEntry>& entry) noexcept {
-					return entry->match(sig, ulPropId);
-				});
+				const auto lpEntry = find([&](const auto& entry) noexcept { return entry->match(sig, ulPropId); });
 
 				if (lpEntry)
 				{
@@ -277,7 +267,7 @@ namespace cache2
 			// First pass, find the tags we don't have cached
 			for (ULONG ulTarget = 0; ulTarget < cPropNames; ulTarget++)
 			{
-				const auto lpEntry = find([&](const std::shared_ptr<namedPropCacheEntry>& entry) noexcept {
+				const auto lpEntry = find([&](const auto& entry) noexcept {
 					return entry->match(
 						sig,
 						lppPropNames[ulTarget]->lpguid,
@@ -314,7 +304,7 @@ namespace cache2
 			for (ULONG ulTarget = 0; ulTarget < cPropNames; ulTarget++)
 			{
 				const MAPINAMEID* nameid = lppPropNames[ulTarget];
-				const auto lpEntry = find([&](const std::shared_ptr<namedPropCacheEntry>& entry) noexcept {
+				const auto lpEntry = find([&](const auto& entry) noexcept {
 					return entry->match(sig, nameid->lpguid, nameid->ulKind, nameid->Kind.lID, nameid->Kind.lpwstrName);
 				});
 
@@ -426,15 +416,14 @@ namespace cache2
 		// If we're using the cache, look up the answer there and return
 		if (registry::cacheNamedProps)
 		{
-			lpNamedPropCacheEntry =
-				namedPropCache::find([&](const std::shared_ptr<namedPropCacheEntry>& entry) noexcept {
-					return entry->match(
-						PROP_ID(ulPropTag),
-						lpNameID->lpguid,
-						lpNameID->ulKind,
-						lpNameID->Kind.lID,
-						lpNameID->Kind.lpwstrName);
-				});
+			lpNamedPropCacheEntry = namedPropCache::find([&](const auto& entry) noexcept {
+				return entry->match(
+					PROP_ID(ulPropTag),
+					lpNameID->lpguid,
+					lpNameID->ulKind,
+					lpNameID->Kind.lID,
+					lpNameID->Kind.lpwstrName);
+			});
 			if (lpNamedPropCacheEntry && lpNamedPropCacheEntry->hasCachedStrings())
 			{
 				return lpNamedPropCacheEntry->getNamePropNames();
