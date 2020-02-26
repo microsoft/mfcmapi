@@ -222,9 +222,9 @@ namespace cache2
 				// ...check the cache
 				const auto lpEntry = find([&](const auto& entry) noexcept { return entry->match(sig, ulPropId); });
 
-				if (lpEntry)
+				if (!lpEntry)
 				{
-					results.emplace_back(lpEntry);
+					misses.emplace_back(ulPropId);
 				}
 			}
 
