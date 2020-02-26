@@ -247,7 +247,10 @@ namespace cache2
 				{
 					results.emplace_back(lpEntry);
 				}
-				// TODO: on missed we need some kind of blank entry
+				else
+				{
+					results.emplace_back(std::make_shared<namedPropCacheEntry>(sig, nullptr, ulPropId));
+				}
 			}
 
 			return results;
@@ -303,27 +306,26 @@ namespace cache2
 				}
 			}
 
-			auto ids = std::vector<ULONG>{};
+			auto results = std::vector<ULONG>{};
 			// Second pass, do our lookup with a populated cache
 			for (ULONG ulTarget = 0; ulTarget < cPropNames; ulTarget++)
 			{
+				const auto nameid = lppPropNames[ulTarget];
 				const auto lpEntry = find([&](const auto& entry) noexcept {
-					return entry->match(
-						sig,
-						lppPropNames[ulTarget]->lpguid,
-						lppPropNames[ulTarget]->ulKind,
-						lppPropNames[ulTarget]->Kind.lID,
-						lppPropNames[ulTarget]->Kind.lpwstrName);
+					return entry->match(sig, nameid->lpguid, nameid->ulKind, nameid->Kind.lID, nameid->Kind.lpwstrName);
 				});
 
 				if (lpEntry)
 				{
-					ids.emplace_back(lpEntry->getPropID());
+					results.emplace_back(lpEntry->getPropID());
 				}
-				// TODO: on missed we need some kind of blank entry
+				else
+				{
+					results.emplace_back(std::make_shared<namedPropCacheEntry>(sig, nameid, 0));
+				}
 			}
 
-			return ids;
+			return results;
 		}
 	};
 
