@@ -332,6 +332,16 @@ namespace cache2
 		return {};
 	}
 
+	_Check_return_ std::shared_ptr<namedPropCacheEntry>
+	GetNameFromID(_In_ LPMAPIPROP lpMAPIProp, _In_opt_ const std::vector<BYTE>& sig, _In_ ULONG ulPropTag, ULONG ulFlags)
+	{
+		auto tag = SPropTagArray{1, ulPropTag};
+		auto lptag = &tag;
+		const auto names = GetNamesFromIDs(lpMAPIProp, &lptag, ulFlags);
+		if (names.size() == 1) return names[0];
+		return {};
+	}
+
 	// No signature form: look up and use signature if possible
 	_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>>
 	GetNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp, _In_ LPSPropTagArray* lppPropTags, ULONG ulFlags)

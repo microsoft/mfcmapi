@@ -18,7 +18,7 @@ namespace smartview
 	std::pair<ULONG, GUID> GetNamedPropInfo(
 		_In_opt_ ULONG ulPropTag,
 		_In_opt_ LPMAPIPROP lpMAPIProp,
-		_In_opt_ LPMAPINAMEID lpNameID,
+		_In_opt_ const MAPINAMEID* lpNameID,
 		_In_opt_ LPSBinary lpMappingSignature,
 		bool bIsAB);
 
@@ -42,8 +42,7 @@ namespace smartview
 		_In_opt_ ULONG ulPropTag,
 		_In_opt_ ULONG ulPropNameID,
 		_In_opt_ LPCGUID lpguidNamedProp);
-	std::wstring
-	InterpretMVBinaryAsString(SBinaryArray myBinArray, parserType parser, _In_opt_ LPMAPIPROP lpMAPIProp);
+	std::wstring InterpretMVBinaryAsString(SBinaryArray myBinArray, parserType parser, _In_opt_ LPMAPIPROP lpMAPIProp);
 	std::wstring InterpretNumberAsString(
 		LONGLONG val,
 		ULONG ulPropTag,
