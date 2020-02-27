@@ -3,7 +3,8 @@
 #include <core/interpret/flags.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/utility/strings.h>
-#include <core/mapi/cache/namedPropCache.h>
+#include <core/mapi/cache/namedPropCacheEntry2.h>
+#include <core/mapi/cache/namedPropCache2.h>
 #include <core/interpret/proptags.h>
 
 namespace smartview
@@ -198,7 +199,7 @@ namespace smartview
 					mnid.lpguid = nullptr;
 					mnid.ulKind = MNID_ID;
 					mnid.Kind.lID = *def->dwDispid;
-					szDispidName = strings::join(oldcache::NameIDToPropNames(&mnid), L", ");
+					szDispidName = strings::join(cache::NameIDToPropNames(&mnid), L", ");
 					if (!szDispidName.empty())
 					{
 						def->dwDispid->addHeader(L" = %1!ws!", szDispidName.c_str());
