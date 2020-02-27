@@ -370,8 +370,7 @@ namespace controls::sortlistctrl
 			// Add our props to the view
 			if (lpPropsToAdd)
 			{
-				ULONG ulPropNames = 0;
-				LPMAPINAMEID* lppPropNames = nullptr;
+				std::vector<std::shared_ptr<cache::namedPropCacheEntry>> names{};
 				ULONG ulCurTag = 0;
 				if (!m_bIsAB && registry::parseNamedProps)
 				{
@@ -424,14 +423,11 @@ namespace controls::sortlistctrl
 								}
 
 								// Get the names
-								hRes = WC_H_GETPROPS(oldcache::GetNamesFromIDs(
-									m_lpPropBag->GetMAPIProp(),
-									lpMappingSig ? &lpMappingSig->Value.bin : nullptr,
-									&lpTag,
-									nullptr,
-									NULL,
-									&ulPropNames,
-									&lppPropNames));
+								auto sig = std::vector<BYTE>{};
+								if (lpMappingSig)
+									sig = {lpMappingSig->Value.bin.lpb,
+										   lpMappingSig->Value.bin.lpb + lpMappingSig->Value.bin.cb};
+								names = cache::GetNamesFromIDs(m_lpPropBag->GetMAPIProp(), sig, &lpTag, NULL);
 
 								MAPIFreeBuffer(lpTag);
 							}
@@ -449,13 +445,13 @@ namespace controls::sortlistctrl
 				ulCurTag = 0;
 				for (ULONG ulCurPropRow = 0; ulCurPropRow < ulProps; ulCurPropRow++)
 				{
-					LPMAPINAMEID lpNameIDInfo = nullptr;
-					// We shouldn't need to check ulCurTag < ulPropNames, but I fear bad GetNamesFromIDs implementations
-					if (lppPropNames && ulCurTag < ulPropNames)
+					const MAPINAMEID* lpNameIDInfo = nullptr;
+					// We shouldn't need to check ulCurTag < names.size(), but I fear bad GetNamesFromIDs implementations
+					if (!names.empty() && ulCurTag < names.size())
 					{
 						if (registry::getPropNamesOnAllProps || PROP_ID(lpPropsToAdd[ulCurPropRow].ulPropTag) >= 0x8000)
 						{
-							lpNameIDInfo = lppPropNames[ulCurTag];
+							lpNameIDInfo = names[ulCurTag]->getMapiNameId();
 							ulCurTag++;
 						}
 					}
@@ -469,8 +465,6 @@ namespace controls::sortlistctrl
 
 					ulCurListBoxRow++;
 				}
-
-				MAPIFreeBuffer(lppPropNames);
 			}
 		}
 
@@ -641,7 +635,7 @@ namespace controls::sortlistctrl
 	void CSingleMAPIPropListCtrl::AddPropToListBox(
 		int iRow,
 		ULONG ulPropTag,
-		_In_opt_ LPMAPINAMEID lpNameID,
+		_In_opt_ const MAPINAMEID* lpNameID,
 		_In_opt_ LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
 		_In_ LPSPropValue lpsPropToAdd)
 	{

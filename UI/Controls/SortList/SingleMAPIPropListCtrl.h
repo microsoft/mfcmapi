@@ -52,7 +52,7 @@ namespace controls::sortlistctrl
 		void AddPropToListBox(
 			int iRow,
 			ULONG ulPropTag,
-			_In_opt_ LPMAPINAMEID lpNameID,
+			_In_opt_ const MAPINAMEID* lpNameID,
 			_In_opt_ LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
 			_In_ LPSPropValue lpsPropToAdd);
 
