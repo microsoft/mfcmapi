@@ -1086,18 +1086,11 @@ namespace controls::sortlistctrl
 				}
 				else
 				{
-					SPropTagArray tag = {0};
-					tag.cValues = 1;
-					lptag = &tag;
 					for (auto iTag = ulLowerBound; iTag <= ulUpperBound; iTag++)
 					{
-						LPMAPINAMEID* lppPropNames = nullptr;
-						ULONG ulPropNames = 0;
-						tag.aulPropTag[0] = PROP_TAG(NULL, iTag);
-
-						hRes = WC_H(cache::GetNamesFromIDs(
-							m_lpPropBag->GetMAPIProp(), &lptag, nullptr, NULL, &ulPropNames, &lppPropNames));
-						if (hRes == S_OK && ulPropNames == 1 && lppPropNames && *lppPropNames)
+						const auto ulPropTag = PROP_TAG(NULL, iTag);
+						const auto name = cache2::GetNameFromID(m_lpPropBag->GetMAPIProp(), ulPropTag, NULL);
+						if (name->valid())
 						{
 							output::DebugPrintEx(
 								output::dbgLevel::NamedProp,
@@ -1105,11 +1098,8 @@ namespace controls::sortlistctrl
 								L"FindAllNamedProps",
 								L"Found an ID with a name (0x%X). Adding to extra prop list.\n",
 								iTag);
-							AddPropToExtraProps(PROP_TAG(NULL, iTag), false);
+							AddPropToExtraProps(ulPropTag, false);
 						}
-
-						MAPIFreeBuffer(lppPropNames);
-						lppPropNames = nullptr;
 					}
 				}
 			}
