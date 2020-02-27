@@ -296,7 +296,7 @@ namespace dialog::editor
 		if (m_lpMAPIProp && !m_bIsAB && (PROPTAG_TAG == ulSkipField || PROPTAG_ID == ulSkipField))
 		{
 			const auto name = cache2::GetNameFromID(m_lpMAPIProp, m_ulPropTag, NULL);
-			if (name)
+			if (name->valid())
 			{
 				const auto mnid = name->getMapiNameId();
 				if (mnid->ulKind == MNID_STRING)

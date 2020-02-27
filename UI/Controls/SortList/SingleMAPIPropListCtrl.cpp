@@ -10,6 +10,8 @@
 #include <core/mapi/mapiProgress.h>
 #include <core/mapi/cache/namedPropCache.h>
 #include <core/mapi/cache/namedPropCacheEntry.h>
+#include <core/mapi/cache/namedPropCacheEntry2.h>
+#include <core/mapi/cache/namedPropCache2.h>
 #include <core/smartview/SmartView.h>
 #include <core/PropertyBag/PropertyBag.h>
 #include <core/PropertyBag/MAPIPropPropertyBag.h>
@@ -1127,25 +1129,16 @@ namespace controls::sortlistctrl
 		output::DebugPrintEx(
 			output::dbgLevel::NamedProp, CLASS, L"CountNamedProps", L"Searching for the highest named prop mapping\n");
 
-		auto hRes = S_OK;
 		ULONG ulLower = 0x8000;
 		ULONG ulUpper = 0xFFFF;
 		ULONG ulHighestKnown = 0;
 		auto ulCurrent = (ulUpper + ulLower) / 2;
 
-		SPropTagArray tag = {0};
-		LPMAPINAMEID* lppPropNames = nullptr;
-		ULONG ulPropNames = 0;
-		auto lptag = &tag;
-		tag.cValues = 1;
-
 		while (ulUpper - ulLower > 1)
 		{
-			tag.aulPropTag[0] = PROP_TAG(NULL, ulCurrent);
-
-			hRes = WC_H(
-				cache::GetNamesFromIDs(m_lpPropBag->GetMAPIProp(), &lptag, nullptr, NULL, &ulPropNames, &lppPropNames));
-			if (hRes == S_OK && ulPropNames == 1 && lppPropNames && *lppPropNames)
+			const auto ulPropTag = PROP_TAG(NULL, ulCurrent);
+			const auto name = cache2::GetNameFromID(m_lpPropBag->GetMAPIProp(), ulPropTag, NULL);
+			if (name->valid())
 			{
 				// Found a named property, reset lower bound
 
@@ -1158,8 +1151,8 @@ namespace controls::sortlistctrl
 						L"CountNamedProps",
 						L"Found a named property at 0x%04X.\n",
 						ulCurrent);
-					auto namePropNames =
-						cache::NameIDToStrings(tag.aulPropTag[0], nullptr, lppPropNames[0], nullptr, false);
+					const auto namePropNames =
+						cache2::NameIDToStrings(ulPropTag, nullptr, name->getMapiNameId(), {}, false);
 					output::DebugPrintEx(
 						output::dbgLevel::NamedProp,
 						CLASS,
@@ -1178,20 +1171,15 @@ namespace controls::sortlistctrl
 				ulUpper = ulCurrent;
 			}
 
-			MAPIFreeBuffer(lppPropNames);
-			lppPropNames = nullptr;
-
 			ulCurrent = (ulUpper + ulLower) / 2;
 		}
 
 		dialog::editor::CEditor MyResult(this, IDS_COUNTNAMEDPROPS, IDS_COUNTNAMEDPROPSPROMPT, CEDITOR_BUTTON_OK);
 		if (ulHighestKnown)
 		{
-			tag.aulPropTag[0] = PROP_TAG(NULL, ulHighestKnown);
-
-			hRes = WC_H(
-				cache::GetNamesFromIDs(m_lpPropBag->GetMAPIProp(), &lptag, nullptr, NULL, &ulPropNames, &lppPropNames));
-			if (hRes == S_OK && ulPropNames == 1 && lppPropNames && *lppPropNames)
+			const auto ulPropTag = PROP_TAG(NULL, ulHighestKnown);
+			const auto name = cache2::GetNameFromID(m_lpPropBag->GetMAPIProp(), ulPropTag, NULL);
+			if (name->valid())
 			{
 				output::DebugPrintEx(
 					output::dbgLevel::NamedProp,
@@ -1207,10 +1195,10 @@ namespace controls::sortlistctrl
 
 			MyResult.AddPane(viewpane::TextPane::CreateMultiLinePane(1, IDS_HIGHESTNAMEDPROPNUM, true));
 
-			if (hRes == S_OK && ulPropNames == 1 && lppPropNames && *lppPropNames)
+			if (name->valid())
 			{
-				auto namePropNames =
-					cache::NameIDToStrings(tag.aulPropTag[0], nullptr, lppPropNames[0], nullptr, false);
+				const auto namePropNames =
+					cache2::NameIDToStrings(ulPropTag, nullptr, name->getMapiNameId(), {}, false);
 				MyResult.SetStringW(
 					1,
 					strings::formatmessage(
@@ -1218,9 +1206,6 @@ namespace controls::sortlistctrl
 						ulHighestKnown,
 						namePropNames.name.c_str(),
 						namePropNames.guid.c_str()));
-
-				MAPIFreeBuffer(lppPropNames);
-				lppPropNames = nullptr;
 			}
 		}
 		else

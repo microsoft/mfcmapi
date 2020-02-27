@@ -332,8 +332,11 @@ namespace cache2
 		return {};
 	}
 
-	_Check_return_ std::shared_ptr<namedPropCacheEntry>
-	GetNameFromID(_In_ LPMAPIPROP lpMAPIProp, _In_opt_ const std::vector<BYTE>& sig, _In_ ULONG ulPropTag, ULONG ulFlags)
+	_Check_return_ std::shared_ptr<namedPropCacheEntry> GetNameFromID(
+		_In_ LPMAPIPROP lpMAPIProp,
+		_In_opt_ const std::vector<BYTE>& sig,
+		_In_ ULONG ulPropTag,
+		ULONG ulFlags)
 	{
 		auto tag = SPropTagArray{1, ulPropTag};
 		auto lptag = &tag;
@@ -507,7 +510,7 @@ namespace cache2
 			const auto cchShortLen = strnlen_s(reinterpret_cast<LPCSTR>(lpNameID->Kind.lpwstrName), RSIZE_MAX);
 			const auto cchWideLen = wcsnlen_s(lpNameID->Kind.lpwstrName, RSIZE_MAX);
 
-			if (cchShortLen < cchWideLen)
+			if ((cchShortLen == 0 && cchWideLen == 0) || cchShortLen < cchWideLen)
 			{
 				// this is the *proper* case
 				output::DebugPrint(
@@ -565,18 +568,14 @@ namespace cache2
 			(registry::getPropNamesOnAllProps ||
 			 PROP_ID(ulPropTag) >= 0x8000)) // and it's either a named prop or we're doing all props
 		{
-			SPropTagArray tag = {};
-			auto lpTag = &tag;
-			tag.cValues = 1;
-			tag.aulPropTag[0] = ulPropTag;
-
-			const auto names = GetNamesFromIDs(lpMAPIProp, sig, &lpTag, NULL);
-			if (names.size() == 1)
+			const auto name = GetNameFromID(lpMAPIProp, sig, ulPropTag, NULL);
+			if (name->valid())
 			{
-				return NameIDToStrings(names[0]->getMapiNameId(), ulPropTag);
+				return NameIDToStrings(name->getMapiNameId(), ulPropTag);
 			}
 		}
 
+		if (lpNameID) return NameIDToStrings(lpNameID, ulPropTag);
 		return {};
 	}
 

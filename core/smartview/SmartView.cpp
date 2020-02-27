@@ -312,7 +312,7 @@ namespace smartview
 				name = cache2::GetNameFromID(lpMAPIProp, ulPropTag, 0);
 			}
 
-			if (name)
+			if (name->valid())
 			{
 				return GetNamedPropInfo(name->getMapiNameId());
 			}
