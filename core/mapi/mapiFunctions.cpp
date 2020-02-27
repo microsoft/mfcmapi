@@ -12,6 +12,8 @@
 #include <core/mapi/extraPropTags.h>
 #include <core/mapi/mapiProgress.h>
 #include <core/mapi/cache/namedPropCache.h>
+#include <core/mapi/cache/namedPropCacheEntry2.h>
+#include <core/mapi/cache/namedPropCache2.h>
 #include <core/mapi/mapiOutput.h>
 
 namespace mapi
@@ -2103,21 +2105,17 @@ namespace mapi
 		LPSPropTagArray lpAllProps = nullptr;
 		LPSPropTagArray lpFilteredProps = nullptr;
 
-		auto hRes = WC_MAPI(lpSource->GetPropList(0, &lpAllProps));
+		const auto hRes = WC_MAPI(lpSource->GetPropList(0, &lpAllProps));
 		if (hRes == S_OK && lpAllProps)
 		{
-			ULONG cProps = 0;
-			LPMAPINAMEID* lppNameIDs = nullptr;
-
-			hRes = WC_H(oldcache::GetNamesFromIDs(lpSource, &lpAllProps, nullptr, 0, &cProps, &lppNameIDs));
-
-			if (hRes == S_OK && lppNameIDs)
+			const auto names = cache::GetNamesFromIDs(lpSource, &lpAllProps, 0);
+			if (!names.empty())
 			{
 				ULONG ulNumProps = 0; // count of props that match our guid
-				for (ULONG i = 0; i < cProps; i++)
+				for (const auto name : names)
 				{
-					if (PROP_ID(lpAllProps->aulPropTag[i]) > 0x7FFF && lppNameIDs[i] &&
-						!memcmp(lppNameIDs[i]->lpguid, lpPropSetGUID, sizeof(GUID)))
+					if (name->getPropID() > 0x7FFF && name->valid() &&
+						::IsEqualGUID(*name->getMapiNameId()->lpguid, *lpPropSetGUID))
 					{
 						ulNumProps++;
 					}
@@ -2128,19 +2126,17 @@ namespace mapi
 				{
 					lpFilteredProps->cValues = 0;
 
-					for (ULONG i = 0; i < cProps; i++)
+					for (const auto name : names)
 					{
-						if (PROP_ID(lpAllProps->aulPropTag[i]) > 0x7FFF && lppNameIDs[i] &&
-							!memcmp(lppNameIDs[i]->lpguid, lpPropSetGUID, sizeof(GUID)))
+						if (name->getPropID() > 0x7FFF && name->valid() &&
+							::IsEqualGUID(*name->getMapiNameId()->lpguid, *lpPropSetGUID))
 						{
-							lpFilteredProps->aulPropTag[lpFilteredProps->cValues] = lpAllProps->aulPropTag[i];
+							lpFilteredProps->aulPropTag[lpFilteredProps->cValues] = name->getPropID();
 							lpFilteredProps->cValues++;
 						}
 					}
 				}
 			}
-
-			MAPIFreeBuffer(lppNameIDs);
 		}
 
 		MAPIFreeBuffer(lpAllProps);
