@@ -24,7 +24,7 @@ namespace cache
 		namedPropCacheEntry(const namedPropCacheEntry&) = delete;
 		namedPropCacheEntry& operator=(const namedPropCacheEntry&) = delete;
 
-		bool valid() { return mapiNameId.Kind.lID || mapiNameId.Kind.lpwstrName; }
+		bool valid() const noexcept { return mapiNameId.Kind.lID || mapiNameId.Kind.lpwstrName; }
 		ULONG getPropID() const noexcept { return ulPropID; }
 		const NamePropNames& getNamePropNames() const noexcept { return namePropNames; }
 		void setNamePropNames(const NamePropNames& _namePropNames) noexcept
