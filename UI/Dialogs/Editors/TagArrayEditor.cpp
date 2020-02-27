@@ -2,8 +2,8 @@
 #include <UI/Dialogs/Editors/TagArrayEditor.h>
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
 #include <core/sortlistdata/propListData.h>
-#include <core/mapi/cache/namedPropCache.h>
-#include <core/mapi/cache/namedPropCacheEntry.h>
+#include <core/mapi/cache/namedPropCacheEntry2.h>
+#include <core/mapi/cache/namedPropCache2.h>
 #include <core/mapi/mapiMemory.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
@@ -107,7 +107,7 @@ namespace dialog::editor
 		{
 			prop->m_ulPropTag = ulNewPropTag;
 
-			const auto namePropNames = oldcache::NameIDToStrings(ulNewPropTag, m_lpMAPIProp, nullptr, nullptr, m_bIsAB);
+			const auto namePropNames = cache::NameIDToStrings(ulNewPropTag, m_lpMAPIProp, nullptr, {}, m_bIsAB);
 
 			const auto propTagNames = proptags::PropTagToPropName(ulNewPropTag, m_bIsAB);
 
@@ -150,8 +150,7 @@ namespace dialog::editor
 					sortlistdata::propListData::init(lpData, ulPropTag);
 				}
 
-				const auto namePropNames =
-					oldcache::NameIDToStrings(ulPropTag, m_lpMAPIProp, nullptr, nullptr, m_bIsAB);
+				const auto namePropNames = cache::NameIDToStrings(ulPropTag, m_lpMAPIProp, nullptr, {}, m_bIsAB);
 
 				const auto propTagNames = proptags::PropTagToPropName(ulPropTag, m_bIsAB);
 

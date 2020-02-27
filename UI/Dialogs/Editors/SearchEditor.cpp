@@ -3,8 +3,8 @@
 #include <core/utility/strings.h>
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
 #include <core/mapi/mapiFunctions.h>
-#include <core/mapi/cache/namedPropCache.h>
-#include <core/mapi/cache/namedPropCacheEntry.h>
+#include <core/mapi/cache/namedPropCacheEntry2.h>
+#include <core/mapi/cache/namedPropCache2.h>
 #include <core/utility/output.h>
 #include <core/interpret/proptags.h>
 #include <core/addin/mfcmapi.h>
@@ -123,7 +123,7 @@ namespace dialog::editor
 			}
 			else
 			{
-				auto namePropNames = oldcache::NameIDToStrings(m_ulPropTag, m_lpMAPIProp, nullptr, nullptr, false);
+				auto namePropNames = cache::NameIDToStrings(m_ulPropTag, m_lpMAPIProp, nullptr, {}, false);
 
 				if (!namePropNames.name.empty())
 					SetStringW(PROPNAME, namePropNames.name);

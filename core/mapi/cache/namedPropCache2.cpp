@@ -340,7 +340,7 @@ namespace cache
 	{
 		auto tag = SPropTagArray{1, ulPropTag};
 		auto lptag = &tag;
-		const auto names = GetNamesFromIDs(lpMAPIProp, &lptag, ulFlags);
+		const auto names = GetNamesFromIDs(lpMAPIProp, sig, &lptag, ulFlags);
 		if (names.size() == 1) return names[0];
 		return {};
 	}

@@ -11,8 +11,8 @@
 #include <core/utility/error.h>
 #include <core/smartview/SmartView.h>
 #include <core/mapi/columnTags.h>
-#include <core/mapi/cache/namedPropCache.h>
-#include <core/mapi/cache/namedPropCacheEntry.h>
+#include <core/mapi/cache/namedPropCacheEntry2.h>
+#include <core/mapi/cache/namedPropCache2.h>
 #include <core/mapi/mapiMemory.h>
 #include <core/interpret/flags.h>
 #include <core/property/parseProperty.h>
@@ -554,7 +554,7 @@ namespace output
 				false,
 				iIndent);
 
-		auto namePropNames = oldcache::NameIDToStrings(lpProp->ulPropTag, lpObj, nullptr, nullptr, false);
+		auto namePropNames = cache::NameIDToStrings(lpProp->ulPropTag, lpObj, nullptr, {}, false);
 		if (!namePropNames.guid.empty())
 			OutputXMLValue(
 				ulDbgLvl,

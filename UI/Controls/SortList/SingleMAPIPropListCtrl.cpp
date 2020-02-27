@@ -669,8 +669,9 @@ namespace controls::sortlistctrl
 		std::wstring PropString;
 		std::wstring AltPropString;
 
-		auto namePropNames =
-			oldcache::NameIDToStrings(ulPropTag, m_lpPropBag->GetMAPIProp(), lpNameID, lpMappingSignature, m_bIsAB);
+		std::vector<BYTE> sig{};
+		if (lpMappingSignature) sig = {lpMappingSignature->lpb, lpMappingSignature->lpb + lpMappingSignature->cb};
+		auto namePropNames = cache::NameIDToStrings(ulPropTag, m_lpPropBag->GetMAPIProp(), lpNameID, sig, m_bIsAB);
 
 		auto propTagNames = proptags::PropTagToPropName(ulPropTag, m_bIsAB);
 
