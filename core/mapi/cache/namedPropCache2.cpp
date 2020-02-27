@@ -10,7 +10,7 @@
 #include <core/addin/addin.h>
 #include <core/utility/error.h>
 
-namespace cache2
+namespace cache
 {
 	namespace directMapi
 	{
@@ -614,4 +614,4 @@ namespace cache2
 
 		return results;
 	}
-} // namespace cache2
+} // namespace cache

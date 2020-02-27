@@ -298,10 +298,10 @@ namespace smartview
 			(registry::getPropNamesOnAllProps ||
 			 PROP_ID(ulPropTag) >= 0x8000)) // and it's either a named prop or we're doing all props
 		{
-			auto name = std::shared_ptr<cache2::namedPropCacheEntry>{};
+			auto name = std::shared_ptr<cache::namedPropCacheEntry>{};
 			if (lpMappingSignature)
 			{
-				name = cache2::GetNameFromID(
+				name = cache::GetNameFromID(
 					lpMAPIProp,
 					{lpMappingSignature->lpb, lpMappingSignature->lpb + lpMappingSignature->cb},
 					ulPropTag,
@@ -309,7 +309,7 @@ namespace smartview
 			}
 			else
 			{
-				name = cache2::GetNameFromID(lpMAPIProp, ulPropTag, 0);
+				name = cache::GetNameFromID(lpMAPIProp, ulPropTag, 0);
 			}
 
 			if (name->valid())

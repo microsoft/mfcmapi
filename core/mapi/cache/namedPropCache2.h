@@ -1,7 +1,7 @@
 #pragma once
 // Named Property Cache
 
-namespace cache2
+namespace cache
 {
 	struct NamePropNames;
 
@@ -35,4 +35,4 @@ namespace cache2
 		bool bIsAB); // true for an address book property (they can be > 8000 and not named props)
 
 	std::vector<std::wstring> NameIDToPropNames(_In_ const MAPINAMEID* lpNameID);
-} // namespace cache2
+} // namespace cache

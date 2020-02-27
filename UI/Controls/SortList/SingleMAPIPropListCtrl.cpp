@@ -1089,7 +1089,7 @@ namespace controls::sortlistctrl
 					for (auto iTag = ulLowerBound; iTag <= ulUpperBound; iTag++)
 					{
 						const auto ulPropTag = PROP_TAG(NULL, iTag);
-						const auto name = cache2::GetNameFromID(m_lpPropBag->GetMAPIProp(), ulPropTag, NULL);
+						const auto name = cache::GetNameFromID(m_lpPropBag->GetMAPIProp(), ulPropTag, NULL);
 						if (name->valid())
 						{
 							output::DebugPrintEx(
@@ -1127,7 +1127,7 @@ namespace controls::sortlistctrl
 		while (ulUpper - ulLower > 1)
 		{
 			const auto ulPropTag = PROP_TAG(NULL, ulCurrent);
-			const auto name = cache2::GetNameFromID(m_lpPropBag->GetMAPIProp(), ulPropTag, NULL);
+			const auto name = cache::GetNameFromID(m_lpPropBag->GetMAPIProp(), ulPropTag, NULL);
 			if (name->valid())
 			{
 				// Found a named property, reset lower bound
@@ -1142,7 +1142,7 @@ namespace controls::sortlistctrl
 						L"Found a named property at 0x%04X.\n",
 						ulCurrent);
 					const auto namePropNames =
-						cache2::NameIDToStrings(ulPropTag, nullptr, name->getMapiNameId(), {}, false);
+						cache::NameIDToStrings(ulPropTag, nullptr, name->getMapiNameId(), {}, false);
 					output::DebugPrintEx(
 						output::dbgLevel::NamedProp,
 						CLASS,
@@ -1168,7 +1168,7 @@ namespace controls::sortlistctrl
 		if (ulHighestKnown)
 		{
 			const auto ulPropTag = PROP_TAG(NULL, ulHighestKnown);
-			const auto name = cache2::GetNameFromID(m_lpPropBag->GetMAPIProp(), ulPropTag, NULL);
+			const auto name = cache::GetNameFromID(m_lpPropBag->GetMAPIProp(), ulPropTag, NULL);
 			if (name->valid())
 			{
 				output::DebugPrintEx(
@@ -1187,8 +1187,7 @@ namespace controls::sortlistctrl
 
 			if (name->valid())
 			{
-				const auto namePropNames =
-					cache2::NameIDToStrings(ulPropTag, nullptr, name->getMapiNameId(), {}, false);
+				const auto namePropNames = cache::NameIDToStrings(ulPropTag, nullptr, name->getMapiNameId(), {}, false);
 				MyResult.SetStringW(
 					1,
 					strings::formatmessage(

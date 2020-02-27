@@ -296,7 +296,7 @@ namespace dialog::editor
 		// And never for Address Books
 		if (m_lpMAPIProp && !m_bIsAB && (PROPTAG_TAG == ulSkipField || PROPTAG_ID == ulSkipField))
 		{
-			const auto name = cache2::GetNameFromID(m_lpMAPIProp, m_ulPropTag, NULL);
+			const auto name = cache::GetNameFromID(m_lpMAPIProp, m_ulPropTag, NULL);
 			if (name->valid())
 			{
 				const auto mnid = name->getMapiNameId();

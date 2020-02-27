@@ -4,7 +4,7 @@
 #include <core/utility/error.h>
 #include <core/mapi/mapiMemory.h>
 
-namespace cache2
+namespace cache
 {
 	static ULONG cbPropName(LPCWSTR lpwstrName) noexcept
 	{
@@ -127,4 +127,4 @@ namespace cache2
 
 		return true;
 	}
-} // namespace cache2
+} // namespace cache

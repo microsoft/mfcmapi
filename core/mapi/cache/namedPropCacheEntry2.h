@@ -1,7 +1,7 @@
 #pragma once
 // Named Property Cache Entry
 
-namespace cache2
+namespace cache
 {
 	struct NamePropNames
 	{
@@ -64,4 +64,4 @@ namespace cache2
 		NamePropNames namePropNames{};
 		bool bStringsCached{}; // We have cached strings
 	};
-} // namespace cache2
+} // namespace cache

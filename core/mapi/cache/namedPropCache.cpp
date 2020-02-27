@@ -688,7 +688,7 @@ namespace oldcache
 		std::vector<std::wstring> results;
 		if (!lpNameID) return {};
 		if (lpNameID->ulKind != MNID_ID) return {};
-		ULONG ulMatch = cache2::ulNoMatch;
+		ULONG ulMatch = cache::ulNoMatch;
 
 		if (NameIDArray.empty()) return {};
 
@@ -701,7 +701,7 @@ namespace oldcache
 			}
 		}
 
-		if (cache2::ulNoMatch != ulMatch)
+		if (cache::ulNoMatch != ulMatch)
 		{
 			for (auto ulCur = ulMatch; ulCur < NameIDArray.size(); ulCur++)
 			{
