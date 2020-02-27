@@ -108,7 +108,7 @@ typedef ULONG(STDAPICALLTYPE FREEBUFFER)(LPVOID lpBuffer);
 // Used by CContentsTableDlg
 #define WM_MFCMAPI_RESETCOLUMNS (WM_APP + 12)
 
-namespace cache
+namespace cache2
 {
 	constexpr ULONG ulNoMatch = 0xffffffff;
 }

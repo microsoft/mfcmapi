@@ -1467,7 +1467,7 @@ namespace mapi
 			rgpnmid[i] = &rgnmid[i];
 		}
 
-		auto lpTags = cache::GetIDsFromNames(lpMessage, ulNumOneOffIDs, rgpnmid, 0);
+		auto lpTags = oldcache::GetIDsFromNames(lpMessage, ulNumOneOffIDs, rgpnmid, 0);
 		if (lpTags)
 		{
 			LPSPropProblemArray lpProbArray = nullptr;
@@ -2109,7 +2109,7 @@ namespace mapi
 			ULONG cProps = 0;
 			LPMAPINAMEID* lppNameIDs = nullptr;
 
-			hRes = WC_H(cache::GetNamesFromIDs(lpSource, &lpAllProps, nullptr, 0, &cProps, &lppNameIDs));
+			hRes = WC_H(oldcache::GetNamesFromIDs(lpSource, &lpAllProps, nullptr, 0, &cProps, &lppNameIDs));
 
 			if (hRes == S_OK && lppNameIDs)
 			{

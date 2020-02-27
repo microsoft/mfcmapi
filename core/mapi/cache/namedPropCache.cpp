@@ -10,7 +10,7 @@
 #include <core/addin/addin.h>
 #include <core/utility/error.h>
 
-namespace cache
+namespace oldcache
 {
 	ULONG cbPropName(LPCWSTR lpwstrName) noexcept
 	{
@@ -688,7 +688,7 @@ namespace cache
 		std::vector<std::wstring> results;
 		if (!lpNameID) return {};
 		if (lpNameID->ulKind != MNID_ID) return {};
-		ULONG ulMatch = ulNoMatch;
+		ULONG ulMatch = cache2::ulNoMatch;
 
 		if (NameIDArray.empty()) return {};
 
@@ -701,7 +701,7 @@ namespace cache
 			}
 		}
 
-		if (ulNoMatch != ulMatch)
+		if (cache2::ulNoMatch != ulMatch)
 		{
 			for (auto ulCur = ulMatch; ulCur < NameIDArray.size(); ulCur++)
 			{
@@ -717,4 +717,4 @@ namespace cache
 
 		return results;
 	}
-} // namespace cache
+} // namespace oldcache

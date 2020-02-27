@@ -18,7 +18,7 @@ namespace proptags
 	{
 		std::wstring szTemp;
 
-		auto namePropNames = cache::NameIDToStrings(ulPropTag, lpObj, nullptr, nullptr, bIsAB);
+		auto namePropNames = oldcache::NameIDToStrings(ulPropTag, lpObj, nullptr, nullptr, bIsAB);
 
 		auto propTagNames = PropTagToPropName(ulPropTag, bIsAB);
 

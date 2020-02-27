@@ -424,7 +424,7 @@ namespace controls::sortlistctrl
 								}
 
 								// Get the names
-								hRes = WC_H_GETPROPS(cache::GetNamesFromIDs(
+								hRes = WC_H_GETPROPS(oldcache::GetNamesFromIDs(
 									m_lpPropBag->GetMAPIProp(),
 									lpMappingSig ? &lpMappingSig->Value.bin : nullptr,
 									&lpTag,
@@ -670,7 +670,7 @@ namespace controls::sortlistctrl
 		std::wstring AltPropString;
 
 		auto namePropNames =
-			cache::NameIDToStrings(ulPropTag, m_lpPropBag->GetMAPIProp(), lpNameID, lpMappingSignature, m_bIsAB);
+			oldcache::NameIDToStrings(ulPropTag, m_lpPropBag->GetMAPIProp(), lpNameID, lpMappingSignature, m_bIsAB);
 
 		auto propTagNames = proptags::PropTagToPropName(ulPropTag, m_bIsAB);
 
@@ -1030,7 +1030,7 @@ namespace controls::sortlistctrl
 		// Exchange can return MAPI_E_NOT_ENOUGH_MEMORY when I call this - give it a try - PSTs support it
 		output::DebugPrintEx(
 			output::dbgLevel::NamedProp, CLASS, L"FindAllNamedProps", L"Calling GetIDsFromNames with a NULL\n");
-		auto lptag = cache::GetIDsFromNames(m_lpPropBag->GetMAPIProp(), NULL, nullptr, NULL);
+		auto lptag = oldcache::GetIDsFromNames(m_lpPropBag->GetMAPIProp(), NULL, nullptr, NULL);
 		if (lptag && lptag->cValues)
 		{
 			// Now we have an array of tags - add them in:

@@ -348,7 +348,7 @@ namespace controls::sortlistctrl
 			szHeaderString = propTagNames.bestGuess;
 			if (szHeaderString.empty())
 			{
-				const auto namePropNames = cache::NameIDToStrings(ulPropTag, lpMDB, nullptr, nullptr, m_bIsAB);
+				const auto namePropNames = oldcache::NameIDToStrings(ulPropTag, lpMDB, nullptr, nullptr, m_bIsAB);
 
 				szHeaderString = namePropNames.name;
 			}

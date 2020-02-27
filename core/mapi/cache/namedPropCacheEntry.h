@@ -1,7 +1,7 @@
 #pragma once
 // Named Property Cache Entry
 
-namespace cache
+namespace oldcache
 {
 	struct NamePropNames
 	{
@@ -64,4 +64,4 @@ namespace cache
 		// Go through all the details of copying allocated data to a cache entry
 		void CopyToCacheData(const MAPINAMEID& src);
 	};
-} // namespace cache
+} // namespace oldcache

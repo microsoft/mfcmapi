@@ -197,7 +197,8 @@ namespace dialog::editor
 		if (NamedID.lpguid &&
 			(MNID_ID == NamedID.ulKind && NamedID.Kind.lID || MNID_STRING == NamedID.ulKind && NamedID.Kind.lpwstrName))
 		{
-			const auto lpNamedPropTags = cache::GetIDsFromNames(m_lpMAPIProp, 1, &lpNamedID, bCreate ? MAPI_CREATE : 0);
+			const auto lpNamedPropTags =
+				oldcache::GetIDsFromNames(m_lpMAPIProp, 1, &lpNamedID, bCreate ? MAPI_CREATE : 0);
 			if (lpNamedPropTags)
 			{
 				m_ulPropTag = CHANGE_PROP_TYPE(lpNamedPropTags->aulPropTag[0], ulPropType);
@@ -267,7 +268,7 @@ namespace dialog::editor
 	// Pass NOSKIPFIELD to fill out all fields
 	void CPropertyTagEditor::PopulateFields(ULONG ulSkipField) const
 	{
-		auto namePropNames = cache::NameIDToStrings(m_ulPropTag, m_lpMAPIProp, nullptr, nullptr, m_bIsAB);
+		auto namePropNames = oldcache::NameIDToStrings(m_ulPropTag, m_lpMAPIProp, nullptr, nullptr, m_bIsAB);
 
 		if (PROPTAG_TAG != ulSkipField) SetHex(PROPTAG_TAG, m_ulPropTag);
 		if (PROPTAG_ID != ulSkipField) SetStringf(PROPTAG_ID, L"0x%04X", PROP_ID(m_ulPropTag)); // STRING_OK

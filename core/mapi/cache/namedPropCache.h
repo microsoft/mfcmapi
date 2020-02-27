@@ -1,7 +1,7 @@
 #pragma once
 // Named Property Cache
 
-namespace cache
+namespace oldcache
 {
 	struct NamePropNames;
 	ULONG cbPropName(LPCWSTR lpwstrName) noexcept;
@@ -37,4 +37,4 @@ namespace cache
 			bIsAB); // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
 
 	std::vector<std::wstring> NameIDToPropNames(_In_ const MAPINAMEID* lpNameID);
-} // namespace cache
+} // namespace oldcache

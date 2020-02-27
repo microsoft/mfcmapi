@@ -2,7 +2,7 @@
 #include <core/mapi/cache/namedPropCacheEntry.h>
 #include <core/mapi/cache/namedPropCache.h>
 
-namespace cache
+namespace oldcache
 {
 	NamedPropCacheEntry::NamedPropCacheEntry(
 		ULONG _cbSig,
@@ -100,4 +100,4 @@ namespace cache
 			}
 		}
 	}
-} // namespace cache
+} // namespace oldcache
