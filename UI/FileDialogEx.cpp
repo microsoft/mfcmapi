@@ -152,7 +152,7 @@ namespace file
 		ofn.nMaxFile = static_cast<DWORD>(szFileName.length());
 
 		ofn.lpstrDefExt = lpszDefExt.c_str();
-		ofn.Flags = dwFlags | OFN_ENABLEHOOK | OFN_EXPLORER;
+		ofn.Flags = dwFlags | OFN_ENABLESIZING;
 		ofn.hwndOwner = pParentWnd ? pParentWnd->m_hWnd : nullptr;
 
 		// setup initial file name
