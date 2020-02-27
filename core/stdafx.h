@@ -61,7 +61,7 @@
 
 #include <core/res/Resource.h> // main symbols
 
-namespace cache
+namespace cache2
 {
 	constexpr ULONG ulNoMatch = 0xffffffff;
 }

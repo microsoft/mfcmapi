@@ -23,11 +23,11 @@ void FindNameIDArrayMatches(
 	ULONG ulLowerBound = 0;
 	auto ulUpperBound = ulMyArray - 1; // ulMyArray-1 is the last entry
 	auto ulMidPoint = (ulUpperBound + ulLowerBound) / 2;
-	ULONG ulFirstMatch = cache::ulNoMatch;
-	ULONG ulLastMatch = cache::ulNoMatch;
+	ULONG ulFirstMatch = cache2::ulNoMatch;
+	ULONG ulLastMatch = cache2::ulNoMatch;
 
 	if (lpulNumExacts) *lpulNumExacts = 0;
-	if (lpulFirstExact) *lpulFirstExact = cache::ulNoMatch;
+	if (lpulFirstExact) *lpulFirstExact = cache2::ulNoMatch;
 
 	// find A match
 	while (ulUpperBound - ulLowerBound > 1)
@@ -61,7 +61,7 @@ void FindNameIDArrayMatches(
 	}
 
 	// Check that we got a match
-	if (cache::ulNoMatch != ulFirstMatch)
+	if (cache2::ulNoMatch != ulFirstMatch)
 	{
 		ulLastMatch = ulFirstMatch; // Remember the last match we've found so far
 
@@ -80,7 +80,7 @@ void FindNameIDArrayMatches(
 
 		ULONG ulNumMatches = 0;
 
-		if (cache::ulNoMatch != ulFirstMatch)
+		if (cache2::ulNoMatch != ulFirstMatch)
 		{
 			ulNumMatches = ulLastMatch - ulFirstMatch + 1;
 		}
@@ -205,7 +205,7 @@ void PrintTagFromName(_In_z_ LPCWSTR lpszPropName, _In_ ULONG ulType)
 {
 	if (!lpszPropName) return;
 
-	if (cache::ulNoMatch != ulType)
+	if (cache2::ulNoMatch != ulType)
 	{
 		printf("Restricting output to ");
 		PrintType(ulType);
@@ -218,7 +218,7 @@ void PrintTagFromName(_In_z_ LPCWSTR lpszPropName, _In_ ULONG ulType)
 	{
 		if (0 == lstrcmpiW(lpszPropName, PropTagArray[ulCur].lpszName))
 		{
-			if (cache::ulNoMatch == ulType)
+			if (cache2::ulNoMatch == ulType)
 			{
 				PrintTag(ulCur);
 			}
@@ -233,22 +233,22 @@ void PrintTagFromName(_In_z_ LPCWSTR lpszPropName, _In_ ULONG ulType)
 			// We're gonna skip at least one, so only print if we have more than one
 			if (ulExacts.size() > 1)
 			{
-				if (cache::ulNoMatch == ulType)
+				if (cache2::ulNoMatch == ulType)
 				{
 					printf("\nOther exact matches:\n");
 				}
 
 				for (const auto& ulMatch : ulExacts)
 				{
-					if (cache::ulNoMatch == ulType && ulExactMatch == ulMatch) continue; // skip this one
-					if (cache::ulNoMatch != ulType && ulType != PROP_TYPE(PropTagArray[ulMatch].ulValue)) continue;
+					if (cache2::ulNoMatch == ulType && ulExactMatch == ulMatch) continue; // skip this one
+					if (cache2::ulNoMatch != ulType && ulType != PROP_TYPE(PropTagArray[ulMatch].ulValue)) continue;
 					PrintTag(ulMatch);
 				}
 			}
 
 			if (!ulPartials.empty())
 			{
-				if (cache::ulNoMatch == ulType)
+				if (cache2::ulNoMatch == ulType)
 				{
 					printf("\nOther partial matches:\n");
 				}
@@ -257,7 +257,7 @@ void PrintTagFromName(_In_z_ LPCWSTR lpszPropName, _In_ ULONG ulType)
 				{
 					if (PropTagArray[ulExactMatch].ulValue == PropTagArray[ulMatch].ulValue)
 						continue; // skip our exact matches
-					if (cache::ulNoMatch != ulType && ulType != PROP_TYPE(PropTagArray[ulMatch].ulValue)) continue;
+					if (cache2::ulNoMatch != ulType && ulType != PROP_TYPE(PropTagArray[ulMatch].ulValue)) continue;
 					PrintTag(ulMatch);
 				}
 			}
@@ -279,7 +279,7 @@ void PrintTagFromPartialName(_In_opt_z_ LPCWSTR lpszPropName, _In_ ULONG ulType)
 	else
 		printf("Searching for all properties\n");
 
-	if (cache::ulNoMatch != ulType)
+	if (cache2::ulNoMatch != ulType)
 	{
 		printf("Restricting output to ");
 		PrintType(ulType);
@@ -292,7 +292,7 @@ void PrintTagFromPartialName(_In_opt_z_ LPCWSTR lpszPropName, _In_ ULONG ulType)
 	{
 		if (!lpszPropName || nullptr != StrStrIW(PropTagArray[ulCur].lpszName, lpszPropName))
 		{
-			if (cache::ulNoMatch != ulType && ulType != PROP_TYPE(PropTagArray[ulCur].ulValue)) continue;
+			if (cache2::ulNoMatch != ulType && ulType != PROP_TYPE(PropTagArray[ulCur].ulValue)) continue;
 			PrintTag(ulCur);
 			ulNumMatches++;
 		}
@@ -378,14 +378,14 @@ void PrintDispID(_In_ ULONG ulRow)
 void PrintDispIDFromNum(_In_ ULONG ulDispID)
 {
 	ULONG ulNumExacts = NULL;
-	ULONG ulFirstExactMatch = cache::ulNoMatch;
+	ULONG ulFirstExactMatch = cache2::ulNoMatch;
 
 	printf("Dispid tag 0x%04lX:\n", ulDispID);
 
 	FindNameIDArrayMatches(
 		ulDispID, NameIDArray.data(), static_cast<ULONG>(NameIDArray.size()), &ulNumExacts, &ulFirstExactMatch);
 
-	if (ulNumExacts > 0 && cache::ulNoMatch != ulFirstExactMatch)
+	if (ulNumExacts > 0 && cache2::ulNoMatch != ulFirstExactMatch)
 	{
 		printf("\nExact matches:\n");
 		for (auto ulCur = ulFirstExactMatch; ulCur < ulFirstExactMatch + ulNumExacts; ulCur++)
@@ -410,7 +410,7 @@ void PrintDispIDFromName(_In_opt_z_ LPCWSTR lpszDispIDName)
 			// now that we have a match, let's see if we have other dispids with the same number
 			const auto ulExactMatch = ulCur; // The guy that matched lpszPropName
 			ULONG ulNumExacts = NULL;
-			ULONG ulFirstExactMatch = cache::ulNoMatch;
+			ULONG ulFirstExactMatch = cache2::ulNoMatch;
 
 			FindNameIDArrayMatches(
 				NameIDArray[ulExactMatch].lValue,
@@ -452,7 +452,7 @@ void PrintDispIDFromPartialName(_In_opt_z_ LPCWSTR lpszDispIDName, _In_ ULONG ul
 	{
 		if (!lpszDispIDName || nullptr != StrStrIW(NameIDArray[ulCur].lpszName, lpszDispIDName))
 		{
-			if (cache::ulNoMatch != ulType && ulType != NameIDArray[ulCur].ulType) continue;
+			if (cache2::ulNoMatch != ulType && ulType != NameIDArray[ulCur].ulType) continue;
 			PrintDispID(ulCur);
 			ulNumMatches++;
 		}
@@ -549,7 +549,7 @@ void DoPropTags()
 	if (lpszPropName) output::DebugPrint(output::dbgLevel::Generic, L"lpszPropName = %ws\n", lpszPropName);
 	output::DebugPrint(output::dbgLevel::Generic, L"ulPropNum = 0x%08X\n", ulPropNum);
 	const auto ulTypeNum =
-		cli::switchType.empty() ? cache::ulNoMatch : proptype::PropTypeNameToPropType(cli::switchType[0]);
+		cli::switchType.empty() ? cache2::ulNoMatch : proptype::PropTypeNameToPropType(cli::switchType[0]);
 
 	// Handle dispid cases
 	if (cli::switchDispid.isSet())
@@ -590,7 +590,7 @@ void DoPropTags()
 	// If we weren't asked about a property, maybe we were asked about types
 	else if (cli::switchType.isSet())
 	{
-		if (cache::ulNoMatch != ulTypeNum)
+		if (cache2::ulNoMatch != ulTypeNum)
 		{
 			PrintType(PROP_TAG(ulTypeNum, 0));
 			printf(" = 0x%04lX = %lu", ulTypeNum, ulTypeNum);

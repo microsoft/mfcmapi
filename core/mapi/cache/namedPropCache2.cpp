@@ -585,7 +585,7 @@ namespace cache2
 		std::vector<std::wstring> results;
 		if (!lpNameID) return {};
 		if (lpNameID->ulKind != MNID_ID) return {};
-		ULONG ulMatch = cache::ulNoMatch;
+		ULONG ulMatch = ulNoMatch;
 
 		if (NameIDArray.empty()) return {};
 
@@ -598,7 +598,7 @@ namespace cache2
 			}
 		}
 
-		if (cache::ulNoMatch != ulMatch)
+		if (ulNoMatch != ulMatch)
 		{
 			for (auto ulCur = ulMatch; ulCur < NameIDArray.size(); ulCur++)
 			{
