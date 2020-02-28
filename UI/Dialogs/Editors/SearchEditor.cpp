@@ -3,8 +3,8 @@
 #include <core/utility/strings.h>
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
 #include <core/mapi/mapiFunctions.h>
-#include <core/mapi/cache/namedPropCacheEntry2.h>
-#include <core/mapi/cache/namedPropCache2.h>
+#include <core/mapi/cache/namedPropCacheEntry.h>
+#include <core/mapi/cache/namedPropCache.h>
 #include <core/utility/output.h>
 #include <core/interpret/proptags.h>
 #include <core/addin/mfcmapi.h>

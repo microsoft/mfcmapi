@@ -11,8 +11,8 @@
 #include <core/sortlistdata/contentsData.h>
 #include <UI/Dialogs/BaseDialog.h>
 #include <UI/Dialogs/ContentsTable/ContentsTableDlg.h>
-#include <core/mapi/cache/namedPropCacheEntry2.h>
-#include <core/mapi/cache/namedPropCache2.h>
+#include <core/mapi/cache/namedPropCacheEntry.h>
+#include <core/mapi/cache/namedPropCache.h>
 #include <core/mapi/mapiMemory.h>
 #include <core/utility/registry.h>
 #include <core/utility/strings.h>

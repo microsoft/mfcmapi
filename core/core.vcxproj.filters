@@ -294,10 +294,10 @@
     <ClInclude Include="propertyBag\mapiPropPropertyBag.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="mapi\cache\namedPropCache2.h">
+    <ClInclude Include="mapi\cache\namedPropCache.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="mapi\cache\namedPropCacheEntry2.h">
+    <ClInclude Include="mapi\cache\namedPropCacheEntry.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -518,10 +518,10 @@
     <ClCompile Include="propertyBag\mapiPropPropertyBag.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="mapi\cache\namedPropCache2.cpp">
+    <ClCompile Include="mapi\cache\namedPropCache.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="mapi\cache\namedPropCacheEntry2.cpp">
+    <ClCompile Include="mapi\cache\namedPropCacheEntry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

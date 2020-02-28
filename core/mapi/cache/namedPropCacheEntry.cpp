@@ -1,6 +1,6 @@
 #include <core/stdafx.h>
-#include <core/mapi/cache/namedPropCacheEntry2.h>
-#include <core/mapi/cache/namedPropCache2.h>
+#include <core/mapi/cache/namedPropCacheEntry.h>
+#include <core/mapi/cache/namedPropCache.h>
 #include <core/utility/error.h>
 #include <core/mapi/mapiMemory.h>
 
