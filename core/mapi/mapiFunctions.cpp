@@ -11,7 +11,6 @@
 #include <core/mapi/mapiABFunctions.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/mapi/mapiProgress.h>
-#include <core/mapi/cache/namedPropCacheEntry.h>
 #include <core/mapi/cache/namedPropCache.h>
 #include <core/mapi/mapiOutput.h>
 

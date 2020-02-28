@@ -545,7 +545,6 @@
     <ClInclude Include="mapi\cache\globalCache.h" />
     <ClInclude Include="mapi\cache\mapiObjects.h" />
     <ClInclude Include="mapi\cache\namedPropCache.h" />
-    <ClInclude Include="mapi\cache\namedPropCacheEntry.h" />
     <ClInclude Include="mapi\columnTags.h" />
     <ClInclude Include="mapi\exportProfile.h" />
     <ClInclude Include="mapi\extraPropTags.h" />
@@ -635,7 +634,6 @@
     <ClCompile Include="mapi\cache\globalCache.cpp" />
     <ClCompile Include="mapi\cache\mapiObjects.cpp" />
     <ClCompile Include="mapi\cache\namedPropCache.cpp" />
-    <ClCompile Include="mapi\cache\namedPropCacheEntry.cpp" />
     <ClCompile Include="mapi\exportProfile.cpp" />
     <ClCompile Include="mapi\mapiABFunctions.cpp" />
     <ClCompile Include="mapi\mapiFile.cpp" />

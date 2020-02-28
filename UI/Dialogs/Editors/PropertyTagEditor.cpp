@@ -1,7 +1,6 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
 #include <core/utility/strings.h>
-#include <core/mapi/cache/namedPropCacheEntry.h>
 #include <core/mapi/cache/namedPropCache.h>
 #include <core/interpret/guid.h>
 #include <UI/Dialogs/Editors/PropertySelector.h>

@@ -297,9 +297,6 @@
     <ClInclude Include="mapi\cache\namedPropCache.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="mapi\cache\namedPropCacheEntry.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="utility\strings.cpp">
@@ -519,9 +516,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="mapi\cache\namedPropCache.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="mapi\cache\namedPropCacheEntry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

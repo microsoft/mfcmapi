@@ -3,7 +3,6 @@
 #include <core/mapi/extraPropTags.h>
 #include <core/utility/strings.h>
 #include <core/interpret/guid.h>
-#include <core/mapi/cache/namedPropCacheEntry.h>
 #include <core/mapi/cache/namedPropCache.h>
 #include <core/addin/addin.h>
 #include <core/addin/mfcmapi.h>
