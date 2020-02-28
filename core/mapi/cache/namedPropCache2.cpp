@@ -91,7 +91,6 @@ namespace cache
 				for (ULONG i = 0; i < cPropNames; i++)
 				{
 					tags.emplace_back(lpTags->aulPropTag[i]);
-					// TODO: Figure out what misses look like here
 				}
 			}
 
