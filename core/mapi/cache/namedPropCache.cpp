@@ -173,7 +173,7 @@ namespace cache
 		return true;
 	}
 
-	// Compare given a signature, guid, kind, and value
+	// Compare given a signature, MAPINAMEID
 	// If signature is empty then do not use a signature
 	_Check_return_ bool
 	namedPropCacheEntry::match(_In_ const std::vector<BYTE>& _sig, _In_ const MAPINAMEID& _mapiNameId) const
@@ -199,20 +199,16 @@ namespace cache
 		return true;
 	}
 
-	// Compare given a tag, guid, kind, and value
-	_Check_return_ bool namedPropCacheEntry::match(
-		ULONG _ulPropID,
-		_In_ const GUID* lpguid,
-		ULONG ulKind,
-		LONG lID,
-		_In_z_ LPCWSTR lpwstrName) const noexcept
+	// Compare given a id, MAPINAMEID
+	_Check_return_ bool namedPropCacheEntry::match(ULONG _ulPropID, _In_ const MAPINAMEID& _mapiNameId) const noexcept
 	{
 		if (ulPropID != _ulPropID) return false;
 
-		if (mapiNameId.ulKind != ulKind) return false;
-		if (MNID_ID == ulKind && mapiNameId.Kind.lID != lID) return false;
-		if (MNID_STRING == ulKind && 0 != lstrcmpW(mapiNameId.Kind.lpwstrName, lpwstrName)) return false;
-		if (0 != memcmp(mapiNameId.lpguid, lpguid, sizeof(GUID))) return false;
+		if (mapiNameId.ulKind != _mapiNameId.ulKind) return false;
+		if (mapiNameId.ulKind == MNID_ID && mapiNameId.Kind.lID != _mapiNameId.Kind.lID) return false;
+		if (mapiNameId.ulKind == MNID_STRING && 0 != lstrcmpW(mapiNameId.Kind.lpwstrName, _mapiNameId.Kind.lpwstrName))
+			return false;
+		if (0 != memcmp(mapiNameId.lpguid, _mapiNameId.lpguid, sizeof(GUID))) return false;
 
 		return true;
 	}
@@ -506,14 +502,8 @@ namespace cache
 		// If we're using the cache, look up the answer there and return
 		if (registry::cacheNamedProps)
 		{
-			lpNamedPropCacheEntry = namedPropCache::find([&](const auto& entry) noexcept {
-				return entry->match(
-					PROP_ID(ulPropTag),
-					lpNameID->lpguid,
-					lpNameID->ulKind,
-					lpNameID->Kind.lID,
-					lpNameID->Kind.lpwstrName);
-			});
+			lpNamedPropCacheEntry = namedPropCache::find(
+				[&](const auto& entry) noexcept { return entry->match(PROP_ID(ulPropTag), *lpNameID); });
 			if (lpNamedPropCacheEntry && lpNamedPropCacheEntry->hasCachedStrings())
 			{
 				return lpNamedPropCacheEntry->getNamePropNames();

@@ -39,16 +39,14 @@ namespace cache
 		_Check_return_ bool
 		match(const namedPropCacheEntry* entry, bool bMatchSig, bool bMatchID, bool bMatchName) const;
 
-		// Compare given a signature, guid, kind, and value
+		// Compare given a signature, MAPINAMEID
 		_Check_return_ bool match(_In_ const std::vector<BYTE>& _sig, _In_ const MAPINAMEID& _mapiNameId) const;
 
 		// Compare given a signature and property ID (ulPropID)
 		_Check_return_ bool match(_In_ const std::vector<BYTE>& _sig, ULONG _ulPropID) const;
 
-		// Compare given a tag, guid, kind, and value
-		_Check_return_ bool
-		match(ULONG _ulPropID, _In_ const GUID* lpguid, ULONG ulKind, LONG lID, _In_z_ LPCWSTR lpwstrName) const
-			noexcept;
+		// Compare given a id, MAPINAMEID
+		_Check_return_ bool match(ULONG _ulPropID, _In_ const MAPINAMEID& _mapiNameId) const noexcept;
 
 	private:
 		ULONG ulPropID{}; // MAPI ID (ala PROP_ID) for a named property
