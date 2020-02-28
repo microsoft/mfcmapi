@@ -8,8 +8,6 @@
 #include <UI/FileDialogEx.h>
 #include <core/utility/import.h>
 #include <core/mapi/mapiProgress.h>
-#include <core/mapi/cache/namedPropCache.h>
-#include <core/mapi/cache/namedPropCacheEntry.h>
 #include <core/mapi/cache/namedPropCacheEntry2.h>
 #include <core/mapi/cache/namedPropCache2.h>
 #include <core/smartview/SmartView.h>
@@ -1032,13 +1030,11 @@ namespace controls::sortlistctrl
 		// Exchange can return MAPI_E_NOT_ENOUGH_MEMORY when I call this - give it a try - PSTs support it
 		output::DebugPrintEx(
 			output::dbgLevel::NamedProp, CLASS, L"FindAllNamedProps", L"Calling GetIDsFromNames with a NULL\n");
-		auto lptag = oldcache::GetIDsFromNames(m_lpPropBag->GetMAPIProp(), NULL, nullptr, NULL);
+		auto lptag = cache::GetIDsFromNames(m_lpPropBag->GetMAPIProp(), {}, NULL);
 		if (lptag && lptag->cValues)
 		{
 			// Now we have an array of tags - add them in:
 			AddPropsToExtraProps(lptag, false);
-			MAPIFreeBuffer(lptag);
-			lptag = nullptr;
 		}
 		else
 		{
@@ -1106,6 +1102,8 @@ namespace controls::sortlistctrl
 				}
 			}
 		}
+
+		MAPIFreeBuffer(lptag);
 
 		if (SUCCEEDED(hRes))
 		{

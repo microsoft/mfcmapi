@@ -11,7 +11,6 @@
 #include <core/mapi/mapiABFunctions.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/mapi/mapiProgress.h>
-#include <core/mapi/cache/namedPropCache.h>
 #include <core/mapi/cache/namedPropCacheEntry2.h>
 #include <core/mapi/cache/namedPropCache2.h>
 #include <core/mapi/mapiOutput.h>
@@ -1458,18 +1457,18 @@ namespace mapi
 		output::DebugPrint(output::dbgLevel::NamedProp, L"RemoveOneOff - removing one off named properties.\n");
 
 		auto hRes = S_OK;
-		MAPINAMEID rgnmid[ulNumOneOffIDs] = {};
-		LPMAPINAMEID rgpnmid[ulNumOneOffIDs] = {};
+		auto names = std::vector<MAPINAMEID>{};
 
 		for (ULONG i = 0; i < ulNumOneOffIDs; i++)
 		{
-			rgnmid[i].lpguid = const_cast<LPGUID>(&guid::PSETID_Common);
-			rgnmid[i].ulKind = MNID_ID;
-			rgnmid[i].Kind.lID = aulOneOffIDs[i];
-			rgpnmid[i] = &rgnmid[i];
+			auto name = MAPINAMEID{};
+			name.lpguid = const_cast<LPGUID>(&guid::PSETID_Common);
+			name.ulKind = MNID_ID;
+			name.Kind.lID = aulOneOffIDs[i];
+			names.emplace_back(name);
 		}
 
-		auto lpTags = oldcache::GetIDsFromNames(lpMessage, ulNumOneOffIDs, rgpnmid, 0);
+		auto lpTags = cache::GetIDsFromNames(lpMessage, names, 0);
 		if (lpTags)
 		{
 			LPSPropProblemArray lpProbArray = nullptr;

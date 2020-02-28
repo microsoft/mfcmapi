@@ -21,10 +21,8 @@ namespace cache
 		_In_opt_ const std::vector<BYTE>& sig,
 		_In_ LPSPropTagArray* lppPropTags,
 		ULONG ulFlags);
-	_Check_return_ std::vector<ULONG> GetIDsFromNames(
-		_In_ LPMAPIPROP lpMAPIProp,
-		_In_ std::vector<MAPINAMEID> nameIDs,
-		_In_ ULONG ulFlags);
+	_Check_return_ LPSPropTagArray
+	GetIDsFromNames(_In_ LPMAPIPROP lpMAPIProp, _In_ std::vector<MAPINAMEID> nameIDs, _In_ ULONG ulFlags);
 
 	NamePropNames NameIDToStrings(
 		ULONG ulPropTag, // optional 'original' prop tag

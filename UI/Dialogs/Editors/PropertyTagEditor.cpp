@@ -194,10 +194,12 @@ namespace dialog::editor
 			(MNID_ID == NamedID.ulKind && NamedID.Kind.lID || MNID_STRING == NamedID.ulKind && NamedID.Kind.lpwstrName))
 		{
 			const auto ids = cache::GetIDsFromNames(m_lpMAPIProp, {NamedID}, bCreate ? MAPI_CREATE : 0);
-			if (ids.size() == 1)
+			if (ids && ids->cValues == 1)
 			{
-				m_ulPropTag = CHANGE_PROP_TYPE(ids[0], ulPropType);
+				m_ulPropTag = CHANGE_PROP_TYPE(ids->aulPropTag[0], ulPropType);
 			}
+
+			MAPIFreeBuffer(ids);
 		}
 	}
 

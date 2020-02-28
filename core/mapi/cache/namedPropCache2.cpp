@@ -72,7 +72,7 @@ namespace cache
 
 		// Returns a vector of tags for the input names
 		// Sourced directly from MAPI
-		static _Check_return_ std::vector<ULONG>
+		static _Check_return_ LPSPropTagArray
 		GetIDsFromNames(_In_ LPMAPIPROP lpMAPIProp, std::vector<MAPINAMEID> nameIDs, ULONG ulFlags)
 		{
 			if (!lpMAPIProp) return {};
@@ -95,18 +95,7 @@ namespace cache
 				WC_H_GETPROPS_S(lpMAPIProp->GetIDsFromNames(lpNameIDs.size(), names, ulFlags, &lpTags));
 			}
 
-			auto tags = std::vector<ULONG>{};
-
-			if (lpTags)
-			{
-				for (ULONG i = 0; i < nameIDs.size(); i++)
-				{
-					tags.emplace_back(lpTags->aulPropTag[i]);
-				}
-			}
-
-			MAPIFreeBuffer(lpTags);
-			return tags;
+			return lpTags;
 		}
 	} // namespace directMapi
 
@@ -236,7 +225,7 @@ namespace cache
 		}
 
 		// If signature is empty then do not use a signature
-		static _Check_return_ std::vector<ULONG> GetIDsFromNames(
+		static _Check_return_ LPSPropTagArray GetIDsFromNames(
 			_In_ LPMAPIPROP lpMAPIProp,
 			_In_ const std::vector<BYTE>& sig,
 			_In_ std::vector<MAPINAMEID> nameIDs,
@@ -266,35 +255,33 @@ namespace cache
 			if (!misses.empty())
 			{
 				auto missed = directMapi::GetIDsFromNames(lpMAPIProp, misses, ulFlags);
-				if (misses.size() == missed.size())
+				if (missed && missed->cValues == misses.size())
 				{
 					// Cache the results
 					auto toCache = std::vector<std::shared_ptr<namedPropCacheEntry>>{};
 					for (ULONG i = 0; i < misses.size(); i++)
 					{
-						toCache.emplace_back(std::make_shared<namedPropCacheEntry>(&misses[i], missed[i], sig));
+						toCache.emplace_back(
+							std::make_shared<namedPropCacheEntry>(&misses[i], missed->aulPropTag[i], sig));
 					}
 
 					add(toCache, sig);
 				}
+
+				MAPIFreeBuffer(missed);
 			}
 
-			auto results = std::vector<ULONG>{};
 			// Second pass, do our lookup with a populated cache
+			auto results = mapi::allocate<LPSPropTagArray>(CbNewSPropTagArray(nameIDs.size()));
+			results->cValues = nameIDs.size();
+			ULONG i = 0;
 			for (const auto nameID : nameIDs)
 			{
 				const auto lpEntry = find([&](const auto& entry) noexcept {
 					return entry->match(sig, nameID.lpguid, nameID.ulKind, nameID.Kind.lID, nameID.Kind.lpwstrName);
 				});
 
-				if (lpEntry)
-				{
-					results.emplace_back(lpEntry->getPropID());
-				}
-				else
-				{
-					results.emplace_back(0);
-				}
+				results->aulPropTag[i++] = lpEntry ? lpEntry->getPropID() : 0;
 			}
 
 			return results;
@@ -364,7 +351,7 @@ namespace cache
 		return namedPropCache::GetNamesFromIDs(lpMAPIProp, sig, lppPropTags);
 	}
 
-	_Check_return_ std::vector<ULONG>
+	_Check_return_ LPSPropTagArray
 	GetIDsFromNames(_In_ LPMAPIPROP lpMAPIProp, _In_ std::vector<MAPINAMEID> nameIDs, _In_ ULONG ulFlags)
 	{
 		if (!lpMAPIProp) return {};
