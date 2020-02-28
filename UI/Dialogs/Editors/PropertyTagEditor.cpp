@@ -1,8 +1,6 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
 #include <core/utility/strings.h>
-#include <core/mapi/cache/namedPropCache.h>
-#include <core/mapi/cache/namedPropCacheEntry.h>
 #include <core/mapi/cache/namedPropCacheEntry2.h>
 #include <core/mapi/cache/namedPropCache2.h>
 #include <core/interpret/guid.h>
@@ -134,8 +132,7 @@ namespace dialog::editor
 	{
 		auto ulPropType = GetSelectedPropType();
 
-		MAPINAMEID NamedID = {nullptr};
-		auto lpNamedID = &NamedID;
+		MAPINAMEID NamedID = {};
 
 		// Assume an ID to help with the dispid case
 		NamedID.ulKind = MNID_ID;
@@ -164,7 +161,6 @@ namespace dialog::editor
 				NamedID.Kind.lID = lpNameIDEntry->lValue;
 				NamedID.lpguid = const_cast<LPGUID>(lpNameIDEntry->lpGuid);
 				ulPropType = lpNameIDEntry->ulType;
-				lpNamedID = &NamedID;
 
 				// We found something in our lookup, but later GetIDsFromNames call may fail
 				// Make sure we write what we found back to the dialog
@@ -197,7 +193,7 @@ namespace dialog::editor
 		if (NamedID.lpguid &&
 			(MNID_ID == NamedID.ulKind && NamedID.Kind.lID || MNID_STRING == NamedID.ulKind && NamedID.Kind.lpwstrName))
 		{
-			const auto ids = cache::GetIDsFromNames(m_lpMAPIProp, 1, &lpNamedID, bCreate ? MAPI_CREATE : 0);
+			const auto ids = cache::GetIDsFromNames(m_lpMAPIProp, {NamedID}, bCreate ? MAPI_CREATE : 0);
 			if (ids.size() == 1)
 			{
 				m_ulPropTag = CHANGE_PROP_TYPE(ids[0], ulPropType);
