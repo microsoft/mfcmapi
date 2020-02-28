@@ -65,6 +65,7 @@ namespace cache
 		ULONG ulFlags);
 	_Check_return_ std::shared_ptr<namedPropCacheEntry>
 	GetNameFromID(_In_ LPMAPIPROP lpMAPIProp, _In_ ULONG ulPropTag, ULONG ulFlags);
+
 	// No signature form: look up and use signature if possible
 	_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>>
 	GetNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp, _In_ LPSPropTagArray* lppPropTags, ULONG ulFlags);
@@ -74,6 +75,8 @@ namespace cache
 		_In_opt_ const std::vector<BYTE>& sig,
 		_In_ LPSPropTagArray* lppPropTags,
 		ULONG ulFlags);
+
+
 	_Check_return_ LPSPropTagArray
 	GetIDsFromNames(_In_ LPMAPIPROP lpMAPIProp, _In_ std::vector<MAPINAMEID> nameIDs, _In_ ULONG ulFlags);
 
