@@ -58,11 +58,8 @@ namespace cache
 		bool bStringsCached{}; // We have cached strings
 	};
 
-	_Check_return_ std::shared_ptr<namedPropCacheEntry> GetNameFromID(
-		_In_ LPMAPIPROP lpMAPIProp,
-		_In_opt_ const std::vector<BYTE>& sig,
-		_In_ ULONG ulPropTag,
-		ULONG ulFlags);
+	_Check_return_ std::shared_ptr<namedPropCacheEntry>
+	GetNameFromID(_In_ LPMAPIPROP lpMAPIProp, _In_opt_ const SBinary* sig, _In_ ULONG ulPropTag, ULONG ulFlags);
 	_Check_return_ std::shared_ptr<namedPropCacheEntry>
 	GetNameFromID(_In_ LPMAPIPROP lpMAPIProp, _In_ ULONG ulPropTag, ULONG ulFlags);
 
@@ -76,7 +73,6 @@ namespace cache
 		_In_ LPSPropTagArray* lppPropTags,
 		ULONG ulFlags);
 
-
 	_Check_return_ LPSPropTagArray
 	GetIDsFromNames(_In_ LPMAPIPROP lpMAPIProp, _In_ std::vector<MAPINAMEID> nameIDs, _In_ ULONG ulFlags);
 
@@ -84,7 +80,7 @@ namespace cache
 		ULONG ulPropTag, // optional 'original' prop tag
 		_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
 		_In_opt_ const MAPINAMEID* lpNameID, // optional named property information to avoid GetNamesFromIDs call
-		_In_opt_ const std::vector<BYTE>& sig, // optional mapping signature for object to speed named prop lookups
+		_In_opt_ const SBinary* sig, // optional mapping signature for object to speed named prop lookups
 		bool bIsAB); // true for an address book property (they can be > 8000 and not named props)
 
 	std::vector<std::wstring> NameIDToPropNames(_In_ const MAPINAMEID* lpNameID);

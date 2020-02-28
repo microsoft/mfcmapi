@@ -553,7 +553,7 @@ namespace output
 				false,
 				iIndent);
 
-		auto namePropNames = cache::NameIDToStrings(lpProp->ulPropTag, lpObj, nullptr, {}, false);
+		auto namePropNames = cache::NameIDToStrings(lpProp->ulPropTag, lpObj, nullptr, nullptr, false);
 		if (!namePropNames.guid.empty())
 			OutputXMLValue(
 				ulDbgLvl,

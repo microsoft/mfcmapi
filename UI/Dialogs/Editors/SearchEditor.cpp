@@ -122,7 +122,7 @@ namespace dialog::editor
 			}
 			else
 			{
-				auto namePropNames = cache::NameIDToStrings(m_ulPropTag, m_lpMAPIProp, nullptr, {}, false);
+				auto namePropNames = cache::NameIDToStrings(m_ulPropTag, m_lpMAPIProp, nullptr, nullptr, false);
 
 				if (!namePropNames.name.empty())
 					SetStringW(PROPNAME, namePropNames.name);

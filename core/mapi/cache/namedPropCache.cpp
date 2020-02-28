@@ -408,15 +408,21 @@ namespace cache
 		return {};
 	}
 
-	_Check_return_ std::shared_ptr<namedPropCacheEntry> GetNameFromID(
-		_In_ LPMAPIPROP lpMAPIProp,
-		_In_opt_ const std::vector<BYTE>& sig,
-		_In_ ULONG ulPropTag,
-		ULONG ulFlags)
+	_Check_return_ std::shared_ptr<namedPropCacheEntry>
+	GetNameFromID(_In_ LPMAPIPROP lpMAPIProp, _In_opt_ const SBinary* sig, _In_ ULONG ulPropTag, ULONG ulFlags)
 	{
 		auto tag = SPropTagArray{1, ulPropTag};
 		auto lptag = &tag;
-		const auto names = GetNamesFromIDs(lpMAPIProp, sig, &lptag, ulFlags);
+		auto names = std::vector<std::shared_ptr<namedPropCacheEntry>>{};
+		if (sig)
+		{
+			names = GetNamesFromIDs(lpMAPIProp, {sig->lpb, sig->lpb + sig->cb}, &lptag, ulFlags);
+		}
+		else
+		{
+			names = GetNamesFromIDs(lpMAPIProp, &lptag, ulFlags);
+		}
+
 		if (names.size() == 1) return names[0];
 		return {};
 	}
@@ -625,7 +631,7 @@ namespace cache
 		ULONG ulPropTag, // optional 'original' prop tag
 		_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
 		_In_opt_ const MAPINAMEID* lpNameID, // optional named property information to avoid GetNamesFromIDs call
-		_In_opt_ const std::vector<BYTE>& sig, // optional mapping signature for object to speed named prop lookups
+		_In_opt_ const SBinary* sig, // optional mapping signature for object to speed named prop lookups
 		bool bIsAB) // true for an address book property (they can be > 8000 and not named props)
 	{
 		// If we weren't passed named property information and we need it, look it up

@@ -106,7 +106,7 @@ namespace dialog::editor
 		{
 			prop->m_ulPropTag = ulNewPropTag;
 
-			const auto namePropNames = cache::NameIDToStrings(ulNewPropTag, m_lpMAPIProp, nullptr, {}, m_bIsAB);
+			const auto namePropNames = cache::NameIDToStrings(ulNewPropTag, m_lpMAPIProp, nullptr, nullptr, m_bIsAB);
 
 			const auto propTagNames = proptags::PropTagToPropName(ulNewPropTag, m_bIsAB);
 
@@ -149,7 +149,7 @@ namespace dialog::editor
 					sortlistdata::propListData::init(lpData, ulPropTag);
 				}
 
-				const auto namePropNames = cache::NameIDToStrings(ulPropTag, m_lpMAPIProp, nullptr, {}, m_bIsAB);
+				const auto namePropNames = cache::NameIDToStrings(ulPropTag, m_lpMAPIProp, nullptr, nullptr, m_bIsAB);
 
 				const auto propTagNames = proptags::PropTagToPropName(ulPropTag, m_bIsAB);
 

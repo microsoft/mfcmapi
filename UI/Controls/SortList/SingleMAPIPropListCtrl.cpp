@@ -667,11 +667,9 @@ namespace controls::sortlistctrl
 		std::wstring PropString;
 		std::wstring AltPropString;
 
-		auto sig = std::vector<BYTE>{};
-		if (lpMappingSignature) sig = {lpMappingSignature->lpb, lpMappingSignature->lpb + lpMappingSignature->cb};
-		auto namePropNames = cache::NameIDToStrings(ulPropTag, m_lpPropBag->GetMAPIProp(), lpNameID, sig, m_bIsAB);
-
-		auto propTagNames = proptags::PropTagToPropName(ulPropTag, m_bIsAB);
+		const auto namePropNames =
+			cache::NameIDToStrings(ulPropTag, m_lpPropBag->GetMAPIProp(), lpNameID, lpMappingSignature, m_bIsAB);
+		const auto propTagNames = proptags::PropTagToPropName(ulPropTag, m_bIsAB);
 
 		if (!propTagNames.bestGuess.empty())
 		{
@@ -1141,7 +1139,7 @@ namespace controls::sortlistctrl
 						L"Found a named property at 0x%04X.\n",
 						ulCurrent);
 					const auto namePropNames =
-						cache::NameIDToStrings(ulPropTag, nullptr, name->getMapiNameId(), {}, false);
+						cache::NameIDToStrings(ulPropTag, nullptr, name->getMapiNameId(), nullptr, false);
 					output::DebugPrintEx(
 						output::dbgLevel::NamedProp,
 						CLASS,
@@ -1186,7 +1184,8 @@ namespace controls::sortlistctrl
 
 			if (name->valid())
 			{
-				const auto namePropNames = cache::NameIDToStrings(ulPropTag, nullptr, name->getMapiNameId(), {}, false);
+				const auto namePropNames =
+					cache::NameIDToStrings(ulPropTag, nullptr, name->getMapiNameId(), nullptr, false);
 				MyResult.SetStringW(
 					1,
 					strings::formatmessage(
