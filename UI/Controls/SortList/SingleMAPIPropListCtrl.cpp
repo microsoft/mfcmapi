@@ -663,7 +663,7 @@ namespace controls::sortlistctrl
 		std::wstring PropString;
 		std::wstring AltPropString;
 
-		std::vector<BYTE> sig{};
+		auto sig = std::vector<BYTE>{};
 		if (lpMappingSignature) sig = {lpMappingSignature->lpb, lpMappingSignature->lpb + lpMappingSignature->cb};
 		auto namePropNames = cache::NameIDToStrings(ulPropTag, m_lpPropBag->GetMAPIProp(), lpNameID, sig, m_bIsAB);
 
