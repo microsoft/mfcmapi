@@ -544,9 +544,7 @@
     <ClInclude Include="mapi\adviseSink.h" />
     <ClInclude Include="mapi\cache\globalCache.h" />
     <ClInclude Include="mapi\cache\mapiObjects.h" />
-    <ClInclude Include="mapi\cache\namedPropCache.h" />
     <ClInclude Include="mapi\cache\namedPropCache2.h" />
-    <ClInclude Include="mapi\cache\namedPropCacheEntry.h" />
     <ClInclude Include="mapi\cache\namedPropCacheEntry2.h" />
     <ClInclude Include="mapi\columnTags.h" />
     <ClInclude Include="mapi\exportProfile.h" />
@@ -636,9 +634,7 @@
     <ClCompile Include="mapi\adviseSink.cpp" />
     <ClCompile Include="mapi\cache\globalCache.cpp" />
     <ClCompile Include="mapi\cache\mapiObjects.cpp" />
-    <ClCompile Include="mapi\cache\namedPropCache.cpp" />
     <ClCompile Include="mapi\cache\namedPropCache2.cpp" />
-    <ClCompile Include="mapi\cache\namedPropCacheEntry.cpp" />
     <ClCompile Include="mapi\cache\namedPropCacheEntry2.cpp" />
     <ClCompile Include="mapi\exportProfile.cpp" />
     <ClCompile Include="mapi\mapiABFunctions.cpp" />
