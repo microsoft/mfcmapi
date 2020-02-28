@@ -175,19 +175,16 @@ namespace cache
 
 	// Compare given a signature, guid, kind, and value
 	// If signature is empty then do not use a signature
-	_Check_return_ bool namedPropCacheEntry::match(
-		_In_ const std::vector<BYTE>& _sig,
-		_In_ const GUID* lpguid,
-		ULONG ulKind,
-		LONG lID,
-		_In_z_ LPCWSTR lpwstrName) const
+	_Check_return_ bool
+	namedPropCacheEntry::match(_In_ const std::vector<BYTE>& _sig, _In_ const MAPINAMEID& _mapiNameId) const
 	{
 		if (!_sig.empty() && sig != _sig) return false;
 
-		if (mapiNameId.ulKind != ulKind) return false;
-		if (MNID_ID == ulKind && mapiNameId.Kind.lID != lID) return false;
-		if (MNID_STRING == ulKind && 0 != lstrcmpW(mapiNameId.Kind.lpwstrName, lpwstrName)) return false;
-		if (0 != memcmp(mapiNameId.lpguid, lpguid, sizeof(GUID))) return false;
+		if (mapiNameId.ulKind != _mapiNameId.ulKind) return false;
+		if (mapiNameId.ulKind == MNID_ID && mapiNameId.Kind.lID != _mapiNameId.Kind.lID) return false;
+		if (mapiNameId.ulKind == MNID_STRING && 0 != lstrcmpW(mapiNameId.Kind.lpwstrName, _mapiNameId.Kind.lpwstrName))
+			return false;
+		if (0 != memcmp(mapiNameId.lpguid, _mapiNameId.lpguid, sizeof(GUID))) return false;
 
 		return true;
 	}
@@ -362,9 +359,7 @@ namespace cache
 			// First pass, find the tags we don't have cached
 			for (const auto& nameID : nameIDs)
 			{
-				const auto lpEntry = find([&](const auto& entry) noexcept {
-					return entry->match(sig, nameID.lpguid, nameID.ulKind, nameID.Kind.lID, nameID.Kind.lpwstrName);
-				});
+				const auto lpEntry = find([&](const auto& entry) noexcept { return entry->match(sig, nameID); });
 
 				if (!lpEntry)
 				{
@@ -398,9 +393,7 @@ namespace cache
 			ULONG i = 0;
 			for (const auto nameID : nameIDs)
 			{
-				const auto lpEntry = find([&](const auto& entry) noexcept {
-					return entry->match(sig, nameID.lpguid, nameID.ulKind, nameID.Kind.lID, nameID.Kind.lpwstrName);
-				});
+				const auto lpEntry = find([&](const auto& entry) noexcept { return entry->match(sig, nameID); });
 
 				results->aulPropTag[i++] = lpEntry ? lpEntry->getPropID() : 0;
 			}
