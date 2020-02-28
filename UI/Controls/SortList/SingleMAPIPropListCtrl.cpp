@@ -425,9 +425,16 @@ namespace controls::sortlistctrl
 								// Get the names
 								auto sig = std::vector<BYTE>{};
 								if (lpMappingSig)
+								{
+
 									sig = {lpMappingSig->Value.bin.lpb,
 										   lpMappingSig->Value.bin.lpb + lpMappingSig->Value.bin.cb};
-								names = cache::GetNamesFromIDs(m_lpPropBag->GetMAPIProp(), sig, &lpTag, NULL);
+									names = cache::GetNamesFromIDs(m_lpPropBag->GetMAPIProp(), sig, &lpTag, NULL);
+								}
+								else
+								{
+									names = cache::GetNamesFromIDs(m_lpPropBag->GetMAPIProp(), &lpTag, NULL);
+								}
 
 								MAPIFreeBuffer(lpTag);
 							}
