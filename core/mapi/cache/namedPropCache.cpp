@@ -490,7 +490,7 @@ namespace cache
 
 		if (lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag))
 		{
-			sig = std::vector<BYTE>{lpProp->Value.bin.lpb, lpProp->Value.bin.lpb + lpProp->Value.bin.cb};
+			sig = {lpProp->Value.bin.lpb, lpProp->Value.bin.lpb + lpProp->Value.bin.cb};
 		}
 
 		MAPIFreeBuffer(lpProp);
