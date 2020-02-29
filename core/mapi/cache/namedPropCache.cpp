@@ -416,7 +416,7 @@ namespace cache
 		auto names = std::vector<std::shared_ptr<namedPropCacheEntry>>{};
 		if (sig)
 		{
-			names = GetNamesFromIDs(lpMAPIProp, {sig->lpb, sig->lpb + sig->cb}, &lptag, ulFlags);
+			names = GetNamesFromIDs(lpMAPIProp, sig, &lptag, ulFlags);
 		}
 		else
 		{
@@ -431,24 +431,24 @@ namespace cache
 	_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>>
 	GetNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp, _In_ LPSPropTagArray* lppPropTags, ULONG ulFlags)
 	{
-		auto sig = std::vector<BYTE>{};
+		SBinary* sig = {};
 		LPSPropValue lpProp = nullptr;
 		// This error is too chatty to log - ignore it.
 		const auto hRes = HrGetOneProp(lpMAPIProp, PR_MAPPING_SIGNATURE, &lpProp);
 		if (SUCCEEDED(hRes) && lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag))
 		{
-			sig = {lpProp->Value.bin.lpb, lpProp->Value.bin.lpb + lpProp->Value.bin.cb};
+			sig = &lpProp->Value.bin;
 		}
 
+		auto names = GetNamesFromIDs(lpMAPIProp, sig, lppPropTags, ulFlags);
 		MAPIFreeBuffer(lpProp);
-
-		return GetNamesFromIDs(lpMAPIProp, sig, lppPropTags, ulFlags);
+		return names;
 	}
 
 	// Signature form: if signature is empty then do not use a signature
 	_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>> GetNamesFromIDs(
 		_In_ LPMAPIPROP lpMAPIProp,
-		_In_opt_ const std::vector<BYTE>& sig,
+		_In_opt_ const SBinary* sig,
 		_In_ LPSPropTagArray* lppPropTags,
 		ULONG ulFlags)
 	{
@@ -464,7 +464,9 @@ namespace cache
 			return directMapi::GetNamesFromIDs(lpMAPIProp, lppPropTags, ulFlags);
 		}
 
-		return namedPropCache::GetNamesFromIDs(lpMAPIProp, sig, lppPropTags);
+		auto sigv = std::vector<BYTE>{};
+		if (sig) sigv = {sig->lpb, sig->lpb + sig->cb};
+		return namedPropCache::GetNamesFromIDs(lpMAPIProp, sigv, lppPropTags);
 	}
 
 	_Check_return_ LPSPropTagArray
