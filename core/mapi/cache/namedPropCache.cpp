@@ -465,7 +465,7 @@ namespace cache
 		}
 
 		auto sigv = std::vector<BYTE>{};
-		if (sig) sigv = {sig->lpb, sig->lpb + sig->cb};
+		if (sig && sig->lpb && sig->cb) sigv = {sig->lpb, sig->lpb + sig->cb};
 		return namedPropCache::GetNamesFromIDs(lpMAPIProp, sigv, lppPropTags);
 	}
 
