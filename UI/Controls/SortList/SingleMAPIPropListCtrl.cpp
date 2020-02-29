@@ -420,9 +420,15 @@ namespace controls::sortlistctrl
 								}
 
 								// Get the names
-								const SBinary* sig = {};
-								if (lpMappingSig) sig = &lpMappingSig->Value.bin;
-								names = cache::GetNamesFromIDs(m_lpPropBag->GetMAPIProp(), sig, &lpTag, NULL);
+								if (lpMappingSig)
+								{
+									names = cache::GetNamesFromIDs(
+										m_lpPropBag->GetMAPIProp(), &lpMappingSig->Value.bin, &lpTag, NULL);
+								}
+								else
+								{
+									names = cache::GetNamesFromIDs(m_lpPropBag->GetMAPIProp(), &lpTag, NULL);
+								}
 
 								MAPIFreeBuffer(lpTag);
 							}
