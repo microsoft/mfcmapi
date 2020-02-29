@@ -292,7 +292,7 @@ namespace cache
 			// If we reach the end of the cache and don't have everything, we set up to make a GetNamesFromIDs call.
 
 			auto results = std::vector<std::shared_ptr<namedPropCacheEntry>>{};
-			const auto lpPropTags = *lppPropTags;
+			const SPropTagArray* lpPropTags = *lppPropTags;
 
 			auto misses = std::vector<ULONG>{};
 
