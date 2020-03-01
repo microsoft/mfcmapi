@@ -131,8 +131,7 @@ namespace dialog::editor
 	{
 		auto ulPropType = GetSelectedPropType();
 
-		MAPINAMEID NamedID = {nullptr};
-		auto lpNamedID = &NamedID;
+		MAPINAMEID NamedID = {};
 
 		// Assume an ID to help with the dispid case
 		NamedID.ulKind = MNID_ID;
@@ -161,7 +160,6 @@ namespace dialog::editor
 				NamedID.Kind.lID = lpNameIDEntry->lValue;
 				NamedID.lpguid = const_cast<LPGUID>(lpNameIDEntry->lpGuid);
 				ulPropType = lpNameIDEntry->ulType;
-				lpNamedID = &NamedID;
 
 				// We found something in our lookup, but later GetIDsFromNames call may fail
 				// Make sure we write what we found back to the dialog
@@ -194,12 +192,13 @@ namespace dialog::editor
 		if (NamedID.lpguid &&
 			(MNID_ID == NamedID.ulKind && NamedID.Kind.lID || MNID_STRING == NamedID.ulKind && NamedID.Kind.lpwstrName))
 		{
-			const auto lpNamedPropTags = cache::GetIDsFromNames(m_lpMAPIProp, 1, &lpNamedID, bCreate ? MAPI_CREATE : 0);
-			if (lpNamedPropTags)
+			const auto lpNamedPropTags = cache::GetIDsFromNames(m_lpMAPIProp, {NamedID}, bCreate ? MAPI_CREATE : 0);
+			if (lpNamedPropTags && lpNamedPropTags->cValues == 1)
 			{
 				m_ulPropTag = CHANGE_PROP_TYPE(lpNamedPropTags->aulPropTag[0], ulPropType);
-				MAPIFreeBuffer(lpNamedPropTags);
 			}
+
+			MAPIFreeBuffer(lpNamedPropTags);
 		}
 	}
 
@@ -292,30 +291,21 @@ namespace dialog::editor
 		// And never for Address Books
 		if (m_lpMAPIProp && !m_bIsAB && (PROPTAG_TAG == ulSkipField || PROPTAG_ID == ulSkipField))
 		{
-			ULONG ulPropNames = 0;
-			SPropTagArray sTagArray = {0};
-			auto lpTagArray = &sTagArray;
-			LPMAPINAMEID* lppPropNames = nullptr;
-
-			lpTagArray->cValues = 1;
-			lpTagArray->aulPropTag[0] = m_ulPropTag;
-
-			const auto hRes = WC_H_GETPROPS(
-				cache::GetNamesFromIDs(m_lpMAPIProp, &lpTagArray, nullptr, NULL, &ulPropNames, &lppPropNames));
-			if (SUCCEEDED(hRes) && ulPropNames == lpTagArray->cValues && lppPropNames && lppPropNames[0])
+			const auto name = cache::GetNameFromID(m_lpMAPIProp, m_ulPropTag, NULL);
+			if (name->valid())
 			{
-				if (MNID_STRING == lppPropNames[0]->ulKind)
+				const auto mnid = name->getMapiNameId();
+				if (mnid->ulKind == MNID_STRING)
 				{
 					if (PROPTAG_NAMEPROPKIND != ulSkipField)
 						SetDropDownSelection(PROPTAG_NAMEPROPKIND, L"MNID_STRING"); // STRING_OK
-					if (PROPTAG_NAMEPROPNAME != ulSkipField)
-						SetStringW(PROPTAG_NAMEPROPNAME, lppPropNames[0]->Kind.lpwstrName);
+					if (PROPTAG_NAMEPROPNAME != ulSkipField) SetStringW(PROPTAG_NAMEPROPNAME, mnid->Kind.lpwstrName);
 				}
-				else if (MNID_ID == lppPropNames[0]->ulKind)
+				else if (mnid->ulKind == MNID_ID)
 				{
 					if (PROPTAG_NAMEPROPKIND != ulSkipField)
 						SetDropDownSelection(PROPTAG_NAMEPROPKIND, L"MNID_ID"); // STRING_OK
-					if (PROPTAG_NAMEPROPNAME != ulSkipField) SetHex(PROPTAG_NAMEPROPNAME, lppPropNames[0]->Kind.lID);
+					if (PROPTAG_NAMEPROPNAME != ulSkipField) SetHex(PROPTAG_NAMEPROPNAME, mnid->Kind.lID);
 				}
 				else
 				{
@@ -324,7 +314,7 @@ namespace dialog::editor
 
 				if (PROPTAG_NAMEPROPGUID != ulSkipField)
 				{
-					SetDropDownSelection(PROPTAG_NAMEPROPGUID, guid::GUIDToString(lppPropNames[0]->lpguid));
+					SetDropDownSelection(PROPTAG_NAMEPROPGUID, guid::GUIDToString(mnid->lpguid));
 				}
 			}
 			else
@@ -337,7 +327,6 @@ namespace dialog::editor
 					SetDropDownSelection(PROPTAG_NAMEPROPGUID, strings::emptystring);
 				}
 			}
-			MAPIFreeBuffer(lppPropNames);
 		}
 	}
 

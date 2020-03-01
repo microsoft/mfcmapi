@@ -367,8 +367,7 @@ namespace controls::sortlistctrl
 			// Add our props to the view
 			if (lpPropsToAdd)
 			{
-				ULONG ulPropNames = 0;
-				LPMAPINAMEID* lppPropNames = nullptr;
+				std::vector<std::shared_ptr<cache::namedPropCacheEntry>> names{};
 				ULONG ulCurTag = 0;
 				if (!m_bIsAB && registry::parseNamedProps)
 				{
@@ -421,14 +420,15 @@ namespace controls::sortlistctrl
 								}
 
 								// Get the names
-								hRes = WC_H_GETPROPS(cache::GetNamesFromIDs(
-									m_lpPropBag->GetMAPIProp(),
-									lpMappingSig ? &lpMappingSig->Value.bin : nullptr,
-									&lpTag,
-									nullptr,
-									NULL,
-									&ulPropNames,
-									&lppPropNames));
+								if (lpMappingSig)
+								{
+									names = cache::GetNamesFromIDs(
+										m_lpPropBag->GetMAPIProp(), &lpMappingSig->Value.bin, &lpTag, NULL);
+								}
+								else
+								{
+									names = cache::GetNamesFromIDs(m_lpPropBag->GetMAPIProp(), &lpTag, NULL);
+								}
 
 								MAPIFreeBuffer(lpTag);
 							}
@@ -446,13 +446,13 @@ namespace controls::sortlistctrl
 				ulCurTag = 0;
 				for (ULONG ulCurPropRow = 0; ulCurPropRow < ulProps; ulCurPropRow++)
 				{
-					LPMAPINAMEID lpNameIDInfo = nullptr;
-					// We shouldn't need to check ulCurTag < ulPropNames, but I fear bad GetNamesFromIDs implementations
-					if (lppPropNames && ulCurTag < ulPropNames)
+					const MAPINAMEID* lpNameIDInfo = nullptr;
+					// We shouldn't need to check ulCurTag < names.size(), but I fear bad GetNamesFromIDs implementations
+					if (!names.empty() && ulCurTag < names.size())
 					{
 						if (registry::getPropNamesOnAllProps || PROP_ID(lpPropsToAdd[ulCurPropRow].ulPropTag) >= 0x8000)
 						{
-							lpNameIDInfo = lppPropNames[ulCurTag];
+							lpNameIDInfo = names[ulCurTag]->getMapiNameId();
 							ulCurTag++;
 						}
 					}
@@ -466,8 +466,6 @@ namespace controls::sortlistctrl
 
 					ulCurListBoxRow++;
 				}
-
-				MAPIFreeBuffer(lppPropNames);
 			}
 		}
 
@@ -638,7 +636,7 @@ namespace controls::sortlistctrl
 	void CSingleMAPIPropListCtrl::AddPropToListBox(
 		int iRow,
 		ULONG ulPropTag,
-		_In_opt_ LPMAPINAMEID lpNameID,
+		_In_opt_ const MAPINAMEID* lpNameID,
 		_In_opt_ LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
 		_In_ LPSPropValue lpsPropToAdd)
 	{
@@ -666,10 +664,9 @@ namespace controls::sortlistctrl
 		std::wstring PropString;
 		std::wstring AltPropString;
 
-		auto namePropNames =
+		const auto namePropNames =
 			cache::NameIDToStrings(ulPropTag, m_lpPropBag->GetMAPIProp(), lpNameID, lpMappingSignature, m_bIsAB);
-
-		auto propTagNames = proptags::PropTagToPropName(ulPropTag, m_bIsAB);
+		const auto propTagNames = proptags::PropTagToPropName(ulPropTag, m_bIsAB);
 
 		if (!propTagNames.bestGuess.empty())
 		{
@@ -1027,13 +1024,11 @@ namespace controls::sortlistctrl
 		// Exchange can return MAPI_E_NOT_ENOUGH_MEMORY when I call this - give it a try - PSTs support it
 		output::DebugPrintEx(
 			output::dbgLevel::NamedProp, CLASS, L"FindAllNamedProps", L"Calling GetIDsFromNames with a NULL\n");
-		auto lptag = cache::GetIDsFromNames(m_lpPropBag->GetMAPIProp(), NULL, nullptr, NULL);
+		auto lptag = cache::GetIDsFromNames(m_lpPropBag->GetMAPIProp(), {}, NULL);
 		if (lptag && lptag->cValues)
 		{
 			// Now we have an array of tags - add them in:
 			AddPropsToExtraProps(lptag, false);
-			MAPIFreeBuffer(lptag);
-			lptag = nullptr;
 		}
 		else
 		{
@@ -1083,18 +1078,11 @@ namespace controls::sortlistctrl
 				}
 				else
 				{
-					SPropTagArray tag = {0};
-					tag.cValues = 1;
-					lptag = &tag;
 					for (auto iTag = ulLowerBound; iTag <= ulUpperBound; iTag++)
 					{
-						LPMAPINAMEID* lppPropNames = nullptr;
-						ULONG ulPropNames = 0;
-						tag.aulPropTag[0] = PROP_TAG(NULL, iTag);
-
-						hRes = WC_H(cache::GetNamesFromIDs(
-							m_lpPropBag->GetMAPIProp(), &lptag, nullptr, NULL, &ulPropNames, &lppPropNames));
-						if (hRes == S_OK && ulPropNames == 1 && lppPropNames && *lppPropNames)
+						const auto ulPropTag = PROP_TAG(NULL, iTag);
+						const auto name = cache::GetNameFromID(m_lpPropBag->GetMAPIProp(), ulPropTag, NULL);
+						if (name->valid())
 						{
 							output::DebugPrintEx(
 								output::dbgLevel::NamedProp,
@@ -1102,15 +1090,14 @@ namespace controls::sortlistctrl
 								L"FindAllNamedProps",
 								L"Found an ID with a name (0x%X). Adding to extra prop list.\n",
 								iTag);
-							AddPropToExtraProps(PROP_TAG(NULL, iTag), false);
+							AddPropToExtraProps(ulPropTag, false);
 						}
-
-						MAPIFreeBuffer(lppPropNames);
-						lppPropNames = nullptr;
 					}
 				}
 			}
 		}
+
+		MAPIFreeBuffer(lptag);
 
 		if (SUCCEEDED(hRes))
 		{
@@ -1126,25 +1113,16 @@ namespace controls::sortlistctrl
 		output::DebugPrintEx(
 			output::dbgLevel::NamedProp, CLASS, L"CountNamedProps", L"Searching for the highest named prop mapping\n");
 
-		auto hRes = S_OK;
 		ULONG ulLower = 0x8000;
 		ULONG ulUpper = 0xFFFF;
 		ULONG ulHighestKnown = 0;
 		auto ulCurrent = (ulUpper + ulLower) / 2;
 
-		SPropTagArray tag = {0};
-		LPMAPINAMEID* lppPropNames = nullptr;
-		ULONG ulPropNames = 0;
-		auto lptag = &tag;
-		tag.cValues = 1;
-
 		while (ulUpper - ulLower > 1)
 		{
-			tag.aulPropTag[0] = PROP_TAG(NULL, ulCurrent);
-
-			hRes = WC_H(
-				cache::GetNamesFromIDs(m_lpPropBag->GetMAPIProp(), &lptag, nullptr, NULL, &ulPropNames, &lppPropNames));
-			if (hRes == S_OK && ulPropNames == 1 && lppPropNames && *lppPropNames)
+			const auto ulPropTag = PROP_TAG(NULL, ulCurrent);
+			const auto name = cache::GetNameFromID(m_lpPropBag->GetMAPIProp(), ulPropTag, NULL);
+			if (name->valid())
 			{
 				// Found a named property, reset lower bound
 
@@ -1157,8 +1135,8 @@ namespace controls::sortlistctrl
 						L"CountNamedProps",
 						L"Found a named property at 0x%04X.\n",
 						ulCurrent);
-					auto namePropNames =
-						cache::NameIDToStrings(tag.aulPropTag[0], nullptr, lppPropNames[0], nullptr, false);
+					const auto namePropNames =
+						cache::NameIDToStrings(ulPropTag, nullptr, name->getMapiNameId(), nullptr, false);
 					output::DebugPrintEx(
 						output::dbgLevel::NamedProp,
 						CLASS,
@@ -1177,20 +1155,15 @@ namespace controls::sortlistctrl
 				ulUpper = ulCurrent;
 			}
 
-			MAPIFreeBuffer(lppPropNames);
-			lppPropNames = nullptr;
-
 			ulCurrent = (ulUpper + ulLower) / 2;
 		}
 
 		dialog::editor::CEditor MyResult(this, IDS_COUNTNAMEDPROPS, IDS_COUNTNAMEDPROPSPROMPT, CEDITOR_BUTTON_OK);
 		if (ulHighestKnown)
 		{
-			tag.aulPropTag[0] = PROP_TAG(NULL, ulHighestKnown);
-
-			hRes = WC_H(
-				cache::GetNamesFromIDs(m_lpPropBag->GetMAPIProp(), &lptag, nullptr, NULL, &ulPropNames, &lppPropNames));
-			if (hRes == S_OK && ulPropNames == 1 && lppPropNames && *lppPropNames)
+			const auto ulPropTag = PROP_TAG(NULL, ulHighestKnown);
+			const auto name = cache::GetNameFromID(m_lpPropBag->GetMAPIProp(), ulPropTag, NULL);
+			if (name->valid())
 			{
 				output::DebugPrintEx(
 					output::dbgLevel::NamedProp,
@@ -1206,10 +1179,10 @@ namespace controls::sortlistctrl
 
 			MyResult.AddPane(viewpane::TextPane::CreateMultiLinePane(1, IDS_HIGHESTNAMEDPROPNUM, true));
 
-			if (hRes == S_OK && ulPropNames == 1 && lppPropNames && *lppPropNames)
+			if (name->valid())
 			{
-				auto namePropNames =
-					cache::NameIDToStrings(tag.aulPropTag[0], nullptr, lppPropNames[0], nullptr, false);
+				const auto namePropNames =
+					cache::NameIDToStrings(ulPropTag, nullptr, name->getMapiNameId(), nullptr, false);
 				MyResult.SetStringW(
 					1,
 					strings::formatmessage(
@@ -1217,9 +1190,6 @@ namespace controls::sortlistctrl
 						ulHighestKnown,
 						namePropNames.name.c_str(),
 						namePropNames.guid.c_str()));
-
-				MAPIFreeBuffer(lppPropNames);
-				lppPropNames = nullptr;
 			}
 		}
 		else

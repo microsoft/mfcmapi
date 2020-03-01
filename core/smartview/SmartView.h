@@ -10,7 +10,7 @@ namespace smartview
 	_Check_return_ parserType FindSmartViewParserForProp(
 		_In_opt_ const _SPropValue* lpProp, // required property value
 		_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
-		_In_opt_ LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
+		_In_opt_ const MAPINAMEID* lpNameID, // optional named property information to avoid GetNamesFromIDs call
 		_In_opt_ LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
 		bool
 			bIsAB, // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
@@ -18,14 +18,14 @@ namespace smartview
 	std::pair<ULONG, GUID> GetNamedPropInfo(
 		_In_opt_ ULONG ulPropTag,
 		_In_opt_ LPMAPIPROP lpMAPIProp,
-		_In_opt_ LPMAPINAMEID lpNameID,
+		_In_opt_ const MAPINAMEID* lpNameID,
 		_In_opt_ LPSBinary lpMappingSignature,
 		bool bIsAB);
 
 	std::wstring parsePropertySmartView(
 		_In_opt_ const SPropValue* lpProp, // required property value
 		_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
-		_In_opt_ LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
+		_In_opt_ const MAPINAMEID*, // optional named property information to avoid GetNamesFromIDs call
 		_In_opt_ LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
 		bool
 			bIsAB, // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
@@ -42,8 +42,7 @@ namespace smartview
 		_In_opt_ ULONG ulPropTag,
 		_In_opt_ ULONG ulPropNameID,
 		_In_opt_ LPCGUID lpguidNamedProp);
-	std::wstring
-	InterpretMVBinaryAsString(SBinaryArray myBinArray, parserType parser, _In_opt_ LPMAPIPROP lpMAPIProp);
+	std::wstring InterpretMVBinaryAsString(SBinaryArray myBinArray, parserType parser, _In_opt_ LPMAPIPROP lpMAPIProp);
 	std::wstring InterpretNumberAsString(
 		LONGLONG val,
 		ULONG ulPropTag,

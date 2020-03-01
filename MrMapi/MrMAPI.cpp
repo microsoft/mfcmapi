@@ -17,7 +17,6 @@
 #include <core/utility/strings.h>
 #include <core/utility/import.h>
 #include <core/mapi/mapiStoreFunctions.h>
-#include <core/mapi/cache/namedPropCache.h>
 #include <mapistub/library/stubutils.h>
 #include <core/addin/addin.h>
 #include <core/utility/registry.h>

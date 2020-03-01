@@ -215,7 +215,7 @@ namespace smartview
 	_Check_return_ parserType FindSmartViewParserForProp(
 		_In_opt_ const _SPropValue* lpProp, // required property value
 		_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
-		_In_opt_ LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
+		_In_opt_ const MAPINAMEID* lpNameID, // optional named property information to avoid GetNamesFromIDs call
 		_In_opt_ LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
 		bool
 			bIsAB, // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
@@ -261,36 +261,10 @@ namespace smartview
 		return parserType::NOPARSING;
 	}
 
-	std::pair<ULONG, GUID> GetNamedPropInfo(
-		_In_opt_ ULONG ulPropTag,
-		_In_opt_ LPMAPIPROP lpMAPIProp,
-		_In_opt_ LPMAPINAMEID lpNameID,
-		_In_opt_ LPSBinary lpMappingSignature,
-		bool bIsAB)
+	_Check_return_ std::pair<ULONG, GUID> GetNamedPropInfo(_In_opt_ const MAPINAMEID* lpNameID) noexcept
 	{
-		LPMAPINAMEID* lppPropNames = nullptr;
-
-		if (!lpNameID && lpMAPIProp && // if we have an object
-			!bIsAB && // Some address book providers return garbage which will crash us
-			registry::parseNamedProps && // and we're parsing named props
-			(registry::getPropNamesOnAllProps ||
-			 PROP_ID(ulPropTag) >= 0x8000)) // and it's either a named prop or we're doing all props
-		{
-			auto tag = SPropTagArray{1, {ulPropTag}};
-			auto lpTag = &tag;
-			auto ulPropNames = ULONG{};
-
-			WC_H_GETPROPS_S(cache::GetNamesFromIDs(
-				lpMAPIProp, lpMappingSignature, &lpTag, nullptr, NULL, &ulPropNames, &lppPropNames));
-			if (ulPropNames == 1 && lppPropNames && lppPropNames[0])
-			{
-				lpNameID = lppPropNames[0];
-			}
-		}
-
 		auto ulPropNameID = ULONG{};
 		auto propNameGUID = GUID{};
-
 		if (lpNameID)
 		{
 			if (lpNameID->lpguid)
@@ -304,15 +278,38 @@ namespace smartview
 			}
 		}
 
-		if (lppPropNames) MAPIFreeBuffer(lppPropNames);
+		return {ulPropNameID, propNameGUID};
+	}
 
-		return std::make_pair(ulPropNameID, propNameGUID);
+	std::pair<ULONG, GUID> GetNamedPropInfo(
+		_In_opt_ ULONG ulPropTag,
+		_In_opt_ LPMAPIPROP lpMAPIProp,
+		_In_opt_ const MAPINAMEID* lpNameID,
+		_In_opt_ LPSBinary lpMappingSignature,
+		bool bIsAB)
+	{
+		if (lpNameID) return GetNamedPropInfo(lpNameID);
+
+		if (lpMAPIProp && // if we have an object
+			!bIsAB && // Some address book providers return garbage which will crash us
+			registry::parseNamedProps && // and we're parsing named props
+			(registry::getPropNamesOnAllProps ||
+			 PROP_ID(ulPropTag) >= 0x8000)) // and it's either a named prop or we're doing all props
+		{
+			const auto name = cache::GetNameFromID(lpMAPIProp, lpMappingSignature, ulPropTag, 0);
+			if (name->valid())
+			{
+				return GetNamedPropInfo(name->getMapiNameId());
+			}
+		}
+
+		return {};
 	}
 
 	std::wstring parsePropertySmartView(
 		_In_opt_ const SPropValue* lpProp, // required property value
 		_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
-		_In_opt_ LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
+		_In_opt_ const MAPINAMEID* lpNameID, // optional named property information to avoid GetNamesFromIDs call
 		_In_opt_ LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
 		bool
 			bIsAB, // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
