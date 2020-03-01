@@ -438,7 +438,7 @@ namespace cache
 			sig = &lpProp->Value.bin;
 		}
 
-		auto names = GetNamesFromIDs(lpMAPIProp, sig, lppPropTags, ulFlags);
+		const auto names = GetNamesFromIDs(lpMAPIProp, sig, lppPropTags, ulFlags);
 		MAPIFreeBuffer(lpProp);
 		return names;
 	}
