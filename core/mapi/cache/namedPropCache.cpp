@@ -34,8 +34,6 @@ namespace cache
 					auto ulPropID = ULONG{};
 					if (lppPropTags && *lppPropTags) ulPropID = PROP_ID((*lppPropTags)->aulPropTag[i]);
 					ids.emplace_back(std::make_shared<namedPropCacheEntry>(lppPropNames[i], ulPropID));
-					// TODO: Figure out what misses look like here
-					// lppPropNames[i]* will be null...
 				}
 			}
 
@@ -257,7 +255,7 @@ namespace cache
 					if (fIsSet(output::dbgLevel::NamedPropCacheMisses))
 					{
 						const auto mni = entry->getMapiNameId();
-						auto names = NameIDToPropNames(mni);
+						const auto names = NameIDToPropNames(mni);
 						if (names.empty())
 						{
 							output::DebugPrint(
