@@ -157,7 +157,7 @@ namespace output
 				true,
 				L"\t\tProp: %u = %ws\n", // STRING_OK
 				uCurProp,
-				proptags::TagToString(lpTagsToDump->aulPropTag[uCurProp], nullptr, false, true).c_str());
+				proptags::TagToString(mapi::getTag(lpTagsToDump, uCurProp), nullptr, false, true).c_str());
 		}
 
 		Output(ulDbgLvl, fFile, true, L"\tEnd Prop Tag List\n");

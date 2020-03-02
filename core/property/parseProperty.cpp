@@ -8,6 +8,7 @@
 #include <core/interpret/proptags.h>
 #include <core/interpret/flags.h>
 #include <core/smartview/SmartView.h>
+#include <core/mapi/mapiFunctions.h>
 
 namespace property
 {
@@ -637,7 +638,7 @@ namespace property
 				actstring += strings::formatmessage(
 					IDS_ACTIONTAGARRAYTAG,
 					i,
-					proptags::TagToString(action.lpPropTagArray->aulPropTag[i], nullptr, false, false).c_str());
+					proptags::TagToString(mapi::getTag(action.lpPropTagArray, i), nullptr, false, false).c_str());
 			}
 		}
 

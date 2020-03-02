@@ -170,9 +170,7 @@ void PrintObjectProperty(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag)
 	LPSPropValue lpAllProps = nullptr;
 	ULONG cValues = 0L;
 
-	SPropTagArray sTag = {0};
-	sTag.cValues = 1;
-	sTag.aulPropTag[0] = ulPropTag;
+	SPropTagArray sTag = {1, ulPropTag};
 
 	WC_H_GETPROPS_S(lpMAPIProp->GetProps(&sTag, fMapiUnicode, &cValues, &lpAllProps));
 
@@ -194,9 +192,7 @@ void PrintObjectProperties(const std::wstring& szObjType, _In_ LPMAPIPROP lpMAPI
 
 	if (ulPropTag)
 	{
-		SPropTagArray sTag = {0};
-		sTag.cValues = 1;
-		sTag.aulPropTag[0] = ulPropTag;
+		SPropTagArray sTag = {1, ulPropTag};
 
 		hRes = WC_H_GETPROPS(lpMAPIProp->GetProps(&sTag, fMapiUnicode, &cValues, &lpAllProps));
 	}
@@ -257,8 +253,7 @@ void PrintStoreTable(_In_ LPMAPISESSION lpMAPISession, ULONG ulPropTag)
 		SPropTagArray sTag = {0};
 		if (ulPropTag)
 		{
-			sTag.cValues = 1;
-			sTag.aulPropTag[0] = ulPropTag;
+			sTag = {1, ulPropTag};
 			sTags = &sTag;
 		}
 

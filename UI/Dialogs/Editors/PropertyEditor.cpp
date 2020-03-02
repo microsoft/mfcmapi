@@ -33,10 +33,8 @@ namespace dialog::editor
 		// We got a MAPI prop object and no input value, go look one up
 		if (lpMAPIProp && !lpsPropValue)
 		{
-			auto sTag = SPropTagArray{};
-			sTag.cValues = 1;
-			sTag.aulPropTag[0] =
-				PROP_TYPE(ulPropTag) == PT_ERROR ? CHANGE_PROP_TYPE(ulPropTag, PT_UNSPECIFIED) : ulPropTag;
+			auto sTag = SPropTagArray{
+				1, PROP_TYPE(ulPropTag) == PT_ERROR ? CHANGE_PROP_TYPE(ulPropTag, PT_UNSPECIFIED) : ulPropTag};
 			ULONG ulValues = NULL;
 
 			hRes = WC_MAPI(lpMAPIProp->GetProps(&sTag, NULL, &ulValues, &sourceProp));

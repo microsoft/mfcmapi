@@ -200,7 +200,7 @@ namespace controls::sortlistctrl
 		m_ulDisplayNameColumn = NODISPLAYNAME;
 		for (ULONG i = 0; i < lpTags->cValues; i++)
 		{
-			if (PROP_ID(lpTags->aulPropTag[i]) == PROP_ID(PR_DISPLAY_NAME))
+			if (PROP_ID(mapi::getTag(lpTags, i)) == PROP_ID(PR_DISPLAY_NAME))
 			{
 				m_ulDisplayNameColumn = i;
 				break;
@@ -212,11 +212,11 @@ namespace controls::sortlistctrl
 		{
 			for (ULONG i = 0; i < lpTags->cValues; i++)
 			{
-				if (PROP_ID(lpTags->aulPropTag[i]) == PROP_ID(PR_SUBJECT) ||
-					PROP_ID(lpTags->aulPropTag[i]) == PROP_ID(PR_RULE_NAME) ||
-					PROP_ID(lpTags->aulPropTag[i]) == PROP_ID(PR_MEMBER_NAME) ||
-					PROP_ID(lpTags->aulPropTag[i]) == PROP_ID(PR_ATTACH_LONG_FILENAME) ||
-					PROP_ID(lpTags->aulPropTag[i]) == PROP_ID(PR_ATTACH_FILENAME))
+				if (PROP_ID(mapi::getTag(lpTags, i)) == PROP_ID(PR_SUBJECT) ||
+					PROP_ID(mapi::getTag(lpTags, i)) == PROP_ID(PR_RULE_NAME) ||
+					PROP_ID(mapi::getTag(lpTags, i)) == PROP_ID(PR_MEMBER_NAME) ||
+					PROP_ID(mapi::getTag(lpTags, i)) == PROP_ID(PR_ATTACH_LONG_FILENAME) ||
+					PROP_ID(mapi::getTag(lpTags, i)) == PROP_ID(PR_ATTACH_FILENAME))
 				{
 					m_ulDisplayNameColumn = i;
 					break;
@@ -403,16 +403,16 @@ namespace controls::sortlistctrl
 				ULONG ulCurTagArrayRow = 0;
 				if (mapi::FindPropInPropTagArray(
 						lpCurColTagArray,
-						m_sptDefaultDisplayColumnTags->aulPropTag[displayCol.ulMatchingTableColumn],
+						mapi::getTag(m_sptDefaultDisplayColumnTags, displayCol.ulMatchingTableColumn),
 						&ulCurTagArrayRow))
 				{
 					AddColumn(
 						displayCol.uidName,
 						ulCurHeaderCol,
 						ulCurTagArrayRow,
-						lpCurColTagArray->aulPropTag[ulCurTagArrayRow]);
+						mapi::getTag(lpCurColTagArray, ulCurTagArrayRow));
 					// Strike out the value in the tag array so we can ignore it later!
-					lpCurColTagArray->aulPropTag[ulCurTagArrayRow] = NULL;
+					mapi::setTag(lpCurColTagArray, ulCurTagArrayRow) = NULL;
 
 					ulCurHeaderCol++;
 				}
@@ -423,9 +423,9 @@ namespace controls::sortlistctrl
 		// Now, walk through the current tag table and add each unstruck column to our list
 		for (ULONG ulCurTableCol = 0; ulCurTableCol < lpCurColTagArray->cValues; ulCurTableCol++)
 		{
-			if (lpCurColTagArray->aulPropTag[ulCurTableCol] != NULL)
+			if (mapi::getTag(lpCurColTagArray, ulCurTableCol) != NULL)
 			{
-				AddColumn(NULL, ulCurHeaderCol, ulCurTableCol, lpCurColTagArray->aulPropTag[ulCurTableCol]);
+				AddColumn(NULL, ulCurHeaderCol, ulCurTableCol, mapi::getTag(lpCurColTagArray, ulCurTableCol));
 				ulCurHeaderCol++;
 			}
 		}

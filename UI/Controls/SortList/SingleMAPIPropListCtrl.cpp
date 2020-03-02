@@ -404,7 +404,7 @@ namespace controls::sortlistctrl
 								{
 									for (ULONG ulCurPropRow = 0; ulCurPropRow < ulProps; ulCurPropRow++)
 									{
-										lpTag->aulPropTag[ulCurPropRow] = lpPropsToAdd[ulCurPropRow].ulPropTag;
+										mapi::setTag(lpTag, ulCurPropRow) = lpPropsToAdd[ulCurPropRow].ulPropTag;
 									}
 								}
 								else
@@ -413,7 +413,7 @@ namespace controls::sortlistctrl
 									{
 										if (PROP_ID(lpPropsToAdd[ulCurPropRow].ulPropTag) >= 0x8000)
 										{
-											lpTag->aulPropTag[ulCurTag] = lpPropsToAdd[ulCurPropRow].ulPropTag;
+											mapi::setTag(lpTag, ulCurTag) = lpPropsToAdd[ulCurPropRow].ulPropTag;
 											ulCurTag++;
 										}
 									}
@@ -476,12 +476,10 @@ namespace controls::sortlistctrl
 			ULONG cExtraProps = 0;
 			LPSPropValue pExtraProps = nullptr;
 			SPropValue extraPropForList = {};
-			SPropTagArray pNewTag;
-			pNewTag.cValues = 1;
 
 			for (ULONG iCurExtraProp = 0; iCurExtraProp < m_sptExtraProps->cValues; iCurExtraProp++)
 			{
-				pNewTag.aulPropTag[0] = m_sptExtraProps->aulPropTag[iCurExtraProp];
+				SPropTagArray pNewTag = {1, mapi::getTag(m_sptExtraProps, iCurExtraProp)};
 
 				// Let's add some extra properties
 				// Don't need to report since we're gonna put show the error in the UI
@@ -491,11 +489,11 @@ namespace controls::sortlistctrl
 				{
 					extraPropForList.dwAlignPad = pExtraProps[0].dwAlignPad;
 
-					if (PROP_TYPE(pNewTag.aulPropTag[0]) == NULL)
+					if (PROP_TYPE(mapi::getTag(pNewTag, 0)) == NULL)
 					{
 						// In this case, we started with a NULL tag, but we got a property back - let's 'fix' our tag for the UI
-						pNewTag.aulPropTag[0] =
-							CHANGE_PROP_TYPE(pNewTag.aulPropTag[0], PROP_TYPE(pExtraProps[0].ulPropTag));
+						mapi::setTag(pNewTag, 0) =
+							CHANGE_PROP_TYPE(mapi::getTag(pNewTag, 0), PROP_TYPE(pExtraProps[0].ulPropTag));
 					}
 
 					// We want to give our parser the tag that came back from GetProps
@@ -506,14 +504,14 @@ namespace controls::sortlistctrl
 				else
 				{
 					extraPropForList.dwAlignPad = NULL;
-					extraPropForList.ulPropTag = CHANGE_PROP_TYPE(pNewTag.aulPropTag[0], PT_ERROR);
+					extraPropForList.ulPropTag = CHANGE_PROP_TYPE(mapi::getTag(pNewTag, 0), PT_ERROR);
 					extraPropForList.Value.err = hRes;
 				}
 
 				// Add the property to the list
 				AddPropToListBox(
 					ulCurListBoxRow,
-					pNewTag.aulPropTag[0], // Tag to use in the UI
+					mapi::getTag(pNewTag, 0), // Tag to use in the UI
 					nullptr, // Let AddPropToListBox look up any named prop information it needs
 					lpMappingSig ? &lpMappingSig->Value.bin : nullptr,
 					&extraPropForList); // Tag + Value to parse - may differ in case of errors or NULL type.
@@ -568,16 +566,13 @@ namespace controls::sortlistctrl
 
 	void CSingleMAPIPropListCtrl::AddPropToExtraProps(ULONG ulPropTag, bool bRefresh)
 	{
-		SPropTagArray sptSingleProp;
-
 		output::DebugPrintEx(
 			output::dbgLevel::Generic, CLASS, L"AddPropToExtraProps", L"adding proptag 0x%X\n", ulPropTag);
 
 		// Cache this proptag so we continue to request it in this view
 		// We've got code to refresh any props cached in m_sptExtraProps...let's add to that.
 
-		sptSingleProp.cValues = 1;
-		sptSingleProp.aulPropTag[0] = ulPropTag;
+		SPropTagArray sptSingleProp = {1, ulPropTag};
 
 		AddPropsToExtraProps(&sptSingleProp, bRefresh);
 	}
@@ -1532,9 +1527,7 @@ namespace controls::sortlistctrl
 
 		auto hRes = S_OK;
 		LPSPropProblemArray lpProblems = nullptr;
-		SPropTagArray TagArray = {0};
-		TagArray.cValues = 1;
-		TagArray.aulPropTag[0] = ulSourcePropTag;
+		SPropTagArray TagArray = {1, ulSourcePropTag};
 
 		dialog::editor::CEditor MyData(
 			this, IDS_PASTEPROP, IDS_PASTEPROPPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
@@ -1550,7 +1543,7 @@ namespace controls::sortlistctrl
 
 		const auto ulSourceTag = MyData.GetHex(1);
 		auto ulTargetTag = MyData.GetHex(2);
-		TagArray.aulPropTag[0] = ulSourceTag;
+		mapi::setTag(TagArray, 0) = ulSourceTag;
 
 		if (PROP_TYPE(ulTargetTag) != PROP_TYPE(ulSourceTag))
 			ulTargetTag = CHANGE_PROP_TYPE(ulTargetTag, PROP_TYPE(ulSourceTag));
