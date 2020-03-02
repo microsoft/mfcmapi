@@ -598,7 +598,7 @@ namespace mapi
 		{
 			for (ULONG iSourceArray = 0; iSourceArray < lpArray2->cValues; iSourceArray++)
 			{
-				if (!IsDuplicateProp(lpArray1, lpArray2->aulPropTag[iSourceArray]))
+				if (!IsDuplicateProp(lpArray1, getTag(lpArray2, iSourceArray)))
 				{
 					iNewArraySize++;
 				}
@@ -620,9 +620,9 @@ namespace mapi
 			{
 				for (ULONG iSourceArray = 0; iSourceArray < lpArray1->cValues; iSourceArray++)
 				{
-					if (PROP_TYPE(lpArray1->aulPropTag[iSourceArray]) != PT_NULL) // ditch bad props
+					if (PROP_TYPE(getTag(lpArray1, iSourceArray)) != PT_NULL) // ditch bad props
 					{
-						lpLocalArray->aulPropTag[iTargetArray++] = lpArray1->aulPropTag[iSourceArray];
+						setTag(lpLocalArray, iTargetArray++) = getTag(lpArray1, iSourceArray);
 					}
 				}
 			}
@@ -631,11 +631,11 @@ namespace mapi
 			{
 				for (ULONG iSourceArray = 0; iSourceArray < lpArray2->cValues; iSourceArray++)
 				{
-					if (PROP_TYPE(lpArray2->aulPropTag[iSourceArray]) != PT_NULL) // ditch bad props
+					if (PROP_TYPE(getTag(lpArray2, iSourceArray)) != PT_NULL) // ditch bad props
 					{
-						if (!IsDuplicateProp(lpArray1, lpArray2->aulPropTag[iSourceArray]))
+						if (!IsDuplicateProp(lpArray1, getTag(lpArray2, iSourceArray)))
 						{
-							lpLocalArray->aulPropTag[iTargetArray++] = lpArray2->aulPropTag[iSourceArray];
+							setTag(lpLocalArray, iTargetArray++) = getTag(lpArray2, iSourceArray);
 						}
 					}
 				}
@@ -1189,7 +1189,7 @@ namespace mapi
 		if (!lpspTagArray) return false;
 		for (ULONG i = 0; i < lpspTagArray->cValues; i++)
 		{
-			if (PROP_ID(ulPropToFind) == PROP_ID(lpspTagArray->aulPropTag[i]))
+			if (PROP_ID(ulPropToFind) == PROP_ID(getTag(lpspTagArray, i)))
 			{
 				*lpulRowFound = i;
 				return true;
@@ -1350,11 +1350,11 @@ namespace mapi
 			// They're dupes if the IDs are the same
 			if (registry::allowDupeColumns)
 			{
-				if (lpArray->aulPropTag[i] == ulPropTag) return true;
+				if (getTag(lpArray, i) == ulPropTag) return true;
 			}
 			else
 			{
-				if (PROP_ID(lpArray->aulPropTag[i]) == PROP_ID(ulPropTag)) return true;
+				if (PROP_ID(getTag(lpArray, i)) == PROP_ID(ulPropTag)) return true;
 			}
 		}
 
@@ -1499,7 +1499,7 @@ namespace mapi
 				LPSPropValue lpCustomFlag = nullptr;
 
 				// Grab dispidCustomFlag, the last tag in the array
-				SPropTagArray pTag = {1, {CHANGE_PROP_TYPE(lpTags->aulPropTag[ulNumOneOffIDs - 1], PT_LONG)}};
+				SPropTagArray pTag = {1, {CHANGE_PROP_TYPE(getTag(lpTags, ulNumOneOffIDs - 1), PT_LONG)}};
 
 				hRes = WC_MAPI(lpMessage->GetProps(&pTag, fMapiUnicode, &cProp, &lpCustomFlag));
 				if (SUCCEEDED(hRes) && 1 == cProp && lpCustomFlag && PT_LONG == PROP_TYPE(lpCustomFlag->ulPropTag))
@@ -1743,15 +1743,13 @@ namespace mapi
 							{
 								// it would probably be quicker to use this loop to construct an array of properties
 								// we desire to copy, and then pass that array to GetProps and then SetProps
-								if (FIsTransmittable(lpsMessageTags->aulPropTag[ulProp]))
+								if (FIsTransmittable(getTag(lpsMessageTags, ulProp)))
 								{
 									LPSPropValue lpProp = nullptr;
 									output::DebugPrint(
-										output::dbgLevel::Generic,
-										L"Copying 0x%08X\n",
-										lpsMessageTags->aulPropTag[ulProp]);
+										output::dbgLevel::Generic, L"Copying 0x%08X\n", getTag(lpsMessageTags, ulProp));
 									hRes = WC_MAPI(HrGetOnePropEx(
-										lpAttachMsg, lpsMessageTags->aulPropTag[ulProp], fMapiUnicode, &lpProp));
+										lpAttachMsg, getTag(lpsMessageTags, ulProp), fMapiUnicode, &lpProp));
 
 									if (SUCCEEDED(hRes))
 									{
@@ -1800,10 +1798,7 @@ namespace mapi
 						hRes = EC_MAPI(HrSetOneProp(lpNewMessage, &sProp));
 						if (FAILED(hRes)) continue;
 
-						SPropTagArray sPropTagArray = {};
-
-						sPropTagArray.cValues = 1;
-						sPropTagArray.aulPropTag[0] = PR_SENTMAIL_ENTRYID;
+						SPropTagArray sPropTagArray = {1, PR_SENTMAIL_ENTRYID};
 
 						output::DebugPrint(output::dbgLevel::Generic, L"Deleting PR_SENTMAIL_ENTRYID\n");
 						hRes = EC_MAPI(lpNewMessage->DeleteProps(&sPropTagArray, nullptr));
@@ -1990,10 +1985,7 @@ namespace mapi
 
 			if (SUCCEEDED(hRes))
 			{
-				SPropTagArray sPropTagArray;
-
-				sPropTagArray.cValues = 1;
-				sPropTagArray.aulPropTag[0] = PR_SENTMAIL_ENTRYID;
+				SPropTagArray sPropTagArray = {1, PR_SENTMAIL_ENTRYID};
 
 				output::DebugPrint(output::dbgLevel::Generic, L"Deleting PR_SENTMAIL_ENTRYID\n");
 				hRes = EC_MAPI(lpNewMessage->DeleteProps(&sPropTagArray, nullptr));
@@ -2129,7 +2121,7 @@ namespace mapi
 						if (name->getPropID() > 0x7FFF && name->valid() &&
 							::IsEqualGUID(*name->getMapiNameId()->lpguid, *lpPropSetGUID))
 						{
-							lpFilteredProps->aulPropTag[lpFilteredProps->cValues] = name->getPropID();
+							setTag(lpFilteredProps, lpFilteredProps->cValues) = name->getPropID();
 							lpFilteredProps->cValues++;
 						}
 					}

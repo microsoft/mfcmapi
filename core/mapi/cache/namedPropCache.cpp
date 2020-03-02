@@ -37,7 +37,7 @@ namespace cache
 				for (ULONG i = 0; i < ulPropNames; i++)
 				{
 					auto ulPropID = ULONG{};
-					if (lppPropTags && *lppPropTags) ulPropID = PROP_ID(mapi::tag(*lppPropTags, i));
+					if (lppPropTags && *lppPropTags) ulPropID = PROP_ID(mapi::getTag(*lppPropTags, i));
 					ids.emplace_back(std::make_shared<namedPropCacheEntry>(lppPropNames[i], ulPropID));
 				}
 			}
@@ -61,7 +61,7 @@ namespace cache
 				ULONG i = 0;
 				for (const auto& tag : tags)
 				{
-					mapi::tag(ulPropTags, i++) = tag;
+					mapi::setTag(ulPropTags, i++) = tag;
 				}
 
 				ids = GetNamesFromIDs(lpMAPIProp, &ulPropTags, ulFlags);
@@ -377,7 +377,7 @@ namespace cache
 					for (ULONG i = 0; i < misses.size(); i++)
 					{
 						toCache.emplace_back(
-							std::make_shared<namedPropCacheEntry>(&misses[i], mapi::tag(missed, i), sig));
+							std::make_shared<namedPropCacheEntry>(&misses[i], mapi::getTag(missed, i), sig));
 					}
 
 					add(toCache, sig);
@@ -394,7 +394,7 @@ namespace cache
 			{
 				const auto lpEntry = find([&](const auto& entry) noexcept { return entry->match(sig, nameID); });
 
-				mapi::tag(results, i++) = lpEntry ? lpEntry->getPropID() : 0;
+				mapi::setTag(results, i++) = lpEntry ? lpEntry->getPropID() : 0;
 			}
 
 			return results;

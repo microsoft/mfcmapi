@@ -347,6 +347,6 @@ namespace mapi
 #pragma warning(push)
 #pragma warning(disable : 26482) // Warning C26482 Only index into arrays using constant expressions (bounds.2).
 	inline ULONG getTag(const SPropTagArray* tag, ULONG i) noexcept { return tag->aulPropTag[i]; }
-	inline ULONG& tag(SPropTagArray* tag, ULONG i) noexcept { return tag->aulPropTag[i]; }
+	inline ULONG& setTag(SPropTagArray* tag, ULONG i) noexcept { return tag->aulPropTag[i]; }
 #pragma warning(pop)
 } // namespace mapi
