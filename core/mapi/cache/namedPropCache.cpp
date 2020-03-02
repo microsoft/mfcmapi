@@ -10,10 +10,6 @@
 #include <core/addin/addin.h>
 #include <core/utility/error.h>
 
-namespace mapi
-{
-} // namespace mapi
-
 namespace cache
 {
 	namespace directMapi
