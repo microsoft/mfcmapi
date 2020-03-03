@@ -85,15 +85,15 @@ namespace mapi::ab
 
 			lpAdrList->aEntries[0].rgPropVals[EID].ulPropTag = PR_ENTRYID;
 
+			auto bin = mapi::setBin(lpAdrList->aEntries[0].rgPropVals[EID]);
 			// Create the One-off address and get an EID for it.
 			hRes = EC_MAPI(lpAddrBook->CreateOneOff(
 				reinterpret_cast<LPTSTR>(lpAdrList->aEntries[0].rgPropVals[NAME].Value.lpszW),
 				reinterpret_cast<LPTSTR>(lpAdrList->aEntries[0].rgPropVals[ADDR].Value.lpszW),
 				reinterpret_cast<LPTSTR>(lpAdrList->aEntries[0].rgPropVals[EMAIL].Value.lpszW),
 				MAPI_UNICODE,
-				&lpAdrList->aEntries[0].rgPropVals[EID].Value.bin.cb,
-				&lpEID));
-			lpAdrList->aEntries[0].rgPropVals[EID].Value.bin.lpb = reinterpret_cast<LPBYTE>(lpEID);
+				&bin.cb,
+				reinterpret_cast<LPENTRYID*>(&bin.lpb)));
 
 			if (SUCCEEDED(hRes))
 			{
@@ -311,9 +311,9 @@ namespace mapi::ab
 					// From this point forward, consider any error an error with the current address book container, so just continue and try the next one.
 					if (PR_ENTRYID == lpABRow->aRow->lpProps[abcPR_ENTRYID].ulPropTag)
 					{
+						auto bin = mapi::getBin(lpABRow->aRow->lpProps[abcPR_ENTRYID]);
 						output::DebugPrint(output::dbgLevel::Generic, L"ManualResolve: Searching this container\n");
-						output::outputBinary(
-							output::dbgLevel::Generic, nullptr, lpABRow->aRow->lpProps[abcPR_ENTRYID].Value.bin);
+						output::outputBinary(output::dbgLevel::Generic, nullptr, bin);
 
 						if (lpABContainer) lpABContainer->Release();
 						lpABContainer = mapi::CallOpenEntry<LPABCONT>(
@@ -321,8 +321,8 @@ namespace mapi::ab
 							lpAdrBook,
 							nullptr,
 							nullptr,
-							lpABRow->aRow->lpProps[abcPR_ENTRYID].Value.bin.cb,
-							reinterpret_cast<ENTRYID*>(lpABRow->aRow->lpProps[abcPR_ENTRYID].Value.bin.lpb),
+							bin.cb,
+							reinterpret_cast<ENTRYID*>(bin.lpb),
 							nullptr,
 							NULL,
 							&ulObjType);

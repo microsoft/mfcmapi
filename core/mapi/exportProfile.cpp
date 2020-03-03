@@ -12,7 +12,7 @@
 
 namespace output
 {
-	void ExportProfileSection(FILE* fProfile, LPPROFSECT lpSect, LPSBinary lpSectBin)
+	void ExportProfileSection(FILE* fProfile, LPPROFSECT lpSect, const SBinary* lpSectBin)
 	{
 		if (!fProfile || !lpSect) return;
 

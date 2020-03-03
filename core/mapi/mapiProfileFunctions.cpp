@@ -555,7 +555,7 @@ namespace mapi::profile
 		return hRes;
 	}
 
-	_Check_return_ LPPROFSECT OpenProfileSection(_In_ LPSERVICEADMIN lpServiceAdmin, _In_ LPSBinary lpServiceUID)
+	_Check_return_ LPPROFSECT OpenProfileSection(_In_ LPSERVICEADMIN lpServiceAdmin, _In_ const SBinary* lpServiceUID)
 	{
 		if (!lpServiceUID || !lpServiceAdmin) return nullptr;
 
@@ -601,7 +601,7 @@ namespace mapi::profile
 		return lpProfSect;
 	}
 
-	_Check_return_ LPPROFSECT OpenProfileSection(_In_ LPPROVIDERADMIN lpProviderAdmin, _In_ LPSBinary lpProviderUID)
+	_Check_return_ LPPROFSECT OpenProfileSection(_In_ LPPROVIDERADMIN lpProviderAdmin, _In_ const SBinary* lpProviderUID)
 	{
 		if (!lpProviderUID || !lpProviderAdmin) return nullptr;
 
