@@ -15,7 +15,7 @@ namespace mapi::store
 	std::function<std::wstring()> promptServerName;
 
 	_Check_return_ LPMDB
-	CallOpenMsgStore(_In_ LPMAPISESSION lpSession, _In_ ULONG_PTR ulUIParam, _In_ LPSBinary lpEID, ULONG ulFlags)
+	CallOpenMsgStore(_In_ LPMAPISESSION lpSession, _In_ ULONG_PTR ulUIParam, _In_ const SBinary* lpEID, ULONG ulFlags)
 	{
 		if (!lpSession || !lpEID) return nullptr;
 

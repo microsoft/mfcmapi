@@ -473,7 +473,8 @@ namespace file
 		output::DebugPrint(output::dbgLevel::Generic, L"SaveToMSG: Saving message to \"%ws\"\n", szPathName.c_str());
 
 		output::DebugPrint(output::dbgLevel::Generic, L"Source Message =\n");
-		output::outputBinary(output::dbgLevel::Generic, nullptr, entryID.Value.bin);
+		auto bin = mapi::getBin(entryID);
+		output::outputBinary(output::dbgLevel::Generic, nullptr, bin);
 
 		auto lpMapiContainer = mapi::safe_cast<LPMAPICONTAINER>(lpFolder);
 		if (lpMapiContainer)

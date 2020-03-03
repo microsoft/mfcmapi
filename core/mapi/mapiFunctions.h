@@ -354,4 +354,15 @@ namespace mapi
 	inline ULONG& setTag(SPropTagArray* tag, ULONG i) noexcept { return tag->aulPropTag[i]; }
 	inline ULONG& setTag(SPropTagArray& tag, ULONG i) noexcept { return tag.aulPropTag[i]; }
 #pragma warning(pop)
+
+#pragma warning(push)
+#pragma warning(disable : 26476) // Warning C26476 Expression/symbol '' uses a naked union '' with multiple type pointers: Use variant instead (type.7).
+	inline SBinary& getBin(_In_ _SPropValue* prop) noexcept
+	{
+		if (!prop) assert(false);
+
+		return prop->Value.bin;
+	}
+	inline const SBinary& getBin(_In_ const _SPropValue& prop) noexcept { return prop.Value.bin; }
+#pragma warning(pop)
 } // namespace mapi

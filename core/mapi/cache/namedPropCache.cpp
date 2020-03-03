@@ -430,16 +430,16 @@ namespace cache
 	_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>>
 	GetNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp, _In_ LPSPropTagArray* lppPropTags, ULONG ulFlags)
 	{
-		SBinary* sig = {};
+		SBinary sig = {};
 		LPSPropValue lpProp = nullptr;
 		// This error is too chatty to log - ignore it.
 		const auto hRes = HrGetOneProp(lpMAPIProp, PR_MAPPING_SIGNATURE, &lpProp);
 		if (SUCCEEDED(hRes) && lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag))
 		{
-			sig = &lpProp->Value.bin;
+			sig = mapi::getBin(lpProp);
 		}
 
-		const auto names = GetNamesFromIDs(lpMAPIProp, sig, lppPropTags, ulFlags);
+		const auto names = GetNamesFromIDs(lpMAPIProp, &sig, lppPropTags, ulFlags);
 		MAPIFreeBuffer(lpProp);
 		return names;
 	}
@@ -489,7 +489,8 @@ namespace cache
 
 		if (lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag))
 		{
-			sig = {lpProp->Value.bin.lpb, lpProp->Value.bin.lpb + lpProp->Value.bin.cb};
+			const auto bin = mapi::getBin(lpProp);
+			sig = {bin.lpb, bin.lpb + bin.cb};
 		}
 
 		MAPIFreeBuffer(lpProp);

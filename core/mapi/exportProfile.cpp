@@ -57,10 +57,10 @@ namespace output
 
 		if (lpProviderUID)
 		{
-			auto lpSect = mapi::profile::OpenProfileSection(lpProviderAdmin, &lpProviderUID->Value.bin);
+			auto lpSect = mapi::profile::OpenProfileSection(lpProviderAdmin, &mapi::getBin(lpProviderUID));
 			if (lpSect)
 			{
-				ExportProfileSection(fProfile, lpSect, &lpProviderUID->Value.bin);
+				ExportProfileSection(fProfile, lpSect, &mapi::getBin(lpProviderUID));
 				lpSect->Release();
 			}
 		}
@@ -78,21 +78,22 @@ namespace output
 		outputSRow(dbgLevel::NoDebug, fProfile, lpRow, nullptr);
 		OutputToFile(fProfile, L"</properties>\n");
 
-		auto lpServiceUID = PpropFindProp(lpRow->lpProps, lpRow->cValues, PR_SERVICE_UID);
+		const auto lpServiceUID = PpropFindProp(lpRow->lpProps, lpRow->cValues, PR_SERVICE_UID);
 
 		if (lpServiceUID)
 		{
-			auto lpSect = mapi::profile::OpenProfileSection(lpServiceAdmin, &lpServiceUID->Value.bin);
+			auto bin = mapi::getBin(lpServiceUID);
+			auto lpSect = mapi::profile::OpenProfileSection(lpServiceAdmin, &bin);
 			if (lpSect)
 			{
-				ExportProfileSection(fProfile, lpSect, &lpServiceUID->Value.bin);
+				ExportProfileSection(fProfile, lpSect, &bin);
 				lpSect->Release();
 			}
 
 			LPPROVIDERADMIN lpProviderAdmin = nullptr;
 
 			EC_MAPI_S(lpServiceAdmin->AdminProviders(
-				reinterpret_cast<LPMAPIUID>(lpServiceUID->Value.bin.lpb),
+				reinterpret_cast<LPMAPIUID>(bin.lpb),
 				0, // fMapiUnicode is not supported
 				&lpProviderAdmin));
 

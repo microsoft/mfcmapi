@@ -34,7 +34,7 @@ LPMDB OpenStore(_In_ LPMAPISESSION lpMAPISession, ULONG ulIndex)
 			if (SUCCEEDED(hRes) && lpRow && 1 == lpRow->cRows && PR_ENTRYID == lpRow->aRow[0].lpProps[0].ulPropTag)
 			{
 				lpMDB = mapi::store::CallOpenMsgStore(
-					lpMAPISession, NULL, &lpRow->aRow[0].lpProps[0].Value.bin, MDB_NO_DIALOG | MDB_WRITE);
+					lpMAPISession, NULL, &mapi::getBin(lpRow->aRow[0].lpProps[0]), MDB_NO_DIALOG | MDB_WRITE);
 			}
 
 			if (lpRow) FreeProws(lpRow);
