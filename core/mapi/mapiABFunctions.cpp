@@ -371,7 +371,7 @@ namespace mapi::ab
 
 							auto pProp = &pProps[abPR_ENTRYID]; // Just a pointer, do not free.
 							pProp->ulPropTag = PR_ENTRYID;
-							pProp->Value.bin = CopySBinary(lpFoundRow[abPR_ENTRYID].Value.bin, lpAdrList);
+							mapi::setBin(pProp) = CopySBinary(mapi::getBin(lpFoundRow[abPR_ENTRYID]), lpAdrList);
 
 							pProp = &pProps[abPR_RECIPIENT_TYPE];
 							pProp->ulPropTag = PR_RECIPIENT_TYPE;
@@ -548,13 +548,14 @@ namespace mapi::ab
 			{
 				ULONG ulObjType = NULL;
 
+				auto bin = mapi::getBin(lpEntryID);
 				lpMailUser = mapi::CallOpenEntry<LPMAILUSER>(
 					nullptr,
 					lpAdrBook,
 					nullptr,
 					nullptr,
-					lpEntryID->Value.bin.cb,
-					reinterpret_cast<LPENTRYID>(lpEntryID->Value.bin.lpb),
+					bin.cb,
+					reinterpret_cast<LPENTRYID>(bin.lpb),
 					nullptr,
 					MAPI_BEST_ACCESS,
 					&ulObjType);

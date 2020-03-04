@@ -215,13 +215,13 @@ namespace file
 				subj = lpProps[ePR_SUBJECT_W].Value.lpszW;
 			}
 
-			LPSBinary lpRecordKey = nullptr;
+			SBinary recordKey = {};
 			if (PR_RECORD_KEY == lpProps[ePR_RECORD_KEY].ulPropTag)
 			{
-				lpRecordKey = &lpProps[ePR_RECORD_KEY].Value.bin;
+				recordKey = mapi::getBin(lpProps[ePR_RECORD_KEY]);
 			}
 
-			szFileOut = BuildFileNameAndPath(ext, subj, dir, lpRecordKey);
+			szFileOut = BuildFileNameAndPath(ext, subj, dir, &recordKey);
 		}
 
 		MAPIFreeBuffer(lpProps);
@@ -473,14 +473,14 @@ namespace file
 		output::DebugPrint(output::dbgLevel::Generic, L"SaveToMSG: Saving message to \"%ws\"\n", szPathName.c_str());
 
 		output::DebugPrint(output::dbgLevel::Generic, L"Source Message =\n");
-		auto bin = mapi::getBin(entryID);
+		const auto bin = mapi::getBin(entryID);
 		output::outputBinary(output::dbgLevel::Generic, nullptr, bin);
 
 		auto lpMapiContainer = mapi::safe_cast<LPMAPICONTAINER>(lpFolder);
 		if (lpMapiContainer)
 		{
 			lpMessage = mapi::CallOpenEntry<LPMESSAGE>(
-				nullptr, nullptr, lpMapiContainer, nullptr, &entryID.Value.bin, nullptr, MAPI_BEST_ACCESS, nullptr);
+				nullptr, nullptr, lpMapiContainer, nullptr, &bin, nullptr, MAPI_BEST_ACCESS, nullptr);
 		}
 
 		auto hRes = S_OK;
@@ -489,7 +489,7 @@ namespace file
 			const auto szSubj =
 				strings::CheckStringProp(lpSubject, PT_UNICODE) ? lpSubject->Value.lpszW : L"UnknownSubject";
 			const auto recordKey =
-				lpRecordKey && lpRecordKey->ulPropTag == PR_RECORD_KEY ? &lpRecordKey->Value.bin : nullptr;
+				lpRecordKey && lpRecordKey->ulPropTag == PR_RECORD_KEY ? &mapi::getBin(lpRecordKey) : nullptr;
 
 			auto szFileName = BuildFileNameAndPath(L".msg", szSubj, szPathName, recordKey); // STRING_OK
 			if (!szFileName.empty())

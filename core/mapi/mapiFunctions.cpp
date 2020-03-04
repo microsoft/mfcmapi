@@ -405,8 +405,7 @@ namespace mapi
 										lpPropArray->Value.lpszW = reinterpret_cast<LPWSTR>(lpBuffer);
 										break;
 									case PT_BINARY:
-										lpPropArray->Value.bin.cb = ulBufferSize;
-										lpPropArray->Value.bin.lpb = lpBuffer;
+										mapi::setBin(lpPropArray) = {ulBufferSize, lpBuffer};
 										break;
 									default:
 										break;
@@ -682,7 +681,7 @@ namespace mapi
 
 				if (pRow && PT_ERROR != PROP_TYPE(pRow->aRow->lpProps[0].ulPropTag))
 				{
-					sbaEID.lpbin[ulRowsCopied] = CopySBinary(pRow->aRow->lpProps[0].Value.bin, sbaEID.lpbin);
+					sbaEID.lpbin[ulRowsCopied] = CopySBinary(mapi::getBin(pRow->aRow->lpProps[0]), sbaEID.lpbin);
 				}
 			}
 
@@ -793,7 +792,8 @@ namespace mapi
 
 				if (PROP_TYPE(pRow->aRow->lpProps[0].ulPropTag) != PT_ERROR)
 				{
-					hRes = WC_H(CopyMessage(pRow->aRow->lpProps[0].Value.bin, lpSrcFolder, lpDestFolder, bMove, hWnd));
+					hRes =
+						WC_H(CopyMessage(mapi::getBin(pRow->aRow->lpProps[0]), lpSrcFolder, lpDestFolder, bMove, hWnd));
 				}
 
 				if (S_OK != hRes) output::DebugPrint(output::dbgLevel::Generic, L"Message Copy Failed\n");
@@ -907,8 +907,8 @@ namespace mapi
 								{
 									if (lpRows->aRow[iArrayPos].lpProps[ulSrc].ulPropTag == PR_RULE_PROVIDER_DATA)
 									{
-										if (!lpRows->aRow[iArrayPos].lpProps[ulSrc].Value.bin.cb ||
-											!lpRows->aRow[iArrayPos].lpProps[ulSrc].Value.bin.lpb)
+										const auto bin = mapi::getBin(lpRows->aRow[iArrayPos].lpProps[ulSrc]);
+										if (!bin.cb || !bin.lpb)
 										{
 											// PR_RULE_PROVIDER_DATA was NULL - we don't want this
 											continue;
@@ -1256,13 +1256,14 @@ namespace mapi
 		EC_H_GETPROPS_S(lpChildFolder->GetProps(&tag, fMapiUnicode, &cProps, &lpProps));
 		if (lpProps && PT_ERROR != PROP_TYPE(lpProps[0].ulPropTag))
 		{
+			const auto bin = mapi::getBin(lpProps[0]);
 			lpParentFolder = CallOpenEntry<LPMAPIFOLDER>(
 				lpMDB,
 				nullptr,
 				nullptr,
 				nullptr,
-				lpProps[0].Value.bin.cb,
-				reinterpret_cast<LPENTRYID>(lpProps[0].Value.bin.lpb),
+				bin.cb,
+				reinterpret_cast<LPENTRYID>(bin.lpb),
 				nullptr,
 				MAPI_BEST_ACCESS,
 				nullptr);
@@ -1309,9 +1310,9 @@ namespace mapi
 		}
 
 		auto eid = LPSBinary{};
-		if (lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag) && lpProp->Value.bin.cb)
+		if (lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag) && mapi::getBin(lpProp).cb)
 		{
-			eid = CopySBinary(&lpProp->Value.bin);
+			eid = CopySBinary(&mapi::getBin(lpProp));
 		}
 
 		if (hRes == MAPI_E_NOT_FOUND)
@@ -1406,9 +1407,7 @@ namespace mapi
 						if (pRows->aRow[iCurPropRow].lpProps &&
 							PR_ENTRYID == pRows->aRow[iCurPropRow].lpProps[eidPR_ENTRYID].ulPropTag)
 						{
-							ENTRYLIST eid = {};
-							eid.cValues = 1;
-							eid.lpbin = &pRows->aRow[iCurPropRow].lpProps[eidPR_ENTRYID].Value.bin;
+							ENTRYLIST eid = {1, &mapi::setBin(pRows->aRow[iCurPropRow].lpProps[eidPR_ENTRYID])};
 							hRes = WC_MAPI(
 								lpFolder->DeleteMessages(&eid, NULL, nullptr, bHardDelete ? DELETE_HARD_DELETE : NULL));
 							if (SUCCEEDED(hRes)) iItemCount++;
@@ -1574,13 +1573,14 @@ namespace mapi
 				{
 					for (ULONG i = 0; i < pRows->cRows; i++)
 					{
+						const auto bin = mapi::getBin(pRows->aRow[i].lpProps[ePR_ENTRYID]);
 						auto lpMessage = CallOpenEntry<LPMESSAGE>(
 							nullptr,
 							nullptr,
 							lpFolder,
 							nullptr,
-							pRows->aRow[i].lpProps[ePR_ENTRYID].Value.bin.cb,
-							reinterpret_cast<LPENTRYID>(pRows->aRow[i].lpProps[ePR_ENTRYID].Value.bin.lpb),
+							bin.cb,
+							reinterpret_cast<LPENTRYID>(bin.lpb),
 							nullptr,
 							MAPI_BEST_ACCESS,
 							nullptr);
@@ -1885,14 +1885,14 @@ namespace mapi
 						for (ULONG iCurPropRow = 0; iCurPropRow < pRows->cRows; iCurPropRow++)
 						{
 							if (lpMessage) lpMessage->Release();
+							const auto bin = mapi::getBin(pRows->aRow[iCurPropRow].lpProps[eidPR_ENTRYID]);
 							lpMessage = CallOpenEntry<LPMESSAGE>(
 								lpMDB,
 								nullptr,
 								nullptr,
 								nullptr,
-								pRows->aRow[iCurPropRow].lpProps[eidPR_ENTRYID].Value.bin.cb,
-								reinterpret_cast<LPENTRYID>(
-									pRows->aRow[iCurPropRow].lpProps[eidPR_ENTRYID].Value.bin.lpb),
+								bin.cb,
+								reinterpret_cast<LPENTRYID>(bin.lpb),
 								nullptr,
 								MAPI_BEST_ACCESS,
 								nullptr);
@@ -2241,8 +2241,8 @@ namespace mapi
 					mres.res.resProperty.ulPropTag = PR_SERVICE_UID;
 					mres.res.resProperty.lpProp = &mval;
 					mval.ulPropTag = PR_SERVICE_UID;
-					mval.Value.bin.cb = sizeof *puidService;
-					mval.Value.bin.lpb = reinterpret_cast<LPBYTE>(const_cast<MAPIUID*>(puidService));
+					mapi::setBin(mval) = {sizeof *puidService,
+										  reinterpret_cast<LPBYTE>(const_cast<MAPIUID*>(puidService))};
 
 					hRes = EC_MAPI(spmtab->Restrict(&mres, 0));
 				}
@@ -2258,10 +2258,11 @@ namespace mapi
 
 					if (pEmsmdbUID && pRow)
 					{
+						const auto bin = mapi::getBin(pRow->lpProps[eSectionUid]);
 						if (PR_EMSMDB_SECTION_UID == pRow->lpProps[eSectionUid].ulPropTag &&
-							pRow->lpProps[eSectionUid].Value.bin.cb == sizeof *pEmsmdbUID)
+							bin.cb == sizeof *pEmsmdbUID)
 						{
-							memcpy(pEmsmdbUID, pRow->lpProps[eSectionUid].Value.bin.lpb, sizeof *pEmsmdbUID);
+							memcpy(pEmsmdbUID, bin.lpb, sizeof *pEmsmdbUID);
 						}
 					}
 				}
@@ -2298,7 +2299,7 @@ namespace mapi
 		auto eid = LPSBinary{};
 		if (SUCCEEDED(hRes) && lpEIDProp)
 		{
-			eid = CopySBinary(&lpEIDProp->Value.bin);
+			eid = CopySBinary(&mapi::getBin(lpEIDProp));
 		}
 
 		MAPIFreeBuffer(lpEIDProp);
