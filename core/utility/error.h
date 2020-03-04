@@ -280,6 +280,17 @@ namespace error
 	}()
 
 // Execute a function, log and return the HRESULT
+// Does not log/display on error if it matches __ignore
+// Does not suppress __ignore as return value so caller can check it
+// Will display dialog on error
+#define EC_H_IGNORE_RET(__ignore, fnx) \
+	error::CheckMe([&]() -> HRESULT { \
+		const auto __hRes = (fnx); \
+		error::LogFunctionCall(__hRes, __ignore, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
+		return __hRes; \
+	}())
+
+// Execute a function, log and return the HRESULT
 // MAPI's GetProps call will return MAPI_W_ERRORS_RETURNED if even one prop fails
 // This is annoying, so this macro tosses those warnings.
 // We have to check each prop before we use it anyway, so we don't lose anything here.

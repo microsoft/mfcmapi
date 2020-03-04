@@ -28,7 +28,7 @@ namespace mapi::store
 
 		LPMDB lpMDB = nullptr;
 		auto ignore = (ulFlags & MDB_ONLINE) ? MAPI_E_UNKNOWN_FLAGS : S_OK;
-		const auto hRes = EC_H_IGNORE(
+		const auto hRes = EC_H_IGNORE_RET(
 			ignore,
 			lpSession->OpenMsgStore(
 				ulUIParam,
@@ -44,7 +44,7 @@ namespace mapi::store
 			output::DebugPrint(
 				output::dbgLevel::OpenItemProp, L"CallOpenMsgStore 2nd attempt ulFlags = 0x%X\n", ulFlags);
 
-			EC_H_S(lpSession->OpenMsgStore(
+			EC_MAPI_S(lpSession->OpenMsgStore(
 				ulUIParam,
 				lpEID->cb,
 				reinterpret_cast<LPENTRYID>(lpEID->lpb),

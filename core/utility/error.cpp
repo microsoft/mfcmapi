@@ -31,10 +31,10 @@ namespace error
 
 		// Check if we have no work to do
 		if (hRes == S_OK || hRes == hrIgnore) return;
-		if (!fIsSet(output::dbgLevel::HRes)) return;
+		if (!(bShowDialog && displayError) && !fIsSet(output::dbgLevel::HRes)) return;
 
 		// Get our error message if we have one
-		auto szErrorMsg =
+		const auto szErrorMsg =
 			bSystemCall ? strings::formatmessagesys(uidErrorMsg) : uidErrorMsg ? strings::loadstring(uidErrorMsg) : L"";
 
 		const auto szErrString = strings::formatmessage(
@@ -46,8 +46,11 @@ namespace error
 			szFile,
 			iLine);
 
-		output::Output(output::dbgLevel::HRes, nullptr, true, strings::StripCarriage(szErrString));
-		output::Output(output::dbgLevel::HRes, nullptr, false, L"\n");
+		if (fIsSet(output::dbgLevel::HRes))
+		{
+			output::Output(output::dbgLevel::HRes, nullptr, true, strings::StripCarriage(szErrString));
+			output::Output(output::dbgLevel::HRes, nullptr, false, L"\n");
+		}
 
 		if (bShowDialog && displayError)
 		{
