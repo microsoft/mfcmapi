@@ -450,7 +450,7 @@ namespace mapi::store
 		LPMDB lpDefaultMDB = nullptr;
 		if (pRow && pRow->cRows)
 		{
-			lpDefaultMDB = CallOpenMsgStore(lpMAPISession, NULL, &pRow->aRow[0].lpProps[EID].Value.bin, MDB_WRITE);
+			lpDefaultMDB = CallOpenMsgStore(lpMAPISession, NULL, &mapi::getBin(pRow->aRow[0].lpProps[EID]), MDB_WRITE);
 		}
 
 		if (pRow) FreeProws(pRow);
@@ -549,10 +549,10 @@ namespace mapi::store
 					// check to see if we have a folder with a matching GUID
 					if (pRow->aRow[ulRowNum].lpProps[STORETYPE].ulPropTag == PR_MDB_PROVIDER &&
 						pRow->aRow[ulRowNum].lpProps[EID].ulPropTag == PR_ENTRYID &&
-						IsEqualMAPIUID(pRow->aRow[ulRowNum].lpProps[STORETYPE].Value.bin.lpb, lpGUID))
+						IsEqualMAPIUID(mapi::getBin(pRow->aRow[ulRowNum].lpProps[STORETYPE]).lpb, lpGUID))
 					{
 						lpMDB = CallOpenMsgStore(
-							lpMAPISession, NULL, &pRow->aRow[ulRowNum].lpProps[EID].Value.bin, MDB_WRITE);
+							lpMAPISession, NULL, &mapi::getBin(pRow->aRow[ulRowNum].lpProps[EID]), MDB_WRITE);
 						break;
 					}
 				}
@@ -624,7 +624,7 @@ namespace mapi::store
 		LPMDB lpMDB = nullptr;
 		if (lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag))
 		{
-			lpMDB = CallOpenMsgStore(lpMAPISession, NULL, &lpProp->Value.bin, MAPI_BEST_ACCESS);
+			lpMDB = CallOpenMsgStore(lpMAPISession, NULL, &mapi::getBin(lpProp), MAPI_BEST_ACCESS);
 		}
 
 		MAPIFreeBuffer(lpProp);

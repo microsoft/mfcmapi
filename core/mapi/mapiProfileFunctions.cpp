@@ -41,7 +41,7 @@ namespace mapi::profile
 
 					if (lpServiceUID)
 					{
-						auto lpSect = OpenProfileSection(lpServiceAdmin, &lpServiceUID->Value.bin);
+						auto lpSect = OpenProfileSection(lpServiceAdmin, &mapi::getBin(lpServiceUID));
 						if (lpSect)
 						{
 							if (bAddMark)
@@ -96,7 +96,7 @@ namespace mapi::profile
 
 					if (lpServiceUID)
 					{
-						lpSect = OpenProfileSection(lpServiceAdmin, &lpServiceUID->Value.bin);
+						lpSect = OpenProfileSection(lpServiceAdmin, &mapi::getBin(lpServiceUID));
 						if (lpSect)
 						{
 							auto pTagArray = SPropTagArray{1, {PR_MARKER}};
@@ -213,7 +213,7 @@ namespace mapi::profile
 
 						if (lpServiceUIDProp)
 						{
-							lpuidService = reinterpret_cast<LPMAPIUID>(lpServiceUIDProp->Value.bin.lpb);
+							lpuidService = reinterpret_cast<LPMAPIUID>(mapi::getBin(lpServiceUIDProp).lpb);
 						}
 					}
 
@@ -501,13 +501,14 @@ namespace mapi::profile
 
 				if (SUCCEEDED(hRes) && lpServerFullVersion &&
 					PR_PROFILE_SERVER_FULL_VERSION == lpServerFullVersion->ulPropTag &&
-					sizeof(EXCHANGE_STORE_VERSION_NUM) == lpServerFullVersion->Value.bin.cb)
+					sizeof(EXCHANGE_STORE_VERSION_NUM) == mapi::getBin(lpServerFullVersion).cb)
 				{
+					const auto bin = mapi::getBin(lpServerFullVersion);
 					output::DebugPrint(output::dbgLevel::Generic, L"PR_PROFILE_SERVER_FULL_VERSION = ");
-					output::outputBinary(output::dbgLevel::Generic, nullptr, lpServerFullVersion->Value.bin);
+					output::outputBinary(output::dbgLevel::Generic, nullptr, bin);
 					output::DebugPrint(output::dbgLevel::Generic, L"\n");
 
-					memcpy(lpStoreVersion, lpServerFullVersion->Value.bin.lpb, sizeof(EXCHANGE_STORE_VERSION_NUM));
+					memcpy(lpStoreVersion, bin.lpb, sizeof(EXCHANGE_STORE_VERSION_NUM));
 					*lpbFoundServerFullVersion = true;
 				}
 
@@ -601,7 +602,8 @@ namespace mapi::profile
 		return lpProfSect;
 	}
 
-	_Check_return_ LPPROFSECT OpenProfileSection(_In_ LPPROVIDERADMIN lpProviderAdmin, _In_ const SBinary* lpProviderUID)
+	_Check_return_ LPPROFSECT
+	OpenProfileSection(_In_ LPPROVIDERADMIN lpProviderAdmin, _In_ const SBinary* lpProviderUID)
 	{
 		if (!lpProviderUID || !lpProviderAdmin) return nullptr;
 
