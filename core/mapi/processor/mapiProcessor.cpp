@@ -277,7 +277,8 @@ namespace mapi::processor
 									szSubFolderOffset = m_szFolderOffset + L"UnknownFolder\\"; // STRING_OK
 								}
 
-								AddFolderToFolderList(&lpRows->aRow[ulRow].lpProps[EID].Value.bin, szSubFolderOffset);
+								AddFolderToFolderList(
+									&mapi::getBin(lpRows->aRow[ulRow].lpProps[EID]), szSubFolderOffset);
 							}
 						}
 					}
@@ -372,13 +373,14 @@ namespace mapi::processor
 
 					if (!lpMsgEID) continue;
 
+					const auto bin = mapi::getBin(lpMsgEID);
 					auto lpMessage = mapi::CallOpenEntry<LPMESSAGE>(
 						nullptr,
 						nullptr,
 						m_lpFolder,
 						nullptr,
-						lpMsgEID->Value.bin.cb,
-						reinterpret_cast<LPENTRYID>(lpMsgEID->Value.bin.lpb),
+						bin.cb,
+						reinterpret_cast<LPENTRYID>(bin.lpb),
 						nullptr,
 						MAPI_BEST_ACCESS,
 						nullptr);

@@ -461,9 +461,10 @@ namespace dialog
 				if (MyData.GetCheck(2)) ulCopyFlags |= FOLDER_MOVE;
 				if (lpProgress) ulCopyFlags |= FOLDER_DIALOG;
 
+				const auto bin = mapi::getBin(lpProps[EID]);
 				hRes = WC_MAPI(lpCopyRoot->CopyFolder(
-					lpProps[EID].Value.bin.cb,
-					reinterpret_cast<LPENTRYID>(lpProps[EID].Value.bin.lpb),
+					bin.cb,
+					reinterpret_cast<LPENTRYID>(bin.lpb),
 					&IID_IMAPIFolder,
 					lpMAPIDestFolder,
 					LPTSTR(MyData.GetStringW(0).c_str()),
@@ -1006,9 +1007,10 @@ namespace dialog
 
 				if (lpProgress) ulCopyFlags |= FOLDER_DIALOG;
 
+				const auto bin = mapi::getBin(lpProps[EID]);
 				const auto hRes = WC_MAPI(lpSrcParentFolder->CopyFolder(
-					lpProps[EID].Value.bin.cb,
-					reinterpret_cast<LPENTRYID>(lpProps[EID].Value.bin.lpb),
+					bin.cb,
+					reinterpret_cast<LPENTRYID>(bin.lpb),
 					&IID_IMAPIFolder,
 					GetRootContainer(),
 					LPTSTR(MyData.GetStringW(0).c_str()),

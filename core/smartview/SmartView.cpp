@@ -344,7 +344,7 @@ namespace smartview
 
 			if (parser != parserType::NOPARSING)
 			{
-				return InterpretBinaryAsString(lpProp->Value.bin, parser, lpMAPIProp);
+				return InterpretBinaryAsString(mapi::getBin(lpProp), parser, lpMAPIProp);
 			}
 
 			break;

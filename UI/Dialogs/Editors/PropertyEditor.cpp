@@ -333,19 +333,20 @@ namespace dialog::editor
 
 			if (m_lpsInputValue)
 			{
+				const auto bin = mapi::getBin(m_lpsInputValue);
 				if (lpPane)
 				{
-					lpPane->SetCount(m_lpsInputValue->Value.bin.cb);
-					if (m_lpsInputValue->Value.bin.cb != 0)
+					lpPane->SetCount(bin.cb);
+					if (bin.cb != 0)
 					{
-						lpPane->SetStringW(strings::BinToHexString(&m_lpsInputValue->Value.bin, false));
+						lpPane->SetStringW(strings::BinToHexString(&bin, false));
 					}
 
-					SetStringA(1, std::string(LPCSTR(m_lpsInputValue->Value.bin.lpb), m_lpsInputValue->Value.bin.cb));
+					SetStringA(1, std::string(LPCSTR(bin.lpb), bin.cb));
 				}
 
 				lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(GetPane(1));
-				if (lpPane) lpPane->SetCount(m_lpsInputValue->Value.bin.cb);
+				if (lpPane) lpPane->SetCount(bin.cb);
 			}
 
 			if (smartViewPane)
@@ -525,8 +526,8 @@ namespace dialog::editor
 			case PT_BINARY:
 				// remember we already read szTmpString and ulStrLen and found ulStrLen was even
 				bin = strings::HexStringToBin(GetStringW(0));
-				m_lpsOutputValue->Value.bin.lpb = mapi::ByteVectorToMAPI(bin, m_lpAllocParent);
-				m_lpsOutputValue->Value.bin.cb = static_cast<ULONG>(bin.size());
+				mapi::setBin(m_lpsOutputValue) = {static_cast<ULONG>(bin.size()),
+												  mapi::ByteVectorToMAPI(bin, m_lpAllocParent)};
 				break;
 			default:
 				// We shouldn't ever get here unless some new prop type shows up

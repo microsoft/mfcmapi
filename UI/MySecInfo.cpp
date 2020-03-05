@@ -168,10 +168,11 @@ namespace mapi::mapiui
 		*ppSecurityDescriptor = nullptr;
 
 		const auto lpsProp = GetLargeBinaryProp(m_lpMAPIProp, m_ulPropTag);
-		if (lpsProp && PROP_TYPE(lpsProp->ulPropTag) == PT_BINARY && lpsProp->Value.bin.lpb)
+		if (lpsProp && PROP_TYPE(lpsProp->ulPropTag) == PT_BINARY && mapi::getBin(lpsProp).lpb)
 		{
-			const auto lpSDBuffer = lpsProp->Value.bin.lpb;
-			const auto cbSBBuffer = lpsProp->Value.bin.cb;
+			const auto bin = mapi::getBin(lpsProp);
+			const auto lpSDBuffer = bin.lpb;
+			const auto cbSBBuffer = bin.cb;
 			const auto pSecDesc =
 				SECURITY_DESCRIPTOR_OF(lpSDBuffer); // will be a pointer into lpPropArray, do not free!
 
@@ -246,9 +247,7 @@ namespace mapi::mapiui
 			{
 				SPropValue Blob = {};
 				Blob.ulPropTag = m_ulPropTag;
-				Blob.dwAlignPad = NULL;
-				Blob.Value.bin.cb = cbBlob;
-				Blob.Value.bin.lpb = lpBlob;
+				mapi::setBin(Blob) = {cbBlob, lpBlob};
 
 				hRes = EC_MAPI(HrSetOneProp(m_lpMAPIProp, &Blob));
 			}

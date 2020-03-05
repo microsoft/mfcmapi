@@ -163,8 +163,8 @@ namespace dialog
 								{
 									if (lpData->lpSourceProps[ulSrc].ulPropTag == PR_RULE_PROVIDER_DATA)
 									{
-										if (!lpData->lpSourceProps[ulSrc].Value.bin.cb ||
-											!lpData->lpSourceProps[ulSrc].Value.bin.lpb)
+										const auto bin = mapi::getBin(lpData->lpSourceProps[ulSrc]);
+										if (!bin.cb || !bin.lpb)
 										{
 											// PR_RULE_PROVIDER_DATA was NULL - we don't want this
 											continue;

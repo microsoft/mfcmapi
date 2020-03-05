@@ -1607,8 +1607,8 @@ namespace dialog
 					if (lpMappingSig && PT_BINARY == PROP_TYPE(lpMappingSig->ulPropTag))
 					{
 						dwSigHash = mapi::ComputeStoreHash(
-							lpMappingSig->Value.bin.cb,
-							lpMappingSig->Value.bin.lpb,
+							mapi::getBin(lpMappingSig).cb,
+							mapi::getBin(lpMappingSig).lpb,
 							nullptr,
 							nullptr,
 							fPublicExchangeStore);

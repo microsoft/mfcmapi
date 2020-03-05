@@ -214,7 +214,7 @@ namespace dialog
 									{
 										// Get the string interpretation
 										szNicknames = smartview::InterpretBinaryAsString(
-											lpsProp->Value.bin, parserType::NICKNAMECACHE, lpMSG);
+											mapi::getBin(lpsProp), parserType::NICKNAMECACHE, lpMSG);
 									}
 
 									lpMSG->Release();
@@ -429,11 +429,11 @@ namespace dialog
 			MyResults.AddPane(viewpane::CountedTextPane::Create(0, IDS_HEX, true, IDS_CB));
 			MyResults.AddPane(viewpane::TextPane::CreateCollapsibleTextPane(1, IDS_ANSISTRING, true));
 
+			const auto bin = mapi::getBin(lpThumbnail);
 			auto lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(MyResults.GetPane(0));
-			if (lpPane) lpPane->SetCount(lpThumbnail->Value.bin.cb);
-			MyResults.SetBinary(0, lpThumbnail->Value.bin.lpb, lpThumbnail->Value.bin.cb);
-
-			MyResults.SetStringA(1, std::string(LPCSTR(lpThumbnail->Value.bin.lpb), lpThumbnail->Value.bin.cb));
+			if (lpPane) lpPane->SetCount(bin.cb);
+			MyResults.SetBinary(0, bin.lpb, bin.cb);
+			MyResults.SetStringA(1, std::string(LPCSTR(bin.lpb), bin.cb));
 		}
 		else
 		{

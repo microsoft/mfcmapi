@@ -233,12 +233,15 @@ namespace property
 				szTmp = guid::GUIDToStringAndName(lpProp->Value.lpguid);
 				break;
 			case PT_BINARY:
-				szTmp = strings::BinToHexString(&lpProp->Value.bin, false);
-				szAltTmp = strings::BinToTextString(&lpProp->Value.bin, false);
+			{
+				const auto bin = mapi::getBin(lpProp);
+				szTmp = strings::BinToHexString(&bin, false);
+				szAltTmp = strings::BinToTextString(&bin, false);
 				bAltPropXMLSafe = false;
 
-				attributes.AddAttribute(L"cb", std::to_wstring(lpProp->Value.bin.cb)); // STRING_OK
+				attributes.AddAttribute(L"cb", std::to_wstring(bin.cb)); // STRING_OK
 				break;
+			}
 			case PT_SRESTRICTION:
 				szTmp = RestrictionToString(reinterpret_cast<LPSRestriction>(lpProp->Value.lpszA), nullptr);
 				bPropXMLSafe = false;
