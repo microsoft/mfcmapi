@@ -6,6 +6,7 @@
 #include <core/smartview/block/blockStringW.h>
 #include <core/smartview/block/blockBytes.h>
 #include <core/smartview/block/blockT.h>
+#include <core/mapi/mapiFunctions.h>
 
 namespace smartview
 {
@@ -157,8 +158,7 @@ namespace smartview
 				offset = Value.lpszA.getOffset();
 				break;
 			case PT_BINARY:
-				prop.Value.bin.cb = *Value.bin.cb;
-				prop.Value.bin.lpb = const_cast<LPBYTE>(Value.bin.lpb->data());
+				mapi::setBin(prop) = {*Value.bin.cb, const_cast<LPBYTE>(Value.bin.lpb->data())};
 				size = Value.bin.getSize();
 				offset = Value.bin.getOffset();
 				break;

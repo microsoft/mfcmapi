@@ -125,7 +125,7 @@ namespace dialog::editor
 				{
 					SPropValue eid = {};
 					eid.ulPropTag = PR_ENTRYID;
-					eid.Value.bin = *defaultEid;
+					mapi::setBin(eid) = *defaultEid;
 					property::parseProperty(&eid, &szProp, nullptr);
 					SetListString(ulListNum, iRow, iCol, szProp);
 					iCol++;

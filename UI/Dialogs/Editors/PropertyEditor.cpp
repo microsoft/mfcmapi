@@ -355,8 +355,8 @@ namespace dialog::editor
 					m_lpsInputValue, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, m_bMVRow));
 
 				smartViewPane->Parse(std::vector<BYTE>(
-					m_lpsInputValue ? m_lpsInputValue->Value.bin.lpb : nullptr,
-					m_lpsInputValue ? m_lpsInputValue->Value.bin.lpb + m_lpsInputValue->Value.bin.cb : nullptr));
+					m_lpsInputValue ? mapi::getBin(m_lpsInputValue).lpb : nullptr,
+					m_lpsInputValue ? mapi::getBin(m_lpsInputValue).lpb + mapi::getBin(m_lpsInputValue).cb : nullptr));
 
 				smartViewPane->OnItemSelected = [&](auto _1) { return HighlightHex(0, _1); };
 			}
@@ -704,14 +704,13 @@ namespace dialog::editor
 				SetBinary(0, bin.data(), static_cast<ULONG>(bin.size()));
 			}
 
-			sProp.Value.bin.lpb = bin.data();
-			sProp.Value.bin.cb = static_cast<ULONG>(bin.size());
+			mapi::setBin(sProp) = {static_cast<ULONG>(bin.size()), bin.data()};
 
 			lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(GetPane(0));
-			if (lpPane) lpPane->SetCount(sProp.Value.bin.cb);
+			if (lpPane) lpPane->SetCount(bin.size());
 
 			lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(GetPane(1));
-			if (lpPane) lpPane->SetCount(sProp.Value.bin.cb);
+			if (lpPane) lpPane->SetCount(bin.size());
 
 			auto smartViewPane = std::dynamic_pointer_cast<viewpane::SmartViewPane>(GetPane(2));
 			if (smartViewPane)
