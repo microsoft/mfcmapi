@@ -423,7 +423,7 @@ namespace controls::sortlistctrl
 								if (lpMappingSig)
 								{
 									names = cache::GetNamesFromIDs(
-										m_lpPropBag->GetMAPIProp(), &lpMappingSig->Value.bin, &lpTag, NULL);
+										m_lpPropBag->GetMAPIProp(), &mapi::getBin(lpMappingSig), &lpTag, NULL);
 								}
 								else
 								{
@@ -461,7 +461,7 @@ namespace controls::sortlistctrl
 						ulCurListBoxRow,
 						lpPropsToAdd[ulCurPropRow].ulPropTag,
 						lpNameIDInfo,
-						lpMappingSig ? &lpMappingSig->Value.bin : nullptr,
+						lpMappingSig ? &mapi::getBin(lpMappingSig) : nullptr,
 						&lpPropsToAdd[ulCurPropRow]);
 
 					ulCurListBoxRow++;
@@ -632,7 +632,7 @@ namespace controls::sortlistctrl
 		int iRow,
 		ULONG ulPropTag,
 		_In_opt_ const MAPINAMEID* lpNameID,
-		_In_opt_ LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
+		_In_opt_ const SBinary* lpMappingSignature, // optional mapping signature for object to speed named prop lookups
 		_In_ LPSPropValue lpsPropToAdd)
 	{
 		auto image = sortIcon::default;
