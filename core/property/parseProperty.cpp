@@ -103,7 +103,7 @@ namespace property
 				sProp.Value.lpszW = lpProp->Value.MVszW.lppszW[ulMVRow];
 				break;
 			case PT_MV_BINARY:
-				sProp.Value.bin = lpProp->Value.MVbin.lpbin[ulMVRow];
+				mapi::setBin(sProp) = lpProp->Value.MVbin.lpbin[ulMVRow];
 				break;
 			case PT_MV_CLSID:
 				sProp.Value.lpguid = &lpProp->Value.MVguid.lpguid[ulMVRow];

@@ -203,7 +203,7 @@ namespace dialog
 									nullptr,
 									nullptr,
 									nullptr,
-									&lpRows->aRow[0].lpProps[eidPR_ENTRYID].Value.bin,
+									&mapi::getBin(lpRows->aRow[0].lpProps[eidPR_ENTRYID]),
 									nullptr,
 									NULL,
 									nullptr);
@@ -244,9 +244,10 @@ namespace dialog
 
 				if (lpsProp)
 				{
+					const auto bin = mapi::getBin(lpsProp);
 					auto lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(MyResults.GetPane(1));
-					if (lpPane) lpPane->SetCount(lpsProp->Value.bin.cb);
-					MyResults.SetBinary(1, lpsProp->Value.bin.lpb, lpsProp->Value.bin.cb);
+					if (lpPane) lpPane->SetCount(bin.cb);
+					MyResults.SetBinary(1, bin.lpb, bin.cb);
 				}
 
 				(void) MyResults.DisplayDialog();
@@ -356,7 +357,8 @@ namespace dialog
 				if (lpProps[qPR_MDB_PROVIDER].ulPropTag == PR_MDB_PROVIDER)
 				{
 					szQuotaString += strings::formatmessage(
-						IDS_QUOTAPROVIDER, strings::BinToHexString(&lpProps[qPR_MDB_PROVIDER].Value.bin, true).c_str());
+						IDS_QUOTAPROVIDER,
+						strings::BinToHexString(&mapi::getBin(lpProps[qPR_MDB_PROVIDER]), true).c_str());
 				}
 
 				MAPIFreeBuffer(lpProps);
