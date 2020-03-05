@@ -838,7 +838,7 @@ namespace controls
 		auto tab = reinterpret_cast<TABLE_NOTIFICATION*>(wParam);
 		const auto hParent = reinterpret_cast<HTREEITEM>(lParam);
 
-		const auto hItemToDelete = FindNode(&tab->propIndex.Value.bin, hParent);
+		const auto hItemToDelete = FindNode(mapi::getBin(tab->propIndex), hParent);
 
 		if (hItemToDelete)
 		{
@@ -863,7 +863,7 @@ namespace controls
 		auto tab = reinterpret_cast<TABLE_NOTIFICATION*>(wParam);
 		const auto hParent = reinterpret_cast<HTREEITEM>(lParam);
 
-		const auto hModifyItem = FindNode(&tab->propIndex.Value.bin, hParent);
+		const auto hModifyItem = FindNode(mapi::getBin(tab->propIndex), hParent);
 
 		if (hModifyItem)
 		{
@@ -969,9 +969,9 @@ namespace controls
 
 	// This function steps through the list control to find the entry with this instance key
 	// Return NULL if item not found
-	_Check_return_ HTREEITEM CHierarchyTableTreeCtrl::FindNode(_In_ LPSBinary lpInstance, HTREEITEM hParent) const
+	_Check_return_ HTREEITEM CHierarchyTableTreeCtrl::FindNode(_In_ const SBinary& instance, HTREEITEM hParent) const
 	{
-		if (!lpInstance || !hParent) return nullptr;
+		if (!hParent) return nullptr;
 
 		output::DebugPrintEx(
 			output::dbgLevel::Generic,
@@ -995,7 +995,7 @@ namespace controls
 					const auto lpCurInstance = node->m_lpInstanceKey;
 					if (lpCurInstance)
 					{
-						if (!memcmp(lpCurInstance->lpb, lpInstance->lpb, lpInstance->cb))
+						if (!memcmp(lpCurInstance->lpb, instance.lpb, instance.cb))
 						{
 							output::DebugPrintEx(
 								output::dbgLevel::Generic,

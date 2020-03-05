@@ -53,7 +53,7 @@ namespace controls
 		void HandleContextMenu(int x, int y);
 		void OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, _In_ HTREEITEM hItemCurHover);
 
-		_Check_return_ HTREEITEM FindNode(_In_ LPSBinary lpInstance, HTREEITEM hParent) const;
+		_Check_return_ HTREEITEM FindNode(_In_ const SBinary& lpInstance, HTREEITEM hParent) const;
 		_Check_return_ LPMAPICONTAINER GetContainer(HTREEITEM Item, modifyType bModify) const;
 		void Advise(HTREEITEM hItem, sortlistdata::sortListData* lpData) const;
 		_Check_return_ LPMAPITABLE
