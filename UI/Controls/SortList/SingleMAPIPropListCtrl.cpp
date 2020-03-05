@@ -513,7 +513,7 @@ namespace controls::sortlistctrl
 					ulCurListBoxRow,
 					mapi::getTag(pNewTag, 0), // Tag to use in the UI
 					nullptr, // Let AddPropToListBox look up any named prop information it needs
-					lpMappingSig ? &lpMappingSig->Value.bin : nullptr,
+					lpMappingSig ? &mapi::getBin(lpMappingSig) : nullptr,
 					&extraPropForList); // Tag + Value to parse - may differ in case of errors or NULL type.
 
 				ulCurListBoxRow++;
