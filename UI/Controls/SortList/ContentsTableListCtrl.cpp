@@ -1492,7 +1492,7 @@ namespace controls::sortlistctrl
 		}
 		else
 		{
-			iNewRow = FindRow(&tab->propPrior.Value.bin) + 1;
+			iNewRow = FindRow(mapi::getBin(tab->propPrior)) + 1;
 		}
 
 		// We make this copy here and pass it in to AddItemToListBox, where it is grabbed by sortListData::InitializeContents to be part of the item data
@@ -1517,7 +1517,7 @@ namespace controls::sortlistctrl
 
 		if (!tab) return MAPI_E_INVALID_PARAMETER;
 
-		const auto iItem = FindRow(&tab->propIndex.Value.bin);
+		const auto iItem = FindRow(mapi::getBin(tab->propIndex));
 
 		output::DebugPrintEx(
 			output::dbgLevel::Generic, CLASS, L"msgOnDeleteItem", L"Received message to delete item 0x%d\n", iItem);
@@ -1546,7 +1546,7 @@ namespace controls::sortlistctrl
 
 		if (!tab) return MAPI_E_INVALID_PARAMETER;
 
-		const auto iItem = FindRow(&tab->propIndex.Value.bin);
+		const auto iItem = FindRow(mapi::getBin(tab->propIndex));
 
 		if (-1 != iItem)
 		{
@@ -1583,11 +1583,9 @@ namespace controls::sortlistctrl
 
 	// This function steps through the list control to find the entry with this instance key
 	// return -1 if item not found
-	_Check_return_ int CContentsTableListCtrl::FindRow(_In_ LPSBinary lpInstance) const
+	_Check_return_ int CContentsTableListCtrl::FindRow(_In_ const SBinary& instance) const
 	{
-		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"msgOnGetIndex", L"Getting index for %p\n", lpInstance);
-
-		if (!lpInstance) return -1;
+		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"msgOnGetIndex", L"Getting index for %p\n", &instance);
 
 		auto iItem = 0;
 		for (iItem = 0; iItem < GetItemCount(); iItem++)
@@ -1601,7 +1599,7 @@ namespace controls::sortlistctrl
 					const auto lpCurInstance = contents->m_lpInstanceKey;
 					if (lpCurInstance)
 					{
-						if (!memcmp(lpCurInstance->lpb, lpInstance->lpb, lpInstance->cb))
+						if (!memcmp(lpCurInstance->lpb, instance.lpb, instance.cb))
 						{
 							output::DebugPrintEx(
 								output::dbgLevel::Generic, CLASS, L"msgOnGetIndex", L"Matched at 0x%08X\n", iItem);
