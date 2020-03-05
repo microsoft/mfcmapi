@@ -217,7 +217,7 @@ namespace dialog
 			OnCompareEntryIDs();
 			return true;
 		case ID_OPENENTRYID:
-			OnOpenEntryID(nullptr);
+			OnOpenEntryID({});
 			return true;
 		case ID_COMPUTESTOREHASH:
 			OnComputeStoreHash();
@@ -663,14 +663,14 @@ namespace dialog
 		(void) MyEID.DisplayDialog();
 	}
 
-	void CBaseDialog::OnOpenEntryID(_In_opt_ LPSBinary lpBin)
+	void CBaseDialog::OnOpenEntryID(_In_ const SBinary& lpBin)
 	{
 		if (!m_lpMapiObjects) return;
 
 		editor::CEditor MyEID(this, IDS_OPENEID, IDS_OPENEIDPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 		MyEID.AddPane(
-			viewpane::TextPane::CreateSingleLinePane(0, IDS_EID, strings::BinToHexString(lpBin, false), false));
+			viewpane::TextPane::CreateSingleLinePane(0, IDS_EID, strings::BinToHexString(&lpBin, false), false));
 
 		const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 		MyEID.AddPane(viewpane::CheckPane::Create(1, IDS_USEMDB, lpMDB != nullptr, lpMDB == nullptr));

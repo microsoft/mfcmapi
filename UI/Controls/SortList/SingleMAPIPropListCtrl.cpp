@@ -1667,7 +1667,7 @@ namespace controls::sortlistctrl
 				case PT_BINARY:
 					output::DebugPrintEx(
 						output::dbgLevel::Generic, CLASS, L"OnOpenProperty", L"property is PT_BINARY\n");
-					m_lpHostDlg->OnOpenEntryID(&lpProp->Value.bin);
+					m_lpHostDlg->OnOpenEntryID(mapi::getBin(lpProp));
 					break;
 				case PT_MV_BINARY:
 					output::DebugPrintEx(
@@ -1682,7 +1682,7 @@ namespace controls::sortlistctrl
 							lpProp->Value.MVbin.cValues);
 						for (ULONG i = 0; i < lpProp->Value.MVbin.cValues; i++)
 						{
-							m_lpHostDlg->OnOpenEntryID(&lpProp->Value.MVbin.lpbin[i]);
+							m_lpHostDlg->OnOpenEntryID(lpProp->Value.MVbin.lpbin[i]);
 						}
 					}
 					break;
