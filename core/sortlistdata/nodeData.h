@@ -30,15 +30,15 @@ namespace sortlistdata
 			ULONG ulContainerFlags);
 		~nodeData();
 
-		bool hasSink() { return !!m_lpAdviseSink; }
-		mapi::adviseSink* getSink() { return m_lpAdviseSink; }
+		bool hasSink() noexcept { return !!m_lpAdviseSink; }
+		mapi::adviseSink* getSink() noexcept { return m_lpAdviseSink; }
 		bool advise(HWND m_hWnd, HTREEITEM hItem, LPMDB lpMDB);
 		bool hasChildren();
-		LONG getSubfolders() { return m_cSubfolders; }
-		void setSubfolders(bool hasFolders) { m_cSubfolders = hasFolders ? 1 : 0; }
-		LPMAPITABLE getTable() { return m_lpHierarchyTable; }
-		void setTable(LPMAPITABLE table) { m_lpHierarchyTable = table; } // we assume the caller did AddRef
-		bool hasTable() { return !!m_lpHierarchyTable; }
+		LONG getSubfolders() noexcept { return m_cSubfolders; }
+		void setSubfolders(bool hasFolders) noexcept { m_cSubfolders = hasFolders ? 1 : 0; }
+		LPMAPITABLE getTable() noexcept { return m_lpHierarchyTable; }
+		void setTable(LPMAPITABLE table) noexcept { m_lpHierarchyTable = table; } // we assume the caller did AddRef
+		bool hasTable() noexcept { return !!m_lpHierarchyTable; }
 
 		LPSBinary m_lpEntryID{}; // Allocated with MAPIAllocateBuffer
 		LPSBinary m_lpInstanceKey{}; // Allocated with MAPIAllocateBuffer
