@@ -168,8 +168,4 @@ namespace sortlistdata
 
 		return false;
 	}
-
-	LPMAPITABLE nodeData::getTable() {}
-	void nodeData::setTable(LPMAPITABLE table) {}
-
 } // namespace sortlistdata

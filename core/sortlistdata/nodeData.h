@@ -36,8 +36,8 @@ namespace sortlistdata
 		bool hasChildren();
 		LONG getSubfolders() { return m_cSubfolders; }
 		void setSubfolders(bool hasFolders) { m_cSubfolders = hasFolders ? 1 : 0; }
-		LPMAPITABLE getTable();
-		void setTable(LPMAPITABLE table);
+		LPMAPITABLE getTable() { return m_lpHierarchyTable; }
+		void setTable(LPMAPITABLE table) { m_lpHierarchyTable = table; } // we assume the caller did AddRef
 		bool hasTable() { return !!m_lpHierarchyTable; }
 
 		LPSBinary m_lpEntryID{}; // Allocated with MAPIAllocateBuffer
