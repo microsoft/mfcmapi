@@ -354,9 +354,10 @@ namespace controls
 			const auto node = lpData->cast<sortlistdata::nodeData>();
 			if (node)
 			{
-				if (node->m_cSubfolders >= 0)
+				auto cSubfolders = node->getSubfolders();
+				if (cSubfolders >= 0)
 				{
-					return node->m_cSubfolders > 0;
+					return cSubfolders > 0;
 				}
 
 				LPCTSTR szName = nullptr;
@@ -367,7 +368,7 @@ namespace controls
 					CLASS,
 					L"HasChildren",
 					L"Using Hierarchy table %d %ws\n",
-					node->m_cSubfolders,
+					cSubfolders,
 					strings::LPCTSTRToWstring(szName).c_str());
 				// Won't force the hierarchy table - just get it if we've already got it
 				return node->hasChildren();
@@ -713,7 +714,7 @@ namespace controls
 			const auto node = lpNodeData->cast<sortlistdata::nodeData>();
 			if (node)
 			{
-				node->m_cSubfolders = 0;
+				node->setSubfolders(false);
 			}
 		}
 	}
@@ -760,7 +761,7 @@ namespace controls
 					const auto node = lpData->cast<sortlistdata::nodeData>();
 					if (node)
 					{
-						node->m_cSubfolders = 1;
+						node->setSubfolders(true);
 					}
 				}
 			}

@@ -34,13 +34,14 @@ namespace sortlistdata
 		mapi::adviseSink* getSink() { return m_lpAdviseSink; }
 		bool advise(HWND m_hWnd, HTREEITEM hItem, LPMDB lpMDB);
 		bool hasChildren();
+		LONG getSubfolders() { return m_cSubfolders; }
+		void setSubfolders(bool hasFolders) { m_cSubfolders = hasFolders ? 1 : 0; }
 		LPMAPITABLE getTable();
 		void setTable(LPMAPITABLE table);
 		bool hasTable() { return !!m_lpHierarchyTable; }
 
 		LPSBinary m_lpEntryID{}; // Allocated with MAPIAllocateBuffer
 		LPSBinary m_lpInstanceKey{}; // Allocated with MAPIAllocateBuffer
-		LONG m_cSubfolders{-1}; // -1 for unknown, 0 for no subfolders, >0 for at least one subfolder
 
 	private:
 		void unadvise();
@@ -48,5 +49,6 @@ namespace sortlistdata
 		mapi::adviseSink* m_lpAdviseSink{}; // Object - free with Release
 		ULONG_PTR m_ulAdviseConnection{};
 		LPMAPITABLE m_lpHierarchyTable{}; // Object - free with Release
+		LONG m_cSubfolders{-1}; // -1 for unknown, 0 for no subfolders, >0 for at least one subfolder
 	};
 } // namespace sortlistdata
