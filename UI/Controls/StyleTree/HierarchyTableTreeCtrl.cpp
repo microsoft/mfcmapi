@@ -127,30 +127,6 @@ namespace controls
 	void CHierarchyTableTreeCtrl::FreeNodeData(const LPARAM lpData) const
 	{
 		auto* lpNodeData = reinterpret_cast<sortlistdata::sortListData*>(lpData);
-
-		if (lpNodeData)
-		{
-			const auto node = lpNodeData->cast<sortlistdata::nodeData>();
-			if (node && node->m_lpAdviseSink)
-			{
-				// unadvise before releasing our sink
-				if (node->m_lpAdviseSink && node->m_lpHierarchyTable)
-				{
-					node->m_lpHierarchyTable->Unadvise(node->m_ulAdviseConnection);
-					node->m_lpAdviseSink->Release();
-					node->m_lpAdviseSink = nullptr;
-				}
-
-				output::DebugPrintEx(
-					output::dbgLevel::Hierarchy,
-					CLASS,
-					L"FreeNodeData",
-					L"Unadvising %p, ulAdviseConnection = 0x%08X\n",
-					node->m_lpAdviseSink,
-					static_cast<int>(node->m_ulAdviseConnection));
-			}
-		}
-
 		delete lpNodeData;
 	}
 
@@ -261,47 +237,17 @@ namespace controls
 		if (lpData)
 		{
 			const auto node = lpData->cast<sortlistdata::nodeData>();
-			if (node->m_lpHierarchyTable && !node->m_lpAdviseSink &&
-				(registry::hierRootNotifs || GetRootItem() != hItem))
+			if (node && !node->hasSink() && (registry::hierRootNotifs || hItem != GetRootItem()))
 			{
-				output::DebugPrintEx(
-					output::dbgLevel::Notify,
-					CLASS,
-					L"GetHierarchyTable",
-					L"Advise sink for \"%ws\" = %p\n",
-					GetItemTextW(hItem).c_str(),
-					hItem);
-				auto lpAdviseSink = new mapi::adviseSink(m_hWnd, hItem);
-
-				if (lpAdviseSink)
+				if (node->advise(m_hWnd, hItem, m_lpMapiObjects->GetMDB()))
 				{
-					const auto hRes = WC_MAPI(node->m_lpHierarchyTable->Advise(
-						fnevTableModified, static_cast<IMAPIAdviseSink*>(lpAdviseSink), &node->m_ulAdviseConnection));
-					if (hRes == MAPI_E_NO_SUPPORT) // Some tables don't support this!
-					{
-						lpAdviseSink->Release();
-						lpAdviseSink = nullptr;
-						output::DebugPrint(output::dbgLevel::Notify, L"This table doesn't support notifications\n");
-					}
-					else if (hRes == S_OK)
-					{
-						const auto lpMDB = m_lpMapiObjects->GetMDB(); // Do not release
-						if (lpMDB)
-						{
-							lpAdviseSink->SetAdviseTarget(lpMDB);
-							mapi::ForceRop(lpMDB);
-						}
-					}
-
 					output::DebugPrintEx(
 						output::dbgLevel::Notify,
 						CLASS,
 						L"GetHierarchyTable",
-						L"Advise sink %p, ulAdviseConnection = 0x%08X\n",
-						lpAdviseSink,
-						static_cast<int>(node->m_ulAdviseConnection));
-
-					node->m_lpAdviseSink = lpAdviseSink;
+						L"Advise sink for \"%ws\" = %p\n",
+						GetItemTextW(hItem).c_str(),
+						hItem);
 				}
 			}
 		}
@@ -1040,7 +986,7 @@ namespace controls
 				if (lpData)
 				{
 					const auto node = lpData->cast<sortlistdata::nodeData>();
-					if (node && node->m_lpAdviseSink)
+					if (node && node->hasSink())
 					{
 						auto rect = RECT{};
 						TreeView_GetItemRect(lvcd->nmcd.hdr.hwndFrom, hItem, &rect, 1);

@@ -2,6 +2,10 @@
 #include <core/sortlistdata/nodeData.h>
 #include <core/mapi/mapiFunctions.h>
 #include <core/sortlistdata/sortListData.h>
+#include <core/utility/output.h>
+#include <core/mapi/adviseSink.h>
+#include <core/utility/error.h>
+#include <core/utility/registry.h>
 
 namespace sortlistdata
 {
@@ -82,9 +86,70 @@ namespace sortlistdata
 
 	nodeData::~nodeData()
 	{
+		unadvise();
 		MAPIFreeBuffer(m_lpInstanceKey);
 		MAPIFreeBuffer(m_lpEntryID);
 
 		if (m_lpHierarchyTable) m_lpHierarchyTable->Release();
+	}
+
+	bool nodeData::advise(HWND m_hWnd, HTREEITEM hItem, LPMDB lpMDB)
+	{
+		auto lpAdviseSink = new (std::nothrow) mapi::adviseSink(m_hWnd, hItem);
+
+		if (lpAdviseSink)
+		{
+			const auto hRes = WC_MAPI(m_lpHierarchyTable->Advise(
+				fnevTableModified, static_cast<IMAPIAdviseSink*>(lpAdviseSink), &m_ulAdviseConnection));
+			if (hRes == MAPI_E_NO_SUPPORT) // Some tables don't support this!
+			{
+				lpAdviseSink->Release();
+				lpAdviseSink = nullptr;
+				output::DebugPrint(output::dbgLevel::Notify, L"This table doesn't support notifications\n");
+				return false;
+			}
+			else if (hRes == S_OK && lpMDB)
+			{
+				lpAdviseSink->SetAdviseTarget(lpMDB);
+				mapi::ForceRop(lpMDB);
+			}
+
+			output::DebugPrint(
+				output::dbgLevel::Notify,
+				L"nodeData::advise",
+				L"Advise sink %p, ulAdviseConnection = 0x%08X\n",
+				lpAdviseSink,
+				static_cast<int>(m_ulAdviseConnection));
+
+			m_lpAdviseSink = lpAdviseSink;
+			return true;
+		}
+
+		return false;
+	}
+
+	void nodeData::unadvise()
+	{
+		if (m_lpAdviseSink)
+		{
+			output::DebugPrint(
+				output::dbgLevel::Hierarchy,
+				L"nodeData::unadvise",
+				L"Unadvising %p, ulAdviseConnection = 0x%08X\n",
+				m_lpAdviseSink,
+				static_cast<int>(m_ulAdviseConnection));
+
+			// unadvise before releasing our sink
+			if (m_lpAdviseSink && m_lpHierarchyTable)
+			{
+				m_lpHierarchyTable->Unadvise(m_ulAdviseConnection);
+			}
+
+			if (m_lpAdviseSink)
+			{
+				m_lpAdviseSink->Release();
+				m_lpAdviseSink = nullptr;
+			}
+		}
 	}
 } // namespace sortlistdata
