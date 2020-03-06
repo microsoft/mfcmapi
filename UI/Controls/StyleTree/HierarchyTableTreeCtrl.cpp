@@ -264,7 +264,7 @@ namespace controls
 		const auto node = lpData->cast<sortlistdata::nodeData>();
 		if (!node) return nullptr;
 
-		if (!node->m_lpHierarchyTable)
+		if (!node->hasTable())
 		{
 			if (lpMAPIContainer)
 			{
@@ -291,7 +291,7 @@ namespace controls
 					EC_MAPI_S(lpHierarchyTable->SetColumns(LPSPropTagArray(&sptHTCols), TBL_BATCH));
 				}
 
-				node->m_lpHierarchyTable = lpHierarchyTable;
+				node->setTable(lpHierarchyTable);
 				lpMAPIContainer->Release();
 			}
 		}
@@ -302,7 +302,7 @@ namespace controls
 			Advise(hItem, lpData);
 		}
 
-		return node->m_lpHierarchyTable;
+		return node->getTable();
 	}
 
 	// Add the first level contents of lpMAPIContainer under the Parent node
@@ -366,18 +366,11 @@ namespace controls
 					output::dbgLevel::Hierarchy,
 					CLASS,
 					L"HasChildren",
-					L"Using Hierarchy table %d %p %ws\n",
+					L"Using Hierarchy table %d %ws\n",
 					node->m_cSubfolders,
-					node->m_lpHierarchyTable,
 					strings::LPCTSTRToWstring(szName).c_str());
 				// Won't force the hierarchy table - just get it if we've already got it
-				auto lpHierarchyTable = node->m_lpHierarchyTable;
-				if (lpHierarchyTable)
-				{
-					auto ulRowCount = ULONG{};
-					const auto hRes = WC_MAPI(lpHierarchyTable->GetRowCount(NULL, &ulRowCount));
-					return !(hRes == S_OK && !ulRowCount);
-				}
+				return node->hasChildren();
 			}
 		}
 
@@ -895,17 +888,9 @@ namespace controls
 			if (lpData)
 			{
 				const auto node = lpData->cast<sortlistdata::nodeData>();
-				if (node)
+				if (node && node->hasChildren())
 				{
-					if (node->m_lpHierarchyTable)
-					{
-						ULONG ulRowCount = NULL;
-						hRes = WC_MAPI(node->m_lpHierarchyTable->GetRowCount(NULL, &ulRowCount));
-						if (S_OK != hRes || ulRowCount)
-						{
-							hRes = EC_B(Expand(hRefreshItem, TVE_EXPAND));
-						}
-					}
+					hRes = EC_B(Expand(hRefreshItem, TVE_EXPAND));
 				}
 			}
 		}

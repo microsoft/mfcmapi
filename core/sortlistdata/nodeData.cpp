@@ -152,4 +152,24 @@ namespace sortlistdata
 			}
 		}
 	}
+
+	bool nodeData::hasChildren()
+	{
+		// If we don't have a table, then we don't have children
+		if (!m_lpHierarchyTable) return false;
+		ULONG ulRowCount = NULL;
+		const auto hRes = WC_MAPI(m_lpHierarchyTable->GetRowCount(NULL, &ulRowCount));
+		if (S_OK != hRes || ulRowCount)
+		{
+			// If we have a row count, we have children.
+			// If we can't get one, assume we might have children.
+			return true;
+		}
+
+		return false;
+	}
+
+	LPMAPITABLE nodeData::getTable() {}
+	void nodeData::setTable(LPMAPITABLE table) {}
+
 } // namespace sortlistdata
