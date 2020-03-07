@@ -17,7 +17,7 @@ namespace cache
 	class CGlobalCache
 	{
 	public:
-		static CGlobalCache& getInstance()
+		static CGlobalCache& getInstance() noexcept
 		{
 			static CGlobalCache instance;
 			return instance;

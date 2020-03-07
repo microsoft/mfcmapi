@@ -79,7 +79,7 @@ namespace mapi
 		ULONG_PTR uiParam{};
 		LPSPropTagArray excludedTags{};
 		bool allocated{};
-		void clean() const
+		void clean() const noexcept
 		{
 			if (progress) progress->Release();
 			if (allocated) MAPIFreeBuffer(excludedTags);
