@@ -16,9 +16,9 @@ namespace smartview
 		binaryParser(const binaryParser&) = delete;
 		binaryParser& operator=(const binaryParser&) = delete;
 
-		bool empty() const { return offset == size; }
-		void advance(size_t cb) { offset += cb; }
-		void rewind() { offset = 0; }
+		bool empty() const noexcept { return offset == size; }
+		void advance(size_t cb) noexcept { offset += cb; }
+		void rewind() noexcept { offset = 0; }
 		size_t getOffset() const { return offset; }
 		void setOffset(size_t _offset) { offset = _offset; }
 		const BYTE* getAddress() const { return bin.data() + offset; }

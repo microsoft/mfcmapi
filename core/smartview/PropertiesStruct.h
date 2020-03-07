@@ -14,7 +14,7 @@ namespace smartview
 	{
 		std::shared_ptr<blockT<DWORD>> dwLowDateTime = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> dwHighDateTime = emptyT<DWORD>();
-		operator FILETIME() const { return FILETIME{*dwLowDateTime, *dwHighDateTime}; }
+		operator FILETIME() const noexcept { return FILETIME{*dwLowDateTime, *dwHighDateTime}; }
 		size_t getSize() const { return dwLowDateTime->getSize() + dwHighDateTime->getSize(); }
 		size_t getOffset() const { return dwHighDateTime->getOffset(); }
 	};

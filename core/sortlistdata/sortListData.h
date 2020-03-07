@@ -6,7 +6,7 @@ namespace sortlistdata
 	class sortListData
 	{
 	public:
-		void init(std::shared_ptr<IData> _lpData, ULONG cValues, LPSPropValue lpProps)
+		void init(std::shared_ptr<IData> _lpData, ULONG cValues, LPSPropValue lpProps) noexcept
 		{
 			clean();
 			lpSourceProps = lpProps;
@@ -14,7 +14,7 @@ namespace sortlistdata
 			lpData = _lpData;
 		}
 
-		void init(std::shared_ptr<IData> _lpData, bool _bItemFullyLoaded = false)
+		void init(std::shared_ptr<IData> _lpData, bool _bItemFullyLoaded = false) noexcept
 		{
 			clean();
 			bItemFullyLoaded = _bItemFullyLoaded;
@@ -23,7 +23,7 @@ namespace sortlistdata
 		~sortListData() { clean(); }
 		void clean() noexcept;
 
-		template <typename T> std::shared_ptr<T> cast() { return std::dynamic_pointer_cast<T>(lpData); }
+		template <typename T> std::shared_ptr<T> cast() noexcept { return std::dynamic_pointer_cast<T>(lpData); }
 
 		const std::wstring& getSortText() const noexcept { return sortText; }
 		void setSortText(const std::wstring& _sortText);

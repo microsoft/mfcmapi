@@ -44,7 +44,7 @@ namespace controls
 		bool HasChildren(_In_ HTREEITEM hItem) const;
 		void OnItemSelected(HTREEITEM hItem) const;
 		bool HandleKeyDown(UINT nChar, bool bShiftPressed, bool bCtrlPressed, bool bMenuPressed);
-		void FreeNodeData(LPARAM lpData) const;
+		void FreeNodeData(LPARAM lpData) const noexcept;
 		void ExpandNode(HTREEITEM hParent) const;
 		void OnRefresh() const;
 		void OnLabelEdit(HTREEITEM hItem, LPTSTR szText);

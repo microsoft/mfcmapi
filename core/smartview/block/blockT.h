@@ -21,8 +21,8 @@ namespace smartview
 		bool isSet() const noexcept override { return set; }
 
 		// Mimic type T
-		void setData(const T& _data) { data = _data; }
-		T getData() const { return data; }
+		void setData(const T& _data) noexcept { data = _data; }
+		T getData() const noexcept { return data; }
 		operator T&() noexcept { return data; }
 		operator T() const noexcept { return data; }
 

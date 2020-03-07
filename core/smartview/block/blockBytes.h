@@ -51,7 +51,7 @@ namespace smartview
 
 		std::wstring toHexString(bool bMultiLine) const { return strings::BinToHexString(_data, bMultiLine); }
 
-		bool equal(size_t _cb, const BYTE* _bin) const
+		bool equal(size_t _cb, const BYTE* _bin) const noexcept
 		{
 			if (_cb != _data.size()) return false;
 			return memcmp(_data.data(), _bin, _cb) == 0;

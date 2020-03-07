@@ -124,7 +124,7 @@ namespace controls
 		Refresh();
 	}
 
-	void CHierarchyTableTreeCtrl::FreeNodeData(const LPARAM lpData) const
+	void CHierarchyTableTreeCtrl::FreeNodeData(const LPARAM lpData) const noexcept
 	{
 		auto* lpNodeData = reinterpret_cast<sortlistdata::sortListData*>(lpData);
 		delete lpNodeData;
