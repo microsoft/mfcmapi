@@ -23,7 +23,7 @@ namespace dialog::editor
 
 	static std::wstring CLASS = L"CStreamEditor";
 
-	ULONG PreferredStreamType(ULONG ulPropTag)
+	ULONG PreferredStreamType(ULONG ulPropTag) noexcept
 	{
 		auto ulPropType = PROP_TYPE(ulPropTag);
 
@@ -487,5 +487,5 @@ namespace dialog::editor
 		}
 	}
 
-	void CStreamEditor::DisableSave() { m_bDisableSave = true; }
+	void CStreamEditor::DisableSave() noexcept { m_bDisableSave = true; }
 } // namespace dialog::editor

@@ -192,7 +192,7 @@ namespace dialog::editor
 		}
 	}
 
-	_Check_return_ LPSPropTagArray CTagArrayEditor::DetachModifiedTagArray()
+	_Check_return_ LPSPropTagArray CTagArrayEditor::DetachModifiedTagArray() noexcept
 	{
 		const auto lpRetArray = m_lpOutputTagArray;
 		m_lpOutputTagArray = nullptr;

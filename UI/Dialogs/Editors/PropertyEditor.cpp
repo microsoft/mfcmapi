@@ -572,7 +572,7 @@ namespace dialog::editor
 	}
 
 	// Callers beware: Detatches and returns the modified prop value - this must be MAPIFreeBuffered!
-	_Check_return_ LPSPropValue CPropertyEditor::DetachModifiedSPropValue()
+	_Check_return_ LPSPropValue CPropertyEditor::DetachModifiedSPropValue() noexcept
 	{
 		const auto m_lpRet = m_lpsOutputValue;
 		m_lpsOutputValue = nullptr;

@@ -87,7 +87,7 @@ namespace dialog::editor
 		if (m_lpMAPIProp) m_lpMAPIProp->Release();
 	}
 
-	_Check_return_ ULONG CPropertyTagEditor::GetPropertyTag() const { return m_ulPropTag; }
+	_Check_return_ ULONG CPropertyTagEditor::GetPropertyTag() const noexcept { return m_ulPropTag; }
 
 	// Select a property tag
 	void CPropertyTagEditor::OnEditAction1()

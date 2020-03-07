@@ -9,7 +9,7 @@ namespace dialog::editor
 		CPropertySelector(bool bIncludeABProps, _In_ LPMAPIPROP lpMAPIProp, _In_ CWnd* pParentWnd);
 		~CPropertySelector();
 
-		_Check_return_ ULONG GetPropertyTag() const;
+		_Check_return_ ULONG GetPropertyTag() const noexcept;
 		_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ sortlistdata::sortListData* lpData) override;
 
 	private:

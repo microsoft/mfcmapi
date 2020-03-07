@@ -87,7 +87,7 @@ namespace dialog::editor
 		return false;
 	}
 
-	_Check_return_ ULONG CPropertySelector::GetPropertyTag() const { return m_ulPropTag; }
+	_Check_return_ ULONG CPropertySelector::GetPropertyTag() const noexcept { return m_ulPropTag; }
 
 	_Check_return_ sortlistdata::sortListData* CPropertySelector::GetSelectedListRowData(ULONG id) const
 	{
