@@ -9,10 +9,10 @@ namespace viewpane
 	public:
 		static std::shared_ptr<SplitterPane> CreateHorizontalPane(int paneID, UINT uidLabel);
 		static std::shared_ptr<SplitterPane> CreateVerticalPane(int paneID, UINT uidLabel);
-		std::shared_ptr<ViewPane> GetPaneOne() { return m_PaneOne; }
+		std::shared_ptr<ViewPane> GetPaneOne() noexcept { return m_PaneOne; }
 		void SetPaneOne(std::shared_ptr<ViewPane> paneOne) { m_PaneOne = paneOne; }
-		std::shared_ptr<ViewPane> GetPaneTwo() { return m_PaneTwo; }
-		void SetPaneTwo(std::shared_ptr<ViewPane> paneTwo) { m_PaneTwo = paneTwo; }
+		std::shared_ptr<ViewPane> GetPaneTwo() noexcept { return m_PaneTwo; }
+		void SetPaneTwo(std::shared_ptr<ViewPane> paneTwo) noexcept { m_PaneTwo = paneTwo; }
 		void Initialize(_In_ CWnd* pParent, _In_ HDC hdc) override;
 		void DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height) override;
 		int GetFixedHeight() override;

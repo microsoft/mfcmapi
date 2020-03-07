@@ -15,16 +15,16 @@ namespace smartview
 		std::shared_ptr<blockT<DWORD>> dwLowDateTime = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> dwHighDateTime = emptyT<DWORD>();
 		operator FILETIME() const noexcept { return FILETIME{*dwLowDateTime, *dwHighDateTime}; }
-		size_t getSize() const { return dwLowDateTime->getSize() + dwHighDateTime->getSize(); }
-		size_t getOffset() const { return dwHighDateTime->getOffset(); }
+		size_t getSize() const noexcept { return dwLowDateTime->getSize() + dwHighDateTime->getSize(); }
+		size_t getOffset() const noexcept { return dwHighDateTime->getOffset(); }
 	};
 
 	struct SBinaryBlock
 	{
 		std::shared_ptr<blockT<ULONG>> cb = emptyT<ULONG>();
 		std::shared_ptr<blockBytes> lpb = emptyBB();
-		size_t getSize() const { return cb->getSize() + lpb->getSize(); }
-		size_t getOffset() const { return cb->getOffset() ? cb->getOffset() : lpb->getOffset(); }
+		size_t getSize() const noexcept { return cb->getSize() + lpb->getSize(); }
+		size_t getOffset() const noexcept { return cb->getOffset() ? cb->getOffset() : lpb->getOffset(); }
 
 		SBinaryBlock(const std::shared_ptr<binaryParser>& parser);
 		SBinaryBlock() noexcept {};

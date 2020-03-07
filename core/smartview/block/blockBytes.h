@@ -33,7 +33,7 @@ namespace smartview
 		bool isSet() const noexcept override { return set; }
 
 		// Mimic std::vector<BYTE>
-		operator const std::vector<BYTE>&() const { return _data; }
+		operator const std::vector<BYTE>&() const noexcept { return _data; }
 		size_t size() const noexcept { return _data.size(); }
 		bool empty() const noexcept { return _data.empty(); }
 		const BYTE* data() const noexcept { return _data.data(); }

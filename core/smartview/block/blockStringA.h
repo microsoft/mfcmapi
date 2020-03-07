@@ -13,7 +13,7 @@ namespace smartview
 		bool isSet() const noexcept override { return set; }
 
 		// Mimic std::string
-		operator const std::string&() const { return data; }
+		operator const std::string&() const noexcept { return data; }
 		_NODISCARD _Ret_z_ const char* c_str() const noexcept { return data.c_str(); }
 		_NODISCARD std::string::size_type length() const noexcept { return data.length(); }
 		_NODISCARD bool empty() const noexcept { return data.empty(); }

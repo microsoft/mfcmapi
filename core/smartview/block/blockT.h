@@ -10,7 +10,7 @@ namespace smartview
 		blockT() = default;
 		blockT(const blockT&) = delete;
 		blockT& operator=(const blockT&) = delete;
-		blockT(const T& _data, size_t _size, size_t _offset)
+		blockT(const T& _data, size_t _size, size_t _offset) noexcept
 		{
 			set = true;
 			data = _data;
