@@ -1486,23 +1486,22 @@ namespace dialog
 
 				if (lpItemEID)
 				{
-					LPSBinary lpServiceUID = nullptr;
-					LPSBinary lpProviderUID = nullptr;
+					SBinary serviceUID = {};
+					SBinary providerUID = {};
 					auto lpProp = PpropFindProp(lpListData->lpSourceProps, lpListData->cSourceProps, PR_SERVICE_UID);
-					if (lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag)) lpServiceUID = &lpProp->Value.bin;
+					if (lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag)) serviceUID = mapi::getBin(lpProp);
 					lpProp = PpropFindProp(lpListData->lpSourceProps, lpListData->cSourceProps, PR_MDB_PROVIDER);
-					if (lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag)) lpProviderUID = &lpProp->Value.bin;
+					if (lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag)) providerUID = mapi::getBin(lpProp);
 
 					MAPIUID emsmdbUID = {0};
 					LPPROFSECT lpProfSect = nullptr;
 					auto fPublicExchangeStore = false;
 					auto fPrivateExchangeStore = false;
-					if (lpProviderUID)
+					if (providerUID.cb && providerUID.lpb)
 					{
-						fPublicExchangeStore =
-							mapi::FExchangePublicStore(reinterpret_cast<LPMAPIUID>(lpProviderUID->lpb));
+						fPublicExchangeStore = mapi::FExchangePublicStore(reinterpret_cast<LPMAPIUID>(providerUID.lpb));
 						fPrivateExchangeStore =
-							mapi::FExchangePrivateStore(reinterpret_cast<LPMAPIUID>(lpProviderUID->lpb));
+							mapi::FExchangePrivateStore(reinterpret_cast<LPMAPIUID>(providerUID.lpb));
 					}
 
 					auto fCached = false;
@@ -1514,10 +1513,10 @@ namespace dialog
 					LPWSTR wzPath = nullptr; // do not free
 
 					// Get profile section
-					if (lpServiceUID)
+					if (serviceUID.cb && serviceUID.lpb)
 					{
 						hRes = WC_H(mapi::HrEmsmdbUIDFromStore(
-							lpMAPISession, reinterpret_cast<LPMAPIUID>(lpServiceUID->lpb), &emsmdbUID));
+							lpMAPISession, reinterpret_cast<LPMAPIUID>(serviceUID.lpb), &emsmdbUID));
 						if (SUCCEEDED(hRes))
 						{
 							if (fIsSet(output::dbgLevel::Generic))
@@ -1533,7 +1532,7 @@ namespace dialog
 						}
 					}
 
-					if (!lpServiceUID || FAILED(hRes))
+					if (!(serviceUID.cb && serviceUID.lpb) || FAILED(hRes))
 					{
 						// For Outlook 2003/2007, HrEmsmdbUIDFromStore may not succeed,
 						// so use pbGlobalProfileSectionGuid instead
