@@ -17,15 +17,15 @@ namespace sortlistdata
 			sortListData* lpData,
 			ULONG cProps,
 			_In_opt_ LPSPropValue lpProps,
-			_In_opt_ LPSBinary lpEntryID,
-			_In_opt_ LPSBinary lpInstanceKey,
+			_In_opt_ const SBinary* lpEntryID,
+			_In_opt_ const SBinary* lpInstanceKey,
 			ULONG bSubfolders,
 			ULONG ulContainerFlags);
 		static void init(sortListData* lpData, _In_ LPSRow lpsRow);
 
 		nodeData(
-			_In_opt_ LPSBinary lpEntryID,
-			_In_opt_ LPSBinary lpInstanceKey,
+			_In_opt_ const SBinary* lpEntryID,
+			_In_opt_ const SBinary* lpInstanceKey,
 			ULONG bSubfolders,
 			ULONG ulContainerFlags);
 		~nodeData();
@@ -39,9 +39,9 @@ namespace sortlistdata
 		LPMAPITABLE getTable() noexcept { return m_lpHierarchyTable; }
 		void setTable(LPMAPITABLE table) noexcept { m_lpHierarchyTable = table; } // we assume the caller did AddRef
 		bool hasTable() noexcept { return !!m_lpHierarchyTable; }
+		bool matchInstanceKey(_In_opt_ const SBinary* lpInstanceKey);
 
 		LPSBinary m_lpEntryID{}; // Allocated with MAPIAllocateBuffer
-		LPSBinary m_lpInstanceKey{}; // Allocated with MAPIAllocateBuffer
 
 	private:
 		void unadvise();
@@ -50,5 +50,6 @@ namespace sortlistdata
 		ULONG_PTR m_ulAdviseConnection{};
 		LPMAPITABLE m_lpHierarchyTable{}; // Object - free with Release
 		LONG m_cSubfolders{-1}; // -1 for unknown, 0 for no subfolders, >0 for at least one subfolder
+		std::vector<BYTE> m_lpInstanceKey{};
 	};
 } // namespace sortlistdata

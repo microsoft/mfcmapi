@@ -922,23 +922,16 @@ namespace controls
 			if (lpListData)
 			{
 				const auto node = lpListData->cast<sortlistdata::nodeData>();
-				if (node)
+				if (node && node->matchInstanceKey(&instance))
 				{
-					const auto lpCurInstance = node->m_lpInstanceKey;
-					if (lpCurInstance)
-					{
-						if (!memcmp(lpCurInstance->lpb, instance.lpb, instance.cb))
-						{
-							output::DebugPrintEx(
-								output::dbgLevel::Generic,
-								CLASS,
-								L"FindNode",
-								L"Matched at %p =\"%ws\"\n",
-								hCurrent,
-								GetItemTextW(hCurrent).c_str());
-							return hCurrent;
-						}
-					}
+					output::DebugPrintEx(
+						output::dbgLevel::Generic,
+						CLASS,
+						L"FindNode",
+						L"Matched at %p =\"%ws\"\n",
+						hCurrent,
+						GetItemTextW(hCurrent).c_str());
+					return hCurrent;
 				}
 			}
 

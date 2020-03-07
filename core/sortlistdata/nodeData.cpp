@@ -13,8 +13,8 @@ namespace sortlistdata
 		sortListData* data,
 		ULONG cProps,
 		_In_opt_ LPSPropValue lpProps,
-		_In_opt_ LPSBinary lpEntryID,
-		_In_opt_ LPSBinary lpInstanceKey,
+		_In_opt_ const SBinary* lpEntryID,
+		_In_opt_ const SBinary* lpInstanceKey,
 		ULONG bSubfolders,
 		ULONG ulContainerFlags)
 	{
@@ -58,8 +58,8 @@ namespace sortlistdata
 	}
 
 	nodeData::nodeData(
-		_In_opt_ LPSBinary lpEntryID,
-		_In_opt_ LPSBinary lpInstanceKey,
+		_In_opt_ const SBinary* lpEntryID,
+		_In_opt_ const SBinary* lpInstanceKey,
 		ULONG bSubfolders,
 		ULONG ulContainerFlags)
 	{
@@ -71,7 +71,7 @@ namespace sortlistdata
 
 		if (lpInstanceKey)
 		{
-			m_lpInstanceKey = mapi::CopySBinary(lpInstanceKey);
+			m_lpInstanceKey = {lpInstanceKey->lpb, lpInstanceKey->lpb + lpInstanceKey->cb};
 		}
 
 		if (bSubfolders != MAPI_E_NOT_FOUND)
@@ -87,7 +87,6 @@ namespace sortlistdata
 	nodeData::~nodeData()
 	{
 		unadvise();
-		MAPIFreeBuffer(m_lpInstanceKey);
 		MAPIFreeBuffer(m_lpEntryID);
 
 		if (m_lpHierarchyTable) m_lpHierarchyTable->Release();
@@ -95,6 +94,7 @@ namespace sortlistdata
 
 	bool nodeData::advise(HWND m_hWnd, HTREEITEM hItem, LPMDB lpMDB)
 	{
+		if (!m_lpHierarchyTable) return false;
 		auto lpAdviseSink = new (std::nothrow) mapi::adviseSink(m_hWnd, hItem);
 
 		if (lpAdviseSink)
@@ -168,4 +168,11 @@ namespace sortlistdata
 
 		return false;
 	}
+
+	bool nodeData::matchInstanceKey(_In_opt_ const SBinary* lpInstanceKey)
+	{
+		if (!lpInstanceKey) return m_lpInstanceKey.empty();
+		return m_lpInstanceKey == std::vector<BYTE>{lpInstanceKey->lpb, lpInstanceKey->lpb + lpInstanceKey->cb};
+	}
+
 } // namespace sortlistdata
