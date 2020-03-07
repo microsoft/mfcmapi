@@ -143,22 +143,11 @@ namespace controls
 		if (!m_lpContainer || !m_hWnd) return;
 		LPSPropValue lpProps = nullptr;
 		LPSPropValue lpRootName = nullptr; // don't free
-		LPSBinary lpEIDBin = nullptr; // don't free
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		ULONG cVals = 0;
 
 		WC_H_GETPROPS_S(m_lpContainer->GetProps(LPSPropTagArray(&sptHTCols), fMapiUnicode, &cVals, &lpProps));
-
-		// Get the entry ID for the Root Container
-		if (!lpProps || PT_ERROR == PROP_TYPE(lpProps[htPR_ENTRYID].ulPropTag))
-		{
-			output::DebugPrint(
-				output::dbgLevel::Hierarchy,
-				L"Could not find EntryID for Root Container. This is benign. Assuming NULL.\n");
-		}
-		else
-			lpEIDBin = &lpProps[htPR_ENTRYID].Value.bin;
 
 		// Get the Display Name for the Root Container
 		if (!lpProps || PT_ERROR == PROP_TYPE(lpProps[htPR_DISPLAY_NAME_W].ulPropTag))
