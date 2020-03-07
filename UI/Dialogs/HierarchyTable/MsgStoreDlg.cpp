@@ -640,7 +640,7 @@ namespace dialog
 					nullptr,
 					nullptr,
 					nullptr,
-					itemEID.size(),
+					static_cast<ULONG>(itemEID.size()),
 					mapi::toEntryID(itemEID),
 					nullptr,
 					MAPI_BEST_ACCESS | SHOW_SOFT_DELETES | MAPI_NO_CACHE,
@@ -792,7 +792,7 @@ namespace dialog
 					if (lpProgress) ulFlags |= FOLDER_DIALOG;
 
 					hRes = EC_MAPI(lpParentFolder->DeleteFolder(
-						itemEID.size(),
+						static_cast<ULONG>(itemEID.size()),
 						mapi::toEntryID(itemEID),
 						lpProgress ? reinterpret_cast<ULONG_PTR>(m_hWnd) : NULL,
 						lpProgress,
@@ -905,7 +905,10 @@ namespace dialog
 			else if (!eid.empty())
 			{
 				EC_MAPI_S(m_lpMDB->SetReceiveFolder(
-					LPTSTR(MyData.GetStringW(0).c_str()), MAPI_UNICODE, eid.size(), mapi::toEntryID(eid)));
+					LPTSTR(MyData.GetStringW(0).c_str()),
+					MAPI_UNICODE,
+					static_cast<ULONG>(eid.size()),
+					mapi::toEntryID(eid)));
 			}
 		}
 	}

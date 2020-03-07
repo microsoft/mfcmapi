@@ -68,7 +68,7 @@ namespace dialog
 			auto lpAddrBook = m_lpMapiObjects->GetAddrBook(false); // Do not release
 			if (lpAddrBook)
 			{
-				EC_MAPI_S(lpAddrBook->SetDefaultDir(itemEID.size(), mapi::toEntryID(itemEID)));
+				EC_MAPI_S(lpAddrBook->SetDefaultDir(static_cast<ULONG>(itemEID.size()), mapi::toEntryID(itemEID)));
 			}
 		}
 	}
@@ -86,7 +86,7 @@ namespace dialog
 			auto lpAddrBook = m_lpMapiObjects->GetAddrBook(false); // do not release
 			if (lpAddrBook)
 			{
-				EC_MAPI_S(lpAddrBook->SetPAB(itemEID.size(), mapi::toEntryID(itemEID)));
+				EC_MAPI_S(lpAddrBook->SetPAB(static_cast<ULONG>(itemEID.size()), mapi::toEntryID(itemEID)));
 			}
 		}
 	}
