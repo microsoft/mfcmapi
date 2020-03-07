@@ -9,80 +9,20 @@
 
 namespace sortlistdata
 {
-	void nodeData::init(
-		sortListData* data,
-		ULONG cProps,
-		_In_opt_ LPSPropValue lpProps,
-		_In_opt_ const SBinary* lpEntryID,
-		_In_opt_ const SBinary* lpInstanceKey,
-		ULONG bSubfolders,
-		ULONG ulContainerFlags)
+	void nodeData::init(sortListData* data, ULONG cProps, _In_opt_ LPSPropValue lpProps)
 	{
 		if (!data) return;
 
-		data->init(
-			std::make_shared<nodeData>(lpEntryID, lpInstanceKey, bSubfolders, ulContainerFlags), cProps, lpProps);
-	}
-
-	void nodeData::init(sortListData* data, _In_ LPSRow lpsRow)
-	{
-		if (!data) return;
-
-		if (!lpsRow)
+		if (!cProps || !lpProps)
 		{
 			data->clean();
 			return;
 		}
 
-		LPSBinary lpEIDBin = nullptr; // don't free
-		LPSBinary lpInstanceBin = nullptr; // don't free
-
-		auto lpEID = PpropFindProp(lpsRow->lpProps, lpsRow->cValues, PR_ENTRYID);
-		if (lpEID) lpEIDBin = &lpEID->Value.bin;
-
-		auto lpInstance = PpropFindProp(lpsRow->lpProps, lpsRow->cValues, PR_INSTANCE_KEY);
-		if (lpInstance) lpInstanceBin = &lpInstance->Value.bin;
-
-		const auto lpSubfolders = PpropFindProp(lpsRow->lpProps, lpsRow->cValues, PR_SUBFOLDERS);
-
-		const auto lpContainerFlags = PpropFindProp(lpsRow->lpProps, lpsRow->cValues, PR_CONTAINER_FLAGS);
-
-		sortlistdata::nodeData::init(
-			data,
-			lpsRow->cValues,
-			lpsRow->lpProps, // pass on props to be archived in node
-			lpEIDBin,
-			lpInstanceBin,
-			lpSubfolders ? static_cast<ULONG>(lpSubfolders->Value.b) : MAPI_E_NOT_FOUND,
-			lpContainerFlags ? lpContainerFlags->Value.ul : MAPI_E_NOT_FOUND);
+		data->init(std::make_shared<nodeData>(cProps, lpProps), cProps, lpProps);
 	}
 
-	nodeData::nodeData(
-		_In_opt_ const SBinary* lpEntryID,
-		_In_opt_ const SBinary* lpInstanceKey,
-		ULONG bSubfolders,
-		ULONG ulContainerFlags)
-	{
-		if (lpEntryID)
-		{
-			// Copy the data over
-			m_lpEntryID = mapi::CopySBinary(lpEntryID);
-		}
-
-		if (lpInstanceKey)
-		{
-			m_lpInstanceKey = {lpInstanceKey->lpb, lpInstanceKey->lpb + lpInstanceKey->cb};
-		}
-
-		if (bSubfolders != MAPI_E_NOT_FOUND)
-		{
-			m_cSubfolders = bSubfolders != 0;
-		}
-		else if (ulContainerFlags != MAPI_E_NOT_FOUND)
-		{
-			m_cSubfolders = ulContainerFlags & AB_SUBCONTAINERS ? 1 : 0;
-		}
-	}
+	nodeData::nodeData(ULONG cProps, _In_opt_ LPSPropValue lpProps) { init(cProps, lpProps); }
 
 	nodeData::~nodeData()
 	{
@@ -92,20 +32,26 @@ namespace sortlistdata
 		if (m_lpHierarchyTable) m_lpHierarchyTable->Release();
 	}
 
-	// Rebuilds a node given a row without destroying the hierarchy table or advise sink
-	void nodeData::rebuild(_In_ LPSRow lpsRow)
+	// Builds/rebuilds a node given a row without touching the hierarchy table or advise sink
+	// Can be used for construction or modification of row
+	void nodeData::init(ULONG cProps, _In_opt_ LPSPropValue lpProps)
 	{
-		const auto lpEID = PpropFindProp(lpsRow->lpProps, lpsRow->cValues, PR_ENTRYID);
+		MAPIFreeBuffer(m_lpEntryID);
+		m_lpEntryID = nullptr;
+		m_lpInstanceKey.clear();
+
+		if (!cProps || !lpProps) return;
+		const auto lpEID = PpropFindProp(lpProps, cProps, PR_ENTRYID);
 		if (lpEID) m_lpEntryID = mapi::CopySBinary(&lpEID->Value.bin);
 
-		const auto lpInstance = PpropFindProp(lpsRow->lpProps, lpsRow->cValues, PR_INSTANCE_KEY);
+		const auto lpInstance = PpropFindProp(lpProps, cProps, PR_INSTANCE_KEY);
 		if (lpInstance)
 		{
 			m_lpInstanceKey = {lpInstance->Value.bin.lpb, lpInstance->Value.bin.lpb + lpInstance->Value.bin.cb};
 		}
 
-		const auto lpSubfolders = PpropFindProp(lpsRow->lpProps, lpsRow->cValues, PR_SUBFOLDERS);
-		const auto lpContainerFlags = PpropFindProp(lpsRow->lpProps, lpsRow->cValues, PR_CONTAINER_FLAGS);
+		const auto lpSubfolders = PpropFindProp(lpProps, cProps, PR_SUBFOLDERS);
+		const auto lpContainerFlags = PpropFindProp(lpProps, cProps, PR_CONTAINER_FLAGS);
 
 		if (lpSubfolders)
 		{

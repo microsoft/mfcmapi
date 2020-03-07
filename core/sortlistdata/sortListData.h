@@ -20,7 +20,7 @@ namespace sortlistdata
 			bItemFullyLoaded = _bItemFullyLoaded;
 			lpData = _lpData;
 		}
-		~sortListData();
+		~sortListData() { clean(); }
 		void clean() noexcept;
 
 		template <typename T> std::shared_ptr<T> cast() { return std::dynamic_pointer_cast<T>(lpData); }

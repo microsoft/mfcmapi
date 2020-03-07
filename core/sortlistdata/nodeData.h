@@ -13,24 +13,12 @@ namespace sortlistdata
 	class nodeData : public IData
 	{
 	public:
-		static void init(
-			sortListData* lpData,
-			ULONG cProps,
-			_In_opt_ LPSPropValue lpProps,
-			_In_opt_ const SBinary* lpEntryID,
-			_In_opt_ const SBinary* lpInstanceKey,
-			ULONG bSubfolders,
-			ULONG ulContainerFlags);
-		static void init(sortListData* lpData, _In_ LPSRow lpsRow);
+		static void init(sortListData* lpData, ULONG cProps, _In_opt_ LPSPropValue lpProps);
 
-		nodeData(
-			_In_opt_ const SBinary* lpEntryID,
-			_In_opt_ const SBinary* lpInstanceKey,
-			ULONG bSubfolders,
-			ULONG ulContainerFlags);
+		nodeData(ULONG cProps, _In_opt_ LPSPropValue lpProps);
 		~nodeData();
 
-		void rebuild(_In_ LPSRow lpsRow);
+		void init(ULONG cProps, _In_opt_ LPSPropValue lpProps);
 
 		bool hasSink() noexcept { return !!m_lpAdviseSink; }
 		mapi::adviseSink* getSink() noexcept { return m_lpAdviseSink; }

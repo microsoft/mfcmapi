@@ -188,11 +188,8 @@ namespace controls
 			sortlistdata::nodeData::init(
 				lpData,
 				cVals,
-				lpProps, // Pass our lpProps to be archived
-				lpEIDBin,
-				nullptr,
-				true, // Always assume root nodes have children so we always paint an expanding icon
-				lpProps ? lpProps[htPR_CONTAINER_FLAGS].Value.ul : MAPI_E_NOT_FOUND);
+				lpProps // Pass our lpProps to be archived
+			);
 
 			(void) AddChildNode(
 				szName, TVI_ROOT, reinterpret_cast<LPARAM>(lpData), [&](auto _1) { return OnItemAdded(_1); });
@@ -225,7 +222,7 @@ namespace controls
 		auto lpData = new (std::nothrow) sortlistdata::sortListData();
 		if (lpData)
 		{
-			sortlistdata::nodeData::init(lpData, lpsRow);
+			sortlistdata::nodeData::init(lpData, lpsRow->cValues, lpsRow->lpProps);
 
 			(void) AddChildNode(szName, hParent, reinterpret_cast<LPARAM>(lpData), callback);
 		}
@@ -837,16 +834,13 @@ namespace controls
 			if (lpData)
 			{
 				auto node = lpData->cast<sortlistdata::nodeData>();
-				if (node )
+				if (node)
 				{
 					// We make this copy here and pass it in to the existing node
 					// The mem will be freed when the item data is cleaned up - do not free here
-					auto newRow = SRow{};
-					newRow.cValues = tab->row.cValues;
-					newRow.ulAdrEntryPad = tab->row.ulAdrEntryPad;
-					hRes =
-						WC_MAPI(ScDupPropset(tab->row.cValues, tab->row.lpProps, MAPIAllocateBuffer, &newRow.lpProps));
-					node->rebuild(&newRow);
+					LPSPropValue newProps = {};
+					hRes = WC_MAPI(ScDupPropset(tab->row.cValues, tab->row.lpProps, MAPIAllocateBuffer, &newProps));
+					node->init(tab->row.cValues, newProps);
 				}
 			}
 
