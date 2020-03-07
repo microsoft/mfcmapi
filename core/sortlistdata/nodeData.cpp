@@ -92,6 +92,33 @@ namespace sortlistdata
 		if (m_lpHierarchyTable) m_lpHierarchyTable->Release();
 	}
 
+	// Rebuilds a node given a row without destroying the hierarchy table or advise sink
+	void nodeData::rebuild(_In_ LPSRow lpsRow)
+	{
+		auto lpEID = PpropFindProp(lpsRow->lpProps, lpsRow->cValues, PR_ENTRYID);
+		if (lpEID) m_lpEntryID = mapi::CopySBinary(&lpEID->Value.bin);
+
+		auto lpInstance = PpropFindProp(lpsRow->lpProps, lpsRow->cValues, PR_INSTANCE_KEY);
+		if (lpInstance)
+		{
+			m_lpInstanceKey = {lpInstance->Value.bin.lpb, lpInstance->Value.bin.lpb + lpInstance->Value.bin.cb};
+		}
+
+		const auto lpSubfolders = PpropFindProp(lpsRow->lpProps, lpsRow->cValues, PR_SUBFOLDERS);
+		const auto bSubfolders = lpSubfolders ? static_cast<ULONG>(lpSubfolders->Value.b) : MAPI_E_NOT_FOUND;
+		const auto lpContainerFlags = PpropFindProp(lpsRow->lpProps, lpsRow->cValues, PR_CONTAINER_FLAGS);
+		const auto ulContainerFlags = lpContainerFlags ? lpContainerFlags->Value.ul : MAPI_E_NOT_FOUND;
+
+		if (bSubfolders != MAPI_E_NOT_FOUND)
+		{
+			m_cSubfolders = bSubfolders != 0;
+		}
+		else if (ulContainerFlags != MAPI_E_NOT_FOUND)
+		{
+			m_cSubfolders = ulContainerFlags & AB_SUBCONTAINERS ? 1 : 0;
+		}
+	}
+
 	bool nodeData::advise(HWND m_hWnd, HTREEITEM hItem, LPMDB lpMDB)
 	{
 		if (!m_lpHierarchyTable) return false;

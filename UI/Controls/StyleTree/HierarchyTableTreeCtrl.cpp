@@ -836,13 +836,18 @@ namespace controls
 			const auto lpData = GetSortListData(hModifyItem);
 			if (lpData)
 			{
-				// We make this copy here and pass it in to the existing node
-				// The mem will be freed when the item data is cleaned up - do not free here
-				auto newRow = SRow{};
-				newRow.cValues = tab->row.cValues;
-				newRow.ulAdrEntryPad = tab->row.ulAdrEntryPad;
-				hRes = WC_MAPI(ScDupPropset(tab->row.cValues, tab->row.lpProps, MAPIAllocateBuffer, &newRow.lpProps));
-				sortlistdata::nodeData::init(lpData, &newRow);
+				auto node = lpData->cast<sortlistdata::nodeData>();
+				if (node )
+				{
+					// We make this copy here and pass it in to the existing node
+					// The mem will be freed when the item data is cleaned up - do not free here
+					auto newRow = SRow{};
+					newRow.cValues = tab->row.cValues;
+					newRow.ulAdrEntryPad = tab->row.ulAdrEntryPad;
+					hRes =
+						WC_MAPI(ScDupPropset(tab->row.cValues, tab->row.lpProps, MAPIAllocateBuffer, &newRow.lpProps));
+					node->rebuild(&newRow);
+				}
 			}
 
 			if (hParent)

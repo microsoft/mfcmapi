@@ -30,6 +30,8 @@ namespace sortlistdata
 			ULONG ulContainerFlags);
 		~nodeData();
 
+		void rebuild(_In_ LPSRow lpsRow);
+
 		bool hasSink() noexcept { return !!m_lpAdviseSink; }
 		mapi::adviseSink* getSink() noexcept { return m_lpAdviseSink; }
 		bool advise(HWND m_hWnd, HTREEITEM hItem, LPMDB lpMDB);
