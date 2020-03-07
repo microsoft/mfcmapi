@@ -266,10 +266,10 @@ namespace mapi::processor
 		}
 
 		lpTemp = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, PR_RECORD_KEY);
-		LPSBinary lpRecordKey = nullptr;
+		SBinary recordKey = {};
 		if (lpTemp && PR_RECORD_KEY == lpTemp->ulPropTag)
 		{
-			lpRecordKey = &lpTemp->Value.bin;
+			recordKey = mapi::getBin(lpTemp);
 		}
 
 		const auto lpMessageClass =
@@ -291,7 +291,7 @@ namespace mapi::processor
 		auto szExt = L".xml"; // STRING_OK
 		if (bOutputMSG) szExt = L".msg"; // STRING_OK
 
-		auto szFileName = file::BuildFileNameAndPath(szExt, szSubj, szFolderPath, lpRecordKey);
+		auto szFileName = file::BuildFileNameAndPath(szExt, szSubj, szFolderPath, &recordKey);
 		wprintf(L",\"%ws\"\n", szFileName.c_str());
 	}
 
