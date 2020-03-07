@@ -42,13 +42,15 @@ namespace sortlistdata
 		const auto lpEID = PpropFindProp(lpProps, cProps, PR_ENTRYID);
 		if (lpEID)
 		{
-			m_lpEntryID = {lpEID->Value.bin.lpb, lpEID->Value.bin.lpb + lpEID->Value.bin.cb};
+			const auto bin = mapi::getBin(lpEID);
+			m_lpEntryID = {bin.lpb, bin.lpb + bin.cb};
 		}
 
 		const auto lpInstance = PpropFindProp(lpProps, cProps, PR_INSTANCE_KEY);
 		if (lpInstance)
 		{
-			m_lpInstanceKey = {lpInstance->Value.bin.lpb, lpInstance->Value.bin.lpb + lpInstance->Value.bin.cb};
+			const auto bin = mapi::getBin(lpInstance);
+			m_lpInstanceKey = {bin.lpb, bin.lpb + bin.cb};
 		}
 
 		const auto lpSubfolders = PpropFindProp(lpProps, cProps, PR_SUBFOLDERS);
