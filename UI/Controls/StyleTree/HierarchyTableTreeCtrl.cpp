@@ -833,17 +833,16 @@ namespace controls
 			item.hItem = hModifyItem;
 			EC_B_S(::SendMessage(m_hWnd, TVM_SETITEMW, 0, reinterpret_cast<LPARAM>(&item)));
 
-			// We make this copy here and pass it in to the node
-			// The mem will be freed when the item data is cleaned up - do not free here
-			auto NewRow = SRow{};
-			NewRow.cValues = tab->row.cValues;
-			NewRow.ulAdrEntryPad = tab->row.ulAdrEntryPad;
-			hRes = WC_MAPI(ScDupPropset(tab->row.cValues, tab->row.lpProps, MAPIAllocateBuffer, &NewRow.lpProps));
-			auto lpData = new sortlistdata::sortListData();
+			const auto lpData = GetSortListData(hModifyItem);
 			if (lpData)
 			{
-				sortlistdata::nodeData::init(lpData, &NewRow);
-				SetNodeData(m_hWnd, hModifyItem, reinterpret_cast<LPARAM>(lpData));
+				// We make this copy here and pass it in to the existing node
+				// The mem will be freed when the item data is cleaned up - do not free here
+				auto newRow = SRow{};
+				newRow.cValues = tab->row.cValues;
+				newRow.ulAdrEntryPad = tab->row.ulAdrEntryPad;
+				hRes = WC_MAPI(ScDupPropset(tab->row.cValues, tab->row.lpProps, MAPIAllocateBuffer, &newRow.lpProps));
+				sortlistdata::nodeData::init(lpData, &newRow);
 			}
 
 			if (hParent)
