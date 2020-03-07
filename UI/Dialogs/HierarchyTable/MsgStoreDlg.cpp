@@ -629,9 +629,9 @@ namespace dialog
 		if (!m_lpHierarchyTableTreeCtrl || !m_lpMapiObjects) return;
 
 		// Find the highlighted item
-		const auto lpItemEID = m_lpHierarchyTableTreeCtrl.GetSelectedItemEID();
+		const auto itemEID = m_lpHierarchyTableTreeCtrl.GetSelectedItemEID();
 
-		if (lpItemEID)
+		if (!itemEID.empty())
 		{
 			if (m_lpMDB)
 			{
@@ -640,8 +640,8 @@ namespace dialog
 					nullptr,
 					nullptr,
 					nullptr,
-					lpItemEID->cb,
-					reinterpret_cast<LPENTRYID>(lpItemEID->lpb),
+					itemEID.size(),
+					mapi::toEntryID(itemEID),
 					nullptr,
 					MAPI_BEST_ACCESS | SHOW_SOFT_DELETES | MAPI_NO_CACHE,
 					nullptr);
@@ -729,7 +729,7 @@ namespace dialog
 	void CMsgStoreDlg::OnDeleteSelectedItem()
 	{
 		auto hRes = S_OK;
-		LPSBinary lpItemEID = nullptr;
+		auto itemEID = std::vector<BYTE>{};
 
 		if (!m_lpHierarchyTableTreeCtrl) return;
 
@@ -742,12 +742,12 @@ namespace dialog
 				const auto node = lpData->cast<sortlistdata::nodeData>();
 				if (node)
 				{
-					lpItemEID = node->m_lpEntryID;
+					itemEID = node->getEntryID();
 				}
 			}
 		}
 
-		if (!lpItemEID) return;
+		if (itemEID.empty()) return;
 		if (!m_lpMDB) return;
 
 		auto lpFolderToDelete = GetSelectedFolder(modifyType::DO_NOT_REQUEST_MODIFY);
@@ -785,15 +785,15 @@ namespace dialog
 						L"OnDeleteSelectedItem",
 						L"Calling DeleteFolder on folder. ulFlags = 0x%08X.\n",
 						ulFlags);
-					output::outputBinary(output::dbgLevel::Generic, nullptr, *lpItemEID);
+					output::outputBinary(output::dbgLevel::Generic, nullptr, itemEID);
 
 					auto lpProgress = mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::DeleteFolder", m_hWnd); // STRING_OK
 
 					if (lpProgress) ulFlags |= FOLDER_DIALOG;
 
 					hRes = EC_MAPI(lpParentFolder->DeleteFolder(
-						lpItemEID->cb,
-						reinterpret_cast<LPENTRYID>(lpItemEID->lpb),
+						itemEID.size(),
+						mapi::toEntryID(itemEID),
 						lpProgress ? reinterpret_cast<ULONG_PTR>(m_hWnd) : NULL,
 						lpProgress,
 						ulFlags));
@@ -894,7 +894,7 @@ namespace dialog
 		MyData.AddPane(viewpane::CheckPane::Create(1, IDS_DELETEASSOCIATION, false, false));
 
 		// Find the highlighted item
-		const auto lpEID = m_lpHierarchyTableTreeCtrl.GetSelectedItemEID();
+		const auto eid = m_lpHierarchyTableTreeCtrl.GetSelectedItemEID();
 
 		if (MyData.DisplayDialog())
 		{
@@ -902,13 +902,10 @@ namespace dialog
 			{
 				EC_MAPI_S(m_lpMDB->SetReceiveFolder(LPTSTR(MyData.GetStringW(0).c_str()), MAPI_UNICODE, NULL, nullptr));
 			}
-			else if (lpEID)
+			else if (!eid.empty())
 			{
 				EC_MAPI_S(m_lpMDB->SetReceiveFolder(
-					LPTSTR(MyData.GetStringW(0).c_str()),
-					MAPI_UNICODE,
-					lpEID->cb,
-					reinterpret_cast<LPENTRYID>(lpEID->lpb)));
+					LPTSTR(MyData.GetStringW(0).c_str()), MAPI_UNICODE, eid.size(), mapi::toEntryID(eid)));
 			}
 		}
 	}

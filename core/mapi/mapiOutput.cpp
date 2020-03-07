@@ -27,6 +27,15 @@ namespace output
 		Output(ulDbgLvl, fFile, false, L"\n");
 	}
 
+	void outputBinary(dbgLevel ulDbgLvl, _In_opt_ FILE* fFile, _In_ const std::vector<BYTE>& bin)
+	{
+		if (earlyExit(ulDbgLvl, fFile)) return;
+
+		Output(ulDbgLvl, fFile, false, strings::BinToHexString(bin, true));
+
+		Output(ulDbgLvl, fFile, false, L"\n");
+	}
+
 	void outputEntryList(dbgLevel ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPENTRYLIST lpEntryList)
 	{
 		if (earlyExit(ulDbgLvl, fFile)) return;

@@ -30,8 +30,7 @@ namespace sortlistdata
 		void setTable(LPMAPITABLE table) noexcept { m_lpHierarchyTable = table; } // we assume the caller did AddRef
 		bool hasTable() noexcept { return !!m_lpHierarchyTable; }
 		bool matchInstanceKey(_In_opt_ const SBinary* lpInstanceKey);
-
-		LPSBinary m_lpEntryID{}; // Allocated with MAPIAllocateBuffer
+		const std::vector<BYTE>& getEntryID() noexcept { return m_lpEntryID; }
 
 	private:
 		void unadvise();
@@ -41,5 +40,6 @@ namespace sortlistdata
 		LPMAPITABLE m_lpHierarchyTable{}; // Object - free with Release
 		LONG m_cSubfolders{-1}; // -1 for unknown, 0 for no subfolders, >0 for at least one subfolder
 		std::vector<BYTE> m_lpInstanceKey{};
+		std::vector<BYTE> m_lpEntryID{};
 	};
 } // namespace sortlistdata

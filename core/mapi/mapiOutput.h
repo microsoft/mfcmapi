@@ -13,6 +13,7 @@ namespace output
 	// We'll use macros to make these calls so the code will read right
 
 	void outputBinary(dbgLevel ulDbgLvl, _In_opt_ FILE* fFile, _In_ const SBinary& bin);
+	void outputBinary(dbgLevel ulDbgLvl, _In_opt_ FILE* fFile, _In_ const std::vector<BYTE>& bin);
 	void outputEntryList(dbgLevel ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPENTRYLIST lpEntryList);
 	void outputFormPropArray(dbgLevel ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPIFORMPROPARRAY lpMAPIFormPropArray);
 	void outputNamedPropID(dbgLevel ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPINAMEID lpName);

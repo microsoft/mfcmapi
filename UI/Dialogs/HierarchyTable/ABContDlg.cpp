@@ -61,14 +61,14 @@ namespace dialog
 
 		if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl) return;
 
-		const auto lpItemEID = m_lpHierarchyTableTreeCtrl.GetSelectedItemEID();
+		const auto itemEID = m_lpHierarchyTableTreeCtrl.GetSelectedItemEID();
 
-		if (lpItemEID)
+		if (!itemEID.empty())
 		{
 			auto lpAddrBook = m_lpMapiObjects->GetAddrBook(false); // Do not release
 			if (lpAddrBook)
 			{
-				EC_MAPI_S(lpAddrBook->SetDefaultDir(lpItemEID->cb, reinterpret_cast<LPENTRYID>(lpItemEID->lpb)));
+				EC_MAPI_S(lpAddrBook->SetDefaultDir(itemEID.size(), mapi::toEntryID(itemEID)));
 			}
 		}
 	}
@@ -79,14 +79,14 @@ namespace dialog
 
 		if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl) return;
 
-		const auto lpItemEID = m_lpHierarchyTableTreeCtrl.GetSelectedItemEID();
+		const auto itemEID = m_lpHierarchyTableTreeCtrl.GetSelectedItemEID();
 
-		if (lpItemEID)
+		if (!itemEID.empty())
 		{
 			auto lpAddrBook = m_lpMapiObjects->GetAddrBook(false); // do not release
 			if (lpAddrBook)
 			{
-				EC_MAPI_S(lpAddrBook->SetPAB(lpItemEID->cb, reinterpret_cast<LPENTRYID>(lpItemEID->lpb)));
+				EC_MAPI_S(lpAddrBook->SetPAB(itemEID.size(), mapi::toEntryID(itemEID)));
 			}
 		}
 	}

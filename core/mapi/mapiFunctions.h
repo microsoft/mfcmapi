@@ -356,7 +356,8 @@ namespace mapi
 #pragma warning(pop)
 
 #pragma warning(push)
-#pragma warning(disable : 26476) // Warning C26476 Expression/symbol '' uses a naked union '' with multiple type pointers: Use variant instead (type.7).
+#pragma warning( \
+	disable : 26476) // Warning C26476 Expression/symbol '' uses a naked union '' with multiple type pointers: Use variant instead (type.7).
 	inline const SBinary& getBin(_In_ const _SPropValue* prop) noexcept
 	{
 		if (!prop) assert(false);
@@ -372,4 +373,9 @@ namespace mapi
 	inline const SBinary& getBin(_In_ const _SPropValue& prop) noexcept { return prop.Value.bin; }
 	inline SBinary& setBin(_In_ _SPropValue& prop) noexcept { return prop.Value.bin; }
 #pragma warning(pop)
+
+	inline LPENTRYID toEntryID(const std::vector<BYTE>& eid) noexcept
+	{
+		return reinterpret_cast<LPENTRYID>(const_cast<BYTE*>(eid.data()));
+	}
 } // namespace mapi

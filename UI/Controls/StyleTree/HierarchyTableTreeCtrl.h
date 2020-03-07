@@ -31,7 +31,7 @@ namespace controls
 
 		// Selected item accessors
 		_Check_return_ LPMAPICONTAINER GetSelectedContainer(modifyType bModify) const;
-		_Check_return_ LPSBinary GetSelectedItemEID() const;
+		_Check_return_ std::vector<BYTE> GetSelectedItemEID() const;
 		_Check_return_ sortlistdata::sortListData* GetSelectedItemData() const;
 		_Check_return_ sortlistdata::sortListData* GetSortListData(HTREEITEM iItem) const;
 

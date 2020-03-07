@@ -530,7 +530,7 @@ namespace controls
 		return reinterpret_cast<sortlistdata::sortListData*>(GetItemData(iItem));
 	}
 
-	_Check_return_ LPSBinary CHierarchyTableTreeCtrl::GetSelectedItemEID() const
+	_Check_return_ std::vector<BYTE> CHierarchyTableTreeCtrl::GetSelectedItemEID() const
 	{
 		// Find the highlighted item
 		const auto Item = GetSelectedItem();
@@ -544,12 +544,12 @@ namespace controls
 				const auto node = lpData->cast<sortlistdata::nodeData>();
 				if (node)
 				{
-					return node->m_lpEntryID;
+					return node->getEntryID();
 				}
 			}
 		}
 
-		return nullptr;
+		return {};
 	}
 
 	_Check_return_ LPMAPICONTAINER CHierarchyTableTreeCtrl::GetSelectedContainer(const modifyType bModify) const
@@ -594,8 +594,7 @@ namespace controls
 
 		auto ulFlags = modifyType::REQUEST_MODIFY == bModify ? MAPI_MODIFY : NULL;
 
-		auto lpCurBin = node->m_lpEntryID;
-		if (!lpCurBin) lpCurBin = &NullBin;
+		const auto curBin = node->getEntryID();
 
 		// Check the type of the root container to know whether the MDB or AddrBook object is valid
 		// This also allows NULL EIDs to return the root container itself.
@@ -617,8 +616,8 @@ namespace controls
 						lpAddrBook,
 						nullptr,
 						nullptr,
-						lpCurBin->cb,
-						reinterpret_cast<LPENTRYID>(lpCurBin->lpb),
+						curBin.size(),
+						mapi::toEntryID(curBin),
 						nullptr,
 						ulFlags,
 						&ulObjType);
@@ -638,8 +637,8 @@ namespace controls
 						nullptr,
 						nullptr,
 						nullptr,
-						lpCurBin->cb,
-						reinterpret_cast<LPENTRYID>(lpCurBin->lpb),
+						curBin.size(),
+						mapi::toEntryID(curBin),
 						nullptr,
 						ulFlags,
 						&ulObjType);
@@ -656,8 +655,8 @@ namespace controls
 				nullptr,
 				m_lpContainer,
 				nullptr,
-				lpCurBin->cb,
-				reinterpret_cast<LPENTRYID>(lpCurBin->lpb),
+				curBin.size(),
+				mapi::toEntryID(curBin),
 				nullptr,
 				ulFlags,
 				&ulObjType);

@@ -27,7 +27,6 @@ namespace sortlistdata
 	nodeData::~nodeData()
 	{
 		unadvise();
-		MAPIFreeBuffer(m_lpEntryID);
 
 		if (m_lpHierarchyTable) m_lpHierarchyTable->Release();
 	}
@@ -36,13 +35,15 @@ namespace sortlistdata
 	// Can be used for construction or modification of row
 	void nodeData::init(ULONG cProps, _In_opt_ LPSPropValue lpProps)
 	{
-		MAPIFreeBuffer(m_lpEntryID);
-		m_lpEntryID = nullptr;
+		m_lpEntryID.clear();
 		m_lpInstanceKey.clear();
 
 		if (!cProps || !lpProps) return;
 		const auto lpEID = PpropFindProp(lpProps, cProps, PR_ENTRYID);
-		if (lpEID) m_lpEntryID = mapi::CopySBinary(&lpEID->Value.bin);
+		if (lpEID)
+		{
+			m_lpEntryID = {lpEID->Value.bin.lpb, lpEID->Value.bin.lpb + lpEID->Value.bin.cb};
+		}
 
 		const auto lpInstance = PpropFindProp(lpProps, cProps, PR_INSTANCE_KEY);
 		if (lpInstance)
