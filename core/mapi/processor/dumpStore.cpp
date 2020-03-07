@@ -459,7 +459,7 @@ namespace mapi::processor
 		else
 		{
 			std::wstring szSubj; // BuildFileNameAndPath will substitute a subject if we don't find one
-			LPSBinary lpRecordKey = nullptr;
+			SBinary recordKey = {};
 
 			auto lpTemp = PpropFindProp(lpAllProps, cValues, PR_SUBJECT_W);
 			if (lpTemp && strings::CheckStringProp(lpTemp, PT_UNICODE))
@@ -478,10 +478,10 @@ namespace mapi::processor
 			lpTemp = PpropFindProp(lpAllProps, cValues, PR_RECORD_KEY);
 			if (lpTemp && PR_RECORD_KEY == lpTemp->ulPropTag)
 			{
-				lpRecordKey = &lpTemp->Value.bin;
+				recordKey = mapi::getBin(lpTemp);
 			}
 
-			lpMsgData->szFilePath = file::BuildFileNameAndPath(L".xml", szSubj, szFolderPath, lpRecordKey); // STRING_OK
+			lpMsgData->szFilePath = file::BuildFileNameAndPath(L".xml", szSubj, szFolderPath, &recordKey); // STRING_OK
 		}
 
 		if (!lpMsgData->szFilePath.empty())
@@ -590,7 +590,7 @@ namespace mapi::processor
 
 		ULONG cProps = 0;
 		LPSPropValue lpsProps = nullptr;
-		LPSBinary lpRecordKey = nullptr;
+		SBinary recordKey = {};
 
 		// Get required properties from the message
 		EC_H_GETPROPS_S(lpMessage->GetProps(LPSPropTagArray(&msgProps), fMapiUnicode, &cProps, &lpsProps));
@@ -602,11 +602,11 @@ namespace mapi::processor
 			}
 			if (PR_RECORD_KEY == lpsProps[msgPR_RECORD_KEY].ulPropTag)
 			{
-				lpRecordKey = &lpsProps[msgPR_RECORD_KEY].Value.bin;
+				recordKey = mapi::getBin(lpsProps[msgPR_RECORD_KEY]);
 			}
 		}
 
-		auto szFileName = file::BuildFileNameAndPath(L".msg", szSubj, szFolderPath, lpRecordKey); // STRING_OK
+		auto szFileName = file::BuildFileNameAndPath(L".msg", szSubj, szFolderPath, &recordKey); // STRING_OK
 		if (!szFileName.empty())
 		{
 			output::DebugPrint(output::dbgLevel::Generic, L"Saving to = \"%ws\"\n", szFileName.c_str());
