@@ -627,7 +627,7 @@ namespace dialog
 		SetTitle(strings::formatmessage(IDS_TITLEBARPLAIN, m_szTitle.c_str()));
 	}
 
-	void CBaseDialog::UpdateStatus(HWND hWndHost, const statusPane pane, const std::wstring& status)
+	void CBaseDialog::UpdateStatus(HWND hWndHost, const statusPane pane, const std::wstring& status) noexcept
 	{
 		(void) ::SendMessage(
 			hWndHost, WM_MFCMAPI_UPDATESTATUSBAR, static_cast<WPARAM>(pane), reinterpret_cast<LPARAM>(status.c_str()));
@@ -993,7 +993,10 @@ namespace dialog
 		return false;
 	}
 
-	_Check_return_ ui::CParentWnd* CBaseDialog::GetParentWnd() const { return m_lpParent; }
+	_Check_return_ ui::CParentWnd* CBaseDialog::GetParentWnd() const noexcept { return m_lpParent; }
 
-	_Check_return_ std::shared_ptr<cache::CMapiObjects> CBaseDialog::GetMapiObjects() const { return m_lpMapiObjects; }
+	_Check_return_ std::shared_ptr<cache::CMapiObjects> CBaseDialog::GetMapiObjects() const noexcept
+	{
+		return m_lpMapiObjects;
+	}
 } // namespace dialog

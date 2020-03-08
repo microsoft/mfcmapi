@@ -249,7 +249,7 @@ namespace controls::sortlistctrl
 		ui::CustomDrawList(reinterpret_cast<LPNMLVCUSTOMDRAW>(pNMHDR), pResult, m_iItemCurHover);
 	}
 
-	void CSortListCtrl::OnDeleteAllItems(_In_ NMHDR* /*pNMHDR*/, _In_ LRESULT* pResult)
+	void CSortListCtrl::OnDeleteAllItems(_In_ NMHDR* /*pNMHDR*/, _In_ LRESULT* pResult) noexcept
 	{
 		*pResult = false; // make sure we get LVN_DELETEITEM for all items
 	}
@@ -329,7 +329,7 @@ namespace controls::sortlistctrl
 	// Simplistic algorithm that only looks at the text. This pays no attention to the underlying MAPI properties.
 	// This will sort dates and numbers badly. :)
 	_Check_return_ int CALLBACK
-	CSortListCtrl::MyCompareProc(_In_ LPARAM lParam1, _In_ LPARAM lParam2, _In_ LPARAM lParamSort)
+	CSortListCtrl::MyCompareProc(_In_ LPARAM lParam1, _In_ LPARAM lParam2, _In_ LPARAM lParamSort) noexcept
 	{
 		if (!lParamSort) return sortEqual;
 		auto iRet = 0;
@@ -626,7 +626,7 @@ namespace controls::sortlistctrl
 		}
 	}
 
-	void CSortListCtrl::AllowEscapeClose() { m_bAllowEscapeClose = true; }
+	void CSortListCtrl::AllowEscapeClose() noexcept { m_bAllowEscapeClose = true; }
 
 	// Assert that we want all keyboard input (including ENTER!)
 	// In the case of TAB though, let it through

@@ -75,7 +75,7 @@ namespace cache
 		m_lpSourcePropObject = nullptr;
 	}
 
-	void CGlobalCache::SetABEntriesToCopy(_In_ LPENTRYLIST lpEBEntriesToCopy)
+	void CGlobalCache::SetABEntriesToCopy(_In_ LPENTRYLIST lpEBEntriesToCopy) noexcept
 	{
 		EmptyBuffer();
 		m_lpAddressEntriesToCopy = lpEBEntriesToCopy;
@@ -83,7 +83,7 @@ namespace cache
 
 	_Check_return_ LPENTRYLIST CGlobalCache::GetABEntriesToCopy() const noexcept { return m_lpAddressEntriesToCopy; }
 
-	void CGlobalCache::SetMessagesToCopy(_In_ LPENTRYLIST lpMessagesToCopy, _In_ LPMAPIFOLDER lpSourceParent)
+	void CGlobalCache::SetMessagesToCopy(_In_ LPENTRYLIST lpMessagesToCopy, _In_ LPMAPIFOLDER lpSourceParent) noexcept
 	{
 		EmptyBuffer();
 		m_lpMessagesToCopy = lpMessagesToCopy;
@@ -93,7 +93,7 @@ namespace cache
 
 	_Check_return_ LPENTRYLIST CGlobalCache::GetMessagesToCopy() const noexcept { return m_lpMessagesToCopy; }
 
-	void CGlobalCache::SetFolderToCopy(_In_ LPMAPIFOLDER lpFolderToCopy, _In_ LPMAPIFOLDER lpSourceParent)
+	void CGlobalCache::SetFolderToCopy(_In_ LPMAPIFOLDER lpFolderToCopy, _In_ LPMAPIFOLDER lpSourceParent) noexcept
 	{
 		EmptyBuffer();
 		m_lpFolderToCopy = lpFolderToCopy;
@@ -114,7 +114,7 @@ namespace cache
 		return m_lpSourceParent;
 	}
 
-	void CGlobalCache::SetPropertyToCopy(ULONG ulPropTag, _In_ LPMAPIPROP lpSourcePropObject)
+	void CGlobalCache::SetPropertyToCopy(ULONG ulPropTag, _In_ LPMAPIPROP lpSourcePropObject) noexcept
 	{
 		EmptyBuffer();
 		m_ulPropTagToCopy = ulPropTag;
@@ -144,7 +144,7 @@ namespace cache
 
 	_Check_return_ std::wstring CGlobalCache::GetProfileToCopy() const { return m_szProfileToCopy; }
 
-	_Check_return_ ULONG CGlobalCache::GetBufferStatus() const
+	_Check_return_ ULONG CGlobalCache::GetBufferStatus() const noexcept
 	{
 		auto ulStatus = BUFFER_EMPTY;
 		if (m_lpMessagesToCopy) ulStatus |= BUFFER_MESSAGES;

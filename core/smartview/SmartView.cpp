@@ -204,7 +204,7 @@ namespace smartview
 		const ULONG ulPropTag,
 		const ULONG ulPropNameID,
 		_In_opt_ const LPCGUID lpguidNamedProp,
-		bool bMVRow)
+		bool bMVRow) noexcept
 	{
 		auto ulLookupPropTag = ulPropTag;
 		if (bMVRow) ulLookupPropTag |= MV_FLAG;

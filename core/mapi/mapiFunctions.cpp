@@ -1183,7 +1183,7 @@ namespace mapi
 	}
 
 	_Check_return_ bool
-	FindPropInPropTagArray(_In_ LPSPropTagArray lpspTagArray, ULONG ulPropToFind, _Out_ ULONG* lpulRowFound)
+	FindPropInPropTagArray(_In_ LPSPropTagArray lpspTagArray, ULONG ulPropToFind, _Out_ ULONG* lpulRowFound) noexcept
 	{
 		*lpulRowFound = 0;
 		if (!lpspTagArray) return false;
@@ -1342,7 +1342,7 @@ namespace mapi
 		return hRes;
 	}
 
-	_Check_return_ bool IsDuplicateProp(_In_ LPSPropTagArray lpArray, ULONG ulPropTag)
+	_Check_return_ bool IsDuplicateProp(_In_ LPSPropTagArray lpArray, ULONG ulPropTag) noexcept
 	{
 		if (!lpArray) return false;
 
@@ -2277,13 +2277,13 @@ namespace mapi
 		return hRes;
 	}
 
-	bool FExchangePrivateStore(_In_ LPMAPIUID lpmapiuid)
+	bool FExchangePrivateStore(_In_ LPMAPIUID lpmapiuid) noexcept
 	{
 		if (!lpmapiuid) return false;
 		return IsEqualMAPIUID(lpmapiuid, LPMAPIUID(pbExchangeProviderPrimaryUserGuid));
 	}
 
-	bool FExchangePublicStore(_In_ LPMAPIUID lpmapiuid)
+	bool FExchangePublicStore(_In_ LPMAPIUID lpmapiuid) noexcept
 	{
 		if (!lpmapiuid) return false;
 		return IsEqualMAPIUID(lpmapiuid, LPMAPIUID(pbExchangeProviderPublicGuid));
@@ -2434,7 +2434,7 @@ namespace mapi
 		return szTitle;
 	}
 
-	bool UnwrapContactEntryID(_In_ ULONG cbIn, _In_ LPBYTE lpbIn, _Out_ ULONG* lpcbOut, _Out_ LPBYTE* lppbOut)
+	bool UnwrapContactEntryID(_In_ ULONG cbIn, _In_ LPBYTE lpbIn, _Out_ ULONG* lpcbOut, _Out_ LPBYTE* lppbOut) noexcept
 	{
 		if (lpcbOut) *lpcbOut = 0;
 		if (lppbOut) *lppbOut = nullptr;
@@ -2469,7 +2469,11 @@ namespace mapi
 	// Augemented version of HrGetOneProp which allows passing flags to underlying GetProps
 	// Useful for passing fMapiUnicode for unspecified string/stream types
 	HRESULT
-	HrGetOnePropEx(_In_ LPMAPIPROP lpMAPIProp, _In_ ULONG ulPropTag, _In_ ULONG ulFlags, _Out_ LPSPropValue* lppProp)
+	HrGetOnePropEx(
+		_In_ LPMAPIPROP lpMAPIProp,
+		_In_ ULONG ulPropTag,
+		_In_ ULONG ulFlags,
+		_Out_ LPSPropValue* lppProp) noexcept
 	{
 		if (!lppProp) return MAPI_E_INVALID_PARAMETER;
 		*lppProp = nullptr;

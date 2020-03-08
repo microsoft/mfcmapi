@@ -49,7 +49,7 @@ namespace controls
 		void OnRefresh() const;
 		void OnLabelEdit(HTREEITEM hItem, LPTSTR szText);
 		void OnDisplaySelectedItem();
-		void OnLastChildDeleted(LPARAM /*lpData*/);
+		void OnLastChildDeleted(LPARAM /*lpData*/) noexcept;
 		void HandleContextMenu(int x, int y);
 		void OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, _In_ HTREEITEM hItemCurHover);
 

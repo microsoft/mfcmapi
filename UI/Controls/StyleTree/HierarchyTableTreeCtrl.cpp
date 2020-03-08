@@ -691,7 +691,7 @@ namespace controls
 		return lpContainer;
 	}
 
-	void CHierarchyTableTreeCtrl::OnLastChildDeleted(const LPARAM lpData)
+	void CHierarchyTableTreeCtrl::OnLastChildDeleted(const LPARAM lpData) noexcept
 	{
 		const auto lpNodeData = reinterpret_cast<sortlistdata::sortListData*>(lpData);
 		if (lpNodeData)

@@ -115,7 +115,7 @@ namespace dialog::editor
 	{
 		if (!lpszDispIDName) return nullptr;
 
-		const auto entry = find_if(begin(NameIDArray), end(NameIDArray), [&](NAMEID_ARRAY_ENTRY& nameID) {
+		const auto entry = find_if(begin(NameIDArray), end(NameIDArray), [&](NAMEID_ARRAY_ENTRY& nameID) noexcept {
 			if (0 == wcscmp(nameID.lpszName, lpszDispIDName))
 			{
 				// PSUNKNOWN is used as a placeholder in NameIDArray - don't return matching entries

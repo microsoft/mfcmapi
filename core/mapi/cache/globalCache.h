@@ -35,16 +35,16 @@ namespace cache
 		void MAPIUninitialize() noexcept;
 		_Check_return_ bool bMAPIInitialized() const noexcept;
 
-		void SetABEntriesToCopy(_In_ LPENTRYLIST lpEBEntriesToCopy);
+		void SetABEntriesToCopy(_In_ LPENTRYLIST lpEBEntriesToCopy) noexcept;
 		_Check_return_ LPENTRYLIST GetABEntriesToCopy() const noexcept;
 
-		void SetMessagesToCopy(_In_ LPENTRYLIST lpMessagesToCopy, _In_ LPMAPIFOLDER lpSourceParent);
+		void SetMessagesToCopy(_In_ LPENTRYLIST lpMessagesToCopy, _In_ LPMAPIFOLDER lpSourceParent) noexcept;
 		_Check_return_ LPENTRYLIST GetMessagesToCopy() const noexcept;
 
-		void SetFolderToCopy(_In_ LPMAPIFOLDER lpFolderToCopy, _In_ LPMAPIFOLDER lpSourceParent);
+		void SetFolderToCopy(_In_ LPMAPIFOLDER lpFolderToCopy, _In_ LPMAPIFOLDER lpSourceParent) noexcept;
 		_Check_return_ LPMAPIFOLDER GetFolderToCopy() const noexcept;
 
-		void SetPropertyToCopy(ULONG ulPropTag, _In_ LPMAPIPROP lpSourcePropObject);
+		void SetPropertyToCopy(ULONG ulPropTag, _In_ LPMAPIPROP lpSourcePropObject) noexcept;
 		_Check_return_ ULONG GetPropertyToCopy() const noexcept;
 		_Check_return_ LPMAPIPROP GetSourcePropObject() const noexcept;
 
@@ -56,7 +56,7 @@ namespace cache
 
 		_Check_return_ LPMAPIFOLDER GetSourceParentFolder() const noexcept;
 
-		_Check_return_ ULONG GetBufferStatus() const;
+		_Check_return_ ULONG GetBufferStatus() const noexcept;
 
 	private:
 		void EmptyBuffer() noexcept;
