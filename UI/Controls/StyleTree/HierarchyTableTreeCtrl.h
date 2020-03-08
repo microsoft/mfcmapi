@@ -51,7 +51,7 @@ namespace controls
 		void OnDisplaySelectedItem();
 		void OnLastChildDeleted(LPARAM /*lpData*/) noexcept;
 		void HandleContextMenu(int x, int y);
-		void OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, _In_ HTREEITEM hItemCurHover);
+		void OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, _In_ HTREEITEM hItemCurHover) noexcept;
 
 		_Check_return_ HTREEITEM FindNode(_In_ const SBinary& lpInstance, HTREEITEM hParent) const;
 		_Check_return_ LPMAPICONTAINER GetContainer(HTREEITEM Item, modifyType bModify) const;

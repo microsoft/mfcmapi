@@ -488,7 +488,7 @@ namespace dialog
 		if (nState == 1 && !bMinimized) EC_B_S(RedrawWindow());
 	}
 
-	void CBaseDialog::SetStatusWidths()
+	void CBaseDialog::SetStatusWidths() noexcept
 	{
 		const auto iData1 = !getStatusMessage(statusPane::data1).empty();
 		const auto iData2 = !getStatusMessage(statusPane::data2).empty();

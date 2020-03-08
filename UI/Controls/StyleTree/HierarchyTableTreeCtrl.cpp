@@ -928,8 +928,10 @@ namespace controls
 		return nullptr;
 	}
 
-	void
-	CHierarchyTableTreeCtrl::OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* /*pResult*/, _In_ HTREEITEM hItemCurHover)
+	void CHierarchyTableTreeCtrl::OnCustomDraw(
+		_In_ NMHDR* pNMHDR,
+		_In_ LRESULT* /*pResult*/,
+		_In_ HTREEITEM hItemCurHover) noexcept
 	{
 		const auto lvcd = reinterpret_cast<LPNMTVCUSTOMDRAW>(pNMHDR);
 		if (!lvcd) return;

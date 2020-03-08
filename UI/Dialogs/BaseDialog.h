@@ -108,7 +108,7 @@ namespace dialog
 		void OnOptions();
 		void OnOutlookVersion();
 
-		void SetStatusWidths();
+		void SetStatusWidths() noexcept;
 
 		// Custom messages
 		_Check_return_ LRESULT msgOnUpdateStatusBar(WPARAM wParam, LPARAM lParam);
