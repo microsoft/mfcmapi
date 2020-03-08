@@ -67,7 +67,7 @@ namespace ui
 		}
 	}
 
-	void CDoubleBuffer::Cleanup()
+	void CDoubleBuffer::Cleanup() noexcept
 	{
 		if (m_hbmpMem)
 		{

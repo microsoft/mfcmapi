@@ -571,7 +571,7 @@ namespace dialog::editor
 		return cx;
 	}
 
-	int ComputeCaptionWidth(HDC hdc, const std::wstring& szTitle, int iMargin)
+	int ComputeCaptionWidth(HDC hdc, const std::wstring& szTitle, int iMargin) noexcept
 	{
 		const auto sizeTitle = ui::GetTextExtentPoint32(hdc, szTitle);
 		auto iCaptionWidth = sizeTitle.cx + iMargin; // Allow for some whitespace between the caption and buttons

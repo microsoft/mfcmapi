@@ -50,7 +50,7 @@ namespace viewpane
 		return pane;
 	}
 
-	void ListPane::Setup(bool bAllowSort, DoListEditCallback callback)
+	void ListPane::Setup(bool bAllowSort, DoListEditCallback callback) noexcept
 	{
 		m_List.AllowEscapeClose();
 		m_bAllowSort = bAllowSort;

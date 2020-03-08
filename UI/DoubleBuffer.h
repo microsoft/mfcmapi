@@ -13,7 +13,7 @@ namespace ui
 		HDC m_hdcPaint;
 		RECT m_rcPaint;
 
-		void Cleanup();
+		void Cleanup() noexcept;
 
 	public:
 		CDoubleBuffer();

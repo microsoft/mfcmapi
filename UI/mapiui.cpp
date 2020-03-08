@@ -448,7 +448,7 @@ namespace ui::mapiui
 		return uidCurMenu - ID_ADDINMENU;
 	}
 
-	_Check_return_ LPMENUITEM GetAddinMenuItem(HWND hWnd, UINT uidMsg)
+	_Check_return_ LPMENUITEM GetAddinMenuItem(HWND hWnd, UINT uidMsg) noexcept
 	{
 		if (uidMsg < ID_ADDINMENU) return nullptr;
 

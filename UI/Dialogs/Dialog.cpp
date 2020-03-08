@@ -38,9 +38,9 @@ namespace dialog
 		if (m_lpNonModalParent) m_lpNonModalParent->Release();
 	}
 
-	void CMyDialog::SetStatusHeight(const int iHeight) { m_iStatusHeight = iHeight; }
+	void CMyDialog::SetStatusHeight(const int iHeight) noexcept { m_iStatusHeight = iHeight; }
 
-	int CMyDialog::GetStatusHeight() const { return m_iStatusHeight; }
+	int CMyDialog::GetStatusHeight() const noexcept { return m_iStatusHeight; }
 
 	std::wstring FormatHT(const LRESULT ht)
 	{

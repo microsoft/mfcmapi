@@ -34,7 +34,7 @@ namespace viewpane
 		bool IsDirty() override;
 
 	private:
-		void Setup(bool bAllowSort, DoListEditCallback callback);
+		void Setup(bool bAllowSort, DoListEditCallback callback) noexcept;
 
 		void UpdateButtons() override;
 

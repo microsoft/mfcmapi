@@ -129,7 +129,7 @@ namespace dialog::editor
 		_Check_return_ sortlistdata::sortListData* InsertListRow(ULONG id, int iRow, const std::wstring& szText) const;
 		void ClearList(ULONG id) const;
 		void ResizeList(ULONG id, bool bSort) const;
-		void SetListID(ULONG id) { m_listID = id; }
+		void SetListID(ULONG id) noexcept { m_listID = id; }
 
 		// Functions used by derived classes during handle change events
 		_Check_return_ std::string GetStringA(ULONG id) const;
@@ -146,7 +146,7 @@ namespace dialog::editor
 		// protected since derived classes need to call the base implementation
 		_Check_return_ virtual ULONG HandleChange(UINT nID);
 
-		void EnableScroll() { m_bEnableScroll = true; }
+		void EnableScroll() noexcept { m_bEnableScroll = true; }
 
 	private:
 		// Overridable functions
@@ -166,7 +166,10 @@ namespace dialog::editor
 			UINT uidActionButtonText3);
 
 		_Check_return_ SIZE ComputeWorkArea(SIZE sScreen);
-		void OnGetMinMaxInfo(_Inout_ MINMAXINFO* lpMMI) { lpMMI->ptMinTrackSize = POINT{m_iMinWidth, m_iMinHeight}; }
+		void OnGetMinMaxInfo(_Inout_ MINMAXINFO* lpMMI) noexcept
+		{
+			lpMMI->ptMinTrackSize = POINT{m_iMinWidth, m_iMinHeight};
+		}
 		void OnSetDefaultSize();
 		_Check_return_ LRESULT OnNcHitTest(CPoint point);
 		void OnSize(UINT nType, int cx, int cy);
