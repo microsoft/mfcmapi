@@ -48,7 +48,7 @@ namespace smartview
 		// If we're at or past the end of the buffer, return 0
 		// If we're before the beginning of the buffer, return 0
 		size_t getSize() const noexcept { return offset > size ? 0 : size - offset; }
-		bool checkSize(size_t cb) const { return cb <= getSize(); }
+		bool checkSize(size_t cb) const noexcept { return cb <= getSize(); }
 
 	private:
 		std::vector<BYTE> bin;
