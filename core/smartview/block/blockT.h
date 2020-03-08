@@ -27,7 +27,7 @@ namespace smartview
 		operator T() const noexcept { return data; }
 
 		// Fill out object of type T, reading from type SOURCE_U
-		template <typename SOURCE_U> void parse(const std::shared_ptr<binaryParser>& parser)
+		template <typename SOURCE_U> void parse(const std::shared_ptr<binaryParser>& parser) noexcept
 		{
 			static constexpr size_t sizeU = sizeof SOURCE_U;
 			// TODO: Consider what a failure block really looks like
