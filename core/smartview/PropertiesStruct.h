@@ -40,16 +40,16 @@ namespace smartview
 	{
 		std::shared_ptr<blockT<DWORD>> cb = emptyT<DWORD>();
 		std::shared_ptr<blockStringA> str = emptySA();
-		size_t getSize() const { return cb->getSize() + str->getSize(); }
-		size_t getOffset() const { return cb->getOffset(); }
+		size_t getSize() const noexcept { return cb->getSize() + str->getSize(); }
+		size_t getOffset() const noexcept { return cb->getOffset(); }
 	};
 
 	struct CountedStringW
 	{
 		std::shared_ptr<blockT<DWORD>> cb = emptyT<DWORD>();
 		std::shared_ptr<blockStringW> str = emptySW();
-		size_t getSize() const { return cb->getSize() + str->getSize(); }
-		size_t getOffset() const { return cb->getOffset(); }
+		size_t getSize() const noexcept { return cb->getSize() + str->getSize(); }
+		size_t getOffset() const noexcept { return cb->getOffset(); }
 	};
 
 	struct StringArrayA

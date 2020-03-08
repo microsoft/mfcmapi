@@ -45,7 +45,7 @@ namespace smartview
 		std::wstring toString();
 
 		std::shared_ptr<block>& getBlock() noexcept { return data; }
-		bool hasData() const { return data->hasData(); }
+		bool hasData() const noexcept { return data->hasData(); }
 
 	protected:
 		std::shared_ptr<binaryParser> m_Parser;
