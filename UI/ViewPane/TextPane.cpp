@@ -247,8 +247,11 @@ namespace viewpane
 		size_t cbCur{};
 	};
 
-	_Check_return_ static DWORD CALLBACK
-	FakeEditStreamReadCallBack(const DWORD_PTR dwCookie, _In_ LPBYTE pbBuff, const LONG cb, _In_count_(cb) LONG* pcb)
+	_Check_return_ static DWORD CALLBACK FakeEditStreamReadCallBack(
+		const DWORD_PTR dwCookie,
+		_In_ LPBYTE pbBuff,
+		const LONG cb,
+		_In_count_(cb) LONG* pcb) noexcept
 	{
 		if (!pbBuff || !pcb || !dwCookie) return 0;
 

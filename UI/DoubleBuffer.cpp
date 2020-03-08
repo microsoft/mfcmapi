@@ -10,7 +10,7 @@ namespace ui
 
 	CDoubleBuffer::~CDoubleBuffer() { Cleanup(); }
 
-	void CDoubleBuffer::Begin(_Inout_ HDC& hdc, _In_ const RECT& rcPaint)
+	void CDoubleBuffer::Begin(_Inout_ HDC& hdc, _In_ const RECT& rcPaint) noexcept
 	{
 #ifdef SKIPBUFFER
 		UNREFERENCED_PARAMETER(hdc);
@@ -45,7 +45,7 @@ namespace ui
 #endif
 	}
 
-	void CDoubleBuffer::End(_Inout_ HDC& hdc)
+	void CDoubleBuffer::End(_Inout_ HDC& hdc) noexcept
 	{
 		if (hdc && hdc == m_hdcMem)
 		{

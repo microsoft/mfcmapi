@@ -100,7 +100,7 @@ namespace clitest
 			const cli::option& option,
 			const std::deque<std::wstring>& argsRemainder,
 			const std::vector<std::wstring>& expectedArgs,
-			const std::vector<std::wstring>& expectedRemainder)
+			const std::vector<std::wstring>& expectedRemainder) noexcept
 		{
 			if (option.size() != expectedArgs.size()) return false;
 			for (UINT i = 0; i < option.size(); i++)

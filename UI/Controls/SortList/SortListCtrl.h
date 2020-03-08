@@ -100,7 +100,7 @@ namespace controls::sortlistctrl
 		void OnDeleteAllItems(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult) noexcept;
 		void OnDeleteItem(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 		void AutoSizeColumn(int iColumn, int iMaxWidth, int iMinWidth);
-		void OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
+		void OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult) noexcept;
 		_Check_return_ static int CALLBACK
 		MyCompareProc(_In_ LPARAM lParam1, _In_ LPARAM lParam2, _In_ LPARAM lParamSort) noexcept;
 

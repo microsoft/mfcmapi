@@ -101,7 +101,7 @@ namespace controls::sortlistctrl
 	static int s_iTrack = 0;
 	static int s_iHeaderHeight = 0;
 
-	void OnBeginTrack(_In_ NMHDR* pNMHDR, _In_ HWND hWndParent)
+	void OnBeginTrack(_In_ NMHDR* pNMHDR, _In_ HWND hWndParent) noexcept
 	{
 		RECT rcHeader = {0};
 		if (!pNMHDR) return;
@@ -113,7 +113,7 @@ namespace controls::sortlistctrl
 		ui::DrawTrackingBar(pHdr->hdr.hwndFrom, hWndParent, s_iTrack, s_iHeaderHeight, false);
 	}
 
-	void OnEndTrack(_In_ NMHDR* pNMHDR, _In_ HWND hWndParent)
+	void OnEndTrack(_In_ NMHDR* pNMHDR, _In_ HWND hWndParent) noexcept
 	{
 		if (s_bInTrack && pNMHDR)
 		{
@@ -122,7 +122,7 @@ namespace controls::sortlistctrl
 		s_bInTrack = false;
 	}
 
-	void OnTrack(_In_ NMHDR* pNMHDR, _In_ HWND hWndParent)
+	void OnTrack(_In_ NMHDR* pNMHDR, _In_ HWND hWndParent) noexcept
 	{
 		if (s_bInTrack && pNMHDR)
 		{
@@ -244,7 +244,7 @@ namespace controls::sortlistctrl
 	}
 
 	// Override for list item painting
-	void CSortListCtrl::OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
+	void CSortListCtrl::OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult) noexcept
 	{
 		ui::CustomDrawList(reinterpret_cast<LPNMLVCUSTOMDRAW>(pNMHDR), pResult, m_iItemCurHover);
 	}
