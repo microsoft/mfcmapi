@@ -81,7 +81,7 @@ namespace controls::sortlistctrl
 		void SetItemText(int nItem, int nSubItem, const std::wstring& lpszText);
 		std::wstring GetItemText(_In_ int nItem, _In_ int nSubItem) const;
 		void AllowEscapeClose();
-		int InsertColumnW(_In_ int nCol, const std::wstring& columnHeading);
+		int InsertColumnW(_In_ int nCol, const std::wstring& columnHeading) noexcept;
 
 	protected:
 		void MySetRedraw(bool bRedraw);

@@ -306,7 +306,7 @@ namespace controls::sortlistctrl
 		}
 	}
 
-	bool IsABPropSet(ULONG ulProps, LPSPropValue lpProps)
+	bool IsABPropSet(ULONG ulProps, LPSPropValue lpProps) noexcept
 	{
 		const auto lpObjectType = PpropFindProp(lpProps, ulProps, PR_OBJECT_TYPE);
 

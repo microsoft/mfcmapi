@@ -123,9 +123,12 @@ namespace controls::sortlistctrl
 		ui::DisplayContextMenu(m_nIDContextMenu, IDR_MENU_TABLE, m_lpHostDlg->m_hWnd, pos.x, pos.y);
 	}
 
-	_Check_return_ ULONG CContentsTableListCtrl::GetContainerType() const { return m_ulContainerType; }
+	_Check_return_ ULONG CContentsTableListCtrl::GetContainerType() const noexcept { return m_ulContainerType; }
 
-	_Check_return_ bool CContentsTableListCtrl::IsContentsTableSet() const { return m_lpContentsTable != nullptr; }
+	_Check_return_ bool CContentsTableListCtrl::IsContentsTableSet() const noexcept
+	{
+		return m_lpContentsTable != nullptr;
+	}
 
 	void CContentsTableListCtrl::SetContentsTable(
 		_In_opt_ LPMAPITABLE lpContentsTable,
@@ -444,17 +447,20 @@ namespace controls::sortlistctrl
 		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"AddColumns", L"Done adding columns\n");
 	}
 
-	void CContentsTableListCtrl::SetRestriction(_In_opt_ const _SRestriction* lpRes)
+	void CContentsTableListCtrl::SetRestriction(_In_opt_ const _SRestriction* lpRes) noexcept
 	{
 		MAPIFreeBuffer(const_cast<LPSRestriction>(m_lpRes));
 		m_lpRes = lpRes;
 	}
 
-	_Check_return_ const _SRestriction* CContentsTableListCtrl::GetRestriction() const { return m_lpRes; }
+	_Check_return_ const _SRestriction* CContentsTableListCtrl::GetRestriction() const noexcept { return m_lpRes; }
 
-	_Check_return_ restrictionType CContentsTableListCtrl::GetRestrictionType() const { return m_RestrictionType; }
+	_Check_return_ restrictionType CContentsTableListCtrl::GetRestrictionType() const noexcept
+	{
+		return m_RestrictionType;
+	}
 
-	void CContentsTableListCtrl::SetRestrictionType(restrictionType RestrictionType)
+	void CContentsTableListCtrl::SetRestrictionType(restrictionType RestrictionType) noexcept
 	{
 		m_RestrictionType = RestrictionType;
 	}
@@ -641,9 +647,9 @@ namespace controls::sortlistctrl
 		lpListCtrl->ClearLoading();
 	}
 
-	_Check_return_ bool CContentsTableListCtrl::IsLoading() const { return m_bInLoadOp; }
+	_Check_return_ bool CContentsTableListCtrl::IsLoading() const noexcept { return m_bInLoadOp; }
 
-	void CContentsTableListCtrl::ClearLoading() { m_bInLoadOp = false; }
+	void CContentsTableListCtrl::ClearLoading() noexcept { m_bInLoadOp = false; }
 
 	void CContentsTableListCtrl::LoadContentsTableIntoView()
 	{
@@ -784,7 +790,7 @@ namespace controls::sortlistctrl
 		}
 	}
 
-	ULONG GetDepth(_In_ LPSRow lpsRowData)
+	ULONG GetDepth(_In_ LPSRow lpsRowData) noexcept
 	{
 		if (!lpsRowData) return 0;
 
@@ -811,7 +817,7 @@ namespace controls::sortlistctrl
 		{MAPI_FORMINFO, sortIcon::mapiFormInfo},
 	};
 
-	sortIcon GetImage(_In_ LPSRow lpsRowData)
+	sortIcon GetImage(_In_ LPSRow lpsRowData) noexcept
 	{
 		if (!lpsRowData) return sortIcon::default;
 
@@ -1248,7 +1254,7 @@ namespace controls::sortlistctrl
 		}
 	}
 
-	_Check_return_ bool CContentsTableListCtrl::IsAdviseSet() const { return m_lpAdviseSink != nullptr; }
+	_Check_return_ bool CContentsTableListCtrl::IsAdviseSet() const noexcept { return m_lpAdviseSink != nullptr; }
 
 	void CContentsTableListCtrl::NotificationOn()
 	{

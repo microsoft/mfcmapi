@@ -686,7 +686,7 @@ namespace controls::sortlistctrl
 		}
 	}
 
-	int CSortListCtrl::InsertColumnW(_In_ int nCol, const std::wstring& columnHeading)
+	int CSortListCtrl::InsertColumnW(_In_ int nCol, const std::wstring& columnHeading) noexcept
 	{
 		auto column = LVCOLUMNW();
 		column.mask = LVCF_TEXT | LVCF_FMT;

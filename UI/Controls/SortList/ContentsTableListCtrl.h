@@ -56,15 +56,15 @@ namespace controls::sortlistctrl
 		void OnOutputTable(const std::wstring& szFileName) const;
 		void SetSortTable(_In_ LPSSortOrderSet lpSortOrderSet, ULONG ulFlags) const;
 		void SetUIColumns(_In_ LPSPropTagArray lpTags);
-		_Check_return_ bool IsLoading() const;
-		void ClearLoading();
-		void SetRestriction(_In_opt_ const _SRestriction* lpRes);
-		_Check_return_ const _SRestriction* GetRestriction() const;
-		_Check_return_ restrictionType GetRestrictionType() const;
-		void SetRestrictionType(restrictionType RestrictionType);
-		_Check_return_ ULONG GetContainerType() const;
-		_Check_return_ bool IsAdviseSet() const;
-		_Check_return_ bool IsContentsTableSet() const;
+		_Check_return_ bool IsLoading() const noexcept;
+		void ClearLoading() noexcept;
+		void SetRestriction(_In_opt_ const _SRestriction* lpRes) noexcept;
+		_Check_return_ const _SRestriction* GetRestriction() const noexcept;
+		_Check_return_ restrictionType GetRestrictionType() const noexcept;
+		void SetRestrictionType(restrictionType RestrictionType) noexcept;
+		_Check_return_ ULONG GetContainerType() const noexcept;
+		_Check_return_ bool IsAdviseSet() const noexcept;
+		_Check_return_ bool IsContentsTableSet() const noexcept;
 		void DoSetColumns(bool bAddExtras, bool bDisplayEditor);
 		void GetStatus();
 		bool bAbortLoad() noexcept { return m_bAbortLoad != 0; }

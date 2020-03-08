@@ -11,7 +11,7 @@
 
 namespace mapiprocessor
 {
-	void PrintFolder(const std::wstring& szFid, const std::wstring& szFolder)
+	void PrintFolder(const std::wstring& szFid, const std::wstring& szFolder) noexcept
 	{
 		wprintf(L"%-15ws %ws\n", szFid.c_str(), szFolder.c_str());
 	}
@@ -20,7 +20,7 @@ namespace mapiprocessor
 		const std::wstring& szMid,
 		bool fAssociated,
 		const std::wstring& szSubject,
-		const std::wstring& szClass)
+		const std::wstring& szClass) noexcept
 	{
 		wprintf(
 			L" %-15ws %wc %ws (%ws)\n", szMid.c_str(), fAssociated ? L'A' : L'R', szSubject.c_str(), szClass.c_str());
@@ -83,7 +83,9 @@ namespace mapiprocessor
 	void CFindFidMid::BeginFolderWork()
 	{
 		output::DebugPrint(
-			output::dbgLevel::Generic, L"CFindFidMid::BeginFolderWork: m_szFolderOffset %ws\n", m_szFolderOffset.c_str());
+			output::dbgLevel::Generic,
+			L"CFindFidMid::BeginFolderWork: m_szFolderOffset %ws\n",
+			m_szFolderOffset.c_str());
 		m_fFIDMatch = false;
 		m_fFIDExactMatch = false;
 		m_fFIDPrinted = false;
@@ -196,7 +198,9 @@ namespace mapiprocessor
 		{
 			lpszThisMid = smartview::FidMidToSzString(lpPropMid->Value.li.QuadPart, false);
 			output::DebugPrint(
-				output::dbgLevel::Generic, L"CFindFidMid::DoContentsTablePerRowWork: Found MID %ws\n", lpszThisMid.c_str());
+				output::dbgLevel::Generic,
+				L"CFindFidMid::DoContentsTablePerRowWork: Found MID %ws\n",
+				lpszThisMid.c_str());
 		}
 		else
 		{

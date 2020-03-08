@@ -125,7 +125,7 @@ namespace cli
 		&switchHelpAlias,
 	};
 
-	void DisplayUsage(BOOL bFull)
+	void DisplayUsage(BOOL bFull) noexcept
 	{
 		printf("MAPI data collection and parsing tool. Supports property tag lookup, error translation,\n");
 		printf("   smart view processing, rule tables, ACL tables, contents tables, and MAPI<->MIME conversion.\n");

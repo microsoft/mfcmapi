@@ -92,7 +92,7 @@ struct HEADER2UNICODE
 	BYTE bCryptMethod;
 };
 
-void PrintCryptType(BYTE bCryptMethod)
+void PrintCryptType(BYTE bCryptMethod) noexcept
 {
 	printf("0x%02X (", bCryptMethod);
 	switch (bCryptMethod)
@@ -111,7 +111,7 @@ void PrintCryptType(BYTE bCryptMethod)
 	printf(")");
 }
 
-void PrintAMAPValid(BYTE fAMapValid)
+void PrintAMAPValid(BYTE fAMapValid) noexcept
 {
 	printf("0x%02X (", fAMapValid);
 	switch (fAMapValid)
@@ -132,7 +132,7 @@ void PrintAMAPValid(BYTE fAMapValid)
 #define MB (KB * 1024)
 #define GB (MB * 1024)
 
-void PrintFileSize(ULONGLONG ullFileSize)
+void PrintFileSize(ULONGLONG ullFileSize) noexcept
 {
 	double scaledSize = 0;
 	if (ullFileSize > GB)
