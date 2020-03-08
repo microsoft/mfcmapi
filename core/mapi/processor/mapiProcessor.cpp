@@ -189,9 +189,9 @@ namespace mapi::processor
 		EndProcessFoldersWork();
 	}
 
-	bool mapiProcessor::ContinueProcessingFolders() { return true; }
+	bool mapiProcessor::ContinueProcessingFolders() noexcept { return true; }
 
-	bool mapiProcessor::ShouldProcessContentsTable() { return true; }
+	bool mapiProcessor::ShouldProcessContentsTable() noexcept { return true; }
 
 	void mapiProcessor::ProcessFolder(bool bDoRegular, bool bDoAssociated, bool bDoDescent)
 	{

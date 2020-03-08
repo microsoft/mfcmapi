@@ -53,8 +53,8 @@ namespace mapi::processor
 		virtual void BeginStoreWork() noexcept;
 		virtual void EndStoreWork() noexcept;
 
-		virtual bool ContinueProcessingFolders();
-		virtual bool ShouldProcessContentsTable();
+		virtual bool ContinueProcessingFolders() noexcept;
+		virtual bool ShouldProcessContentsTable() noexcept;
 		virtual void BeginProcessFoldersWork() noexcept;
 		virtual void DoProcessFoldersPerFolderWork() noexcept;
 		virtual void EndProcessFoldersWork() noexcept;

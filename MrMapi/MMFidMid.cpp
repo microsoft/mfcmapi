@@ -33,8 +33,8 @@ namespace mapiprocessor
 		void InitFidMid(const std::wstring& szFid, const std::wstring& szMid, bool bMid);
 
 	private:
-		bool ContinueProcessingFolders() override;
-		bool ShouldProcessContentsTable() override;
+		bool ContinueProcessingFolders() noexcept override;
+		bool ShouldProcessContentsTable() noexcept override;
 		void BeginFolderWork() override;
 		void BeginContentsTableWork(ULONG ulFlags, ULONG ulCountRows) override;
 		bool DoContentsTablePerRowWork(_In_ const _SRow* lpSRow, ULONG ulCurRow) override;
@@ -166,13 +166,13 @@ namespace mapiprocessor
 		}
 	}
 
-	bool CFindFidMid::ContinueProcessingFolders()
+	bool CFindFidMid::ContinueProcessingFolders() noexcept
 	{
 		// if we've found an exact match, we can stop
 		return !m_fFIDExactMatch;
 	}
 
-	bool CFindFidMid::ShouldProcessContentsTable()
+	bool CFindFidMid::ShouldProcessContentsTable() noexcept
 	{
 		// Only process a folder's contents table if both
 		// 1 - We matched our fid, possibly because a fid wasn't passed in
