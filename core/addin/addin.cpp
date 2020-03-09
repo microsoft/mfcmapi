@@ -231,6 +231,11 @@ namespace addin
 			EC_W32_S(RegCloseKey(m_hRootKey));
 		}
 
+		CFileList(const CFileList&) = delete;
+		CFileList& operator=(const CFileList&) = delete;
+		CFileList(CFileList&&) = delete;
+		CFileList& operator=(CFileList&&) = delete;
+
 		// Add the DLL to the list
 		void AddToList(_In_ const std::wstring& szDLL)
 		{

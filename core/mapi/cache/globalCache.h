@@ -30,6 +30,8 @@ namespace cache
 	public:
 		CGlobalCache(CGlobalCache const&) = delete;
 		void operator=(CGlobalCache const&) = delete;
+		CGlobalCache(CGlobalCache&&) = delete;
+		CGlobalCache& operator=(CGlobalCache&&) = delete;
 
 		void MAPIInitialize(ULONG ulFlags);
 		void MAPIUninitialize() noexcept;
