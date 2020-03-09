@@ -262,7 +262,7 @@ namespace viewpane
 
 		*pcb = cbRead;
 
-		if (cbRead) memcpy(pbBuff, LPBYTE(lpfs->lpszW.c_str()) + lpfs->cbCur, cbRead);
+		if (cbRead) memcpy(pbBuff, lpfs->lpszW.c_str() + lpfs->cbCur, cbRead);
 
 		lpfs->cbCur += cbRead;
 
@@ -305,7 +305,7 @@ namespace viewpane
 		SetEditBoxText();
 	}
 
-	void TextPane::SetBinary(_In_opt_count_(cb) LPBYTE lpb, const size_t cb)
+	void TextPane::SetBinary(_In_opt_count_(cb) const BYTE* lpb, const size_t cb)
 	{
 		if (!lpb || !cb)
 		{

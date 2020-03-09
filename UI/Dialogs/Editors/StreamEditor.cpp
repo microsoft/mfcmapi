@@ -424,14 +424,14 @@ namespace dialog::editor
 			{
 				auto lpszA = GetStringA(m_iTextBox);
 
-				lpBinPane->SetBinary(LPBYTE(lpszA.c_str()), lpszA.length() * sizeof(CHAR));
+				lpBinPane->SetBinary(reinterpret_cast<const BYTE*>(lpszA.c_str()), lpszA.length() * sizeof(CHAR));
 				lpBinPane->SetCount(lpszA.length() * sizeof(CHAR));
 				break;
 			}
 			case EDITOR_STREAM_UNICODE:
 				auto lpszW = GetStringW(m_iTextBox);
 
-				lpBinPane->SetBinary(LPBYTE(lpszW.c_str()), lpszW.length() * sizeof(WCHAR));
+				lpBinPane->SetBinary(reinterpret_cast<const BYTE*>(lpszW.c_str()), lpszW.length() * sizeof(WCHAR));
 				lpBinPane->SetCount(lpszW.length() * sizeof(WCHAR));
 				break;
 			}

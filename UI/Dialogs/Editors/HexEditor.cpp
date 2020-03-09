@@ -112,7 +112,7 @@ namespace dialog ::editor
 			lpb = bin.data();
 			cb = bin.size();
 
-			SetStringA(HEXED_ANSI, std::string(LPCSTR(lpb), cb));
+			SetStringA(HEXED_ANSI, std::string(reinterpret_cast<LPCSTR>(lpb), cb));
 			if (!(cb % 2)) // Set Unicode String
 			{
 				SetStringW(HEXED_UNICODE, std::wstring(LPWSTR(lpb), cb / sizeof(WCHAR)));
@@ -131,11 +131,11 @@ namespace dialog ::editor
 			auto bin = GetBinary(HEXED_HEX);
 			lpb = bin.data();
 			cb = bin.size();
-			SetStringA(HEXED_ANSI, std::string(LPCSTR(lpb), cb)); // ansi string
+			SetStringA(HEXED_ANSI, std::string(reinterpret_cast<LPCSTR>(lpb), cb)); // ansi string
 
 			if (!(cb % 2)) // Set Unicode String
 			{
-				SetStringW(HEXED_UNICODE, std::wstring(LPWSTR(lpb), cb / sizeof(WCHAR)));
+				SetStringW(HEXED_UNICODE, std::wstring(reinterpret_cast<LPWSTR>(lpb), cb / sizeof(WCHAR)));
 			}
 			else
 			{

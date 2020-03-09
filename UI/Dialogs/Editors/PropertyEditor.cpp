@@ -220,7 +220,7 @@ namespace dialog::editor
 				{
 					cbStr = lpszA.length() * sizeof(CHAR);
 
-					lpPane->SetBinary(LPBYTE(lpszA.c_str()), cbStr);
+					lpPane->SetBinary(reinterpret_cast<const BYTE*>(lpszA.c_str()), cbStr);
 					lpPane->SetCount(cbStr);
 				}
 
@@ -242,7 +242,7 @@ namespace dialog::editor
 				{
 					cbStr = lpszW.length() * sizeof(WCHAR);
 
-					lpPane->SetBinary(LPBYTE(lpszW.c_str()), cbStr);
+					lpPane->SetBinary(reinterpret_cast<const BYTE*>(lpszW.c_str()), cbStr);
 					lpPane->SetCount(cbStr);
 				}
 
@@ -733,7 +733,7 @@ namespace dialog::editor
 
 					// Even if we don't have a string, still make the call to SetBinary
 					// This will blank out the binary control when lpszA is NULL
-					lpPane->SetBinary(LPBYTE(lpszA.c_str()), cbStr);
+					lpPane->SetBinary(reinterpret_cast<const BYTE*>(lpszA.c_str()), cbStr);
 					lpPane->SetCount(cbStr);
 				}
 
@@ -766,7 +766,7 @@ namespace dialog::editor
 
 					// Even if we don't have a string, still make the call to SetBinary
 					// This will blank out the binary control when lpszW is NULL
-					lpPane->SetBinary(LPBYTE(lpszW.c_str()), cbStr);
+					lpPane->SetBinary(reinterpret_cast<const BYTE*>(lpszW.c_str()), cbStr);
 					lpPane->SetCount(cbStr);
 				}
 
