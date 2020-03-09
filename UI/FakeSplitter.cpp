@@ -17,8 +17,8 @@ namespace controls
 	CFakeSplitter::~CFakeSplitter()
 	{
 		TRACE_DESTRUCTOR(CLASS);
-		(void) DestroyCursor(m_hSplitCursorH);
-		(void) DestroyCursor(m_hSplitCursorV);
+		static_cast<void>(DestroyCursor(m_hSplitCursorH));
+		static_cast<void>(DestroyCursor(m_hSplitCursorV));
 		CWnd::DestroyWindow();
 	}
 
@@ -377,7 +377,7 @@ namespace controls
 			const auto hpenOld = SelectObject(hdc, GetPen(m_bTracking ? ui::uiPen::SolidPen : ui::uiPen::DashedPen));
 			MoveToEx(hdc, pts[0].x, pts[0].y, nullptr);
 			LineTo(hdc, pts[1].x, pts[1].y);
-			(void) SelectObject(hdc, hpenOld);
+			static_cast<void>(SelectObject(hdc, hpenOld));
 
 			db.End(hdc);
 		}

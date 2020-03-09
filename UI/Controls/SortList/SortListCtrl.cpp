@@ -661,7 +661,7 @@ namespace controls::sortlistctrl
 		auto lvi = LVITEMW();
 		lvi.iSubItem = nSubItem;
 		lvi.pszText = const_cast<LPWSTR>(lpszText.c_str());
-		(void) ::SendMessage(m_hWnd, LVM_SETITEMTEXTW, nItem, reinterpret_cast<LPARAM>(&lvi));
+		static_cast<void>(::SendMessage(m_hWnd, LVM_SETITEMTEXTW, nItem, reinterpret_cast<LPARAM>(&lvi)));
 	}
 
 	std::wstring CSortListCtrl::GetItemText(_In_ int nItem, _In_ int nSubItem) const

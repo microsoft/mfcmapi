@@ -64,7 +64,7 @@ namespace viewpane
 			cxDropDown = max(cxDropDown, sizeDrop.cx);
 		}
 
-		(void) SelectObject(hdc, hfontOld);
+		static_cast<void>(SelectObject(hdc, hfontOld));
 		ReleaseDC(m_DropDown.GetSafeHwnd(), hdc);
 
 		// Add scroll bar and margins for our frame

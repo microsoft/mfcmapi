@@ -136,7 +136,7 @@ namespace viewpane
 			OnAddListEntry();
 			break;
 		case IDD_LISTEDIT:
-			(void) OnEditListEntry();
+			static_cast<void>(OnEditListEntry());
 			break;
 		case IDD_LISTDELETE:
 			OnDeleteListEntry(true);
@@ -391,7 +391,7 @@ namespace viewpane
 	{
 		const auto iItem = m_List.GetItemCount();
 
-		(void) InsertRow(iItem, std::to_wstring(iItem));
+		static_cast<void>(InsertRow(iItem, std::to_wstring(iItem)));
 
 		m_List.SetSelectedItem(iItem);
 

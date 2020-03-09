@@ -424,7 +424,7 @@ namespace dialog
 				MyData.LoadString(4, IDS_NOTFOUND);
 			}
 
-			(void) MyData.DisplayDialog();
+			static_cast<void>(MyData.DisplayDialog());
 		}
 	}
 

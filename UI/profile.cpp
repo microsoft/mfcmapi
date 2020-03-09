@@ -19,7 +19,8 @@ namespace ui::profile
 		const auto szServiceNameToAddA = strings::wstringTostring(szServiceNameToAdd);
 		LPCSTR szServices[] = {szServiceNameToAddA.c_str(), nullptr};
 
-		output::DebugPrint(output::dbgLevel::Generic, L"LaunchProfileWizard: Using LAUNCHWIZARDENTRY to launch wizard API.\n");
+		output::DebugPrint(
+			output::dbgLevel::Generic, L"LaunchProfileWizard: Using LAUNCHWIZARDENTRY to launch wizard API.\n");
 
 		// Call LaunchWizard to add the service.
 		const auto hRes = WC_MAPI(LaunchWizard(hParentWnd, ulFlags, szServices, cchProfName, szProfName));
@@ -32,7 +33,8 @@ namespace ui::profile
 
 		if (SUCCEEDED(hRes))
 		{
-			output::DebugPrint(output::dbgLevel::Generic, L"LaunchProfileWizard: Profile \"%hs\" configured.\n", szProfName);
+			output::DebugPrint(
+				output::dbgLevel::Generic, L"LaunchProfileWizard: Profile \"%hs\" configured.\n", szProfName);
 		}
 
 		return strings::LPCSTRToWstring(szProfName);
@@ -46,7 +48,7 @@ namespace ui::profile
 		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_FILEPATH, true));
 		MyData.SetStringW(0, GetMAPISVCPath());
 
-		(void) MyData.DisplayDialog();
+		static_cast<void>(MyData.DisplayDialog());
 	}
 
 	struct SERVICESINIREC

@@ -29,8 +29,8 @@ namespace smartview
 		{
 			// Must have at least 2 bytes left to have another flag
 			if (m_Parser->getSize() < sizeof(DWORD) * 3 + sizeof(WORD)) break;
-			(void) m_Parser->advance(sizeof DWORD);
-			(void) m_Parser->advance(sizeof DWORD);
+			static_cast<void>(m_Parser->advance(sizeof DWORD));
+			static_cast<void>(m_Parser->advance(sizeof DWORD));
 			const auto len1 = blockT<DWORD>::parse(m_Parser);
 			m_Parser->advance(*len1);
 			const auto len2 = blockT<WORD>::parse(m_Parser);

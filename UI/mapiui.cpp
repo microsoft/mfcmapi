@@ -468,7 +468,7 @@ namespace ui::mapiui
 	{
 		dialog::editor::CEditor Err(nullptr, ID_PRODUCTNAME, NULL, CEDITOR_BUTTON_OK);
 		Err.SetPromptPostFix(errString);
-		(void) Err.DisplayDialog();
+		static_cast<void>(Err.DisplayDialog());
 	}
 
 	void OutputToDbgView(const std::wstring& szMsg) { dialog::editor::OutputToDbgView(szMsg); }

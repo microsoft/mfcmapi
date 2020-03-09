@@ -223,7 +223,7 @@ namespace viewpane
 
 			// Set maximum text size
 			// Use -1 to allow for VERY LARGE strings
-			(void) ::SendMessage(m_EditBox.m_hWnd, EM_EXLIMITTEXT, static_cast<WPARAM>(0), static_cast<LPARAM>(-1));
+			static_cast<void>(::SendMessage(m_EditBox.m_hWnd, EM_EXLIMITTEXT, WPARAM{0}, LPARAM{-1}));
 
 			SetEditBoxText();
 

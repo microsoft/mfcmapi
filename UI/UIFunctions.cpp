@@ -354,7 +354,7 @@ namespace ui
 
 			if (IDR_MENU_PROPERTY_POPUP == uiClassMenu)
 			{
-				(void) addinui::ExtendAddInMenu(hRealPopup, MENU_CONTEXT_PROPERTY);
+				static_cast<void>(addinui::ExtendAddInMenu(hRealPopup, MENU_CONTEXT_PROPERTY));
 			}
 
 			ConvertMenuOwnerDraw(hRealPopup, false);
@@ -594,10 +594,11 @@ namespace ui
 		const auto bmpSrc = SelectObject(hdcSrc, hBitmap);
 		const auto bmpDst = SelectObject(hdcDst, hRet);
 
-		(void) StretchBlt(hdcDst, 0, 0, sizeDst.cx, sizeDst.cy, hdcSrc, 0, 0, sizeSrc.cx, sizeSrc.cy, SRCCOPY);
+		static_cast<void>(
+			StretchBlt(hdcDst, 0, 0, sizeDst.cx, sizeDst.cy, hdcSrc, 0, 0, sizeSrc.cx, sizeSrc.cy, SRCCOPY));
 
-		(void) SelectObject(hdcSrc, bmpSrc);
-		(void) SelectObject(hdcDst, bmpDst);
+		static_cast<void>(SelectObject(hdcSrc, bmpSrc));
+		static_cast<void>(SelectObject(hdcDst, bmpDst));
 
 		if (bmpDst) DeleteObject(bmpDst);
 		if (bmpSrc) DeleteObject(bmpSrc);
@@ -628,7 +629,7 @@ namespace ui
 #endif
 
 		SelectObject(hdc, hfontOld);
-		(void) SetTextColor(hdc, crText);
+		static_cast<void>(SetTextColor(hdc, crText));
 	}
 
 	// Clear/initialize formatting on the rich edit control.
@@ -643,7 +644,7 @@ namespace ui
 		cf.dwMask = CFM_COLOR | CFM_FACE | CFM_BOLD | CFM_ITALIC | CFM_UNDERLINE | CFM_STRIKEOUT;
 		cf.crTextColor = MyGetSysColor(bReadOnly ? uiColor::TextReadOnly : uiColor::Text);
 		_tcscpy_s(cf.szFaceName, _countof(cf.szFaceName), SEGOE);
-		(void) ::SendMessage(hWnd, EM_SETCHARFORMAT, SCF_ALL, reinterpret_cast<LPARAM>(&cf));
+		static_cast<void>(::SendMessage(hWnd, EM_SETCHARFORMAT, SCF_ALL, reinterpret_cast<LPARAM>(&cf)));
 	}
 
 	// Lighten the colors of the base, being careful not to overflow
@@ -756,23 +757,23 @@ namespace ui
 
 		auto lStyle = ::GetWindowLongPtr(hWnd, GWL_EXSTYLE);
 		lStyle &= ~WS_EX_CLIENTEDGE;
-		(void) ::SetWindowLongPtr(hWnd, GWL_EXSTYLE, lStyle);
+		static_cast<void>(::SetWindowLongPtr(hWnd, GWL_EXSTYLE, lStyle));
 		if (bReadOnly)
 		{
-			(void) ::SendMessage(
+			static_cast<void>(::SendMessage(
 				hWnd,
 				EM_SETBKGNDCOLOR,
 				static_cast<WPARAM>(0),
-				static_cast<LPARAM>(MyGetSysColor(uiColor::BackgroundReadOnly)));
-			(void) ::SendMessage(hWnd, EM_SETREADONLY, true, 0L);
+				static_cast<LPARAM>(MyGetSysColor(uiColor::BackgroundReadOnly))));
+			static_cast<void>(::SendMessage(hWnd, EM_SETREADONLY, true, 0L));
 		}
 		else
 		{
-			(void) ::SendMessage(
+			static_cast<void>(::SendMessage(
 				hWnd,
 				EM_SETBKGNDCOLOR,
 				static_cast<WPARAM>(0),
-				static_cast<LPARAM>(MyGetSysColor(uiColor::Background)));
+				static_cast<LPARAM>(MyGetSysColor(uiColor::Background))));
 		}
 
 		ClearEditFormatting(hWnd, bReadOnly);
@@ -781,7 +782,8 @@ namespace ui
 		auto reCallback = new (std::nothrow) CRichEditOleCallback(hWnd, hWndParent);
 		if (reCallback)
 		{
-			(void) ::SendMessage(hWnd, EM_SETOLECALLBACK, static_cast<WPARAM>(0), reinterpret_cast<LPARAM>(reCallback));
+			static_cast<void>(
+				::SendMessage(hWnd, EM_SETOLECALLBACK, static_cast<WPARAM>(0), reinterpret_cast<LPARAM>(reCallback)));
 			reCallback->Release();
 		}
 	}
@@ -920,11 +922,11 @@ namespace ui
 		RECT rcBM = {0, 0, iWidth, iHeight};
 
 		const auto hbmTarget = CreateCompatibleBitmap(hdcSource, iWidth, iHeight);
-		(void) SelectObject(hdcTarget, hbmTarget);
+		static_cast<void>(SelectObject(hdcTarget, hbmTarget));
 		FillRect(hdcTarget, &rcBM, GetSysBrush(cReplace));
 
-		(void) TransparentBlt(
-			hdcTarget, 0, 0, iWidth, iHeight, hdcSource, 0, 0, iWidth, iHeight, MyGetSysColor(cSource));
+		static_cast<void>(
+			TransparentBlt(hdcTarget, 0, 0, iWidth, iHeight, hdcSource, 0, 0, iWidth, iHeight, MyGetSysColor(cSource)));
 		if (hbmTarget) DeleteObject(hbmTarget);
 	}
 
@@ -941,10 +943,10 @@ namespace ui
 		RECT rcBM = {0, 0, iWidth, iHeight};
 
 		const auto hbmTarget = CreateCompatibleBitmap(hdcSource, iWidth, iHeight);
-		(void) SelectObject(hdcTarget, hbmTarget);
+		static_cast<void>(SelectObject(hdcTarget, hbmTarget));
 		FillRect(hdcTarget, &rcBM, GetSysBrush(cBackground));
 
-		(void) BitBlt(hdcTarget, offset, offset, iWidth, iHeight, hdcSource, 0, 0, SRCCOPY);
+		static_cast<void>(BitBlt(hdcTarget, offset, offset, iWidth, iHeight, hdcSource, 0, 0, SRCCOPY));
 		if (hbmTarget) DeleteObject(hbmTarget);
 	}
 
@@ -967,7 +969,7 @@ namespace ui
 		const auto hdcBitmap = CreateCompatibleDC(hdc);
 		// TODO: pass target dimensions here and load the most appropriate bitmap
 		const auto hbmBitmap = GetBitmap(iBitmap);
-		(void) SelectObject(hdcBitmap, hbmBitmap);
+		static_cast<void>(SelectObject(hdcBitmap, hbmBitmap));
 
 		auto bm = BITMAP{};
 		::GetObject(hbmBitmap, sizeof bm, &bm);
@@ -998,8 +1000,8 @@ namespace ui
 
 		// In case the original bitmap dimensions doesn't match our target dimension, we stretch it to fit
 		// We can get better results if the original bitmap happens to match.
-		(void) StretchBlt(
-			hdc, rcTarget.left, rcTarget.top, iWidth, iHeight, hdcShift, 0, 0, bm.bmWidth, bm.bmHeight, SRCCOPY);
+		static_cast<void>(StretchBlt(
+			hdc, rcTarget.left, rcTarget.top, iWidth, iHeight, hdcShift, 0, 0, bm.bmWidth, bm.bmHeight, SRCCOPY));
 
 		if (hdcShift) DeleteDC(hdcShift);
 		if (hdcBackReplace) DeleteDC(hdcBackReplace);
@@ -1229,7 +1231,7 @@ namespace ui
 		const auto hpenOld = SelectObject(hdc, GetPen(uiPen::SolidGreyPen));
 		MoveToEx(hdc, rcHeader.left, rcHeader.bottom - 1, nullptr);
 		LineTo(hdc, rcHeader.right, rcHeader.bottom - 1);
-		(void) SelectObject(hdc, hpenOld);
+		static_cast<void>(SelectObject(hdc, hpenOld));
 
 		// Draw our divider
 		// Since no one else uses rcHeader after here, we can modify it in place
@@ -1272,7 +1274,7 @@ namespace ui
 
 				auto rcRight = RECT{};
 				// Compute the right edge of the last item
-				(void) Header_GetItemRect(lvcd->hdr.hwndFrom, iIndex, &rcRight);
+				static_cast<void>(Header_GetItemRect(lvcd->hdr.hwndFrom, iIndex, &rcRight));
 				rc.left = rcRight.right;
 			}
 
@@ -1509,7 +1511,7 @@ namespace ui
 			const auto hpenOld = SelectObject(hdc, GetPen(uiPen::SolidGreyPen));
 			MoveToEx(hdc, rcText.left, lMid, nullptr);
 			LineTo(hdc, rcText.right, lMid);
-			(void) SelectObject(hdc, hpenOld);
+			static_cast<void>(SelectObject(hdc, hpenOld));
 		}
 		else if (!lpMenuEntry->m_pName.empty())
 		{
@@ -1540,9 +1542,9 @@ namespace ui
 
 				SelectObject(hdcMem, bm);
 				SetRect(&rc, 0, 0, nWidth, nHeight);
-				(void) DrawFrameControl(hdcMem, &rc, DFC_MENU, DFCS_MENUCHECK);
+				static_cast<void>(DrawFrameControl(hdcMem, &rc, DFC_MENU, DFCS_MENUCHECK));
 
-				(void) TransparentBlt(
+				static_cast<void>(TransparentBlt(
 					hdc,
 					rcItem.left,
 					(rcItem.top + rcItem.bottom - nHeight) / 2,
@@ -1553,7 +1555,7 @@ namespace ui
 					0,
 					nWidth,
 					nHeight,
-					MyGetSysColor(uiColor::Background));
+					MyGetSysColor(uiColor::Background)));
 
 #ifdef SKIPBUFFER
 				auto frameRect = rcItem;
@@ -1906,7 +1908,7 @@ namespace ui
 			const auto hpenOld = SelectObject(hdc, GetPen(uiPen::SolidGreyPen));
 			MoveToEx(hdc, rcMenuGutterLeft.right, rcClient.top - 1, nullptr);
 			LineTo(hdc, rcMenuGutterRight.left, rcClient.top - 1);
-			(void) SelectObject(hdc, hpenOld);
+			static_cast<void>(SelectObject(hdc, hpenOld));
 
 			// White out the caption
 			FillRect(hdc, &rcFullCaption, GetSysBrush(uiColor::Background));

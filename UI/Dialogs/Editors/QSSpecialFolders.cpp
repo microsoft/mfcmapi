@@ -223,13 +223,13 @@ namespace dialog::editor
 	void OnQSCheckSpecialFolders(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 	{
 		lpHostDlg->UpdateStatusBarText(statusPane::infoText, IDS_STATUSTEXTCHECKINGSPECIALFOLDERS);
-		(void) lpHostDlg->SendMessage(WM_PAINT, NULL, NULL); // force paint so we update the status now
+		static_cast<void>(lpHostDlg->SendMessage(WM_PAINT, NULL, NULL)); // force paint so we update the status now
 
 		auto lpMDB = OpenStoreForQuickStart(lpHostDlg, hwnd);
 		if (lpMDB)
 		{
 			SpecialFolderEditor MyResults(lpHostDlg, lpMDB);
-			(void) MyResults.DisplayDialog();
+			static_cast<void>(MyResults.DisplayDialog());
 			lpMDB->Release();
 		}
 

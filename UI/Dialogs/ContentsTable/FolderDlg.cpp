@@ -1869,7 +1869,7 @@ namespace dialog
 				MyStatus.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_MESSAGESTATUS, true));
 				MyStatus.SetHex(0, ulMessageStatus);
 
-				(void) MyStatus.DisplayDialog();
+				static_cast<void>(MyStatus.DisplayDialog());
 			}
 		}
 

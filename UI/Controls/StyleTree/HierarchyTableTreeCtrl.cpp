@@ -134,7 +134,7 @@ namespace controls
 	{
 		if (registry::hierRootNotifs || hItem != TVI_ROOT)
 		{
-			(void) GetHierarchyTable(hItem, nullptr, true);
+			static_cast<void>(GetHierarchyTable(hItem, nullptr, true));
 		}
 	}
 
@@ -180,8 +180,8 @@ namespace controls
 				lpProps // Pass our lpProps to be archived
 			);
 
-			(void) AddChildNode(
-				szName, TVI_ROOT, reinterpret_cast<LPARAM>(lpData), [&](auto _1) { return OnItemAdded(_1); });
+			static_cast<void>(AddChildNode(
+				szName, TVI_ROOT, reinterpret_cast<LPARAM>(lpData), [&](auto _1) { return OnItemAdded(_1); }));
 		}
 
 		// Node owns the lpProps memory now, so we don't free it
@@ -213,7 +213,7 @@ namespace controls
 		{
 			sortlistdata::nodeData::init(lpData, lpsRow->cValues, lpsRow->lpProps);
 
-			(void) AddChildNode(szName, hParent, reinterpret_cast<LPARAM>(lpData), callback);
+			static_cast<void>(AddChildNode(szName, hParent, reinterpret_cast<LPARAM>(lpData), callback));
 		}
 	}
 
@@ -374,7 +374,7 @@ namespace controls
 		auto lpMAPIContainer = GetContainer(hItem, modifyType::REQUEST_MODIFY);
 
 		// Make sure we've gotten the hierarchy table for this node
-		(void) GetHierarchyTable(hItem, lpMAPIContainer, registry::hierExpandNotifications);
+		static_cast<void>(GetHierarchyTable(hItem, lpMAPIContainer, registry::hierExpandNotifications));
 
 		UINT uiMsg = IDS_STATUSTEXTNOFOLDER;
 		std::wstring szParam1;

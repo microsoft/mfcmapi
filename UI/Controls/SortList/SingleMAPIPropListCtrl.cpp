@@ -1193,7 +1193,7 @@ namespace controls::sortlistctrl
 			MyResult.LoadString(0, IDS_HIGHESTNAMEDPROPNOTFOUND);
 		}
 
-		(void) MyResult.DisplayDialog();
+		static_cast<void>(MyResult.DisplayDialog());
 	}
 
 	// Delete the selected property
@@ -1855,7 +1855,7 @@ namespace controls::sortlistctrl
 		if (m_lpPropBag && propertybag::propBagType::Row == m_lpPropBag->GetType())
 		{
 			SRow MyRow = {0};
-			(void) m_lpPropBag->GetAllProps(&MyRow.cValues, &MyRow.lpProps);
+			static_cast<void>(m_lpPropBag->GetAllProps(&MyRow.cValues, &MyRow.lpProps));
 			MyAddInMenuParams.lpRow = &MyRow;
 			MyAddInMenuParams.ulCurrentFlags |= MENU_FLAGS_ROW;
 		}

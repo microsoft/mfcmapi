@@ -288,7 +288,7 @@ namespace dialog
 		if (!m_lpMapiObjects) return;
 
 		// ensure we have an AB
-		(void) m_lpMapiObjects->GetAddrBook(true); // do not release
+		static_cast<void>(m_lpMapiObjects->GetAddrBook(true)); // do not release
 
 		// call the dialog
 		new CAbContDlg(m_lpParent, m_lpMapiObjects);
@@ -962,7 +962,7 @@ namespace dialog
 		MyData.AddPane(viewpane::CheckPane::Create(1, IDS_REGKEY_FORCEOUTLOOKMAPI, registry::forceOutlookMAPI, true));
 		MyData.AddPane(viewpane::CheckPane::Create(2, IDS_REGKEY_FORCESYSTEMMAPI, registry::forceSystemMAPI, true));
 
-		(void) MyData.DisplayDialog();
+		static_cast<void>(MyData.DisplayDialog());
 	}
 
 	void CMainDlg::OnMAPIInitialize()
@@ -1061,7 +1061,7 @@ namespace dialog
 
 			MyResult.AddPane(viewpane::TextPane::CreateMultiLinePane(1, IDS_OPTIONS, szPropString, true));
 
-			(void) MyResult.DisplayDialog();
+			static_cast<void>(MyResult.DisplayDialog());
 
 			MAPIFreeBuffer(lpOptions);
 		}
@@ -1115,7 +1115,7 @@ namespace dialog
 
 			MyResult.AddPane(viewpane::TextPane::CreateMultiLinePane(1, IDS_OPTIONS, szPropString, true));
 
-			(void) MyResult.DisplayDialog();
+			static_cast<void>(MyResult.DisplayDialog());
 
 			MAPIFreeBuffer(lpOptions);
 		}
@@ -1221,7 +1221,7 @@ namespace dialog
 				const auto szResult = strings::loadstring(bBlocked ? IDS_TRUE : IDS_FALSE);
 				MyResult.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_RESULT, szResult, true));
 
-				(void) MyResult.DisplayDialog();
+				static_cast<void>(MyResult.DisplayDialog());
 			}
 		}
 	}
@@ -1638,7 +1638,7 @@ namespace dialog
 
 					editor::CEditor Result(this, IDS_STOREHASH, NULL, CEDITOR_BUTTON_OK);
 					Result.SetPromptPostFix(szHash);
-					(void) Result.DisplayDialog();
+					static_cast<void>(Result.DisplayDialog());
 
 					MAPIFreeBuffer(lpMappingSig);
 					MAPIFreeBuffer(lpPathPropA);

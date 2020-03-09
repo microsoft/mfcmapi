@@ -47,7 +47,7 @@ namespace viewpane
 		const auto hdc = GetDC(m_Count.GetSafeHwnd());
 		const auto hfontOld = SelectObject(hdc, ui::GetSegoeFont());
 		const auto sizeText = ui::GetTextExtentPoint32(hdc, szCount);
-		(void) SelectObject(hdc, hfontOld);
+		static_cast<void>(SelectObject(hdc, hfontOld));
 		ReleaseDC(m_Count.GetSafeHwnd(), hdc);
 		m_iCountLabelWidth = sizeText.cx + m_iSideMargin;
 

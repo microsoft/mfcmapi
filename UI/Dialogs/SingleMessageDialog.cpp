@@ -66,7 +66,7 @@ namespace dialog
 	void SingleMessageDialog::OnRefreshView()
 	{
 		if (!m_lpPropDisplay) return;
-		(void) m_lpPropDisplay->RefreshMAPIPropList();
+		static_cast<void>(m_lpPropDisplay->RefreshMAPIPropList());
 	}
 
 	void SingleMessageDialog::OnAttachmentProperties()
@@ -112,7 +112,7 @@ namespace dialog
 					EC_MAPI_S(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 				}
 
-				(void) m_lpPropDisplay->RefreshMAPIPropList();
+				static_cast<void>(m_lpPropDisplay->RefreshMAPIPropList());
 			}
 		}
 	}
@@ -140,9 +140,9 @@ namespace dialog
 				0);
 			MyEditor.DisableSave();
 
-			(void) MyEditor.DisplayDialog();
+			static_cast<void>(MyEditor.DisplayDialog());
 
-			(void) m_lpPropDisplay->RefreshMAPIPropList();
+			static_cast<void>(m_lpPropDisplay->RefreshMAPIPropList());
 		}
 	}
 
@@ -169,9 +169,9 @@ namespace dialog
 				0);
 			MyEditor.DisableSave();
 
-			(void) MyEditor.DisplayDialog();
+			static_cast<void>(MyEditor.DisplayDialog());
 
-			(void) m_lpPropDisplay->RefreshMAPIPropList();
+			static_cast<void>(m_lpPropDisplay->RefreshMAPIPropList());
 		}
 	}
 
@@ -198,9 +198,9 @@ namespace dialog
 				0);
 			MyEditor.DisableSave();
 
-			(void) MyEditor.DisplayDialog();
+			static_cast<void>(MyEditor.DisplayDialog());
 
-			(void) m_lpPropDisplay->RefreshMAPIPropList();
+			static_cast<void>(m_lpPropDisplay->RefreshMAPIPropList());
 		}
 	}
 
@@ -214,7 +214,7 @@ namespace dialog
 
 			EC_MAPI_S(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 
-			(void) m_lpPropDisplay->RefreshMAPIPropList();
+			static_cast<void>(m_lpPropDisplay->RefreshMAPIPropList());
 		}
 	}
 } // namespace dialog

@@ -190,7 +190,7 @@ namespace controls::sortlistctrl
 			szFlags = flags::InterpretFlags(flagTableType, ulTableType);
 			MyData.AddPane(viewpane::TextPane::CreateMultiLinePane(3, IDS_ULTABLETYPE, szFlags, true));
 
-			(void) MyData.DisplayDialog();
+			static_cast<void>(MyData.DisplayDialog());
 		}
 	}
 
@@ -513,7 +513,7 @@ namespace controls::sortlistctrl
 		LPSRowSet pRows = nullptr;
 		ULONG iCurListBoxRow = 0;
 
-		(void) ::SendMessage(hWndHost, WM_MFCMAPI_CLEARSINGLEMAPIPROPLIST, NULL, NULL);
+		static_cast<void>(::SendMessage(hWndHost, WM_MFCMAPI_CLEARSINGLEMAPIPROPLIST, NULL, NULL));
 		auto szCount = std::to_wstring(lpListCtrl->GetItemCount());
 		dialog::CBaseDialog::UpdateStatus(
 			hWndHost, statusPane::data1, strings::formatmessage(IDS_STATUSTEXTNUMITEMS, szCount.c_str()));

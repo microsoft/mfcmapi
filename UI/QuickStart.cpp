@@ -55,7 +55,7 @@ namespace dialog
 		if (!lpMapiObjects) return nullptr;
 
 		// ensure we have an AB
-		(void) OpenSessionForQuickStart(lpHostDlg, hwnd); // do not release
+		static_cast<void>(OpenSessionForQuickStart(lpHostDlg, hwnd)); // do not release
 		auto lpAdrBook = lpMapiObjects->GetAddrBook(true); // do not release
 
 		if (lpAdrBook)
@@ -250,7 +250,7 @@ namespace dialog
 					MyResults.SetBinary(1, bin.lpb, bin.cb);
 				}
 
-				(void) MyResults.DisplayDialog();
+				static_cast<void>(MyResults.DisplayDialog());
 			}
 
 			MAPIFreeBuffer(lpsProp);
@@ -371,7 +371,7 @@ namespace dialog
 			MyResults.AddPane(viewpane::TextPane::CreateMultiLinePane(0, NULL, true));
 			MyResults.SetStringW(0, szQuotaString);
 
-			(void) MyResults.DisplayDialog();
+			static_cast<void>(MyResults.DisplayDialog());
 		}
 
 		lpHostDlg->UpdateStatusBarText(statusPane::infoText, strings::emptystring);
@@ -442,7 +442,7 @@ namespace dialog
 			MyResults.AddPane(viewpane::TextPane::CreateSingleLinePaneID(0, 0, IDS_QSTHUMBNAILNOTFOUND, true));
 		}
 
-		(void) MyResults.DisplayDialog();
+		static_cast<void>(MyResults.DisplayDialog());
 
 		MAPIFreeBuffer(lpThumbnail);
 		if (lpAdrBook) lpAdrBook->Release();

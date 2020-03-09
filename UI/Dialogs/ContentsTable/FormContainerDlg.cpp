@@ -42,7 +42,7 @@ namespace dialog
 		{
 			m_lpFormContainer->AddRef();
 			LPTSTR lpszDisplayName = nullptr;
-			(void) m_lpFormContainer->GetDisplay(fMapiUnicode, &lpszDisplayName);
+			static_cast<void>(m_lpFormContainer->GetDisplay(fMapiUnicode, &lpszDisplayName));
 			if (lpszDisplayName)
 			{
 				m_szTitle = strings::LPCTSTRToWstring(lpszDisplayName);
@@ -127,11 +127,11 @@ namespace dialog
 							SRow sRow = {};
 							sRow.cValues = ulPropVals;
 							sRow.lpProps = lpPropVals;
-							(void) ::SendMessage(
+							static_cast<void>(::SendMessage(
 								m_lpContentsTableListCtrl->m_hWnd,
 								WM_MFCMAPI_THREADADDITEM,
 								i,
-								reinterpret_cast<LPARAM>(&sRow));
+								reinterpret_cast<LPARAM>(&sRow)));
 						}
 
 						lpMAPIFormInfoArray->aFormInfo[i]->Release();
@@ -445,7 +445,7 @@ namespace dialog
 			editor::CEditor MyOutput(
 				this, IDS_GETDISPLAY, IDS_GETDISPLAYPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 			MyOutput.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_GETDISPLAY, szDisplayName, true));
-			(void) MyOutput.DisplayDialog();
+			static_cast<void>(MyOutput.DisplayDialog());
 			MAPIFreeBuffer(lpszDisplayName);
 		}
 	}

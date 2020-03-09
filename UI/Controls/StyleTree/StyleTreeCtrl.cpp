@@ -252,7 +252,7 @@ namespace controls
 	void StyleTreeCtrl::OnRightClick(_In_ NMHDR* /*pNMHDR*/, _In_ LRESULT* pResult)
 	{
 		// Send WM_CONTEXTMENU to self
-		(void) SendMessage(WM_CONTEXTMENU, reinterpret_cast<WPARAM>(m_hWnd), GetMessagePos());
+		static_cast<void>(SendMessage(WM_CONTEXTMENU, reinterpret_cast<WPARAM>(m_hWnd), GetMessagePos()));
 
 		// Mark message as handled and suppress default handling
 		*pResult = 1;
@@ -270,7 +270,7 @@ namespace controls
 			if (item)
 			{
 				auto rc = RECT{};
-				(void) GetItemRect(item, &rc, true);
+				static_cast<void>(GetItemRect(item, &rc, true));
 				pos.x = rc.left;
 				pos.y = rc.top;
 				::ClientToScreen(hwnd, &pos);

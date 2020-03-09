@@ -618,7 +618,7 @@ namespace dialog
 
 		if (lpMAPIFolder)
 		{
-			(void) DisplayObject(lpMAPIFolder, NULL, objectType::assocContents, this);
+			static_cast<void>(DisplayObject(lpMAPIFolder, NULL, objectType::assocContents, this));
 
 			lpMAPIFolder->Release();
 		}
