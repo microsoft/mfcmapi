@@ -189,7 +189,7 @@ namespace dialog::editor
 				SPropValue sProp = {};
 				sProp.ulPropTag = CHANGE_PROP_TYPE(m_ulPropTag, PT_BINARY);
 				auto bin = GetBinary(m_iBinBox);
-				mapi::setBin(sProp) = {ULONG(bin.size()), bin.data()};
+				mapi::setBin(sProp) = {static_cast<ULONG>(bin.size()), bin.data()};
 
 				// TODO: pass in named prop stuff to make this work
 				lpSmartView->SetParser(

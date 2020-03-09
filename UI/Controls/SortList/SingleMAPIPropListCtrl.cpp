@@ -767,7 +767,7 @@ namespace controls::sortlistctrl
 			{
 				// This fixes a ton of flashing problems
 				lpMyHeader->SetRedraw(true);
-				for (auto iCurCol = 0; iCurCol < int(columns::PropColumns.size()); iCurCol++)
+				for (auto iCurCol = 0; iCurCol < static_cast<int>(columns::PropColumns.size()); iCurCol++)
 				{
 					SetColumnWidth(iCurCol, LVSCW_AUTOSIZE_USEHEADER);
 					if (GetColumnWidth(iCurCol) > 200) SetColumnWidth(iCurCol, 200);

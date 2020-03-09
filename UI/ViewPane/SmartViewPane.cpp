@@ -39,7 +39,7 @@ namespace viewpane
 
 		for (const auto& smartViewParserType : SmartViewParserTypeArray)
 		{
-			InsertDropString(smartViewParserType.lpszName, (ULONG) smartViewParserType.type);
+			InsertDropString(smartViewParserType.lpszName, static_cast<ULONG>(smartViewParserType.type));
 		}
 
 		DropDownPane::Initialize(pParent, hdc);
@@ -206,7 +206,7 @@ namespace viewpane
 			if (parsedData.empty())
 			{
 				parsedData =
-					smartview::InterpretBinaryAsString(SBinary{ULONG(bin.size()), bin.data()}, iStructType, nullptr);
+					smartview::InterpretBinaryAsString(SBinary{static_cast<ULONG>(bin.size()), bin.data()}, iStructType, nullptr);
 			}
 
 			szSmartViewArray.push_back(parsedData);

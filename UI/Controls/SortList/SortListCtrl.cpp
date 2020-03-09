@@ -693,6 +693,6 @@ namespace controls::sortlistctrl
 		column.pszText = const_cast<LPWSTR>(columnHeading.c_str());
 		column.fmt = LVCFMT_LEFT;
 
-		return static_cast<int>(::SendMessage(m_hWnd, LVM_INSERTCOLUMNW, nCol, (LPARAM) &column));
+		return static_cast<int>(::SendMessage(m_hWnd, LVM_INSERTCOLUMNW, nCol, reinterpret_cast<LPARAM>(&column)));
 	}
 } // namespace controls::sortlistctrl
