@@ -342,7 +342,7 @@ namespace dialog::editor
 						lpPane->SetStringW(strings::BinToHexString(&bin, false));
 					}
 
-					SetStringA(1, std::string(LPCSTR(bin.lpb), bin.cb));
+					SetStringA(1, std::string(reinterpret_cast<LPCSTR>(bin.lpb), bin.cb));
 				}
 
 				lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(GetPane(1));
@@ -694,7 +694,8 @@ namespace dialog::editor
 			{
 				ClearHighlight(0);
 				bin = GetBinary(0);
-				if (paneID == 0) SetStringA(1, std::string(LPCSTR(bin.data()), bin.size())); // ansi string
+				if (paneID == 0)
+					SetStringA(1, std::string(reinterpret_cast<LPCSTR>(bin.data()), bin.size())); // ansi string
 			}
 			else if (paneID == 1)
 			{
@@ -744,7 +745,7 @@ namespace dialog::editor
 			{
 				bin = GetBinary(1);
 
-				SetStringA(0, std::string(LPCSTR(bin.data()), bin.size()));
+				SetStringA(0, std::string(reinterpret_cast<LPCSTR>(bin.data()), bin.size()));
 
 				lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(GetPane(0));
 				if (lpPane) lpPane->SetCount(bin.size());
@@ -779,7 +780,7 @@ namespace dialog::editor
 				bin = GetBinary(1);
 				if (!(bin.size() % sizeof(WCHAR)))
 				{
-					SetStringW(0, std::wstring(LPCWSTR(bin.data()), bin.size() / sizeof(WCHAR)));
+					SetStringW(0, std::wstring(reinterpret_cast<LPCWSTR>(bin.data()), bin.size() / sizeof(WCHAR)));
 					if (lpPane) lpPane->SetCount(bin.size() / sizeof(WCHAR));
 				}
 				else

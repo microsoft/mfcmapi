@@ -435,7 +435,7 @@ namespace dialog
 			auto lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(MyResults.GetPane(0));
 			if (lpPane) lpPane->SetCount(bin.cb);
 			MyResults.SetBinary(0, bin.lpb, bin.cb);
-			MyResults.SetStringA(1, std::string(LPCSTR(bin.lpb), bin.cb));
+			MyResults.SetStringA(1, std::string(reinterpret_cast<LPCSTR>(bin.lpb), bin.cb));
 		}
 		else
 		{

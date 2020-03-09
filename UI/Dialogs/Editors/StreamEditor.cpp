@@ -447,11 +447,13 @@ namespace dialog::editor
 				case EDITOR_RTF:
 				case EDITOR_STREAM_BINARY:
 				default:
-					SetStringA(m_iTextBox, std::string(LPCSTR(bin.data()), bin.size() / sizeof(CHAR)));
+					SetStringA(
+						m_iTextBox, std::string(reinterpret_cast<LPCSTR>(bin.data()), bin.size() / sizeof(CHAR)));
 					if (lpBinPane) lpBinPane->SetCount(bin.size());
 					break;
 				case EDITOR_STREAM_UNICODE:
-					SetStringW(m_iTextBox, std::wstring(LPWSTR(bin.data()), bin.size() / sizeof(WCHAR)));
+					SetStringW(
+						m_iTextBox, std::wstring(reinterpret_cast<LPWSTR>(bin.data()), bin.size() / sizeof(WCHAR)));
 					if (lpBinPane) lpBinPane->SetCount(bin.size());
 					break;
 				}
