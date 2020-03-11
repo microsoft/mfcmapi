@@ -33,7 +33,7 @@ namespace sortlistdata
 		auto lpProp = PpropFindProp(lpsRowData->lpProps, lpsRowData->cValues, PR_INSTANCE_KEY);
 		if (lpProp && PR_INSTANCE_KEY == lpProp->ulPropTag)
 		{
-			m_lpInstanceKey = mapi::CopySBinary(&lpProp->Value.bin);
+			m_lpInstanceKey = mapi::CopySBinary(&mapi::getBin(lpProp));
 		}
 
 		// Save the attachment number into lpData
@@ -71,28 +71,28 @@ namespace sortlistdata
 		lpProp = PpropFindProp(lpsRowData->lpProps, lpsRowData->cValues, PR_ENTRYID);
 		if (lpProp && PR_ENTRYID == lpProp->ulPropTag)
 		{
-			m_lpEntryID = mapi::CopySBinary(&lpProp->Value.bin);
+			m_lpEntryID = mapi::CopySBinary(&mapi::getBin(lpProp));
 		}
 
 		// Save the Longterm Entry ID into lpData
 		lpProp = PpropFindProp(lpsRowData->lpProps, lpsRowData->cValues, PR_LONGTERM_ENTRYID_FROM_TABLE);
 		if (lpProp && PR_LONGTERM_ENTRYID_FROM_TABLE == lpProp->ulPropTag)
 		{
-			m_lpLongtermID = mapi::CopySBinary(&lpProp->Value.bin);
+			m_lpLongtermID = mapi::CopySBinary(&mapi::getBin(lpProp));
 		}
 
 		// Save the Service ID into lpData
 		lpProp = PpropFindProp(lpsRowData->lpProps, lpsRowData->cValues, PR_SERVICE_UID);
 		if (lpProp && PR_SERVICE_UID == lpProp->ulPropTag)
 		{
-			m_lpServiceUID = mapi::CopySBinary(&lpProp->Value.bin);
+			m_lpServiceUID = mapi::CopySBinary(&mapi::getBin(lpProp));
 		}
 
 		// Save the Provider ID into lpData
 		lpProp = PpropFindProp(lpsRowData->lpProps, lpsRowData->cValues, PR_PROVIDER_UID);
 		if (lpProp && PR_PROVIDER_UID == lpProp->ulPropTag)
 		{
-			m_lpProviderUID = mapi::CopySBinary(&lpProp->Value.bin);
+			m_lpProviderUID = mapi::CopySBinary(&mapi::getBin(lpProp));
 		}
 
 		// Save the DisplayName into lpData
@@ -103,7 +103,8 @@ namespace sortlistdata
 		if (strings::CheckStringProp(lpProp, PT_STRING8))
 		{
 			m_szProfileDisplayName = strings::LPCSTRToWstring(lpProp->Value.lpszA);
-			output::DebugPrint(output::dbgLevel::Generic, L"\tPR_DISPLAY_NAME_A = %ws\n", m_szProfileDisplayName.c_str());
+			output::DebugPrint(
+				output::dbgLevel::Generic, L"\tPR_DISPLAY_NAME_A = %ws\n", m_szProfileDisplayName.c_str());
 		}
 
 		// Save the e-mail address (if it exists on the object) into lpData

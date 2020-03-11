@@ -56,11 +56,11 @@ namespace dialog
 			const std::wstring& szParam1,
 			const std::wstring& szParam2,
 			const std::wstring& szParam3);
-		void OnOpenEntryID(_In_opt_ LPSBinary lpBin);
-		_Check_return_ ui::CParentWnd* GetParentWnd() const;
-		_Check_return_ std::shared_ptr<cache::CMapiObjects> GetMapiObjects() const;
+		void OnOpenEntryID(_In_ const SBinary& bin);
+		_Check_return_ ui::CParentWnd* GetParentWnd() const noexcept;
+		_Check_return_ std::shared_ptr<cache::CMapiObjects> GetMapiObjects() const noexcept;
 
-		static void UpdateStatus(HWND hWndHost, const statusPane pane, const std::wstring& status);
+		static void UpdateStatus(HWND hWndHost, const statusPane pane, const std::wstring& status) noexcept;
 
 	protected:
 		// Overrides called by child classes
@@ -108,7 +108,7 @@ namespace dialog
 		void OnOptions();
 		void OnOutlookVersion();
 
-		void SetStatusWidths();
+		void SetStatusWidths() noexcept;
 
 		// Custom messages
 		_Check_return_ LRESULT msgOnUpdateStatusBar(WPARAM wParam, LPARAM lParam);

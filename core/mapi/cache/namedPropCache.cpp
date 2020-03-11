@@ -2,6 +2,7 @@
 #include <core/mapi/cache/namedPropCache.h>
 #include <core/interpret/guid.h>
 #include <core/mapi/mapiMemory.h>
+#include <core/mapi/mapiFunctions.h>
 #include <core/utility/registry.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
@@ -32,7 +33,7 @@ namespace cache
 				for (ULONG i = 0; i < ulPropNames; i++)
 				{
 					auto ulPropID = ULONG{};
-					if (lppPropTags && *lppPropTags) ulPropID = PROP_ID((*lppPropTags)->aulPropTag[i]);
+					if (lppPropTags && *lppPropTags) ulPropID = PROP_ID(mapi::getTag(*lppPropTags, i));
 					ids.emplace_back(std::make_shared<namedPropCacheEntry>(lppPropNames[i], ulPropID));
 				}
 			}
@@ -56,7 +57,7 @@ namespace cache
 				ULONG i = 0;
 				for (const auto& tag : tags)
 				{
-					ulPropTags->aulPropTag[i++] = tag;
+					mapi::setTag(ulPropTags, i++) = tag;
 				}
 
 				ids = GetNamesFromIDs(lpMAPIProp, &ulPropTags, ulFlags);
@@ -297,7 +298,7 @@ namespace cache
 			// First pass, find any misses we might have
 			for (ULONG ulTarget = 0; ulTarget < lpPropTags->cValues; ulTarget++)
 			{
-				const auto ulPropTag = lpPropTags->aulPropTag[ulTarget];
+				const auto ulPropTag = mapi::getTag(lpPropTags, ulTarget);
 				const auto ulPropId = PROP_ID(ulPropTag);
 				// ...check the cache
 				const auto lpEntry = find([&](const auto& entry) noexcept { return entry->match(sig, ulPropId); });
@@ -319,7 +320,7 @@ namespace cache
 			// Second pass, do our lookup with a populated cache
 			for (ULONG ulTarget = 0; ulTarget < lpPropTags->cValues; ulTarget++)
 			{
-				const auto ulPropId = PROP_ID(lpPropTags->aulPropTag[ulTarget]);
+				const auto ulPropId = PROP_ID(mapi::getTag(lpPropTags, ulTarget));
 				// ...check the cache
 				const auto lpEntry = find([&](const auto& entry) noexcept { return entry->match(sig, ulPropId); });
 
@@ -372,7 +373,7 @@ namespace cache
 					for (ULONG i = 0; i < misses.size(); i++)
 					{
 						toCache.emplace_back(
-							std::make_shared<namedPropCacheEntry>(&misses[i], missed->aulPropTag[i], sig));
+							std::make_shared<namedPropCacheEntry>(&misses[i], mapi::getTag(missed, i), sig));
 					}
 
 					add(toCache, sig);
@@ -389,7 +390,7 @@ namespace cache
 			{
 				const auto lpEntry = find([&](const auto& entry) noexcept { return entry->match(sig, nameID); });
 
-				results->aulPropTag[i++] = lpEntry ? lpEntry->getPropID() : 0;
+				mapi::setTag(results, i++) = lpEntry ? lpEntry->getPropID() : 0;
 			}
 
 			return results;
@@ -429,16 +430,16 @@ namespace cache
 	_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>>
 	GetNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp, _In_ LPSPropTagArray* lppPropTags, ULONG ulFlags)
 	{
-		SBinary* sig = {};
+		SBinary sig = {};
 		LPSPropValue lpProp = nullptr;
 		// This error is too chatty to log - ignore it.
 		const auto hRes = HrGetOneProp(lpMAPIProp, PR_MAPPING_SIGNATURE, &lpProp);
 		if (SUCCEEDED(hRes) && lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag))
 		{
-			sig = &lpProp->Value.bin;
+			sig = mapi::getBin(lpProp);
 		}
 
-		const auto names = GetNamesFromIDs(lpMAPIProp, sig, lppPropTags, ulFlags);
+		const auto names = GetNamesFromIDs(lpMAPIProp, &sig, lppPropTags, ulFlags);
 		MAPIFreeBuffer(lpProp);
 		return names;
 	}
@@ -488,7 +489,8 @@ namespace cache
 
 		if (lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag))
 		{
-			sig = {lpProp->Value.bin.lpb, lpProp->Value.bin.lpb + lpProp->Value.bin.cb};
+			const auto bin = mapi::getBin(lpProp);
+			sig = {bin.lpb, bin.lpb + bin.cb};
 		}
 
 		MAPIFreeBuffer(lpProp);

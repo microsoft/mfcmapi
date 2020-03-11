@@ -223,7 +223,7 @@ namespace viewpane
 
 			// Set maximum text size
 			// Use -1 to allow for VERY LARGE strings
-			(void) ::SendMessage(m_EditBox.m_hWnd, EM_EXLIMITTEXT, static_cast<WPARAM>(0), static_cast<LPARAM>(-1));
+			static_cast<void>(::SendMessage(m_EditBox.m_hWnd, EM_EXLIMITTEXT, WPARAM{0}, LPARAM{-1}));
 
 			SetEditBoxText();
 
@@ -247,8 +247,11 @@ namespace viewpane
 		size_t cbCur{};
 	};
 
-	_Check_return_ static DWORD CALLBACK
-	FakeEditStreamReadCallBack(const DWORD_PTR dwCookie, _In_ LPBYTE pbBuff, const LONG cb, _In_count_(cb) LONG* pcb)
+	_Check_return_ static DWORD CALLBACK FakeEditStreamReadCallBack(
+		const DWORD_PTR dwCookie,
+		_In_ LPBYTE pbBuff,
+		const LONG cb,
+		_In_count_(cb) LONG* pcb) noexcept
 	{
 		if (!pbBuff || !pcb || !dwCookie) return 0;
 
@@ -259,7 +262,7 @@ namespace viewpane
 
 		*pcb = cbRead;
 
-		if (cbRead) memcpy(pbBuff, LPBYTE(lpfs->lpszW.c_str()) + lpfs->cbCur, cbRead);
+		if (cbRead) memcpy(pbBuff, lpfs->lpszW.c_str() + lpfs->cbCur, cbRead);
 
 		lpfs->cbCur += cbRead;
 
@@ -302,7 +305,7 @@ namespace viewpane
 		SetEditBoxText();
 	}
 
-	void TextPane::SetBinary(_In_opt_count_(cb) LPBYTE lpb, const size_t cb)
+	void TextPane::SetBinary(_In_opt_count_(cb) const BYTE* lpb, const size_t cb)
 	{
 		if (!lpb || !cb)
 		{

@@ -75,7 +75,7 @@ namespace dialog ::editor
 			auto text = GetStringA(HEXED_ANSI);
 			SetStringA(HEXED_UNICODE, text);
 
-			lpb = LPBYTE(text.c_str());
+			lpb = reinterpret_cast<LPBYTE>(const_cast<char*>(text.c_str()));
 			cb = text.length() * sizeof(CHAR);
 
 			szEncodeStr = strings::Base64Encode(cb, lpb);
@@ -90,7 +90,7 @@ namespace dialog ::editor
 			auto text = GetStringW(HEXED_UNICODE);
 			SetStringW(HEXED_ANSI, text);
 
-			lpb = LPBYTE(text.c_str());
+			lpb = reinterpret_cast<LPBYTE>(const_cast<wchar_t*>(text.c_str()));
 			cb = text.length() * sizeof(WCHAR);
 
 			szEncodeStr = strings::Base64Encode(cb, lpb);
@@ -112,10 +112,10 @@ namespace dialog ::editor
 			lpb = bin.data();
 			cb = bin.size();
 
-			SetStringA(HEXED_ANSI, std::string(LPCSTR(lpb), cb));
+			SetStringA(HEXED_ANSI, std::string(reinterpret_cast<LPCSTR>(lpb), cb));
 			if (!(cb % 2)) // Set Unicode String
 			{
-				SetStringW(HEXED_UNICODE, std::wstring(LPWSTR(lpb), cb / sizeof(WCHAR)));
+				SetStringW(HEXED_UNICODE, std::wstring(reinterpret_cast<LPWSTR>(lpb), cb / sizeof(WCHAR)));
 			}
 			else
 			{
@@ -131,11 +131,11 @@ namespace dialog ::editor
 			auto bin = GetBinary(HEXED_HEX);
 			lpb = bin.data();
 			cb = bin.size();
-			SetStringA(HEXED_ANSI, std::string(LPCSTR(lpb), cb)); // ansi string
+			SetStringA(HEXED_ANSI, std::string(reinterpret_cast<LPCSTR>(lpb), cb)); // ansi string
 
 			if (!(cb % 2)) // Set Unicode String
 			{
-				SetStringW(HEXED_UNICODE, std::wstring(LPWSTR(lpb), cb / sizeof(WCHAR)));
+				SetStringW(HEXED_UNICODE, std::wstring(reinterpret_cast<LPWSTR>(lpb), cb / sizeof(WCHAR)));
 			}
 			else
 			{

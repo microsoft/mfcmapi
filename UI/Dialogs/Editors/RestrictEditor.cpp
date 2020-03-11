@@ -82,7 +82,7 @@ namespace dialog::editor
 			_In_ LPVOID lpAllocParent);
 
 		void OnEditAction1() override;
-		_Check_return_ LPSPropValue DetachModifiedSPropValue();
+		_Check_return_ LPSPropValue DetachModifiedSPropValue() noexcept;
 
 	private:
 		_Check_return_ ULONG HandleChange(UINT nID) override;
@@ -190,7 +190,7 @@ namespace dialog::editor
 		return paneID;
 	}
 
-	_Check_return_ LPSPropValue CResCombinedEditor::DetachModifiedSPropValue()
+	_Check_return_ LPSPropValue CResCombinedEditor::DetachModifiedSPropValue() noexcept
 	{
 		const auto lpRet = m_lpNewProp;
 		m_lpNewProp = nullptr;
@@ -358,7 +358,7 @@ namespace dialog::editor
 			_In_ LPVOID lpAllocParent);
 
 		void OnEditAction1() override;
-		_Check_return_ LPSRestriction DetachModifiedSRestriction();
+		_Check_return_ LPSRestriction DetachModifiedSRestriction() noexcept;
 
 	private:
 		_Check_return_ ULONG HandleChange(UINT nID) override;
@@ -409,7 +409,7 @@ namespace dialog::editor
 		return paneID;
 	}
 
-	_Check_return_ LPSRestriction CResSubResEditor::DetachModifiedSRestriction()
+	_Check_return_ LPSRestriction CResSubResEditor::DetachModifiedSRestriction() noexcept
 	{
 		const auto lpRet = m_lpNewRes;
 		m_lpNewRes = nullptr;
@@ -436,8 +436,8 @@ namespace dialog::editor
 	public:
 		CResAndOrEditor(_In_ CWnd* pParentWnd, _In_ const _SRestriction* lpRes, _In_ LPVOID lpAllocParent);
 
-		_Check_return_ LPSRestriction DetachModifiedSRestrictionArray();
-		_Check_return_ ULONG GetResCount() const;
+		_Check_return_ LPSRestriction DetachModifiedSRestrictionArray() noexcept;
+		_Check_return_ ULONG GetResCount() const noexcept;
 		_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ sortlistdata::sortListData* lpData) override;
 
 	private:
@@ -476,14 +476,14 @@ namespace dialog::editor
 		return bRet;
 	}
 
-	_Check_return_ LPSRestriction CResAndOrEditor::DetachModifiedSRestrictionArray()
+	_Check_return_ LPSRestriction CResAndOrEditor::DetachModifiedSRestrictionArray() noexcept
 	{
 		const auto lpRet = m_lpNewResArray;
 		m_lpNewResArray = nullptr;
 		return lpRet;
 	}
 
-	_Check_return_ ULONG CResAndOrEditor::GetResCount() const { return m_ulNewResCount; }
+	_Check_return_ ULONG CResAndOrEditor::GetResCount() const noexcept { return m_ulNewResCount; }
 
 	void CResAndOrEditor::InitListFromRestriction(ULONG ulListNum, _In_ const _SRestriction* lpRes) const
 	{
@@ -593,16 +593,16 @@ namespace dialog::editor
 	public:
 		CResCommentEditor(_In_ CWnd* pParentWnd, _In_ const _SRestriction* lpRes, _In_ LPVOID lpAllocParent);
 
-		_Check_return_ LPSRestriction DetachModifiedSRestriction();
-		_Check_return_ LPSPropValue DetachModifiedSPropValue();
-		_Check_return_ ULONG GetSPropValueCount() const;
+		_Check_return_ LPSRestriction DetachModifiedSRestriction() noexcept;
+		_Check_return_ LPSPropValue DetachModifiedSPropValue() noexcept;
+		_Check_return_ ULONG GetSPropValueCount() const noexcept;
 		_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ sortlistdata::sortListData* lpData) override;
 
 	private:
 		void OnEditAction1() override;
 		BOOL OnInitDialog() override;
 		void InitListFromPropArray(ULONG ulListNum, ULONG cProps, _In_count_(cProps) const _SPropValue* lpProps) const;
-		_Check_return_ const _SRestriction* GetSourceRes() const;
+		_Check_return_ const _SRestriction* GetSourceRes() const noexcept;
 		void OnOK() override;
 
 		LPVOID m_lpAllocParent;
@@ -652,28 +652,28 @@ namespace dialog::editor
 		return bRet;
 	}
 
-	_Check_return_ const _SRestriction* CResCommentEditor::GetSourceRes() const
+	_Check_return_ const _SRestriction* CResCommentEditor::GetSourceRes() const noexcept
 	{
 		if (m_lpNewCommentRes) return m_lpNewCommentRes;
 		if (m_lpSourceRes && m_lpSourceRes->res.resComment.lpRes) return m_lpSourceRes->res.resComment.lpRes;
 		return nullptr;
 	}
 
-	_Check_return_ LPSRestriction CResCommentEditor::DetachModifiedSRestriction()
+	_Check_return_ LPSRestriction CResCommentEditor::DetachModifiedSRestriction() noexcept
 	{
 		const auto lpRet = m_lpNewCommentRes;
 		m_lpNewCommentRes = nullptr;
 		return lpRet;
 	}
 
-	_Check_return_ LPSPropValue CResCommentEditor::DetachModifiedSPropValue()
+	_Check_return_ LPSPropValue CResCommentEditor::DetachModifiedSPropValue() noexcept
 	{
 		const auto lpRet = m_lpNewCommentProp;
 		m_lpNewCommentProp = nullptr;
 		return lpRet;
 	}
 
-	_Check_return_ ULONG CResCommentEditor::GetSPropValueCount() const { return m_ulNewCommentProp; }
+	_Check_return_ ULONG CResCommentEditor::GetSPropValueCount() const noexcept { return m_ulNewCommentProp; }
 
 	void CResCommentEditor::InitListFromPropArray(
 		ULONG ulListNum,
@@ -902,7 +902,7 @@ namespace dialog::editor
 		return bRet;
 	}
 
-	_Check_return_ const _SRestriction* CRestrictEditor::GetSourceRes() const
+	_Check_return_ const _SRestriction* CRestrictEditor::GetSourceRes() const noexcept
 	{
 		if (m_lpRes && !m_bModified) return m_lpRes;
 		return m_lpOutputRes;
@@ -914,7 +914,7 @@ namespace dialog::editor
 		CMyDialog::OnOK(); // don't need to call CEditor::OnOK
 	}
 
-	_Check_return_ LPSRestriction CRestrictEditor::DetachModifiedSRestriction()
+	_Check_return_ LPSRestriction CRestrictEditor::DetachModifiedSRestriction() noexcept
 	{
 		if (!m_bModified) return nullptr;
 		const auto lpRet = m_lpOutputRes;
@@ -1271,7 +1271,7 @@ namespace dialog::editor
 		return bRet;
 	}
 
-	_Check_return_ const _SRestriction* CCriteriaEditor::GetSourceRes() const
+	_Check_return_ const _SRestriction* CCriteriaEditor::GetSourceRes() const noexcept
 	{
 		if (m_lpNewRes) return m_lpNewRes;
 		return m_lpSourceRes;
@@ -1290,7 +1290,7 @@ namespace dialog::editor
 	}
 
 	// Whoever gets this MUST MAPIFreeBuffer
-	_Check_return_ LPSRestriction CCriteriaEditor::DetachModifiedSRestriction()
+	_Check_return_ LPSRestriction CCriteriaEditor::DetachModifiedSRestriction() noexcept
 	{
 		const auto lpRet = m_lpNewRes;
 		m_lpNewRes = nullptr;
@@ -1298,14 +1298,14 @@ namespace dialog::editor
 	}
 
 	// Whoever gets this MUST MAPIFreeBuffer
-	_Check_return_ LPENTRYLIST CCriteriaEditor::DetachModifiedEntryList()
+	_Check_return_ LPENTRYLIST CCriteriaEditor::DetachModifiedEntryList() noexcept
 	{
 		const auto lpRet = m_lpNewEntryList;
 		m_lpNewEntryList = nullptr;
 		return lpRet;
 	}
 
-	_Check_return_ ULONG CCriteriaEditor::GetSearchFlags() const { return m_ulNewSearchFlags; }
+	_Check_return_ ULONG CCriteriaEditor::GetSearchFlags() const noexcept { return m_ulNewSearchFlags; }
 
 	void CCriteriaEditor::InitListFromEntryList(ULONG ulListNum, _In_ const SBinaryArray* lpEntryList) const
 	{

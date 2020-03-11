@@ -225,7 +225,7 @@ namespace error
 	[&]() -> void { \
 		if (!(fnx)) \
 		{ \
-			(void) error::CheckWin32Error(true, __FILE__, __LINE__, #fnx); \
+			static_cast<void>(error::CheckWin32Error(true, __FILE__, __LINE__, #fnx)); \
 		} \
 	}()
 
@@ -241,7 +241,7 @@ namespace error
 	[&]() -> void { \
 		if (!(fnx)) \
 		{ \
-			(void) error::CheckWin32Error(false, __FILE__, __LINE__, #fnx); \
+			static_cast<void>(error::CheckWin32Error(false, __FILE__, __LINE__, #fnx)); \
 		} \
 	}()
 
@@ -252,7 +252,7 @@ namespace error
 		const auto __ret = (fnx); \
 		if (!__ret) \
 		{ \
-			(void) error::CheckWin32Error(true, __FILE__, __LINE__, #fnx); \
+			static_cast<void>(error::CheckWin32Error(true, __FILE__, __LINE__, #fnx)); \
 		} \
 		return __ret; \
 	}()
@@ -264,7 +264,7 @@ namespace error
 		const auto __ret = (fnx); \
 		if (!__ret) \
 		{ \
-			(void) error::CheckWin32Error(false, __FILE__, __LINE__, #fnx); \
+			static_cast<void>(error::CheckWin32Error(false, __FILE__, __LINE__, #fnx)); \
 		} \
 		return __ret; \
 	}()
@@ -275,7 +275,7 @@ namespace error
 	[&]() -> void { \
 		if (!(fnx)) \
 		{ \
-			(void) error::CheckWin32Error(false, __FILE__, __LINE__, #fnx); \
+			static_cast<void>(error::CheckWin32Error(false, __FILE__, __LINE__, #fnx)); \
 		} \
 	}()
 

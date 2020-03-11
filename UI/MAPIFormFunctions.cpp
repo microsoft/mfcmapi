@@ -137,11 +137,9 @@ namespace mapi::mapiui
 
 		if (lpspvaShow)
 		{
-			hRes = EC_MAPI(lpSourceFolder->GetMessageStatus(
-				lpspvaShow[EID].Value.bin.cb,
-				reinterpret_cast<LPENTRYID>(lpspvaShow[EID].Value.bin.lpb),
-				0,
-				&ulMessageStatus));
+			const auto bin = mapi::getBin(lpspvaShow[EID]);
+			hRes = EC_MAPI(
+				lpSourceFolder->GetMessageStatus(bin.cb, reinterpret_cast<LPENTRYID>(bin.lpb), 0, &ulMessageStatus));
 
 			auto lpMAPIFormViewer = new (std::nothrow) CMyMAPIFormViewer(
 				hwndParent, lpMDB, lpMAPISession, lpSourceFolder, lpMessage, lpContentsTableListCtrl, iItem);
@@ -249,11 +247,9 @@ namespace mapi::mapiui
 
 		if (lpspvaShow)
 		{
-			hRes = EC_MAPI(lpParentFolder->GetMessageStatus(
-				lpspvaShow[EID].Value.bin.cb,
-				reinterpret_cast<LPENTRYID>(lpspvaShow[EID].Value.bin.lpb),
-				0,
-				&ulMessageStatus));
+			const auto bin = mapi::getBin(lpspvaShow[EID]);
+			hRes = EC_MAPI(
+				lpParentFolder->GetMessageStatus(bin.cb, reinterpret_cast<LPENTRYID>(bin.lpb), 0, &ulMessageStatus));
 
 			if (SUCCEEDED(hRes))
 			{

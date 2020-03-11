@@ -6,6 +6,7 @@
 #include <core/smartview/block/blockStringW.h>
 #include <core/smartview/block/blockBytes.h>
 #include <core/smartview/block/blockT.h>
+#include <core/mapi/mapiFunctions.h>
 
 namespace smartview
 {
@@ -13,17 +14,17 @@ namespace smartview
 	{
 		std::shared_ptr<blockT<DWORD>> dwLowDateTime = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> dwHighDateTime = emptyT<DWORD>();
-		operator FILETIME() const { return FILETIME{*dwLowDateTime, *dwHighDateTime}; }
-		size_t getSize() const { return dwLowDateTime->getSize() + dwHighDateTime->getSize(); }
-		size_t getOffset() const { return dwHighDateTime->getOffset(); }
+		operator FILETIME() const noexcept { return FILETIME{*dwLowDateTime, *dwHighDateTime}; }
+		size_t getSize() const noexcept { return dwLowDateTime->getSize() + dwHighDateTime->getSize(); }
+		size_t getOffset() const noexcept { return dwHighDateTime->getOffset(); }
 	};
 
 	struct SBinaryBlock
 	{
 		std::shared_ptr<blockT<ULONG>> cb = emptyT<ULONG>();
 		std::shared_ptr<blockBytes> lpb = emptyBB();
-		size_t getSize() const { return cb->getSize() + lpb->getSize(); }
-		size_t getOffset() const { return cb->getOffset() ? cb->getOffset() : lpb->getOffset(); }
+		size_t getSize() const noexcept { return cb->getSize() + lpb->getSize(); }
+		size_t getOffset() const noexcept { return cb->getOffset() ? cb->getOffset() : lpb->getOffset(); }
 
 		SBinaryBlock(const std::shared_ptr<binaryParser>& parser);
 		SBinaryBlock() noexcept {};
@@ -39,16 +40,16 @@ namespace smartview
 	{
 		std::shared_ptr<blockT<DWORD>> cb = emptyT<DWORD>();
 		std::shared_ptr<blockStringA> str = emptySA();
-		size_t getSize() const { return cb->getSize() + str->getSize(); }
-		size_t getOffset() const { return cb->getOffset(); }
+		size_t getSize() const noexcept { return cb->getSize() + str->getSize(); }
+		size_t getOffset() const noexcept { return cb->getOffset(); }
 	};
 
 	struct CountedStringW
 	{
 		std::shared_ptr<blockT<DWORD>> cb = emptyT<DWORD>();
 		std::shared_ptr<blockStringW> str = emptySW();
-		size_t getSize() const { return cb->getSize() + str->getSize(); }
-		size_t getOffset() const { return cb->getOffset(); }
+		size_t getSize() const noexcept { return cb->getSize() + str->getSize(); }
+		size_t getOffset() const noexcept { return cb->getOffset(); }
 	};
 
 	struct StringArrayA
@@ -157,8 +158,7 @@ namespace smartview
 				offset = Value.lpszA.getOffset();
 				break;
 			case PT_BINARY:
-				prop.Value.bin.cb = *Value.bin.cb;
-				prop.Value.bin.lpb = const_cast<LPBYTE>(Value.bin.lpb->data());
+				mapi::setBin(prop) = {*Value.bin.cb, const_cast<LPBYTE>(Value.bin.lpb->data())};
 				size = Value.bin.getSize();
 				offset = Value.bin.getOffset();
 				break;

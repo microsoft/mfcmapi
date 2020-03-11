@@ -124,33 +124,9 @@ namespace controls
 		Refresh();
 	}
 
-	void CHierarchyTableTreeCtrl::FreeNodeData(const LPARAM lpData) const
+	void CHierarchyTableTreeCtrl::FreeNodeData(const LPARAM lpData) const noexcept
 	{
 		auto* lpNodeData = reinterpret_cast<sortlistdata::sortListData*>(lpData);
-
-		if (lpNodeData)
-		{
-			const auto node = lpNodeData->cast<sortlistdata::nodeData>();
-			if (node && node->m_lpAdviseSink)
-			{
-				// unadvise before releasing our sink
-				if (node->m_lpAdviseSink && node->m_lpHierarchyTable)
-				{
-					node->m_lpHierarchyTable->Unadvise(node->m_ulAdviseConnection);
-					node->m_lpAdviseSink->Release();
-					node->m_lpAdviseSink = nullptr;
-				}
-
-				output::DebugPrintEx(
-					output::dbgLevel::Hierarchy,
-					CLASS,
-					L"FreeNodeData",
-					L"Unadvising %p, ulAdviseConnection = 0x%08X\n",
-					node->m_lpAdviseSink,
-					static_cast<int>(node->m_ulAdviseConnection));
-			}
-		}
-
 		delete lpNodeData;
 	}
 
@@ -158,7 +134,7 @@ namespace controls
 	{
 		if (registry::hierRootNotifs || hItem != TVI_ROOT)
 		{
-			(void) GetHierarchyTable(hItem, nullptr, true);
+			static_cast<void>(GetHierarchyTable(hItem, nullptr, true));
 		}
 	}
 
@@ -167,22 +143,11 @@ namespace controls
 		if (!m_lpContainer || !m_hWnd) return;
 		LPSPropValue lpProps = nullptr;
 		LPSPropValue lpRootName = nullptr; // don't free
-		LPSBinary lpEIDBin = nullptr; // don't free
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		ULONG cVals = 0;
 
 		WC_H_GETPROPS_S(m_lpContainer->GetProps(LPSPropTagArray(&sptHTCols), fMapiUnicode, &cVals, &lpProps));
-
-		// Get the entry ID for the Root Container
-		if (!lpProps || PT_ERROR == PROP_TYPE(lpProps[htPR_ENTRYID].ulPropTag))
-		{
-			output::DebugPrint(
-				output::dbgLevel::Hierarchy,
-				L"Could not find EntryID for Root Container. This is benign. Assuming NULL.\n");
-		}
-		else
-			lpEIDBin = &lpProps[htPR_ENTRYID].Value.bin;
 
 		// Get the Display Name for the Root Container
 		if (!lpProps || PT_ERROR == PROP_TYPE(lpProps[htPR_DISPLAY_NAME_W].ulPropTag))
@@ -212,14 +177,11 @@ namespace controls
 			sortlistdata::nodeData::init(
 				lpData,
 				cVals,
-				lpProps, // Pass our lpProps to be archived
-				lpEIDBin,
-				nullptr,
-				true, // Always assume root nodes have children so we always paint an expanding icon
-				lpProps ? lpProps[htPR_CONTAINER_FLAGS].Value.ul : MAPI_E_NOT_FOUND);
+				lpProps // Pass our lpProps to be archived
+			);
 
-			(void) AddChildNode(
-				szName, TVI_ROOT, reinterpret_cast<LPARAM>(lpData), [&](auto _1) { return OnItemAdded(_1); });
+			static_cast<void>(AddChildNode(
+				szName, TVI_ROOT, reinterpret_cast<LPARAM>(lpData), [&](auto _1) { return OnItemAdded(_1); }));
 		}
 
 		// Node owns the lpProps memory now, so we don't free it
@@ -249,9 +211,9 @@ namespace controls
 		auto lpData = new (std::nothrow) sortlistdata::sortListData();
 		if (lpData)
 		{
-			sortlistdata::nodeData::init(lpData, lpsRow);
+			sortlistdata::nodeData::init(lpData, lpsRow->cValues, lpsRow->lpProps);
 
-			(void) AddChildNode(szName, hParent, reinterpret_cast<LPARAM>(lpData), callback);
+			static_cast<void>(AddChildNode(szName, hParent, reinterpret_cast<LPARAM>(lpData), callback));
 		}
 	}
 
@@ -261,47 +223,17 @@ namespace controls
 		if (lpData)
 		{
 			const auto node = lpData->cast<sortlistdata::nodeData>();
-			if (node->m_lpHierarchyTable && !node->m_lpAdviseSink &&
-				(registry::hierRootNotifs || GetRootItem() != hItem))
+			if (node && !node->hasSink() && (registry::hierRootNotifs || hItem != GetRootItem()))
 			{
-				output::DebugPrintEx(
-					output::dbgLevel::Notify,
-					CLASS,
-					L"GetHierarchyTable",
-					L"Advise sink for \"%ws\" = %p\n",
-					GetItemTextW(hItem).c_str(),
-					hItem);
-				auto lpAdviseSink = new mapi::adviseSink(m_hWnd, hItem);
-
-				if (lpAdviseSink)
+				if (node->advise(m_hWnd, hItem, m_lpMapiObjects->GetMDB()))
 				{
-					const auto hRes = WC_MAPI(node->m_lpHierarchyTable->Advise(
-						fnevTableModified, static_cast<IMAPIAdviseSink*>(lpAdviseSink), &node->m_ulAdviseConnection));
-					if (hRes == MAPI_E_NO_SUPPORT) // Some tables don't support this!
-					{
-						lpAdviseSink->Release();
-						lpAdviseSink = nullptr;
-						output::DebugPrint(output::dbgLevel::Notify, L"This table doesn't support notifications\n");
-					}
-					else if (hRes == S_OK)
-					{
-						const auto lpMDB = m_lpMapiObjects->GetMDB(); // Do not release
-						if (lpMDB)
-						{
-							lpAdviseSink->SetAdviseTarget(lpMDB);
-							mapi::ForceRop(lpMDB);
-						}
-					}
-
 					output::DebugPrintEx(
 						output::dbgLevel::Notify,
 						CLASS,
 						L"GetHierarchyTable",
-						L"Advise sink %p, ulAdviseConnection = 0x%08X\n",
-						lpAdviseSink,
-						static_cast<int>(node->m_ulAdviseConnection));
-
-					node->m_lpAdviseSink = lpAdviseSink;
+						L"Advise sink for \"%ws\" = %p\n",
+						GetItemTextW(hItem).c_str(),
+						hItem);
 				}
 			}
 		}
@@ -318,7 +250,7 @@ namespace controls
 		const auto node = lpData->cast<sortlistdata::nodeData>();
 		if (!node) return nullptr;
 
-		if (!node->m_lpHierarchyTable)
+		if (!node->hasTable())
 		{
 			if (lpMAPIContainer)
 			{
@@ -345,7 +277,7 @@ namespace controls
 					EC_MAPI_S(lpHierarchyTable->SetColumns(LPSPropTagArray(&sptHTCols), TBL_BATCH));
 				}
 
-				node->m_lpHierarchyTable = lpHierarchyTable;
+				node->setTable(lpHierarchyTable);
 				lpMAPIContainer->Release();
 			}
 		}
@@ -356,7 +288,7 @@ namespace controls
 			Advise(hItem, lpData);
 		}
 
-		return node->m_lpHierarchyTable;
+		return node->getTable();
 	}
 
 	// Add the first level contents of lpMAPIContainer under the Parent node
@@ -408,9 +340,10 @@ namespace controls
 			const auto node = lpData->cast<sortlistdata::nodeData>();
 			if (node)
 			{
-				if (node->m_cSubfolders >= 0)
+				auto cSubfolders = node->getSubfolders();
+				if (cSubfolders >= 0)
 				{
-					return node->m_cSubfolders > 0;
+					return cSubfolders > 0;
 				}
 
 				LPCTSTR szName = nullptr;
@@ -420,18 +353,11 @@ namespace controls
 					output::dbgLevel::Hierarchy,
 					CLASS,
 					L"HasChildren",
-					L"Using Hierarchy table %d %p %ws\n",
-					node->m_cSubfolders,
-					node->m_lpHierarchyTable,
+					L"Using Hierarchy table %d %ws\n",
+					cSubfolders,
 					strings::LPCTSTRToWstring(szName).c_str());
 				// Won't force the hierarchy table - just get it if we've already got it
-				auto lpHierarchyTable = node->m_lpHierarchyTable;
-				if (lpHierarchyTable)
-				{
-					auto ulRowCount = ULONG{};
-					const auto hRes = WC_MAPI(lpHierarchyTable->GetRowCount(NULL, &ulRowCount));
-					return !(hRes == S_OK && !ulRowCount);
-				}
+				return node->hasChildren();
 			}
 		}
 
@@ -448,7 +374,7 @@ namespace controls
 		auto lpMAPIContainer = GetContainer(hItem, modifyType::REQUEST_MODIFY);
 
 		// Make sure we've gotten the hierarchy table for this node
-		(void) GetHierarchyTable(hItem, lpMAPIContainer, registry::hierExpandNotifications);
+		static_cast<void>(GetHierarchyTable(hItem, lpMAPIContainer, registry::hierExpandNotifications));
 
 		UINT uiMsg = IDS_STATUSTEXTNOFOLDER;
 		std::wstring szParam1;
@@ -604,7 +530,7 @@ namespace controls
 		return reinterpret_cast<sortlistdata::sortListData*>(GetItemData(iItem));
 	}
 
-	_Check_return_ LPSBinary CHierarchyTableTreeCtrl::GetSelectedItemEID() const
+	_Check_return_ std::vector<BYTE> CHierarchyTableTreeCtrl::GetSelectedItemEID() const
 	{
 		// Find the highlighted item
 		const auto Item = GetSelectedItem();
@@ -618,12 +544,12 @@ namespace controls
 				const auto node = lpData->cast<sortlistdata::nodeData>();
 				if (node)
 				{
-					return node->m_lpEntryID;
+					return node->getEntryID();
 				}
 			}
 		}
 
-		return nullptr;
+		return {};
 	}
 
 	_Check_return_ LPMAPICONTAINER CHierarchyTableTreeCtrl::GetSelectedContainer(const modifyType bModify) const
@@ -668,8 +594,7 @@ namespace controls
 
 		auto ulFlags = modifyType::REQUEST_MODIFY == bModify ? MAPI_MODIFY : NULL;
 
-		auto lpCurBin = node->m_lpEntryID;
-		if (!lpCurBin) lpCurBin = &NullBin;
+		const auto curBin = node->getEntryID();
 
 		// Check the type of the root container to know whether the MDB or AddrBook object is valid
 		// This also allows NULL EIDs to return the root container itself.
@@ -691,8 +616,8 @@ namespace controls
 						lpAddrBook,
 						nullptr,
 						nullptr,
-						lpCurBin->cb,
-						reinterpret_cast<LPENTRYID>(lpCurBin->lpb),
+						static_cast<ULONG>(curBin.size()),
+						mapi::toEntryID(curBin),
 						nullptr,
 						ulFlags,
 						&ulObjType);
@@ -712,8 +637,8 @@ namespace controls
 						nullptr,
 						nullptr,
 						nullptr,
-						lpCurBin->cb,
-						reinterpret_cast<LPENTRYID>(lpCurBin->lpb),
+						static_cast<ULONG>(curBin.size()),
+						mapi::toEntryID(curBin),
 						nullptr,
 						ulFlags,
 						&ulObjType);
@@ -730,8 +655,8 @@ namespace controls
 				nullptr,
 				m_lpContainer,
 				nullptr,
-				lpCurBin->cb,
-				reinterpret_cast<LPENTRYID>(lpCurBin->lpb),
+				static_cast<ULONG>(curBin.size()),
+				mapi::toEntryID(curBin),
 				nullptr,
 				ulFlags,
 				&ulObjType);
@@ -766,7 +691,7 @@ namespace controls
 		return lpContainer;
 	}
 
-	void CHierarchyTableTreeCtrl::OnLastChildDeleted(const LPARAM lpData)
+	void CHierarchyTableTreeCtrl::OnLastChildDeleted(const LPARAM lpData) noexcept
 	{
 		const auto lpNodeData = reinterpret_cast<sortlistdata::sortListData*>(lpData);
 		if (lpNodeData)
@@ -774,7 +699,7 @@ namespace controls
 			const auto node = lpNodeData->cast<sortlistdata::nodeData>();
 			if (node)
 			{
-				node->m_cSubfolders = 0;
+				node->setSubfolders(false);
 			}
 		}
 	}
@@ -821,7 +746,7 @@ namespace controls
 					const auto node = lpData->cast<sortlistdata::nodeData>();
 					if (node)
 					{
-						node->m_cSubfolders = 1;
+						node->setSubfolders(true);
 					}
 				}
 			}
@@ -838,7 +763,7 @@ namespace controls
 		auto tab = reinterpret_cast<TABLE_NOTIFICATION*>(wParam);
 		const auto hParent = reinterpret_cast<HTREEITEM>(lParam);
 
-		const auto hItemToDelete = FindNode(&tab->propIndex.Value.bin, hParent);
+		const auto hItemToDelete = FindNode(mapi::getBin(tab->propIndex), hParent);
 
 		if (hItemToDelete)
 		{
@@ -863,7 +788,7 @@ namespace controls
 		auto tab = reinterpret_cast<TABLE_NOTIFICATION*>(wParam);
 		const auto hParent = reinterpret_cast<HTREEITEM>(lParam);
 
-		const auto hModifyItem = FindNode(&tab->propIndex.Value.bin, hParent);
+		const auto hModifyItem = FindNode(mapi::getBin(tab->propIndex), hParent);
 
 		if (hModifyItem)
 		{
@@ -896,13 +821,15 @@ namespace controls
 			const auto lpData = GetSortListData(hModifyItem);
 			if (lpData)
 			{
-				// We make this copy here and pass it in to the existing node
-				// The mem will be freed when the item data is cleaned up - do not free here
-				auto newRow = SRow{};
-				newRow.cValues = tab->row.cValues;
-				newRow.ulAdrEntryPad = tab->row.ulAdrEntryPad;
-				hRes = WC_MAPI(ScDupPropset(tab->row.cValues, tab->row.lpProps, MAPIAllocateBuffer, &newRow.lpProps));
-				sortlistdata::nodeData::init(lpData, &newRow);
+				auto node = lpData->cast<sortlistdata::nodeData>();
+				if (node)
+				{
+					// We make this copy here and pass it in to the existing node
+					// The mem will be freed when the item data is cleaned up - do not free here
+					LPSPropValue newProps = {};
+					hRes = WC_MAPI(ScDupPropset(tab->row.cValues, tab->row.lpProps, MAPIAllocateBuffer, &newProps));
+					node->init(tab->row.cValues, newProps);
+				}
 			}
 
 			if (hParent)
@@ -948,17 +875,9 @@ namespace controls
 			if (lpData)
 			{
 				const auto node = lpData->cast<sortlistdata::nodeData>();
-				if (node)
+				if (node && node->hasChildren())
 				{
-					if (node->m_lpHierarchyTable)
-					{
-						ULONG ulRowCount = NULL;
-						hRes = WC_MAPI(node->m_lpHierarchyTable->GetRowCount(NULL, &ulRowCount));
-						if (S_OK != hRes || ulRowCount)
-						{
-							hRes = EC_B(Expand(hRefreshItem, TVE_EXPAND));
-						}
-					}
+					hRes = EC_B(Expand(hRefreshItem, TVE_EXPAND));
 				}
 			}
 		}
@@ -968,9 +887,9 @@ namespace controls
 
 	// This function steps through the list control to find the entry with this instance key
 	// Return NULL if item not found
-	_Check_return_ HTREEITEM CHierarchyTableTreeCtrl::FindNode(_In_ LPSBinary lpInstance, HTREEITEM hParent) const
+	_Check_return_ HTREEITEM CHierarchyTableTreeCtrl::FindNode(_In_ const SBinary& instance, HTREEITEM hParent) const
 	{
-		if (!lpInstance || !hParent) return nullptr;
+		if (!hParent) return nullptr;
 
 		output::DebugPrintEx(
 			output::dbgLevel::Generic,
@@ -989,23 +908,16 @@ namespace controls
 			if (lpListData)
 			{
 				const auto node = lpListData->cast<sortlistdata::nodeData>();
-				if (node)
+				if (node && node->matchInstanceKey(&instance))
 				{
-					const auto lpCurInstance = node->m_lpInstanceKey;
-					if (lpCurInstance)
-					{
-						if (!memcmp(lpCurInstance->lpb, lpInstance->lpb, lpInstance->cb))
-						{
-							output::DebugPrintEx(
-								output::dbgLevel::Generic,
-								CLASS,
-								L"FindNode",
-								L"Matched at %p =\"%ws\"\n",
-								hCurrent,
-								GetItemTextW(hCurrent).c_str());
-							return hCurrent;
-						}
-					}
+					output::DebugPrintEx(
+						output::dbgLevel::Generic,
+						CLASS,
+						L"FindNode",
+						L"Matched at %p =\"%ws\"\n",
+						hCurrent,
+						GetItemTextW(hCurrent).c_str());
+					return hCurrent;
 				}
 			}
 
@@ -1016,8 +928,10 @@ namespace controls
 		return nullptr;
 	}
 
-	void
-	CHierarchyTableTreeCtrl::OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* /*pResult*/, _In_ HTREEITEM hItemCurHover)
+	void CHierarchyTableTreeCtrl::OnCustomDraw(
+		_In_ NMHDR* pNMHDR,
+		_In_ LRESULT* /*pResult*/,
+		_In_ HTREEITEM hItemCurHover) noexcept
 	{
 		const auto lvcd = reinterpret_cast<LPNMTVCUSTOMDRAW>(pNMHDR);
 		if (!lvcd) return;
@@ -1039,7 +953,7 @@ namespace controls
 				if (lpData)
 				{
 					const auto node = lpData->cast<sortlistdata::nodeData>();
-					if (node && node->m_lpAdviseSink)
+					if (node && node->hasSink())
 					{
 						auto rect = RECT{};
 						TreeView_GetItemRect(lvcd->nmcd.hdr.hwndFrom, hItem, &rect, 1);

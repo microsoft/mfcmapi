@@ -17,7 +17,7 @@ namespace dialog::editor
 			_In_ CWnd* pParentWnd);
 		~CPropertyTagEditor();
 
-		_Check_return_ ULONG GetPropertyTag() const;
+		_Check_return_ ULONG GetPropertyTag() const noexcept;
 
 	private:
 		_Check_return_ ULONG HandleChange(UINT nID) override;

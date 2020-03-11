@@ -79,7 +79,7 @@ namespace mapi
 		ULONG_PTR uiParam{};
 		LPSPropTagArray excludedTags{};
 		bool allocated{};
-		void clean() const
+		void clean() const noexcept
 		{
 			if (progress) progress->Release();
 			if (allocated) MAPIFreeBuffer(excludedTags);
@@ -211,12 +211,12 @@ namespace mapi
 	_Check_return_ HRESULT
 	DeleteToDeletedItems(_In_ LPMDB lpMDB, _In_ LPMAPIFOLDER lpSourceFolder, _In_ LPENTRYLIST lpEIDs, _In_ HWND hWnd);
 	_Check_return_ bool
-	FindPropInPropTagArray(_In_ LPSPropTagArray lpspTagArray, ULONG ulPropToFind, _Out_ ULONG* lpulRowFound);
+	FindPropInPropTagArray(_In_ LPSPropTagArray lpspTagArray, ULONG ulPropToFind, _Out_ ULONG* lpulRowFound) noexcept;
 	_Check_return_ LPMAPIFOLDER GetParentFolder(_In_ LPMAPIFOLDER lpChildFolder, _In_ LPMDB lpMDB);
 	_Check_return_ LPSBinary GetSpecialFolderEID(_In_ LPMDB lpMDB, ULONG ulFolderPropTag);
 	_Check_return_ HRESULT
 	IsAttachmentBlocked(_In_ LPMAPISESSION lpMAPISession, _In_z_ LPCWSTR pwszFileName, _Out_ bool* pfBlocked);
-	_Check_return_ bool IsDuplicateProp(_In_ LPSPropTagArray lpArray, ULONG ulPropTag);
+	_Check_return_ bool IsDuplicateProp(_In_ LPSPropTagArray lpArray, ULONG ulPropTag) noexcept;
 	_Check_return_ HRESULT ManuallyEmptyFolder(_In_ LPMAPIFOLDER lpFolder, BOOL bAssoc, BOOL bHardDelete);
 	_Check_return_ LPBYTE ByteVectorToMAPI(const std::vector<BYTE>& bin, LPVOID lpParent);
 	_Check_return_ HRESULT RemoveOneOff(_In_ LPMESSAGE lpMessage, bool bRemovePropDef);
@@ -258,8 +258,8 @@ namespace mapi
 
 	HRESULT
 	HrEmsmdbUIDFromStore(_In_ LPMAPISESSION pmsess, _In_ const MAPIUID* puidService, _Out_opt_ MAPIUID* pEmsmdbUID);
-	bool FExchangePrivateStore(_In_ LPMAPIUID lpmapiuid);
-	bool FExchangePublicStore(_In_ LPMAPIUID lpmapiuid);
+	bool FExchangePrivateStore(_In_ LPMAPIUID lpmapiuid) noexcept;
+	bool FExchangePublicStore(_In_ LPMAPIUID lpmapiuid) noexcept;
 
 	enum
 	{
@@ -314,14 +314,18 @@ namespace mapi
 	LPSBinary GetDefaultFolderEID(_In_ ULONG ulFolder, _In_ LPMDB lpMDB);
 
 	std::wstring GetTitle(LPMAPIPROP lpMAPIProp);
-	bool UnwrapContactEntryID(_In_ ULONG cbIn, _In_ LPBYTE lpbIn, _Out_ ULONG* lpcbOut, _Out_ LPBYTE* lppbOut);
+	bool UnwrapContactEntryID(_In_ ULONG cbIn, _In_ LPBYTE lpbIn, _Out_ ULONG* lpcbOut, _Out_ LPBYTE* lppbOut) noexcept;
 
 	LPSPropTagArray GetExcludedTags(_In_opt_ LPSPropTagArray lpTagArray, _In_opt_ LPMAPIPROP lpProp, bool bIsAB);
 
 	// Augemented version of HrGetOneProp which allows passing flags to underlying GetProps
 	// Useful for passing fMapiUnicode for unspecified string/stream types
 	HRESULT
-	HrGetOnePropEx(_In_ LPMAPIPROP lpMAPIProp, _In_ ULONG ulPropTag, _In_ ULONG ulFlags, _Out_ LPSPropValue* lppProp);
+	HrGetOnePropEx(
+		_In_ LPMAPIPROP lpMAPIProp,
+		_In_ ULONG ulPropTag,
+		_In_ ULONG ulFlags,
+		_Out_ LPSPropValue* lppProp) noexcept;
 
 	void ForceRop(_In_ LPMDB lpMDB);
 
@@ -343,4 +347,39 @@ namespace mapi
 		_In_ const _SPropValue* lpSPropValueSrc,
 		_In_ ALLOCATEMORE* lpfAllocMore,
 		_In_ LPVOID lpvObject);
+
+#pragma warning(push)
+#pragma warning(disable : 26482) // Warning C26482 Only index into arrays using constant expressions (bounds.2).
+	// Get a tag from a const array
+	inline ULONG getTag(const SPropTagArray* tag, ULONG i) noexcept { return tag->aulPropTag[i]; }
+	inline ULONG getTag(const SPropTagArray& tag, ULONG i) noexcept { return tag.aulPropTag[i]; }
+	// Get a reference to a tag usable for setting.
+	// Cannot be used with const arrays.
+	inline ULONG& setTag(SPropTagArray* tag, ULONG i) noexcept { return tag->aulPropTag[i]; }
+	inline ULONG& setTag(SPropTagArray& tag, ULONG i) noexcept { return tag.aulPropTag[i]; }
+#pragma warning(pop)
+
+#pragma warning(push)
+#pragma warning( \
+	disable : 26476) // Warning C26476 Expression/symbol '' uses a naked union '' with multiple type pointers: Use variant instead (type.7).
+	inline const SBinary& getBin(_In_ const _SPropValue* prop) noexcept
+	{
+		if (!prop) assert(false);
+
+		return prop->Value.bin;
+	}
+	inline SBinary& setBin(_In_ _SPropValue* prop) noexcept
+	{
+		if (!prop) assert(false);
+
+		return prop->Value.bin;
+	}
+	inline const SBinary& getBin(_In_ const _SPropValue& prop) noexcept { return prop.Value.bin; }
+	inline SBinary& setBin(_In_ _SPropValue& prop) noexcept { return prop.Value.bin; }
+#pragma warning(pop)
+
+	inline LPENTRYID toEntryID(const std::vector<BYTE>& eid) noexcept
+	{
+		return reinterpret_cast<LPENTRYID>(const_cast<BYTE*>(eid.data()));
+	}
 } // namespace mapi

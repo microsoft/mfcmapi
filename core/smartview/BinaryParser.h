@@ -16,12 +16,12 @@ namespace smartview
 		binaryParser(const binaryParser&) = delete;
 		binaryParser& operator=(const binaryParser&) = delete;
 
-		bool empty() const { return offset == size; }
-		void advance(size_t cb) { offset += cb; }
-		void rewind() { offset = 0; }
-		size_t getOffset() const { return offset; }
-		void setOffset(size_t _offset) { offset = _offset; }
-		const BYTE* getAddress() const { return bin.data() + offset; }
+		bool empty() const noexcept { return offset == size; }
+		void advance(size_t cb) noexcept { offset += cb; }
+		void rewind() noexcept { offset = 0; }
+		size_t getOffset() const noexcept { return offset; }
+		void setOffset(size_t _offset) noexcept { offset = _offset; }
+		const BYTE* getAddress() const noexcept { return bin.data() + offset; }
 		void setCap(size_t cap)
 		{
 			sizes.push(size);
@@ -47,8 +47,8 @@ namespace smartview
 		// If we're before the end of the buffer, return the count of remaining bytes
 		// If we're at or past the end of the buffer, return 0
 		// If we're before the beginning of the buffer, return 0
-		size_t getSize() const { return offset > size ? 0 : size - offset; }
-		bool checkSize(size_t cb) const { return cb <= getSize(); }
+		size_t getSize() const noexcept { return offset > size ? 0 : size - offset; }
+		bool checkSize(size_t cb) const noexcept { return cb <= getSize(); }
 
 	private:
 		std::vector<BYTE> bin;

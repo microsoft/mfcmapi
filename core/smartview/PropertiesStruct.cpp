@@ -110,7 +110,7 @@ namespace smartview
 			PROP_TAG(*PropType, *PropID), PropType->getSize() + PropID->getSize(), PropType->getOffset());
 		dwAlignPad = 0;
 
-		if (doNickname) (void) parser->advance(sizeof DWORD); // reserved
+		if (doNickname) static_cast<void>(parser->advance(sizeof DWORD)); // reserved
 
 		switch (*PropType)
 		{
@@ -165,7 +165,7 @@ namespace smartview
 			{
 				if (doNickname)
 				{
-					(void) parser->advance(sizeof LARGE_INTEGER); // union
+					static_cast<void>(parser->advance(sizeof LARGE_INTEGER)); // union
 					Value.lpszA.cb = blockT<DWORD>::parse(parser);
 				}
 				else
@@ -180,7 +180,7 @@ namespace smartview
 		case PT_BINARY:
 			if (doNickname)
 			{
-				(void) parser->advance(sizeof LARGE_INTEGER); // union
+				static_cast<void>(parser->advance(sizeof LARGE_INTEGER)); // union
 			}
 
 			if (doRuleProcessing || doNickname)
@@ -205,7 +205,7 @@ namespace smartview
 			{
 				if (doNickname)
 				{
-					(void) parser->advance(sizeof LARGE_INTEGER); // union
+					static_cast<void>(parser->advance(sizeof LARGE_INTEGER)); // union
 					Value.lpszW.cb = blockT<DWORD>::parse(parser);
 				}
 				else
@@ -217,13 +217,13 @@ namespace smartview
 			}
 			break;
 		case PT_CLSID:
-			if (doNickname) (void) parser->advance(sizeof LARGE_INTEGER); // union
+			if (doNickname) static_cast<void>(parser->advance(sizeof LARGE_INTEGER)); // union
 			Value.lpguid = blockT<GUID>::parse(parser);
 			break;
 		case PT_MV_STRING8:
 			if (doNickname)
 			{
-				(void) parser->advance(sizeof LARGE_INTEGER); // union
+				static_cast<void>(parser->advance(sizeof LARGE_INTEGER)); // union
 				Value.MVszA.cValues = blockT<DWORD>::parse(parser);
 			}
 			else
@@ -244,7 +244,7 @@ namespace smartview
 		case PT_MV_UNICODE:
 			if (doNickname)
 			{
-				(void) parser->advance(sizeof LARGE_INTEGER); // union
+				static_cast<void>(parser->advance(sizeof LARGE_INTEGER)); // union
 				Value.MVszW.cValues = blockT<DWORD>::parse(parser);
 			}
 			else
@@ -264,7 +264,7 @@ namespace smartview
 		case PT_MV_BINARY:
 			if (doNickname)
 			{
-				(void) parser->advance(sizeof LARGE_INTEGER); // union
+				static_cast<void>(parser->advance(sizeof LARGE_INTEGER)); // union
 				Value.MVbin.cValues = blockT<DWORD>::parse(parser);
 			}
 			else

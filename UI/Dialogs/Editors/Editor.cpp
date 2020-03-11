@@ -141,7 +141,7 @@ namespace dialog::editor
 				auto pane = std::dynamic_pointer_cast<viewpane::ListPane>(GetPane(m_listID));
 				if (pane)
 				{
-					(void) pane->HandleChange(IDD_LISTEDIT);
+					static_cast<void>(pane->HandleChange(IDD_LISTEDIT));
 				}
 
 				return NULL;
@@ -154,7 +154,7 @@ namespace dialog::editor
 			const auto idFrom = LOWORD(wParam);
 			if (EN_CHANGE == nCode || CBN_SELCHANGE == nCode || CBN_EDITCHANGE == nCode)
 			{
-				(void) HandleChange(idFrom);
+				static_cast<void>(HandleChange(idFrom));
 			}
 			else if (BN_CLICKED == nCode)
 			{
@@ -173,7 +173,7 @@ namespace dialog::editor
 					OnRecalcLayout();
 					return NULL;
 				default:
-					(void) HandleChange(idFrom);
+					static_cast<void>(HandleChange(idFrom));
 					break;
 				}
 			}
@@ -453,7 +453,7 @@ namespace dialog::editor
 		}
 
 		// tear down from our width computations
-		(void) SelectObject(hdc, hfontOld);
+		static_cast<void>(SelectObject(hdc, hfontOld));
 		::ReleaseDC(m_hWnd, hdc);
 
 		m_iButtonWidth += m_iMargin;
@@ -557,7 +557,7 @@ namespace dialog::editor
 			{
 				auto szLine = std::basic_string<TCHAR>(len + 1, '\0');
 
-				(void) lpPrompt->GetLine(i, const_cast<TCHAR*>(szLine.c_str()), len);
+				static_cast<void>(lpPrompt->GetLine(i, const_cast<TCHAR*>(szLine.c_str()), len));
 
 				const int iWidth = LOWORD(::GetTabbedTextExtent(hdc, szLine.c_str(), len, 0, nullptr));
 				cx = max(cx, iWidth);
@@ -571,7 +571,7 @@ namespace dialog::editor
 		return cx;
 	}
 
-	int ComputeCaptionWidth(HDC hdc, const std::wstring& szTitle, int iMargin)
+	int ComputeCaptionWidth(HDC hdc, const std::wstring& szTitle, int iMargin) noexcept
 	{
 		const auto sizeTitle = ui::GetTextExtentPoint32(hdc, szTitle);
 		auto iCaptionWidth = sizeTitle.cx + iMargin; // Allow for some whitespace between the caption and buttons
@@ -633,7 +633,7 @@ namespace dialog::editor
 		// Check that we're wide enough to handle our caption
 		cx = max(cx, ComputeCaptionWidth(hdc, m_szTitle, m_iMargin));
 		output::DebugPrint(output::dbgLevel::Draw, L"CEditor::ComputeWorkArea caption->%d \n", cx);
-		(void) SelectObject(hdc, hfontOld);
+		static_cast<void>(SelectObject(hdc, hfontOld));
 		::ReleaseDC(m_hWnd, hdc);
 		// Done figuring a good width (cx)
 
@@ -712,11 +712,11 @@ namespace dialog::editor
 
 		auto rc = RECT{};
 		::GetClientRect(m_hWnd, &rc);
-		(void) ::PostMessage(
+		static_cast<void>(::PostMessage(
 			m_hWnd,
 			WM_SIZE,
 			static_cast<WPARAM>(SIZE_RESTORED),
-			static_cast<LPARAM>(MAKELPARAM(rc.right - rc.left, rc.bottom - rc.top)));
+			static_cast<LPARAM>(MAKELPARAM(rc.right - rc.left, rc.bottom - rc.top))));
 	}
 
 	// Artificially expand our gripper region to make it easier to expand dialogs

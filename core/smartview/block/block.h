@@ -7,14 +7,14 @@ namespace smartview
 	{
 	public:
 		block() = default;
-		explicit block(std::wstring _text) : text(std::move(_text)) {}
+		explicit block(std::wstring _text) noexcept : text(std::move(_text)) {}
 		block(const block&) = delete;
 		block& operator=(const block&) = delete;
 
 		virtual bool isSet() const noexcept { return true; }
-		const std::wstring& getText() const { return text; }
-		const std::vector<std::shared_ptr<block>>& getChildren() const { return children; }
-		bool isHeader() const { return cb == 0 && offset == 0; }
+		const std::wstring& getText() const noexcept { return text; }
+		const std::vector<std::shared_ptr<block>>& getChildren() const noexcept { return children; }
+		bool isHeader() const noexcept { return cb == 0 && offset == 0; }
 
 		virtual std::wstring toString() const
 		{
@@ -30,11 +30,11 @@ namespace smartview
 			return strings::join(items, strings::emptystring);
 		}
 
-		size_t getSize() const { return cb; }
-		void setSize(size_t _size) { cb = _size; }
-		size_t getOffset() const { return offset; }
-		void setOffset(size_t _offset) { offset = _offset; }
-		ULONG getSource() const { return source; }
+		size_t getSize() const noexcept { return cb; }
+		void setSize(size_t _size) noexcept { cb = _size; }
+		size_t getOffset() const noexcept { return offset; }
+		void setOffset(size_t _offset) noexcept { offset = _offset; }
+		ULONG getSource() const noexcept { return source; }
 		void setSource(ULONG _source)
 		{
 			source = _source;
@@ -105,7 +105,7 @@ namespace smartview
 			children.push_back(child);
 		}
 
-		bool hasData() const { return !text.empty() || !children.empty(); }
+		bool hasData() const noexcept { return !text.empty() || !children.empty(); }
 
 	private:
 		size_t offset{};

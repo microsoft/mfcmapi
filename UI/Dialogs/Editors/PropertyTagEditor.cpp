@@ -9,6 +9,7 @@
 #include <core/utility/output.h>
 #include <core/interpret/proptype.h>
 #include <core/interpret/proptags.h>
+#include <core/mapi/mapiFunctions.h>
 
 namespace dialog::editor
 {
@@ -86,7 +87,7 @@ namespace dialog::editor
 		if (m_lpMAPIProp) m_lpMAPIProp->Release();
 	}
 
-	_Check_return_ ULONG CPropertyTagEditor::GetPropertyTag() const { return m_ulPropTag; }
+	_Check_return_ ULONG CPropertyTagEditor::GetPropertyTag() const noexcept { return m_ulPropTag; }
 
 	// Select a property tag
 	void CPropertyTagEditor::OnEditAction1()
@@ -114,7 +115,7 @@ namespace dialog::editor
 	{
 		if (!lpszDispIDName) return nullptr;
 
-		const auto entry = find_if(begin(NameIDArray), end(NameIDArray), [&](NAMEID_ARRAY_ENTRY& nameID) {
+		const auto entry = find_if(begin(NameIDArray), end(NameIDArray), [&](NAMEID_ARRAY_ENTRY& nameID) noexcept {
 			if (0 == wcscmp(nameID.lpszName, lpszDispIDName))
 			{
 				// PSUNKNOWN is used as a placeholder in NameIDArray - don't return matching entries
@@ -195,7 +196,7 @@ namespace dialog::editor
 			const auto lpNamedPropTags = cache::GetIDsFromNames(m_lpMAPIProp, {NamedID}, bCreate ? MAPI_CREATE : 0);
 			if (lpNamedPropTags && lpNamedPropTags->cValues == 1)
 			{
-				m_ulPropTag = CHANGE_PROP_TYPE(lpNamedPropTags->aulPropTag[0], ulPropType);
+				m_ulPropTag = CHANGE_PROP_TYPE(mapi::getTag(lpNamedPropTags, 0), ulPropType);
 			}
 
 			MAPIFreeBuffer(lpNamedPropTags);

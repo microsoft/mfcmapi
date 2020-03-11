@@ -33,10 +33,8 @@ namespace dialog::editor
 		// We got a MAPI prop object and no input value, go look one up
 		if (lpMAPIProp && !lpsPropValue)
 		{
-			auto sTag = SPropTagArray{};
-			sTag.cValues = 1;
-			sTag.aulPropTag[0] =
-				PROP_TYPE(ulPropTag) == PT_ERROR ? CHANGE_PROP_TYPE(ulPropTag, PT_UNSPECIFIED) : ulPropTag;
+			auto sTag = SPropTagArray{
+				1, PROP_TYPE(ulPropTag) == PT_ERROR ? CHANGE_PROP_TYPE(ulPropTag, PT_UNSPECIFIED) : ulPropTag};
 			ULONG ulValues = NULL;
 
 			hRes = WC_MAPI(lpMAPIProp->GetProps(&sTag, NULL, &ulValues, &sourceProp));
@@ -222,7 +220,7 @@ namespace dialog::editor
 				{
 					cbStr = lpszA.length() * sizeof(CHAR);
 
-					lpPane->SetBinary(LPBYTE(lpszA.c_str()), cbStr);
+					lpPane->SetBinary(reinterpret_cast<const BYTE*>(lpszA.c_str()), cbStr);
 					lpPane->SetCount(cbStr);
 				}
 
@@ -244,7 +242,7 @@ namespace dialog::editor
 				{
 					cbStr = lpszW.length() * sizeof(WCHAR);
 
-					lpPane->SetBinary(LPBYTE(lpszW.c_str()), cbStr);
+					lpPane->SetBinary(reinterpret_cast<const BYTE*>(lpszW.c_str()), cbStr);
 					lpPane->SetCount(cbStr);
 				}
 
@@ -335,19 +333,20 @@ namespace dialog::editor
 
 			if (m_lpsInputValue)
 			{
+				const auto bin = mapi::getBin(m_lpsInputValue);
 				if (lpPane)
 				{
-					lpPane->SetCount(m_lpsInputValue->Value.bin.cb);
-					if (m_lpsInputValue->Value.bin.cb != 0)
+					lpPane->SetCount(bin.cb);
+					if (bin.cb != 0)
 					{
-						lpPane->SetStringW(strings::BinToHexString(&m_lpsInputValue->Value.bin, false));
+						lpPane->SetStringW(strings::BinToHexString(&bin, false));
 					}
 
-					SetStringA(1, std::string(LPCSTR(m_lpsInputValue->Value.bin.lpb), m_lpsInputValue->Value.bin.cb));
+					SetStringA(1, std::string(reinterpret_cast<LPCSTR>(bin.lpb), bin.cb));
 				}
 
 				lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(GetPane(1));
-				if (lpPane) lpPane->SetCount(m_lpsInputValue->Value.bin.cb);
+				if (lpPane) lpPane->SetCount(bin.cb);
 			}
 
 			if (smartViewPane)
@@ -356,8 +355,8 @@ namespace dialog::editor
 					m_lpsInputValue, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, m_bMVRow));
 
 				smartViewPane->Parse(std::vector<BYTE>(
-					m_lpsInputValue ? m_lpsInputValue->Value.bin.lpb : nullptr,
-					m_lpsInputValue ? m_lpsInputValue->Value.bin.lpb + m_lpsInputValue->Value.bin.cb : nullptr));
+					m_lpsInputValue ? mapi::getBin(m_lpsInputValue).lpb : nullptr,
+					m_lpsInputValue ? mapi::getBin(m_lpsInputValue).lpb + mapi::getBin(m_lpsInputValue).cb : nullptr));
 
 				smartViewPane->OnItemSelected = [&](auto _1) { return HighlightHex(0, _1); };
 			}
@@ -527,8 +526,8 @@ namespace dialog::editor
 			case PT_BINARY:
 				// remember we already read szTmpString and ulStrLen and found ulStrLen was even
 				bin = strings::HexStringToBin(GetStringW(0));
-				m_lpsOutputValue->Value.bin.lpb = mapi::ByteVectorToMAPI(bin, m_lpAllocParent);
-				m_lpsOutputValue->Value.bin.cb = static_cast<ULONG>(bin.size());
+				mapi::setBin(m_lpsOutputValue) = {static_cast<ULONG>(bin.size()),
+												  mapi::ByteVectorToMAPI(bin, m_lpAllocParent)};
 				break;
 			default:
 				// We shouldn't ever get here unless some new prop type shows up
@@ -573,7 +572,7 @@ namespace dialog::editor
 	}
 
 	// Callers beware: Detatches and returns the modified prop value - this must be MAPIFreeBuffered!
-	_Check_return_ LPSPropValue CPropertyEditor::DetachModifiedSPropValue()
+	_Check_return_ LPSPropValue CPropertyEditor::DetachModifiedSPropValue() noexcept
 	{
 		const auto m_lpRet = m_lpsOutputValue;
 		m_lpsOutputValue = nullptr;
@@ -695,7 +694,8 @@ namespace dialog::editor
 			{
 				ClearHighlight(0);
 				bin = GetBinary(0);
-				if (paneID == 0) SetStringA(1, std::string(LPCSTR(bin.data()), bin.size())); // ansi string
+				if (paneID == 0)
+					SetStringA(1, std::string(reinterpret_cast<LPCSTR>(bin.data()), bin.size())); // ansi string
 			}
 			else if (paneID == 1)
 			{
@@ -705,14 +705,13 @@ namespace dialog::editor
 				SetBinary(0, bin.data(), static_cast<ULONG>(bin.size()));
 			}
 
-			sProp.Value.bin.lpb = bin.data();
-			sProp.Value.bin.cb = static_cast<ULONG>(bin.size());
+			mapi::setBin(sProp) = {static_cast<ULONG>(bin.size()), bin.data()};
 
 			lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(GetPane(0));
-			if (lpPane) lpPane->SetCount(sProp.Value.bin.cb);
+			if (lpPane) lpPane->SetCount(bin.size());
 
 			lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(GetPane(1));
-			if (lpPane) lpPane->SetCount(sProp.Value.bin.cb);
+			if (lpPane) lpPane->SetCount(bin.size());
 
 			auto smartViewPane = std::dynamic_pointer_cast<viewpane::SmartViewPane>(GetPane(2));
 			if (smartViewPane)
@@ -735,7 +734,7 @@ namespace dialog::editor
 
 					// Even if we don't have a string, still make the call to SetBinary
 					// This will blank out the binary control when lpszA is NULL
-					lpPane->SetBinary(LPBYTE(lpszA.c_str()), cbStr);
+					lpPane->SetBinary(reinterpret_cast<const BYTE*>(lpszA.c_str()), cbStr);
 					lpPane->SetCount(cbStr);
 				}
 
@@ -746,7 +745,7 @@ namespace dialog::editor
 			{
 				bin = GetBinary(1);
 
-				SetStringA(0, std::string(LPCSTR(bin.data()), bin.size()));
+				SetStringA(0, std::string(reinterpret_cast<LPCSTR>(bin.data()), bin.size()));
 
 				lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(GetPane(0));
 				if (lpPane) lpPane->SetCount(bin.size());
@@ -768,7 +767,7 @@ namespace dialog::editor
 
 					// Even if we don't have a string, still make the call to SetBinary
 					// This will blank out the binary control when lpszW is NULL
-					lpPane->SetBinary(LPBYTE(lpszW.c_str()), cbStr);
+					lpPane->SetBinary(reinterpret_cast<const BYTE*>(lpszW.c_str()), cbStr);
 					lpPane->SetCount(cbStr);
 				}
 
@@ -781,7 +780,7 @@ namespace dialog::editor
 				bin = GetBinary(1);
 				if (!(bin.size() % sizeof(WCHAR)))
 				{
-					SetStringW(0, std::wstring(LPCWSTR(bin.data()), bin.size() / sizeof(WCHAR)));
+					SetStringW(0, std::wstring(reinterpret_cast<LPCWSTR>(bin.data()), bin.size() / sizeof(WCHAR)));
 					if (lpPane) lpPane->SetCount(bin.size() / sizeof(WCHAR));
 				}
 				else

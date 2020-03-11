@@ -123,9 +123,12 @@ namespace controls::sortlistctrl
 		ui::DisplayContextMenu(m_nIDContextMenu, IDR_MENU_TABLE, m_lpHostDlg->m_hWnd, pos.x, pos.y);
 	}
 
-	_Check_return_ ULONG CContentsTableListCtrl::GetContainerType() const { return m_ulContainerType; }
+	_Check_return_ ULONG CContentsTableListCtrl::GetContainerType() const noexcept { return m_ulContainerType; }
 
-	_Check_return_ bool CContentsTableListCtrl::IsContentsTableSet() const { return m_lpContentsTable != nullptr; }
+	_Check_return_ bool CContentsTableListCtrl::IsContentsTableSet() const noexcept
+	{
+		return m_lpContentsTable != nullptr;
+	}
 
 	void CContentsTableListCtrl::SetContentsTable(
 		_In_opt_ LPMAPITABLE lpContentsTable,
@@ -187,7 +190,7 @@ namespace controls::sortlistctrl
 			szFlags = flags::InterpretFlags(flagTableType, ulTableType);
 			MyData.AddPane(viewpane::TextPane::CreateMultiLinePane(3, IDS_ULTABLETYPE, szFlags, true));
 
-			(void) MyData.DisplayDialog();
+			static_cast<void>(MyData.DisplayDialog());
 		}
 	}
 
@@ -200,7 +203,7 @@ namespace controls::sortlistctrl
 		m_ulDisplayNameColumn = NODISPLAYNAME;
 		for (ULONG i = 0; i < lpTags->cValues; i++)
 		{
-			if (PROP_ID(lpTags->aulPropTag[i]) == PROP_ID(PR_DISPLAY_NAME))
+			if (PROP_ID(mapi::getTag(lpTags, i)) == PROP_ID(PR_DISPLAY_NAME))
 			{
 				m_ulDisplayNameColumn = i;
 				break;
@@ -212,11 +215,11 @@ namespace controls::sortlistctrl
 		{
 			for (ULONG i = 0; i < lpTags->cValues; i++)
 			{
-				if (PROP_ID(lpTags->aulPropTag[i]) == PROP_ID(PR_SUBJECT) ||
-					PROP_ID(lpTags->aulPropTag[i]) == PROP_ID(PR_RULE_NAME) ||
-					PROP_ID(lpTags->aulPropTag[i]) == PROP_ID(PR_MEMBER_NAME) ||
-					PROP_ID(lpTags->aulPropTag[i]) == PROP_ID(PR_ATTACH_LONG_FILENAME) ||
-					PROP_ID(lpTags->aulPropTag[i]) == PROP_ID(PR_ATTACH_FILENAME))
+				if (PROP_ID(mapi::getTag(lpTags, i)) == PROP_ID(PR_SUBJECT) ||
+					PROP_ID(mapi::getTag(lpTags, i)) == PROP_ID(PR_RULE_NAME) ||
+					PROP_ID(mapi::getTag(lpTags, i)) == PROP_ID(PR_MEMBER_NAME) ||
+					PROP_ID(mapi::getTag(lpTags, i)) == PROP_ID(PR_ATTACH_LONG_FILENAME) ||
+					PROP_ID(mapi::getTag(lpTags, i)) == PROP_ID(PR_ATTACH_FILENAME))
 				{
 					m_ulDisplayNameColumn = i;
 					break;
@@ -403,16 +406,16 @@ namespace controls::sortlistctrl
 				ULONG ulCurTagArrayRow = 0;
 				if (mapi::FindPropInPropTagArray(
 						lpCurColTagArray,
-						m_sptDefaultDisplayColumnTags->aulPropTag[displayCol.ulMatchingTableColumn],
+						mapi::getTag(m_sptDefaultDisplayColumnTags, displayCol.ulMatchingTableColumn),
 						&ulCurTagArrayRow))
 				{
 					AddColumn(
 						displayCol.uidName,
 						ulCurHeaderCol,
 						ulCurTagArrayRow,
-						lpCurColTagArray->aulPropTag[ulCurTagArrayRow]);
+						mapi::getTag(lpCurColTagArray, ulCurTagArrayRow));
 					// Strike out the value in the tag array so we can ignore it later!
-					lpCurColTagArray->aulPropTag[ulCurTagArrayRow] = NULL;
+					mapi::setTag(lpCurColTagArray, ulCurTagArrayRow) = NULL;
 
 					ulCurHeaderCol++;
 				}
@@ -423,9 +426,9 @@ namespace controls::sortlistctrl
 		// Now, walk through the current tag table and add each unstruck column to our list
 		for (ULONG ulCurTableCol = 0; ulCurTableCol < lpCurColTagArray->cValues; ulCurTableCol++)
 		{
-			if (lpCurColTagArray->aulPropTag[ulCurTableCol] != NULL)
+			if (mapi::getTag(lpCurColTagArray, ulCurTableCol) != NULL)
 			{
-				AddColumn(NULL, ulCurHeaderCol, ulCurTableCol, lpCurColTagArray->aulPropTag[ulCurTableCol]);
+				AddColumn(NULL, ulCurHeaderCol, ulCurTableCol, mapi::getTag(lpCurColTagArray, ulCurTableCol));
 				ulCurHeaderCol++;
 			}
 		}
@@ -444,17 +447,20 @@ namespace controls::sortlistctrl
 		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"AddColumns", L"Done adding columns\n");
 	}
 
-	void CContentsTableListCtrl::SetRestriction(_In_opt_ const _SRestriction* lpRes)
+	void CContentsTableListCtrl::SetRestriction(_In_opt_ const _SRestriction* lpRes) noexcept
 	{
 		MAPIFreeBuffer(const_cast<LPSRestriction>(m_lpRes));
 		m_lpRes = lpRes;
 	}
 
-	_Check_return_ const _SRestriction* CContentsTableListCtrl::GetRestriction() const { return m_lpRes; }
+	_Check_return_ const _SRestriction* CContentsTableListCtrl::GetRestriction() const noexcept { return m_lpRes; }
 
-	_Check_return_ restrictionType CContentsTableListCtrl::GetRestrictionType() const { return m_RestrictionType; }
+	_Check_return_ restrictionType CContentsTableListCtrl::GetRestrictionType() const noexcept
+	{
+		return m_RestrictionType;
+	}
 
-	void CContentsTableListCtrl::SetRestrictionType(restrictionType RestrictionType)
+	void CContentsTableListCtrl::SetRestrictionType(restrictionType RestrictionType) noexcept
 	{
 		m_RestrictionType = RestrictionType;
 	}
@@ -507,7 +513,7 @@ namespace controls::sortlistctrl
 		LPSRowSet pRows = nullptr;
 		ULONG iCurListBoxRow = 0;
 
-		(void) ::SendMessage(hWndHost, WM_MFCMAPI_CLEARSINGLEMAPIPROPLIST, NULL, NULL);
+		static_cast<void>(::SendMessage(hWndHost, WM_MFCMAPI_CLEARSINGLEMAPIPROPLIST, NULL, NULL));
 		auto szCount = std::to_wstring(lpListCtrl->GetItemCount());
 		dialog::CBaseDialog::UpdateStatus(
 			hWndHost, statusPane::data1, strings::formatmessage(IDS_STATUSTEXTNUMITEMS, szCount.c_str()));
@@ -641,9 +647,9 @@ namespace controls::sortlistctrl
 		lpListCtrl->ClearLoading();
 	}
 
-	_Check_return_ bool CContentsTableListCtrl::IsLoading() const { return m_bInLoadOp; }
+	_Check_return_ bool CContentsTableListCtrl::IsLoading() const noexcept { return m_bInLoadOp; }
 
-	void CContentsTableListCtrl::ClearLoading() { m_bInLoadOp = false; }
+	void CContentsTableListCtrl::ClearLoading() noexcept { m_bInLoadOp = false; }
 
 	void CContentsTableListCtrl::LoadContentsTableIntoView()
 	{
@@ -784,7 +790,7 @@ namespace controls::sortlistctrl
 		}
 	}
 
-	ULONG GetDepth(_In_ LPSRow lpsRowData)
+	ULONG GetDepth(_In_ LPSRow lpsRowData) noexcept
 	{
 		if (!lpsRowData) return 0;
 
@@ -811,7 +817,7 @@ namespace controls::sortlistctrl
 		{MAPI_FORMINFO, sortIcon::mapiFormInfo},
 	};
 
-	sortIcon GetImage(_In_ LPSRow lpsRowData)
+	sortIcon GetImage(_In_ LPSRow lpsRowData) noexcept
 	{
 		if (!lpsRowData) return sortIcon::default;
 
@@ -1248,7 +1254,7 @@ namespace controls::sortlistctrl
 		}
 	}
 
-	_Check_return_ bool CContentsTableListCtrl::IsAdviseSet() const { return m_lpAdviseSink != nullptr; }
+	_Check_return_ bool CContentsTableListCtrl::IsAdviseSet() const noexcept { return m_lpAdviseSink != nullptr; }
 
 	void CContentsTableListCtrl::NotificationOn()
 	{
@@ -1492,7 +1498,7 @@ namespace controls::sortlistctrl
 		}
 		else
 		{
-			iNewRow = FindRow(&tab->propPrior.Value.bin) + 1;
+			iNewRow = FindRow(mapi::getBin(tab->propPrior)) + 1;
 		}
 
 		// We make this copy here and pass it in to AddItemToListBox, where it is grabbed by sortListData::InitializeContents to be part of the item data
@@ -1517,7 +1523,7 @@ namespace controls::sortlistctrl
 
 		if (!tab) return MAPI_E_INVALID_PARAMETER;
 
-		const auto iItem = FindRow(&tab->propIndex.Value.bin);
+		const auto iItem = FindRow(mapi::getBin(tab->propIndex));
 
 		output::DebugPrintEx(
 			output::dbgLevel::Generic, CLASS, L"msgOnDeleteItem", L"Received message to delete item 0x%d\n", iItem);
@@ -1546,7 +1552,7 @@ namespace controls::sortlistctrl
 
 		if (!tab) return MAPI_E_INVALID_PARAMETER;
 
-		const auto iItem = FindRow(&tab->propIndex.Value.bin);
+		const auto iItem = FindRow(mapi::getBin(tab->propIndex));
 
 		if (-1 != iItem)
 		{
@@ -1583,11 +1589,9 @@ namespace controls::sortlistctrl
 
 	// This function steps through the list control to find the entry with this instance key
 	// return -1 if item not found
-	_Check_return_ int CContentsTableListCtrl::FindRow(_In_ LPSBinary lpInstance) const
+	_Check_return_ int CContentsTableListCtrl::FindRow(_In_ const SBinary& instance) const
 	{
-		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"msgOnGetIndex", L"Getting index for %p\n", lpInstance);
-
-		if (!lpInstance) return -1;
+		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"msgOnGetIndex", L"Getting index for %p\n", &instance);
 
 		auto iItem = 0;
 		for (iItem = 0; iItem < GetItemCount(); iItem++)
@@ -1601,7 +1605,7 @@ namespace controls::sortlistctrl
 					const auto lpCurInstance = contents->m_lpInstanceKey;
 					if (lpCurInstance)
 					{
-						if (!memcmp(lpCurInstance->lpb, lpInstance->lpb, lpInstance->cb))
+						if (!memcmp(lpCurInstance->lpb, instance.lpb, instance.cb))
 						{
 							output::DebugPrintEx(
 								output::dbgLevel::Generic, CLASS, L"msgOnGetIndex", L"Matched at 0x%08X\n", iItem);

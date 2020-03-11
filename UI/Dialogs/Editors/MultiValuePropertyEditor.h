@@ -18,7 +18,7 @@ namespace dialog::editor
 		~CMultiValuePropertyEditor();
 
 		// Get values after we've done the DisplayDialog
-		_Check_return_ LPSPropValue DetachModifiedSPropValue();
+		_Check_return_ LPSPropValue DetachModifiedSPropValue() noexcept;
 		_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ sortlistdata::sortListData* lpData) override;
 
 	private:

@@ -101,7 +101,7 @@ namespace controls::sortlistctrl
 	static int s_iTrack = 0;
 	static int s_iHeaderHeight = 0;
 
-	void OnBeginTrack(_In_ NMHDR* pNMHDR, _In_ HWND hWndParent)
+	void OnBeginTrack(_In_ NMHDR* pNMHDR, _In_ HWND hWndParent) noexcept
 	{
 		RECT rcHeader = {0};
 		if (!pNMHDR) return;
@@ -113,7 +113,7 @@ namespace controls::sortlistctrl
 		ui::DrawTrackingBar(pHdr->hdr.hwndFrom, hWndParent, s_iTrack, s_iHeaderHeight, false);
 	}
 
-	void OnEndTrack(_In_ NMHDR* pNMHDR, _In_ HWND hWndParent)
+	void OnEndTrack(_In_ NMHDR* pNMHDR, _In_ HWND hWndParent) noexcept
 	{
 		if (s_bInTrack && pNMHDR)
 		{
@@ -122,7 +122,7 @@ namespace controls::sortlistctrl
 		s_bInTrack = false;
 	}
 
-	void OnTrack(_In_ NMHDR* pNMHDR, _In_ HWND hWndParent)
+	void OnTrack(_In_ NMHDR* pNMHDR, _In_ HWND hWndParent) noexcept
 	{
 		if (s_bInTrack && pNMHDR)
 		{
@@ -244,12 +244,12 @@ namespace controls::sortlistctrl
 	}
 
 	// Override for list item painting
-	void CSortListCtrl::OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
+	void CSortListCtrl::OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult) noexcept
 	{
 		ui::CustomDrawList(reinterpret_cast<LPNMLVCUSTOMDRAW>(pNMHDR), pResult, m_iItemCurHover);
 	}
 
-	void CSortListCtrl::OnDeleteAllItems(_In_ NMHDR* /*pNMHDR*/, _In_ LRESULT* pResult)
+	void CSortListCtrl::OnDeleteAllItems(_In_ NMHDR* /*pNMHDR*/, _In_ LRESULT* pResult) noexcept
 	{
 		*pResult = false; // make sure we get LVN_DELETEITEM for all items
 	}
@@ -329,7 +329,7 @@ namespace controls::sortlistctrl
 	// Simplistic algorithm that only looks at the text. This pays no attention to the underlying MAPI properties.
 	// This will sort dates and numbers badly. :)
 	_Check_return_ int CALLBACK
-	CSortListCtrl::MyCompareProc(_In_ LPARAM lParam1, _In_ LPARAM lParam2, _In_ LPARAM lParamSort)
+	CSortListCtrl::MyCompareProc(_In_ LPARAM lParam1, _In_ LPARAM lParam2, _In_ LPARAM lParamSort) noexcept
 	{
 		if (!lParamSort) return sortEqual;
 		auto iRet = 0;
@@ -626,7 +626,7 @@ namespace controls::sortlistctrl
 		}
 	}
 
-	void CSortListCtrl::AllowEscapeClose() { m_bAllowEscapeClose = true; }
+	void CSortListCtrl::AllowEscapeClose() noexcept { m_bAllowEscapeClose = true; }
 
 	// Assert that we want all keyboard input (including ENTER!)
 	// In the case of TAB though, let it through
@@ -661,7 +661,7 @@ namespace controls::sortlistctrl
 		auto lvi = LVITEMW();
 		lvi.iSubItem = nSubItem;
 		lvi.pszText = const_cast<LPWSTR>(lpszText.c_str());
-		(void) ::SendMessage(m_hWnd, LVM_SETITEMTEXTW, nItem, reinterpret_cast<LPARAM>(&lvi));
+		static_cast<void>(::SendMessage(m_hWnd, LVM_SETITEMTEXTW, nItem, reinterpret_cast<LPARAM>(&lvi)));
 	}
 
 	std::wstring CSortListCtrl::GetItemText(_In_ int nItem, _In_ int nSubItem) const
@@ -686,13 +686,13 @@ namespace controls::sortlistctrl
 		}
 	}
 
-	int CSortListCtrl::InsertColumnW(_In_ int nCol, const std::wstring& columnHeading)
+	int CSortListCtrl::InsertColumnW(_In_ int nCol, const std::wstring& columnHeading) noexcept
 	{
 		auto column = LVCOLUMNW();
 		column.mask = LVCF_TEXT | LVCF_FMT;
 		column.pszText = const_cast<LPWSTR>(columnHeading.c_str());
 		column.fmt = LVCFMT_LEFT;
 
-		return static_cast<int>(::SendMessage(m_hWnd, LVM_INSERTCOLUMNW, nCol, (LPARAM) &column));
+		return static_cast<int>(::SendMessage(m_hWnd, LVM_INSERTCOLUMNW, nCol, reinterpret_cast<LPARAM>(&column)));
 	}
 } // namespace controls::sortlistctrl

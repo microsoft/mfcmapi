@@ -9,6 +9,7 @@
 #include <core/interpret/proptags.h>
 #include <core/interpret/proptype.h>
 #include <core/addin/mfcmapi.h>
+#include <core/mapi/mapiFunctions.h>
 
 namespace dialog::editor
 {
@@ -142,7 +143,7 @@ namespace dialog::editor
 
 			for (ULONG iTagCount = 0; iTagCount < cValues; iTagCount++)
 			{
-				const auto ulPropTag = lpTagArray->aulPropTag[iTagCount];
+				const auto ulPropTag = mapi::getTag(lpTagArray, iTagCount);
 				auto lpData = InsertListRow(ulListNum, iTagCount, std::to_wstring(iTagCount));
 				if (lpData)
 				{
@@ -184,14 +185,14 @@ namespace dialog::editor
 					const auto prop = lpData->cast<sortlistdata::propListData>();
 					if (prop)
 					{
-						m_lpOutputTagArray->aulPropTag[iTagCount] = prop->m_ulPropTag;
+						mapi::setTag(m_lpOutputTagArray, iTagCount) = prop->m_ulPropTag;
 					}
 				}
 			}
 		}
 	}
 
-	_Check_return_ LPSPropTagArray CTagArrayEditor::DetachModifiedTagArray()
+	_Check_return_ LPSPropTagArray CTagArrayEditor::DetachModifiedTagArray() noexcept
 	{
 		const auto lpRetArray = m_lpOutputTagArray;
 		m_lpOutputTagArray = nullptr;

@@ -21,7 +21,7 @@ namespace dialog::editor
 			ULONG ulOutCodePage);
 		~CStreamEditor();
 
-		void DisableSave();
+		void DisableSave() noexcept;
 
 	private:
 		BOOL OnInitDialog() override;

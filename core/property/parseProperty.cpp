@@ -8,6 +8,7 @@
 #include <core/interpret/proptags.h>
 #include <core/interpret/flags.h>
 #include <core/smartview/SmartView.h>
+#include <core/mapi/mapiFunctions.h>
 
 namespace property
 {
@@ -102,7 +103,7 @@ namespace property
 				sProp.Value.lpszW = lpProp->Value.MVszW.lppszW[ulMVRow];
 				break;
 			case PT_MV_BINARY:
-				sProp.Value.bin = lpProp->Value.MVbin.lpbin[ulMVRow];
+				mapi::setBin(sProp) = lpProp->Value.MVbin.lpbin[ulMVRow];
 				break;
 			case PT_MV_CLSID:
 				sProp.Value.lpguid = &lpProp->Value.MVguid.lpguid[ulMVRow];
@@ -232,12 +233,15 @@ namespace property
 				szTmp = guid::GUIDToStringAndName(lpProp->Value.lpguid);
 				break;
 			case PT_BINARY:
-				szTmp = strings::BinToHexString(&lpProp->Value.bin, false);
-				szAltTmp = strings::BinToTextString(&lpProp->Value.bin, false);
+			{
+				const auto bin = mapi::getBin(lpProp);
+				szTmp = strings::BinToHexString(&bin, false);
+				szAltTmp = strings::BinToTextString(&bin, false);
 				bAltPropXMLSafe = false;
 
-				attributes.AddAttribute(L"cb", std::to_wstring(lpProp->Value.bin.cb)); // STRING_OK
+				attributes.AddAttribute(L"cb", std::to_wstring(bin.cb)); // STRING_OK
 				break;
+			}
 			case PT_SRESTRICTION:
 				szTmp = RestrictionToString(reinterpret_cast<LPSRestriction>(lpProp->Value.lpszA), nullptr);
 				bPropXMLSafe = false;
@@ -637,7 +641,7 @@ namespace property
 				actstring += strings::formatmessage(
 					IDS_ACTIONTAGARRAYTAG,
 					i,
-					proptags::TagToString(action.lpPropTagArray->aulPropTag[i], nullptr, false, false).c_str());
+					proptags::TagToString(mapi::getTag(action.lpPropTagArray, i), nullptr, false, false).c_str());
 			}
 		}
 

@@ -405,8 +405,7 @@ namespace mapi
 										lpPropArray->Value.lpszW = reinterpret_cast<LPWSTR>(lpBuffer);
 										break;
 									case PT_BINARY:
-										lpPropArray->Value.bin.cb = ulBufferSize;
-										lpPropArray->Value.bin.lpb = lpBuffer;
+										mapi::setBin(lpPropArray) = {ulBufferSize, lpBuffer};
 										break;
 									default:
 										break;
@@ -598,7 +597,7 @@ namespace mapi
 		{
 			for (ULONG iSourceArray = 0; iSourceArray < lpArray2->cValues; iSourceArray++)
 			{
-				if (!IsDuplicateProp(lpArray1, lpArray2->aulPropTag[iSourceArray]))
+				if (!IsDuplicateProp(lpArray1, getTag(lpArray2, iSourceArray)))
 				{
 					iNewArraySize++;
 				}
@@ -620,9 +619,9 @@ namespace mapi
 			{
 				for (ULONG iSourceArray = 0; iSourceArray < lpArray1->cValues; iSourceArray++)
 				{
-					if (PROP_TYPE(lpArray1->aulPropTag[iSourceArray]) != PT_NULL) // ditch bad props
+					if (PROP_TYPE(getTag(lpArray1, iSourceArray)) != PT_NULL) // ditch bad props
 					{
-						lpLocalArray->aulPropTag[iTargetArray++] = lpArray1->aulPropTag[iSourceArray];
+						setTag(lpLocalArray, iTargetArray++) = getTag(lpArray1, iSourceArray);
 					}
 				}
 			}
@@ -631,11 +630,11 @@ namespace mapi
 			{
 				for (ULONG iSourceArray = 0; iSourceArray < lpArray2->cValues; iSourceArray++)
 				{
-					if (PROP_TYPE(lpArray2->aulPropTag[iSourceArray]) != PT_NULL) // ditch bad props
+					if (PROP_TYPE(getTag(lpArray2, iSourceArray)) != PT_NULL) // ditch bad props
 					{
-						if (!IsDuplicateProp(lpArray1, lpArray2->aulPropTag[iSourceArray]))
+						if (!IsDuplicateProp(lpArray1, getTag(lpArray2, iSourceArray)))
 						{
-							lpLocalArray->aulPropTag[iTargetArray++] = lpArray2->aulPropTag[iSourceArray];
+							setTag(lpLocalArray, iTargetArray++) = getTag(lpArray2, iSourceArray);
 						}
 					}
 				}
@@ -682,7 +681,7 @@ namespace mapi
 
 				if (pRow && PT_ERROR != PROP_TYPE(pRow->aRow->lpProps[0].ulPropTag))
 				{
-					sbaEID.lpbin[ulRowsCopied] = CopySBinary(pRow->aRow->lpProps[0].Value.bin, sbaEID.lpbin);
+					sbaEID.lpbin[ulRowsCopied] = CopySBinary(mapi::getBin(pRow->aRow->lpProps[0]), sbaEID.lpbin);
 				}
 			}
 
@@ -793,7 +792,8 @@ namespace mapi
 
 				if (PROP_TYPE(pRow->aRow->lpProps[0].ulPropTag) != PT_ERROR)
 				{
-					hRes = WC_H(CopyMessage(pRow->aRow->lpProps[0].Value.bin, lpSrcFolder, lpDestFolder, bMove, hWnd));
+					hRes =
+						WC_H(CopyMessage(mapi::getBin(pRow->aRow->lpProps[0]), lpSrcFolder, lpDestFolder, bMove, hWnd));
 				}
 
 				if (S_OK != hRes) output::DebugPrint(output::dbgLevel::Generic, L"Message Copy Failed\n");
@@ -907,8 +907,8 @@ namespace mapi
 								{
 									if (lpRows->aRow[iArrayPos].lpProps[ulSrc].ulPropTag == PR_RULE_PROVIDER_DATA)
 									{
-										if (!lpRows->aRow[iArrayPos].lpProps[ulSrc].Value.bin.cb ||
-											!lpRows->aRow[iArrayPos].lpProps[ulSrc].Value.bin.lpb)
+										const auto bin = mapi::getBin(lpRows->aRow[iArrayPos].lpProps[ulSrc]);
+										if (!bin.cb || !bin.lpb)
 										{
 											// PR_RULE_PROVIDER_DATA was NULL - we don't want this
 											continue;
@@ -1183,13 +1183,13 @@ namespace mapi
 	}
 
 	_Check_return_ bool
-	FindPropInPropTagArray(_In_ LPSPropTagArray lpspTagArray, ULONG ulPropToFind, _Out_ ULONG* lpulRowFound)
+	FindPropInPropTagArray(_In_ LPSPropTagArray lpspTagArray, ULONG ulPropToFind, _Out_ ULONG* lpulRowFound) noexcept
 	{
 		*lpulRowFound = 0;
 		if (!lpspTagArray) return false;
 		for (ULONG i = 0; i < lpspTagArray->cValues; i++)
 		{
-			if (PROP_ID(ulPropToFind) == PROP_ID(lpspTagArray->aulPropTag[i]))
+			if (PROP_ID(ulPropToFind) == PROP_ID(getTag(lpspTagArray, i)))
 			{
 				*lpulRowFound = i;
 				return true;
@@ -1256,13 +1256,14 @@ namespace mapi
 		EC_H_GETPROPS_S(lpChildFolder->GetProps(&tag, fMapiUnicode, &cProps, &lpProps));
 		if (lpProps && PT_ERROR != PROP_TYPE(lpProps[0].ulPropTag))
 		{
+			const auto bin = mapi::getBin(lpProps[0]);
 			lpParentFolder = CallOpenEntry<LPMAPIFOLDER>(
 				lpMDB,
 				nullptr,
 				nullptr,
 				nullptr,
-				lpProps[0].Value.bin.cb,
-				reinterpret_cast<LPENTRYID>(lpProps[0].Value.bin.lpb),
+				bin.cb,
+				reinterpret_cast<LPENTRYID>(bin.lpb),
 				nullptr,
 				MAPI_BEST_ACCESS,
 				nullptr);
@@ -1309,9 +1310,9 @@ namespace mapi
 		}
 
 		auto eid = LPSBinary{};
-		if (lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag) && lpProp->Value.bin.cb)
+		if (lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag) && mapi::getBin(lpProp).cb)
 		{
-			eid = CopySBinary(&lpProp->Value.bin);
+			eid = CopySBinary(&mapi::getBin(lpProp));
 		}
 
 		if (hRes == MAPI_E_NOT_FOUND)
@@ -1341,7 +1342,7 @@ namespace mapi
 		return hRes;
 	}
 
-	_Check_return_ bool IsDuplicateProp(_In_ LPSPropTagArray lpArray, ULONG ulPropTag)
+	_Check_return_ bool IsDuplicateProp(_In_ LPSPropTagArray lpArray, ULONG ulPropTag) noexcept
 	{
 		if (!lpArray) return false;
 
@@ -1350,11 +1351,11 @@ namespace mapi
 			// They're dupes if the IDs are the same
 			if (registry::allowDupeColumns)
 			{
-				if (lpArray->aulPropTag[i] == ulPropTag) return true;
+				if (getTag(lpArray, i) == ulPropTag) return true;
 			}
 			else
 			{
-				if (PROP_ID(lpArray->aulPropTag[i]) == PROP_ID(ulPropTag)) return true;
+				if (PROP_ID(getTag(lpArray, i)) == PROP_ID(ulPropTag)) return true;
 			}
 		}
 
@@ -1406,9 +1407,7 @@ namespace mapi
 						if (pRows->aRow[iCurPropRow].lpProps &&
 							PR_ENTRYID == pRows->aRow[iCurPropRow].lpProps[eidPR_ENTRYID].ulPropTag)
 						{
-							ENTRYLIST eid = {};
-							eid.cValues = 1;
-							eid.lpbin = &pRows->aRow[iCurPropRow].lpProps[eidPR_ENTRYID].Value.bin;
+							ENTRYLIST eid = {1, &mapi::setBin(pRows->aRow[iCurPropRow].lpProps[eidPR_ENTRYID])};
 							hRes = WC_MAPI(
 								lpFolder->DeleteMessages(&eid, NULL, nullptr, bHardDelete ? DELETE_HARD_DELETE : NULL));
 							if (SUCCEEDED(hRes)) iItemCount++;
@@ -1499,7 +1498,7 @@ namespace mapi
 				LPSPropValue lpCustomFlag = nullptr;
 
 				// Grab dispidCustomFlag, the last tag in the array
-				SPropTagArray pTag = {1, {CHANGE_PROP_TYPE(lpTags->aulPropTag[ulNumOneOffIDs - 1], PT_LONG)}};
+				SPropTagArray pTag = {1, {CHANGE_PROP_TYPE(getTag(lpTags, ulNumOneOffIDs - 1), PT_LONG)}};
 
 				hRes = WC_MAPI(lpMessage->GetProps(&pTag, fMapiUnicode, &cProp, &lpCustomFlag));
 				if (SUCCEEDED(hRes) && 1 == cProp && lpCustomFlag && PT_LONG == PROP_TYPE(lpCustomFlag->ulPropTag))
@@ -1574,13 +1573,14 @@ namespace mapi
 				{
 					for (ULONG i = 0; i < pRows->cRows; i++)
 					{
+						const auto bin = mapi::getBin(pRows->aRow[i].lpProps[ePR_ENTRYID]);
 						auto lpMessage = CallOpenEntry<LPMESSAGE>(
 							nullptr,
 							nullptr,
 							lpFolder,
 							nullptr,
-							pRows->aRow[i].lpProps[ePR_ENTRYID].Value.bin.cb,
-							reinterpret_cast<LPENTRYID>(pRows->aRow[i].lpProps[ePR_ENTRYID].Value.bin.lpb),
+							bin.cb,
+							reinterpret_cast<LPENTRYID>(bin.lpb),
 							nullptr,
 							MAPI_BEST_ACCESS,
 							nullptr);
@@ -1743,15 +1743,13 @@ namespace mapi
 							{
 								// it would probably be quicker to use this loop to construct an array of properties
 								// we desire to copy, and then pass that array to GetProps and then SetProps
-								if (FIsTransmittable(lpsMessageTags->aulPropTag[ulProp]))
+								if (FIsTransmittable(getTag(lpsMessageTags, ulProp)))
 								{
 									LPSPropValue lpProp = nullptr;
 									output::DebugPrint(
-										output::dbgLevel::Generic,
-										L"Copying 0x%08X\n",
-										lpsMessageTags->aulPropTag[ulProp]);
+										output::dbgLevel::Generic, L"Copying 0x%08X\n", getTag(lpsMessageTags, ulProp));
 									hRes = WC_MAPI(HrGetOnePropEx(
-										lpAttachMsg, lpsMessageTags->aulPropTag[ulProp], fMapiUnicode, &lpProp));
+										lpAttachMsg, getTag(lpsMessageTags, ulProp), fMapiUnicode, &lpProp));
 
 									if (SUCCEEDED(hRes))
 									{
@@ -1800,10 +1798,7 @@ namespace mapi
 						hRes = EC_MAPI(HrSetOneProp(lpNewMessage, &sProp));
 						if (FAILED(hRes)) continue;
 
-						SPropTagArray sPropTagArray = {};
-
-						sPropTagArray.cValues = 1;
-						sPropTagArray.aulPropTag[0] = PR_SENTMAIL_ENTRYID;
+						SPropTagArray sPropTagArray = {1, PR_SENTMAIL_ENTRYID};
 
 						output::DebugPrint(output::dbgLevel::Generic, L"Deleting PR_SENTMAIL_ENTRYID\n");
 						hRes = EC_MAPI(lpNewMessage->DeleteProps(&sPropTagArray, nullptr));
@@ -1890,14 +1885,14 @@ namespace mapi
 						for (ULONG iCurPropRow = 0; iCurPropRow < pRows->cRows; iCurPropRow++)
 						{
 							if (lpMessage) lpMessage->Release();
+							const auto bin = mapi::getBin(pRows->aRow[iCurPropRow].lpProps[eidPR_ENTRYID]);
 							lpMessage = CallOpenEntry<LPMESSAGE>(
 								lpMDB,
 								nullptr,
 								nullptr,
 								nullptr,
-								pRows->aRow[iCurPropRow].lpProps[eidPR_ENTRYID].Value.bin.cb,
-								reinterpret_cast<LPENTRYID>(
-									pRows->aRow[iCurPropRow].lpProps[eidPR_ENTRYID].Value.bin.lpb),
+								bin.cb,
+								reinterpret_cast<LPENTRYID>(bin.lpb),
 								nullptr,
 								MAPI_BEST_ACCESS,
 								nullptr);
@@ -1990,10 +1985,7 @@ namespace mapi
 
 			if (SUCCEEDED(hRes))
 			{
-				SPropTagArray sPropTagArray;
-
-				sPropTagArray.cValues = 1;
-				sPropTagArray.aulPropTag[0] = PR_SENTMAIL_ENTRYID;
+				SPropTagArray sPropTagArray = {1, PR_SENTMAIL_ENTRYID};
 
 				output::DebugPrint(output::dbgLevel::Generic, L"Deleting PR_SENTMAIL_ENTRYID\n");
 				hRes = EC_MAPI(lpNewMessage->DeleteProps(&sPropTagArray, nullptr));
@@ -2129,7 +2121,7 @@ namespace mapi
 						if (name->getPropID() > 0x7FFF && name->valid() &&
 							::IsEqualGUID(*name->getMapiNameId()->lpguid, *lpPropSetGUID))
 						{
-							lpFilteredProps->aulPropTag[lpFilteredProps->cValues] = name->getPropID();
+							setTag(lpFilteredProps, lpFilteredProps->cValues) = name->getPropID();
 							lpFilteredProps->cValues++;
 						}
 					}
@@ -2249,8 +2241,8 @@ namespace mapi
 					mres.res.resProperty.ulPropTag = PR_SERVICE_UID;
 					mres.res.resProperty.lpProp = &mval;
 					mval.ulPropTag = PR_SERVICE_UID;
-					mval.Value.bin.cb = sizeof *puidService;
-					mval.Value.bin.lpb = reinterpret_cast<LPBYTE>(const_cast<MAPIUID*>(puidService));
+					mapi::setBin(mval) = {sizeof *puidService,
+										  reinterpret_cast<LPBYTE>(const_cast<MAPIUID*>(puidService))};
 
 					hRes = EC_MAPI(spmtab->Restrict(&mres, 0));
 				}
@@ -2266,10 +2258,11 @@ namespace mapi
 
 					if (pEmsmdbUID && pRow)
 					{
+						const auto bin = mapi::getBin(pRow->lpProps[eSectionUid]);
 						if (PR_EMSMDB_SECTION_UID == pRow->lpProps[eSectionUid].ulPropTag &&
-							pRow->lpProps[eSectionUid].Value.bin.cb == sizeof *pEmsmdbUID)
+							bin.cb == sizeof *pEmsmdbUID)
 						{
-							memcpy(pEmsmdbUID, pRow->lpProps[eSectionUid].Value.bin.lpb, sizeof *pEmsmdbUID);
+							memcpy(pEmsmdbUID, bin.lpb, sizeof *pEmsmdbUID);
 						}
 					}
 				}
@@ -2284,13 +2277,13 @@ namespace mapi
 		return hRes;
 	}
 
-	bool FExchangePrivateStore(_In_ LPMAPIUID lpmapiuid)
+	bool FExchangePrivateStore(_In_ LPMAPIUID lpmapiuid) noexcept
 	{
 		if (!lpmapiuid) return false;
 		return IsEqualMAPIUID(lpmapiuid, LPMAPIUID(pbExchangeProviderPrimaryUserGuid));
 	}
 
-	bool FExchangePublicStore(_In_ LPMAPIUID lpmapiuid)
+	bool FExchangePublicStore(_In_ LPMAPIUID lpmapiuid) noexcept
 	{
 		if (!lpmapiuid) return false;
 		return IsEqualMAPIUID(lpmapiuid, LPMAPIUID(pbExchangeProviderPublicGuid));
@@ -2306,7 +2299,7 @@ namespace mapi
 		auto eid = LPSBinary{};
 		if (SUCCEEDED(hRes) && lpEIDProp)
 		{
-			eid = CopySBinary(&lpEIDProp->Value.bin);
+			eid = CopySBinary(&mapi::getBin(lpEIDProp));
 		}
 
 		MAPIFreeBuffer(lpEIDProp);
@@ -2441,7 +2434,7 @@ namespace mapi
 		return szTitle;
 	}
 
-	bool UnwrapContactEntryID(_In_ ULONG cbIn, _In_ LPBYTE lpbIn, _Out_ ULONG* lpcbOut, _Out_ LPBYTE* lppbOut)
+	bool UnwrapContactEntryID(_In_ ULONG cbIn, _In_ LPBYTE lpbIn, _Out_ ULONG* lpcbOut, _Out_ LPBYTE* lppbOut) noexcept
 	{
 		if (lpcbOut) *lpcbOut = 0;
 		if (lppbOut) *lppbOut = nullptr;
@@ -2476,7 +2469,11 @@ namespace mapi
 	// Augemented version of HrGetOneProp which allows passing flags to underlying GetProps
 	// Useful for passing fMapiUnicode for unspecified string/stream types
 	HRESULT
-	HrGetOnePropEx(_In_ LPMAPIPROP lpMAPIProp, _In_ ULONG ulPropTag, _In_ ULONG ulFlags, _Out_ LPSPropValue* lppProp)
+	HrGetOnePropEx(
+		_In_ LPMAPIPROP lpMAPIProp,
+		_In_ ULONG ulPropTag,
+		_In_ ULONG ulFlags,
+		_Out_ LPSPropValue* lppProp) noexcept
 	{
 		if (!lppProp) return MAPI_E_INVALID_PARAMETER;
 		*lppProp = nullptr;

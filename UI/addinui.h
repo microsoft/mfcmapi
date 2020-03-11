@@ -10,6 +10,6 @@ namespace ui::addinui
 	EXTERN_C __declspec(dllexport) void __cdecl FreeDialogResult(_In_ LPADDINDIALOGRESULT lpDialogResult);
 
 	_Check_return_ ULONG ExtendAddInMenu(HMENU hMenu, ULONG ulAddInContext);
-	_Check_return_ LPMENUITEM GetAddinMenuItem(HWND hWnd, UINT uidMsg);
+	_Check_return_ LPMENUITEM GetAddinMenuItem(HWND hWnd, UINT uidMsg) noexcept;
 	void InvokeAddInMenu(_In_opt_ LPADDINMENUPARAMS lpParams);
 } // namespace ui::addinui

@@ -80,8 +80,8 @@ namespace controls::sortlistctrl
 		_Check_return_ sortlistdata::sortListData* InsertRow(int iRow, const std::wstring& szText) const;
 		void SetItemText(int nItem, int nSubItem, const std::wstring& lpszText);
 		std::wstring GetItemText(_In_ int nItem, _In_ int nSubItem) const;
-		void AllowEscapeClose();
-		int InsertColumnW(_In_ int nCol, const std::wstring& columnHeading);
+		void AllowEscapeClose() noexcept;
+		int InsertColumnW(_In_ int nCol, const std::wstring& columnHeading) noexcept;
 
 	protected:
 		void MySetRedraw(bool bRedraw);
@@ -97,12 +97,12 @@ namespace controls::sortlistctrl
 		_Check_return_ UINT OnGetDlgCode();
 
 		void OnColumnClick(int iColumn);
-		void OnDeleteAllItems(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
+		void OnDeleteAllItems(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult) noexcept;
 		void OnDeleteItem(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 		void AutoSizeColumn(int iColumn, int iMaxWidth, int iMinWidth);
-		void OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
+		void OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult) noexcept;
 		_Check_return_ static int CALLBACK
-		MyCompareProc(_In_ LPARAM lParam1, _In_ LPARAM lParam2, _In_ LPARAM lParamSort);
+		MyCompareProc(_In_ LPARAM lParam1, _In_ LPARAM lParam2, _In_ LPARAM lParamSort) noexcept;
 
 		LONG m_cRef;
 		int m_iRedrawCount;

@@ -31,7 +31,7 @@ namespace viewpane
 
 		void Clear();
 		void SetStringW(const std::wstring& szMsg);
-		void SetBinary(_In_opt_count_(cb) LPBYTE lpb, size_t cb);
+		void SetBinary(_In_opt_count_(cb) const BYTE* lpb, size_t cb);
 		void SetBinaryStream(_In_ LPSTREAM lpStreamIn);
 		void GetBinaryStream(_In_ LPSTREAM lpStreamOut) const;
 		void AppendString(_In_ const std::wstring& szMsg);

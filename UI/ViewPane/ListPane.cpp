@@ -50,7 +50,7 @@ namespace viewpane
 		return pane;
 	}
 
-	void ListPane::Setup(bool bAllowSort, DoListEditCallback callback)
+	void ListPane::Setup(bool bAllowSort, DoListEditCallback callback) noexcept
 	{
 		m_List.AllowEscapeClose();
 		m_bAllowSort = bAllowSort;
@@ -136,7 +136,7 @@ namespace viewpane
 			OnAddListEntry();
 			break;
 		case IDD_LISTEDIT:
-			(void) OnEditListEntry();
+			static_cast<void>(OnEditListEntry());
 			break;
 		case IDD_LISTDELETE:
 			OnDeleteListEntry(true);
@@ -391,7 +391,7 @@ namespace viewpane
 	{
 		const auto iItem = m_List.GetItemCount();
 
-		(void) InsertRow(iItem, std::to_wstring(iItem));
+		static_cast<void>(InsertRow(iItem, std::to_wstring(iItem)));
 
 		m_List.SetSelectedItem(iItem);
 
@@ -426,7 +426,8 @@ namespace viewpane
 	_Check_return_ bool ListPane::OnEditListEntry()
 	{
 		const auto iItem = m_List.GetNextItem(-1, LVNI_FOCUSED | LVNI_SELECTED);
-		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"OnEditListEntry", L"This item was selected: 0x%08X\n", iItem);
+		output::DebugPrintEx(
+			output::dbgLevel::Generic, CLASS, L"OnEditListEntry", L"This item was selected: 0x%08X\n", iItem);
 
 		if (iItem == -1) return false;
 

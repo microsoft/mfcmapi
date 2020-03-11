@@ -17,8 +17,8 @@ namespace controls
 	CFakeSplitter::~CFakeSplitter()
 	{
 		TRACE_DESTRUCTOR(CLASS);
-		(void) DestroyCursor(m_hSplitCursorH);
-		(void) DestroyCursor(m_hSplitCursorV);
+		static_cast<void>(DestroyCursor(m_hSplitCursorH));
+		static_cast<void>(DestroyCursor(m_hSplitCursorV));
 		CWnd::DestroyWindow();
 	}
 
@@ -106,7 +106,7 @@ namespace controls
 		return CWnd::WindowProc(message, wParam, lParam);
 	}
 
-	void CFakeSplitter::SetPaneOne(HWND paneOne)
+	void CFakeSplitter::SetPaneOne(HWND paneOne) noexcept
 	{
 		m_PaneOne = paneOne;
 		if (m_PaneOne)
@@ -119,7 +119,7 @@ namespace controls
 		}
 	}
 
-	void CFakeSplitter::SetPaneTwo(HWND paneTwo) { m_PaneTwo = paneTwo; }
+	void CFakeSplitter::SetPaneTwo(HWND paneTwo) noexcept { m_PaneTwo = paneTwo; }
 
 	void CFakeSplitter::OnSize(UINT /*nType*/, const int cx, const int cy)
 	{
@@ -255,9 +255,9 @@ namespace controls
 		OnSize(0, rect.Width(), rect.Height());
 	}
 
-	void CFakeSplitter::SetSplitType(const splitType stSplitType) { m_SplitType = stSplitType; }
+	void CFakeSplitter::SetSplitType(const splitType stSplitType) noexcept { m_SplitType = stSplitType; }
 
-	_Check_return_ int CFakeSplitter::HitTest(const LONG x, const LONG y) const
+	_Check_return_ int CFakeSplitter::HitTest(const LONG x, const LONG y) const noexcept
 	{
 		if (!m_PaneOne && !m_ViewPaneOne) return noHit;
 
@@ -377,7 +377,7 @@ namespace controls
 			const auto hpenOld = SelectObject(hdc, GetPen(m_bTracking ? ui::uiPen::SolidPen : ui::uiPen::DashedPen));
 			MoveToEx(hdc, pts[0].x, pts[0].y, nullptr);
 			LineTo(hdc, pts[1].x, pts[1].y);
-			(void) SelectObject(hdc, hpenOld);
+			static_cast<void>(SelectObject(hdc, hpenOld));
 
 			db.End(hdc);
 		}

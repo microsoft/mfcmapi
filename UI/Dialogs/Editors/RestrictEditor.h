@@ -9,7 +9,7 @@ namespace dialog::editor
 		CRestrictEditor(_In_ CWnd* pParentWnd, _In_opt_ LPVOID lpAllocParent, _In_opt_ const _SRestriction* lpRes);
 		~CRestrictEditor();
 
-		_Check_return_ LPSRestriction DetachModifiedSRestriction();
+		_Check_return_ LPSRestriction DetachModifiedSRestriction() noexcept;
 
 	private:
 		void OnEditAction1() override;
@@ -26,7 +26,7 @@ namespace dialog::editor
 		_Check_return_ ULONG HandleChange(UINT nID) override;
 		void OnOK() override;
 
-		_Check_return_ const _SRestriction* GetSourceRes() const;
+		_Check_return_ const _SRestriction* GetSourceRes() const noexcept;
 
 		// source variables
 		const _SRestriction* m_lpRes;
@@ -47,9 +47,9 @@ namespace dialog::editor
 			ULONG ulSearchState);
 		~CCriteriaEditor();
 
-		_Check_return_ LPSRestriction DetachModifiedSRestriction();
-		_Check_return_ LPENTRYLIST DetachModifiedEntryList();
-		_Check_return_ ULONG GetSearchFlags() const;
+		_Check_return_ LPSRestriction DetachModifiedSRestriction() noexcept;
+		_Check_return_ LPENTRYLIST DetachModifiedEntryList() noexcept;
+		_Check_return_ ULONG GetSearchFlags() const noexcept;
 		_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ sortlistdata::sortListData* lpData) override;
 
 	private:
@@ -59,7 +59,7 @@ namespace dialog::editor
 		void InitListFromEntryList(ULONG ulListNum, _In_ const SBinaryArray* lpEntryList) const;
 		void OnOK() override;
 
-		_Check_return_ const _SRestriction* GetSourceRes() const;
+		_Check_return_ const _SRestriction* GetSourceRes() const noexcept;
 
 		const _SRestriction* m_lpSourceRes;
 		LPSRestriction m_lpNewRes;

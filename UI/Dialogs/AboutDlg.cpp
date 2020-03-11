@@ -11,7 +11,7 @@ namespace dialog
 	void DisplayAboutDlg(_In_ CWnd* lpParentWnd)
 	{
 		CAboutDlg AboutDlg(lpParentWnd);
-		(void) EC_D_DIALOG(AboutDlg.DoModal());
+		static_cast<void>(EC_D_DIALOG(AboutDlg.DoModal()));
 	}
 
 	static std::wstring CLASS = L"CAboutDlg";

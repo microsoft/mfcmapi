@@ -23,7 +23,7 @@ namespace dialog::editor
 
 	static std::wstring CLASS = L"CStreamEditor";
 
-	ULONG PreferredStreamType(ULONG ulPropTag)
+	ULONG PreferredStreamType(ULONG ulPropTag) noexcept
 	{
 		auto ulPropType = PROP_TYPE(ulPropTag);
 
@@ -189,8 +189,7 @@ namespace dialog::editor
 				SPropValue sProp = {};
 				sProp.ulPropTag = CHANGE_PROP_TYPE(m_ulPropTag, PT_BINARY);
 				auto bin = GetBinary(m_iBinBox);
-				sProp.Value.bin.lpb = bin.data();
-				sProp.Value.bin.cb = ULONG(bin.size());
+				mapi::setBin(sProp) = {static_cast<ULONG>(bin.size()), bin.data()};
 
 				// TODO: pass in named prop stuff to make this work
 				lpSmartView->SetParser(
@@ -425,14 +424,14 @@ namespace dialog::editor
 			{
 				auto lpszA = GetStringA(m_iTextBox);
 
-				lpBinPane->SetBinary(LPBYTE(lpszA.c_str()), lpszA.length() * sizeof(CHAR));
+				lpBinPane->SetBinary(reinterpret_cast<const BYTE*>(lpszA.c_str()), lpszA.length() * sizeof(CHAR));
 				lpBinPane->SetCount(lpszA.length() * sizeof(CHAR));
 				break;
 			}
 			case EDITOR_STREAM_UNICODE:
 				auto lpszW = GetStringW(m_iTextBox);
 
-				lpBinPane->SetBinary(LPBYTE(lpszW.c_str()), lpszW.length() * sizeof(WCHAR));
+				lpBinPane->SetBinary(reinterpret_cast<const BYTE*>(lpszW.c_str()), lpszW.length() * sizeof(WCHAR));
 				lpBinPane->SetCount(lpszW.length() * sizeof(WCHAR));
 				break;
 			}
@@ -448,11 +447,13 @@ namespace dialog::editor
 				case EDITOR_RTF:
 				case EDITOR_STREAM_BINARY:
 				default:
-					SetStringA(m_iTextBox, std::string(LPCSTR(bin.data()), bin.size() / sizeof(CHAR)));
+					SetStringA(
+						m_iTextBox, std::string(reinterpret_cast<LPCSTR>(bin.data()), bin.size() / sizeof(CHAR)));
 					if (lpBinPane) lpBinPane->SetCount(bin.size());
 					break;
 				case EDITOR_STREAM_UNICODE:
-					SetStringW(m_iTextBox, std::wstring(LPWSTR(bin.data()), bin.size() / sizeof(WCHAR)));
+					SetStringW(
+						m_iTextBox, std::wstring(reinterpret_cast<LPWSTR>(bin.data()), bin.size() / sizeof(WCHAR)));
 					if (lpBinPane) lpBinPane->SetCount(bin.size());
 					break;
 				}
@@ -488,5 +489,5 @@ namespace dialog::editor
 		}
 	}
 
-	void CStreamEditor::DisableSave() { m_bDisableSave = true; }
+	void CStreamEditor::DisableSave() noexcept { m_bDisableSave = true; }
 } // namespace dialog::editor

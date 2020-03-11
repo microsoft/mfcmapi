@@ -14,7 +14,7 @@ namespace dialog::editor
 	public:
 		COptions(_In_ CWnd* pWnd);
 		~COptions();
-		bool NeedPropRefresh() const;
+		bool NeedPropRefresh() const noexcept;
 
 	private:
 		_Check_return_ ULONG HandleChange(UINT nID) override;
@@ -110,7 +110,7 @@ namespace dialog::editor
 
 	_Check_return_ ULONG COptions::HandleChange(const UINT nID) { return CEditor::HandleChange(nID); }
 
-	bool COptions::NeedPropRefresh() const { return m_bNeedPropRefresh; }
+	bool COptions::NeedPropRefresh() const noexcept { return m_bNeedPropRefresh; }
 
 	bool DisplayOptionsDlg(_In_ CWnd* lpParentWnd)
 	{

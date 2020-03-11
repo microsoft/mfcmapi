@@ -31,7 +31,7 @@ namespace controls
 
 		// Selected item accessors
 		_Check_return_ LPMAPICONTAINER GetSelectedContainer(modifyType bModify) const;
-		_Check_return_ LPSBinary GetSelectedItemEID() const;
+		_Check_return_ std::vector<BYTE> GetSelectedItemEID() const;
 		_Check_return_ sortlistdata::sortListData* GetSelectedItemData() const;
 		_Check_return_ sortlistdata::sortListData* GetSortListData(HTREEITEM iItem) const;
 
@@ -44,16 +44,16 @@ namespace controls
 		bool HasChildren(_In_ HTREEITEM hItem) const;
 		void OnItemSelected(HTREEITEM hItem) const;
 		bool HandleKeyDown(UINT nChar, bool bShiftPressed, bool bCtrlPressed, bool bMenuPressed);
-		void FreeNodeData(LPARAM lpData) const;
+		void FreeNodeData(LPARAM lpData) const noexcept;
 		void ExpandNode(HTREEITEM hParent) const;
 		void OnRefresh() const;
 		void OnLabelEdit(HTREEITEM hItem, LPTSTR szText);
 		void OnDisplaySelectedItem();
-		void OnLastChildDeleted(LPARAM /*lpData*/);
+		void OnLastChildDeleted(LPARAM /*lpData*/) noexcept;
 		void HandleContextMenu(int x, int y);
-		void OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, _In_ HTREEITEM hItemCurHover);
+		void OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, _In_ HTREEITEM hItemCurHover) noexcept;
 
-		_Check_return_ HTREEITEM FindNode(_In_ LPSBinary lpInstance, HTREEITEM hParent) const;
+		_Check_return_ HTREEITEM FindNode(_In_ const SBinary& lpInstance, HTREEITEM hParent) const;
 		_Check_return_ LPMAPICONTAINER GetContainer(HTREEITEM Item, modifyType bModify) const;
 		void Advise(HTREEITEM hItem, sortlistdata::sortListData* lpData) const;
 		_Check_return_ LPMAPITABLE

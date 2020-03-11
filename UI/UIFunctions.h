@@ -75,17 +75,17 @@ namespace ui
 
 	_Check_return_ int GetEditHeight(_In_opt_ HWND hwndEdit);
 	_Check_return_ int GetTextHeight(_In_opt_ HWND hwndEdit);
-	SIZE GetTextExtentPoint32(HDC hdc, const std::wstring& szText);
+	SIZE GetTextExtentPoint32(HDC hdc, const std::wstring& szText) noexcept;
 
-	HFONT GetSegoeFont();
-	HFONT GetSegoeFontBold();
+	HFONT GetSegoeFont() noexcept;
+	HFONT GetSegoeFontBold() noexcept;
 
-	_Check_return_ HBRUSH GetSysBrush(uiColor uc);
-	_Check_return_ COLORREF MyGetSysColor(uiColor uc);
+	_Check_return_ HBRUSH GetSysBrush(uiColor uc) noexcept;
+	_Check_return_ COLORREF MyGetSysColor(uiColor uc) noexcept;
 
-	_Check_return_ HPEN GetPen(uiPen up);
+	_Check_return_ HPEN GetPen(uiPen up) noexcept;
 
-	HBITMAP GetBitmap(uiBitmap ub);
+	HBITMAP GetBitmap(uiBitmap ub) noexcept;
 
 	struct SCALE
 	{
@@ -94,10 +94,10 @@ namespace ui
 		LONG denominator;
 	};
 
-	SCALE GetDPIScale();
-	HBITMAP ScaleBitmap(HBITMAP hBitmap, const SCALE& scale);
+	SCALE GetDPIScale() noexcept;
+	HBITMAP ScaleBitmap(HBITMAP hBitmap, const SCALE& scale) noexcept;
 
-	void ClearEditFormatting(_In_ HWND hWnd, bool bReadOnly);
+	void ClearEditFormatting(_In_ HWND hWnd, bool bReadOnly) noexcept;
 
 	// Application-specific owner-drawn menu info struct. Owner-drawn data
 	// is a pointer to one of these. MSAAMENUINFO must be the first
@@ -122,23 +122,23 @@ namespace ui
 		WPARAM wParam,
 		LPARAM lParam,
 		UINT_PTR uIdSubclass,
-		DWORD_PTR /*dwRefData*/);
+		DWORD_PTR /*dwRefData*/) noexcept;
 	void SubclassEdit(_In_ HWND hWnd, _In_opt_ HWND hWndParent, bool bReadOnly);
 
 	// List
-	void CustomDrawList(_In_ LPNMLVCUSTOMDRAW lvcd, _In_ LRESULT* pResult, DWORD_PTR iItemCurHover);
-	void DrawListItemGlow(_In_ HWND hWnd, UINT itemID);
+	void CustomDrawList(_In_ LPNMLVCUSTOMDRAW lvcd, _In_ LRESULT* pResult, DWORD_PTR iItemCurHover) noexcept;
+	void DrawListItemGlow(_In_ HWND hWnd, UINT itemID) noexcept;
 
 	// Tree
-	void DrawBitmap(_In_ HDC hdc, _In_ const RECT& rcTarget, uiBitmap iBitmap, bool bHover, int offset = 0);
-	void CustomDrawTree(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, bool bHover, _In_ HTREEITEM hItemCurHover);
-	void DrawTreeItemGlow(_In_ HWND hWnd, _In_ HTREEITEM hItem);
-	void DrawExpandTriangle(_In_ HWND hWnd, _In_ HDC hdc, _In_ HTREEITEM hItem, bool bGlow, bool bHover);
+	void DrawBitmap(_In_ HDC hdc, _In_ const RECT& rcTarget, uiBitmap iBitmap, bool bHover, int offset = 0) noexcept;
+	void CustomDrawTree(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, bool bHover, _In_ HTREEITEM hItemCurHover) noexcept;
+	void DrawTreeItemGlow(_In_ HWND hWnd, _In_ HTREEITEM hItem) noexcept;
+	void DrawExpandTriangle(_In_ HWND hWnd, _In_ HDC hdc, _In_ HTREEITEM hItem, bool bGlow, bool bHover) noexcept;
 
 	// Header
 	void DrawTriangle(_In_ HWND hWnd, _In_ HDC hdc, _In_ const RECT& rc, bool bButton, bool bUp);
 	void CustomDrawHeader(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
-	void DrawTrackingBar(_In_ HWND hWndHeader, _In_ HWND hWndList, int x, int iHeaderHeight, bool bRedraw);
+	void DrawTrackingBar(_In_ HWND hWndHeader, _In_ HWND hWndList, int x, int iHeaderHeight, bool bRedraw) noexcept;
 
 	// Menu and Combo box
 	bool MeasureItem(_In_ LPMEASUREITEMSTRUCT lpMeasureItemStruct);
@@ -163,7 +163,7 @@ namespace ui
 		RECT* lprcMaxIcon,
 		RECT* lprcMinIcon,
 		RECT* lprcCaptionText) noexcept;
-	void DrawSystemButtons(_In_ HWND hWnd, _In_opt_ HDC hdc, LONG_PTR iHitTest, bool bHover);
+	void DrawSystemButtons(_In_ HWND hWnd, _In_opt_ HDC hdc, LONG_PTR iHitTest, bool bHover) noexcept;
 	void DrawWindowFrame(_In_ HWND hWnd, bool bActive, int iStatusHeight);
 
 	// Winproc handler for custom controls
@@ -173,7 +173,7 @@ namespace ui
 	void DrawHelpText(_In_ HWND hWnd, _In_ UINT uIDText);
 
 	// Text labels
-	void SubclassLabel(_In_ HWND hWnd);
+	void SubclassLabel(_In_ HWND hWnd) noexcept;
 	void StyleLabel(_In_ HWND hWnd, uiLabelStyle lsStyle);
 
 	void StyleButton(_In_ HWND hWnd, uiButtonStyle bsStyle);
@@ -185,5 +185,5 @@ namespace ui
 		bool bBold,
 		_In_ UINT format);
 
-	_Check_return_ HWND GetMainWindow();
+	_Check_return_ HWND GetMainWindow() noexcept;
 } // namespace ui

@@ -10,7 +10,7 @@ namespace smartview
 		blockT() = default;
 		blockT(const blockT&) = delete;
 		blockT& operator=(const blockT&) = delete;
-		blockT(const T& _data, size_t _size, size_t _offset)
+		blockT(const T& _data, size_t _size, size_t _offset) noexcept
 		{
 			set = true;
 			data = _data;
@@ -21,13 +21,13 @@ namespace smartview
 		bool isSet() const noexcept override { return set; }
 
 		// Mimic type T
-		void setData(const T& _data) { data = _data; }
-		T getData() const { return data; }
+		void setData(const T& _data) noexcept { data = _data; }
+		T getData() const noexcept { return data; }
 		operator T&() noexcept { return data; }
 		operator T() const noexcept { return data; }
 
 		// Fill out object of type T, reading from type SOURCE_U
-		template <typename SOURCE_U> void parse(const std::shared_ptr<binaryParser>& parser)
+		template <typename SOURCE_U> void parse(const std::shared_ptr<binaryParser>& parser) noexcept
 		{
 			static constexpr size_t sizeU = sizeof SOURCE_U;
 			// TODO: Consider what a failure block really looks like

@@ -47,7 +47,7 @@ LPSBinary MAPIFindFolderW(
 				_wcsicmp(lpRowProp[ePR_DISPLAY_NAME_W].Value.lpszW, lpszName.c_str()) == 0 &&
 				PR_ENTRYID == lpRowProp[ePR_ENTRYID].ulPropTag)
 			{
-				eid = mapi::CopySBinary(&lpRowProp[ePR_ENTRYID].Value.bin);
+				eid = mapi::CopySBinary(&mapi::getBin(lpRowProp[ePR_ENTRYID]));
 				break;
 			}
 		}
@@ -179,7 +179,7 @@ static LPSBinary LookupRootFolderW(
 		WC_MAPI_S(lpMDB->GetProps(&rgPropTag, MAPI_UNICODE, &cValues, &lpPropValue));
 		if (lpPropValue && lpPropValue->ulPropTag == ulPropTag)
 		{
-			eid = mapi::CopySBinary(&lpPropValue->Value.bin);
+			eid = mapi::CopySBinary(&mapi::getBin(lpPropValue));
 		}
 
 		MAPIFreeBuffer(lpPropValue);
@@ -345,8 +345,8 @@ void DumpHierarchyTable(
 						LPMAPIFOLDER lpSubfolder = nullptr;
 
 						WC_MAPI_S(lpFolder->OpenEntry(
-							lpRow->aRow[i].lpProps[ePR_ENTRYID].Value.bin.cb,
-							reinterpret_cast<LPENTRYID>(lpRow->aRow[i].lpProps[ePR_ENTRYID].Value.bin.lpb),
+							mapi::getBin(lpRow->aRow[i].lpProps[ePR_ENTRYID]).cb,
+							reinterpret_cast<LPENTRYID>(mapi::getBin(lpRow->aRow[i].lpProps[ePR_ENTRYID]).lpb),
 							nullptr,
 							MAPI_BEST_ACCESS,
 							&ulObjType,
@@ -485,8 +485,8 @@ ComputeFolderSize(
 						LPMAPIFOLDER lpSubfolder = nullptr;
 
 						WC_MAPI_S(lpFolder->OpenEntry(
-							lpRow->aRow[i].lpProps[ePR_ENTRYID].Value.bin.cb,
-							reinterpret_cast<LPENTRYID>(lpRow->aRow[i].lpProps[ePR_ENTRYID].Value.bin.lpb),
+							mapi::getBin(lpRow->aRow[i].lpProps[ePR_ENTRYID]).cb,
+							reinterpret_cast<LPENTRYID>(mapi::getBin(lpRow->aRow[i].lpProps[ePR_ENTRYID]).lpb),
 							nullptr,
 							MAPI_BEST_ACCESS,
 							&ulObjType,

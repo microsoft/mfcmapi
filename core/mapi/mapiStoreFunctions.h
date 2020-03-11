@@ -6,7 +6,7 @@ namespace mapi::store
 	extern std::function<std::wstring()> promptServerName;
 
 	_Check_return_ LPMDB
-	CallOpenMsgStore(_In_ LPMAPISESSION lpSession, _In_ ULONG_PTR ulUIParam, _In_ LPSBinary lpEID, ULONG ulFlags);
+	CallOpenMsgStore(_In_ LPMAPISESSION lpSession, _In_ ULONG_PTR ulUIParam, _In_ const SBinary* lpEID, ULONG ulFlags);
 	std::wstring BuildServerDN(const std::wstring& szServerName, const std::wstring& szPost);
 	_Check_return_ LPMAPITABLE GetMailboxTable(_In_ LPMDB lpMDB, const std::wstring& szServerName, ULONG ulOffset);
 	_Check_return_ LPMAPITABLE GetMailboxTable1(_In_ LPMDB lpMDB, const std::wstring& szServerDN, ULONG ulFlags);

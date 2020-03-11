@@ -25,7 +25,7 @@ namespace dialog
 		// If the previous foreground window is ours, remember its handle for computing cascades
 		m_hWndPrevious = ::GetForegroundWindow();
 		DWORD pid = NULL;
-		(void) GetWindowThreadProcessId(m_hWndPrevious, &pid);
+		static_cast<void>(GetWindowThreadProcessId(m_hWndPrevious, &pid));
 		if (GetCurrentProcessId() != pid)
 		{
 			m_hWndPrevious = nullptr;
@@ -38,9 +38,9 @@ namespace dialog
 		if (m_lpNonModalParent) m_lpNonModalParent->Release();
 	}
 
-	void CMyDialog::SetStatusHeight(const int iHeight) { m_iStatusHeight = iHeight; }
+	void CMyDialog::SetStatusHeight(const int iHeight) noexcept { m_iStatusHeight = iHeight; }
 
-	int CMyDialog::GetStatusHeight() const { return m_iStatusHeight; }
+	int CMyDialog::GetStatusHeight() const noexcept { return m_iStatusHeight; }
 
 	std::wstring FormatHT(const LRESULT ht)
 	{
@@ -151,7 +151,7 @@ namespace dialog
 		// These are client coordinates - we need to translate them to screen coordinates
 		POINT pt = {GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)};
 		output::DebugPrint(output::dbgLevel::UI, L"NCHitTestMouse: pt = %d %d", pt.x, pt.y);
-		(void) MapWindowPoints(hWnd, nullptr, &pt, 1); // Map our client point to the screen
+		static_cast<void>(MapWindowPoints(hWnd, nullptr, &pt, 1)); // Map our client point to the screen
 		output::Outputf(output::dbgLevel::UI, nullptr, false, L" mapped = %d %d\r\n", pt.x, pt.y);
 
 		const auto ht = CheckButtons(hWnd, pt);
@@ -252,21 +252,21 @@ namespace dialog
 					var.vt = VT_LPWSTR;
 					var.pwszVal = L"Microsoft.MFCMAPI";
 
-					(void) pps->SetValue(PKEY_AppUserModel_ID, var);
+					static_cast<void>(pps->SetValue(PKEY_AppUserModel_ID, var));
 				}
 
 				if (pps) pps->Release();
 			}
 
-			if (import::pfnSetWindowTheme) (void) import::pfnSetWindowTheme(m_hWnd, L"", L"");
+			if (import::pfnSetWindowTheme) static_cast<void>(import::pfnSetWindowTheme(m_hWnd, L"", L""));
 			{
 				// These calls force Windows to initialize the system menu for this window.
 				// This avoids repaints whenever the system menu is later accessed.
 				// We eliminate classic mode visual artifacts with this call.
-				(void) ::GetSystemMenu(m_hWnd, false);
+				static_cast<void>(::GetSystemMenu(m_hWnd, false));
 				auto mbi = MENUBARINFO{};
 				mbi.cbSize = sizeof mbi;
-				(void) GetMenuBarInfo(m_hWnd, OBJID_SYSMENU, 0, &mbi);
+				static_cast<void>(GetMenuBarInfo(m_hWnd, OBJID_SYSMENU, 0, &mbi));
 			}
 			break;
 		}
@@ -320,10 +320,10 @@ namespace dialog
 		{
 			// Cheap cascade effect
 			auto rc = RECT{};
-			(void) ::GetWindowRect(m_hWndPrevious, &rc);
+			static_cast<void>(::GetWindowRect(m_hWndPrevious, &rc));
 			const LONG lOffset = GetSystemMetrics(SM_CXSMSIZE);
-			(void) ::SetWindowPos(
-				m_hWnd, nullptr, rc.left + lOffset, rc.top + lOffset, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+			static_cast<void>(
+				::SetWindowPos(m_hWnd, nullptr, rc.left + lOffset, rc.top + lOffset, 0, 0, SWP_NOSIZE | SWP_NOZORDER));
 		}
 		else
 		{

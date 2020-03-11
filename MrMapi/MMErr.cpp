@@ -14,7 +14,7 @@ void PrintErrFromNum(_In_ ULONG ulError)
 	printf("0x%08lX = %ws\n", ulError, error::ErrorNameFromErrorCode(ulError).c_str());
 }
 
-void PrintErrFromName(_In_ const std::wstring& lpszError)
+void PrintErrFromName(_In_ const std::wstring& lpszError) noexcept
 {
 	const auto szErr = lpszError.c_str();
 
@@ -27,7 +27,7 @@ void PrintErrFromName(_In_ const std::wstring& lpszError)
 	}
 }
 
-void PrintErrFromPartialName(_In_ const std::wstring& lpszError)
+void PrintErrFromPartialName(_In_ const std::wstring& lpszError) noexcept
 {
 	if (!lpszError.empty())
 		printf("Searching for \"%ws\"\n", lpszError.c_str());

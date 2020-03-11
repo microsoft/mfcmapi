@@ -33,7 +33,7 @@ namespace smartview
 		bool isSet() const noexcept override { return set; }
 
 		// Mimic std::vector<BYTE>
-		operator const std::vector<BYTE>&() const { return _data; }
+		operator const std::vector<BYTE>&() const noexcept { return _data; }
 		size_t size() const noexcept { return _data.size(); }
 		bool empty() const noexcept { return _data.empty(); }
 		const BYTE* data() const noexcept { return _data.data(); }
@@ -51,7 +51,7 @@ namespace smartview
 
 		std::wstring toHexString(bool bMultiLine) const { return strings::BinToHexString(_data, bMultiLine); }
 
-		bool equal(size_t _cb, const BYTE* _bin) const
+		bool equal(size_t _cb, const BYTE* _bin) const noexcept
 		{
 			if (_cb != _data.size()) return false;
 			return memcmp(_data.data(), _bin, _cb) == 0;

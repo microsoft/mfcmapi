@@ -121,10 +121,10 @@ namespace ui
 				if (m_hWnd != WindowFromPoint(pos))
 				{
 					DWORD dwPos = 0;
-					(void) ::SendMessage(
-						m_hWnd, EM_GETSEL, reinterpret_cast<WPARAM>(&dwPos), static_cast<LPARAM>(NULL));
-					(void) ::SendMessage(
-						m_hWnd, EM_POSFROMCHAR, reinterpret_cast<WPARAM>(&pos), static_cast<LPARAM>(dwPos));
+					static_cast<void>(
+						::SendMessage(m_hWnd, EM_GETSEL, reinterpret_cast<WPARAM>(&dwPos), static_cast<LPARAM>(NULL)));
+					static_cast<void>(::SendMessage(
+						m_hWnd, EM_POSFROMCHAR, reinterpret_cast<WPARAM>(&pos), static_cast<LPARAM>(dwPos)));
 					ClientToScreen(m_hWnd, &pos);
 				}
 
@@ -137,8 +137,8 @@ namespace ui
 					m_hWndParent,
 					nullptr);
 				DeleteMenuEntries(hPopup);
-				(void) ::SendMessage(
-					m_hWnd, dwCommand, static_cast<WPARAM>(0), static_cast<LPARAM>(EM_SETSEL == dwCommand) ? -1 : 0);
+				static_cast<void>(::SendMessage(
+					m_hWnd, dwCommand, static_cast<WPARAM>(0), static_cast<LPARAM>(EM_SETSEL == dwCommand) ? -1 : 0));
 			}
 
 			DestroyMenu(hContext);

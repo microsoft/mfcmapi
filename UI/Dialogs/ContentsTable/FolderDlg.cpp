@@ -486,17 +486,17 @@ namespace dialog
 				// the properties that Exchange excludes to save bits and time.
 				// Should not be necessary to exclude these, but speeds the process
 				// when a lot of messages are being copied.
-				static const SizedSPropTagArray(7, excludeTags) = {7,
-																   {PR_ACCESS,
-																	PR_BODY,
-																	PR_RTF_SYNC_BODY_COUNT,
-																	PR_RTF_SYNC_BODY_CRC,
-																	PR_RTF_SYNC_BODY_TAG,
-																	PR_RTF_SYNC_PREFIX_COUNT,
-																	PR_RTF_SYNC_TRAILING_COUNT}};
+				static SizedSPropTagArray(7, excludeTags) = {7,
+															 {PR_ACCESS,
+															  PR_BODY,
+															  PR_RTF_SYNC_BODY_COUNT,
+															  PR_RTF_SYNC_BODY_CRC,
+															  PR_RTF_SYNC_BODY_TAG,
+															  PR_RTF_SYNC_PREFIX_COUNT,
+															  PR_RTF_SYNC_TRAILING_COUNT}};
 
 				const auto lpTagsToExclude =
-					ui::mapiui::GetExcludedTags(LPSPropTagArray(&excludeTags), m_lpFolder, m_bIsAB);
+					ui::mapiui::GetExcludedTags(reinterpret_cast<LPSPropTagArray>(&excludeTags), m_lpFolder, m_bIsAB);
 				if (lpTagsToExclude)
 				{
 					for (ULONG i = 0; i < lpEIDs->cValues; i++)
@@ -1869,7 +1869,7 @@ namespace dialog
 				MyStatus.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_MESSAGESTATUS, true));
 				MyStatus.SetHex(0, ulMessageStatus);
 
-				(void) MyStatus.DisplayDialog();
+				static_cast<void>(MyStatus.DisplayDialog());
 			}
 		}
 

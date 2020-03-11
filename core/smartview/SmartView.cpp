@@ -204,7 +204,7 @@ namespace smartview
 		const ULONG ulPropTag,
 		const ULONG ulPropNameID,
 		_In_opt_ const LPCGUID lpguidNamedProp,
-		bool bMVRow)
+		bool bMVRow) noexcept
 	{
 		auto ulLookupPropTag = ulPropTag;
 		if (bMVRow) ulLookupPropTag |= MV_FLAG;
@@ -216,7 +216,7 @@ namespace smartview
 		_In_opt_ const _SPropValue* lpProp, // required property value
 		_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
 		_In_opt_ const MAPINAMEID* lpNameID, // optional named property information to avoid GetNamesFromIDs call
-		_In_opt_ LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
+		_In_opt_ const SBinary* lpMappingSignature, // optional mapping signature for object to speed named prop lookups
 		bool
 			bIsAB, // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
 		bool bMVRow) // did the row come from a MV prop?
@@ -285,7 +285,7 @@ namespace smartview
 		_In_opt_ ULONG ulPropTag,
 		_In_opt_ LPMAPIPROP lpMAPIProp,
 		_In_opt_ const MAPINAMEID* lpNameID,
-		_In_opt_ LPSBinary lpMappingSignature,
+		_In_opt_ const SBinary* lpMappingSignature,
 		bool bIsAB)
 	{
 		if (lpNameID) return GetNamedPropInfo(lpNameID);
@@ -310,7 +310,7 @@ namespace smartview
 		_In_opt_ const SPropValue* lpProp, // required property value
 		_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
 		_In_opt_ const MAPINAMEID* lpNameID, // optional named property information to avoid GetNamesFromIDs call
-		_In_opt_ LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
+		_In_opt_ const SBinary* lpMappingSignature, // optional mapping signature for object to speed named prop lookups
 		bool
 			bIsAB, // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
 		bool bMVRow) // did the row come from a MV prop?
@@ -344,7 +344,7 @@ namespace smartview
 
 			if (parser != parserType::NOPARSING)
 			{
-				return InterpretBinaryAsString(lpProp->Value.bin, parser, lpMAPIProp);
+				return InterpretBinaryAsString(mapi::getBin(lpProp), parser, lpMAPIProp);
 			}
 
 			break;

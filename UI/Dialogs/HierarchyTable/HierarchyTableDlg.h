@@ -28,7 +28,7 @@ namespace dialog
 		void CreateDialogAndMenu(const UINT nIDMenuResource, const UINT uiClassMenuResource);
 		void OnInitMenu(_In_ CMenu* pMenu) override;
 		// Get the current root container - does not addref
-		LPMAPICONTAINER GetRootContainer() const { return m_lpContainer; }
+		LPMAPICONTAINER GetRootContainer() const noexcept { return m_lpContainer; }
 		void SetRootContainer(LPUNKNOWN container);
 
 		controls::CHierarchyTableTreeCtrl m_lpHierarchyTableTreeCtrl{};

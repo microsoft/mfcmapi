@@ -217,7 +217,7 @@ namespace dialog
 			OnCompareEntryIDs();
 			return true;
 		case ID_OPENENTRYID:
-			OnOpenEntryID(nullptr);
+			OnOpenEntryID({});
 			return true;
 		case ID_COMPUTESTOREHASH:
 			OnComputeStoreHash();
@@ -226,7 +226,7 @@ namespace dialog
 			HandleCopy();
 			return true;
 		case ID_PASTE:
-			(void) HandlePaste();
+			static_cast<void>(HandlePaste());
 			return true;
 		case ID_OUTLOOKVERSION:
 			OnOutlookVersion();
@@ -348,7 +348,7 @@ namespace dialog
 		case 'V':
 			if (bCtrl)
 			{
-				(void) HandlePaste();
+				static_cast<void>(HandlePaste());
 				return true;
 			}
 			break;
@@ -477,7 +477,7 @@ namespace dialog
 				hMenuBar, uiPos, MF_BYPOSITION | MF_POPUP, reinterpret_cast<UINT_PTR>(hMenuToAdd), szTitle.c_str());
 			if (IDR_MENU_PROPERTY == uiResource)
 			{
-				(void) ui::addinui::ExtendAddInMenu(hMenuToAdd, MENU_CONTEXT_PROPERTY);
+				static_cast<void>(ui::addinui::ExtendAddInMenu(hMenuToAdd, MENU_CONTEXT_PROPERTY));
 			}
 		}
 	}
@@ -488,7 +488,7 @@ namespace dialog
 		if (nState == 1 && !bMinimized) EC_B_S(RedrawWindow());
 	}
 
-	void CBaseDialog::SetStatusWidths()
+	void CBaseDialog::SetStatusWidths() noexcept
 	{
 		const auto iData1 = !getStatusMessage(statusPane::data1).empty();
 		const auto iData2 = !getStatusMessage(statusPane::data2).empty();
@@ -627,10 +627,10 @@ namespace dialog
 		SetTitle(strings::formatmessage(IDS_TITLEBARPLAIN, m_szTitle.c_str()));
 	}
 
-	void CBaseDialog::UpdateStatus(HWND hWndHost, const statusPane pane, const std::wstring& status)
+	void CBaseDialog::UpdateStatus(HWND hWndHost, const statusPane pane, const std::wstring& status) noexcept
 	{
-		(void) ::SendMessage(
-			hWndHost, WM_MFCMAPI_UPDATESTATUSBAR, static_cast<WPARAM>(pane), reinterpret_cast<LPARAM>(status.c_str()));
+		static_cast<void>(::SendMessage(
+			hWndHost, WM_MFCMAPI_UPDATESTATUSBAR, static_cast<WPARAM>(pane), reinterpret_cast<LPARAM>(status.c_str())));
 	}
 
 	// WM_MFCMAPI_UPDATESTATUSBAR
@@ -660,17 +660,17 @@ namespace dialog
 		const auto szVersionString = version::GetOutlookVersionString();
 
 		MyEID.AddPane(viewpane::TextPane::CreateMultiLinePane(0, IDS_OUTLOOKVERSIONPROMPT, szVersionString, true));
-		(void) MyEID.DisplayDialog();
+		static_cast<void>(MyEID.DisplayDialog());
 	}
 
-	void CBaseDialog::OnOpenEntryID(_In_opt_ LPSBinary lpBin)
+	void CBaseDialog::OnOpenEntryID(_In_ const SBinary& lpBin)
 	{
 		if (!m_lpMapiObjects) return;
 
 		editor::CEditor MyEID(this, IDS_OPENEID, IDS_OPENEIDPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 		MyEID.AddPane(
-			viewpane::TextPane::CreateSingleLinePane(0, IDS_EID, strings::BinToHexString(lpBin, false), false));
+			viewpane::TextPane::CreateSingleLinePane(0, IDS_EID, strings::BinToHexString(&lpBin, false), false));
 
 		const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 		MyEID.AddPane(viewpane::CheckPane::Create(1, IDS_USEMDB, lpMDB != nullptr, lpMDB == nullptr));
@@ -704,7 +704,7 @@ namespace dialog
 
 		if (MyEID.GetCheck(9))
 		{
-			(void) mapi::UnwrapContactEntryID(sBin.cb, sBin.lpb, &sBin.cb, &sBin.lpb);
+			static_cast<void>(mapi::UnwrapContactEntryID(sBin.cb, sBin.lpb, &sBin.cb, &sBin.lpb));
 		}
 
 		if (MyEID.GetCheck(8) && lpAB) // Do IAddrBook->Details here
@@ -835,7 +835,7 @@ namespace dialog
 
 			editor::CEditor Result(this, IDS_COMPAREEIDSRESULT, NULL, CEDITOR_BUTTON_OK);
 			Result.SetPromptPostFix(szRet);
-			(void) Result.DisplayDialog();
+			static_cast<void>(Result.DisplayDialog());
 		}
 	}
 
@@ -861,7 +861,7 @@ namespace dialog
 
 		editor::CEditor Result(this, IDS_STOREHASH, NULL, CEDITOR_BUTTON_OK);
 		Result.SetPromptPostFix(szHash);
-		(void) Result.DisplayDialog();
+		static_cast<void>(Result.DisplayDialog());
 	}
 
 	void CBaseDialog::OnNotificationsOn()
@@ -993,7 +993,10 @@ namespace dialog
 		return false;
 	}
 
-	_Check_return_ ui::CParentWnd* CBaseDialog::GetParentWnd() const { return m_lpParent; }
+	_Check_return_ ui::CParentWnd* CBaseDialog::GetParentWnd() const noexcept { return m_lpParent; }
 
-	_Check_return_ std::shared_ptr<cache::CMapiObjects> CBaseDialog::GetMapiObjects() const { return m_lpMapiObjects; }
+	_Check_return_ std::shared_ptr<cache::CMapiObjects> CBaseDialog::GetMapiObjects() const noexcept
+	{
+		return m_lpMapiObjects;
+	}
 } // namespace dialog
