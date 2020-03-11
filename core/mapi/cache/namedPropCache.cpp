@@ -158,8 +158,8 @@ namespace cache
 	_Check_return_ bool
 	namedPropCacheEntry::match(const namedPropCacheEntry* entry, bool bMatchSig, bool bMatchID, bool bMatchName) const
 	{
-		if (!bMatchSig && entry->sig != sig) return false;
-		if (!bMatchID && entry->ulPropID != ulPropID) return false;
+		if (bMatchSig && entry->sig != sig) return false;
+		if (bMatchID && entry->ulPropID != ulPropID) return false;
 
 		if (bMatchName)
 		{
