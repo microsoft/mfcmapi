@@ -156,17 +156,17 @@ namespace cache
 	}
 
 	_Check_return_ bool
-	namedPropCacheEntry::match(const namedPropCacheEntry* entry, bool bMatchSig, bool bMatchID, bool bMatchName) const
+	namedPropCacheEntry::match(const namedPropCacheEntry& entry, bool bMatchSig, bool bMatchID, bool bMatchName) const
 	{
-		if (bMatchSig && entry->sig != sig) return false;
-		if (bMatchID && entry->ulPropID != ulPropID) return false;
+		if (bMatchSig && entry.sig != sig) return false;
+		if (bMatchID && entry.ulPropID != ulPropID) return false;
 
 		if (bMatchName)
 		{
-			if (entry->mapiNameId.ulKind != mapiNameId.ulKind) return false;
-			if (MNID_ID == mapiNameId.ulKind && mapiNameId.Kind.lID != entry->mapiNameId.Kind.lID) return false;
-			if (MNID_STRING == mapiNameId.ulKind && entry->name != name) return false;
-			if (!IsEqualGUID(entry->guid, guid)) return false;
+			if (entry.mapiNameId.ulKind != mapiNameId.ulKind) return false;
+			if (MNID_ID == mapiNameId.ulKind && mapiNameId.Kind.lID != entry.mapiNameId.Kind.lID) return false;
+			if (MNID_STRING == mapiNameId.ulKind && entry.name != name) return false;
+			if (!IsEqualGUID(entry.guid, guid)) return false;
 		}
 
 		return true;
@@ -243,12 +243,12 @@ namespace cache
 				auto match = std::shared_ptr<namedPropCacheEntry>{};
 				if (sig.empty())
 				{
-					match = find([&](const auto& _entry) { return entry->match(_entry.get(), false, true, true); });
+					match = find([&](const auto& _entry) { return entry->match(*_entry.get(), false, true, true); });
 				}
 				else
 				{
 					entry->setSig(sig);
-					match = find([&](const auto& _entry) { return entry->match(_entry.get(), true, true, true); });
+					match = find([&](const auto& _entry) { return entry->match(*_entry.get(), true, true, true); });
 				}
 
 				if (!match)

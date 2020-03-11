@@ -35,25 +35,25 @@ namespace namedproptest
 			const auto formStorage2 = cache::namedPropCacheEntry(&formStorageID, 0x1111, sig2);
 
 			// Test all forms of match
-			Assert::AreEqual(true, formStorage1.match(&formStorage1, true, true, true));
-			Assert::AreEqual(true, formStorage1.match(&formStorage1, false, true, true));
-			Assert::AreEqual(true, formStorage1.match(&formStorage1, true, false, true));
-			Assert::AreEqual(true, formStorage1.match(&formStorage1, true, true, false));
-			Assert::AreEqual(true, formStorage1.match(&formStorage1, true, false, false));
-			Assert::AreEqual(true, formStorage1.match(&formStorage1, false, true, false));
-			Assert::AreEqual(true, formStorage1.match(&formStorage1, false, false, true));
-			Assert::AreEqual(true, formStorage1.match(&formStorage1, false, false, false));
+			Assert::AreEqual(true, formStorage1.match(formStorage1, true, true, true));
+			Assert::AreEqual(true, formStorage1.match(formStorage1, false, true, true));
+			Assert::AreEqual(true, formStorage1.match(formStorage1, true, false, true));
+			Assert::AreEqual(true, formStorage1.match(formStorage1, true, true, false));
+			Assert::AreEqual(true, formStorage1.match(formStorage1, true, false, false));
+			Assert::AreEqual(true, formStorage1.match(formStorage1, false, true, false));
+			Assert::AreEqual(true, formStorage1.match(formStorage1, false, false, true));
+			Assert::AreEqual(true, formStorage1.match(formStorage1, false, false, false));
 
-			Assert::AreEqual(true, formStorage1.match(&formStorage1, false, false, false));
+			Assert::AreEqual(true, formStorage1.match(formStorage1, false, false, false));
 
 			// Should fail
-			Assert::AreEqual(false, formStorage1.match(&formStorage2, true, true, true));
+			Assert::AreEqual(false, formStorage1.match(formStorage2, true, true, true));
 
 			// Should all work
-			Assert::AreEqual(true, formStorage1.match(&formStorage2, false, true, true));
-			Assert::AreEqual(true, formStorage1.match(&formStorage2, false, false, true));
-			Assert::AreEqual(true, formStorage1.match(&formStorage2, false, true, false));
-			Assert::AreEqual(true, formStorage1.match(&formStorage2, false, false, false));
+			Assert::AreEqual(true, formStorage1.match(formStorage2, false, true, true));
+			Assert::AreEqual(true, formStorage1.match(formStorage2, false, false, true));
+			Assert::AreEqual(true, formStorage1.match(formStorage2, false, true, false));
+			Assert::AreEqual(true, formStorage1.match(formStorage2, false, false, false));
 		}
 	};
 } // namespace namedproptest

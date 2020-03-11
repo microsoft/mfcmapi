@@ -37,7 +37,7 @@ namespace cache
 		void setSig(const std::vector<BYTE>& _sig) { sig = _sig; }
 
 		_Check_return_ bool
-		match(const namedPropCacheEntry* entry, bool bMatchSig, bool bMatchID, bool bMatchName) const;
+		match(const namedPropCacheEntry& entry, bool bMatchSig, bool bMatchID, bool bMatchName) const;
 
 		// Compare given a signature, MAPINAMEID
 		_Check_return_ bool match(_In_ const std::vector<BYTE>& _sig, _In_ const MAPINAMEID& _mapiNameId) const;
