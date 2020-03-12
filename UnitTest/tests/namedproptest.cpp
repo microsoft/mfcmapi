@@ -1,6 +1,7 @@
 #include <UnitTest/stdafx.h>
 #include <UnitTest/UnitTest.h>
 #include <core/mapi/cache/namedProps.h>
+#include <core/mapi/cache/namedPropCache.h>
 #include <core/mapi/extraPropTags.h>
 
 namespace namedproptest
@@ -10,16 +11,16 @@ namespace namedproptest
 	public:
 		// Without this, clang gets weird
 		static const bool dummy_var = true;
+		const std::vector<BYTE> sig1 = {1, 2, 3, 4};
+		const std::vector<BYTE> sig2 = {5, 6, 7, 8, 9};
 
 		TEST_CLASS_INITIALIZE(initialize) { unittest::init(); }
 
 		TEST_METHOD(Test_Match)
 		{
-			const auto sig1 = std::vector<BYTE>({1, 2, 3, 4});
-			const auto sig2 = std::vector<BYTE>({5, 6, 7, 8, 9});
-
 			const auto formStorageID = MAPINAMEID{const_cast<LPGUID>(&guid::PSETID_Common), MNID_ID, dispidFormStorage};
-			const auto formStorageName = MAPINAMEID{const_cast<LPGUID>(&guid::PSETID_Common), MNID_ID, {.lpwstrName = L"name"}};
+			const auto formStorageName =
+				MAPINAMEID{const_cast<LPGUID>(&guid::PSETID_Common), MNID_ID, {.lpwstrName = L"name"}};
 			const auto pageDirStreamID =
 				MAPINAMEID{const_cast<LPGUID>(&guid::PSETID_Common), MNID_ID, dispidPageDirStream};
 
@@ -77,6 +78,32 @@ namespace namedproptest
 			Assert::AreEqual(true, formStorage1.match(0x1111, formStorageID));
 			Assert::AreEqual(false, formStorage1.match(0x1112, formStorageID));
 			Assert::AreEqual(false, formStorage1.match(0x1111, pageDirStreamID));
+		}
+
+		TEST_METHOD(Test_Cache)
+		{
+			const auto formStorageID = MAPINAMEID{const_cast<LPGUID>(&guid::PSETID_Common), MNID_ID, dispidFormStorage};
+			const auto formStorageName =
+				MAPINAMEID{const_cast<LPGUID>(&guid::PSETID_Common), MNID_ID, {.lpwstrName = L"name"}};
+			const auto pageDirStreamID =
+				MAPINAMEID{const_cast<LPGUID>(&guid::PSETID_Common), MNID_ID, dispidPageDirStream};
+
+			const auto prop1 = std::make_shared<cache::namedPropCacheEntry>(&formStorageID, 0x1111);
+			const auto prop2 = std::make_shared<cache::namedPropCacheEntry>(&formStorageName, 0x2222);
+			const auto prop3 = std::make_shared<cache::namedPropCacheEntry>(&pageDirStreamID, 0x3333);
+
+			auto ids = std::vector<std::shared_ptr<cache::namedPropCacheEntry>>{};
+			ids.emplace_back(prop1);
+			ids.emplace_back(prop2);
+			ids.emplace_back(prop3);
+
+			cache::namedPropCache::add(ids, sig1);
+
+			const auto find1 = 
+				cache::namedPropCache::find(
+				[&](const auto& _entry) { return prop1->match(*_entry.get(), true, true, true); });
+
+			Assert::AreEqual(true, find1->match(*prop1.get(), true, true, true));
 		}
 	};
 } // namespace namedproptest
