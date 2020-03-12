@@ -542,10 +542,10 @@
     <ClInclude Include="interpret\sid.h" />
     <ClInclude Include="interpret\smartViewParsers.h" />
     <ClInclude Include="mapi\adviseSink.h" />
-    <ClInclude Include="mapi\cache\cache.h" />
+    <ClInclude Include="mapi\cache\namedPropCache.h" />
     <ClInclude Include="mapi\cache\globalCache.h" />
     <ClInclude Include="mapi\cache\mapiObjects.h" />
-    <ClInclude Include="mapi\cache\namedPropCache.h" />
+    <ClInclude Include="mapi\cache\namedProps.h" />
     <ClInclude Include="mapi\columnTags.h" />
     <ClInclude Include="mapi\exportProfile.h" />
     <ClInclude Include="mapi\extraPropTags.h" />
@@ -632,10 +632,10 @@
     <ClCompile Include="interpret\proptype.cpp" />
     <ClCompile Include="interpret\sid.cpp" />
     <ClCompile Include="mapi\adviseSink.cpp" />
-    <ClCompile Include="mapi\cache\cache.cpp" />
+    <ClCompile Include="mapi\cache\namedPropCache.cpp" />
     <ClCompile Include="mapi\cache\globalCache.cpp" />
     <ClCompile Include="mapi\cache\mapiObjects.cpp" />
-    <ClCompile Include="mapi\cache\namedPropCache.cpp" />
+    <ClCompile Include="mapi\cache\namedProps.cpp" />
     <ClCompile Include="mapi\exportProfile.cpp" />
     <ClCompile Include="mapi\mapiABFunctions.cpp" />
     <ClCompile Include="mapi\mapiFile.cpp" />

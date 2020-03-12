@@ -1,6 +1,6 @@
 #include <UnitTest/stdafx.h>
 #include <UnitTest/UnitTest.h>
-#include <core/mapi/cache/namedPropCache.h>
+#include <core/mapi/cache/namedProps.h>
 #include <core/mapi/extraPropTags.h>
 
 namespace namedproptest

@@ -2,7 +2,7 @@
 #include <UI/Dialogs/Editors/TagArrayEditor.h>
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
 #include <core/sortlistdata/propListData.h>
-#include <core/mapi/cache/namedPropCache.h>
+#include <core/mapi/cache/namedProps.h>
 #include <core/mapi/mapiMemory.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>

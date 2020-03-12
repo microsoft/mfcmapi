@@ -2,7 +2,7 @@
 #include <core/interpret/proptags.h>
 #include <core/addin/addin.h>
 #include <core/addin/mfcmapi.h>
-#include <core/mapi/cache/namedPropCache.h>
+#include <core/mapi/cache/namedProps.h>
 #include <core/utility/strings.h>
 #include <core/interpret/proptype.h>
 #include <core/utility/output.h>
