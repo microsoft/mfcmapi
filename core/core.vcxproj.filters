@@ -297,6 +297,9 @@
     <ClInclude Include="propertyBag\mapiPropPropertyBag.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="mapi\cache\cache.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="utility\strings.cpp">
@@ -516,6 +519,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="propertyBag\mapiPropPropertyBag.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mapi\cache\cache.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
