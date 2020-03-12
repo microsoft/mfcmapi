@@ -19,6 +19,7 @@ namespace namedproptest
 			const auto sig2 = std::vector<BYTE>({5, 6, 7, 8, 9});
 
 			const auto formStorageID = MAPINAMEID{const_cast<LPGUID>(&guid::PSETID_Common), MNID_ID, dispidFormStorage};
+			const auto formStorageName = MAPINAMEID{const_cast<LPGUID>(&guid::PSETID_Common), MNID_ID, {.lpwstrName = L"name"}};
 			const auto pageDirStreamID =
 				MAPINAMEID{const_cast<LPGUID>(&guid::PSETID_Common), MNID_ID, dispidPageDirStream};
 
@@ -46,6 +47,12 @@ namespace namedproptest
 			Assert::AreEqual(
 				true,
 				formStorage1.match(cache::namedPropCacheEntry(&pageDirStreamID, 0x1111, sig1), true, true, false));
+			Assert::AreEqual(
+				true,
+				formStorage1.match(cache::namedPropCacheEntry(&formStorageName, 0x1111, sig1), true, true, false));
+			Assert::AreEqual(
+				false,
+				formStorage1.match(cache::namedPropCacheEntry(&formStorageName, 0x1111, sig1), true, true, true));
 
 			// Should all work
 			Assert::AreEqual(true, formStorage1.match(formStorage2, false, true, true));
