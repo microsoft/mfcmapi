@@ -112,7 +112,7 @@ namespace cache
 		const auto entry =
 			find_if(cache.begin(), cache.end(), [compare](const auto& _entry) { return compare(_entry); });
 
-		return entry != cache.end() ? *entry : nullptr;
+		return entry != cache.end() ? *entry : namedPropCacheEntry::empty();
 	}
 
 	_Check_return_ std::shared_ptr<namedPropCacheEntry> namedPropCache::find(
@@ -161,7 +161,7 @@ namespace cache
 				match = find(entry, true, true, true);
 			}
 
-			if (!match)
+			if (!match || !match->valid())
 			{
 				if (fIsSet(output::dbgLevel::NamedPropCacheMisses))
 				{

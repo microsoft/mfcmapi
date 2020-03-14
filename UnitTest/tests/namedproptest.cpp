@@ -106,6 +106,18 @@ namespace namedproptest
 			Assert::AreEqual(true, cache::namedPropCache::find(sig1, 0x1111)->match(*prop1.get(), true, true, true));
 			Assert::AreEqual(
 				true, cache::namedPropCache::find(sig1, formStorageID)->match(*prop1.get(), true, true, true));
+
+			// This is super awkward - need to get rid of all these get calls...
+			Assert::AreEqual(
+				true,
+				cache::namedPropCache::find(0x1110, formStorageID)
+					->match(*cache::namedPropCacheEntry::empty().get(), true, true, true));
+
+			Assert::AreEqual(
+				false, cache::namedPropCache::find(0x1110, formStorageID)->match(*prop1.get(), true, true, true));
+			Assert::AreEqual(false, cache::namedPropCache::find(sig2, 0x1111)->match(*prop1.get(), true, true, true));
+			Assert::AreEqual(
+				false, cache::namedPropCache::find(sig2, formStorageID)->match(*prop1.get(), true, true, true));
 		}
 	};
 } // namespace namedproptest

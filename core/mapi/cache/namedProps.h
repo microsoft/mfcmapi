@@ -24,6 +24,12 @@ namespace cache
 		namedPropCacheEntry(const namedPropCacheEntry&) = delete;
 		namedPropCacheEntry& operator=(const namedPropCacheEntry&) = delete;
 
+		static std::shared_ptr<namedPropCacheEntry>& empty() noexcept
+		{
+			static std::shared_ptr<namedPropCacheEntry> _empty = std::make_shared<namedPropCacheEntry>(nullptr, 0);
+			return _empty;
+		}
+
 		bool valid() const noexcept { return mapiNameId.Kind.lID || mapiNameId.Kind.lpwstrName; }
 		ULONG getPropID() const noexcept { return ulPropID; }
 		const NamePropNames& getNamePropNames() const noexcept { return namePropNames; }
