@@ -115,6 +115,33 @@ namespace cache
 		return entry != cache.end() ? *entry : nullptr;
 	}
 
+	_Check_return_ std::shared_ptr<namedPropCacheEntry> namedPropCache::find(
+		const std::shared_ptr<cache::namedPropCacheEntry>& entry,
+		bool bMatchSig,
+		bool bMatchID,
+		bool bMatchName)
+	{
+		return find([&](const auto& _entry) { return _entry->match(*entry.get(), bMatchSig, bMatchID, bMatchName); });
+	}
+
+	_Check_return_ std::shared_ptr<namedPropCacheEntry>
+	namedPropCache::find(_In_ const std::vector<BYTE>& _sig, _In_ const MAPINAMEID& _mapiNameId)
+	{
+		return find([&](const auto& _entry) { return _entry->match(_sig, _mapiNameId); });
+	}
+
+	_Check_return_ std::shared_ptr<namedPropCacheEntry>
+	namedPropCache::find(_In_ const std::vector<BYTE>& _sig, ULONG _ulPropID)
+	{
+		return find([&](const auto& _entry) { return _entry->match(_sig, _ulPropID); });
+	}
+
+	_Check_return_ std::shared_ptr<namedPropCacheEntry>
+	namedPropCache::find(ULONG _ulPropID, _In_ const MAPINAMEID& _mapiNameId)
+	{
+		return find([&](const auto& _entry) { return _entry->match(_ulPropID, _mapiNameId); });
+	}
+
 	// Add a mapping to the cache if it doesn't already exist
 	// If given a signature, we include it in our search.
 	// If not, we search without it

@@ -27,6 +27,14 @@ namespace cache
 		static std::list<std::shared_ptr<namedPropCacheEntry>>& getCache() noexcept;
 		_Check_return_ static std::shared_ptr<namedPropCacheEntry>
 		find(const std::function<bool(const std::shared_ptr<namedPropCacheEntry>&)>& compare);
+		_Check_return_ static std::shared_ptr<namedPropCacheEntry>
+		find(const std::shared_ptr<cache::namedPropCacheEntry>& entry, bool bMatchSig, bool bMatchID, bool bMatchName);
+		_Check_return_ static std::shared_ptr<namedPropCacheEntry>
+		find(_In_ const std::vector<BYTE>& _sig, _In_ const MAPINAMEID& _mapiNameId);
+		_Check_return_ static std::shared_ptr<namedPropCacheEntry>
+		find(_In_ const std::vector<BYTE>& _sig, ULONG _ulPropID);
+		_Check_return_ static std::shared_ptr<namedPropCacheEntry>
+		find(ULONG _ulPropID, _In_ const MAPINAMEID& _mapiNameId);
 
 		// Add a mapping to the cache if it doesn't already exist
 		// If given a signature, we include it in our search.

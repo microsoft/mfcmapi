@@ -99,10 +99,7 @@ namespace namedproptest
 
 			cache::namedPropCache::add(ids, sig1);
 
-			const auto find1 = 
-				cache::namedPropCache::find(
-				[&](const auto& _entry) { return prop1->match(*_entry.get(), true, true, true); });
-
+			const auto find1 = cache::namedPropCache::find(prop1, true, true, true);
 			Assert::AreEqual(true, find1->match(*prop1.get(), true, true, true));
 		}
 	};
