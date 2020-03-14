@@ -99,8 +99,13 @@ namespace namedproptest
 
 			cache::namedPropCache::add(ids, sig1);
 
-			const auto find1 = cache::namedPropCache::find(prop1, true, true, true);
-			Assert::AreEqual(true, find1->match(*prop1.get(), true, true, true));
+			Assert::AreEqual(
+				true, cache::namedPropCache::find(prop1, true, true, true)->match(*prop1.get(), true, true, true));
+			Assert::AreEqual(
+				true, cache::namedPropCache::find(0x1111, formStorageID)->match(*prop1.get(), true, true, true));
+			Assert::AreEqual(true, cache::namedPropCache::find(sig1, 0x1111)->match(*prop1.get(), true, true, true));
+			Assert::AreEqual(
+				true, cache::namedPropCache::find(sig1, formStorageID)->match(*prop1.get(), true, true, true));
 		}
 	};
 } // namespace namedproptest
