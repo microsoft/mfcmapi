@@ -23,10 +23,12 @@ namespace cache
 
 	class namedPropCache
 	{
-	public:
-		static std::list<std::shared_ptr<namedPropCacheEntry>>& getCache() noexcept;
+	private:
 		_Check_return_ static std::shared_ptr<namedPropCacheEntry>
 		find(const std::function<bool(const std::shared_ptr<namedPropCacheEntry>&)>& compare);
+
+	public:
+		static std::list<std::shared_ptr<namedPropCacheEntry>>& getCache() noexcept;
 		_Check_return_ static std::shared_ptr<namedPropCacheEntry>
 		find(const std::shared_ptr<cache::namedPropCacheEntry>& entry, bool bMatchSig, bool bMatchID, bool bMatchName);
 		_Check_return_ static std::shared_ptr<namedPropCacheEntry>

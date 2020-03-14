@@ -241,8 +241,7 @@ namespace cache
 		// If we're using the cache, look up the answer there and return
 		if (registry::cacheNamedProps)
 		{
-			lpNamedPropCacheEntry = namedPropCache::find(
-				[&](const auto& entry) noexcept { return entry->match(PROP_ID(ulPropTag), *lpNameID); });
+			lpNamedPropCacheEntry = namedPropCache::find(PROP_ID(ulPropTag), *lpNameID);
 			if (lpNamedPropCacheEntry && lpNamedPropCacheEntry->hasCachedStrings())
 			{
 				return lpNamedPropCacheEntry->getNamePropNames();

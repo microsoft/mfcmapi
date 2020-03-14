@@ -153,12 +153,12 @@ namespace cache
 			auto match = std::shared_ptr<namedPropCacheEntry>{};
 			if (sig.empty())
 			{
-				match = find([&](const auto& _entry) { return entry->match(*_entry.get(), false, true, true); });
+				match = find(entry, false, true, true);
 			}
 			else
 			{
 				entry->setSig(sig);
-				match = find([&](const auto& _entry) { return entry->match(*_entry.get(), true, true, true); });
+				match = find(entry, true, true, true);
 			}
 
 			if (!match)
