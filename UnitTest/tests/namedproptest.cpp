@@ -15,7 +15,11 @@ namespace namedproptest
 		const std::vector<BYTE> sig2 = {5, 6, 7, 8, 9};
 
 		const MAPINAMEID formStorageID = {const_cast<LPGUID>(&guid::PSETID_Common), MNID_ID, dispidFormStorage};
-		const MAPINAMEID formStorageName = {const_cast<LPGUID>(&guid::PSETID_Common), MNID_ID, {.lpwstrName = L"name"}};
+		const MAPINAMEID formStorageIDLog = {const_cast<LPGUID>(&guid::PSETID_Log), MNID_ID, dispidFormStorage};
+		const MAPINAMEID formStorageName = {
+			const_cast<LPGUID>(&guid::PSETID_Common), MNID_STRING, {.lpwstrName = L"name"}};
+		const MAPINAMEID formStorageName2 = {
+			const_cast<LPGUID>(&guid::PSETID_Common), MNID_STRING, {.lpwstrName = L"name2"}};
 		const MAPINAMEID pageDirStreamID = {const_cast<LPGUID>(&guid::PSETID_Common), MNID_ID, dispidPageDirStream};
 
 		TEST_CLASS_INITIALIZE(initialize) { unittest::init(); }
@@ -24,6 +28,10 @@ namespace namedproptest
 		{
 			const auto formStorage1 = cache::namedPropCacheEntry::make(&formStorageID, 0x1111, sig1);
 			const auto formStorage2 = cache::namedPropCacheEntry::make(&formStorageID, 0x1111, sig2);
+			const auto formStorageLog = cache::namedPropCacheEntry::make(&formStorageIDLog, 0x1111, sig1);
+
+			const auto formStorageProp = cache::namedPropCacheEntry::make(&formStorageName, 0x1111, sig1);
+			const auto formStorageProp1 = cache::namedPropCacheEntry::make(&formStorageName2, 0x1111, sig1);
 
 			// Test all forms of match
 			Assert::AreEqual(true, formStorage1->match(formStorage1, true, true, true));
@@ -34,9 +42,6 @@ namespace namedproptest
 			Assert::AreEqual(true, formStorage1->match(formStorage1, false, true, false));
 			Assert::AreEqual(true, formStorage1->match(formStorage1, false, false, true));
 			Assert::AreEqual(true, formStorage1->match(formStorage1, false, false, false));
-
-			// Should fail
-			Assert::AreEqual(false, formStorage1->match(formStorage2, true, true, true));
 
 			// Odd comparisons
 			Assert::AreEqual(
@@ -58,6 +63,18 @@ namespace namedproptest
 				formStorage1->match(
 					cache::namedPropCacheEntry::make(&formStorageName, 0x1111, sig1), true, true, true));
 
+			// Should fail
+			Assert::AreEqual(
+				false,
+				formStorage1->match(cache::namedPropCacheEntry::make(&formStorageID, 0x1110, sig1), true, true, true));
+			Assert::AreEqual(
+				false,
+				formStorage1->match(
+					cache::namedPropCacheEntry::make(&pageDirStreamID, 0x1111, sig1), true, true, true));
+			Assert::AreEqual(false, formStorage1->match(nullptr, true, true, true));
+			Assert::AreEqual(false, formStorage1->match(formStorage2, true, true, true));
+			Assert::AreEqual(false, formStorage1->match(formStorageLog, true, true, true));
+
 			// Should all work
 			Assert::AreEqual(true, formStorage1->match(formStorage2, false, true, true));
 			Assert::AreEqual(true, formStorage1->match(formStorage2, false, false, true));
@@ -68,7 +85,11 @@ namespace namedproptest
 			// _Check_return_ bool match(_In_ const std::vector<BYTE>& _sig, _In_ const MAPINAMEID& _mapiNameId) const;
 			Assert::AreEqual(true, formStorage1->match(sig1, formStorageID));
 			Assert::AreEqual(false, formStorage1->match(sig2, formStorageID));
+			Assert::AreEqual(false, formStorage1->match(sig1, formStorageName));
+			Assert::AreEqual(false, formStorage1->match(sig1, formStorageIDLog));
 			Assert::AreEqual(false, formStorage1->match(sig1, pageDirStreamID));
+			Assert::AreEqual(true, formStorageProp->match(sig1, formStorageName));
+			Assert::AreEqual(false, formStorageProp->match(sig1, formStorageName2));
 
 			// Compare given a signature and property ID (ulPropID)
 			// _Check_return_ bool match(_In_ const std::vector<BYTE>& _sig, ULONG _ulPropID) const;
@@ -81,6 +102,14 @@ namespace namedproptest
 			Assert::AreEqual(true, formStorage1->match(0x1111, formStorageID));
 			Assert::AreEqual(false, formStorage1->match(0x1112, formStorageID));
 			Assert::AreEqual(false, formStorage1->match(0x1111, pageDirStreamID));
+			Assert::AreEqual(false, formStorage1->match(0x1111, formStorageName));
+			Assert::AreEqual(false, formStorage1->match(0x1111, formStorageIDLog));
+			Assert::AreEqual(true, formStorageProp->match(0x1111, formStorageName));
+			Assert::AreEqual(false, formStorageProp->match(0x1111, formStorageName2));
+
+			// String prop
+			Assert::AreEqual(true, formStorageProp->match(formStorageProp, true, true, true));
+			Assert::AreEqual(false, formStorageProp->match(formStorageProp1, true, true, true));
 		}
 
 		TEST_METHOD(Test_Cache)
