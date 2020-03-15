@@ -121,7 +121,7 @@ namespace cache
 		bool bMatchID,
 		bool bMatchName)
 	{
-		return find([&](const auto& _entry) { return _entry->match(*entry.get(), bMatchSig, bMatchID, bMatchName); });
+		return find([&](const auto& _entry) { return _entry->match(entry, bMatchSig, bMatchID, bMatchName); });
 	}
 
 	_Check_return_ std::shared_ptr<namedPropCacheEntry>
