@@ -106,6 +106,10 @@ namespace namedproptest
 
 			Assert::AreEqual(
 				true, cache::namedPropCache::find(prop1, true, true, true)->match(prop1, true, true, true));
+			Assert::AreEqual(
+				true, cache::namedPropCache::find(prop2, true, true, true)->match(prop2, true, true, true));
+			Assert::AreEqual(
+				true, cache::namedPropCache::find(prop3, true, true, true)->match(prop3, true, true, true));
 			Assert::AreEqual(true, cache::namedPropCache::find(0x1111, formStorageID)->match(prop1, true, true, true));
 			Assert::AreEqual(true, cache::namedPropCache::find(sig1, 0x1111)->match(prop1, true, true, true));
 			Assert::AreEqual(true, cache::namedPropCache::find(sig1, formStorageID)->match(prop1, true, true, true));
