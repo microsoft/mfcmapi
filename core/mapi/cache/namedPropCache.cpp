@@ -215,7 +215,7 @@ namespace cache
 			// ...check the cache
 			const auto lpEntry = find([&](const auto& entry) noexcept { return entry->match(sig, ulPropId); });
 
-			if (!lpEntry)
+			if (!lpEntry || !lpEntry->valid())
 			{
 				misses.emplace_back(ulPropTag);
 			}
@@ -268,7 +268,7 @@ namespace cache
 		{
 			const auto lpEntry = find([&](const auto& entry) noexcept { return entry->match(sig, nameID); });
 
-			if (!lpEntry)
+			if (!lpEntry || !lpEntry->valid())
 			{
 				misses.emplace_back(nameID);
 			}
