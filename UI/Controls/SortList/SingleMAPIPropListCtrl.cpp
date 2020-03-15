@@ -1077,7 +1077,7 @@ namespace controls::sortlistctrl
 					{
 						const auto ulPropTag = PROP_TAG(NULL, iTag);
 						const auto name = cache::GetNameFromID(m_lpPropBag->GetMAPIProp(), ulPropTag, NULL);
-						if (name->valid())
+						if (cache::namedPropCacheEntry::valid(name))
 						{
 							output::DebugPrintEx(
 								output::dbgLevel::NamedProp,
@@ -1117,7 +1117,7 @@ namespace controls::sortlistctrl
 		{
 			const auto ulPropTag = PROP_TAG(NULL, ulCurrent);
 			const auto name = cache::GetNameFromID(m_lpPropBag->GetMAPIProp(), ulPropTag, NULL);
-			if (name->valid())
+			if (cache::namedPropCacheEntry::valid(name))
 			{
 				// Found a named property, reset lower bound
 
@@ -1158,7 +1158,7 @@ namespace controls::sortlistctrl
 		{
 			const auto ulPropTag = PROP_TAG(NULL, ulHighestKnown);
 			const auto name = cache::GetNameFromID(m_lpPropBag->GetMAPIProp(), ulPropTag, NULL);
-			if (name->valid())
+			if (cache::namedPropCacheEntry::valid(name))
 			{
 				output::DebugPrintEx(
 					output::dbgLevel::NamedProp,
@@ -1174,7 +1174,7 @@ namespace controls::sortlistctrl
 
 			MyResult.AddPane(viewpane::TextPane::CreateMultiLinePane(1, IDS_HIGHESTNAMEDPROPNUM, true));
 
-			if (name->valid())
+			if (cache::namedPropCacheEntry::valid(name))
 			{
 				const auto namePropNames =
 					cache::NameIDToStrings(ulPropTag, nullptr, name->getMapiNameId(), nullptr, false);

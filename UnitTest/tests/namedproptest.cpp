@@ -14,16 +14,14 @@ namespace namedproptest
 		const std::vector<BYTE> sig1 = {1, 2, 3, 4};
 		const std::vector<BYTE> sig2 = {5, 6, 7, 8, 9};
 
+		const MAPINAMEID formStorageID = {const_cast<LPGUID>(&guid::PSETID_Common), MNID_ID, dispidFormStorage};
+		const MAPINAMEID formStorageName = {const_cast<LPGUID>(&guid::PSETID_Common), MNID_ID, {.lpwstrName = L"name"}};
+		const MAPINAMEID pageDirStreamID = {const_cast<LPGUID>(&guid::PSETID_Common), MNID_ID, dispidPageDirStream};
+
 		TEST_CLASS_INITIALIZE(initialize) { unittest::init(); }
 
 		TEST_METHOD(Test_Match)
 		{
-			const auto formStorageID = MAPINAMEID{const_cast<LPGUID>(&guid::PSETID_Common), MNID_ID, dispidFormStorage};
-			const auto formStorageName =
-				MAPINAMEID{const_cast<LPGUID>(&guid::PSETID_Common), MNID_ID, {.lpwstrName = L"name"}};
-			const auto pageDirStreamID =
-				MAPINAMEID{const_cast<LPGUID>(&guid::PSETID_Common), MNID_ID, dispidPageDirStream};
-
 			const auto formStorage1 = cache::namedPropCacheEntry::make(&formStorageID, 0x1111, sig1);
 			const auto formStorage2 = cache::namedPropCacheEntry::make(&formStorageID, 0x1111, sig2);
 
@@ -87,12 +85,6 @@ namespace namedproptest
 
 		TEST_METHOD(Test_Cache)
 		{
-			const auto formStorageID = MAPINAMEID{const_cast<LPGUID>(&guid::PSETID_Common), MNID_ID, dispidFormStorage};
-			const auto formStorageName =
-				MAPINAMEID{const_cast<LPGUID>(&guid::PSETID_Common), MNID_ID, {.lpwstrName = L"name"}};
-			const auto pageDirStreamID =
-				MAPINAMEID{const_cast<LPGUID>(&guid::PSETID_Common), MNID_ID, dispidPageDirStream};
-
 			const auto prop1 = cache::namedPropCacheEntry::make(&formStorageID, 0x1111);
 			const auto prop2 = cache::namedPropCacheEntry::make(&formStorageName, 0x2222);
 			const auto prop3 = cache::namedPropCacheEntry::make(&pageDirStreamID, 0x3333);
@@ -122,6 +114,21 @@ namespace namedproptest
 			Assert::AreEqual(false, cache::namedPropCache::find(0x1110, formStorageID)->match(prop1, true, true, true));
 			Assert::AreEqual(false, cache::namedPropCache::find(sig2, 0x1111)->match(prop1, true, true, true));
 			Assert::AreEqual(false, cache::namedPropCache::find(sig2, formStorageID)->match(prop1, true, true, true));
+		}
+
+		TEST_METHOD(Test_Valid)
+		{
+			Assert::AreEqual(false, cache::namedPropCacheEntry::valid(cache::namedPropCacheEntry::empty()));
+			Assert::AreEqual(
+				true,
+				cache::namedPropCacheEntry::valid(cache::namedPropCacheEntry::make(&formStorageName, 0x1111, sig1)));
+			Assert::AreEqual(
+				true, cache::namedPropCacheEntry::valid(cache::namedPropCacheEntry::make(&formStorageName, 0x1111)));
+			Assert::AreEqual(
+				false, cache::namedPropCacheEntry::valid(cache::namedPropCacheEntry::make(&formStorageName, 0)));
+			Assert::AreEqual(
+				false, cache::namedPropCacheEntry::valid(cache::namedPropCacheEntry::make(nullptr, 0x1111)));
+			Assert::AreEqual(false, cache::namedPropCacheEntry::valid(cache::namedPropCacheEntry::make(nullptr, 0)));
 		}
 	};
 } // namespace namedproptest

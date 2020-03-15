@@ -297,7 +297,7 @@ namespace smartview
 			 PROP_ID(ulPropTag) >= 0x8000)) // and it's either a named prop or we're doing all props
 		{
 			const auto name = cache::GetNameFromID(lpMAPIProp, lpMappingSignature, ulPropTag, 0);
-			if (name->valid())
+			if (cache::namedPropCacheEntry::valid(name))
 			{
 				return GetNamedPropInfo(name->getMapiNameId());
 			}

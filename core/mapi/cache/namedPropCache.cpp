@@ -161,7 +161,7 @@ namespace cache
 				match = find(entry, true, true, true);
 			}
 
-			if (!match || !match->valid())
+			if (!namedPropCacheEntry::valid(match))
 			{
 				if (fIsSet(output::dbgLevel::NamedPropCacheMisses))
 				{
@@ -215,7 +215,7 @@ namespace cache
 			// ...check the cache
 			const auto lpEntry = find([&](const auto& entry) noexcept { return entry->match(sig, ulPropId); });
 
-			if (!lpEntry || !lpEntry->valid())
+			if (!namedPropCacheEntry::valid(lpEntry))
 			{
 				misses.emplace_back(ulPropTag);
 			}
@@ -236,7 +236,7 @@ namespace cache
 			// ...check the cache
 			const auto lpEntry = find([&](const auto& entry) noexcept { return entry->match(sig, ulPropId); });
 
-			if (lpEntry)
+			if (namedPropCacheEntry::valid(lpEntry))
 			{
 				results.emplace_back(lpEntry);
 			}
@@ -268,7 +268,7 @@ namespace cache
 		{
 			const auto lpEntry = find([&](const auto& entry) noexcept { return entry->match(sig, nameID); });
 
-			if (!lpEntry || !lpEntry->valid())
+			if (!namedPropCacheEntry::valid(lpEntry))
 			{
 				misses.emplace_back(nameID);
 			}
@@ -301,7 +301,7 @@ namespace cache
 		{
 			const auto lpEntry = find([&](const auto& entry) noexcept { return entry->match(sig, nameID); });
 
-			mapi::setTag(results, i++) = lpEntry ? lpEntry->getPropID() : 0;
+			mapi::setTag(results, i++) = namedPropCacheEntry::valid(lpEntry) ? lpEntry->getPropID() : 0;
 		}
 
 		return results;

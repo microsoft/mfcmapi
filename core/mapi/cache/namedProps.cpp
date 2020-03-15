@@ -378,7 +378,7 @@ namespace cache
 			 PROP_ID(ulPropTag) >= 0x8000)) // and it's either a named prop or we're doing all props
 		{
 			const auto name = GetNameFromID(lpMAPIProp, sig, ulPropTag, NULL);
-			if (name->valid())
+			if (cache::namedPropCacheEntry::valid(name))
 			{
 				return NameIDToStrings(name->getMapiNameId(), ulPropTag);
 			}
