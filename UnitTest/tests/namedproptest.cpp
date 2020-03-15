@@ -158,6 +158,7 @@ namespace namedproptest
 			Assert::AreEqual(
 				false, cache::namedPropCacheEntry::valid(cache::namedPropCacheEntry::make(nullptr, 0x1111)));
 			Assert::AreEqual(false, cache::namedPropCacheEntry::valid(cache::namedPropCacheEntry::make(nullptr, 0)));
+			Assert::AreEqual(false, cache::namedPropCacheEntry::valid(nullptr));
 		}
 	};
 } // namespace namedproptest
