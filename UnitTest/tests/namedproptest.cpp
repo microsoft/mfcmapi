@@ -24,8 +24,8 @@ namespace namedproptest
 			const auto pageDirStreamID =
 				MAPINAMEID{const_cast<LPGUID>(&guid::PSETID_Common), MNID_ID, dispidPageDirStream};
 
-			const auto formStorage1 = std::make_shared<cache::namedPropCacheEntry>(&formStorageID, 0x1111, sig1);
-			const auto formStorage2 = std::make_shared<cache::namedPropCacheEntry>(&formStorageID, 0x1111, sig2);
+			const auto formStorage1 = cache::namedPropCacheEntry::make(&formStorageID, 0x1111, sig1);
+			const auto formStorage2 = cache::namedPropCacheEntry::make(&formStorageID, 0x1111, sig2);
 
 			// Test all forms of match
 			Assert::AreEqual(true, formStorage1->match(formStorage1, true, true, true));
@@ -43,24 +43,22 @@ namespace namedproptest
 			// Odd comparisons
 			Assert::AreEqual(
 				true,
-				formStorage1->match(
-					std::make_shared<cache::namedPropCacheEntry>(&formStorageID, 0x1111, sig1), true, true, true));
+				formStorage1->match(cache::namedPropCacheEntry::make(&formStorageID, 0x1111, sig1), true, true, true));
+			Assert::AreEqual(
+				true,
+				formStorage1->match(cache::namedPropCacheEntry::make(&formStorageID, 0x1112, sig1), true, false, true));
 			Assert::AreEqual(
 				true,
 				formStorage1->match(
-					std::make_shared<cache::namedPropCacheEntry>(&formStorageID, 0x1112, sig1), true, false, true));
+					cache::namedPropCacheEntry::make(&pageDirStreamID, 0x1111, sig1), true, true, false));
 			Assert::AreEqual(
 				true,
 				formStorage1->match(
-					std::make_shared<cache::namedPropCacheEntry>(&pageDirStreamID, 0x1111, sig1), true, true, false));
-			Assert::AreEqual(
-				true,
-				formStorage1->match(
-					std::make_shared<cache::namedPropCacheEntry>(&formStorageName, 0x1111, sig1), true, true, false));
+					cache::namedPropCacheEntry::make(&formStorageName, 0x1111, sig1), true, true, false));
 			Assert::AreEqual(
 				false,
 				formStorage1->match(
-					std::make_shared<cache::namedPropCacheEntry>(&formStorageName, 0x1111, sig1), true, true, true));
+					cache::namedPropCacheEntry::make(&formStorageName, 0x1111, sig1), true, true, true));
 
 			// Should all work
 			Assert::AreEqual(true, formStorage1->match(formStorage2, false, true, true));
@@ -95,9 +93,9 @@ namespace namedproptest
 			const auto pageDirStreamID =
 				MAPINAMEID{const_cast<LPGUID>(&guid::PSETID_Common), MNID_ID, dispidPageDirStream};
 
-			const auto prop1 = std::make_shared<cache::namedPropCacheEntry>(&formStorageID, 0x1111);
-			const auto prop2 = std::make_shared<cache::namedPropCacheEntry>(&formStorageName, 0x2222);
-			const auto prop3 = std::make_shared<cache::namedPropCacheEntry>(&pageDirStreamID, 0x3333);
+			const auto prop1 = cache::namedPropCacheEntry::make(&formStorageID, 0x1111);
+			const auto prop2 = cache::namedPropCacheEntry::make(&formStorageName, 0x2222);
+			const auto prop3 = cache::namedPropCacheEntry::make(&pageDirStreamID, 0x3333);
 
 			auto ids = std::vector<std::shared_ptr<cache::namedPropCacheEntry>>{};
 			ids.emplace_back(prop1);
