@@ -3,6 +3,8 @@
 #include <core/mapi/cache/namedProps.h>
 #include <core/mapi/cache/namedPropCache.h>
 #include <core/mapi/extraPropTags.h>
+#include <core/utility/output.h>
+#include <core/utility/registry.h>
 
 namespace namedproptest
 {
@@ -114,6 +116,7 @@ namespace namedproptest
 
 		TEST_METHOD(Test_Cache)
 		{
+			registry::debugTag |= static_cast<DWORD>(output::dbgLevel::NamedPropCacheMisses);
 			const auto prop1 = cache::namedPropCacheEntry::make(&formStorageID, 0x1111);
 			const auto prop2 = cache::namedPropCacheEntry::make(&formStorageName, 0x2222);
 			const auto prop3 = cache::namedPropCacheEntry::make(&pageDirStreamID, 0x3333);
@@ -124,6 +127,7 @@ namespace namedproptest
 			ids.emplace_back(prop3);
 
 			cache::namedPropCache::add(ids, sig1);
+			cache::namedPropCache::add(ids, {});
 
 			Assert::AreEqual(
 				true, cache::namedPropCache::find(prop1, true, true, true)->match(prop1, true, true, true));
