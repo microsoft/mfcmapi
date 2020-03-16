@@ -875,4 +875,18 @@ namespace strings
 
 		return ret;
 	}
+
+	std::wstring MAPINAMEIDToString(_In_ const MAPINAMEID& mapiNameId)
+	{
+		if (mapiNameId.ulKind == MNID_ID)
+		{
+			return strings::format(L"ulKind=MNID_ID, lID=%04X", mapiNameId.Kind.lID);
+		}
+		else if (mapiNameId.ulKind == MNID_STRING)
+		{
+			return strings::format(L"ulKind=MNID_STRING, lpwstrName='%ws'", mapiNameId.Kind.lpwstrName);
+		}
+
+		return {};
+	}
 } // namespace strings

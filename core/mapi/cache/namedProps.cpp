@@ -132,6 +132,22 @@ namespace cache
 		return true;
 	}
 
+	void namedPropCacheEntry::output() const
+	{
+		if (fIsSet(output::dbgLevel::NamedPropCache))
+		{
+			const auto guidStr = guid::GUIDToStringAndName(guid);
+			output::DebugPrint(output::dbgLevel::NamedPropCache, L"id=%04X, guid=%ws\n", ulPropID, guidStr.c_str());
+			const auto nameidString = strings::MAPINAMEIDToString(mapiNameId);
+			output::DebugPrint(output::dbgLevel::NamedPropCache, L"%ws\n", nameidString.c_str());
+			if (!sig.empty())
+			{
+				const auto sigStr = strings::BinToHexString(sig, true);
+				output::DebugPrint(output::dbgLevel::NamedPropCache, L"sig=%ws\n", sigStr.c_str());
+			}
+		}
+	}
+
 	_Check_return_ std::shared_ptr<namedPropCacheEntry>
 	GetNameFromID(_In_ LPMAPIPROP lpMAPIProp, _In_ ULONG ulPropTag, ULONG ulFlags)
 	{

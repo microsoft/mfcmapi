@@ -86,4 +86,6 @@ namespace strings
 
 	// Tokenize strings of the form "a: b c: d" into a map where a->b, c->d, etc
 	std::map<std::wstring, std::wstring> tokenize(const std::wstring str);
+
+	std::wstring MAPINAMEIDToString(_In_ const MAPINAMEID& mapiNameId);
 } // namespace strings

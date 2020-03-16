@@ -112,7 +112,16 @@ namespace cache
 		const auto entry =
 			find_if(cache.begin(), cache.end(), [compare](const auto& _entry) { return compare(_entry); });
 
-		return entry != cache.end() ? *entry : namedPropCacheEntry::empty();
+		if (entry != cache.end())
+		{
+			output::DebugPrint(output::dbgLevel::NamedPropCache, L"find: found match\n");
+			return *entry;
+		}
+		else
+		{
+			output::DebugPrint(output::dbgLevel::NamedPropCache, L"find: no match\n");
+			return namedPropCacheEntry::empty();
+		}
 	}
 
 	_Check_return_ std::shared_ptr<namedPropCacheEntry> namedPropCache::find(
@@ -121,24 +130,77 @@ namespace cache
 		bool bMatchID,
 		bool bMatchName)
 	{
+		if (fIsSet(output::dbgLevel::NamedPropCache))
+		{
+			output::DebugPrint(
+				output::dbgLevel::NamedPropCache,
+				L"find: bMatchSig=%d, bMatchID=%d, bMatchName=%d\n",
+				bMatchSig,
+				bMatchID,
+				bMatchName);
+			entry->output();
+		}
+
 		return find([&](const auto& _entry) { return _entry->match(entry, bMatchSig, bMatchID, bMatchName); });
 	}
 
 	_Check_return_ std::shared_ptr<namedPropCacheEntry>
 	namedPropCache::find(_In_ const std::vector<BYTE>& _sig, _In_ const MAPINAMEID& _mapiNameId)
 	{
+		if (fIsSet(output::dbgLevel::NamedPropCache))
+		{
+			const auto nameidString = strings::MAPINAMEIDToString(_mapiNameId);
+			if (_sig.empty())
+			{
+				output::DebugPrint(output::dbgLevel::NamedPropCache, L"find: _mapiNameId: %ws\n", nameidString.c_str());
+			}
+			else
+			{
+				const auto sigStr = strings::BinToHexString(_sig, true);
+				output::DebugPrint(
+					output::dbgLevel::NamedPropCache,
+					L"find: _sig=%ws, _mapiNameId: %ws\n",
+					sigStr.c_str(),
+					nameidString.c_str());
+			}
+		}
+
 		return find([&](const auto& _entry) { return _entry->match(_sig, _mapiNameId); });
 	}
 
 	_Check_return_ std::shared_ptr<namedPropCacheEntry>
 	namedPropCache::find(_In_ const std::vector<BYTE>& _sig, ULONG _ulPropID)
 	{
+		if (fIsSet(output::dbgLevel::NamedPropCache))
+		{
+			if (_sig.empty())
+			{
+				output::DebugPrint(output::dbgLevel::NamedPropCache, L"find: _ulPropID=%04X\n", _ulPropID);
+			}
+			else
+			{
+				const auto sigStr = strings::BinToHexString(_sig, true);
+				output::DebugPrint(
+					output::dbgLevel::NamedPropCache, L"find: _sig=%ws, _ulPropID=%04X\n", sigStr.c_str(), _ulPropID);
+			}
+		}
+
 		return find([&](const auto& _entry) { return _entry->match(_sig, _ulPropID); });
 	}
 
 	_Check_return_ std::shared_ptr<namedPropCacheEntry>
 	namedPropCache::find(ULONG _ulPropID, _In_ const MAPINAMEID& _mapiNameId)
 	{
+		if (fIsSet(output::dbgLevel::NamedPropCache))
+		{
+			const auto nameidString = strings::MAPINAMEIDToString(_mapiNameId);
+			output::DebugPrint(
+				output::dbgLevel::NamedPropCache,
+				L"find: _ulPropID=%04X, _mapiNameId: %ws\n",
+				_ulPropID,
+				nameidString.c_str());
+		}
+
 		return find([&](const auto& _entry) { return _entry->match(_ulPropID, _mapiNameId); });
 	}
 
@@ -150,6 +212,8 @@ namespace cache
 		auto& cache = getCache();
 		for (auto& entry : entries)
 		{
+			output::DebugPrint(output::dbgLevel::NamedPropCache, L"add:\n");
+			entry->output();
 			auto match = std::shared_ptr<namedPropCacheEntry>{};
 			if (sig.empty())
 			{
@@ -208,12 +272,13 @@ namespace cache
 		auto misses = std::vector<ULONG>{};
 
 		// First pass, find any misses we might have
+		output::DebugPrint(output::dbgLevel::NamedPropCache, L"GetNamesFromIDs: Looking for misses\n");
 		for (ULONG ulTarget = 0; ulTarget < lpPropTags->cValues; ulTarget++)
 		{
 			const auto ulPropTag = mapi::getTag(lpPropTags, ulTarget);
 			const auto ulPropId = PROP_ID(ulPropTag);
 			// ...check the cache
-			const auto lpEntry = find([&](const auto& entry) noexcept { return entry->match(sig, ulPropId); });
+			const auto lpEntry = find(sig, ulPropId);
 
 			if (!namedPropCacheEntry::valid(lpEntry))
 			{
@@ -224,17 +289,20 @@ namespace cache
 		// Go to MAPI with whatever's left. We set up for a single call to GetNamesFromIDs.
 		if (!misses.empty())
 		{
+			output::DebugPrint(
+				output::dbgLevel::NamedPropCache, L"GetNamesFromIDs: Add %d misses to cache\n", misses.size());
 			auto missed = directMapi::GetNamesFromIDs(lpMAPIProp, misses, NULL);
 			// Cache the results
 			add(missed, sig);
 		}
 
 		// Second pass, do our lookup with a populated cache
+		output::DebugPrint(output::dbgLevel::NamedPropCache, L"GetNamesFromIDs: Lookup again from cache\n");
 		for (ULONG ulTarget = 0; ulTarget < lpPropTags->cValues; ulTarget++)
 		{
 			const auto ulPropId = PROP_ID(mapi::getTag(lpPropTags, ulTarget));
 			// ...check the cache
-			const auto lpEntry = find([&](const auto& entry) noexcept { return entry->match(sig, ulPropId); });
+			const auto lpEntry = find(sig, ulPropId);
 
 			if (namedPropCacheEntry::valid(lpEntry))
 			{
@@ -264,9 +332,10 @@ namespace cache
 		auto misses = std::vector<MAPINAMEID>{};
 
 		// First pass, find the tags we don't have cached
+		output::DebugPrint(output::dbgLevel::NamedPropCache, L"GetIDsFromNames: Looking for misses\n");
 		for (const auto& nameID : nameIDs)
 		{
-			const auto lpEntry = find([&](const auto& entry) noexcept { return entry->match(sig, nameID); });
+			const auto lpEntry = find(sig, nameID);
 
 			if (!namedPropCacheEntry::valid(lpEntry))
 			{
@@ -287,6 +356,8 @@ namespace cache
 					toCache.emplace_back(namedPropCacheEntry::make(&misses[i], mapi::getTag(missed, i), sig));
 				}
 
+				output::DebugPrint(
+					output::dbgLevel::NamedPropCache, L"GetIDsFromNames: Add %d misses to cache\n", misses.size());
 				add(toCache, sig);
 			}
 
@@ -294,12 +365,13 @@ namespace cache
 		}
 
 		// Second pass, do our lookup with a populated cache
+		output::DebugPrint(output::dbgLevel::NamedPropCache, L"GetIDsFromNames: Lookup again from cache\n");
 		auto results = mapi::allocate<LPSPropTagArray>(CbNewSPropTagArray(nameIDs.size()));
 		results->cValues = nameIDs.size();
 		ULONG i = 0;
 		for (const auto nameID : nameIDs)
 		{
-			const auto lpEntry = find([&](const auto& entry) noexcept { return entry->match(sig, nameID); });
+			const auto lpEntry = find(sig, nameID);
 
 			mapi::setTag(results, i++) = namedPropCacheEntry::valid(lpEntry) ? lpEntry->getPropID() : 0;
 		}

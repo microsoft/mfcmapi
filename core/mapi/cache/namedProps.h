@@ -63,6 +63,8 @@ namespace cache
 		// Compare given a id, MAPINAMEID
 		_Check_return_ bool match(ULONG _ulPropID, _In_ const MAPINAMEID& _mapiNameId) const noexcept;
 
+		void output() const;
+
 	private:
 		ULONG ulPropID{}; // MAPI ID (ala PROP_ID) for a named property
 		MAPINAMEID mapiNameId{}; // guid, kind, value
