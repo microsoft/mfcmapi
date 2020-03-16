@@ -163,14 +163,14 @@ namespace cache
 
 			if (!namedPropCacheEntry::valid(match))
 			{
-				if (fIsSet(output::dbgLevel::NamedPropCacheMisses))
+				if (fIsSet(output::dbgLevel::NamedPropCache))
 				{
 					const auto mni = entry->getMapiNameId();
 					const auto names = NameIDToPropNames(mni);
 					if (names.empty())
 					{
 						output::DebugPrint(
-							output::dbgLevel::NamedPropCacheMisses,
+							output::dbgLevel::NamedPropCache,
 							L"add: Caching unknown property 0x%08X %ws\n",
 							mni->Kind.lID,
 							guid::GUIDToStringAndName(mni->lpguid).c_str());
@@ -178,7 +178,7 @@ namespace cache
 					else
 					{
 						output::DebugPrint(
-							output::dbgLevel::NamedPropCacheMisses,
+							output::dbgLevel::NamedPropCache,
 							L"add: Caching property 0x%08X %ws = %ws\n",
 							mni->Kind.lID,
 							guid::GUIDToStringAndName(mni->lpguid).c_str(),

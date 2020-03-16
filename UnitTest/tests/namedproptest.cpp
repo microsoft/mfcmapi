@@ -116,7 +116,7 @@ namespace namedproptest
 
 		TEST_METHOD(Test_Cache)
 		{
-			registry::debugTag |= static_cast<DWORD>(output::dbgLevel::NamedPropCacheMisses);
+			registry::debugTag |= static_cast<DWORD>(output::dbgLevel::NamedPropCache);
 			const auto prop1 = cache::namedPropCacheEntry::make(&formStorageID, 0x1111);
 			const auto prop2 = cache::namedPropCacheEntry::make(&formStorageName, 0x2222);
 			const auto prop3 = cache::namedPropCacheEntry::make(&pageDirStreamID, 0x3333);

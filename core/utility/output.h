@@ -33,7 +33,7 @@ namespace output
 		SmartView = 0x00040000,
 		LoadMAPI = 0x00080000,
 		Hierarchy = 0x00100000,
-		NamedPropCacheMisses = 0x00200000,
+		NamedPropCache = 0x00200000,
 		Draw = 0x10000000,
 		UI = 0x20000000,
 		MAPIFunctions = 0x40000000,

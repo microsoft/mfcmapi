@@ -1141,33 +1141,33 @@ Options Dialog: Please review Tools\\Options for various options.\n\
 Debug Output supports various tags. All output includes the tag number used to print it.\n\
 The output can be excluded by removing the tag from the options page.\n\
 Supported tags:\n\
-0x00000000 DBGNoDebug\n\
-0x00000001 DBGGeneric\n\
-0x00000002 DBGVersionBanner\n\
-0x00000004 DBGFatalError\n\
-0x00000008 DBGRefCount\n\
-0x00000010 DBGConDes\n\
-0x00000020 DBGNotify\n\
-0x00000040 DBGHRes\n\
-0x00000080 DBGCreateDialog\n\
-0x00000100 DBGOpenItemProp\n\
-0x00000200 DBGDeleteSelectedItem\n\
-0x00000400 DBGTest\n\
-0x00000800 DBGFormViewer\n\
-0x00001000 DBGNamedProp\n\
-0x00002000 DBGLoadLibrary\n\
-0x00004000 DBGForms\n\
-0x00008000 DBGAddInPlumbing\n\
-0x00010000 DBGAddIn\n\
-0x00020000 DBGStream\n\
-0x00040000 DBGSmartView\n\
-0x00080000 DBGLoadMAPI\n\
-0x00100000 DBGHierarchy\n\
-0x00200000 DBGNamedPropCacheMisses\n\
-0x10000000 DBGDraw\n\
-0x20000000 DBGUI\n\
-0x40000000 DBGMAPIFunctions\n\
-0x80000000 DBGMenu"
+0x00000000 NoDebug\n\
+0x00000001 Generic\n\
+0x00000002 VersionBanner\n\
+0x00000004 FatalError\n\
+0x00000008 RefCount\n\
+0x00000010 ConDes\n\
+0x00000020 Notify\n\
+0x00000040 HRes\n\
+0x00000080 CreateDialog\n\
+0x00000100 OpenItemProp\n\
+0x00000200 DeleteSelectedItem\n\
+0x00000400 Test\n\
+0x00000800 FormViewer\n\
+0x00001000 NamedProp\n\
+0x00002000 LoadLibrary\n\
+0x00004000 Forms\n\
+0x00008000 AddInPlumbing\n\
+0x00010000 AddIn\n\
+0x00020000 Stream\n\
+0x00040000 SmartView\n\
+0x00080000 LoadMAPI\n\
+0x00100000 Hierarchy\n\
+0x00200000 NamedPropCache\n\
+0x10000000 Draw\n\
+0x20000000 UI\n\
+0x40000000 MAPIFunctions\n\
+0x80000000 Menu"
 
 IDS_DISPLAYABOUTCHECK "Display at startup"
 
