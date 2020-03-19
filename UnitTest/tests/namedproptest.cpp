@@ -24,17 +24,31 @@ namespace namedproptest
 			const_cast<LPGUID>(&guid::PSETID_Common), MNID_STRING, {.lpwstrName = L"name2"}};
 		const MAPINAMEID pageDirStreamID = {const_cast<LPGUID>(&guid::PSETID_Common), MNID_ID, dispidPageDirStream};
 
+		const std::shared_ptr<cache::namedPropCacheEntry> formStorage1 =
+			cache::namedPropCacheEntry::make(&formStorageID, 0x1111, sig1);
+		const std::shared_ptr<cache::namedPropCacheEntry> formStorage2 =
+			cache::namedPropCacheEntry::make(&formStorageID, 0x1111, sig2);
+		const std::shared_ptr<cache::namedPropCacheEntry> formStorageLog =
+			cache::namedPropCacheEntry::make(&formStorageIDLog, 0x1111, sig1);
+
+		const std::shared_ptr<cache::namedPropCacheEntry> formStorageProp =
+			cache::namedPropCacheEntry::make(&formStorageName, 0x1111, sig1);
+		const std::shared_ptr<cache::namedPropCacheEntry> formStorageProp1 =
+			cache::namedPropCacheEntry::make(&formStorageName2, 0x1111, sig1);
+
+		const std::shared_ptr<cache::namedPropCacheEntry> prop1 =
+			cache::namedPropCacheEntry::make(&formStorageID, 0x1111);
+		const std::shared_ptr<cache::namedPropCacheEntry> prop2 =
+			cache::namedPropCacheEntry::make(&formStorageName, 0x2222);
+		const std::shared_ptr<cache::namedPropCacheEntry> prop3 =
+			cache::namedPropCacheEntry::make(&pageDirStreamID, 0x3333);
+		const std::vector<std::shared_ptr<cache::namedPropCacheEntry>> ids1 = {prop1, prop2};
+		const std::vector<std::shared_ptr<cache::namedPropCacheEntry>> ids2 = {prop3};
+
 		TEST_CLASS_INITIALIZE(initialize) { unittest::init(); }
 
 		TEST_METHOD(Test_Match)
 		{
-			const auto formStorage1 = cache::namedPropCacheEntry::make(&formStorageID, 0x1111, sig1);
-			const auto formStorage2 = cache::namedPropCacheEntry::make(&formStorageID, 0x1111, sig2);
-			const auto formStorageLog = cache::namedPropCacheEntry::make(&formStorageIDLog, 0x1111, sig1);
-
-			const auto formStorageProp = cache::namedPropCacheEntry::make(&formStorageName, 0x1111, sig1);
-			const auto formStorageProp1 = cache::namedPropCacheEntry::make(&formStorageName2, 0x1111, sig1);
-
 			// Test all forms of match
 			Assert::AreEqual(true, formStorage1->match(formStorage1, true, true, true));
 			Assert::AreEqual(true, formStorage1->match(formStorage1, false, true, true));
@@ -117,16 +131,6 @@ namespace namedproptest
 		TEST_METHOD(Test_Cache)
 		{
 			registry::debugTag |= static_cast<DWORD>(output::dbgLevel::NamedPropCache);
-			const auto prop1 = cache::namedPropCacheEntry::make(&formStorageID, 0x1111);
-			const auto prop2 = cache::namedPropCacheEntry::make(&formStorageName, 0x2222);
-			const auto prop3 = cache::namedPropCacheEntry::make(&pageDirStreamID, 0x3333);
-
-			auto ids1 = std::vector<std::shared_ptr<cache::namedPropCacheEntry>>{};
-			ids1.emplace_back(prop1);
-			ids1.emplace_back(prop2);
-
-			auto ids2 = std::vector<std::shared_ptr<cache::namedPropCacheEntry>>{};
-			ids2.emplace_back(prop3);
 
 			cache::namedPropCache::add(ids1, sig1);
 			cache::namedPropCache::add(ids1, {});

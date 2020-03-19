@@ -207,7 +207,7 @@ namespace cache
 	// Add a mapping to the cache if it doesn't already exist
 	// If given a signature, we include it in our search.
 	// If not, we search without it
-	void namedPropCache::add(std::vector<std::shared_ptr<namedPropCacheEntry>>& entries, const std::vector<BYTE>& sig)
+	void namedPropCache::add(const std::vector<std::shared_ptr<namedPropCacheEntry>>& entries, const std::vector<BYTE>& sig)
 	{
 		auto& cache = getCache();
 		for (auto& entry : entries)
