@@ -24,6 +24,7 @@ namespace namedproptest
 		const MAPINAMEID formStorageName2 = {
 			const_cast<LPGUID>(&guid::PSETID_Common), MNID_STRING, {.lpwstrName = L"name2"}};
 		const MAPINAMEID pageDirStreamID = {const_cast<LPGUID>(&guid::PSETID_Common), MNID_ID, dispidPageDirStream};
+		const MAPINAMEID propDefStream = {const_cast<LPGUID>(&guid::PSETID_Common), MNID_ID, dispidPropDefStream};
 
 		const std::shared_ptr<cache::namedPropCacheEntry> formStorage1 =
 			cache::namedPropCacheEntry::make(&formStorageID, 0x1111, sig1);
@@ -197,12 +198,18 @@ namespace namedproptest
 			Assert::AreEqual(name1.dasl, std::wstring{L"id/{00062008-0000-0000-C000-000000000046}/850F1111"});
 			Assert::AreEqual(name1.bestPidLid, std::wstring{L"dispidFormStorage"});
 
-			// 
 			const auto name2 = cache::NameIDToStrings(0x1111, nullptr, {}, &sig1bin, false);
 			Assert::AreEqual(name2.name, std::wstring{L""});
 			Assert::AreEqual(name2.guid, std::wstring{L""});
 			Assert::AreEqual(name2.dasl, std::wstring{L""});
 			Assert::AreEqual(name2.bestPidLid, std::wstring{L""});
+
+			const auto propNames = cache::NameIDToPropNames(&propDefStream);
+			Assert::AreEqual(propNames[0], std::wstring{L"PidLidPropertyDefinitionStream"});
+			Assert::AreEqual(propNames[1], std::wstring{L"dispidPropDefStream"});
+
+			const auto propNames2 = cache::NameIDToPropNames({});
+			Assert::AreEqual(propNames2.empty(), true);
 		}
 	};
 } // namespace namedproptest
