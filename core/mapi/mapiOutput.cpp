@@ -11,7 +11,7 @@
 #include <core/utility/error.h>
 #include <core/smartview/SmartView.h>
 #include <core/mapi/columnTags.h>
-#include <core/mapi/cache/namedPropCache.h>
+#include <core/mapi/cache/namedProps.h>
 #include <core/mapi/mapiMemory.h>
 #include <core/interpret/flags.h>
 #include <core/property/parseProperty.h>

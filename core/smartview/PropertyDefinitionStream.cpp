@@ -3,7 +3,7 @@
 #include <core/interpret/flags.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/utility/strings.h>
-#include <core/mapi/cache/namedPropCache.h>
+#include <core/mapi/cache/namedProps.h>
 #include <core/interpret/proptags.h>
 
 namespace smartview

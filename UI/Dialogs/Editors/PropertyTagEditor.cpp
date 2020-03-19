@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
 #include <core/utility/strings.h>
-#include <core/mapi/cache/namedPropCache.h>
+#include <core/mapi/cache/namedProps.h>
 #include <core/interpret/guid.h>
 #include <UI/Dialogs/Editors/PropertySelector.h>
 #include <core/addin/addin.h>
@@ -293,7 +293,7 @@ namespace dialog::editor
 		if (m_lpMAPIProp && !m_bIsAB && (PROPTAG_TAG == ulSkipField || PROPTAG_ID == ulSkipField))
 		{
 			const auto name = cache::GetNameFromID(m_lpMAPIProp, m_ulPropTag, NULL);
-			if (name->valid())
+			if (cache::namedPropCacheEntry::valid(name))
 			{
 				const auto mnid = name->getMapiNameId();
 				if (mnid->ulKind == MNID_STRING)

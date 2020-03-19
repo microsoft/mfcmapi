@@ -11,7 +11,7 @@
 #include <core/mapi/mapiABFunctions.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/mapi/mapiProgress.h>
-#include <core/mapi/cache/namedPropCache.h>
+#include <core/mapi/cache/namedProps.h>
 #include <core/mapi/mapiOutput.h>
 
 namespace mapi
@@ -2104,7 +2104,7 @@ namespace mapi
 				ULONG ulNumProps = 0; // count of props that match our guid
 				for (const auto name : names)
 				{
-					if (name->getPropID() > 0x7FFF && name->valid() &&
+					if (cache::namedPropCacheEntry::valid(name) && name->getPropID() > 0x7FFF &&
 						::IsEqualGUID(*name->getMapiNameId()->lpguid, *lpPropSetGUID))
 					{
 						ulNumProps++;
@@ -2118,7 +2118,7 @@ namespace mapi
 
 					for (const auto name : names)
 					{
-						if (name->getPropID() > 0x7FFF && name->valid() &&
+						if (cache::namedPropCacheEntry::valid(name) && name->getPropID() > 0x7FFF &&
 							::IsEqualGUID(*name->getMapiNameId()->lpguid, *lpPropSetGUID))
 						{
 							setTag(lpFilteredProps, lpFilteredProps->cValues) = name->getPropID();

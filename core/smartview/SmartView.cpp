@@ -3,7 +3,7 @@
 #include <core/mapi/extraPropTags.h>
 #include <core/utility/strings.h>
 #include <core/interpret/guid.h>
-#include <core/mapi/cache/namedPropCache.h>
+#include <core/mapi/cache/namedProps.h>
 #include <core/addin/addin.h>
 #include <core/addin/mfcmapi.h>
 #include <core/utility/registry.h>
@@ -297,7 +297,7 @@ namespace smartview
 			 PROP_ID(ulPropTag) >= 0x8000)) // and it's either a named prop or we're doing all props
 		{
 			const auto name = cache::GetNameFromID(lpMAPIProp, lpMappingSignature, ulPropTag, 0);
-			if (name->valid())
+			if (cache::namedPropCacheEntry::valid(name))
 			{
 				return GetNamedPropInfo(name->getMapiNameId());
 			}
