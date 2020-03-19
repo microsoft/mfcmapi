@@ -191,7 +191,7 @@ namespace namedproptest
 			cache::namedPropCache::add(ids2, {});
 
 			Assert::AreEqual(false, cache::namedPropCacheEntry::valid(cache::namedPropCacheEntry::empty()));
-			const auto sig1bin = SBinary{sig1.size(), const_cast<BYTE*>(sig1.data())};
+			const auto sig1bin = SBinary{static_cast<ULONG>(sig1.size()), const_cast<BYTE*>(sig1.data())};
 			const auto name1 = cache::NameIDToStrings(0x1111, nullptr, &formStorageID, &sig1bin, false);
 			Assert::AreEqual(name1.name, std::wstring{L"id: 0x850F=34063 = dispidFormStorage"});
 			Assert::AreEqual(name1.guid, std::wstring{L"{00062008-0000-0000-C000-000000000046} = PSETID_Common"});
