@@ -13,6 +13,7 @@ namespace namedproptest
 	public:
 		// Without this, clang gets weird
 		static const bool dummy_var = true;
+
 		const std::vector<BYTE> sig1 = {1, 2, 3, 4};
 		const std::vector<BYTE> sig2 = {5, 6, 7, 8, 9};
 
@@ -45,7 +46,11 @@ namespace namedproptest
 		const std::vector<std::shared_ptr<cache::namedPropCacheEntry>> ids1 = {prop1, prop2};
 		const std::vector<std::shared_ptr<cache::namedPropCacheEntry>> ids2 = {prop3};
 
-		TEST_CLASS_INITIALIZE(initialize) { unittest::init(); }
+		TEST_CLASS_INITIALIZE(initialize)
+		{
+			unittest::init();
+			registry::debugTag |= static_cast<DWORD>(output::dbgLevel::NamedPropCache);
+		}
 
 		TEST_METHOD(Test_Match)
 		{
@@ -130,8 +135,6 @@ namespace namedproptest
 
 		TEST_METHOD(Test_Cache)
 		{
-			registry::debugTag |= static_cast<DWORD>(output::dbgLevel::NamedPropCache);
-
 			cache::namedPropCache::add(ids1, sig1);
 			cache::namedPropCache::add(ids1, {});
 			cache::namedPropCache::add(ids2, {});
@@ -177,6 +180,22 @@ namespace namedproptest
 				false, cache::namedPropCacheEntry::valid(cache::namedPropCacheEntry::make(nullptr, 0x1111)));
 			Assert::AreEqual(false, cache::namedPropCacheEntry::valid(cache::namedPropCacheEntry::make(nullptr, 0)));
 			Assert::AreEqual(false, cache::namedPropCacheEntry::valid(nullptr));
+		}
+
+		TEST_METHOD(Test_Names)
+		{
+			registry::debugTag |= static_cast<DWORD>(output::dbgLevel::NamedPropCache);
+
+			cache::namedPropCache::add(ids1, sig1);
+			cache::namedPropCache::add(ids2, {});
+
+			Assert::AreEqual(false, cache::namedPropCacheEntry::valid(cache::namedPropCacheEntry::empty()));
+			const auto sig1bin = SBinary{sig1.size(), const_cast<BYTE*>(sig1.data())};
+			const auto name1 = cache::NameIDToStrings(0x1111, nullptr, &formStorageID, &sig1bin, false);
+			Assert::AreEqual(name1.name, std::wstring{L"id: 0x850F=34063 = dispidFormStorage"});
+			Assert::AreEqual(name1.guid, std::wstring{L"{00062008-0000-0000-C000-000000000046} = PSETID_Common"});
+			Assert::AreEqual(name1.dasl, std::wstring{L"id/{00062008-0000-0000-C000-000000000046}/850F1111"});
+			Assert::AreEqual(name1.bestPidLid, std::wstring{L"dispidFormStorage"});
 		}
 	};
 } // namespace namedproptest
