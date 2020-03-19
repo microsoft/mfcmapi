@@ -121,13 +121,16 @@ namespace namedproptest
 			const auto prop2 = cache::namedPropCacheEntry::make(&formStorageName, 0x2222);
 			const auto prop3 = cache::namedPropCacheEntry::make(&pageDirStreamID, 0x3333);
 
-			auto ids = std::vector<std::shared_ptr<cache::namedPropCacheEntry>>{};
-			ids.emplace_back(prop1);
-			ids.emplace_back(prop2);
-			ids.emplace_back(prop3);
+			auto ids1 = std::vector<std::shared_ptr<cache::namedPropCacheEntry>>{};
+			ids1.emplace_back(prop1);
+			ids1.emplace_back(prop2);
 
-			cache::namedPropCache::add(ids, sig1);
-			cache::namedPropCache::add(ids, {});
+			auto ids2 = std::vector<std::shared_ptr<cache::namedPropCacheEntry>>{};
+			ids2.emplace_back(prop3);
+
+			cache::namedPropCache::add(ids1, sig1);
+			cache::namedPropCache::add(ids1, {});
+			cache::namedPropCache::add(ids2, {});
 
 			Assert::AreEqual(
 				true, cache::namedPropCache::find(prop1, true, true, true)->match(prop1, true, true, true));
@@ -147,6 +150,13 @@ namespace namedproptest
 			Assert::AreEqual(false, cache::namedPropCache::find(0x1110, formStorageID)->match(prop1, true, true, true));
 			Assert::AreEqual(false, cache::namedPropCache::find(sig2, 0x1111)->match(prop1, true, true, true));
 			Assert::AreEqual(false, cache::namedPropCache::find(sig2, formStorageID)->match(prop1, true, true, true));
+
+			Assert::AreEqual(
+				true, cache::namedPropCache::find(0x3333, pageDirStreamID)->match(prop3, true, true, true));
+			Assert::AreEqual(true, cache::namedPropCache::find({}, 0x3333)->match(prop3, true, true, true));
+			Assert::AreEqual(
+				true,
+				cache::namedPropCache::find(std::vector<BYTE>{}, pageDirStreamID)->match(prop3, true, true, true));
 		}
 
 		TEST_METHOD(Test_Valid)
