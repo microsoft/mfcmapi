@@ -262,7 +262,7 @@ namespace viewpane
 
 		*pcb = cbRead;
 
-		if (cbRead) memcpy(pbBuff, lpfs->lpszW.c_str() + lpfs->cbCur, cbRead);
+		if (cbRead) memcpy(pbBuff, reinterpret_cast<LPBYTE>(lpfs->lpszW.data()) + lpfs->cbCur, cbRead);
 
 		lpfs->cbCur += cbRead;
 
