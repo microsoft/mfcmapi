@@ -136,8 +136,7 @@ namespace cache
 	{
 		if (fIsSet(output::dbgLevel::NamedPropCache))
 		{
-			const auto guidStr = guid::GUIDToStringAndName(guid);
-			output::DebugPrint(output::dbgLevel::NamedPropCache, L"id=%04X, guid=%ws\n", ulPropID, guidStr.c_str());
+			output::DebugPrint(output::dbgLevel::NamedPropCache, L"id=%04X\n", ulPropID);
 			const auto nameidString = strings::MAPINAMEIDToString(mapiNameId);
 			output::DebugPrint(output::dbgLevel::NamedPropCache, L"%ws\n", nameidString.c_str());
 			if (!sig.empty())

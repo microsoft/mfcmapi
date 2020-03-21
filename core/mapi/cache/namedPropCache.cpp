@@ -207,7 +207,8 @@ namespace cache
 	// Add a mapping to the cache if it doesn't already exist
 	// If given a signature, we include it in our search.
 	// If not, we search without it
-	void namedPropCache::add(const std::vector<std::shared_ptr<namedPropCacheEntry>>& entries, const std::vector<BYTE>& sig)
+	void
+	namedPropCache::add(const std::vector<std::shared_ptr<namedPropCacheEntry>>& entries, const std::vector<BYTE>& sig)
 	{
 		auto& cache = getCache();
 		for (auto& entry : entries)
@@ -229,24 +230,17 @@ namespace cache
 			{
 				if (fIsSet(output::dbgLevel::NamedPropCache))
 				{
-					const auto mni = entry->getMapiNameId();
-					const auto names = NameIDToPropNames(mni);
+					const auto names = NameIDToPropNames(entry->getMapiNameId());
 					if (names.empty())
 					{
-						output::DebugPrint(
-							output::dbgLevel::NamedPropCache,
-							L"add: Caching unknown property 0x%08X %ws\n",
-							mni->Kind.lID,
-							guid::GUIDToStringAndName(mni->lpguid).c_str());
+						output::DebugPrint(output::dbgLevel::NamedPropCache, L"add: Caching unknown property\n");
+						entry->output();
 					}
 					else
 					{
 						output::DebugPrint(
-							output::dbgLevel::NamedPropCache,
-							L"add: Caching property 0x%08X %ws = %ws\n",
-							mni->Kind.lID,
-							guid::GUIDToStringAndName(mni->lpguid).c_str(),
-							names[0].c_str());
+							output::dbgLevel::NamedPropCache, L"add: Caching property %ws\n", names[0].c_str());
+						entry->output();
 					}
 				}
 
