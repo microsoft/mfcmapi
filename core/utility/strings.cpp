@@ -1,6 +1,7 @@
 #include <core/stdafx.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
+#include <core/interpret/guid.h>
 
 namespace strings
 {
@@ -878,13 +879,15 @@ namespace strings
 
 	std::wstring MAPINAMEIDToString(_In_ const MAPINAMEID& mapiNameId)
 	{
+		const auto guidstr = guid::GUIDToStringAndName(mapiNameId.lpguid);
 		if (mapiNameId.ulKind == MNID_ID)
 		{
-			return strings::format(L"ulKind=MNID_ID, lID=%04X", mapiNameId.Kind.lID);
+			return strings::format(L"ulKind=MNID_ID, lID=%04X, guid=%ws", mapiNameId.Kind.lID, guidstr.c_str());
 		}
 		else if (mapiNameId.ulKind == MNID_STRING)
 		{
-			return strings::format(L"ulKind=MNID_STRING, lpwstrName='%ws'", mapiNameId.Kind.lpwstrName);
+			return strings::format(
+				L"ulKind=MNID_STRING, lpwstrName='%ws', guid=%ws", mapiNameId.Kind.lpwstrName, guidstr.c_str());
 		}
 
 		return {};
