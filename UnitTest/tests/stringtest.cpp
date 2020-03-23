@@ -545,5 +545,15 @@ namespace stringtest
 				Assert::AreEqual(std::wstring(L"ab"), tok1[L"lpb"]);
 			}
 		}
+
+		TEST_METHOD(Test_Case)
+		{
+			Assert::AreEqual(true, strings::compareInsensitive(L"hello", L"HELLO"));
+			Assert::AreEqual(true, strings::compareInsensitive(L"HELLO", L"hello"));
+			Assert::AreEqual(false, strings::compareInsensitive(L"hello", L"hello1"));
+			Assert::AreEqual(false, strings::compareInsensitive(L"hello1", L"hello"));
+			Assert::AreEqual(false, strings::compareInsensitive(L"hello ", L"HELLO"));
+			Assert::AreEqual(false, strings::compareInsensitive(L"hello", L"HELLO "));
+		}
 	};
 } // namespace stringtest
