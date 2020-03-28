@@ -65,7 +65,7 @@ namespace smartview
 					xid->NamespaceGuid,
 					L"NamespaceGuid = %1!ws!\r\n",
 					guid::GUIDToString(xid->NamespaceGuid->getData()).c_str());
-				xidBlock->addLabledChild(L"LocalId = ", xid->LocalID);
+				xidBlock->addLabeledChild(L"LocalId = ", xid->LocalID);
 
 				i++;
 			}

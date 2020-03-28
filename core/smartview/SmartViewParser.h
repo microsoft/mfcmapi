@@ -76,9 +76,9 @@ namespace smartview
 		{
 			data->addChild(_block, text, args...);
 		}
-		void addLabledChild(const std::wstring& _text, const std::shared_ptr<block>& _block)
+		void addLabeledChild(const std::wstring& _text, const std::shared_ptr<block>& _block)
 		{
-			data->addLabledChild(_text, _block);
+			data->addLabeledChild(_text, _block);
 		}
 		void addChild(const std::shared_ptr<block>& child) { data->addChild(child); }
 		void terminateBlock() { data->terminateBlock(); }

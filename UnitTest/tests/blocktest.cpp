@@ -17,25 +17,41 @@ namespace blocktest
 		TEST_CLASS_INITIALIZE(initialize) { unittest::init(); }
 		TEST_METHOD(Test_block)
 		{
-			auto block1 = smartview::block(L"test");
-			Assert::AreEqual(block1.isHeader(), true);
-			block1.setSize(5);
-			Assert::AreEqual(block1.isHeader(), false);
-			block1.setOffset(6);
-			Assert::AreEqual(block1.isHeader(), false);
-			block1.setSource(7);
+			auto block1 = std::make_shared<smartview::block>(L"test");
+			auto block2 = std::make_shared<smartview::block>(L"block2");
+			Assert::AreEqual(block1->isHeader(), true);
+			block1->setSize(5);
+			Assert::AreEqual(block1->isHeader(), false);
+			block1->setOffset(6);
+			Assert::AreEqual(block1->isHeader(), false);
+			block1->setSource(7);
 
-			Assert::AreEqual(block1.getText(), std::wstring(L"test"));
-			Assert::AreEqual(block1.getChildren().empty(), true);
-			Assert::AreEqual(block1.toString(), std::wstring(L"test"));
-			Assert::AreEqual(block1.getSize(), size_t(5));
-			Assert::AreEqual(block1.getOffset(), size_t(6));
-			Assert::AreEqual(block1.getSource(), ULONG(7));
+			Assert::AreEqual(block1->getText(), std::wstring(L"test"));
+			Assert::AreEqual(block1->getChildren().empty(), true);
+			Assert::AreEqual(block1->toString(), std::wstring(L"test"));
+			Assert::AreEqual(block1->getSize(), size_t(5));
+			Assert::AreEqual(block1->getOffset(), size_t(6));
+			Assert::AreEqual(block1->getSource(), ULONG(7));
 
-			block1.setText(L"the %1!ws!", L"other");
-			Assert::AreEqual(block1.getText(), std::wstring(L"the other"));
-			block1.addHeader(L" this %1!ws!", L"that");
-			Assert::AreEqual(block1.toString(), std::wstring(L"the other this that"));
+			block1->setText(L"the %1!ws!", L"other");
+			Assert::AreEqual(block1->getText(), std::wstring(L"the other"));
+			block1->addHeader(L" this %1!ws!", L"that");
+			Assert::AreEqual(block1->toString(), std::wstring(L"the other this that"));
+
+			block1->setText(L"hello");
+			Assert::AreEqual(block1->getText(), std::wstring(L"hello"));
+
+			block1->setText(L"hello %1!ws!", L"world");
+			Assert::AreEqual(block1->getText(), std::wstring(L"hello world"));
+
+			block1->terminateBlock();
+			block1->terminateBlock();
+			block1->addChild(block2);
+			Assert::AreEqual(block1->toString(), std::wstring(L"hello world this that\r\nblock2"));
+
+			block1->addBlankLine();
+			block1->addLabeledChild(L"Label: ", block2);
+			Assert::AreEqual(block1->toString(), std::wstring(L"hello world this that\r\nblock2\r\n\r\nLabel: block2\r\n"));
 		}
 	};
 } // namespace blocktest
