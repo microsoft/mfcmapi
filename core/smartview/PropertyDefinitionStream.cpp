@@ -123,7 +123,7 @@ namespace smartview
 		if (szCharacters->length())
 		{
 			data->addHeader(L" Characters = ");
-			data->addChild(szCharacters, szCharacters->toWstring());
+			data->addChild(szCharacters);
 		}
 
 		data->terminateBlock();

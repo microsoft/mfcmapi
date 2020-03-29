@@ -58,6 +58,9 @@ namespace blocktest
 			Assert::AreEqual(block3->hasData(), false);
 			block3->addChild(block1);
 			Assert::AreEqual(block3->hasData(), true);
+			block3->setSource(42);
+			Assert::AreEqual(block3->getSource(), ULONG(42));
+			Assert::AreEqual(block1->getSource(), ULONG(42));
 		}
 
 		TEST_METHOD(Test_blockStringA)
@@ -65,7 +68,6 @@ namespace blocktest
 			auto block1 = std::make_shared<smartview::blockStringA>();
 			Assert::AreEqual(block1->isSet(), false);
 			auto block2 = std::make_shared<smartview::blockStringA>(std::string("test"), 4, 5);
-			Assert::AreEqual(block2->toWstring(), std::wstring(L"test"));
 			Assert::AreEqual(block2->length(), size_t(4));
 		}
 
@@ -74,7 +76,6 @@ namespace blocktest
 			auto block1 = std::make_shared<smartview::blockStringW>();
 			Assert::AreEqual(block1->isSet(), false);
 			auto block2 = std::make_shared<smartview::blockStringW>(std::wstring(L"test"), 4, 5);
-			Assert::AreEqual(block2->toString(), std::wstring(L"test"));
 			Assert::AreEqual(block2->length(), size_t(4));
 		}
 	};
