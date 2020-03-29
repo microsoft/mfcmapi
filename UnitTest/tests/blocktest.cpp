@@ -52,11 +52,30 @@ namespace blocktest
 
 			block1->addBlankLine();
 			block1->addLabeledChild(L"Label: ", block2);
-			Assert::AreEqual(block1->toString(), std::wstring(L"hello world this that\r\nblock2\r\n\r\nLabel: block2\r\n"));
+			Assert::AreEqual(
+				block1->toString(), std::wstring(L"hello world this that\r\nblock2\r\n\r\nLabel: block2\r\n"));
 
 			Assert::AreEqual(block3->hasData(), false);
 			block3->addChild(block1);
 			Assert::AreEqual(block3->hasData(), true);
+		}
+
+		TEST_METHOD(Test_blockStringA)
+		{
+			auto block1 = std::make_shared<smartview::blockStringA>();
+			Assert::AreEqual(block1->isSet(), false);
+			auto block2 = std::make_shared<smartview::blockStringA>(std::string("test"), 4, 5);
+			Assert::AreEqual(block2->toWstring(), std::wstring(L"test"));
+			Assert::AreEqual(block2->length(), size_t(4));
+		}
+
+		TEST_METHOD(Test_blockStringW)
+		{
+			auto block1 = std::make_shared<smartview::blockStringW>();
+			Assert::AreEqual(block1->isSet(), false);
+			auto block2 = std::make_shared<smartview::blockStringW>(std::wstring(L"test"), 4, 5);
+			Assert::AreEqual(block2->toString(), std::wstring(L"test"));
+			Assert::AreEqual(block2->length(), size_t(4));
 		}
 	};
 } // namespace blocktest
