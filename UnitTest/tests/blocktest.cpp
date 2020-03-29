@@ -19,6 +19,7 @@ namespace blocktest
 		{
 			auto block1 = std::make_shared<smartview::block>(L"test");
 			auto block2 = std::make_shared<smartview::block>(L"block2");
+			auto block3 = std::make_shared<smartview::block>(L"");
 			Assert::AreEqual(block1->isHeader(), true);
 			block1->setSize(5);
 			Assert::AreEqual(block1->isHeader(), false);
@@ -52,6 +53,10 @@ namespace blocktest
 			block1->addBlankLine();
 			block1->addLabeledChild(L"Label: ", block2);
 			Assert::AreEqual(block1->toString(), std::wstring(L"hello world this that\r\nblock2\r\n\r\nLabel: block2\r\n"));
+
+			Assert::AreEqual(block3->hasData(), false);
+			block3->addChild(block1);
+			Assert::AreEqual(block3->hasData(), true);
 		}
 	};
 } // namespace blocktest
