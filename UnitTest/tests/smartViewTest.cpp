@@ -235,6 +235,7 @@ namespace SmartViewTest
 				SmartViewTestResource{parserType::PROPERTIES, unittest::parse_all, IDR_SV11PROP5IN, IDR_SV11PROP5OUT},
 				SmartViewTestResource{parserType::PROPERTIES, unittest::parse_all, IDR_SV11PROP6IN, IDR_SV11PROP6OUT},
 				SmartViewTestResource{parserType::PROPERTIES, unittest::parse_all, IDR_SV11PROP7IN, IDR_SV11PROP7OUT},
+				SmartViewTestResource{parserType::PROPERTIES, unittest::parse_all, IDR_SV11PROP8IN, IDR_SV11PROP8OUT},
 			}));
 		}
 
