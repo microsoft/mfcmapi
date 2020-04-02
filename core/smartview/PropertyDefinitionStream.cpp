@@ -123,7 +123,7 @@ namespace smartview
 		if (szCharacters->length())
 		{
 			data->addHeader(L" Characters = ");
-			data->addChild(szCharacters, szCharacters->toWstring());
+			data->addChild(szCharacters);
 		}
 
 		data->terminateBlock();
@@ -244,7 +244,7 @@ namespace smartview
 					else if (!sb->lpbContent->empty())
 					{
 						skipBlock->terminateBlock();
-						skipBlock->addLabledChild(L"\t\tContent = ", sb->lpbContent);
+						skipBlock->addLabeledChild(L"\t\tContent = ", sb->lpbContent);
 					}
 
 					iSkipBlock++;

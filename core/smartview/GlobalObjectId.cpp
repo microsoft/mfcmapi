@@ -80,7 +80,7 @@ namespace smartview
 
 		if (m_lpData->size())
 		{
-			addLabledChild(L"Data = ", m_lpData);
+			addLabeledChild(L"Data = ", m_lpData);
 		}
 	}
 } // namespace smartview

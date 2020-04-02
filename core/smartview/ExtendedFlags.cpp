@@ -133,7 +133,7 @@ namespace smartview
 				if (extendedFlag->lpUnknownData->size())
 				{
 					terminateBlock();
-					addLabledChild(L"\tUnknown Data = ", extendedFlag->lpUnknownData);
+					addLabeledChild(L"\tUnknown Data = ", extendedFlag->lpUnknownData);
 				}
 			}
 		}

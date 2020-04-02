@@ -32,8 +32,36 @@ namespace smartview
 
 	struct SBinaryArrayBlock
 	{
+		~SBinaryArrayBlock()
+		{
+			if (binCreated) delete[] bin;
+		}
 		std::shared_ptr<blockT<ULONG>> cValues = emptyT<ULONG>();
 		std::vector<std::shared_ptr<SBinaryBlock>> lpbin;
+		SBinary* getbin()
+		{
+			if (binCreated) return bin;
+			binCreated = true;
+			if (cValues)
+			{
+				auto count = cValues->getData();
+				bin = new (std::nothrow) SBinary[count];
+				if (bin)
+				{
+					for (ULONG i = 0; i < count; i++)
+					{
+						bin[i].cb = lpbin[i]->cb->getData();
+						bin[i].lpb = const_cast<BYTE*>(lpbin[i]->lpb->data());
+					}
+				}
+			}
+
+			return bin;
+		}
+
+	private:
+		SBinary* bin{};
+		bool binCreated{false};
 	};
 
 	struct CountedStringA
@@ -175,9 +203,12 @@ namespace smartview
 				break;
 			//case PT_MV_STRING8:
 			//case PT_MV_UNICODE:
-			//case PT_MV_BINARY:
+			case PT_MV_BINARY:
+				prop.Value.MVbin.cValues = Value.MVbin.cValues->getData();
+				prop.Value.MVbin.lpbin = Value.MVbin.getbin();
+				break;
 			case PT_ERROR:
-				prop.Value.err = *Value.err;
+				prop.Value.err = Value.err->getData();
 				size = Value.err->getSize();
 				offset = Value.err->getOffset();
 				break;

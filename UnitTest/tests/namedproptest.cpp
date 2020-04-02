@@ -211,5 +211,13 @@ namespace namedproptest
 			const auto propNames2 = cache::NameIDToPropNames({});
 			Assert::AreEqual(propNames2.empty(), true);
 		}
+
+		TEST_METHOD(Test_String)
+		{
+			Assert::AreEqual(std::wstring(L"ulKind=MNID_ID, lID=850F, guid={00062008-0000-0000-C000-000000000046} = PSETID_Common"), strings::MAPINAMEIDToString(formStorageID));
+			Assert::AreEqual(std::wstring(L"ulKind=MNID_STRING, lpwstrName='name', guid={00062008-0000-0000-C000-000000000046} = PSETID_Common"), strings::MAPINAMEIDToString(formStorageName));
+			const auto badID = MAPINAMEID{const_cast<LPGUID>(&guid::PSETID_Common), 3, dispidFormStorage};
+			Assert::AreEqual(std::wstring(L""), strings::MAPINAMEIDToString(badID));
+		}
 	};
 } // namespace namedproptest

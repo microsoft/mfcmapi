@@ -74,7 +74,7 @@ namespace smartview
 				L"dwFlags = 0x%1!08X! = %2!ws!\r\n",
 				view->dwFlags->getData(),
 				flags::InterpretFlags(flagWebViewFlags, *view->dwFlags).c_str());
-			addLabledChild(L"dwUnused = ", view->dwUnused);
+			addLabeledChild(L"dwUnused = ", view->dwUnused);
 
 			terminateBlock();
 			addChild(view->cbData, L"cbData = 0x%1!08X!\r\n", view->cbData->getData());
@@ -88,7 +88,7 @@ namespace smartview
 				break;
 			}
 			default:
-				addLabledChild(L"lpData = ", view->lpData);
+				addLabeledChild(L"lpData = ", view->lpData);
 				break;
 			}
 

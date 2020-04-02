@@ -17,7 +17,6 @@ namespace smartview
 		_NODISCARD _Ret_z_ const char* c_str() const noexcept { return data.c_str(); }
 		_NODISCARD std::string::size_type length() const noexcept { return data.length(); }
 		_NODISCARD bool empty() const noexcept { return data.empty(); }
-		std::wstring toWstring() const noexcept { return strings::stringTowstring(data); }
 
 		blockStringA(const std::shared_ptr<binaryParser>& parser, size_t cchChar = -1)
 		{
