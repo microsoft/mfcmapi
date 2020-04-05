@@ -22,3 +22,4 @@
 /TestResults/*
 *.aps
 /mfcmapitest
+/packages
