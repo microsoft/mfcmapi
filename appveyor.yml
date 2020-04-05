@@ -38,6 +38,7 @@ install:
 
 before_build:
 - nuget restore
+- mapistub\nuget restore
 - ps: >-
     $Env:APPVEYOR_BUILD_VERSION -match "(\d+)\.(\d+)\.(\d+)\.(\d+)"
 
