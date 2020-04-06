@@ -28,13 +28,13 @@ namespace cache
 		if (cchShortLen < cchWideLen)
 		{
 			// this is the *proper* case
-			cbName = (cchWideLen + 1) * sizeof WCHAR;
+			cbName = ULONG((cchWideLen + 1) * sizeof WCHAR);
 		}
 		else
 		{
 			// This is the case where ANSI data was shoved into a unicode string.
 			// Add a couple extra NULL in case we read this as unicode again.
-			cbName = (cchShortLen + 3) * sizeof CHAR;
+			cbName = ULONG((cchShortLen + 3) * sizeof CHAR);
 		}
 
 		return cbName;
