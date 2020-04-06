@@ -50,11 +50,12 @@ namespace cache
 		{
 			if (!lpMAPIProp) return {};
 
+			auto countTags = ULONG(tags.size());
 			auto ids = std::vector<std::shared_ptr<namedPropCacheEntry>>{};
-			auto ulPropTags = mapi::allocate<LPSPropTagArray>(CbNewSPropTagArray(tags.size()));
+			auto ulPropTags = mapi::allocate<LPSPropTagArray>(CbNewSPropTagArray(countTags));
 			if (ulPropTags)
 			{
-				ulPropTags->cValues = tags.size();
+				ulPropTags->cValues = countTags;
 				ULONG i = 0;
 				for (const auto& tag : tags)
 				{
@@ -91,7 +92,7 @@ namespace cache
 				}
 
 				auto names = const_cast<MAPINAMEID**>(lpNameIDs.data());
-				WC_H_GETPROPS_S(lpMAPIProp->GetIDsFromNames(lpNameIDs.size(), names, ulFlags, &lpTags));
+				WC_H_GETPROPS_S(lpMAPIProp->GetIDsFromNames(ULONG(lpNameIDs.size()), names, ulFlags, &lpTags));
 			}
 
 			return lpTags;
@@ -359,15 +360,19 @@ namespace cache
 		}
 
 		// Second pass, do our lookup with a populated cache
+		auto countIDs = ULONG(nameIDs.size());
 		output::DebugPrint(output::dbgLevel::NamedPropCache, L"GetIDsFromNames: Lookup again from cache\n");
-		auto results = mapi::allocate<LPSPropTagArray>(CbNewSPropTagArray(nameIDs.size()));
-		results->cValues = nameIDs.size();
-		ULONG i = 0;
-		for (const auto nameID : nameIDs)
+		auto results = mapi::allocate<LPSPropTagArray>(CbNewSPropTagArray(countIDs));
+		if (results)
 		{
-			const auto lpEntry = find(sig, nameID);
+			results->cValues = countIDs;
+			ULONG i = 0;
+			for (const auto nameID : nameIDs)
+			{
+				const auto lpEntry = find(sig, nameID);
 
-			mapi::setTag(results, i++) = namedPropCacheEntry::valid(lpEntry) ? lpEntry->getPropID() : 0;
+				mapi::setTag(results, i++) = namedPropCacheEntry::valid(lpEntry) ? lpEntry->getPropID() : 0;
+			}
 		}
 
 		return results;
