@@ -7,7 +7,9 @@ skip_tags: true
 image: Visual Studio 2019
 configuration:
 - Release
+- Release Unicode
 - Debug
+- Debug Unicode
 platform:
 - win32
 - x64
