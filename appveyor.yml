@@ -96,7 +96,7 @@ after_build:
     Compress-File -Source "$indir\x64\Release\MFCMAPI.pdb" -Target "$outdir\MFCMAPI.pdb.x64.$version.zip"
 
 test_script:
-- cmd: vstest.console /logger:Appveyor %APPVEYOR_BUILD_FOLDER%\bin\%PLATFORM%\UnitTest\%CONFIGURATION%\UnitTest.dll
+- cmd: vstest.console /logger:Appveyor "%APPVEYOR_BUILD_FOLDER%\bin\%PLATFORM%\UnitTest\%CONFIGURATION%\UnitTest.dll"
 
 artifacts:
 - path: Archives\MFCMAPI.exe.$(APPVEYOR_BUILD_VERSION).zip 
