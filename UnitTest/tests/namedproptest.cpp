@@ -50,7 +50,7 @@ namespace namedproptest
 		TEST_CLASS_INITIALIZE(initialize)
 		{
 			unittest::init();
-			registry::debugTag |= static_cast<DWORD>(output::dbgLevel::NamedPropCache);
+			// registry::debugTag |= static_cast<DWORD>(output::dbgLevel::NamedPropCache);
 		}
 
 		TEST_METHOD(Test_Match)
@@ -185,8 +185,6 @@ namespace namedproptest
 
 		TEST_METHOD(Test_Names)
 		{
-			registry::debugTag |= static_cast<DWORD>(output::dbgLevel::NamedPropCache);
-
 			cache::namedPropCache::add(ids1, sig1);
 			cache::namedPropCache::add(ids2, {});
 
