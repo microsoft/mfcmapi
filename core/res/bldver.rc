@@ -16,7 +16,7 @@
 /* Define file version and project version */
 
 #define RC_VERSION_COMPANY_NAME     "Microsoft Corporation\0"
-#define VER_LEGALCOPYRIGHT_YEARS    "1999-2019"
+#define VER_LEGALCOPYRIGHT_YEARS    "1999-2020"
 #define RC_VERSION_PRODUCT_NAME     RC_PRODUCT_NAME "\0"
 #define RC_VERSION_LEGAL_COPYRIGHT  "Copyright \251 " VER_LEGALCOPYRIGHT_YEARS " Microsoft Corporation. All rights reserved.\0"
 #define RC_VERSION_LEGAL_TRADEMARKS "Microsoft\256 is a registered trademark of Microsoft Corporation.\0"
