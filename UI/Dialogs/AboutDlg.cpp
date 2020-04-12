@@ -24,7 +24,7 @@ namespace dialog
 	{
 		const auto bRet = CMyDialog::OnInitDialog();
 
-		auto szProductName = strings::loadstring(ID_PRODUCTNAME);
+		auto szProductName = strings::loadstring(ID_PRODUCTNAME_FULL);
 		SetTitle(szProductName);
 
 		RECT rcClient = {0};

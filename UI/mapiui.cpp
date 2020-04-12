@@ -466,7 +466,7 @@ namespace ui::mapiui
 
 	void displayError(const std::wstring& errString)
 	{
-		dialog::editor::CEditor Err(nullptr, ID_PRODUCTNAME, NULL, CEDITOR_BUTTON_OK);
+		dialog::editor::CEditor Err(nullptr, ID_PRODUCTNAME_FULL, NULL, CEDITOR_BUTTON_OK);
 		Err.SetPromptPostFix(errString);
 		static_cast<void>(Err.DisplayDialog());
 	}

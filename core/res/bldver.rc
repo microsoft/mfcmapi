@@ -44,7 +44,7 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "CompanyName", RC_VERSION_COMPANY_NAME
-            VALUE "FileDescription", RC_VERSION_FILE_DESCRIPTION
+            VALUE "FileDescription", RC_VERSION_FILE_DESCRIPTION_FULL
             VALUE "InternalName", RC_VERSION_INTERNAL_NAME
             VALUE "LegalCopyright", RC_VERSION_LEGAL_COPYRIGHT
             VALUE "LegalTrademarks", RC_VERSION_LEGAL_TRADEMARKS
