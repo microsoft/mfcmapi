@@ -50,7 +50,11 @@ namespace namedproptest
 		TEST_CLASS_INITIALIZE(initialize)
 		{
 			unittest::init();
-			// registry::debugTag |= static_cast<DWORD>(output::dbgLevel::NamedPropCache);
+			if (registry::debugTag &
+				static_cast<DWORD>(output::dbgLevel::All) == static_cast<DWORD>(output::dbgLevel::All))
+			{
+				registry::debugTag |= static_cast<DWORD>(output::dbgLevel::NamedPropCache);
+			}
 		}
 
 		TEST_METHOD(Test_Match)
@@ -212,8 +216,13 @@ namespace namedproptest
 
 		TEST_METHOD(Test_String)
 		{
-			Assert::AreEqual(std::wstring(L"ulKind=MNID_ID, lID=850F, guid={00062008-0000-0000-C000-000000000046} = PSETID_Common"), strings::MAPINAMEIDToString(formStorageID));
-			Assert::AreEqual(std::wstring(L"ulKind=MNID_STRING, lpwstrName='name', guid={00062008-0000-0000-C000-000000000046} = PSETID_Common"), strings::MAPINAMEIDToString(formStorageName));
+			Assert::AreEqual(
+				std::wstring(L"ulKind=MNID_ID, lID=850F, guid={00062008-0000-0000-C000-000000000046} = PSETID_Common"),
+				strings::MAPINAMEIDToString(formStorageID));
+			Assert::AreEqual(
+				std::wstring(L"ulKind=MNID_STRING, lpwstrName='name', guid={00062008-0000-0000-C000-000000000046} = "
+							 L"PSETID_Common"),
+				strings::MAPINAMEIDToString(formStorageName));
 			const auto badID = MAPINAMEID{const_cast<LPGUID>(&guid::PSETID_Common), 3, dispidFormStorage};
 			Assert::AreEqual(std::wstring(L""), strings::MAPINAMEIDToString(badID));
 		}
