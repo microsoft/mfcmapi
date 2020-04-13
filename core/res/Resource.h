@@ -329,6 +329,7 @@
 
 // Stringtable definitions - 33601 through 40000 are all available
 // 33601 through 35000 are dialog titles and prompts
+#define ID_PRODUCTNAME_FULL 33601
 #define ID_PRODUCTNAME 33602
 #define IDS_ADDONEOFF 33603
 #define IDS_ADDSERVICESTOINF 33604

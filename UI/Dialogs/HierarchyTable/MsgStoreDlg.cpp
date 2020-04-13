@@ -570,7 +570,7 @@ namespace dialog
 		MyData.AddPane(viewpane::TextPane::CreateSingleLinePaneID(0, IDS_FOLDERNAME, IDS_FOLDERNAMEVALUE, false));
 		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_FOLDERTYPE, false));
 		MyData.SetHex(1, FOLDER_GENERIC);
-		auto szProduct = strings::loadstring(ID_PRODUCTNAME);
+		auto szProduct = strings::loadstring(ID_PRODUCTNAME_FULL);
 		const auto szFolderComment = strings::formatmessage(IDS_FOLDERCOMMENTVALUE, szProduct.c_str());
 		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(2, IDS_FOLDERCOMMENT, szFolderComment, false));
 		MyData.AddPane(viewpane::CheckPane::Create(3, IDS_PASSOPENIFEXISTS, false, false));
