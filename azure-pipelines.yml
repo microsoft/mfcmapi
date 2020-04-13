@@ -10,8 +10,6 @@ jobs:
         BuildPlatform: 'x64'
 
   variables:
-    Parameters.solution: '**/*.sln'
-    BuildPlatform: Win32
     BuildConfiguration: 'Release'
 
   pool:
@@ -46,6 +44,7 @@ jobs:
   - task: VSBuild@1
     displayName: Build
     inputs:
+      solution: '**/*.sln'
       vsVersion: latest
       msbuildArgs: '/p:SourceLinkCreate=true'
       platform: '$(BuildPlatform)'
@@ -67,6 +66,7 @@ jobs:
     inputs:
       IndexSources: false
       SymbolServerType: TeamServices
+      DetailedLog: true
 
   - task: CopyFiles@2
     displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
