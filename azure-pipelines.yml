@@ -9,7 +9,7 @@ jobs:
       x64:
         BuildPlatform: 'x64'
 
-- variables:
+  variables:
     Parameters.solution: '**/*.sln'
     BuildPlatform: Win32
     BuildConfiguration: 'Release'
