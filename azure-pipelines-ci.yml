@@ -1,0 +1,94 @@
+# Continuous integration
+name: $(Year:yy).2.$(date:yy)$(DayOfYear)$(rev:.rr)
+
+stages:
+- stage: Build
+  jobs:
+  - job: Build
+    strategy:
+      matrix:
+        Win32:
+          BuildPlatform: 'Win32'
+        x64:
+          BuildPlatform: 'x64'
+      matrix:
+        Release:
+          BuildConfiguration: 'Release'
+        Debug:
+          BuildConfiguration: 'Debug'
+        ReleaseUnicode:
+          BuildConfiguration: 'Release Unicode'
+        DebugUnicode:
+          BuildConfiguration: 'DebugUnicode'
+
+    pool:
+      name: Azure Pipelines
+      vmImage: 'windows-latest'
+      demands:
+      - msbuild
+      - visualstudio
+      - vstest
+
+    steps:
+    - checkout: self
+      clean: true
+      submodules: recursive
+    - powershell: |
+       gci env:BUILD_BUILDNUMBER
+       $Env:BUILD_BUILDNUMBER -match "(\d+)\.(\d+)\.(\d+)\.(\d+)"
+       $m = $matches
+       $file = gci "$Env:BUILD_SOURCESDIRECTORY\core\res\bldver.rc"
+       if($file)
+       {
+        attrib $file -r
+        $fc = Get-Content($file)
+        $fc = $fc -replace "#define rmj (\d+)", ("#define rmj "+$m[1])
+        $fc = $fc -replace "#define rmm (\d+)", ("#define rmm "+$m[2])
+        $fc = $fc -replace "#define rup (\d+)", ("#define rup "+$m[3])
+        $fc = $fc -replace "#define rmn (\d+)", ("#define rmn "+$m[4])
+        $fc | Out-File $file
+       }
+      displayName: 'Add Version'
+
+    - task: VSBuild@1
+      displayName: Build
+      inputs:
+        solution: '**/*.sln'
+        vsVersion: latest
+        msbuildArgs: '/p:SourceLinkCreate=true'
+        platform: '$(BuildPlatform)'
+        configuration: '$(BuildConfiguration)'
+        clean: true
+        maximumCpuCount: true
+        msbuildArchitecture: x64
+        createLogFile: true
+
+    - task: VSTest@2
+      displayName: 'VsTest - UnitTests'
+      inputs:
+        runInParallel: true
+        codeCoverageEnabled: true
+        diagnosticsEnabled: True
+
+    - task: PublishSymbols@2
+      displayName: 'Publish symbols path'
+      inputs:
+        IndexSources: false
+        SymbolServerType: TeamServices
+        DetailedLog: true
+
+    - task: CopyFiles@2
+      displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
+      inputs:
+        SourceFolder: '$(Build.SourcesDirectory)\bin'
+        Contents: |
+          **\mfcmapi.exe
+          **\mfcmapi.pdb
+          **\mrmapi.exe
+          **\mrmapi.pdb
+        TargetFolder: '$(build.artifactstagingdirectory)'
+        CleanTargetFolder: true
+        OverWrite: true
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: drop'
