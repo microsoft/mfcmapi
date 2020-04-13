@@ -2,9 +2,8 @@ name: $(Year:yy).0.$(date:yy)$(DayOfYear)$(rev:.rr)
 
 variables:
   Parameters.solution: '**/*.sln'
-  BuildPlatform:
-  - Win32
-  - x64
+  # TODO: Figure out multiple platforms, like x64
+  BuildPlatform: Win32
   BuildConfiguration: 'Release'
 
 pool:
