@@ -1,18 +1,12 @@
-# Multi-configuration and multi-agent job options are not exported to YAML.
-# Configure these options using documentation guidance: https://docs.microsoft.com/vsts/pipelines/process/phases
-
 name: $(Year:yy).0.$(date:yy)$(DayOfYear)$(rev:.rr)
+
 variables:
   Parameters.solution: '**/*.sln'
-  BuildPlatform: 'Win32,x64'
-  BuildConfiguration: 'Release'
-  Version.MajorMinor: $(Year:yy).0
-  Version.PatchVersion: $(date:yy)$(DayOfYear)
-  Version.Revision: $(rev:.rr)
+  platform: Win32, x64
+  configuration: Release
 
 pool:
   name: Azure Pipelines
-  # name: $(TeamProject)_$(BuildDefinitionName)_$(SourceBranchName)_$(Date:yyyyMMdd)$(Rev:.r)
   vmImage: 'windows-latest'
   demands:
   - msbuild
@@ -24,15 +18,11 @@ steps:
    gci env:BUILD_BUILDNUMBER
    $Env:BUILD_BUILDNUMBER -match "(\d+)\.(\d+)\.(\d+)\.(\d+)"
    $m = $matches
-   echo "$m"
-   # echo "filename: $Env:BUILD_SOURCESDIRECTORY\core\res\bldver.rc"
    $file = gci "$Env:BUILD_SOURCESDIRECTORY\core\res\bldver.rc"
    if($file)
    {
-    # echo $file
     attrib $file -r
     $fc = Get-Content($file)
-    # echo $fc
     $fc = $fc -replace "#define rmj (\d+)", ("#define rmj "+$m[1])
     $fc = $fc -replace "#define rmm (\d+)", ("#define rmm "+$m[2])
     $fc = $fc -replace "#define rup (\d+)", ("#define rup "+$m[3])
@@ -44,10 +34,10 @@ steps:
 - task: VSBuild@1
   displayName: Build
   inputs:
-    vsVersion: 16.0
+    vsVersion: latest
     msbuildArgs: '/p:SourceLinkCreate=true'
-    platform: '$(BuildPlatform)'
-    configuration: '$(BuildConfiguration)'
+    platform: '$(platform)'
+    configuration: '$(configuration)'
     clean: true
     maximumCpuCount: true
     msbuildArchitecture: x64
