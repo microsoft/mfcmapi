@@ -50,8 +50,8 @@ namespace namedproptest
 		TEST_CLASS_INITIALIZE(initialize)
 		{
 			unittest::init();
-			if (registry::debugTag &
-				static_cast<DWORD>(output::dbgLevel::All) == static_cast<DWORD>(output::dbgLevel::All))
+			if ((registry::debugTag & static_cast<DWORD>(output::dbgLevel::All)) ==
+				static_cast<DWORD>(output::dbgLevel::All))
 			{
 				registry::debugTag |= static_cast<DWORD>(output::dbgLevel::NamedPropCache);
 			}
