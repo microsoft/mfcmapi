@@ -5,6 +5,9 @@ variables:
   Parameters.solution: '**/*.sln'
   BuildPlatform: 'Win32,x64'
   BuildConfiguration: 'Release'
+  Version.MajorMinor: $(Year:yy).0
+  Version.PatchVersion: $(date:yy)$(DayOfYear)
+  Version.Revision: $(rev:.rr)
 
 pool:
   name: Azure Pipelines
