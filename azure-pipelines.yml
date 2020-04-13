@@ -2,8 +2,6 @@ name: $(Year:yy).0.$(date:yy)$(DayOfYear)$(rev:.rr)
 
 variables:
   Parameters.solution: '**/*.sln'
-  platform: Win32, x64
-  configuration: Release
 
 pool:
   name: Azure Pipelines
@@ -36,8 +34,8 @@ steps:
   inputs:
     vsVersion: latest
     msbuildArgs: '/p:SourceLinkCreate=true'
-    platform: '$(platform)'
-    configuration: '$(configuration)'
+    platform: '$(BuildPlatform)'
+    configuration: '$(BuildConfiguration)'
     clean: true
     maximumCpuCount: true
     msbuildArchitecture: x64
