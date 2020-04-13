@@ -10,7 +10,8 @@ variables:
   Version.Revision: $(rev:.rr)
 
 pool:
-  name: Azure Pipelines
+  name: $(Year:yy).0.$(date:yy)$(DayOfYear)$(rev:.rr)
+  # name: $(TeamProject)_$(BuildDefinitionName)_$(SourceBranchName)_$(Date:yyyyMMdd)$(Rev:.r)
   vmImage: 'windows-latest'
   demands:
   - msbuild
