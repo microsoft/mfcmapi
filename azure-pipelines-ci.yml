@@ -17,7 +17,7 @@ stages:
           BuildConfiguration: 'Release Unicode'
           BuildPlatform: 'Win32'
         DebugUnicode_Win32:
-          BuildConfiguration: 'DebugUnicode'
+          BuildConfiguration: 'Debug Unicode'
           BuildPlatform: 'Win32'
         Release_x64:
           BuildConfiguration: 'Release'
@@ -29,7 +29,7 @@ stages:
           BuildConfiguration: 'Release Unicode'
           BuildPlatform: 'x64'
         DebugUnicode_x64:
-          BuildConfiguration: 'DebugUnicode'
+          BuildConfiguration: 'Debug Unicode'
           BuildPlatform: 'x64'
 
     pool:
