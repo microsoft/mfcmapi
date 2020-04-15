@@ -111,7 +111,7 @@ stages:
     - task: GitHubRelease@1
       inputs:
         gitHubConnection: 'stephenegriffin'
-        repositoryName: '$(Build.Repository.BuildNumber)'
+        repositoryName: '$(Build.Repository.Name)'
         action: 'create'
         target: '$(Build.SourceVersion)'
         tagSource: 'userSpecifiedTag'
