@@ -101,8 +101,8 @@ stages:
         CleanTargetFolder: true
         OverWrite: true
 
-    - publish: '$(Build.ArtifactStagingDirectory)'
-      artifact: 'test'
+    # - publish: '$(Build.ArtifactStagingDirectory)'
+    #   artifact: 'test'
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: drop'
 
