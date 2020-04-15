@@ -114,7 +114,7 @@ stages:
         repositoryName: '$(Build.Repository.BuildNumber)'
         action: 'create'
         target: '$(Build.SourceVersion)'
-        tagSource: 'gitTag'
+        tagSource: 'userSpecifiedTag'
         tagPattern: '$(Build.BuildNumber)'
         title: 'Continuous Integration ($(Build.BuildNumber))'
         # releaseNotesSource: 'inline'
@@ -123,3 +123,5 @@ stages:
         isPreRelease: true
         # changeLogCompareToRelease: 'lastFullRelease'
         # changeLogType: 'commitBased'
+        assets: |
+          $(Build.ArtifactStagingDirectory)/*.exe
