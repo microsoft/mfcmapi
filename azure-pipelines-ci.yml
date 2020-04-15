@@ -101,6 +101,8 @@ stages:
         CleanTargetFolder: true
         OverWrite: true
 
+    - publish: '$(Build.ArtifactStagingDirectory)'
+      artifact: 'test'
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: drop'
 
@@ -108,6 +110,9 @@ stages:
   jobs:
   - job: Release
     steps:
+    - checkout: none
+    - download: current
+      artifact: 'test'
     - task: GitHubRelease@1
       inputs:
         gitHubConnection: 'stephenegriffin'
@@ -117,11 +122,11 @@ stages:
         tagSource: 'userSpecifiedTag'
         tag: '$(Build.BuildNumber)'
         title: 'Continuous Integration ($(Build.BuildNumber))'
-        # releaseNotesSource: 'inline'
-        # releaseNotesInline: 'Build: *$(Build.BuildNumber)*\n\nThis is the unicode continuous integration build of MFCMAPI.\n\nIf you just want to run the MFCMAPI or MrMAPI, get the executables (exe). If you want to debug them, get the symbol files (pdb).\n\n*The 64 bit builds will only work on a machine with Outlook 2010/2013/2016 64 bit installed. All other machines should use the 32 bit builds, regardless of the operating system.*\n\n[![Facebook Badge](http://badge.facebook.com/badge/26764016480.2776.1538253884.png)](http://www.facebook.com/MFCMAPI)\n\n[Download stats](https://www.somsubhra.com/github-release-stats/?username=stephenegriffin&repository=mfcmapi&search=0)'
+        releaseNotesSource: 'inline'
+        releaseNotesInline: 'Build: *$(Build.BuildNumber)*\n\nThis is the unicode continuous integration build of MFCMAPI.\n\nIf you just want to run the MFCMAPI or MrMAPI, get the executables (exe). If you want to debug them, get the symbol files (pdb).\n\n*The 64 bit builds will only work on a machine with Outlook 2010/2013/2016 64 bit installed. All other machines should use the 32 bit builds, regardless of the operating system.*\n\n[![Facebook Badge](http://badge.facebook.com/badge/26764016480.2776.1538253884.png)](http://www.facebook.com/MFCMAPI)\n\n[Download stats](https://www.somsubhra.com/github-release-stats/?username=stephenegriffin&repository=mfcmapi&search=0)'
         isDraft: true
         isPreRelease: true
-        # changeLogCompareToRelease: 'lastFullRelease'
-        # changeLogType: 'commitBased'
+        changeLogCompareToRelease: 'lastFullRelease'
+        changeLogType: 'commitBased'
         assets: |
           $(Build.ArtifactStagingDirectory)/*.exe
