@@ -66,7 +66,7 @@ stages:
       inputs:
         solution: '**/*.sln'
         vsVersion: latest
-        # msbuildArgs: '/p:SourceLinkCreate=true'
+        msbuildArgs: '/p:SourceLinkCreate=true'
         platform: '$(BuildPlatform)'
         configuration: '$(BuildConfiguration)'
         # clean: true
@@ -81,6 +81,8 @@ stages:
     #     codeCoverageEnabled: true
     #     diagnosticsEnabled: True
 
+    # It looks like this consumes azure artifact space which is super limited
+    # We'll keep symbols over in the github release instead
     # - task: PublishSymbols@2
     #   displayName: 'Publish symbols path'
     #   inputs:
