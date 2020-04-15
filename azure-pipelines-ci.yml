@@ -13,21 +13,21 @@ stages:
         # Debug_Win32:
         #   BuildConfiguration: 'Debug'
         #   BuildPlatform: 'Win32'
-        ReleaseUnicode_Win32:
-          BuildConfiguration: 'Release Unicode'
-          BuildPlatform: 'Win32'
+        # ReleaseUnicode_Win32:
+        #   BuildConfiguration: 'Release Unicode'
+        #   BuildPlatform: 'Win32'
         # DebugUnicode_Win32:
         #   BuildConfiguration: 'Debug Unicode'
         #   BuildPlatform: 'Win32'
-        Release_x64:
-          BuildConfiguration: 'Release'
-          BuildPlatform: 'x64'
+        # Release_x64:
+        #   BuildConfiguration: 'Release'
+        #   BuildPlatform: 'x64'
         # Debug_x64:
         #   BuildConfiguration: 'Debug'
         #   BuildPlatform: 'x64'
-        ReleaseUnicode_x64:
-          BuildConfiguration: 'Release Unicode'
-          BuildPlatform: 'x64'
+        # ReleaseUnicode_x64:
+        #   BuildConfiguration: 'Release Unicode'
+        #   BuildPlatform: 'x64'
         # DebugUnicode_x64:
         #   BuildConfiguration: 'Debug Unicode'
         #   BuildPlatform: 'x64'
@@ -66,13 +66,13 @@ stages:
       inputs:
         solution: '**/*.sln'
         vsVersion: latest
-        msbuildArgs: '/p:SourceLinkCreate=true'
+        # msbuildArgs: '/p:SourceLinkCreate=true'
         platform: '$(BuildPlatform)'
         configuration: '$(BuildConfiguration)'
-        clean: true
-        maximumCpuCount: true
-        msbuildArchitecture: x64
-        createLogFile: true
+        # clean: true
+        # maximumCpuCount: true
+        # msbuildArchitecture: x64
+        # createLogFile: true
 
     # - task: VSTest@2
     #   displayName: 'VsTest - UnitTests'
@@ -111,15 +111,15 @@ stages:
     - task: GitHubRelease@1
       inputs:
         gitHubConnection: 'stephenegriffin'
-        repositoryName: '$(Build.Repository.Name)'
+        repositoryName: '$(Build.Repository.BuildNumber)'
         action: 'create'
         target: '$(Build.SourceVersion)'
-        # tagSource: 'gitTag'
-        # tagPattern: '$(Build.env:BUILD_BUILDNUMBER)'
-        title: 'Continuous Integration ($(Build.env:BUILD_BUILDNUMBER))'
-        releaseNotesSource: 'inline'
-        releaseNotesInline: 'Build: *$(Build.env:BUILD_BUILDNUMBER)*\n\nThis is the unicode continuous integration build of MFCMAPI.\n\nIf you just want to run the MFCMAPI or MrMAPI, get the executables (exe). If you want to debug them, get the symbol files (pdb).\n\n*The 64 bit builds will only work on a machine with Outlook 2010/2013/2016 64 bit installed. All other machines should use the 32 bit builds, regardless of the operating system.*\n\n[![Facebook Badge](http://badge.facebook.com/badge/26764016480.2776.1538253884.png)](http://www.facebook.com/MFCMAPI)\n\n[Download stats](https://www.somsubhra.com/github-release-stats/?username=stephenegriffin&repository=mfcmapi&search=0)'
+        tagSource: 'gitTag'
+        tagPattern: '$(Build.BuildNumber)'
+        title: 'Continuous Integration ($(Build.BuildNumber))'
+        # releaseNotesSource: 'inline'
+        # releaseNotesInline: 'Build: *$(Build.BuildNumber)*\n\nThis is the unicode continuous integration build of MFCMAPI.\n\nIf you just want to run the MFCMAPI or MrMAPI, get the executables (exe). If you want to debug them, get the symbol files (pdb).\n\n*The 64 bit builds will only work on a machine with Outlook 2010/2013/2016 64 bit installed. All other machines should use the 32 bit builds, regardless of the operating system.*\n\n[![Facebook Badge](http://badge.facebook.com/badge/26764016480.2776.1538253884.png)](http://www.facebook.com/MFCMAPI)\n\n[Download stats](https://www.somsubhra.com/github-release-stats/?username=stephenegriffin&repository=mfcmapi&search=0)'
         isDraft: true
         isPreRelease: true
-        changeLogCompareToRelease: 'lastFullRelease'
-        changeLogType: 'commitBased'
+        # changeLogCompareToRelease: 'lastFullRelease'
+        # changeLogType: 'commitBased'
