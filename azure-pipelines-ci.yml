@@ -113,8 +113,12 @@ stages:
   - job: Release
     steps:
     - checkout: none
-    - download: current
-      artifact: 'test'
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: 'drop'
+        downloadPath: '$(System.ArtifactsDirectory)'
     - task: GitHubRelease@1
       inputs:
         gitHubConnection: 'stephenegriffin'
@@ -131,4 +135,4 @@ stages:
         changeLogCompareToRelease: 'lastFullRelease'
         changeLogType: 'commitBased'
         assets: |
-          $(Build.ArtifactStagingDirectory)/*.exe
+          $(Build.ArtifactsDirectory)/*.exe
