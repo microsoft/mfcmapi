@@ -144,8 +144,8 @@ stages:
         tagSource: 'userSpecifiedTag'
         tag: '$(Build.BuildNumber)'
         title: 'Continuous Integration ($(Build.BuildNumber))'
-        releaseNotesSource: 'file'
-        releaseNotesFile: releaseNote-ci.md
+        releaseNotesSource: 'filePath'
+        releaseNotesFilePath: releaseNote-ci.md
         isDraft: true
         isPreRelease: true
         changeLogCompareToRelease: 'lastFullRelease'
