@@ -110,7 +110,9 @@ stages:
   jobs:
   - job: Release
     steps:
-    - checkout: none
+    - checkout: self
+      clean: true
+      submodules: recursive
 
     - task: DownloadBuildArtifacts@0
       inputs:
@@ -121,10 +123,8 @@ stages:
     - task: ArchiveFiles@2
       inputs:
         rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/Win32/MrMAPI/Release Unicode/MrMAPI.exe'
-        # includeRootFolder: false
-        archiveType: 'zip'
+        # archiveType: 'zip'
         archiveFile: '$(Build.ArtifactStagingDirectory)/MrMAPI.exe.$(Build.BuildNumber).zip'
-        # replaceExistingArchive: true
         
     # Compress-File -Source "$indir\Win32\MrMAPI\Release Unicode\MrMAPI.exe" -Target "$outdir\MrMAPI.exe.$version.zip"
     # Compress-File -Source "$indir\Win32\MrMAPI\Release Unicode\MrMAPI.pdb" -Target "$outdir\MrMAPI.pdb.$version.zip"
