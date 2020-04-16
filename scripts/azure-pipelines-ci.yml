@@ -7,30 +7,30 @@ stages:
   - job: Build
     strategy:
       matrix:
-        # Release_Win32:
-        #   BuildConfiguration: 'Release'
-        #   BuildPlatform: 'Win32'
-        # Debug_Win32:
-        #   BuildConfiguration: 'Debug'
-        #   BuildPlatform: 'Win32'
+        Release_Win32:
+          BuildConfiguration: 'Release'
+          BuildPlatform: 'Win32'
+        Debug_Win32:
+          BuildConfiguration: 'Debug'
+          BuildPlatform: 'Win32'
         ReleaseUnicode_Win32:
           BuildConfiguration: 'Release Unicode'
           BuildPlatform: 'Win32'
-        # DebugUnicode_Win32:
-        #   BuildConfiguration: 'Debug Unicode'
-        #   BuildPlatform: 'Win32'
-        # Release_x64:
-        #   BuildConfiguration: 'Release'
-        #   BuildPlatform: 'x64'
-        # Debug_x64:
-        #   BuildConfiguration: 'Debug'
-        #   BuildPlatform: 'x64'
+        DebugUnicode_Win32:
+          BuildConfiguration: 'Debug Unicode'
+          BuildPlatform: 'Win32'
+        Release_x64:
+          BuildConfiguration: 'Release'
+          BuildPlatform: 'x64'
+        Debug_x64:
+          BuildConfiguration: 'Debug'
+          BuildPlatform: 'x64'
         ReleaseUnicode_x64:
           BuildConfiguration: 'Release Unicode'
           BuildPlatform: 'x64'
-        # DebugUnicode_x64:
-        #   BuildConfiguration: 'Debug Unicode'
-        #   BuildPlatform: 'x64'
+        DebugUnicode_x64:
+          BuildConfiguration: 'Debug Unicode'
+          BuildPlatform: 'x64'
 
     pool:
       name: Azure Pipelines
@@ -69,19 +69,19 @@ stages:
         msbuildArgs: '/p:SourceLinkCreate=true'
         platform: '$(BuildPlatform)'
         configuration: '$(BuildConfiguration)'
-        # clean: true
-        # maximumCpuCount: true
-        # msbuildArchitecture: x64
-        # createLogFile: true
+        clean: true
+        maximumCpuCount: true
+        msbuildArchitecture: x64
+        createLogFile: true
 
-    # - task: VSTest@2
-    #   displayName: 'VsTest - UnitTests'
-    #   inputs:
-    #     runInParallel: true
-    #     codeCoverageEnabled: true
-    #     diagnosticsEnabled: True
+    - task: VSTest@2
+      displayName: 'VsTest - UnitTests'
+      inputs:
+        runInParallel: true
+        codeCoverageEnabled: true
+        diagnosticsEnabled: True
 
-    # It looks like this consumes azure artifact space which is super limited
+    # This might consume azure artifact space which is super limited
     # We'll keep symbols over in the github release instead
     # - task: PublishSymbols@2
     #   displayName: 'Publish symbols path'
@@ -123,17 +123,35 @@ stages:
     - task: ArchiveFiles@2
       inputs:
         rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/Win32/MrMAPI/Release Unicode/MrMAPI.exe'
-        # archiveType: 'zip'
         archiveFile: '$(Build.ArtifactStagingDirectory)/MrMAPI.exe.$(Build.BuildNumber).zip'
-        
-    # Compress-File -Source "$indir\Win32\MrMAPI\Release Unicode\MrMAPI.exe" -Target "$outdir\MrMAPI.exe.$version.zip"
-    # Compress-File -Source "$indir\Win32\MrMAPI\Release Unicode\MrMAPI.pdb" -Target "$outdir\MrMAPI.pdb.$version.zip"
-    # Compress-File -Source "$indir\x64\MrMAPI\Release Unicode\MrMAPI.exe" -Target "$outdir\MrMAPI.exe.x64.$version.zip"
-    # Compress-File -Source "$indir\x64\MrMAPI\Release Unicode\MrMAPI.pdb" -Target "$outdir\MrMAPI.pdb.x64.$version.zip"
-    # Compress-File -Source "$indir\Win32\Release Unicode\MFCMAPI.exe" -Target "$outdir\MFCMAPI.exe.$version.zip"
-    # Compress-File -Source "$indir\Win32\Release Unicode\MFCMAPI.pdb" -Target "$outdir\MFCMAPI.pdb.$version.zip"
-    # Compress-File -Source "$indir\x64\Release Unicode\MFCMAPI.exe" -Target "$outdir\MFCMAPI.exe.x64.$version.zip"
-    # Compress-File -Source "$indir\x64\Release Unicode\MFCMAPI.pdb" -Target "$outdir\MFCMAPI.pdb.x64.$version.zip"
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/Win32/MrMAPI/Release Unicode/MrMAPI.pdb'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/MrMAPI.pdb.$(Build.BuildNumber).zip'
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/x64/MrMAPI/Release Unicode/MrMAPI.exe'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/MrMAPI.x64.exe.$(Build.BuildNumber).zip'
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/x64/MrMAPI/Release Unicode/MrMAPI.pdb'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/MrMAPI.x64.pdb.$(Build.BuildNumber).zip'
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/Win32/Release Unicode/MFCMAPI.exe'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/MFCMAPI.exe.$(Build.BuildNumber).zip'
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/Win32/Release Unicode/MFCMAPI.pdb'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/MFCMAPI.pdb.$(Build.BuildNumber).zip'
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/x64/Release Unicode/MFCMAPI.exe'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/MFCMAPI.x64.exe.$(Build.BuildNumber).zip'
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/x64/Release Unicode/MFCMAPI.pdb'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/MFCMAPI.x64.pdb.$(Build.BuildNumber).zip'
 
     - task: GitHubRelease@1
       inputs:
@@ -153,11 +171,11 @@ stages:
           If you just want to run the MFCMAPI or MrMAPI, get the executables (exe). If you want to debug them, get the symbol files (pdb).
 
           *The 64 bit builds will only work on a machine with Outlook 2010/2013/2016 64 bit installed. All other machines should use the 32 bit builds, regardless of the operating system.*
-          [![Facebook Badge](http://badge.facebook.com/badge/26764016480.2776.1538253884.png)](http://www.facebook.com/MFCMAPI)  
-          [Download stats](https://www.somsubhra.com/github-release-stats/?username=stephenegriffin&repository=mfcmapi&search=0)'
+          [![Facebook Badge](http://badge.facebook.com/badge/26764016480.2776.1538253884.png)](http://www.facebook.com/MFCMAPI)
+          [Download stats](https://www.somsubhra.com/github-release-stats/?username=stephenegriffin&repository=mfcmapi&search=0)
         isDraft: true
         isPreRelease: true
         changeLogCompareToRelease: 'lastFullRelease'
-        changeLogType: 'commitBased'
+        changeLogType: 'issueBased'
         assets: |
           $(Build.ArtifactStagingDirectory)/*.zip
