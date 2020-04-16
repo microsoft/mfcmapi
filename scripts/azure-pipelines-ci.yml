@@ -63,6 +63,7 @@ stages:
           BuildPlatform: 'x64'
 
     steps:
+    - checkout: none
     - task: VSBuild@1
       displayName: Build
       inputs:
