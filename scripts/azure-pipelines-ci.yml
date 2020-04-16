@@ -15,6 +15,7 @@ stages:
   jobs:
   - job: Build
     strategy:
+      maxParallel: 4
       matrix:
         Release_Win32:
           BuildConfiguration: 'Release'
@@ -109,21 +110,8 @@ stages:
 
 - stage: Release
   jobs:
-  - job: Download
-    steps:
-    - checkout: self
-      clean: true
-      submodules: recursive
-
-    - task: DownloadBuildArtifacts@0
-      inputs:
-        buildType: 'current'
-        downloadType: 'single'
-        artifactName: 'drop'
-        downloadPath: '$(System.ArtifactsDirectory)'
-
-  - job: Archive
-    dependsOn: Download
+  - job: Release
+    continueOnError: true
     strategy:
       matrix:
         MrMAPI_Win32:
@@ -146,6 +134,17 @@ stages:
           file: 'MFCMAPI'
 
     steps:
+    - checkout: self
+      clean: true
+      submodules: recursive
+
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: 'drop'
+        downloadPath: '$(System.ArtifactsDirectory)'
+
     - task: ArchiveFiles@2
       inputs:
         rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/$(bitness)$(sourcePath)/$(file)/Release Unicode/$(file).exe'
@@ -155,9 +154,6 @@ stages:
         rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/$(bitness)$(sourcePath)/$(file)/Release Unicode/$(file).pdb'
         archiveFile: '$(Build.ArtifactStagingDirectory)/$(file)$(targetBitness).pdb.$(Build.BuildNumber).zip'
 
-  - job: Publish
-    dependsOn: Archive
-    steps:
     - task: GitHubRelease@1
       inputs:
         gitHubConnection: 'stephenegriffin'
