@@ -120,7 +120,7 @@ stages:
         downloadPath: '$(System.ArtifactsDirectory)'
     - task: ArchiveFiles@2
       inputs:
-        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/MrMAPI/Release Unicode/MrMAPI.exe'
+        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/Win32/MrMAPI/Release Unicode/MrMAPI.exe'
         # includeRootFolder: false
         archiveType: 'zip'
         archiveFile: '$(Build.ArtifactStagingDirectory)/MrMAPI.exe.$(Build.BuildNumber).zip'
