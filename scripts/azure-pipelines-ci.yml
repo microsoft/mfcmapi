@@ -3,7 +3,37 @@ name: $(Year:yy).2.$(date:yy)$(DayOfYear)$(rev:.rr)
 
 stages:
 - stage: Build
+  pool:
+    name: Azure Pipelines
+    vmImage: 'windows-latest'
+    demands:
+    - msbuild
+    - visualstudio
+    - vstest
+
   jobs:
+  - job: PullSource
+    steps:
+    - checkout: self
+      clean: true
+      submodules: recursive
+    - powershell: |
+       gci env:BUILD_BUILDNUMBER
+       $Env:BUILD_BUILDNUMBER -match "(\d+)\.(\d+)\.(\d+)\.(\d+)"
+       $m = $matches
+       $file = gci "$Env:BUILD_SOURCESDIRECTORY\core\res\bldver.rc"
+       if($file)
+       {
+        attrib $file -r
+        $fc = Get-Content($file)
+        $fc = $fc -replace "#define rmj (\d+)", ("#define rmj "+$m[1])
+        $fc = $fc -replace "#define rmm (\d+)", ("#define rmm "+$m[2])
+        $fc = $fc -replace "#define rup (\d+)", ("#define rup "+$m[3])
+        $fc = $fc -replace "#define rmn (\d+)", ("#define rmn "+$m[4])
+        $fc | Out-File $file
+       }
+      displayName: 'Add Version'
+
   - job: Build
     strategy:
       matrix:
@@ -32,35 +62,7 @@ stages:
           BuildConfiguration: 'Debug Unicode'
           BuildPlatform: 'x64'
 
-    pool:
-      name: Azure Pipelines
-      vmImage: 'windows-latest'
-      demands:
-      - msbuild
-      - visualstudio
-      - vstest
-
     steps:
-    - checkout: self
-      clean: true
-      submodules: recursive
-    - powershell: |
-       gci env:BUILD_BUILDNUMBER
-       $Env:BUILD_BUILDNUMBER -match "(\d+)\.(\d+)\.(\d+)\.(\d+)"
-       $m = $matches
-       $file = gci "$Env:BUILD_SOURCESDIRECTORY\core\res\bldver.rc"
-       if($file)
-       {
-        attrib $file -r
-        $fc = Get-Content($file)
-        $fc = $fc -replace "#define rmj (\d+)", ("#define rmj "+$m[1])
-        $fc = $fc -replace "#define rmm (\d+)", ("#define rmm "+$m[2])
-        $fc = $fc -replace "#define rup (\d+)", ("#define rup "+$m[3])
-        $fc = $fc -replace "#define rmn (\d+)", ("#define rmn "+$m[4])
-        $fc | Out-File $file
-       }
-      displayName: 'Add Version'
-
     - task: VSBuild@1
       displayName: Build
       inputs:
@@ -103,12 +105,14 @@ stages:
         CleanTargetFolder: true
         OverWrite: true
 
+  - job: PublishForRelease
+    steps:
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: drop'
 
 - stage: Release
   jobs:
-  - job: Release
+  - job: Download
     steps:
     - checkout: self
       clean: true
@@ -120,39 +124,41 @@ stages:
         downloadType: 'single'
         artifactName: 'drop'
         downloadPath: '$(System.ArtifactsDirectory)'
-    - task: ArchiveFiles@2
-      inputs:
-        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/Win32/MrMAPI/Release Unicode/MrMAPI.exe'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/MrMAPI.exe.$(Build.BuildNumber).zip'
-    - task: ArchiveFiles@2
-      inputs:
-        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/Win32/MrMAPI/Release Unicode/MrMAPI.pdb'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/MrMAPI.pdb.$(Build.BuildNumber).zip'
-    - task: ArchiveFiles@2
-      inputs:
-        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/x64/MrMAPI/Release Unicode/MrMAPI.exe'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/MrMAPI.x64.exe.$(Build.BuildNumber).zip'
-    - task: ArchiveFiles@2
-      inputs:
-        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/x64/MrMAPI/Release Unicode/MrMAPI.pdb'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/MrMAPI.x64.pdb.$(Build.BuildNumber).zip'
-    - task: ArchiveFiles@2
-      inputs:
-        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/Win32/Release Unicode/MFCMapi.exe'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/MFCMAPI.exe.$(Build.BuildNumber).zip'
-    - task: ArchiveFiles@2
-      inputs:
-        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/Win32/Release Unicode/MFCMapi.pdb'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/MFCMAPI.pdb.$(Build.BuildNumber).zip'
-    - task: ArchiveFiles@2
-      inputs:
-        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/x64/Release Unicode/MFCMapi.exe'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/MFCMAPI.x64.exe.$(Build.BuildNumber).zip'
-    - task: ArchiveFiles@2
-      inputs:
-        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/x64/Release Unicode/MFCMapi.pdb'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/MFCMAPI.x64.pdb.$(Build.BuildNumber).zip'
 
+  - job: Archive
+    strategy:
+      matrix:
+        MrMAPI_Win32:
+          sourcePath: '/MrMAPI'
+          sourceBitness: 'Win32'
+          targetBitness: ''
+          file: 'MrMAPI'
+        MrMAPI_x64:
+          sourcePath: '/MrMAPI'
+          sourceBitness: 'x64'
+          targetBitness: '.x64'
+          file: 'MrMAPI'
+        MFCMAPI_Win32:
+          sourceBitness: 'Win32'
+          targetBitness: ''
+          file: 'MFCMAPI'
+        MFCMAPI_x64:
+          sourceBitness: 'x64'
+          targetBitness: '.x64'
+          file: 'MFCMAPI'
+
+    steps:
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/$(bitness)$(sourcePath)/$(file)/Release Unicode/$(file).exe'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/$(file)$(targetBitness).exe.$(Build.BuildNumber).zip'
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/$(bitness)$(sourcePath)/$(file)/Release Unicode/$(file).pdb'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/$(file)$(targetBitness).pdb.$(Build.BuildNumber).zip'
+
+  - job: Publish
+    steps:
     - task: GitHubRelease@1
       inputs:
         gitHubConnection: 'stephenegriffin'
