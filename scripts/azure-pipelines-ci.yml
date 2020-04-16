@@ -138,19 +138,19 @@ stages:
         archiveFile: '$(Build.ArtifactStagingDirectory)/MrMAPI.x64.pdb.$(Build.BuildNumber).zip'
     - task: ArchiveFiles@2
       inputs:
-        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/Win32/Release Unicode/MFCMAPI.exe'
+        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/Win32/Release Unicode/MFCMapi.exe'
         archiveFile: '$(Build.ArtifactStagingDirectory)/MFCMAPI.exe.$(Build.BuildNumber).zip'
     - task: ArchiveFiles@2
       inputs:
-        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/Win32/Release Unicode/MFCMAPI.pdb'
+        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/Win32/Release Unicode/MFCMapi.pdb'
         archiveFile: '$(Build.ArtifactStagingDirectory)/MFCMAPI.pdb.$(Build.BuildNumber).zip'
     - task: ArchiveFiles@2
       inputs:
-        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/x64/Release Unicode/MFCMAPI.exe'
+        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/x64/Release Unicode/MFCMapi.exe'
         archiveFile: '$(Build.ArtifactStagingDirectory)/MFCMAPI.x64.exe.$(Build.BuildNumber).zip'
     - task: ArchiveFiles@2
       inputs:
-        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/x64/Release Unicode/MFCMAPI.pdb'
+        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/x64/Release Unicode/MFCMapi.pdb'
         archiveFile: '$(Build.ArtifactStagingDirectory)/MFCMAPI.x64.pdb.$(Build.BuildNumber).zip'
 
     - task: GitHubRelease@1
