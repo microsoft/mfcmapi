@@ -7,15 +7,15 @@ stages:
   - job: Build
     strategy:
       matrix:
-        Release_Win32:
-          BuildConfiguration: 'Release'
-          BuildPlatform: 'Win32'
+        # Release_Win32:
+        #   BuildConfiguration: 'Release'
+        #   BuildPlatform: 'Win32'
         # Debug_Win32:
         #   BuildConfiguration: 'Debug'
         #   BuildPlatform: 'Win32'
-        # ReleaseUnicode_Win32:
-        #   BuildConfiguration: 'Release Unicode'
-        #   BuildPlatform: 'Win32'
+        ReleaseUnicode_Win32:
+          BuildConfiguration: 'Release Unicode'
+          BuildPlatform: 'Win32'
         # DebugUnicode_Win32:
         #   BuildConfiguration: 'Debug Unicode'
         #   BuildPlatform: 'Win32'
@@ -25,9 +25,9 @@ stages:
         # Debug_x64:
         #   BuildConfiguration: 'Debug'
         #   BuildPlatform: 'x64'
-        # ReleaseUnicode_x64:
-        #   BuildConfiguration: 'Release Unicode'
-        #   BuildPlatform: 'x64'
+        ReleaseUnicode_x64:
+          BuildConfiguration: 'Release Unicode'
+          BuildPlatform: 'x64'
         # DebugUnicode_x64:
         #   BuildConfiguration: 'Debug Unicode'
         #   BuildPlatform: 'x64'
@@ -103,8 +103,6 @@ stages:
         CleanTargetFolder: true
         OverWrite: true
 
-    # - publish: '$(Build.ArtifactStagingDirectory)'
-    #   artifact: 'test'
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: drop'
 
@@ -113,12 +111,30 @@ stages:
   - job: Release
     steps:
     - checkout: none
+
     - task: DownloadBuildArtifacts@0
       inputs:
         buildType: 'current'
         downloadType: 'single'
         artifactName: 'drop'
         downloadPath: '$(System.ArtifactsDirectory)'
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/MrMAPI/Release Unicode/MrMAPI.exe'
+        # includeRootFolder: false
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/MrMAPI.exe.$(Build.BuildNumber).zip'
+        # replaceExistingArchive: true
+        
+    # Compress-File -Source "$indir\Win32\MrMAPI\Release Unicode\MrMAPI.exe" -Target "$outdir\MrMAPI.exe.$version.zip"
+    # Compress-File -Source "$indir\Win32\MrMAPI\Release Unicode\MrMAPI.pdb" -Target "$outdir\MrMAPI.pdb.$version.zip"
+    # Compress-File -Source "$indir\x64\MrMAPI\Release Unicode\MrMAPI.exe" -Target "$outdir\MrMAPI.exe.x64.$version.zip"
+    # Compress-File -Source "$indir\x64\MrMAPI\Release Unicode\MrMAPI.pdb" -Target "$outdir\MrMAPI.pdb.x64.$version.zip"
+    # Compress-File -Source "$indir\Win32\Release Unicode\MFCMAPI.exe" -Target "$outdir\MFCMAPI.exe.$version.zip"
+    # Compress-File -Source "$indir\Win32\Release Unicode\MFCMAPI.pdb" -Target "$outdir\MFCMAPI.pdb.$version.zip"
+    # Compress-File -Source "$indir\x64\Release Unicode\MFCMAPI.exe" -Target "$outdir\MFCMAPI.exe.x64.$version.zip"
+    # Compress-File -Source "$indir\x64\Release Unicode\MFCMAPI.pdb" -Target "$outdir\MFCMAPI.pdb.x64.$version.zip"
+
     - task: GitHubRelease@1
       inputs:
         gitHubConnection: 'stephenegriffin'
@@ -135,4 +151,4 @@ stages:
         changeLogCompareToRelease: 'lastFullRelease'
         changeLogType: 'commitBased'
         assets: |
-          $(System.ArtifactsDirectory)/drop/*.exe
+          $(Build.ArtifactStagingDirectory)/*.zip
