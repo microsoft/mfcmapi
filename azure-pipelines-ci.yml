@@ -135,4 +135,4 @@ stages:
         changeLogCompareToRelease: 'lastFullRelease'
         changeLogType: 'commitBased'
         assets: |
-          $(System.ArtifactsDirectory)/*.exe
+          $(System.ArtifactsDirectory)/drop/*.exe
