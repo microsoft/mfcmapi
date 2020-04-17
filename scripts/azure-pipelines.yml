@@ -1,26 +1,27 @@
+# Release build
 name: $(Year:yy).0.$(date:yy)$(DayOfYear)$(rev:.rr)
+
+pool:
+  name: Azure Pipelines
+  vmImage: 'windows-latest'
+  demands:
+  - msbuild
+  - visualstudio
+  - vstest
 
 stages:
 - stage: Build
   jobs:
   - job: Build
     strategy:
+      maxParallel: 4
       matrix:
         Win32:
+          BuildConfiguration: 'Release Unicode'
           BuildPlatform: 'Win32'
         x64:
+          BuildConfiguration: 'Release Unicode'
           BuildPlatform: 'x64'
-
-    variables:
-      BuildConfiguration: 'Release'
-
-    pool:
-      name: Azure Pipelines
-      vmImage: 'windows-latest'
-      demands:
-      - msbuild
-      - visualstudio
-      - vstest
 
     steps:
     - checkout: self
