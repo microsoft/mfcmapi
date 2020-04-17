@@ -86,3 +86,18 @@ stages:
 
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: drop'
+
+- stage: Release
+  jobs:
+  - job: Release
+    steps:
+    - checkout: self
+      clean: true
+      submodules: recursive
+
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: 'drop'
+        downloadPath: '$(System.ArtifactsDirectory)'
