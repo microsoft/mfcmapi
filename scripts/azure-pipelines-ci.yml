@@ -121,6 +121,7 @@ stages:
         downloadType: 'single'
         artifactName: 'drop'
         downloadPath: '$(System.ArtifactsDirectory)'
+
     - task: ArchiveFiles@2
       inputs:
         rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/Win32/MrMAPI/Release Unicode/MrMAPI.exe'
