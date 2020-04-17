@@ -132,3 +132,63 @@ stages:
                      "ToolVersion" : "1.0"
                  }
              ]
+
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/Win32/MrMAPI/Release Unicode/MrMAPI.exe'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/MrMAPI.exe.$(Build.BuildNumber).zip'
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/Win32/MrMAPI/Release Unicode/MrMAPI.pdb'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/MrMAPI.pdb.$(Build.BuildNumber).zip'
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/x64/MrMAPI/Release Unicode/MrMAPI.exe'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/MrMAPI.x64.exe.$(Build.BuildNumber).zip'
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/x64/MrMAPI/Release Unicode/MrMAPI.pdb'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/MrMAPI.x64.pdb.$(Build.BuildNumber).zip'
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/Win32/Release Unicode/MFCMapi.exe'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/MFCMAPI.exe.$(Build.BuildNumber).zip'
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/Win32/Release Unicode/MFCMapi.pdb'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/MFCMAPI.pdb.$(Build.BuildNumber).zip'
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/x64/Release Unicode/MFCMapi.exe'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/MFCMAPI.x64.exe.$(Build.BuildNumber).zip'
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/x64/Release Unicode/MFCMapi.pdb'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/MFCMAPI.x64.pdb.$(Build.BuildNumber).zip'
+
+    - task: GitHubRelease@1
+      inputs:
+        gitHubConnection: 'stephenegriffin'
+        repositoryName: '$(Build.Repository.Name)'
+        action: 'create'
+        target: '$(Build.SourceVersion)'
+        tagSource: 'userSpecifiedTag'
+        tag: '$(Build.BuildNumber)'
+        title: MFCMAPI $(Month) $(Year:yyyy) ($(Build.BuildNumber))
+        releaseNotesSource: 'inline'
+        releaseNotesInline: |-
+          Build: *$(Build.BuildNumber)*
+          [![Build Status](https://dev.azure.com/mrmapi/MFCMAPI/_apis/build/status/Continuous%20Integration/stephenegriffin.mfcmapi?branchName=master)](https://dev.azure.com/mrmapi/MFCMAPI/_build/latest?definitionId=14&branchName=master)
+
+          If you just want to run MFCMAPI or MrMAPI, get the executables (exe). If you want to debug them, get the symbol files (pdb).
+
+          *The 64 bit builds will only work on a machine with 64 bit Outlook installed. All other machines should use the 32 bit builds, regardless of the operating system.*
+
+          [![Facebook Badge](http://badge.facebook.com/badge/26764016480.2776.1538253884.png)](http://www.facebook.com/MFCMAPI)
+          [Download stats](https://www.somsubhra.com/github-release-stats/?username=stephenegriffin&repository=mfcmapi&search=0)
+        isDraft: true
+        isPreRelease: false
+        changeLogCompareToRelease: 'lastFullRelease'
+        changeLogType: 'issueBased'
+        assets: |
+          $(Build.ArtifactStagingDirectory)/*.zip
