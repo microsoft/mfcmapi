@@ -64,12 +64,12 @@ stages:
         codeCoverageEnabled: true
         diagnosticsEnabled: True
 
-    - task: PublishSymbols@2
-      displayName: 'Publish symbols path'
-      inputs:
-        IndexSources: false
-        SymbolServerType: TeamServices
-        DetailedLog: true
+    #- task: PublishSymbols@2
+    #  displayName: 'Publish symbols path'
+    #  inputs:
+    #    IndexSources: false
+    #    SymbolServerType: TeamServices
+    #    DetailedLog: true
 
     - task: CopyFiles@2
       displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
