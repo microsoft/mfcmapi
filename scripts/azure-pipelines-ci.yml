@@ -11,7 +11,6 @@ pool:
 
 stages:
 - stage: Build
-
   jobs:
   - job: Build
     strategy:
@@ -111,28 +110,6 @@ stages:
 - stage: Release
   jobs:
   - job: Release
-    continueOnError: true
-    strategy:
-      matrix:
-        MrMAPI_Win32:
-          sourcePath: '/MrMAPI'
-          sourceBitness: 'Win32'
-          targetBitness: ''
-          file: 'MrMAPI'
-        MrMAPI_x64:
-          sourcePath: '/MrMAPI'
-          sourceBitness: 'x64'
-          targetBitness: '.x64'
-          file: 'MrMAPI'
-        MFCMAPI_Win32:
-          sourceBitness: 'Win32'
-          targetBitness: ''
-          file: 'MFCMAPI'
-        MFCMAPI_x64:
-          sourceBitness: 'x64'
-          targetBitness: '.x64'
-          file: 'MFCMAPI'
-
     steps:
     - checkout: self
       clean: true
@@ -144,15 +121,38 @@ stages:
         downloadType: 'single'
         artifactName: 'drop'
         downloadPath: '$(System.ArtifactsDirectory)'
-
     - task: ArchiveFiles@2
       inputs:
-        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/$(bitness)$(sourcePath)/$(file)/Release Unicode/$(file).exe'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/$(file)$(targetBitness).exe.$(Build.BuildNumber).zip'
+        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/Win32/MrMAPI/Release Unicode/MrMAPI.exe'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/MrMAPI.exe.$(Build.BuildNumber).zip'
     - task: ArchiveFiles@2
       inputs:
-        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/$(bitness)$(sourcePath)/$(file)/Release Unicode/$(file).pdb'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/$(file)$(targetBitness).pdb.$(Build.BuildNumber).zip'
+        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/Win32/MrMAPI/Release Unicode/MrMAPI.pdb'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/MrMAPI.pdb.$(Build.BuildNumber).zip'
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/x64/MrMAPI/Release Unicode/MrMAPI.exe'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/MrMAPI.x64.exe.$(Build.BuildNumber).zip'
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/x64/MrMAPI/Release Unicode/MrMAPI.pdb'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/MrMAPI.x64.pdb.$(Build.BuildNumber).zip'
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/Win32/Release Unicode/MFCMapi.exe'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/MFCMAPI.exe.$(Build.BuildNumber).zip'
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/Win32/Release Unicode/MFCMapi.pdb'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/MFCMAPI.pdb.$(Build.BuildNumber).zip'
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/x64/Release Unicode/MFCMapi.exe'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/MFCMAPI.x64.exe.$(Build.BuildNumber).zip'
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/x64/Release Unicode/MFCMapi.pdb'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/MFCMAPI.x64.pdb.$(Build.BuildNumber).zip'
 
     - task: GitHubRelease@1
       inputs:
