@@ -1,6 +1,9 @@
 # Release build
 name: $(Year:yy).0.$(date:yy)$(DayOfYear)$(rev:.rr)
 
+trigger: none
+pr: none
+
 pool:
   name: Azure Pipelines
   vmImage: 'windows-latest'

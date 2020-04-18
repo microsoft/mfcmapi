@@ -1,6 +1,9 @@
 # Continuous integration
 name: $(Year:yy).2.$(date:yy)$(DayOfYear)$(rev:.rr)
 
+pr:
+  master
+
 pool:
   name: Azure Pipelines
   vmImage: 'windows-latest'
