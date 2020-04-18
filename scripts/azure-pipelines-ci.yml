@@ -1,7 +1,7 @@
 # Continuous integration
 name: $(Year:yy).2.$(date:yy)$(DayOfYear)$(rev:.rr)
 
-trigger:none
+trigger: none
 pr:
 - master
 
