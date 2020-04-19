@@ -177,11 +177,11 @@ stages:
         target: '$(Build.SourceVersion)'
         tagSource: 'userSpecifiedTag'
         tag: '$(Build.BuildNumber)'
-        title: MFCMAPI $(Month) $(Year:yyyy) ($(Build.BuildNumber))
+        title: MFCMAPI Month Year ($(Build.BuildNumber))
         releaseNotesSource: 'inline'
         releaseNotesInline: |-
           Build: *$(Build.BuildNumber)*
-          [![Build Status](https://dev.azure.com/mrmapi/MFCMAPI/_apis/build/status/Continuous%20Integration/stephenegriffin.mfcmapi?branchName=master)](https://dev.azure.com/mrmapi/MFCMAPI/_build/latest?definitionId=14&branchName=master)
+          [![Build Status](https://dev.azure.com/mrmapi/MFCMAPI/_apis/build/status/Release/MFCMAPI%20Build?branchName=master)](https://dev.azure.com/mrmapi/MFCMAPI/_build/latest?definitionId=13&branchName=master)
 
           If you just want to run MFCMAPI or MrMAPI, get the executables (exe). If you want to debug them, get the symbol files (pdb).
 
