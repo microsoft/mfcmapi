@@ -642,16 +642,15 @@ namespace dialog::editor
 			if (paneID == 0 || paneID == 1)
 			{
 				szTmpString = GetStringW(0);
-				sProp.Value.cur.Hi = strings::wstringToUlong(szTmpString, 16);
+				sProp.Value.cur.Hi = strings::wstringToUlong(szTmpString, 16, false);
 				szTmpString = GetStringW(1);
-				sProp.Value.cur.Lo = strings::wstringToUlong(szTmpString, 16);
+				sProp.Value.cur.Lo = strings::wstringToUlong(szTmpString, 16, false);
 				SetStringW(2, strings::CurrencyToString(sProp.Value.cur));
 			}
 			else if (paneID == 2)
 			{
 				szTmpString = GetStringW(paneID);
-				szTmpString = strings::StripCharacter(szTmpString, L'.');
-				sProp.Value.cur.int64 = strings::wstringToInt64(szTmpString);
+				sProp.Value.cur.int64 = strings::wstringToCurrency(szTmpString);
 				SetHex(0, static_cast<int>(sProp.Value.cur.Hi));
 				SetHex(1, static_cast<int>(sProp.Value.cur.Lo));
 			}
@@ -661,9 +660,9 @@ namespace dialog::editor
 			if (paneID == 0 || paneID == 1)
 			{
 				szTmpString = GetStringW(0);
-				sProp.Value.li.HighPart = static_cast<long>(strings::wstringToUlong(szTmpString, 16));
+				sProp.Value.li.HighPart = static_cast<long>(strings::wstringToUlong(szTmpString, 16, false));
 				szTmpString = GetStringW(1);
-				sProp.Value.li.LowPart = static_cast<long>(strings::wstringToUlong(szTmpString, 16));
+				sProp.Value.li.LowPart = static_cast<long>(strings::wstringToUlong(szTmpString, 16, false));
 				SetStringf(2, L"%I64d", sProp.Value.li.QuadPart); // STRING_OK
 			}
 			else if (paneID == 2)

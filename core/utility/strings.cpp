@@ -261,14 +261,56 @@ namespace strings
 	{
 		if (src.empty()) return 0;
 
-		return _wtoi64(src.c_str());
+		return _wtoi64(trimWhitespace(src).c_str());
+	}
+
+	__int64 wstringToCurrency(const std::wstring& src) noexcept
+	{
+		if (src.empty()) return 0;
+		const auto periodCount = std::count(src.begin(), src.end(), L'.');
+		if (periodCount > 1) return 0; // reject multiple periods
+		auto left = std::wstring{};
+		auto right = std::wstring{};
+		if (periodCount == 1)
+		{
+			// We need to shift the period right "4 spaces"
+			// Suppose we take AAA.BBB and split into two strings, AAA and BBB
+			// We can then take the first four characters in B, padding with 0 if needed
+			// And join them to A to get our result
+			const auto halves = split(trimWhitespace(src), L'.');
+			switch(halves.size())
+			{
+			case 0:
+				break;
+			case 1:
+				left = trimWhitespace(halves[0]);
+				break;
+			case 2:
+				left = trimWhitespace(halves[0]);
+				right =
+					trimWhitespace(halves[1]) + std::wstring(4, L'0'); // pad with enough 0 that trimming just works
+				right = std::wstring(right, 0, 4);
+				break;
+			default:
+				break;
+			}
+		}
+		else
+		{
+			left = trim(src);
+			right = L"0000";
+		}
+
+		const auto whole = left + right;
+
+		return _wtoi64(whole.c_str());
 	}
 
 	std::wstring strip(const std::wstring& str, const std::function<bool(const WCHAR&)>& func)
 	{
 		std::wstring result;
 		result.reserve(str.length());
-		remove_copy_if(str.begin(), str.end(), back_inserter(result), func);
+		std::remove_copy_if(str.begin(), str.end(), back_inserter(result), func);
 		return result;
 	}
 
