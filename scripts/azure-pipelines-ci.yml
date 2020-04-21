@@ -18,7 +18,7 @@ stages:
   jobs:
   - job: Build
     strategy:
-      maxParallel: 4
+      maxParallel: 8
       matrix:
         Release_Win32:
           BuildConfiguration: 'Release'
