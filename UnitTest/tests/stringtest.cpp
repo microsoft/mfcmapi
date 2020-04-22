@@ -386,8 +386,11 @@ namespace stringtest
 		{
 			Assert::AreEqual(words, strings::split(fullstring, L' '));
 			Assert::AreEqual(std::vector<std::wstring>{L"1", L"2"}, strings::split(L"1.2", L'.'));
+			Assert::AreEqual(std::vector<std::wstring>{L"1", L"", L"2"}, strings::split(L"1..2", L'.'));
 			Assert::AreEqual(std::vector<std::wstring>{L"", L"2"}, strings::split(L".2", L'.'));
+			Assert::AreEqual(std::vector<std::wstring>{L"", L"", L"2"}, strings::split(L"..2", L'.'));
 			Assert::AreEqual(std::vector<std::wstring>{L"1", L""}, strings::split(L"1.", L'.'));
+			Assert::AreEqual(std::vector<std::wstring>{L"1", L"", L""}, strings::split(L"1..", L'.'));
 		}
 
 		TEST_METHOD(Test_join) { Assert::AreEqual(fullstring, strings::join(words, L' ')); }
