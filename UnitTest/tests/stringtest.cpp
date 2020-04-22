@@ -159,7 +159,8 @@ namespace stringtest
 			Assert::AreEqual(__int64{-1}, strings::wstringToInt64(L"-1"));
 			Assert::AreEqual(INT64_MAX - 1, strings::wstringToInt64(L"9223372036854775806"));
 			Assert::AreEqual(INT64_MAX, strings::wstringToInt64(L"9223372036854775807"));
-			Assert::AreEqual(INT64_MAX, strings::wstringToInt64(L"9223372036854775808")); // positive overflow converts to INT64_MAX
+			Assert::AreEqual(
+				INT64_MAX, strings::wstringToInt64(L"9223372036854775808")); // positive overflow converts to INT64_MAX
 			Assert::AreEqual(__int64{0}, strings::wstringToInt64(L"0"));
 			Assert::AreEqual(__int64{0}, strings::wstringToInt64(L""));
 			Assert::AreEqual(__int64{0}, strings::wstringToInt64(L"test")); // non numbers convert to 0
@@ -190,9 +191,9 @@ namespace stringtest
 			Assert::AreEqual(__int64{0}, strings::wstringToCurrency(L"0.00"));
 			Assert::AreEqual(__int64{0}, strings::wstringToCurrency(L"000."));
 
-			Assert::AreEqual(INT64_MAX, strings::wstringToInt64(L"922337203685477.5807"));
-			Assert::AreEqual(INT64_MAX, strings::wstringToInt64(L"922337203685477.58071"));
-			Assert::AreEqual(INT64_MAX, strings::wstringToInt64(L"922337203685477.5808"));
+			Assert::AreEqual(INT64_MAX, strings::wstringToCurrency(L"922337203685477.5807"));
+			Assert::AreEqual(INT64_MAX, strings::wstringToCurrency(L"922337203685477.58071"));
+			Assert::AreEqual(INT64_MAX, strings::wstringToCurrency(L"922337203685477.5808"));
 		}
 
 		TEST_METHOD(Test_StripCharacter)
@@ -383,16 +384,10 @@ namespace stringtest
 
 		TEST_METHOD(Test_split)
 		{
-			auto splitWords = strings::split(fullstring, L' ');
-
-			size_t i = 0;
-			for (i = 0; i < splitWords.size(); i++)
-			{
-				Assert::IsTrue(i < words.size());
-				Assert::AreEqual(words[i], splitWords[i]);
-			}
-
-			Assert::IsTrue(i == words.size());
+			Assert::AreEqual(words, strings::split(fullstring, L' '));
+			Assert::AreEqual(std::vector<std::wstring>{L"1", L"2"}, strings::split(L"1.2", L'.'));
+			Assert::AreEqual(std::vector<std::wstring>{L"", L"2"}, strings::split(L".2", L'.'));
+			Assert::AreEqual(std::vector<std::wstring>{L"1", L""}, strings::split(L"1.", L'.'));
 		}
 
 		TEST_METHOD(Test_join) { Assert::AreEqual(fullstring, strings::join(words, L' ')); }

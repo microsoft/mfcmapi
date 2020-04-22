@@ -278,17 +278,17 @@ namespace strings
 			// We can then take the first four characters in B, padding with 0 if needed
 			// And join them to A to get our result
 			const auto halves = split(trimWhitespace(src), L'.');
-			switch(halves.size())
+			switch (halves.size())
 			{
 			case 0:
 				break;
 			case 1:
 				left = trimWhitespace(halves[0]);
+				right = L"0000";
 				break;
 			case 2:
 				left = trimWhitespace(halves[0]);
-				right =
-					trimWhitespace(halves[1]) + std::wstring(4, L'0'); // pad with enough 0 that trimming just works
+				right = trimWhitespace(halves[1]) + std::wstring(4, L'0'); // pad with enough 0 that trimming just works
 				right = std::wstring(right, 0, 4);
 				break;
 			default:
