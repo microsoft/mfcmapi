@@ -589,6 +589,14 @@ namespace strings
 			elems.push_back(item);
 		}
 
+		// If the last character is a delimiter, the above won't get our final "string"
+		// For instamce, "1." has only mapped to "1" so far.
+		// Add a final "" to finish the split
+		if (str.length() >= 1 && str.back() == delim)
+		{
+			elems.push_back(L"");
+		}
+
 		return elems;
 	}
 
