@@ -168,7 +168,7 @@ namespace stringtest
 
 		TEST_METHOD(Test_wstringToCurrency)
 		{
-			Assert::AreEqual(__int64{0}, strings::wstringToCurrency(L"test")); // non numbers convert to 0
+			Assert::AreEqual(__int64{0}, strings::wstringToCurrency(L"test")); // Non numbers convert to 0
 			Assert::AreEqual(__int64{0}, strings::wstringToCurrency(L"1.2.3")); // Too many decimal places convert to 0
 
 			Assert::AreEqual(__int64{0}, strings::wstringToCurrency(L""));
