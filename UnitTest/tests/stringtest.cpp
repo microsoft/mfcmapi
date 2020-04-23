@@ -171,6 +171,7 @@ namespace stringtest
 			Assert::AreEqual(__int64{0}, strings::wstringToCurrency(L"test")); // non numbers convert to 0
 			Assert::AreEqual(__int64{0}, strings::wstringToCurrency(L"1.2.3")); // Too many decimal places convert to 0
 
+			Assert::AreEqual(__int64{0}, strings::wstringToCurrency(L""));
 			Assert::AreEqual(__int64{1234}, strings::wstringToCurrency(L".1234"));
 			Assert::AreEqual(__int64{1234}, strings::wstringToCurrency(L"0.1234"));
 			Assert::AreEqual(__int64{1234}, strings::wstringToCurrency(L"00.1234"));
@@ -194,6 +195,11 @@ namespace stringtest
 			Assert::AreEqual(INT64_MAX, strings::wstringToCurrency(L"922337203685477.5807"));
 			Assert::AreEqual(INT64_MAX, strings::wstringToCurrency(L"922337203685477.58071"));
 			Assert::AreEqual(INT64_MAX, strings::wstringToCurrency(L"922337203685477.5808"));
+
+			Assert::AreEqual(__int64{123400}, strings::wstringToCurrency(L" 12.34"));
+			Assert::AreEqual(__int64{123400}, strings::wstringToCurrency(L"12 .34"));
+			Assert::AreEqual(__int64{123400}, strings::wstringToCurrency(L"12. 34"));
+			Assert::AreEqual(__int64{123400}, strings::wstringToCurrency(L"12.34 "));
 		}
 
 		TEST_METHOD(Test_StripCharacter)

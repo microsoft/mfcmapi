@@ -264,7 +264,7 @@ namespace strings
 		return _wtoi64(trimWhitespace(src).c_str());
 	}
 
-	__int64 wstringToCurrency(const std::wstring& src) noexcept
+	__int64 wstringToCurrency(const std::wstring& src)
 	{
 		if (src.empty()) return 0;
 		const auto periodCount = std::count(src.begin(), src.end(), L'.');
@@ -277,23 +277,9 @@ namespace strings
 			// Suppose we take AAA.BBB and split into two strings, AAA and BBB
 			// We can then take the first four characters in B, padding with 0 if needed
 			// And join them to A to get our result
-			const auto halves = split(trimWhitespace(src), L'.');
-			switch (halves.size())
-			{
-			case 0:
-				break;
-			case 1:
-				left = trimWhitespace(halves[0]);
-				right = L"0000";
-				break;
-			case 2:
-				left = trimWhitespace(halves[0]);
-				right = trimWhitespace(halves[1]) + std::wstring(4, L'0'); // pad with enough 0 that trimming just works
-				right = std::wstring(right, 0, 4);
-				break;
-			default:
-				break;
-			}
+			const auto halves = split(trimWhitespace(src) + L"0000", L'.');
+			left = trimWhitespace(halves[0]);
+			right = std::wstring(trimWhitespace(halves[1]), 0, 4);
 		}
 		else
 		{
@@ -304,7 +290,7 @@ namespace strings
 		const auto whole = left + right;
 
 		return _wtoi64(whole.c_str());
-	}
+	} // namespace strings
 
 	std::wstring strip(const std::wstring& str, const std::function<bool(const WCHAR&)>& func)
 	{
