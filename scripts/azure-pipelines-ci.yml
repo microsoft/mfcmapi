@@ -17,7 +17,7 @@ stages:
 - stage: Build
   jobs:
   - job: Build
-    displayName: testname $(Agent.JobName)
+    displayName:
     strategy:
       maxParallel: 8
       matrix:
