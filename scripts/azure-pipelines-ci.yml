@@ -17,7 +17,7 @@ stages:
 - stage: Build
   jobs:
   - job: Build
-    displayName:
+    displayName: 0
     strategy:
       maxParallel: 8
       matrix:
