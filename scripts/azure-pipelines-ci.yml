@@ -21,27 +21,35 @@ stages:
       maxParallel: 8
       matrix:
         Release_Win32:
+          displayName: ReleaseWin32
           BuildConfiguration: 'Release'
           BuildPlatform: 'Win32'
         Debug_Win32:
+          displayName: DebugWin32
           BuildConfiguration: 'Debug'
           BuildPlatform: 'Win32'
         ReleaseUnicode_Win32:
+          displayName: ReleaseUnicodeWin32
           BuildConfiguration: 'Release Unicode'
           BuildPlatform: 'Win32'
         DebugUnicode_Win32:
+          displayName: DebugUnicodeWin32
           BuildConfiguration: 'Debug Unicode'
           BuildPlatform: 'Win32'
         Release_x64:
+          displayName: ReleaseX64
           BuildConfiguration: 'Release'
           BuildPlatform: 'x64'
         Debug_x64:
+          displayName: DebugX64
           BuildConfiguration: 'Debug'
           BuildPlatform: 'x64'
         ReleaseUnicode_x64:
+          displayName: ReleaseUnicodeX64
           BuildConfiguration: 'Release Unicode'
           BuildPlatform: 'x64'
         DebugUnicode_x64:
+          displayName: DebugUnicodeX64
           BuildConfiguration: 'Debug Unicode'
           BuildPlatform: 'x64'
 
@@ -113,7 +121,7 @@ stages:
 
 - stage: Release
   jobs:
-  - job: Release
+  - job:
     steps:
     - checkout: self
       clean: true
