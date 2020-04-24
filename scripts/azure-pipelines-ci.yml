@@ -17,7 +17,6 @@ stages:
 - stage: Build
   jobs:
   - job: Build
-    displayName: ''
     strategy:
       maxParallel: 8
       matrix:
@@ -55,7 +54,7 @@ stages:
 - stage: Release
   jobs:
   - job: Release
-    displayName: testname Release
+    displayName: Release
     steps:
     - checkout: self
       clean: true
