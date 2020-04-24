@@ -6,7 +6,7 @@ parameters:
   type: string
 
 jobs:
-- job: ${{ parameters.BuildPlatform }} ${{ parameters.BuildConfiguration }}
+- job: ${{ parameters.BuildPlatform }}_${{ parameters.BuildConfiguration }}
   steps:
   - checkout: self
     clean: true
