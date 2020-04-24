@@ -32,8 +32,8 @@ steps:
     solution: '**/*.sln'
     vsVersion: latest
     msbuildArgs: '/p:SourceLinkCreate=true'
-    platform: '$(parameters.BuildPlatform)'
-    configuration: '$(parameters.BuildConfiguration)'
+    platform: ${{ parameters.BuildPlatform }}
+    configuration: ${{ parameters.BuildConfiguration }}
     clean: true
     maximumCpuCount: true
     msbuildArchitecture: x64
