@@ -37,6 +37,7 @@ namespace strings
 	long wstringToLong(const std::wstring& src, int radix) noexcept;
 	double wstringToDouble(const std::wstring& src) noexcept;
 	__int64 wstringToInt64(const std::wstring& src) noexcept;
+	__int64 wstringToCurrency(const std::wstring& src);
 
 	std::wstring StripCharacter(const std::wstring& szString, const WCHAR& character);
 	std::wstring StripCarriage(const std::wstring& szString);

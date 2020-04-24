@@ -216,6 +216,12 @@ namespace cache
 		{
 			output::DebugPrint(output::dbgLevel::NamedPropCache, L"add:\n");
 			entry->output();
+			if (entry->getPropID() == PT_ERROR)
+			{
+				output::DebugPrint(output::dbgLevel::NamedPropCache, L"add: Skipping error property\n");
+				continue;
+			}
+
 			auto match = std::shared_ptr<namedPropCacheEntry>{};
 			if (sig.empty())
 			{

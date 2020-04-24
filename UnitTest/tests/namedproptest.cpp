@@ -185,6 +185,9 @@ namespace namedproptest
 				false, cache::namedPropCacheEntry::valid(cache::namedPropCacheEntry::make(nullptr, 0x1111)));
 			Assert::AreEqual(false, cache::namedPropCacheEntry::valid(cache::namedPropCacheEntry::make(nullptr, 0)));
 			Assert::AreEqual(false, cache::namedPropCacheEntry::valid(nullptr));
+			Assert::AreEqual(
+				false,
+				cache::namedPropCacheEntry::valid(cache::namedPropCacheEntry::make(&formStorageName, PT_ERROR, sig1)));
 		}
 
 		TEST_METHOD(Test_Names)

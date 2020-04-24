@@ -261,14 +261,42 @@ namespace strings
 	{
 		if (src.empty()) return 0;
 
-		return _wtoi64(src.c_str());
+		return _wtoi64(trimWhitespace(src).c_str());
 	}
+
+	__int64 wstringToCurrency(const std::wstring& src)
+	{
+		if (src.empty()) return 0;
+		const auto periodCount = std::count(src.begin(), src.end(), L'.');
+		if (periodCount > 1) return 0; // reject multiple periods
+		auto left = std::wstring{};
+		auto right = std::wstring{};
+		if (periodCount == 1)
+		{
+			// We need to shift the period right "4 spaces"
+			// Suppose we take AAA.BBB and split into two strings, AAA and BBB
+			// We can then take the first four characters in B, padding with 0 if needed
+			// And join them to A to get our result
+			const auto halves = split(trimWhitespace(src) + L"0000", L'.');
+			left = trimWhitespace(halves[0]);
+			right = std::wstring(trimWhitespace(halves[1]), 0, 4);
+		}
+		else
+		{
+			left = trim(src);
+			right = L"0000";
+		}
+
+		const auto whole = left + right;
+
+		return _wtoi64(whole.c_str());
+	} // namespace strings
 
 	std::wstring strip(const std::wstring& str, const std::function<bool(const WCHAR&)>& func)
 	{
 		std::wstring result;
 		result.reserve(str.length());
-		remove_copy_if(str.begin(), str.end(), back_inserter(result), func);
+		std::remove_copy_if(str.begin(), str.end(), back_inserter(result), func);
 		return result;
 	}
 
@@ -545,6 +573,14 @@ namespace strings
 		while (getline(ss, item, delim))
 		{
 			elems.push_back(item);
+		}
+
+		// If the last character is a delimiter, the above won't get our final "string".
+		// For instamce, "1." has only mapped to "1" so far.
+		// Add a final "" to finish the split.
+		if (str.length() >= 1 && str.back() == delim)
+		{
+			elems.push_back(L"");
 		}
 
 		return elems;

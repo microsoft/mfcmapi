@@ -38,7 +38,8 @@ namespace cache
 
 		static inline bool valid(std::shared_ptr<cache::namedPropCacheEntry> item) noexcept
 		{
-			return item && item->ulPropID && (item->mapiNameId.Kind.lID || item->mapiNameId.Kind.lpwstrName);
+			return item && item->ulPropID && item->ulPropID != PT_ERROR &&
+				   (item->mapiNameId.Kind.lID || item->mapiNameId.Kind.lpwstrName);
 		}
 		ULONG getPropID() const noexcept { return ulPropID; }
 		const NamePropNames& getNamePropNames() const noexcept { return namePropNames; }

@@ -16,6 +16,10 @@ namespace Microsoft::VisualStudio::CppUnitTestFramework
 	{
 		return strings::join({q.begin(), q.end()}, L",");
 	}
+	template <> inline std::wstring ToString<std::vector<std::wstring>>(const std::vector<std::wstring>& q)
+	{
+		return strings::join({q.begin(), q.end()}, L",");
+	}
 } // namespace Microsoft::VisualStudio::CppUnitTestFramework
 
 namespace unittest
