@@ -46,7 +46,7 @@ stages:
           BuildPlatform: 'x64'
 
     steps:
-    - template: scripts/build.yml
+    - template: build.yml
       parameters:
         BuildConfiguration: $(BuildConfiguration)
         BuildPlatform: $(BuildPlatform)
