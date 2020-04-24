@@ -24,6 +24,7 @@ stages:
       parameters:
         BuildConfiguration: Debug
         BuildPlatform: Win32
+    - template: build.yml
       parameters:
         BuildConfiguration: Release Unicode
         BuildPlatform: Win32
@@ -31,6 +32,7 @@ stages:
       parameters:
         BuildConfiguration: Debug Unicode
         BuildPlatform: Win32
+    - template: build.yml
       parameters:
         BuildConfiguration: Release
         BuildPlatform: x64
@@ -38,6 +40,7 @@ stages:
       parameters:
         BuildConfiguration: Debug
         BuildPlatform: x64
+    - template: build.yml
       parameters:
         BuildConfiguration: Release Unicode
         BuildPlatform: x64
