@@ -1,12 +1,14 @@
 # Common build script
 parameters:
-- name: BuildPlatform
+- name: name
   type: string
-- name: BuildConfiguration
+- name: platform
+  type: string
+- name: configuration
   type: string
 
 jobs:
-- job: ${{ parameters.BuildPlatform }}_${{ parameters.BuildConfiguration }}
+- job: ${{ parameters.name }}
   steps:
   - checkout: self
     clean: true
@@ -34,8 +36,8 @@ jobs:
       solution: '**/*.sln'
       vsVersion: latest
       msbuildArgs: '/p:SourceLinkCreate=true'
-      platform: ${{ parameters.BuildPlatform }}
-      configuration: ${{ parameters.BuildConfiguration }}
+      platform: ${{ parameters.platform }}
+      configuration: ${{ parameters.configuration }}
       clean: true
       maximumCpuCount: true
       msbuildArchitecture: x64

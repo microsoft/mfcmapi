@@ -18,36 +18,44 @@ stages:
   jobs:
     - template: build.yml
       parameters:
-        BuildConfiguration: Release
-        BuildPlatform: Win32
+        name: Release_Win32
+        configuration: Release
+        platform: Win32
     - template: build.yml
       parameters:
-        BuildConfiguration: Debug
-        BuildPlatform: Win32
+        name: Debug_Win32
+        configuration: Debug
+        platform: Win32
     - template: build.yml
       parameters:
-        BuildConfiguration: Release Unicode
-        BuildPlatform: Win32
+        name: Release_Unicode_Win32
+        configuration: Release Unicode
+        platform: Win32
     - template: build.yml
       parameters:
-        BuildConfiguration: Debug Unicode
-        BuildPlatform: Win32
+        name: Debug_Unicode_Win32
+        configuration: Debug Unicode
+        platform: Win32
     - template: build.yml
       parameters:
-        BuildConfiguration: Release
-        BuildPlatform: x64
+        name: Release_x64
+        configuration: Release
+        platform: x64
     - template: build.yml
       parameters:
-        BuildConfiguration: Debug
-        BuildPlatform: x64
+        name: Debug_x64
+        configuration: Debug
+        platform: x64
     - template: build.yml
       parameters:
-        BuildConfiguration: Release Unicode
-        BuildPlatform: x64
+        name: Release_Unicode_x64
+        configuration: Release Unicode
+        platform: x64
     - template: build.yml
       parameters:
-        BuildConfiguration: Debug Unicode
-        BuildPlatform: x64
+        name: Debug_Unicode_x64
+        configuration: Debug Unicode
+        platform: x64
 
 - stage: Release
   jobs:
