@@ -118,7 +118,7 @@ stages:
         releaseNotesSource: 'inline'
         releaseNotesInline: |-
           Build: *$(Build.BuildNumber)*
-          [![Build Status](https://dev.azure.com/mrmapi/MFCMAPI/_apis/build/status/Continuous%20Integration/stephenegriffin.mfcmapi?branchName=master)](https://dev.azure.com/mrmapi/MFCMAPI/_build/latest?definitionId=14&branchName=master)
+          [![Build Status](https://dev.azure.com/mrmapi/MFCMAPI/_apis/build/status/Continuous%20Integration/ci?branchName=master)](https://dev.azure.com/mrmapi/MFCMAPI/_build/latest?definitionId=14&branchName=master)
 
           This is the unicode continuous integration build of MFCMAPI.
 
