@@ -33,5 +33,5 @@ stages:
         name: signed
         sign: true
         title: MFCMAPI Month Year
-        buildstatus: [![Build Status](https://dev.azure.com/mrmapi/MFCMAPI/_apis/build/status/Release/MFCMAPI%20Build?branchName=master)](https://dev.azure.com/mrmapi/MFCMAPI/_build/latest?definitionId=13&branchName=master)
+        buildstatus: "[![Build Status](https://dev.azure.com/mrmapi/MFCMAPI/_apis/build/status/Release/MFCMAPI%20Build?branchName=master)](https://dev.azure.com/mrmapi/MFCMAPI/_build/latest?definitionId=13&branchName=master)"
         prerelease: false

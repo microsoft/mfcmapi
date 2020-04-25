@@ -64,7 +64,7 @@ stages:
         name: ci
         sign: false
         title: Continuous Integration
-        buildstatus: [![Build Status](https://dev.azure.com/mrmapi/MFCMAPI/_apis/build/status/Continuous%20Integration/ci?branchName=master)](https://dev.azure.com/mrmapi/MFCMAPI/_build/latest?definitionId=14&branchName=master)
+        buildstatus: "[![Build Status](https://dev.azure.com/mrmapi/MFCMAPI/_apis/build/status/Continuous%20Integration/ci?branchName=master)](https://dev.azure.com/mrmapi/MFCMAPI/_build/latest?definitionId=14&branchName=master)"
         description: |-
           This is the unicode continuous integration build of MFCMAPI.
 
