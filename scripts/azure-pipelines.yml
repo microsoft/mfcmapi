@@ -28,7 +28,7 @@ stages:
 
 - stage: Release
   jobs:
-    - template: build.yml
+    - template: release.yml
       parameters:
         name: signed
         sign: true
