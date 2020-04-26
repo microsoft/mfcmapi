@@ -15,183 +15,22 @@ pool:
 stages:
 - stage: Build
   jobs:
-  - job: Build
-    strategy:
-      maxParallel: 4
-      matrix:
-        Win32:
-          BuildConfiguration: 'Release Unicode'
-          BuildPlatform: 'Win32'
-        x64:
-          BuildConfiguration: 'Release Unicode'
-          BuildPlatform: 'x64'
-
-    steps:
-    - checkout: self
-      clean: true
-      submodules: recursive
-    - powershell: |
-       gci env:BUILD_BUILDNUMBER
-       $Env:BUILD_BUILDNUMBER -match "(\d+)\.(\d+)\.(\d+)\.(\d+)"
-       $m = $matches
-       $file = gci "$Env:BUILD_SOURCESDIRECTORY\core\res\bldver.rc"
-       if($file)
-       {
-        attrib $file -r
-        $fc = Get-Content($file)
-        $fc = $fc -replace "#define rmj (\d+)", ("#define rmj "+$m[1])
-        $fc = $fc -replace "#define rmm (\d+)", ("#define rmm "+$m[2])
-        $fc = $fc -replace "#define rup (\d+)", ("#define rup "+$m[3])
-        $fc = $fc -replace "#define rmn (\d+)", ("#define rmn "+$m[4])
-        $fc | Out-File $file
-       }
-      displayName: 'Add Version'
-
-    - task: VSBuild@1
-      displayName: Build
-      inputs:
-        solution: '**/*.sln'
-        vsVersion: latest
-        msbuildArgs: '/p:SourceLinkCreate=true'
-        platform: '$(BuildPlatform)'
-        configuration: '$(BuildConfiguration)'
-        clean: true
-        maximumCpuCount: true
-        msbuildArchitecture: x64
-        createLogFile: true
-
-    - task: VSTest@2
-      displayName: 'VsTest - UnitTests'
-      inputs:
-        runInParallel: true
-        codeCoverageEnabled: true
-        diagnosticsEnabled: True
-
-    #- task: PublishSymbols@2
-    #  displayName: 'Publish symbols path'
-    #  inputs:
-    #    IndexSources: false
-    #    SymbolServerType: TeamServices
-    #    DetailedLog: true
-
-    - task: CopyFiles@2
-      displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
-      inputs:
-        SourceFolder: '$(Build.SourcesDirectory)\bin'
-        Contents: |
-          **\mfcmapi.exe
-          **\mfcmapi.pdb
-          **\mrmapi.exe
-          **\mrmapi.pdb
-        TargetFolder: '$(build.artifactstagingdirectory)'
-        CleanTargetFolder: true
-        OverWrite: true
-
-    - task: PublishBuildArtifacts@1
-      displayName: 'Publish Artifact: drop'
+    - template: build.yml
+      parameters:
+        name: Release_Unicode_Win32
+        configuration: Release Unicode
+        platform: Win32
+    - template: build.yml
+      parameters:
+        name: Release_Unicode_x64
+        configuration: Release Unicode
+        platform: x64
 
 - stage: Release
   jobs:
-  - job: Release
-    steps:
-    - checkout: self
-      clean: true
-      submodules: recursive
-
-    - task: DownloadBuildArtifacts@0
-      inputs:
-        buildType: 'current'
-        downloadType: 'single'
-        artifactName: 'drop'
-        downloadPath: '$(System.ArtifactsDirectory)'
-
-    - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
-      displayName: 'ESRP CodeSigning'
-      inputs:
-        ConnectedServiceName: 'ESRP CodeSigning Service connection'
-        FolderPath: '$(System.ArtifactsDirectory)/drop'
-        Pattern: '*.exe'
-        signConfigType: inlineSignParams
-        inlineOperation: |
-         [
-                 {
-                     "KeyCode" : "CP-230012",
-                     "OperationCode" : "SigntoolSign",
-                     "Parameters" : {
-                         "OpusName" : "Microsoft",
-                         "OpusInfo" : "http://www.microsoft.com",
-                         "FileDigest" : "/fd \"SHA256\"",
-                         "PageHash" : "/NPH",
-                         "TimeStamp" : "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
-                     },
-                     "ToolName" : "sign",
-                     "ToolVersion" : "1.0"
-                 },
-                 {
-                     "KeyCode" : "CP-230012",
-                     "OperationCode" : "SigntoolVerify",
-                     "Parameters" : {},
-                     "ToolName" : "sign",
-                     "ToolVersion" : "1.0"
-                 }
-             ]
-
-    - task: ArchiveFiles@2
-      inputs:
-        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/Win32/MrMAPI/Release Unicode/MrMAPI.exe'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/MrMAPI.exe.$(Build.BuildNumber).zip'
-    - task: ArchiveFiles@2
-      inputs:
-        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/Win32/MrMAPI/Release Unicode/MrMAPI.pdb'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/MrMAPI.pdb.$(Build.BuildNumber).zip'
-    - task: ArchiveFiles@2
-      inputs:
-        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/x64/MrMAPI/Release Unicode/MrMAPI.exe'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/MrMAPI.x64.exe.$(Build.BuildNumber).zip'
-    - task: ArchiveFiles@2
-      inputs:
-        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/x64/MrMAPI/Release Unicode/MrMAPI.pdb'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/MrMAPI.x64.pdb.$(Build.BuildNumber).zip'
-    - task: ArchiveFiles@2
-      inputs:
-        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/Win32/Release Unicode/MFCMapi.exe'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/MFCMAPI.exe.$(Build.BuildNumber).zip'
-    - task: ArchiveFiles@2
-      inputs:
-        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/Win32/Release Unicode/MFCMapi.pdb'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/MFCMAPI.pdb.$(Build.BuildNumber).zip'
-    - task: ArchiveFiles@2
-      inputs:
-        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/x64/Release Unicode/MFCMapi.exe'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/MFCMAPI.x64.exe.$(Build.BuildNumber).zip'
-    - task: ArchiveFiles@2
-      inputs:
-        rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/x64/Release Unicode/MFCMapi.pdb'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/MFCMAPI.x64.pdb.$(Build.BuildNumber).zip'
-
-    - task: GitHubRelease@1
-      inputs:
-        gitHubConnection: 'stephenegriffin'
-        repositoryName: '$(Build.Repository.Name)'
-        action: 'create'
-        target: '$(Build.SourceVersion)'
-        tagSource: 'userSpecifiedTag'
-        tag: '$(Build.BuildNumber)'
-        title: MFCMAPI Month Year ($(Build.BuildNumber))
-        releaseNotesSource: 'inline'
-        releaseNotesInline: |-
-          Build: *$(Build.BuildNumber)*
-          [![Build Status](https://dev.azure.com/mrmapi/MFCMAPI/_apis/build/status/Release/MFCMAPI%20Build?branchName=master)](https://dev.azure.com/mrmapi/MFCMAPI/_build/latest?definitionId=13&branchName=master)
-
-          If you just want to run MFCMAPI or MrMAPI, get the executables (exe). If you want to debug them, get the symbol files (pdb).
-
-          *The 64 bit builds will only work on a machine with 64 bit Outlook installed. All other machines should use the 32 bit builds, regardless of the operating system.*
-
-          [![Facebook Badge](http://badge.facebook.com/badge/26764016480.2776.1538253884.png)](http://www.facebook.com/MFCMAPI)
-          [Download stats](https://www.somsubhra.com/github-release-stats/?username=stephenegriffin&repository=mfcmapi&search=0)
-        isDraft: true
-        isPreRelease: false
-        changeLogCompareToRelease: 'lastFullRelease'
-        changeLogType: 'issueBased'
-        assets: |
-          $(Build.ArtifactStagingDirectory)/*.zip
+    - template: release.yml
+      parameters:
+        name: signed
+        sign: true
+        title: MFCMAPI Month Year
+        prerelease: false
