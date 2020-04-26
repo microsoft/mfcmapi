@@ -9,6 +9,7 @@ parameters:
   type: string
 - name: description
   type: string
+  default: ""
 - name: prerelease
   type: boolean
   default: true
