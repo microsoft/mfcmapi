@@ -69,7 +69,7 @@ namespace smartview
 		std::shared_ptr<blockT<DWORD>> cb = emptyT<DWORD>();
 		std::shared_ptr<blockStringA> str = emptySA();
 		size_t getSize() const noexcept { return cb->getSize() + str->getSize(); }
-		size_t getOffset() const noexcept { return cb->getOffset(); }
+		size_t getOffset() const noexcept { return cb->getOffset() ? cb->getOffset() : str->getOffset(); }
 	};
 
 	struct CountedStringW
@@ -77,7 +77,7 @@ namespace smartview
 		std::shared_ptr<blockT<DWORD>> cb = emptyT<DWORD>();
 		std::shared_ptr<blockStringW> str = emptySW();
 		size_t getSize() const noexcept { return cb->getSize() + str->getSize(); }
-		size_t getOffset() const noexcept { return cb->getOffset(); }
+		size_t getOffset() const noexcept { return cb->getOffset() ? cb->getOffset() : str->getOffset(); }
 	};
 
 	struct StringArrayA
