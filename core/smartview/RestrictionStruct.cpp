@@ -10,10 +10,10 @@ namespace smartview
 {
 	// If bRuleCondition is true, parse restrictions as defined in [MS-OXCDATA] 2.12
 	// If bRuleCondition is true, bExtendedCount controls whether the count fields in AND/OR restrictions is 16 or 32 bits
-	//   https://msdn.microsoft.com/en-us/library/ee201126(v=exchg.80).aspx
+	//   https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxcdata/5d554ba7-b82f-42b6-8802-97c19f760633
 	// If bRuleCondition is false, parse restrictions as defined in [MS-OXOCFG] 2.2.6.1.2
 	// If bRuleCondition is false, ignore bExtendedCount (assumes true)
-	//   https://msdn.microsoft.com/en-us/library/ee217813(v=exchg.80).aspx
+	//   https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxocfg/6d9acc02-dafa-494b-88ae-1c4385e547d6
 	// Never fails, but will not parse restrictions above _MaxDepth
 	// [MS-OXCDATA] 2.11.4 TaggedPropertyValue Structure
 	void RestrictionStruct::parse(ULONG ulDepth)
