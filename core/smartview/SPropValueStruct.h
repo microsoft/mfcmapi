@@ -10,15 +10,7 @@
 
 namespace smartview
 {
-	struct FILETIMEBLock
-	{
-		std::shared_ptr<blockT<DWORD>> dwLowDateTime = emptyT<DWORD>();
-		std::shared_ptr<blockT<DWORD>> dwHighDateTime = emptyT<DWORD>();
-		operator FILETIME() const noexcept { return FILETIME{*dwLowDateTime, *dwHighDateTime}; }
-		size_t getSize() const noexcept { return dwLowDateTime->getSize() + dwHighDateTime->getSize(); }
-		size_t getOffset() const noexcept { return dwHighDateTime->getOffset(); }
-	};
-
+	class FILETIMEBLock;
 	struct SBinaryBlock
 	{
 		std::shared_ptr<blockT<ULONG>> cb = emptyT<ULONG>();
@@ -116,7 +108,7 @@ namespace smartview
 		std::shared_ptr<blockT<WORD>> b = emptyT<WORD>(); /* case PT_BOOLEAN */
 		std::shared_ptr<blockT<float>> flt = emptyT<float>(); /* case PT_R4 */
 		std::shared_ptr<blockT<double>> dbl = emptyT<double>(); /* case PT_DOUBLE */
-		FILETIMEBLock ft; /* case PT_SYSTIME */
+		std::shared_ptr<FILETIMEBLock> ft; /* case PT_SYSTIME */
 		CountedStringA lpszA; /* case PT_STRING8 */
 		SBinaryBlock bin; /* case PT_BINARY */
 		CountedStringW lpszW; /* case PT_UNICODE */

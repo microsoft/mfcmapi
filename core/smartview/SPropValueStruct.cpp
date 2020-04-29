@@ -5,6 +5,28 @@
 
 namespace smartview
 {
+	class FILETIMEBLock
+	{
+	public:
+		FILETIMEBLock(const std::shared_ptr<binaryParser>& parser)
+		{
+			dwHighDateTime = blockT<DWORD>::parse(parser);
+			dwLowDateTime = blockT<DWORD>::parse(parser);
+		}
+		static std::shared_ptr<FILETIMEBLock> parse(const std::shared_ptr<binaryParser>& parser)
+		{
+			return std::make_shared<FILETIMEBLock>(parser);
+		}
+
+		operator FILETIME() const noexcept { return FILETIME{*dwLowDateTime, *dwHighDateTime}; }
+		size_t getSize() const noexcept { return dwLowDateTime->getSize() + dwHighDateTime->getSize(); }
+		size_t getOffset() const noexcept { return dwHighDateTime->getOffset(); }
+
+	private:
+		std::shared_ptr<blockT<DWORD>> dwLowDateTime = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> dwHighDateTime = emptyT<DWORD>();
+	};
+
 	void SPropValueStruct::parse()
 	{
 		const auto ulCurrOffset = m_Parser->getOffset();
@@ -58,8 +80,7 @@ namespace smartview
 			li = blockT<LARGE_INTEGER>::parse(m_Parser);
 			break;
 		case PT_SYSTIME:
-			ft.dwHighDateTime = blockT<DWORD>::parse(m_Parser);
-			ft.dwLowDateTime = blockT<DWORD>::parse(m_Parser);
+			ft = FILETIMEBLock::parse(m_Parser);
 			break;
 		case PT_STRING8:
 			if (m_doRuleProcessing)
@@ -275,9 +296,12 @@ namespace smartview
 			offset = li->getOffset();
 			break;
 		case PT_SYSTIME:
-			prop.Value.ft = ft;
-			size = ft.getSize();
-			offset = ft.getOffset();
+			if (ft)
+			{
+				prop.Value.ft = *ft;
+				size = ft->getSize();
+				offset = ft->getOffset();
+			}
 			break;
 		case PT_STRING8:
 			prop.Value.lpszA = const_cast<LPSTR>(lpszA.str->c_str());
