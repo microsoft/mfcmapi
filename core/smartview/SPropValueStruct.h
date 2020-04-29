@@ -26,7 +26,12 @@ namespace smartview
 		size_t getSize() const noexcept { return cb->getSize() + lpb->getSize(); }
 		size_t getOffset() const noexcept { return cb->getOffset() ? cb->getOffset() : lpb->getOffset(); }
 
-		SBinaryBlock(const std::shared_ptr<binaryParser>& parser);
+		SBinaryBlock(const std::shared_ptr<binaryParser>& parser)
+		{
+			cb = blockT<DWORD>::parse(parser);
+			// Note that we're not placing a restriction on how large a multivalued binary property we can parse. May need to revisit this.
+			lpb = blockBytes::parse(parser, *cb);
+		}
 		SBinaryBlock() noexcept {};
 	};
 
@@ -143,115 +148,9 @@ namespace smartview
 		}
 
 		// TODO: Fill in missing cases with test coverage
-		void EnsurePropBlocks()
-		{
-			if (propStringsGenerated) return;
-			auto prop = SPropValue{};
-			auto size = size_t{};
-			auto offset = size_t{};
-			prop.ulPropTag = *ulPropTag;
-			prop.dwAlignPad = dwAlignPad;
-			switch (*PropType)
-			{
-			case PT_I2:
-				prop.Value.i = *Value.i;
-				size = Value.i->getSize();
-				offset = Value.i->getOffset();
-				break;
-			case PT_LONG:
-				prop.Value.l = *Value.l;
-				size = Value.l->getSize();
-				offset = Value.l->getOffset();
-				break;
-			case PT_R4:
-				prop.Value.flt = *Value.flt;
-				size = Value.flt->getSize();
-				offset = Value.flt->getOffset();
-				break;
-			case PT_DOUBLE:
-				prop.Value.dbl = *Value.dbl;
-				size = Value.dbl->getSize();
-				offset = Value.dbl->getOffset();
-				break;
-			case PT_BOOLEAN:
-				prop.Value.b = *Value.b;
-				size = Value.b->getSize();
-				offset = Value.b->getOffset();
-				break;
-			case PT_I8:
-				prop.Value.li = Value.li->getData();
-				size = Value.li->getSize();
-				offset = Value.li->getOffset();
-				break;
-			case PT_SYSTIME:
-				prop.Value.ft = Value.ft;
-				size = Value.ft.getSize();
-				offset = Value.ft.getOffset();
-				break;
-			case PT_STRING8:
-				prop.Value.lpszA = const_cast<LPSTR>(Value.lpszA.str->c_str());
-				size = Value.lpszA.getSize();
-				offset = Value.lpszA.getOffset();
-				break;
-			case PT_BINARY:
-				mapi::setBin(prop) = {*Value.bin.cb, const_cast<LPBYTE>(Value.bin.lpb->data())};
-				size = Value.bin.getSize();
-				offset = Value.bin.getOffset();
-				break;
-			case PT_UNICODE:
-				prop.Value.lpszW = const_cast<LPWSTR>(Value.lpszW.str->c_str());
-				size = Value.lpszW.getSize();
-				offset = Value.lpszW.getOffset();
-				break;
-			case PT_CLSID:
-				guid = Value.lpguid->getData();
-				prop.Value.lpguid = &guid;
-				size = Value.lpguid->getSize();
-				offset = Value.lpguid->getOffset();
-				break;
-			//case PT_MV_STRING8:
-			//case PT_MV_UNICODE:
-			case PT_MV_BINARY:
-				prop.Value.MVbin.cValues = Value.MVbin.cValues->getData();
-				prop.Value.MVbin.lpbin = Value.MVbin.getbin();
-				break;
-			case PT_ERROR:
-				prop.Value.err = Value.err->getData();
-				size = Value.err->getSize();
-				offset = Value.err->getOffset();
-				break;
-			}
+		void EnsurePropBlocks();
 
-			auto propString = std::wstring{};
-			auto altPropString = std::wstring{};
-			property::parseProperty(&prop, &propString, &altPropString);
-
-			propBlock =
-				std::make_shared<blockStringW>(strings::RemoveInvalidCharactersW(propString, false), size, offset);
-
-			altPropBlock =
-				std::make_shared<blockStringW>(strings::RemoveInvalidCharactersW(altPropString, false), size, offset);
-
-			const auto smartViewString = parsePropertySmartView(&prop, nullptr, nullptr, nullptr, false, false);
-			smartViewBlock = std::make_shared<blockStringW>(smartViewString, size, offset);
-
-			propStringsGenerated = true;
-		}
-
-		_Check_return_ std::wstring PropNum() const
-		{
-			switch (PROP_TYPE(*ulPropTag))
-			{
-			case PT_LONG:
-				return InterpretNumberAsString(*Value.l, *ulPropTag, 0, nullptr, nullptr, false);
-			case PT_I2:
-				return InterpretNumberAsString(*Value.i, *ulPropTag, 0, nullptr, nullptr, false);
-			case PT_I8:
-				return InterpretNumberAsString(Value.li->getData().QuadPart, *ulPropTag, 0, nullptr, nullptr, false);
-			}
-
-			return strings::emptystring;
-		}
+		_Check_return_ std::wstring PropNum() const;
 
 		// Any data we need to cache for getData can live here
 	private:
