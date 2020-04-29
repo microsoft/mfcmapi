@@ -1,8 +1,6 @@
 #include <core/stdafx.h>
 #include <core/smartview/PropertiesStruct.h>
 #include <core/smartview/SPropValueStruct.h>
-#include <core/smartview/SmartView.h>
-#include <core/interpret/proptags.h>
 
 namespace smartview
 {

@@ -1,12 +1,5 @@
 #pragma once
 #include <core/smartview/smartViewParser.h>
-#include <core/smartview/SmartView.h>
-#include <core/property/parseProperty.h>
-#include <core/smartview/block/blockStringA.h>
-#include <core/smartview/block/blockStringW.h>
-#include <core/smartview/block/blockBytes.h>
-#include <core/smartview/block/blockT.h>
-#include <core/mapi/mapiFunctions.h>
 
 namespace smartview
 {
