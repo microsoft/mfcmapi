@@ -27,6 +27,46 @@ namespace smartview
 		std::shared_ptr<blockT<DWORD>> dwHighDateTime = emptyT<DWORD>();
 	};
 
+	class CountedStringA
+	{
+	public:
+		CountedStringA(const std::shared_ptr<binaryParser>& parser, bool doRuleProcessing, bool doNickname)
+		{
+			if (doRuleProcessing)
+			{
+				str = blockStringA::parse(parser);
+				cb->setData(static_cast<DWORD>(str->length()));
+			}
+			else
+			{
+				if (doNickname)
+				{
+					static_cast<void>(parser->advance(sizeof LARGE_INTEGER)); // union
+					cb = blockT<DWORD>::parse(parser);
+				}
+				else
+				{
+					cb = blockT<DWORD, WORD>::parse(parser);
+				}
+
+				str = blockStringA::parse(parser, *cb);
+			}
+		}
+		static std::shared_ptr<CountedStringA>
+		parse(const std::shared_ptr<binaryParser>& parser, bool doRuleProcessing, bool doNickname)
+		{
+			return std::make_shared<CountedStringA>(parser, doRuleProcessing, doNickname);
+		}
+
+		operator LPSTR() const noexcept { return const_cast<LPSTR>(str->c_str()); }
+		size_t getSize() const noexcept { return cb->getSize() + str->getSize(); }
+		size_t getOffset() const noexcept { return cb->getOffset() ? cb->getOffset() : str->getOffset(); }
+
+	private:
+		std::shared_ptr<blockT<DWORD>> cb = emptyT<DWORD>();
+		std::shared_ptr<blockStringA> str = emptySA();
+	};
+
 	void SPropValueStruct::parse()
 	{
 		const auto ulCurrOffset = m_Parser->getOffset();
@@ -83,26 +123,7 @@ namespace smartview
 			ft = FILETIMEBLock::parse(m_Parser);
 			break;
 		case PT_STRING8:
-			if (m_doRuleProcessing)
-			{
-				lpszA.str = blockStringA::parse(m_Parser);
-				lpszA.cb->setData(static_cast<DWORD>(lpszA.str->length()));
-			}
-			else
-			{
-				if (m_doNickname)
-				{
-					static_cast<void>(m_Parser->advance(sizeof LARGE_INTEGER)); // union
-					lpszA.cb = blockT<DWORD>::parse(m_Parser);
-				}
-				else
-				{
-					lpszA.cb = blockT<DWORD, WORD>::parse(m_Parser);
-				}
-
-				lpszA.str = blockStringA::parse(m_Parser, *lpszA.cb);
-			}
-
+			lpszA = CountedStringA::parse(m_Parser, m_doRuleProcessing, m_doNickname);
 			break;
 		case PT_BINARY:
 			if (m_doNickname)
@@ -304,9 +325,12 @@ namespace smartview
 			}
 			break;
 		case PT_STRING8:
-			prop.Value.lpszA = const_cast<LPSTR>(lpszA.str->c_str());
-			size = lpszA.getSize();
-			offset = lpszA.getOffset();
+			if (lpszA)
+			{
+				prop.Value.lpszA = *lpszA;
+				size = lpszA->getSize();
+				offset = lpszA->getOffset();
+			}
 			break;
 		case PT_BINARY:
 			mapi::setBin(prop) = {*bin.cb, const_cast<LPBYTE>(bin.lpb->data())};
