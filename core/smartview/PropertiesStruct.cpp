@@ -36,18 +36,14 @@ namespace smartview
 		for (;;)
 		{
 			if (dwPropCount >= m_MaxEntries) break;
-			const auto oldSize = m_Parser->getSize();
 			auto parser = std::make_shared<SPropValueStruct>();
 			if (parser)
 			{
-				parser->Init(dwPropCount, m_NickName, m_RuleCondition);
+				parser->Init(dwPropCount++, m_NickName, m_RuleCondition);
 				parser->smartViewParser::parse(m_Parser, 0, false);
 			}
 
 			m_Props.emplace_back(parser);
-			const auto newSize = m_Parser->getSize();
-			if (newSize == 0 || newSize == oldSize) break;
-			dwPropCount++;
 		}
 	}
 
