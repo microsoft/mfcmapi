@@ -111,8 +111,16 @@ namespace smartview
 		std::shared_ptr<blockT<SCODE>> err = emptyT<SCODE>(); /* case PT_ERROR */
 	};
 
-	struct SPropValueStruct
+	struct SPropValueStruct : public smartViewParser
 	{
+	public:
+		void Init(int index, bool doNickname, bool doRuleProcessing) noexcept
+		{
+			m_index = index;
+			m_doNickname = doNickname;
+			m_doRuleProcessing = doRuleProcessing;
+		}
+
 		std::shared_ptr<blockT<WORD>> PropType = emptyT<WORD>();
 		std::shared_ptr<blockT<WORD>> PropID = emptyT<WORD>();
 		std::shared_ptr<blockT<ULONG>> ulPropTag = emptyT<ULONG>();
@@ -245,15 +253,19 @@ namespace smartview
 			return strings::emptystring;
 		}
 
-		SPropValueStruct(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool doRuleProcessing);
-
 		// Any data we need to cache for getData can live here
 	private:
+		void parse() override;
+		void parseBlocks() override;
+
 		GUID guid{};
 		std::shared_ptr<blockStringW> propBlock = emptySW();
 		std::shared_ptr<blockStringW> altPropBlock = emptySW();
 		std::shared_ptr<blockStringW> smartViewBlock = emptySW();
 		bool propStringsGenerated{};
+		bool m_doNickname{};
+		bool m_doRuleProcessing{};
+		int m_index{};
 	};
 
 	class PropertiesStruct : public smartViewParser
