@@ -1,6 +1,7 @@
 #include <core/stdafx.h>
 #include <core/smartview/RestrictionStruct.h>
 #include <core/smartview/PropertiesStruct.h>
+#include <core/smartview/SPropValueStruct.h>
 #include <core/interpret/flags.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/smartview/SmartView.h>
