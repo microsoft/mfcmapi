@@ -97,8 +97,20 @@ namespace smartview
 		std::vector<std::shared_ptr<blockStringW>> lppszW;
 	};
 
-	struct PVBlock
+	struct SPropValueStruct : public smartViewParser
 	{
+	public:
+		void Init(int index, bool doNickname, bool doRuleProcessing) noexcept
+		{
+			m_index = index;
+			m_doNickname = doNickname;
+			m_doRuleProcessing = doRuleProcessing;
+		}
+
+		std::shared_ptr<blockT<WORD>> PropType = emptyT<WORD>();
+		std::shared_ptr<blockT<WORD>> PropID = emptyT<WORD>();
+		std::shared_ptr<blockT<ULONG>> ulPropTag = emptyT<ULONG>();
+		ULONG dwAlignPad{};
 		std::shared_ptr<blockT<WORD>> i = emptyT<WORD>(); /* case PT_I2 */
 		std::shared_ptr<blockT<LONG>> l = emptyT<LONG>(); /* case PT_LONG */
 		std::shared_ptr<blockT<WORD>> b = emptyT<WORD>(); /* case PT_BOOLEAN */
@@ -114,23 +126,7 @@ namespace smartview
 		StringArrayA MVszA; /* case PT_MV_STRING8 */
 		StringArrayW MVszW; /* case PT_MV_UNICODE */
 		std::shared_ptr<blockT<SCODE>> err = emptyT<SCODE>(); /* case PT_ERROR */
-	};
 
-	struct SPropValueStruct : public smartViewParser
-	{
-	public:
-		void Init(int index, bool doNickname, bool doRuleProcessing) noexcept
-		{
-			m_index = index;
-			m_doNickname = doNickname;
-			m_doRuleProcessing = doRuleProcessing;
-		}
-
-		std::shared_ptr<blockT<WORD>> PropType = emptyT<WORD>();
-		std::shared_ptr<blockT<WORD>> PropID = emptyT<WORD>();
-		std::shared_ptr<blockT<ULONG>> ulPropTag = emptyT<ULONG>();
-		ULONG dwAlignPad{};
-		PVBlock Value;
 		_Check_return_ std::shared_ptr<blockStringW> PropBlock()
 		{
 			EnsurePropBlocks();

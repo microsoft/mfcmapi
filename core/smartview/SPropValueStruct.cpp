@@ -22,64 +22,64 @@ namespace smartview
 		{
 		case PT_I2:
 			// TODO: Insert proper property struct parsing here
-			if (m_doNickname) Value.i = blockT<WORD>::parse(m_Parser);
+			if (m_doNickname) i = blockT<WORD>::parse(m_Parser);
 			if (m_doNickname) m_Parser->advance(sizeof WORD);
 			if (m_doNickname) m_Parser->advance(sizeof DWORD);
 			break;
 		case PT_LONG:
-			Value.l = blockT<LONG, DWORD>::parse(m_Parser);
+			l = blockT<LONG, DWORD>::parse(m_Parser);
 			if (m_doNickname) m_Parser->advance(sizeof DWORD);
 			break;
 		case PT_ERROR:
-			Value.err = blockT<SCODE, DWORD>::parse(m_Parser);
+			err = blockT<SCODE, DWORD>::parse(m_Parser);
 			if (m_doNickname) m_Parser->advance(sizeof DWORD);
 			break;
 		case PT_R4:
-			Value.flt = blockT<float>::parse(m_Parser);
+			flt = blockT<float>::parse(m_Parser);
 			if (m_doNickname) m_Parser->advance(sizeof DWORD);
 			break;
 		case PT_DOUBLE:
-			Value.dbl = blockT<double>::parse(m_Parser);
+			dbl = blockT<double>::parse(m_Parser);
 			break;
 		case PT_BOOLEAN:
 			if (m_doRuleProcessing)
 			{
-				Value.b = blockT<WORD, BYTE>::parse(m_Parser);
+				b = blockT<WORD, BYTE>::parse(m_Parser);
 			}
 			else
 			{
-				Value.b = blockT<WORD>::parse(m_Parser);
+				b = blockT<WORD>::parse(m_Parser);
 			}
 
 			if (m_doNickname) m_Parser->advance(sizeof WORD);
 			if (m_doNickname) m_Parser->advance(sizeof DWORD);
 			break;
 		case PT_I8:
-			Value.li = blockT<LARGE_INTEGER>::parse(m_Parser);
+			li = blockT<LARGE_INTEGER>::parse(m_Parser);
 			break;
 		case PT_SYSTIME:
-			Value.ft.dwHighDateTime = blockT<DWORD>::parse(m_Parser);
-			Value.ft.dwLowDateTime = blockT<DWORD>::parse(m_Parser);
+			ft.dwHighDateTime = blockT<DWORD>::parse(m_Parser);
+			ft.dwLowDateTime = blockT<DWORD>::parse(m_Parser);
 			break;
 		case PT_STRING8:
 			if (m_doRuleProcessing)
 			{
-				Value.lpszA.str = blockStringA::parse(m_Parser);
-				Value.lpszA.cb->setData(static_cast<DWORD>(Value.lpszA.str->length()));
+				lpszA.str = blockStringA::parse(m_Parser);
+				lpszA.cb->setData(static_cast<DWORD>(lpszA.str->length()));
 			}
 			else
 			{
 				if (m_doNickname)
 				{
 					static_cast<void>(m_Parser->advance(sizeof LARGE_INTEGER)); // union
-					Value.lpszA.cb = blockT<DWORD>::parse(m_Parser);
+					lpszA.cb = blockT<DWORD>::parse(m_Parser);
 				}
 				else
 				{
-					Value.lpszA.cb = blockT<DWORD, WORD>::parse(m_Parser);
+					lpszA.cb = blockT<DWORD, WORD>::parse(m_Parser);
 				}
 
-				Value.lpszA.str = blockStringA::parse(m_Parser, *Value.lpszA.cb);
+				lpszA.str = blockStringA::parse(m_Parser, *lpszA.cb);
 			}
 
 			break;
@@ -91,59 +91,59 @@ namespace smartview
 
 			if (m_doRuleProcessing || m_doNickname)
 			{
-				Value.bin.cb = blockT<DWORD>::parse(m_Parser);
+				bin.cb = blockT<DWORD>::parse(m_Parser);
 			}
 			else
 			{
-				Value.bin.cb = blockT<DWORD, WORD>::parse(m_Parser);
+				bin.cb = blockT<DWORD, WORD>::parse(m_Parser);
 			}
 
 			// Note that we're not placing a restriction on how large a binary property we can parse. May need to revisit this.
-			Value.bin.lpb = blockBytes::parse(m_Parser, *Value.bin.cb);
+			bin.lpb = blockBytes::parse(m_Parser, *bin.cb);
 			break;
 		case PT_UNICODE:
 			if (m_doRuleProcessing)
 			{
-				Value.lpszW.str = blockStringW::parse(m_Parser);
-				Value.lpszW.cb->setData(static_cast<DWORD>(Value.lpszW.str->length()));
+				lpszW.str = blockStringW::parse(m_Parser);
+				lpszW.cb->setData(static_cast<DWORD>(lpszW.str->length()));
 			}
 			else
 			{
 				if (m_doNickname)
 				{
 					static_cast<void>(m_Parser->advance(sizeof LARGE_INTEGER)); // union
-					Value.lpszW.cb = blockT<DWORD>::parse(m_Parser);
+					lpszW.cb = blockT<DWORD>::parse(m_Parser);
 				}
 				else
 				{
-					Value.lpszW.cb = blockT<DWORD, WORD>::parse(m_Parser);
+					lpszW.cb = blockT<DWORD, WORD>::parse(m_Parser);
 				}
 
-				Value.lpszW.str = blockStringW::parse(m_Parser, *Value.lpszW.cb / sizeof(WCHAR));
+				lpszW.str = blockStringW::parse(m_Parser, *lpszW.cb / sizeof(WCHAR));
 			}
 			break;
 		case PT_CLSID:
 			if (m_doNickname) static_cast<void>(m_Parser->advance(sizeof LARGE_INTEGER)); // union
-			Value.lpguid = blockT<GUID>::parse(m_Parser);
+			lpguid = blockT<GUID>::parse(m_Parser);
 			break;
 		case PT_MV_STRING8:
 			if (m_doNickname)
 			{
 				static_cast<void>(m_Parser->advance(sizeof LARGE_INTEGER)); // union
-				Value.MVszA.cValues = blockT<DWORD>::parse(m_Parser);
+				MVszA.cValues = blockT<DWORD>::parse(m_Parser);
 			}
 			else
 			{
-				Value.MVszA.cValues = blockT<DWORD, WORD>::parse(m_Parser);
+				MVszA.cValues = blockT<DWORD, WORD>::parse(m_Parser);
 			}
 
-			if (Value.MVszA.cValues)
-			//if (Value.MVszA.cValues && Value.MVszA.cValues < _MaxEntriesLarge)
+			if (MVszA.cValues)
+			//if (MVszA.cValues && MVszA.cValues < _MaxEntriesLarge)
 			{
-				Value.MVszA.lppszA.reserve(*Value.MVszA.cValues);
-				for (ULONG j = 0; j < *Value.MVszA.cValues; j++)
+				MVszA.lppszA.reserve(*MVszA.cValues);
+				for (ULONG j = 0; j < *MVszA.cValues; j++)
 				{
-					Value.MVszA.lppszA.emplace_back(std::make_shared<blockStringA>(m_Parser));
+					MVszA.lppszA.emplace_back(std::make_shared<blockStringA>(m_Parser));
 				}
 			}
 			break;
@@ -151,19 +151,19 @@ namespace smartview
 			if (m_doNickname)
 			{
 				static_cast<void>(m_Parser->advance(sizeof LARGE_INTEGER)); // union
-				Value.MVszW.cValues = blockT<DWORD>::parse(m_Parser);
+				MVszW.cValues = blockT<DWORD>::parse(m_Parser);
 			}
 			else
 			{
-				Value.MVszW.cValues = blockT<DWORD, WORD>::parse(m_Parser);
+				MVszW.cValues = blockT<DWORD, WORD>::parse(m_Parser);
 			}
 
-			if (Value.MVszW.cValues && *Value.MVszW.cValues < _MaxEntriesLarge)
+			if (MVszW.cValues && *MVszW.cValues < _MaxEntriesLarge)
 			{
-				Value.MVszW.lppszW.reserve(*Value.MVszW.cValues);
-				for (ULONG j = 0; j < *Value.MVszW.cValues; j++)
+				MVszW.lppszW.reserve(*MVszW.cValues);
+				for (ULONG j = 0; j < *MVszW.cValues; j++)
 				{
-					Value.MVszW.lppszW.emplace_back(std::make_shared<blockStringW>(m_Parser));
+					MVszW.lppszW.emplace_back(std::make_shared<blockStringW>(m_Parser));
 				}
 			}
 			break;
@@ -171,18 +171,18 @@ namespace smartview
 			if (m_doNickname)
 			{
 				static_cast<void>(m_Parser->advance(sizeof LARGE_INTEGER)); // union
-				Value.MVbin.cValues = blockT<DWORD>::parse(m_Parser);
+				MVbin.cValues = blockT<DWORD>::parse(m_Parser);
 			}
 			else
 			{
-				Value.MVbin.cValues = blockT<DWORD, WORD>::parse(m_Parser);
+				MVbin.cValues = blockT<DWORD, WORD>::parse(m_Parser);
 			}
 
-			if (Value.MVbin.cValues && *Value.MVbin.cValues < _MaxEntriesLarge)
+			if (MVbin.cValues && *MVbin.cValues < _MaxEntriesLarge)
 			{
-				for (ULONG j = 0; j < *Value.MVbin.cValues; j++)
+				for (ULONG j = 0; j < *MVbin.cValues; j++)
 				{
-					Value.MVbin.lpbin.emplace_back(std::make_shared<SBinaryBlock>(m_Parser));
+					MVbin.lpbin.emplace_back(std::make_shared<SBinaryBlock>(m_Parser));
 				}
 			}
 			break;
@@ -245,71 +245,71 @@ namespace smartview
 		switch (*PropType)
 		{
 		case PT_I2:
-			prop.Value.i = *Value.i;
-			size = Value.i->getSize();
-			offset = Value.i->getOffset();
+			prop.Value.i = *i;
+			size = i->getSize();
+			offset = i->getOffset();
 			break;
 		case PT_LONG:
-			prop.Value.l = *Value.l;
-			size = Value.l->getSize();
-			offset = Value.l->getOffset();
+			prop.Value.l = *l;
+			size = l->getSize();
+			offset = l->getOffset();
 			break;
 		case PT_R4:
-			prop.Value.flt = *Value.flt;
-			size = Value.flt->getSize();
-			offset = Value.flt->getOffset();
+			prop.Value.flt = *flt;
+			size = flt->getSize();
+			offset = flt->getOffset();
 			break;
 		case PT_DOUBLE:
-			prop.Value.dbl = *Value.dbl;
-			size = Value.dbl->getSize();
-			offset = Value.dbl->getOffset();
+			prop.Value.dbl = *dbl;
+			size = dbl->getSize();
+			offset = dbl->getOffset();
 			break;
 		case PT_BOOLEAN:
-			prop.Value.b = *Value.b;
-			size = Value.b->getSize();
-			offset = Value.b->getOffset();
+			prop.Value.b = *b;
+			size = b->getSize();
+			offset = b->getOffset();
 			break;
 		case PT_I8:
-			prop.Value.li = Value.li->getData();
-			size = Value.li->getSize();
-			offset = Value.li->getOffset();
+			prop.Value.li = li->getData();
+			size = li->getSize();
+			offset = li->getOffset();
 			break;
 		case PT_SYSTIME:
-			prop.Value.ft = Value.ft;
-			size = Value.ft.getSize();
-			offset = Value.ft.getOffset();
+			prop.Value.ft = ft;
+			size = ft.getSize();
+			offset = ft.getOffset();
 			break;
 		case PT_STRING8:
-			prop.Value.lpszA = const_cast<LPSTR>(Value.lpszA.str->c_str());
-			size = Value.lpszA.getSize();
-			offset = Value.lpszA.getOffset();
+			prop.Value.lpszA = const_cast<LPSTR>(lpszA.str->c_str());
+			size = lpszA.getSize();
+			offset = lpszA.getOffset();
 			break;
 		case PT_BINARY:
-			mapi::setBin(prop) = {*Value.bin.cb, const_cast<LPBYTE>(Value.bin.lpb->data())};
-			size = Value.bin.getSize();
-			offset = Value.bin.getOffset();
+			mapi::setBin(prop) = {*bin.cb, const_cast<LPBYTE>(bin.lpb->data())};
+			size = bin.getSize();
+			offset = bin.getOffset();
 			break;
 		case PT_UNICODE:
-			prop.Value.lpszW = const_cast<LPWSTR>(Value.lpszW.str->c_str());
-			size = Value.lpszW.getSize();
-			offset = Value.lpszW.getOffset();
+			prop.Value.lpszW = const_cast<LPWSTR>(lpszW.str->c_str());
+			size = lpszW.getSize();
+			offset = lpszW.getOffset();
 			break;
 		case PT_CLSID:
-			guid = Value.lpguid->getData();
+			guid = lpguid->getData();
 			prop.Value.lpguid = &guid;
-			size = Value.lpguid->getSize();
-			offset = Value.lpguid->getOffset();
+			size = lpguid->getSize();
+			offset = lpguid->getOffset();
 			break;
 		//case PT_MV_STRING8:
 		//case PT_MV_UNICODE:
 		case PT_MV_BINARY:
-			prop.Value.MVbin.cValues = Value.MVbin.cValues->getData();
-			prop.Value.MVbin.lpbin = Value.MVbin.getbin();
+			prop.Value.MVbin.cValues = MVbin.cValues->getData();
+			prop.Value.MVbin.lpbin = MVbin.getbin();
 			break;
 		case PT_ERROR:
-			prop.Value.err = Value.err->getData();
-			size = Value.err->getSize();
-			offset = Value.err->getOffset();
+			prop.Value.err = err->getData();
+			size = err->getSize();
+			offset = err->getOffset();
 			break;
 		}
 
@@ -333,11 +333,11 @@ namespace smartview
 		switch (PROP_TYPE(*ulPropTag))
 		{
 		case PT_LONG:
-			return InterpretNumberAsString(*Value.l, *ulPropTag, 0, nullptr, nullptr, false);
+			return InterpretNumberAsString(*l, *ulPropTag, 0, nullptr, nullptr, false);
 		case PT_I2:
-			return InterpretNumberAsString(*Value.i, *ulPropTag, 0, nullptr, nullptr, false);
+			return InterpretNumberAsString(*i, *ulPropTag, 0, nullptr, nullptr, false);
 		case PT_I8:
-			return InterpretNumberAsString(Value.li->getData().QuadPart, *ulPropTag, 0, nullptr, nullptr, false);
+			return InterpretNumberAsString(li->getData().QuadPart, *ulPropTag, 0, nullptr, nullptr, false);
 		}
 
 		return strings::emptystring;
