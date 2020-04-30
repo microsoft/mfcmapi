@@ -12,6 +12,7 @@ namespace smartview
 {
 	class FILETIMEBLock;
 	class CountedStringA;
+	class CountedStringW;
 	struct SBinaryBlock
 	{
 		std::shared_ptr<blockT<ULONG>> cb = emptyT<ULONG>();
@@ -62,14 +63,6 @@ namespace smartview
 		bool binCreated{false};
 	};
 
-	struct CountedStringW
-	{
-		std::shared_ptr<blockT<DWORD>> cb = emptyT<DWORD>();
-		std::shared_ptr<blockStringW> str = emptySW();
-		size_t getSize() const noexcept { return cb->getSize() + str->getSize(); }
-		size_t getOffset() const noexcept { return cb->getOffset() ? cb->getOffset() : str->getOffset(); }
-	};
-
 	struct StringArrayA
 	{
 		std::shared_ptr<blockT<ULONG>> cValues = emptyT<ULONG>();
@@ -104,7 +97,7 @@ namespace smartview
 		std::shared_ptr<FILETIMEBLock> ft; /* case PT_SYSTIME */
 		std::shared_ptr<CountedStringA> lpszA; /* case PT_STRING8 */
 		SBinaryBlock bin; /* case PT_BINARY */
-		CountedStringW lpszW; /* case PT_UNICODE */
+		std::shared_ptr<CountedStringW> lpszW; /* case PT_UNICODE */
 		std::shared_ptr<blockT<GUID>> lpguid = emptyT<GUID>(); /* case PT_CLSID */
 		std::shared_ptr<blockT<LARGE_INTEGER>> li = emptyT<LARGE_INTEGER>(); /* case PT_I8 */
 		SBinaryArrayBlock MVbin; /* case PT_MV_BINARY */

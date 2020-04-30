@@ -5,7 +5,20 @@
 
 namespace smartview
 {
-	class FILETIMEBLock
+	// TODO: refine and shift to own file
+	template <typename T> class IBlock : public block
+	{
+	public:
+		IBlock() = default;
+		IBlock(const IBlock&) = delete;
+		IBlock& operator=(const IBlock&) = delete;
+
+		virtual operator T() const noexcept = 0;
+		virtual size_t getSize() const noexcept = 0;
+		virtual size_t getOffset() const noexcept = 0;
+	};
+
+	class FILETIMEBLock : public IBlock<FILETIME>
 	{
 	public:
 		FILETIMEBLock(const std::shared_ptr<binaryParser>& parser)
@@ -18,16 +31,16 @@ namespace smartview
 			return std::make_shared<FILETIMEBLock>(parser);
 		}
 
-		operator FILETIME() const noexcept { return FILETIME{*dwLowDateTime, *dwHighDateTime}; }
-		size_t getSize() const noexcept { return dwLowDateTime->getSize() + dwHighDateTime->getSize(); }
-		size_t getOffset() const noexcept { return dwHighDateTime->getOffset(); }
+		operator FILETIME() const noexcept override { return FILETIME{*dwLowDateTime, *dwHighDateTime}; }
+		size_t getSize() const noexcept override { return dwLowDateTime->getSize() + dwHighDateTime->getSize(); }
+		size_t getOffset() const noexcept override { return dwHighDateTime->getOffset(); }
 
 	private:
 		std::shared_ptr<blockT<DWORD>> dwLowDateTime = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> dwHighDateTime = emptyT<DWORD>();
 	};
 
-	class CountedStringA
+	class CountedStringA : public IBlock<LPSTR>
 	{
 	public:
 		CountedStringA(const std::shared_ptr<binaryParser>& parser, bool doRuleProcessing, bool doNickname)
@@ -58,13 +71,53 @@ namespace smartview
 			return std::make_shared<CountedStringA>(parser, doRuleProcessing, doNickname);
 		}
 
-		operator LPSTR() const noexcept { return const_cast<LPSTR>(str->c_str()); }
-		size_t getSize() const noexcept { return cb->getSize() + str->getSize(); }
-		size_t getOffset() const noexcept { return cb->getOffset() ? cb->getOffset() : str->getOffset(); }
+		operator LPSTR() const noexcept override { return const_cast<LPSTR>(str->c_str()); }
+		size_t getSize() const noexcept override { return cb->getSize() + str->getSize(); }
+		size_t getOffset() const noexcept override { return cb->getOffset() ? cb->getOffset() : str->getOffset(); }
 
 	private:
 		std::shared_ptr<blockT<DWORD>> cb = emptyT<DWORD>();
 		std::shared_ptr<blockStringA> str = emptySA();
+	};
+
+	class CountedStringW : public IBlock<LPWSTR>
+	{
+	public:
+		CountedStringW(const std::shared_ptr<binaryParser>& parser, bool doRuleProcessing, bool doNickname)
+		{
+			if (doRuleProcessing)
+			{
+				str = blockStringW::parse(parser);
+				cb->setData(static_cast<DWORD>(str->length()));
+			}
+			else
+			{
+				if (doNickname)
+				{
+					static_cast<void>(parser->advance(sizeof LARGE_INTEGER)); // union
+					cb = blockT<DWORD>::parse(parser);
+				}
+				else
+				{
+					cb = blockT<DWORD, WORD>::parse(parser);
+				}
+
+				str = blockStringW::parse(parser, *cb / sizeof(WCHAR));
+			}
+		}
+		static std::shared_ptr<CountedStringW>
+		parse(const std::shared_ptr<binaryParser>& parser, bool doRuleProcessing, bool doNickname)
+		{
+			return std::make_shared<CountedStringW>(parser, doRuleProcessing, doNickname);
+		}
+
+		operator LPWSTR() const noexcept override { return const_cast<LPWSTR>(str->c_str()); }
+		size_t getSize() const noexcept override { return cb->getSize() + str->getSize(); }
+		size_t getOffset() const noexcept override { return cb->getOffset() ? cb->getOffset() : str->getOffset(); }
+
+	private:
+		std::shared_ptr<blockT<DWORD>> cb = emptyT<DWORD>();
+		std::shared_ptr<blockStringW> str = emptySW();
 	};
 
 	void SPropValueStruct::parse()
@@ -144,25 +197,7 @@ namespace smartview
 			bin.lpb = blockBytes::parse(m_Parser, *bin.cb);
 			break;
 		case PT_UNICODE:
-			if (m_doRuleProcessing)
-			{
-				lpszW.str = blockStringW::parse(m_Parser);
-				lpszW.cb->setData(static_cast<DWORD>(lpszW.str->length()));
-			}
-			else
-			{
-				if (m_doNickname)
-				{
-					static_cast<void>(m_Parser->advance(sizeof LARGE_INTEGER)); // union
-					lpszW.cb = blockT<DWORD>::parse(m_Parser);
-				}
-				else
-				{
-					lpszW.cb = blockT<DWORD, WORD>::parse(m_Parser);
-				}
-
-				lpszW.str = blockStringW::parse(m_Parser, *lpszW.cb / sizeof(WCHAR));
-			}
+			lpszW = CountedStringW::parse(m_Parser, m_doRuleProcessing, m_doNickname);
 			break;
 		case PT_CLSID:
 			if (m_doNickname) static_cast<void>(m_Parser->advance(sizeof LARGE_INTEGER)); // union
@@ -338,9 +373,12 @@ namespace smartview
 			offset = bin.getOffset();
 			break;
 		case PT_UNICODE:
-			prop.Value.lpszW = const_cast<LPWSTR>(lpszW.str->c_str());
-			size = lpszW.getSize();
-			offset = lpszW.getOffset();
+			if (lpszW)
+			{
+				prop.Value.lpszW = *lpszW;
+				size = lpszW->getSize();
+				offset = lpszW->getOffset();
+			}
 			break;
 		case PT_CLSID:
 			guid = lpguid->getData();
