@@ -13,7 +13,7 @@ namespace smartview
 		IBlock(const IBlock&) = delete;
 		IBlock& operator=(const IBlock&) = delete;
 
-		virtual operator T() const noexcept = 0;
+		virtual operator T() noexcept = 0;
 		virtual size_t getSize() const noexcept = 0;
 		virtual size_t getOffset() const noexcept = 0;
 	};
@@ -31,7 +31,7 @@ namespace smartview
 			return std::make_shared<FILETIMEBLock>(parser);
 		}
 
-		operator FILETIME() const noexcept override { return FILETIME{*dwLowDateTime, *dwHighDateTime}; }
+		operator FILETIME() noexcept override { return {*dwLowDateTime, *dwHighDateTime}; }
 		size_t getSize() const noexcept override { return dwLowDateTime->getSize() + dwHighDateTime->getSize(); }
 		size_t getOffset() const noexcept override { return dwHighDateTime->getOffset(); }
 
@@ -71,7 +71,7 @@ namespace smartview
 			return std::make_shared<CountedStringA>(parser, doRuleProcessing, doNickname);
 		}
 
-		operator LPSTR() const noexcept override { return const_cast<LPSTR>(str->c_str()); }
+		operator LPSTR() noexcept override { return const_cast<LPSTR>(str->c_str()); }
 		size_t getSize() const noexcept override { return cb->getSize() + str->getSize(); }
 		size_t getOffset() const noexcept override { return cb->getOffset() ? cb->getOffset() : str->getOffset(); }
 
@@ -111,13 +111,114 @@ namespace smartview
 			return std::make_shared<CountedStringW>(parser, doRuleProcessing, doNickname);
 		}
 
-		operator LPWSTR() const noexcept override { return const_cast<LPWSTR>(str->c_str()); }
+		operator LPWSTR() noexcept override { return const_cast<LPWSTR>(str->c_str()); }
 		size_t getSize() const noexcept override { return cb->getSize() + str->getSize(); }
 		size_t getOffset() const noexcept override { return cb->getOffset() ? cb->getOffset() : str->getOffset(); }
 
 	private:
 		std::shared_ptr<blockT<DWORD>> cb = emptyT<DWORD>();
 		std::shared_ptr<blockStringW> str = emptySW();
+	};
+
+	class SBinaryBlock : public IBlock<SBinary>
+	{
+	public:
+		SBinaryBlock(const std::shared_ptr<binaryParser>& parser) : SBinaryBlock(parser, false, true) {}
+		SBinaryBlock(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool doRuleProcessing)
+		{
+			if (doNickname)
+			{
+				static_cast<void>(parser->advance(sizeof LARGE_INTEGER)); // union
+			}
+
+			if (doRuleProcessing || doNickname)
+			{
+				cb = blockT<DWORD>::parse(parser);
+			}
+			else
+			{
+				cb = blockT<DWORD, WORD>::parse(parser);
+			}
+
+			// Note that we're not placing a restriction on how large a binary property we can parse. May need to revisit this.
+			lpb = blockBytes::parse(parser, *cb);
+		}
+		static std::shared_ptr<SBinaryBlock> parse(const std::shared_ptr<binaryParser>& parser)
+		{
+			return std::make_shared<SBinaryBlock>(parser);
+		}
+		static std::shared_ptr<SBinaryBlock>
+		parse(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool doRuleProcessing)
+		{
+			return std::make_shared<SBinaryBlock>(parser, doNickname, doRuleProcessing);
+		}
+
+		operator SBinary() noexcept override { return {*cb, const_cast<LPBYTE>(lpb->data())}; }
+		size_t getSize() const noexcept { return cb->getSize() + lpb->getSize(); }
+		size_t getOffset() const noexcept { return cb->getOffset() ? cb->getOffset() : lpb->getOffset(); }
+
+	private:
+		std::shared_ptr<blockT<ULONG>> cb = emptyT<ULONG>();
+		std::shared_ptr<blockBytes> lpb = emptyBB();
+	};
+
+	class SBinaryArrayBlock : public IBlock<SBinaryArray>
+	{
+	public:
+		SBinaryArrayBlock(const std::shared_ptr<binaryParser>& parser, bool doNickname)
+		{
+			if (doNickname)
+			{
+				static_cast<void>(parser->advance(sizeof LARGE_INTEGER)); // union
+				cValues = blockT<DWORD>::parse(parser);
+			}
+			else
+			{
+				cValues = blockT<DWORD, WORD>::parse(parser);
+			}
+
+			if (cValues && *cValues < _MaxEntriesLarge)
+			{
+				for (ULONG j = 0; j < *cValues; j++)
+				{
+					lpbin.emplace_back(SBinaryBlock::parse(parser));
+				}
+			}
+		}
+		~SBinaryArrayBlock()
+		{
+			if (bin) delete[] bin;
+		}
+		static std::shared_ptr<SBinaryArrayBlock> parse(const std::shared_ptr<binaryParser>& parser, bool doNickname)
+		{
+			return std::make_shared<SBinaryArrayBlock>(parser, doNickname);
+		}
+
+		operator SBinaryArray() noexcept override
+		{
+			if (*cValues && !bin)
+			{
+				auto count = cValues->getData();
+				bin = new (std::nothrow) SBinary[count];
+				if (bin)
+				{
+					for (ULONG i = 0; i < count; i++)
+					{
+						bin[i] = *lpbin[i];
+					}
+				}
+			}
+
+			return SBinaryArray{*cValues, bin};
+		}
+		// TODO: Implement size and offset
+		size_t getSize() const noexcept { return {}; }
+		size_t getOffset() const noexcept { return {}; }
+
+	private:
+		std::shared_ptr<blockT<ULONG>> cValues = emptyT<ULONG>();
+		std::vector<std::shared_ptr<SBinaryBlock>> lpbin;
+		SBinary* bin{};
 	};
 
 	void SPropValueStruct::parse()
@@ -179,22 +280,7 @@ namespace smartview
 			lpszA = CountedStringA::parse(m_Parser, m_doRuleProcessing, m_doNickname);
 			break;
 		case PT_BINARY:
-			if (m_doNickname)
-			{
-				static_cast<void>(m_Parser->advance(sizeof LARGE_INTEGER)); // union
-			}
-
-			if (m_doRuleProcessing || m_doNickname)
-			{
-				bin.cb = blockT<DWORD>::parse(m_Parser);
-			}
-			else
-			{
-				bin.cb = blockT<DWORD, WORD>::parse(m_Parser);
-			}
-
-			// Note that we're not placing a restriction on how large a binary property we can parse. May need to revisit this.
-			bin.lpb = blockBytes::parse(m_Parser, *bin.cb);
+			bin = SBinaryBlock::parse(m_Parser, m_doNickname, m_doRuleProcessing);
 			break;
 		case PT_UNICODE:
 			lpszW = CountedStringW::parse(m_Parser, m_doRuleProcessing, m_doNickname);
@@ -245,23 +331,7 @@ namespace smartview
 			}
 			break;
 		case PT_MV_BINARY:
-			if (m_doNickname)
-			{
-				static_cast<void>(m_Parser->advance(sizeof LARGE_INTEGER)); // union
-				MVbin.cValues = blockT<DWORD>::parse(m_Parser);
-			}
-			else
-			{
-				MVbin.cValues = blockT<DWORD, WORD>::parse(m_Parser);
-			}
-
-			if (MVbin.cValues && *MVbin.cValues < _MaxEntriesLarge)
-			{
-				for (ULONG j = 0; j < *MVbin.cValues; j++)
-				{
-					MVbin.lpbin.emplace_back(std::make_shared<SBinaryBlock>(m_Parser));
-				}
-			}
+			MVbin = SBinaryArrayBlock::parse(m_Parser, m_doNickname);
 			break;
 		default:
 			break;
@@ -368,9 +438,12 @@ namespace smartview
 			}
 			break;
 		case PT_BINARY:
-			mapi::setBin(prop) = {*bin.cb, const_cast<LPBYTE>(bin.lpb->data())};
-			size = bin.getSize();
-			offset = bin.getOffset();
+			if (bin)
+			{
+				mapi::setBin(prop) = *bin;
+				size = bin->getSize();
+				offset = bin->getOffset();
+			}
 			break;
 		case PT_UNICODE:
 			if (lpszW)
@@ -389,8 +462,12 @@ namespace smartview
 		//case PT_MV_STRING8:
 		//case PT_MV_UNICODE:
 		case PT_MV_BINARY:
-			prop.Value.MVbin.cValues = MVbin.cValues->getData();
-			prop.Value.MVbin.lpbin = MVbin.getbin();
+			if (MVbin)
+			{
+				prop.Value.MVbin = *MVbin;
+				size = MVbin->getSize();
+				offset = MVbin->getOffset();
+			}
 			break;
 		case PT_ERROR:
 			prop.Value.err = err->getData();
@@ -428,5 +505,4 @@ namespace smartview
 
 		return strings::emptystring;
 	}
-
 } // namespace smartview

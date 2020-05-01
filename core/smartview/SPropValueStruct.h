@@ -13,56 +13,8 @@ namespace smartview
 	class FILETIMEBLock;
 	class CountedStringA;
 	class CountedStringW;
-	struct SBinaryBlock
-	{
-		std::shared_ptr<blockT<ULONG>> cb = emptyT<ULONG>();
-		std::shared_ptr<blockBytes> lpb = emptyBB();
-		size_t getSize() const noexcept { return cb->getSize() + lpb->getSize(); }
-		size_t getOffset() const noexcept { return cb->getOffset() ? cb->getOffset() : lpb->getOffset(); }
-
-		SBinaryBlock(const std::shared_ptr<binaryParser>& parser)
-		{
-			cb = blockT<DWORD>::parse(parser);
-			// Note that we're not placing a restriction on how large a multivalued binary property we can parse. May need to revisit this.
-			lpb = blockBytes::parse(parser, *cb);
-		}
-		SBinaryBlock() noexcept {};
-	};
-
-	struct SBinaryArrayBlock
-	{
-		~SBinaryArrayBlock()
-		{
-			if (binCreated) delete[] bin;
-		}
-		std::shared_ptr<blockT<ULONG>> cValues = emptyT<ULONG>();
-		std::vector<std::shared_ptr<SBinaryBlock>> lpbin;
-		SBinary* getbin()
-		{
-			if (binCreated) return bin;
-			binCreated = true;
-			if (cValues)
-			{
-				auto count = cValues->getData();
-				bin = new (std::nothrow) SBinary[count];
-				if (bin)
-				{
-					for (ULONG i = 0; i < count; i++)
-					{
-						bin[i].cb = lpbin[i]->cb->getData();
-						bin[i].lpb = const_cast<BYTE*>(lpbin[i]->lpb->data());
-					}
-				}
-			}
-
-			return bin;
-		}
-
-	private:
-		SBinary* bin{};
-		bool binCreated{false};
-	};
-
+	class SBinaryBlock;
+	class SBinaryArrayBlock;
 	struct StringArrayA
 	{
 		std::shared_ptr<blockT<ULONG>> cValues = emptyT<ULONG>();
@@ -96,11 +48,11 @@ namespace smartview
 		std::shared_ptr<blockT<double>> dbl = emptyT<double>(); /* case PT_DOUBLE */
 		std::shared_ptr<FILETIMEBLock> ft; /* case PT_SYSTIME */
 		std::shared_ptr<CountedStringA> lpszA; /* case PT_STRING8 */
-		SBinaryBlock bin; /* case PT_BINARY */
+		std::shared_ptr<SBinaryBlock> bin; /* case PT_BINARY */
 		std::shared_ptr<CountedStringW> lpszW; /* case PT_UNICODE */
 		std::shared_ptr<blockT<GUID>> lpguid = emptyT<GUID>(); /* case PT_CLSID */
 		std::shared_ptr<blockT<LARGE_INTEGER>> li = emptyT<LARGE_INTEGER>(); /* case PT_I8 */
-		SBinaryArrayBlock MVbin; /* case PT_MV_BINARY */
+		std::shared_ptr<SBinaryArrayBlock> MVbin; /* case PT_MV_BINARY */
 		StringArrayA MVszA; /* case PT_MV_STRING8 */
 		StringArrayW MVszW; /* case PT_MV_UNICODE */
 		std::shared_ptr<blockT<SCODE>> err = emptyT<SCODE>(); /* case PT_ERROR */
