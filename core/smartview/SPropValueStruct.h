@@ -17,6 +17,7 @@ namespace smartview
 	class SBinaryArrayBlock;
 	class StringArrayA;
 	class StringArrayW;
+	class I2BLock;
 
 	struct SPropValueStruct : public smartViewParser
 	{
@@ -32,7 +33,7 @@ namespace smartview
 		std::shared_ptr<blockT<WORD>> PropID = emptyT<WORD>();
 		std::shared_ptr<blockT<ULONG>> ulPropTag = emptyT<ULONG>();
 		ULONG dwAlignPad{};
-		std::shared_ptr<blockT<WORD>> i = emptyT<WORD>(); /* case PT_I2 */
+		std::shared_ptr<I2BLock> i; /* case PT_I2 */
 		std::shared_ptr<blockT<LONG>> l = emptyT<LONG>(); /* case PT_LONG */
 		std::shared_ptr<blockT<WORD>> b = emptyT<WORD>(); /* case PT_BOOLEAN */
 		std::shared_ptr<blockT<float>> flt = emptyT<float>(); /* case PT_R4 */

@@ -317,6 +317,30 @@ namespace smartview
 		std::vector<std::shared_ptr<blockStringW>> lppszW;
 	};
 
+	class I2BLock : public IBlock<WORD>
+	{
+	public:
+		I2BLock(const std::shared_ptr<binaryParser>& parser, bool doNickname)
+		{
+			if (doNickname) i = blockT<WORD>::parse(parser); // TODO: This can't be right
+			if (doNickname) parser->advance(sizeof WORD);
+			if (doNickname) parser->advance(sizeof DWORD);
+		}
+		static std::shared_ptr<I2BLock> parse(const std::shared_ptr<binaryParser>& parser, bool doNickname)
+		{
+			return std::make_shared<I2BLock>(parser, doNickname);
+		}
+
+		operator WORD() noexcept override { return *i; }
+		size_t getSize() const noexcept override { return i->getSize(); }
+		size_t getOffset() const noexcept override { return i->getOffset(); }
+
+		void getProp(SPropValue& prop) override { prop.Value.i = this->operator WORD(); }
+
+	private:
+		std::shared_ptr<blockT<WORD>> i = emptyT<WORD>();
+	};
+
 	void SPropValueStruct::parse()
 	{
 		const auto ulCurrOffset = m_Parser->getOffset();
@@ -333,10 +357,7 @@ namespace smartview
 		switch (*PropType)
 		{
 		case PT_I2:
-			// TODO: Insert proper property struct parsing here
-			if (m_doNickname) i = blockT<WORD>::parse(m_Parser);
-			if (m_doNickname) m_Parser->advance(sizeof WORD);
-			if (m_doNickname) m_Parser->advance(sizeof DWORD);
+			i = I2BLock::parse(m_Parser, m_doNickname);
 			break;
 		case PT_LONG:
 			l = blockT<LONG, DWORD>::parse(m_Parser);
@@ -453,9 +474,12 @@ namespace smartview
 		switch (*PropType)
 		{
 		case PT_I2:
-			prop.Value.i = *i;
-			size = i->getSize();
-			offset = i->getOffset();
+			if (i)
+			{
+				i->getProp(prop);
+				size = i->getSize();
+				offset = i->getOffset();
+			}
 			break;
 		case PT_LONG:
 			prop.Value.l = *l;
