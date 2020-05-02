@@ -15,17 +15,8 @@ namespace smartview
 	class CountedStringW;
 	class SBinaryBlock;
 	class SBinaryArrayBlock;
-	struct StringArrayA
-	{
-		std::shared_ptr<blockT<ULONG>> cValues = emptyT<ULONG>();
-		std::vector<std::shared_ptr<blockStringA>> lppszA;
-	};
-
-	struct StringArrayW
-	{
-		std::shared_ptr<blockT<ULONG>> cValues = emptyT<ULONG>();
-		std::vector<std::shared_ptr<blockStringW>> lppszW;
-	};
+	class StringArrayA;
+	class StringArrayW;
 
 	struct SPropValueStruct : public smartViewParser
 	{
@@ -53,8 +44,8 @@ namespace smartview
 		std::shared_ptr<blockT<GUID>> lpguid = emptyT<GUID>(); /* case PT_CLSID */
 		std::shared_ptr<blockT<LARGE_INTEGER>> li = emptyT<LARGE_INTEGER>(); /* case PT_I8 */
 		std::shared_ptr<SBinaryArrayBlock> MVbin; /* case PT_MV_BINARY */
-		StringArrayA MVszA; /* case PT_MV_STRING8 */
-		StringArrayW MVszW; /* case PT_MV_UNICODE */
+		std::shared_ptr<StringArrayA> MVszA; /* case PT_MV_STRING8 */
+		std::shared_ptr<StringArrayW> MVszW; /* case PT_MV_UNICODE */
 		std::shared_ptr<blockT<SCODE>> err = emptyT<SCODE>(); /* case PT_ERROR */
 
 		_Check_return_ std::shared_ptr<blockStringW> PropBlock()

@@ -221,6 +221,93 @@ namespace smartview
 		SBinary* bin{};
 	};
 
+	class StringArrayA : public IBlock<SLPSTRArray>
+	{
+	public:
+		StringArrayA(const std::shared_ptr<binaryParser>& parser, bool doNickname)
+		{
+			if (doNickname)
+			{
+				static_cast<void>(parser->advance(sizeof LARGE_INTEGER)); // union
+				cValues = blockT<DWORD>::parse(parser);
+			}
+			else
+			{
+				cValues = blockT<DWORD, WORD>::parse(parser);
+			}
+
+			if (cValues)
+			//if (cValues && cValues < _MaxEntriesLarge)
+			{
+				lppszA.reserve(*cValues);
+				for (ULONG j = 0; j < *cValues; j++)
+				{
+					lppszA.emplace_back(std::make_shared<blockStringA>(parser));
+				}
+			}
+		}
+		static std::shared_ptr<StringArrayA> parse(const std::shared_ptr<binaryParser>& parser, bool doNickname)
+		{
+			return std::make_shared<StringArrayA>(parser, doNickname);
+		}
+
+		operator SLPSTRArray() noexcept override
+		{
+			// TODO: implement
+			return SLPSTRArray{};
+		}
+		// TODO: Implement size and offset
+		size_t getSize() const noexcept { return {}; }
+		size_t getOffset() const noexcept { return {}; }
+
+	private:
+		std::shared_ptr<blockT<ULONG>> cValues = emptyT<ULONG>();
+		std::vector<std::shared_ptr<blockStringA>> lppszA;
+	};
+
+	class StringArrayW : public IBlock<SWStringArray>
+	{
+	public:
+		StringArrayW(const std::shared_ptr<binaryParser>& parser, bool doNickname)
+		{
+			if (doNickname)
+			{
+				static_cast<void>(parser->advance(sizeof LARGE_INTEGER)); // union
+				cValues = blockT<DWORD>::parse(parser);
+			}
+			else
+			{
+				cValues = blockT<DWORD, WORD>::parse(parser);
+			}
+
+			if (cValues && *cValues < _MaxEntriesLarge)
+			{
+				lppszW.reserve(*cValues);
+				for (ULONG j = 0; j < *cValues; j++)
+				{
+					lppszW.emplace_back(std::make_shared<blockStringW>(parser));
+				}
+			}
+		}
+		static std::shared_ptr<StringArrayW> parse(const std::shared_ptr<binaryParser>& parser, bool doNickname)
+		{
+			return std::make_shared<StringArrayW>(parser, doNickname);
+		}
+
+		operator SWStringArray() noexcept override
+		{
+			// TODO: implement
+			return SWStringArray{};
+		}
+		// TODO: Implement size and offset
+		size_t getSize() const noexcept { return {}; }
+		size_t getOffset() const noexcept { return {}; }
+
+	private:
+		std::shared_ptr<blockT<ULONG>> cValues = emptyT<ULONG>();
+		std::vector<std::shared_ptr<blockStringW>> lppszW;
+	};
+
 	void SPropValueStruct::parse()
 	{
 		const auto ulCurrOffset = m_Parser->getOffset();
@@ -290,45 +377,10 @@ namespace smartview
 			lpguid = blockT<GUID>::parse(m_Parser);
 			break;
 		case PT_MV_STRING8:
-			if (m_doNickname)
-			{
-				static_cast<void>(m_Parser->advance(sizeof LARGE_INTEGER)); // union
-				MVszA.cValues = blockT<DWORD>::parse(m_Parser);
-			}
-			else
-			{
-				MVszA.cValues = blockT<DWORD, WORD>::parse(m_Parser);
-			}
-
-			if (MVszA.cValues)
-			//if (MVszA.cValues && MVszA.cValues < _MaxEntriesLarge)
-			{
-				MVszA.lppszA.reserve(*MVszA.cValues);
-				for (ULONG j = 0; j < *MVszA.cValues; j++)
-				{
-					MVszA.lppszA.emplace_back(std::make_shared<blockStringA>(m_Parser));
-				}
-			}
+			MVszA = StringArrayA::parse(m_Parser, m_doNickname);
 			break;
 		case PT_MV_UNICODE:
-			if (m_doNickname)
-			{
-				static_cast<void>(m_Parser->advance(sizeof LARGE_INTEGER)); // union
-				MVszW.cValues = blockT<DWORD>::parse(m_Parser);
-			}
-			else
-			{
-				MVszW.cValues = blockT<DWORD, WORD>::parse(m_Parser);
-			}
-
-			if (MVszW.cValues && *MVszW.cValues < _MaxEntriesLarge)
-			{
-				MVszW.lppszW.reserve(*MVszW.cValues);
-				for (ULONG j = 0; j < *MVszW.cValues; j++)
-				{
-					MVszW.lppszW.emplace_back(std::make_shared<blockStringW>(m_Parser));
-				}
-			}
+			MVszW = StringArrayW::parse(m_Parser, m_doNickname);
 			break;
 		case PT_MV_BINARY:
 			MVbin = SBinaryArrayBlock::parse(m_Parser, m_doNickname);
@@ -459,8 +511,20 @@ namespace smartview
 			size = lpguid->getSize();
 			offset = lpguid->getOffset();
 			break;
-		//case PT_MV_STRING8:
-		//case PT_MV_UNICODE:
+		case PT_MV_STRING8:
+			if (MVszA)
+			{
+				// TODO: set up prop of type SLPSTRArray
+				// prop.Value.MVszA
+			}
+			break;
+		case PT_MV_UNICODE:
+			if (MVszW)
+			{
+				// TODO: set up prop of type SWStringArray
+				// prop.Value.MVszW
+			}
+			break;
 		case PT_MV_BINARY:
 			if (MVbin)
 			{
