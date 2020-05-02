@@ -16,6 +16,7 @@ namespace smartview
 		virtual operator T() noexcept = 0;
 		virtual size_t getSize() const noexcept = 0;
 		virtual size_t getOffset() const noexcept = 0;
+		virtual void getProp(SPropValue& prop) = 0;
 	};
 
 	class FILETIMEBLock : public IBlock<FILETIME>
@@ -34,6 +35,8 @@ namespace smartview
 		operator FILETIME() noexcept override { return {*dwLowDateTime, *dwHighDateTime}; }
 		size_t getSize() const noexcept override { return dwLowDateTime->getSize() + dwHighDateTime->getSize(); }
 		size_t getOffset() const noexcept override { return dwHighDateTime->getOffset(); }
+
+		void getProp(SPropValue& prop) override { prop.Value.ft = this->operator FILETIME(); }
 
 	private:
 		std::shared_ptr<blockT<DWORD>> dwLowDateTime = emptyT<DWORD>();
@@ -74,6 +77,7 @@ namespace smartview
 		operator LPSTR() noexcept override { return const_cast<LPSTR>(str->c_str()); }
 		size_t getSize() const noexcept override { return cb->getSize() + str->getSize(); }
 		size_t getOffset() const noexcept override { return cb->getOffset() ? cb->getOffset() : str->getOffset(); }
+		void getProp(SPropValue& prop) override { prop.Value.lpszA = this->operator LPSTR(); }
 
 	private:
 		std::shared_ptr<blockT<DWORD>> cb = emptyT<DWORD>();
@@ -114,6 +118,7 @@ namespace smartview
 		operator LPWSTR() noexcept override { return const_cast<LPWSTR>(str->c_str()); }
 		size_t getSize() const noexcept override { return cb->getSize() + str->getSize(); }
 		size_t getOffset() const noexcept override { return cb->getOffset() ? cb->getOffset() : str->getOffset(); }
+		void getProp(SPropValue& prop) override { prop.Value.lpszW = this->operator LPWSTR(); }
 
 	private:
 		std::shared_ptr<blockT<DWORD>> cb = emptyT<DWORD>();
@@ -156,6 +161,7 @@ namespace smartview
 		operator SBinary() noexcept override { return {*cb, const_cast<LPBYTE>(lpb->data())}; }
 		size_t getSize() const noexcept { return cb->getSize() + lpb->getSize(); }
 		size_t getOffset() const noexcept { return cb->getOffset() ? cb->getOffset() : lpb->getOffset(); }
+		void getProp(SPropValue& prop) override { prop.Value.bin = this->operator SBinary(); }
 
 	private:
 		std::shared_ptr<blockT<ULONG>> cb = emptyT<ULONG>();
@@ -214,6 +220,7 @@ namespace smartview
 		// TODO: Implement size and offset
 		size_t getSize() const noexcept { return {}; }
 		size_t getOffset() const noexcept { return {}; }
+		void getProp(SPropValue& prop) override { prop.Value.MVbin = this->operator SBinaryArray(); }
 
 	private:
 		std::shared_ptr<blockT<ULONG>> cValues = emptyT<ULONG>();
@@ -259,6 +266,7 @@ namespace smartview
 		// TODO: Implement size and offset
 		size_t getSize() const noexcept { return {}; }
 		size_t getOffset() const noexcept { return {}; }
+		void getProp(SPropValue& prop) override { prop.Value.MVszA = this->operator SLPSTRArray(); }
 
 	private:
 		std::shared_ptr<blockT<ULONG>> cValues = emptyT<ULONG>();
@@ -302,6 +310,7 @@ namespace smartview
 		// TODO: Implement size and offset
 		size_t getSize() const noexcept { return {}; }
 		size_t getOffset() const noexcept { return {}; }
+		void getProp(SPropValue& prop) override { prop.Value.MVszW = this->operator SWStringArray(); }
 
 	private:
 		std::shared_ptr<blockT<ULONG>> cValues = emptyT<ULONG>();
@@ -476,7 +485,7 @@ namespace smartview
 		case PT_SYSTIME:
 			if (ft)
 			{
-				prop.Value.ft = *ft;
+				ft->getProp(prop);
 				size = ft->getSize();
 				offset = ft->getOffset();
 			}
@@ -484,7 +493,7 @@ namespace smartview
 		case PT_STRING8:
 			if (lpszA)
 			{
-				prop.Value.lpszA = *lpszA;
+				lpszA->getProp(prop);
 				size = lpszA->getSize();
 				offset = lpszA->getOffset();
 			}
@@ -492,7 +501,7 @@ namespace smartview
 		case PT_BINARY:
 			if (bin)
 			{
-				mapi::setBin(prop) = *bin;
+				bin->getProp(prop);
 				size = bin->getSize();
 				offset = bin->getOffset();
 			}
@@ -500,6 +509,7 @@ namespace smartview
 		case PT_UNICODE:
 			if (lpszW)
 			{
+				lpszW->getProp(prop);
 				prop.Value.lpszW = *lpszW;
 				size = lpszW->getSize();
 				offset = lpszW->getOffset();
@@ -514,21 +524,23 @@ namespace smartview
 		case PT_MV_STRING8:
 			if (MVszA)
 			{
-				// TODO: set up prop of type SLPSTRArray
-				// prop.Value.MVszA
+				MVszA->getProp(prop);
+				size = MVszA->getSize();
+				offset = MVszA->getOffset();
 			}
 			break;
 		case PT_MV_UNICODE:
 			if (MVszW)
 			{
-				// TODO: set up prop of type SWStringArray
-				// prop.Value.MVszW
+				MVszW->getProp(prop);
+				size = MVszW->getSize();
+				offset = MVszW->getOffset();
 			}
 			break;
 		case PT_MV_BINARY:
 			if (MVbin)
 			{
-				prop.Value.MVbin = *MVbin;
+				MVbin->getProp(prop);
 				size = MVbin->getSize();
 				offset = MVbin->getOffset();
 			}
