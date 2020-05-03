@@ -6,7 +6,7 @@
 namespace smartview
 {
 	// TODO: refine and shift to own file
-	template <typename T> class IBlock : public block
+	class IBlock : public block
 	{
 	public:
 		IBlock() = default;
@@ -18,7 +18,7 @@ namespace smartview
 		virtual void getProp(SPropValue& prop) = 0;
 	};
 
-	class FILETIMEBLock : public IBlock<FILETIME>
+	class FILETIMEBLock : public IBlock
 	{
 	public:
 		FILETIMEBLock(const std::shared_ptr<binaryParser>& parser)
@@ -41,7 +41,7 @@ namespace smartview
 		std::shared_ptr<blockT<DWORD>> dwHighDateTime = emptyT<DWORD>();
 	};
 
-	class CountedStringA : public IBlock<LPSTR>
+	class CountedStringA : public IBlock
 	{
 	public:
 		CountedStringA(const std::shared_ptr<binaryParser>& parser, bool doRuleProcessing, bool doNickname)
@@ -81,7 +81,7 @@ namespace smartview
 		std::shared_ptr<blockStringA> str = emptySA();
 	};
 
-	class CountedStringW : public IBlock<LPWSTR>
+	class CountedStringW : public IBlock
 	{
 	public:
 		CountedStringW(const std::shared_ptr<binaryParser>& parser, bool doRuleProcessing, bool doNickname)
@@ -121,7 +121,7 @@ namespace smartview
 		std::shared_ptr<blockStringW> str = emptySW();
 	};
 
-	class SBinaryBlock : public IBlock<SBinary>
+	class SBinaryBlock : public IBlock
 	{
 	public:
 		SBinaryBlock(const std::shared_ptr<binaryParser>& parser) : SBinaryBlock(parser, false, true) {}
@@ -164,7 +164,7 @@ namespace smartview
 		std::shared_ptr<blockBytes> lpb = emptyBB();
 	};
 
-	class SBinaryArrayBlock : public IBlock<SBinaryArray>
+	class SBinaryArrayBlock : public IBlock
 	{
 	public:
 		SBinaryArrayBlock(const std::shared_ptr<binaryParser>& parser, bool doNickname)
@@ -224,7 +224,7 @@ namespace smartview
 		SBinary* bin{};
 	};
 
-	class StringArrayA : public IBlock<SLPSTRArray>
+	class StringArrayA : public IBlock
 	{
 	public:
 		StringArrayA(const std::shared_ptr<binaryParser>& parser, bool doNickname)
@@ -264,7 +264,7 @@ namespace smartview
 		std::vector<std::shared_ptr<blockStringA>> lppszA;
 	};
 
-	class StringArrayW : public IBlock<SWStringArray>
+	class StringArrayW : public IBlock
 	{
 	public:
 		StringArrayW(const std::shared_ptr<binaryParser>& parser, bool doNickname)
@@ -303,7 +303,7 @@ namespace smartview
 		std::vector<std::shared_ptr<blockStringW>> lppszW;
 	};
 
-	class I2BLock : public IBlock<WORD>
+	class I2BLock : public IBlock
 	{
 	public:
 		I2BLock(const std::shared_ptr<binaryParser>& parser, bool doNickname)
