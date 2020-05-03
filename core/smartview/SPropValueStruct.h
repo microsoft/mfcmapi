@@ -10,12 +10,12 @@
 
 namespace smartview
 {
-	class IBlock : public block
+	class PVBlock : public block
 	{
 	public:
-		IBlock() = default;
-		IBlock(const IBlock&) = delete;
-		IBlock& operator=(const IBlock&) = delete;
+		PVBlock() = default;
+		PVBlock(const PVBlock&) = delete;
+		PVBlock& operator=(const PVBlock&) = delete;
 
 		virtual size_t getSize() const noexcept = 0;
 		virtual size_t getOffset() const noexcept = 0;
@@ -37,7 +37,7 @@ namespace smartview
 		std::shared_ptr<blockT<WORD>> PropID = emptyT<WORD>();
 		std::shared_ptr<blockT<ULONG>> ulPropTag = emptyT<ULONG>();
 		ULONG dwAlignPad{};
-		std::shared_ptr<IBlock> value;
+		std::shared_ptr<PVBlock> value;
 
 		std::shared_ptr<blockT<WORD>> b = emptyT<WORD>(); /* case PT_BOOLEAN */
 		std::shared_ptr<blockT<float>> flt = emptyT<float>(); /* case PT_R4 */

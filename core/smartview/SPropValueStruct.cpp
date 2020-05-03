@@ -6,7 +6,7 @@
 namespace smartview
 {
 	/* case PT_SYSTIME */
-	class FILETIMEBLock : public IBlock
+	class FILETIMEBLock : public PVBlock
 	{
 	public:
 		FILETIMEBLock(const std::shared_ptr<binaryParser>& parser)
@@ -30,7 +30,7 @@ namespace smartview
 	};
 
 	/* case PT_STRING8 */
-	class CountedStringA : public IBlock
+	class CountedStringA : public PVBlock
 	{
 	public:
 		CountedStringA(const std::shared_ptr<binaryParser>& parser, bool doRuleProcessing, bool doNickname)
@@ -71,7 +71,7 @@ namespace smartview
 	};
 
 	/* case PT_UNICODE */
-	class CountedStringW : public IBlock
+	class CountedStringW : public PVBlock
 	{
 	public:
 		CountedStringW(const std::shared_ptr<binaryParser>& parser, bool doRuleProcessing, bool doNickname)
@@ -112,7 +112,7 @@ namespace smartview
 	};
 
 	/* case PT_BINARY */
-	class SBinaryBlock : public IBlock
+	class SBinaryBlock : public PVBlock
 	{
 	public:
 		SBinaryBlock(const std::shared_ptr<binaryParser>& parser) : SBinaryBlock(parser, false, true) {}
@@ -156,7 +156,7 @@ namespace smartview
 	};
 
 	/* case PT_MV_BINARY */
-	class SBinaryArrayBlock : public IBlock
+	class SBinaryArrayBlock : public PVBlock
 	{
 	public:
 		SBinaryArrayBlock(const std::shared_ptr<binaryParser>& parser, bool doNickname)
@@ -217,7 +217,7 @@ namespace smartview
 	};
 
 	/* case PT_MV_STRING8 */
-	class StringArrayA : public IBlock
+	class StringArrayA : public PVBlock
 	{
 	public:
 		StringArrayA(const std::shared_ptr<binaryParser>& parser, bool doNickname)
@@ -258,7 +258,7 @@ namespace smartview
 	};
 
 	/* case PT_MV_UNICODE */
-	class StringArrayW : public IBlock
+	class StringArrayW : public PVBlock
 	{
 	public:
 		StringArrayW(const std::shared_ptr<binaryParser>& parser, bool doNickname)
@@ -298,7 +298,7 @@ namespace smartview
 	};
 
 	/* case PT_I2 */
-	class I2BLock : public IBlock
+	class I2BLock : public PVBlock
 	{
 	public:
 		I2BLock(const std::shared_ptr<binaryParser>& parser, bool doNickname)
@@ -327,7 +327,7 @@ namespace smartview
 	};
 
 	/* case PT_LONG */
-	class LongBLock : public IBlock
+	class LongBLock : public PVBlock
 	{
 	public:
 		LongBLock(const std::shared_ptr<binaryParser>& parser, bool doNickname)
