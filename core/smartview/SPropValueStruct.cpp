@@ -188,7 +188,11 @@ namespace smartview
 			return std::make_shared<SBinaryArrayBlock>(parser, doNickname);
 		}
 
-		operator SBinaryArray() noexcept
+	private:
+		// TODO: Implement size and offset
+		size_t getSize() const noexcept { return {}; }
+		size_t getOffset() const noexcept { return {}; }
+		void getProp(SPropValue& prop) override
 		{
 			if (*cValues && !bin)
 			{
@@ -203,14 +207,8 @@ namespace smartview
 				}
 			}
 
-			return SBinaryArray{*cValues, bin};
+			prop.Value.MVbin = SBinaryArray{*cValues, bin};
 		}
-
-	private:
-		// TODO: Implement size and offset
-		size_t getSize() const noexcept { return {}; }
-		size_t getOffset() const noexcept { return {}; }
-		void getProp(SPropValue& prop) override { prop.Value.MVbin = this->operator SBinaryArray(); }
 		std::shared_ptr<blockT<ULONG>> cValues = emptyT<ULONG>();
 		std::vector<std::shared_ptr<SBinaryBlock>> lpbin;
 		SBinary* bin{};
@@ -313,7 +311,6 @@ namespace smartview
 			return std::make_shared<I2BLock>(parser, doNickname);
 		}
 
-		operator WORD() noexcept { return *i; }
 		std::wstring propNum(ULONG ulPropTag) override
 		{
 			return InterpretNumberAsString(*i, ulPropTag, 0, nullptr, nullptr, false);
@@ -322,7 +319,7 @@ namespace smartview
 	private:
 		size_t getSize() const noexcept override { return i->getSize(); }
 		size_t getOffset() const noexcept override { return i->getOffset(); }
-		void getProp(SPropValue& prop) override { prop.Value.i = this->operator WORD(); }
+		void getProp(SPropValue& prop) override { prop.Value.i = *i; }
 		std::shared_ptr<blockT<WORD>> i = emptyT<WORD>();
 	};
 
@@ -341,7 +338,6 @@ namespace smartview
 			return std::make_shared<LongBLock>(parser, doNickname);
 		}
 
-		operator DWORD() noexcept { return *l; }
 		std::wstring propNum(ULONG ulPropTag) override
 		{
 			return InterpretNumberAsString(*l, ulPropTag, 0, nullptr, nullptr, false);
@@ -350,7 +346,7 @@ namespace smartview
 	private:
 		size_t getSize() const noexcept override { return l->getSize(); }
 		size_t getOffset() const noexcept override { return l->getOffset(); }
-		void getProp(SPropValue& prop) override { prop.Value.l = this->operator DWORD(); }
+		void getProp(SPropValue& prop) override { prop.Value.l = *l; }
 		std::shared_ptr<blockT<LONG>> l = emptyT<LONG>();
 	};
 
