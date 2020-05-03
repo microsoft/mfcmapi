@@ -479,6 +479,29 @@ namespace smartview
 		std::shared_ptr<blockT<LARGE_INTEGER>> li = emptyT<LARGE_INTEGER>();
 	};
 
+	/* case PT_ERROR */
+	class ErrorBlock : public PVBlock
+	{
+	public:
+		ErrorBlock(const std::shared_ptr<binaryParser>& parser, bool doNickname)
+		{
+			err = blockT<SCODE, DWORD>::parse(parser);
+			if (doNickname) parser->advance(sizeof DWORD);
+		}
+		static std::shared_ptr<ErrorBlock> parse(const std::shared_ptr<binaryParser>& parser, bool doNickname)
+		{
+			return std::make_shared<ErrorBlock>(parser, doNickname);
+		}
+
+		size_t getSize() const noexcept override { return err->getSize(); }
+		size_t getOffset() const noexcept override { return err->getOffset(); }
+
+		void getProp(SPropValue& prop) override { prop.Value.err = *err; }
+
+	private:
+		std::shared_ptr<blockT<SCODE>> err = emptyT<SCODE>(); 
+	};
+
 	void SPropValueStruct::parse()
 	{
 		const auto ulCurrOffset = m_Parser->getOffset();
@@ -501,8 +524,7 @@ namespace smartview
 			value = LongBLock::parse(m_Parser, m_doNickname);
 			break;
 		case PT_ERROR:
-			err = blockT<SCODE, DWORD>::parse(m_Parser);
-			if (m_doNickname) m_Parser->advance(sizeof DWORD);
+			value = ErrorBlock::parse(m_Parser, m_doNickname);
 			break;
 		case PT_R4:
 			value = R4BLock::parse(m_Parser, m_doNickname);
@@ -609,6 +631,7 @@ namespace smartview
 		case PT_CLSID:
 		case PT_DOUBLE:
 		case PT_I8:
+		case PT_ERROR:
 		case PT_MV_STRING8:
 		case PT_MV_UNICODE:
 		case PT_MV_BINARY:
@@ -618,11 +641,6 @@ namespace smartview
 				size = value->getSize();
 				offset = value->getOffset();
 			}
-			break;
-		case PT_ERROR:
-			prop.Value.err = err->getData();
-			size = err->getSize();
-			offset = err->getOffset();
 			break;
 		}
 
