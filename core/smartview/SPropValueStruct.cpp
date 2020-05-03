@@ -5,6 +5,7 @@
 
 namespace smartview
 {
+	/* case PT_SYSTIME */
 	class FILETIMEBLock : public IBlock
 	{
 	public:
@@ -28,6 +29,7 @@ namespace smartview
 		std::shared_ptr<blockT<DWORD>> dwHighDateTime = emptyT<DWORD>();
 	};
 
+	/* case PT_STRING8 */
 	class CountedStringA : public IBlock
 	{
 	public:
@@ -68,6 +70,7 @@ namespace smartview
 		std::shared_ptr<blockStringA> str = emptySA();
 	};
 
+	/* case PT_UNICODE */
 	class CountedStringW : public IBlock
 	{
 	public:
@@ -108,6 +111,7 @@ namespace smartview
 		std::shared_ptr<blockStringW> str = emptySW();
 	};
 
+	/* case PT_BINARY */
 	class SBinaryBlock : public IBlock
 	{
 	public:
@@ -151,6 +155,7 @@ namespace smartview
 		std::shared_ptr<blockBytes> lpb = emptyBB();
 	};
 
+	/* case PT_MV_BINARY */
 	class SBinaryArrayBlock : public IBlock
 	{
 	public:
@@ -211,6 +216,7 @@ namespace smartview
 		SBinary* bin{};
 	};
 
+	/* case PT_MV_STRING8 */
 	class StringArrayA : public IBlock
 	{
 	public:
@@ -251,6 +257,7 @@ namespace smartview
 		std::vector<std::shared_ptr<blockStringA>> lppszA;
 	};
 
+	/* case PT_MV_UNICODE */
 	class StringArrayW : public IBlock
 	{
 	public:
