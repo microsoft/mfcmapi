@@ -22,12 +22,10 @@ namespace smartview
 			return std::make_shared<FILETIMEBLock>(parser);
 		}
 
+	private:
 		size_t getSize() const noexcept override { return dwLowDateTime->getSize() + dwHighDateTime->getSize(); }
 		size_t getOffset() const noexcept override { return dwHighDateTime->getOffset(); }
-
 		void getProp(SPropValue& prop) override { prop.Value.ft = {*dwLowDateTime, *dwHighDateTime}; }
-
-	private:
 		std::shared_ptr<blockT<DWORD>> dwLowDateTime = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> dwHighDateTime = emptyT<DWORD>();
 	};
@@ -64,11 +62,10 @@ namespace smartview
 			return std::make_shared<CountedStringA>(parser, doNickname, doRuleProcessing);
 		}
 
+	private:
 		size_t getSize() const noexcept override { return cb->getSize() + str->getSize(); }
 		size_t getOffset() const noexcept override { return cb->getOffset() ? cb->getOffset() : str->getOffset(); }
 		void getProp(SPropValue& prop) override { prop.Value.lpszA = const_cast<LPSTR>(str->c_str()); }
-
-	private:
 		std::shared_ptr<blockT<DWORD>> cb = emptyT<DWORD>();
 		std::shared_ptr<blockStringA> str = emptySA();
 	};
@@ -105,11 +102,10 @@ namespace smartview
 			return std::make_shared<CountedStringW>(parser, doNickname, doRuleProcessing);
 		}
 
+	private:
 		size_t getSize() const noexcept override { return cb->getSize() + str->getSize(); }
 		size_t getOffset() const noexcept override { return cb->getOffset() ? cb->getOffset() : str->getOffset(); }
 		void getProp(SPropValue& prop) override { prop.Value.lpszW = const_cast<LPWSTR>(str->c_str()); }
-
-	private:
 		std::shared_ptr<blockT<DWORD>> cb = emptyT<DWORD>();
 		std::shared_ptr<blockStringW> str = emptySW();
 	};
@@ -149,11 +145,11 @@ namespace smartview
 		}
 
 		operator SBinary() noexcept { return {*cb, const_cast<LPBYTE>(lpb->data())}; }
+
+	private:
 		size_t getSize() const noexcept { return cb->getSize() + lpb->getSize(); }
 		size_t getOffset() const noexcept { return cb->getOffset() ? cb->getOffset() : lpb->getOffset(); }
 		void getProp(SPropValue& prop) override { prop.Value.bin = this->operator SBinary(); }
-
-	private:
 		std::shared_ptr<blockT<ULONG>> cb = emptyT<ULONG>();
 		std::shared_ptr<blockBytes> lpb = emptyBB();
 	};
@@ -209,12 +205,12 @@ namespace smartview
 
 			return SBinaryArray{*cValues, bin};
 		}
+
+	private:
 		// TODO: Implement size and offset
 		size_t getSize() const noexcept { return {}; }
 		size_t getOffset() const noexcept { return {}; }
 		void getProp(SPropValue& prop) override { prop.Value.MVbin = this->operator SBinaryArray(); }
-
-	private:
 		std::shared_ptr<blockT<ULONG>> cValues = emptyT<ULONG>();
 		std::vector<std::shared_ptr<SBinaryBlock>> lpbin;
 		SBinary* bin{};
@@ -252,12 +248,11 @@ namespace smartview
 			return std::make_shared<StringArrayA>(parser, doNickname);
 		}
 
+	private:
 		// TODO: Implement size and offset
 		size_t getSize() const noexcept { return {}; }
 		size_t getOffset() const noexcept { return {}; }
 		void getProp(SPropValue& prop) override { prop.Value.MVszA = SLPSTRArray{}; }
-
-	private:
 		std::shared_ptr<blockT<ULONG>> cValues = emptyT<ULONG>();
 		std::vector<std::shared_ptr<blockStringA>> lppszA;
 	};
@@ -293,12 +288,11 @@ namespace smartview
 			return std::make_shared<StringArrayW>(parser, doNickname);
 		}
 
+	private:
 		// TODO: Implement size and offset
 		size_t getSize() const noexcept { return {}; }
 		size_t getOffset() const noexcept { return {}; }
 		void getProp(SPropValue& prop) override { prop.Value.MVszW = SWStringArray{}; }
-
-	private:
 		std::shared_ptr<blockT<ULONG>> cValues = emptyT<ULONG>();
 		std::vector<std::shared_ptr<blockStringW>> lppszW;
 	};
@@ -320,16 +314,15 @@ namespace smartview
 		}
 
 		operator WORD() noexcept { return *i; }
-		size_t getSize() const noexcept override { return i->getSize(); }
-		size_t getOffset() const noexcept override { return i->getOffset(); }
-
-		void getProp(SPropValue& prop) override { prop.Value.i = this->operator WORD(); }
 		std::wstring propNum(ULONG ulPropTag) override
 		{
 			return InterpretNumberAsString(*i, ulPropTag, 0, nullptr, nullptr, false);
 		}
 
 	private:
+		size_t getSize() const noexcept override { return i->getSize(); }
+		size_t getOffset() const noexcept override { return i->getOffset(); }
+		void getProp(SPropValue& prop) override { prop.Value.i = this->operator WORD(); }
 		std::shared_ptr<blockT<WORD>> i = emptyT<WORD>();
 	};
 
@@ -349,16 +342,15 @@ namespace smartview
 		}
 
 		operator DWORD() noexcept { return *l; }
-		size_t getSize() const noexcept override { return l->getSize(); }
-		size_t getOffset() const noexcept override { return l->getOffset(); }
-
-		void getProp(SPropValue& prop) override { prop.Value.l = this->operator DWORD(); }
 		std::wstring propNum(ULONG ulPropTag) override
 		{
 			return InterpretNumberAsString(*l, ulPropTag, 0, nullptr, nullptr, false);
 		}
 
 	private:
+		size_t getSize() const noexcept override { return l->getSize(); }
+		size_t getOffset() const noexcept override { return l->getOffset(); }
+		void getProp(SPropValue& prop) override { prop.Value.l = this->operator DWORD(); }
 		std::shared_ptr<blockT<LONG>> l = emptyT<LONG>();
 	};
 
@@ -386,12 +378,10 @@ namespace smartview
 			return std::make_shared<BooleanBLock>(parser, doNickname, doRuleProcessing);
 		}
 
+	private:
 		size_t getSize() const noexcept override { return b->getSize(); }
 		size_t getOffset() const noexcept override { return b->getOffset(); }
-
 		void getProp(SPropValue& prop) override { prop.Value.b = *b; }
-
-	private:
 		std::shared_ptr<blockT<WORD>> b = emptyT<WORD>();
 	};
 
@@ -410,12 +400,10 @@ namespace smartview
 			return std::make_shared<R4BLock>(parser, doNickname);
 		}
 
+	private:
 		size_t getSize() const noexcept override { return flt->getSize(); }
 		size_t getOffset() const noexcept override { return flt->getOffset(); }
-
 		void getProp(SPropValue& prop) override { prop.Value.flt = *flt; }
-
-	private:
 		std::shared_ptr<blockT<float>> flt = emptyT<float>();
 	};
 
@@ -430,12 +418,10 @@ namespace smartview
 			return std::make_shared<DoubleBlock>(parser);
 		}
 
+	private:
 		size_t getSize() const noexcept override { return dbl->getSize(); }
 		size_t getOffset() const noexcept override { return dbl->getOffset(); }
-
 		void getProp(SPropValue& prop) override { prop.Value.dbl = *dbl; }
-
-	private:
 		std::shared_ptr<blockT<double>> dbl = emptyT<double>();
 	};
 
@@ -454,16 +440,14 @@ namespace smartview
 			return std::make_shared<CLSIDBlock>(parser, doNickname);
 		}
 
+	private:
 		size_t getSize() const noexcept override { return lpguid->getSize(); }
 		size_t getOffset() const noexcept override { return lpguid->getOffset(); }
-
 		void getProp(SPropValue& prop) override
 		{
 			GUID guid = lpguid->getData();
 			prop.Value.lpguid = &guid;
 		}
-
-	private:
 		std::shared_ptr<blockT<GUID>> lpguid = emptyT<GUID>();
 	};
 
@@ -478,16 +462,15 @@ namespace smartview
 			return std::make_shared<I8Block>(parser);
 		}
 
-		size_t getSize() const noexcept override { return li->getSize(); }
-		size_t getOffset() const noexcept override { return li->getOffset(); }
-
-		void getProp(SPropValue& prop) override { prop.Value.li = li->getData(); }
 		std::wstring propNum(ULONG ulPropTag) override
 		{
 			return InterpretNumberAsString(li->getData().QuadPart, ulPropTag, 0, nullptr, nullptr, false);
 		}
 
 	private:
+		size_t getSize() const noexcept override { return li->getSize(); }
+		size_t getOffset() const noexcept override { return li->getOffset(); }
+		void getProp(SPropValue& prop) override { prop.Value.li = li->getData(); }
 		std::shared_ptr<blockT<LARGE_INTEGER>> li = emptyT<LARGE_INTEGER>();
 	};
 
@@ -506,12 +489,10 @@ namespace smartview
 			return std::make_shared<ErrorBlock>(parser, doNickname);
 		}
 
+	private:
 		size_t getSize() const noexcept override { return err->getSize(); }
 		size_t getOffset() const noexcept override { return err->getOffset(); }
-
 		void getProp(SPropValue& prop) override { prop.Value.err = *err; }
-
-	private:
 		std::shared_ptr<blockT<SCODE>> err = emptyT<SCODE>();
 	};
 

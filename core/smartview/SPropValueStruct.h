@@ -14,9 +14,6 @@ namespace smartview
 		PVBlock(const PVBlock&) = delete;
 		PVBlock& operator=(const PVBlock&) = delete;
 
-		virtual size_t getSize() const noexcept = 0;
-		virtual size_t getOffset() const noexcept = 0;
-		virtual void getProp(SPropValue& prop) = 0;
 		virtual std::wstring propNum(ULONG /*ulPropTag*/) { return strings::emptystring; }
 
 		_Check_return_ std::shared_ptr<blockStringW> PropBlock(ULONG ulPropTag)
@@ -61,6 +58,9 @@ namespace smartview
 			propStringsGenerated = true;
 		}
 
+		virtual size_t getSize() const noexcept = 0;
+		virtual size_t getOffset() const noexcept = 0;
+		virtual void getProp(SPropValue& prop) = 0;
 		std::shared_ptr<blockStringW> propBlock = emptySW();
 		std::shared_ptr<blockStringW> altPropBlock = emptySW();
 		std::shared_ptr<blockStringW> smartViewBlock = emptySW();
