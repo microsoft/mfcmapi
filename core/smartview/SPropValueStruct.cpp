@@ -410,6 +410,25 @@ namespace smartview
 		std::shared_ptr<blockT<float>> flt = emptyT<float>();
 	};
 
+	/* case PT_DOUBLE */
+	class DoubleBlock : public PVBlock
+	{
+	public:
+		DoubleBlock(const std::shared_ptr<binaryParser>& parser) { dbl = blockT<double>::parse(parser); }
+		static std::shared_ptr<DoubleBlock> parse(const std::shared_ptr<binaryParser>& parser)
+		{
+			return std::make_shared<DoubleBlock>(parser);
+		}
+
+		size_t getSize() const noexcept override { return dbl->getSize(); }
+		size_t getOffset() const noexcept override { return dbl->getOffset(); }
+
+		void getProp(SPropValue& prop) override { prop.Value.dbl = *dbl; }
+
+	private:
+		std::shared_ptr<blockT<double>> dbl = emptyT<double>();
+	};
+
 	void SPropValueStruct::parse()
 	{
 		const auto ulCurrOffset = m_Parser->getOffset();
@@ -439,7 +458,7 @@ namespace smartview
 			value = R4BLock::parse(m_Parser, m_doNickname);
 			break;
 		case PT_DOUBLE:
-			dbl = blockT<double>::parse(m_Parser);
+			value = DoubleBlock::parse(m_Parser);
 			break;
 		case PT_BOOLEAN:
 			value = BooleanBLock::parse(m_Parser, m_doNickname, m_doRuleProcessing);
@@ -538,6 +557,7 @@ namespace smartview
 		case PT_UNICODE:
 		case PT_BOOLEAN:
 		case PT_R4:
+		case PT_DOUBLE:
 		case PT_MV_STRING8:
 		case PT_MV_UNICODE:
 		case PT_MV_BINARY:
@@ -547,11 +567,6 @@ namespace smartview
 				size = value->getSize();
 				offset = value->getOffset();
 			}
-			break;
-		case PT_DOUBLE:
-			prop.Value.dbl = *dbl;
-			size = dbl->getSize();
-			offset = dbl->getOffset();
 			break;
 		case PT_I8:
 			prop.Value.li = li->getData();

@@ -20,7 +20,7 @@ namespace smartview
 		virtual size_t getSize() const noexcept = 0;
 		virtual size_t getOffset() const noexcept = 0;
 		virtual void getProp(SPropValue& prop) = 0;
-		virtual std::wstring propNum(ULONG ulPropTag) { return strings::emptystring; }
+		virtual std::wstring propNum(ULONG /*ulPropTag*/) { return strings::emptystring; }
 	};
 
 	struct SPropValueStruct : public smartViewParser
@@ -39,7 +39,6 @@ namespace smartview
 		ULONG dwAlignPad{};
 		std::shared_ptr<PVBlock> value;
 
-		std::shared_ptr<blockT<double>> dbl = emptyT<double>(); /* case PT_DOUBLE */
 		std::shared_ptr<blockT<GUID>> lpguid = emptyT<GUID>(); /* case PT_CLSID */
 		std::shared_ptr<blockT<LARGE_INTEGER>> li = emptyT<LARGE_INTEGER>(); /* case PT_I8 */
 		std::shared_ptr<blockT<SCODE>> err = emptyT<SCODE>(); /* case PT_ERROR */
