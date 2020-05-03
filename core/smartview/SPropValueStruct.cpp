@@ -456,6 +456,29 @@ namespace smartview
 		std::shared_ptr<blockT<GUID>> lpguid = emptyT<GUID>();
 	};
 
+	/* case PT_I8 */
+	class I8Block : public PVBlock
+	{
+	public:
+		I8Block(const std::shared_ptr<binaryParser>& parser) { li = blockT<LARGE_INTEGER>::parse(parser); }
+		static std::shared_ptr<I8Block> parse(const std::shared_ptr<binaryParser>& parser)
+		{
+			return std::make_shared<I8Block>(parser);
+		}
+
+		size_t getSize() const noexcept override { return li->getSize(); }
+		size_t getOffset() const noexcept override { return li->getOffset(); }
+
+		void getProp(SPropValue& prop) override { prop.Value.li = li->getData(); }
+		std::wstring propNum(ULONG ulPropTag) override
+		{
+			return InterpretNumberAsString(li->getData().QuadPart, ulPropTag, 0, nullptr, nullptr, false);
+		}
+
+	private:
+		std::shared_ptr<blockT<LARGE_INTEGER>> li = emptyT<LARGE_INTEGER>();
+	};
+
 	void SPropValueStruct::parse()
 	{
 		const auto ulCurrOffset = m_Parser->getOffset();
@@ -491,7 +514,7 @@ namespace smartview
 			value = BooleanBLock::parse(m_Parser, m_doNickname, m_doRuleProcessing);
 			break;
 		case PT_I8:
-			li = blockT<LARGE_INTEGER>::parse(m_Parser);
+			value = I8Block::parse(m_Parser);
 			break;
 		case PT_SYSTIME:
 			value = FILETIMEBLock::parse(m_Parser);
@@ -585,6 +608,7 @@ namespace smartview
 		case PT_R4:
 		case PT_CLSID:
 		case PT_DOUBLE:
+		case PT_I8:
 		case PT_MV_STRING8:
 		case PT_MV_UNICODE:
 		case PT_MV_BINARY:
@@ -594,11 +618,6 @@ namespace smartview
 				size = value->getSize();
 				offset = value->getOffset();
 			}
-			break;
-		case PT_I8:
-			prop.Value.li = li->getData();
-			size = li->getSize();
-			offset = li->getOffset();
 			break;
 		case PT_ERROR:
 			prop.Value.err = err->getData();
@@ -624,12 +643,6 @@ namespace smartview
 
 	_Check_return_ std::wstring SPropValueStruct::PropNum() const
 	{
-		switch (PROP_TYPE(*ulPropTag))
-		{
-		case PT_I8:
-			return InterpretNumberAsString(li->getData().QuadPart, *ulPropTag, 0, nullptr, nullptr, false);
-		}
-
 		return value ? value->propNum(*ulPropTag) : strings::emptystring;
 	}
 } // namespace smartview

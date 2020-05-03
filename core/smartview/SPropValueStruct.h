@@ -39,7 +39,6 @@ namespace smartview
 		ULONG dwAlignPad{};
 		std::shared_ptr<PVBlock> value;
 
-		std::shared_ptr<blockT<LARGE_INTEGER>> li = emptyT<LARGE_INTEGER>(); /* case PT_I8 */
 		std::shared_ptr<blockT<SCODE>> err = emptyT<SCODE>(); /* case PT_ERROR */
 
 		_Check_return_ std::shared_ptr<blockStringW> PropBlock()
