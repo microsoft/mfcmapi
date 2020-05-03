@@ -14,7 +14,8 @@ namespace smartview
 			dwHighDateTime = blockT<DWORD>::parse(parser);
 			dwLowDateTime = blockT<DWORD>::parse(parser);
 		}
-		static std::shared_ptr<FILETIMEBLock> parse(const std::shared_ptr<binaryParser>& parser)
+		static std::shared_ptr<FILETIMEBLock>
+		parse(const std::shared_ptr<binaryParser>& parser, bool /*doNickname*/, bool /*doRuleProcessing*/)
 		{
 			return std::make_shared<FILETIMEBLock>(parser);
 		}
@@ -33,7 +34,7 @@ namespace smartview
 	class CountedStringA : public PVBlock
 	{
 	public:
-		CountedStringA(const std::shared_ptr<binaryParser>& parser, bool doRuleProcessing, bool doNickname)
+		CountedStringA(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool doRuleProcessing)
 		{
 			if (doRuleProcessing)
 			{
@@ -56,9 +57,9 @@ namespace smartview
 			}
 		}
 		static std::shared_ptr<CountedStringA>
-		parse(const std::shared_ptr<binaryParser>& parser, bool doRuleProcessing, bool doNickname)
+		parse(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool doRuleProcessing)
 		{
-			return std::make_shared<CountedStringA>(parser, doRuleProcessing, doNickname);
+			return std::make_shared<CountedStringA>(parser, doNickname, doRuleProcessing);
 		}
 
 		size_t getSize() const noexcept override { return cb->getSize() + str->getSize(); }
@@ -74,7 +75,7 @@ namespace smartview
 	class CountedStringW : public PVBlock
 	{
 	public:
-		CountedStringW(const std::shared_ptr<binaryParser>& parser, bool doRuleProcessing, bool doNickname)
+		CountedStringW(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool doRuleProcessing)
 		{
 			if (doRuleProcessing)
 			{
@@ -97,9 +98,9 @@ namespace smartview
 			}
 		}
 		static std::shared_ptr<CountedStringW>
-		parse(const std::shared_ptr<binaryParser>& parser, bool doRuleProcessing, bool doNickname)
+		parse(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool doRuleProcessing)
 		{
-			return std::make_shared<CountedStringW>(parser, doRuleProcessing, doNickname);
+			return std::make_shared<CountedStringW>(parser, doNickname, doRuleProcessing);
 		}
 
 		size_t getSize() const noexcept override { return cb->getSize() + str->getSize(); }
@@ -183,7 +184,8 @@ namespace smartview
 		{
 			if (bin) delete[] bin;
 		}
-		static std::shared_ptr<SBinaryArrayBlock> parse(const std::shared_ptr<binaryParser>& parser, bool doNickname)
+		static std::shared_ptr<SBinaryArrayBlock>
+		parse(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool /*doRuleProcessing*/)
 		{
 			return std::make_shared<SBinaryArrayBlock>(parser, doNickname);
 		}
@@ -242,7 +244,8 @@ namespace smartview
 				}
 			}
 		}
-		static std::shared_ptr<StringArrayA> parse(const std::shared_ptr<binaryParser>& parser, bool doNickname)
+		static std::shared_ptr<StringArrayA>
+		parse(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool /*doRuleProcessing*/)
 		{
 			return std::make_shared<StringArrayA>(parser, doNickname);
 		}
@@ -282,7 +285,8 @@ namespace smartview
 				}
 			}
 		}
-		static std::shared_ptr<StringArrayW> parse(const std::shared_ptr<binaryParser>& parser, bool doNickname)
+		static std::shared_ptr<StringArrayW>
+		parse(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool /*doRuleProcessing*/)
 		{
 			return std::make_shared<StringArrayW>(parser, doNickname);
 		}
@@ -307,7 +311,8 @@ namespace smartview
 			if (doNickname) parser->advance(sizeof WORD);
 			if (doNickname) parser->advance(sizeof DWORD);
 		}
-		static std::shared_ptr<I2BLock> parse(const std::shared_ptr<binaryParser>& parser, bool doNickname)
+		static std::shared_ptr<I2BLock>
+		parse(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool /*doRuleProcessing*/)
 		{
 			return std::make_shared<I2BLock>(parser, doNickname);
 		}
@@ -335,7 +340,8 @@ namespace smartview
 			l = blockT<LONG, DWORD>::parse(parser);
 			if (doNickname) parser->advance(sizeof DWORD);
 		}
-		static std::shared_ptr<LongBLock> parse(const std::shared_ptr<binaryParser>& parser, bool doNickname)
+		static std::shared_ptr<LongBLock>
+		parse(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool /*doRuleProcessing*/)
 		{
 			return std::make_shared<LongBLock>(parser, doNickname);
 		}
@@ -396,7 +402,8 @@ namespace smartview
 			flt = blockT<float>::parse(parser);
 			if (doNickname) parser->advance(sizeof DWORD);
 		}
-		static std::shared_ptr<R4BLock> parse(const std::shared_ptr<binaryParser>& parser, bool doNickname)
+		static std::shared_ptr<R4BLock>
+		parse(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool /*doRuleProcessing*/)
 		{
 			return std::make_shared<R4BLock>(parser, doNickname);
 		}
@@ -415,7 +422,8 @@ namespace smartview
 	{
 	public:
 		DoubleBlock(const std::shared_ptr<binaryParser>& parser) { dbl = blockT<double>::parse(parser); }
-		static std::shared_ptr<DoubleBlock> parse(const std::shared_ptr<binaryParser>& parser)
+		static std::shared_ptr<DoubleBlock>
+		parse(const std::shared_ptr<binaryParser>& parser, bool /*doNickname*/, bool /*doRuleProcessing*/)
 		{
 			return std::make_shared<DoubleBlock>(parser);
 		}
@@ -438,7 +446,8 @@ namespace smartview
 			if (doNickname) static_cast<void>(parser->advance(sizeof LARGE_INTEGER)); // union
 			lpguid = blockT<GUID>::parse(parser);
 		}
-		static std::shared_ptr<CLSIDBlock> parse(const std::shared_ptr<binaryParser>& parser, bool doNickname)
+		static std::shared_ptr<CLSIDBlock>
+		parse(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool /*doRuleProcessing*/)
 		{
 			return std::make_shared<CLSIDBlock>(parser, doNickname);
 		}
@@ -461,7 +470,8 @@ namespace smartview
 	{
 	public:
 		I8Block(const std::shared_ptr<binaryParser>& parser) { li = blockT<LARGE_INTEGER>::parse(parser); }
-		static std::shared_ptr<I8Block> parse(const std::shared_ptr<binaryParser>& parser)
+		static std::shared_ptr<I8Block>
+		parse(const std::shared_ptr<binaryParser>& parser, bool /*doNickname*/, bool /*doRuleProcessing*/)
 		{
 			return std::make_shared<I8Block>(parser);
 		}
@@ -488,7 +498,8 @@ namespace smartview
 			err = blockT<SCODE, DWORD>::parse(parser);
 			if (doNickname) parser->advance(sizeof DWORD);
 		}
-		static std::shared_ptr<ErrorBlock> parse(const std::shared_ptr<binaryParser>& parser, bool doNickname)
+		static std::shared_ptr<ErrorBlock>
+		parse(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool /*doRuleProcessing*/)
 		{
 			return std::make_shared<ErrorBlock>(parser, doNickname);
 		}
@@ -517,49 +528,49 @@ namespace smartview
 		switch (*PropType)
 		{
 		case PT_I2:
-			value = I2BLock::parse(m_Parser, m_doNickname);
+			value = I2BLock::parse(m_Parser, m_doNickname, m_doRuleProcessing);
 			break;
 		case PT_LONG:
-			value = LongBLock::parse(m_Parser, m_doNickname);
+			value = LongBLock::parse(m_Parser, m_doNickname, m_doRuleProcessing);
 			break;
 		case PT_ERROR:
-			value = ErrorBlock::parse(m_Parser, m_doNickname);
+			value = ErrorBlock::parse(m_Parser, m_doNickname, m_doRuleProcessing);
 			break;
 		case PT_R4:
-			value = R4BLock::parse(m_Parser, m_doNickname);
+			value = R4BLock::parse(m_Parser, m_doNickname, m_doRuleProcessing);
 			break;
 		case PT_DOUBLE:
-			value = DoubleBlock::parse(m_Parser);
+			value = DoubleBlock::parse(m_Parser, m_doNickname, m_doRuleProcessing);
 			break;
 		case PT_BOOLEAN:
 			value = BooleanBLock::parse(m_Parser, m_doNickname, m_doRuleProcessing);
 			break;
 		case PT_I8:
-			value = I8Block::parse(m_Parser);
+			value = I8Block::parse(m_Parser, m_doNickname, m_doRuleProcessing);
 			break;
 		case PT_SYSTIME:
-			value = FILETIMEBLock::parse(m_Parser);
+			value = FILETIMEBLock::parse(m_Parser, m_doNickname, m_doRuleProcessing);
 			break;
 		case PT_STRING8:
-			value = CountedStringA::parse(m_Parser, m_doRuleProcessing, m_doNickname);
+			value = CountedStringA::parse(m_Parser, m_doNickname, m_doRuleProcessing);
 			break;
 		case PT_BINARY:
 			value = SBinaryBlock::parse(m_Parser, m_doNickname, m_doRuleProcessing);
 			break;
 		case PT_UNICODE:
-			value = CountedStringW::parse(m_Parser, m_doRuleProcessing, m_doNickname);
+			value = CountedStringW::parse(m_Parser, m_doNickname, m_doRuleProcessing);
 			break;
 		case PT_CLSID:
-			value = CLSIDBlock::parse(m_Parser, m_doNickname);
+			value = CLSIDBlock::parse(m_Parser, m_doNickname, m_doRuleProcessing);
 			break;
 		case PT_MV_STRING8:
-			value = StringArrayA::parse(m_Parser, m_doNickname);
+			value = StringArrayA::parse(m_Parser, m_doNickname, m_doRuleProcessing);
 			break;
 		case PT_MV_UNICODE:
-			value = StringArrayW::parse(m_Parser, m_doNickname);
+			value = StringArrayW::parse(m_Parser, m_doNickname, m_doRuleProcessing);
 			break;
 		case PT_MV_BINARY:
-			value = SBinaryArrayBlock::parse(m_Parser, m_doNickname);
+			value = SBinaryArrayBlock::parse(m_Parser, m_doNickname, m_doRuleProcessing);
 			break;
 		default:
 			break;
