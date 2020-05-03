@@ -36,7 +36,6 @@ namespace smartview
 		std::shared_ptr<blockT<WORD>> PropType = emptyT<WORD>();
 		std::shared_ptr<blockT<WORD>> PropID = emptyT<WORD>();
 		std::shared_ptr<blockT<ULONG>> ulPropTag = emptyT<ULONG>();
-		ULONG dwAlignPad{};
 		std::shared_ptr<PVBlock> value;
 
 		_Check_return_ std::shared_ptr<blockStringW> PropBlock()

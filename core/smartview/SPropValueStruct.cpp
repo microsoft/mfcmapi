@@ -499,7 +499,7 @@ namespace smartview
 		void getProp(SPropValue& prop) override { prop.Value.err = *err; }
 
 	private:
-		std::shared_ptr<blockT<SCODE>> err = emptyT<SCODE>(); 
+		std::shared_ptr<blockT<SCODE>> err = emptyT<SCODE>();
 	};
 
 	void SPropValueStruct::parse()
@@ -511,7 +511,6 @@ namespace smartview
 
 		ulPropTag = blockT<ULONG>::create(
 			PROP_TAG(*PropType, *PropID), PropType->getSize() + PropID->getSize(), PropType->getOffset());
-		dwAlignPad = 0;
 
 		if (m_doNickname) static_cast<void>(m_Parser->advance(sizeof DWORD)); // reserved
 
@@ -617,31 +616,11 @@ namespace smartview
 		auto size = size_t{};
 		auto offset = size_t{};
 		prop.ulPropTag = *ulPropTag;
-		prop.dwAlignPad = dwAlignPad;
-		switch (*PropType)
+		if (value)
 		{
-		case PT_I2:
-		case PT_LONG:
-		case PT_SYSTIME:
-		case PT_STRING8:
-		case PT_BINARY:
-		case PT_UNICODE:
-		case PT_BOOLEAN:
-		case PT_R4:
-		case PT_CLSID:
-		case PT_DOUBLE:
-		case PT_I8:
-		case PT_ERROR:
-		case PT_MV_STRING8:
-		case PT_MV_UNICODE:
-		case PT_MV_BINARY:
-			if (value)
-			{
-				value->getProp(prop);
-				size = value->getSize();
-				offset = value->getOffset();
-			}
-			break;
+			value->getProp(prop);
+			size = value->getSize();
+			offset = value->getOffset();
 		}
 
 		auto propString = std::wstring{};
