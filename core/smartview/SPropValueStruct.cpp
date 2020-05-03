@@ -429,6 +429,33 @@ namespace smartview
 		std::shared_ptr<blockT<double>> dbl = emptyT<double>();
 	};
 
+	/* case PT_CLSID */
+	class CLSIDBlock : public PVBlock
+	{
+	public:
+		CLSIDBlock(const std::shared_ptr<binaryParser>& parser, bool doNickname)
+		{
+			if (doNickname) static_cast<void>(parser->advance(sizeof LARGE_INTEGER)); // union
+			lpguid = blockT<GUID>::parse(parser);
+		}
+		static std::shared_ptr<CLSIDBlock> parse(const std::shared_ptr<binaryParser>& parser, bool doNickname)
+		{
+			return std::make_shared<CLSIDBlock>(parser, doNickname);
+		}
+
+		size_t getSize() const noexcept override { return lpguid->getSize(); }
+		size_t getOffset() const noexcept override { return lpguid->getOffset(); }
+
+		void getProp(SPropValue& prop) override
+		{
+			GUID guid = lpguid->getData();
+			prop.Value.lpguid = &guid;
+		}
+
+	private:
+		std::shared_ptr<blockT<GUID>> lpguid = emptyT<GUID>();
+	};
+
 	void SPropValueStruct::parse()
 	{
 		const auto ulCurrOffset = m_Parser->getOffset();
@@ -479,8 +506,7 @@ namespace smartview
 			value = CountedStringW::parse(m_Parser, m_doRuleProcessing, m_doNickname);
 			break;
 		case PT_CLSID:
-			if (m_doNickname) static_cast<void>(m_Parser->advance(sizeof LARGE_INTEGER)); // union
-			lpguid = blockT<GUID>::parse(m_Parser);
+			value = CLSIDBlock::parse(m_Parser, m_doNickname);
 			break;
 		case PT_MV_STRING8:
 			value = StringArrayA::parse(m_Parser, m_doNickname);
@@ -557,6 +583,7 @@ namespace smartview
 		case PT_UNICODE:
 		case PT_BOOLEAN:
 		case PT_R4:
+		case PT_CLSID:
 		case PT_DOUBLE:
 		case PT_MV_STRING8:
 		case PT_MV_UNICODE:
@@ -572,12 +599,6 @@ namespace smartview
 			prop.Value.li = li->getData();
 			size = li->getSize();
 			offset = li->getOffset();
-			break;
-		case PT_CLSID:
-			guid = lpguid->getData();
-			prop.Value.lpguid = &guid;
-			size = lpguid->getSize();
-			offset = lpguid->getOffset();
 			break;
 		case PT_ERROR:
 			prop.Value.err = err->getData();
