@@ -39,7 +39,6 @@ namespace smartview
 		ULONG dwAlignPad{};
 		std::shared_ptr<IBlock> value;
 
-		std::shared_ptr<blockT<LONG>> l = emptyT<LONG>(); /* case PT_LONG */
 		std::shared_ptr<blockT<WORD>> b = emptyT<WORD>(); /* case PT_BOOLEAN */
 		std::shared_ptr<blockT<float>> flt = emptyT<float>(); /* case PT_R4 */
 		std::shared_ptr<blockT<double>> dbl = emptyT<double>(); /* case PT_DOUBLE */

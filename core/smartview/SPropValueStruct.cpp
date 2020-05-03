@@ -290,6 +290,7 @@ namespace smartview
 		std::vector<std::shared_ptr<blockStringW>> lppszW;
 	};
 
+	/* case PT_I2 */
 	class I2BLock : public IBlock
 	{
 	public:
@@ -318,6 +319,34 @@ namespace smartview
 		std::shared_ptr<blockT<WORD>> i = emptyT<WORD>();
 	};
 
+	/* case PT_LONG */
+	class LongBLock : public IBlock
+	{
+	public:
+		LongBLock(const std::shared_ptr<binaryParser>& parser, bool doNickname)
+		{
+			l = blockT<LONG, DWORD>::parse(parser);
+			if (doNickname) parser->advance(sizeof DWORD);
+		}
+		static std::shared_ptr<LongBLock> parse(const std::shared_ptr<binaryParser>& parser, bool doNickname)
+		{
+			return std::make_shared<LongBLock>(parser, doNickname);
+		}
+
+		operator DWORD() noexcept { return *l; }
+		size_t getSize() const noexcept override { return l->getSize(); }
+		size_t getOffset() const noexcept override { return l->getOffset(); }
+
+		void getProp(SPropValue& prop) override { prop.Value.l = this->operator DWORD(); }
+		std::wstring propNum(ULONG ulPropTag) override
+		{
+			return InterpretNumberAsString(*l, ulPropTag, 0, nullptr, nullptr, false);
+		}
+
+	private:
+		std::shared_ptr<blockT<LONG>> l = emptyT<LONG>();
+	};
+
 	void SPropValueStruct::parse()
 	{
 		const auto ulCurrOffset = m_Parser->getOffset();
@@ -337,8 +366,7 @@ namespace smartview
 			value = I2BLock::parse(m_Parser, m_doNickname);
 			break;
 		case PT_LONG:
-			l = blockT<LONG, DWORD>::parse(m_Parser);
-			if (m_doNickname) m_Parser->advance(sizeof DWORD);
+			value = LongBLock::parse(m_Parser, m_doNickname);
 			break;
 		case PT_ERROR:
 			err = blockT<SCODE, DWORD>::parse(m_Parser);
@@ -451,6 +479,7 @@ namespace smartview
 		switch (*PropType)
 		{
 		case PT_I2:
+		case PT_LONG:
 		case PT_SYSTIME:
 		case PT_STRING8:
 		case PT_BINARY:
@@ -464,11 +493,6 @@ namespace smartview
 				size = value->getSize();
 				offset = value->getOffset();
 			}
-			break;
-		case PT_LONG:
-			prop.Value.l = *l;
-			size = l->getSize();
-			offset = l->getOffset();
 			break;
 		case PT_R4:
 			prop.Value.flt = *flt;
@@ -522,12 +546,10 @@ namespace smartview
 	{
 		switch (PROP_TYPE(*ulPropTag))
 		{
-		case PT_LONG:
-			return InterpretNumberAsString(*l, *ulPropTag, 0, nullptr, nullptr, false);
 		case PT_I8:
 			return InterpretNumberAsString(li->getData().QuadPart, *ulPropTag, 0, nullptr, nullptr, false);
 		}
 
-		return value?value->propNum(*ulPropTag):strings::emptystring;
+		return value ? value->propNum(*ulPropTag) : strings::emptystring;
 	}
 } // namespace smartview
