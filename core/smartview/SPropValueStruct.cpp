@@ -2,6 +2,8 @@
 #include <core/smartview/SPropValueStruct.h>
 #include <core/smartview/SmartView.h>
 #include <core/interpret/proptags.h>
+#include <core/smartview/block/blockStringA.h>
+#include <core/smartview/block/blockBytes.h>
 
 namespace smartview
 {
@@ -618,35 +620,6 @@ namespace smartview
 			propRoot->terminateBlock();
 			propRoot->addChild(szSmartView, L"Smart View: %1!ws!", szSmartView->c_str());
 		}
-	}
-
-	void SPropValueStruct::EnsurePropBlocks()
-	{
-		if (propStringsGenerated) return;
-		auto prop = SPropValue{};
-		auto size = size_t{};
-		auto offset = size_t{};
-		prop.ulPropTag = *ulPropTag;
-		if (value)
-		{
-			value->getProp(prop);
-			size = value->getSize();
-			offset = value->getOffset();
-		}
-
-		auto propString = std::wstring{};
-		auto altPropString = std::wstring{};
-		property::parseProperty(&prop, &propString, &altPropString);
-
-		propBlock = std::make_shared<blockStringW>(strings::RemoveInvalidCharactersW(propString, false), size, offset);
-
-		altPropBlock =
-			std::make_shared<blockStringW>(strings::RemoveInvalidCharactersW(altPropString, false), size, offset);
-
-		const auto smartViewString = parsePropertySmartView(&prop, nullptr, nullptr, nullptr, false, false);
-		smartViewBlock = std::make_shared<blockStringW>(smartViewString, size, offset);
-
-		propStringsGenerated = true;
 	}
 
 	_Check_return_ std::wstring SPropValueStruct::PropNum() const
