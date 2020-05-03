@@ -354,6 +354,39 @@ namespace smartview
 		std::shared_ptr<blockT<LONG>> l = emptyT<LONG>();
 	};
 
+	/* case PT_BOOLEAN */
+	class BooleanBLock : public PVBlock
+	{
+	public:
+		BooleanBLock(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool doRuleProcessing)
+		{
+			if (doRuleProcessing)
+			{
+				b = blockT<WORD, BYTE>::parse(parser);
+			}
+			else
+			{
+				b = blockT<WORD>::parse(parser);
+			}
+
+			if (doNickname) parser->advance(sizeof WORD);
+			if (doNickname) parser->advance(sizeof DWORD);
+		}
+		static std::shared_ptr<BooleanBLock>
+		parse(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool doRuleProcessing)
+		{
+			return std::make_shared<BooleanBLock>(parser, doNickname, doRuleProcessing);
+		}
+
+		size_t getSize() const noexcept override { return b->getSize(); }
+		size_t getOffset() const noexcept override { return b->getOffset(); }
+
+		void getProp(SPropValue& prop) override { prop.Value.l = *b; }
+
+	private:
+		std::shared_ptr<blockT<WORD>> b = emptyT<WORD>();
+	};
+
 	void SPropValueStruct::parse()
 	{
 		const auto ulCurrOffset = m_Parser->getOffset();
@@ -387,17 +420,7 @@ namespace smartview
 			dbl = blockT<double>::parse(m_Parser);
 			break;
 		case PT_BOOLEAN:
-			if (m_doRuleProcessing)
-			{
-				b = blockT<WORD, BYTE>::parse(m_Parser);
-			}
-			else
-			{
-				b = blockT<WORD>::parse(m_Parser);
-			}
-
-			if (m_doNickname) m_Parser->advance(sizeof WORD);
-			if (m_doNickname) m_Parser->advance(sizeof DWORD);
+			value = BooleanBLock::parse(m_Parser, m_doNickname, m_doRuleProcessing);
 			break;
 		case PT_I8:
 			li = blockT<LARGE_INTEGER>::parse(m_Parser);
@@ -491,6 +514,7 @@ namespace smartview
 		case PT_STRING8:
 		case PT_BINARY:
 		case PT_UNICODE:
+		case PT_BOOLEAN:
 		case PT_MV_STRING8:
 		case PT_MV_UNICODE:
 		case PT_MV_BINARY:
@@ -510,11 +534,6 @@ namespace smartview
 			prop.Value.dbl = *dbl;
 			size = dbl->getSize();
 			offset = dbl->getOffset();
-			break;
-		case PT_BOOLEAN:
-			prop.Value.b = *b;
-			size = b->getSize();
-			offset = b->getOffset();
 			break;
 		case PT_I8:
 			prop.Value.li = li->getData();
