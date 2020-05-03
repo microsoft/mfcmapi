@@ -10,14 +10,18 @@
 
 namespace smartview
 {
-	class FILETIMEBLock;
-	class CountedStringA;
-	class CountedStringW;
-	class SBinaryBlock;
-	class SBinaryArrayBlock;
-	class StringArrayA;
-	class StringArrayW;
-	class I2BLock;
+	class IBlock : public block
+	{
+	public:
+		IBlock() = default;
+		IBlock(const IBlock&) = delete;
+		IBlock& operator=(const IBlock&) = delete;
+
+		virtual size_t getSize() const noexcept = 0;
+		virtual size_t getOffset() const noexcept = 0;
+		virtual void getProp(SPropValue& prop) = 0;
+		virtual std::wstring propNum(ULONG ulPropTag) { return strings::emptystring; }
+	};
 
 	struct SPropValueStruct : public smartViewParser
 	{
@@ -33,20 +37,14 @@ namespace smartview
 		std::shared_ptr<blockT<WORD>> PropID = emptyT<WORD>();
 		std::shared_ptr<blockT<ULONG>> ulPropTag = emptyT<ULONG>();
 		ULONG dwAlignPad{};
-		std::shared_ptr<I2BLock> i; /* case PT_I2 */
+		std::shared_ptr<IBlock> value;
+
 		std::shared_ptr<blockT<LONG>> l = emptyT<LONG>(); /* case PT_LONG */
 		std::shared_ptr<blockT<WORD>> b = emptyT<WORD>(); /* case PT_BOOLEAN */
 		std::shared_ptr<blockT<float>> flt = emptyT<float>(); /* case PT_R4 */
 		std::shared_ptr<blockT<double>> dbl = emptyT<double>(); /* case PT_DOUBLE */
-		std::shared_ptr<FILETIMEBLock> ft; /* case PT_SYSTIME */
-		std::shared_ptr<CountedStringA> lpszA; /* case PT_STRING8 */
-		std::shared_ptr<SBinaryBlock> bin; /* case PT_BINARY */
-		std::shared_ptr<CountedStringW> lpszW; /* case PT_UNICODE */
 		std::shared_ptr<blockT<GUID>> lpguid = emptyT<GUID>(); /* case PT_CLSID */
 		std::shared_ptr<blockT<LARGE_INTEGER>> li = emptyT<LARGE_INTEGER>(); /* case PT_I8 */
-		std::shared_ptr<SBinaryArrayBlock> MVbin; /* case PT_MV_BINARY */
-		std::shared_ptr<StringArrayA> MVszA; /* case PT_MV_STRING8 */
-		std::shared_ptr<StringArrayW> MVszW; /* case PT_MV_UNICODE */
 		std::shared_ptr<blockT<SCODE>> err = emptyT<SCODE>(); /* case PT_ERROR */
 
 		_Check_return_ std::shared_ptr<blockStringW> PropBlock()

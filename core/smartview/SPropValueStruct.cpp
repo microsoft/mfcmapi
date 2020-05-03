@@ -5,19 +5,6 @@
 
 namespace smartview
 {
-	// TODO: refine and shift to own file
-	class IBlock : public block
-	{
-	public:
-		IBlock() = default;
-		IBlock(const IBlock&) = delete;
-		IBlock& operator=(const IBlock&) = delete;
-
-		virtual size_t getSize() const noexcept = 0;
-		virtual size_t getOffset() const noexcept = 0;
-		virtual void getProp(SPropValue& prop) = 0;
-	};
-
 	class FILETIMEBLock : public IBlock
 	{
 	public:
@@ -322,6 +309,10 @@ namespace smartview
 		size_t getOffset() const noexcept override { return i->getOffset(); }
 
 		void getProp(SPropValue& prop) override { prop.Value.i = this->operator WORD(); }
+		std::wstring propNum(ULONG ulPropTag) override
+		{
+			return InterpretNumberAsString(*i, ulPropTag, 0, nullptr, nullptr, false);
+		}
 
 	private:
 		std::shared_ptr<blockT<WORD>> i = emptyT<WORD>();
@@ -343,7 +334,7 @@ namespace smartview
 		switch (*PropType)
 		{
 		case PT_I2:
-			i = I2BLock::parse(m_Parser, m_doNickname);
+			value = I2BLock::parse(m_Parser, m_doNickname);
 			break;
 		case PT_LONG:
 			l = blockT<LONG, DWORD>::parse(m_Parser);
@@ -377,29 +368,29 @@ namespace smartview
 			li = blockT<LARGE_INTEGER>::parse(m_Parser);
 			break;
 		case PT_SYSTIME:
-			ft = FILETIMEBLock::parse(m_Parser);
+			value = FILETIMEBLock::parse(m_Parser);
 			break;
 		case PT_STRING8:
-			lpszA = CountedStringA::parse(m_Parser, m_doRuleProcessing, m_doNickname);
+			value = CountedStringA::parse(m_Parser, m_doRuleProcessing, m_doNickname);
 			break;
 		case PT_BINARY:
-			bin = SBinaryBlock::parse(m_Parser, m_doNickname, m_doRuleProcessing);
+			value = SBinaryBlock::parse(m_Parser, m_doNickname, m_doRuleProcessing);
 			break;
 		case PT_UNICODE:
-			lpszW = CountedStringW::parse(m_Parser, m_doRuleProcessing, m_doNickname);
+			value = CountedStringW::parse(m_Parser, m_doRuleProcessing, m_doNickname);
 			break;
 		case PT_CLSID:
 			if (m_doNickname) static_cast<void>(m_Parser->advance(sizeof LARGE_INTEGER)); // union
 			lpguid = blockT<GUID>::parse(m_Parser);
 			break;
 		case PT_MV_STRING8:
-			MVszA = StringArrayA::parse(m_Parser, m_doNickname);
+			value = StringArrayA::parse(m_Parser, m_doNickname);
 			break;
 		case PT_MV_UNICODE:
-			MVszW = StringArrayW::parse(m_Parser, m_doNickname);
+			value = StringArrayW::parse(m_Parser, m_doNickname);
 			break;
 		case PT_MV_BINARY:
-			MVbin = SBinaryArrayBlock::parse(m_Parser, m_doNickname);
+			value = SBinaryArrayBlock::parse(m_Parser, m_doNickname);
 			break;
 		default:
 			break;
@@ -460,11 +451,18 @@ namespace smartview
 		switch (*PropType)
 		{
 		case PT_I2:
-			if (i)
+		case PT_SYSTIME:
+		case PT_STRING8:
+		case PT_BINARY:
+		case PT_UNICODE:
+		case PT_MV_STRING8:
+		case PT_MV_UNICODE:
+		case PT_MV_BINARY:
+			if (value)
 			{
-				i->getProp(prop);
-				size = i->getSize();
-				offset = i->getOffset();
+				value->getProp(prop);
+				size = value->getSize();
+				offset = value->getOffset();
 			}
 			break;
 		case PT_LONG:
@@ -492,67 +490,11 @@ namespace smartview
 			size = li->getSize();
 			offset = li->getOffset();
 			break;
-		case PT_SYSTIME:
-			if (ft)
-			{
-				ft->getProp(prop);
-				size = ft->getSize();
-				offset = ft->getOffset();
-			}
-			break;
-		case PT_STRING8:
-			if (lpszA)
-			{
-				lpszA->getProp(prop);
-				size = lpszA->getSize();
-				offset = lpszA->getOffset();
-			}
-			break;
-		case PT_BINARY:
-			if (bin)
-			{
-				bin->getProp(prop);
-				size = bin->getSize();
-				offset = bin->getOffset();
-			}
-			break;
-		case PT_UNICODE:
-			if (lpszW)
-			{
-				lpszW->getProp(prop);
-				size = lpszW->getSize();
-				offset = lpszW->getOffset();
-			}
-			break;
 		case PT_CLSID:
 			guid = lpguid->getData();
 			prop.Value.lpguid = &guid;
 			size = lpguid->getSize();
 			offset = lpguid->getOffset();
-			break;
-		case PT_MV_STRING8:
-			if (MVszA)
-			{
-				MVszA->getProp(prop);
-				size = MVszA->getSize();
-				offset = MVszA->getOffset();
-			}
-			break;
-		case PT_MV_UNICODE:
-			if (MVszW)
-			{
-				MVszW->getProp(prop);
-				size = MVszW->getSize();
-				offset = MVszW->getOffset();
-			}
-			break;
-		case PT_MV_BINARY:
-			if (MVbin)
-			{
-				MVbin->getProp(prop);
-				size = MVbin->getSize();
-				offset = MVbin->getOffset();
-			}
 			break;
 		case PT_ERROR:
 			prop.Value.err = err->getData();
@@ -582,12 +524,10 @@ namespace smartview
 		{
 		case PT_LONG:
 			return InterpretNumberAsString(*l, *ulPropTag, 0, nullptr, nullptr, false);
-		case PT_I2:
-			return InterpretNumberAsString(*i, *ulPropTag, 0, nullptr, nullptr, false);
 		case PT_I8:
 			return InterpretNumberAsString(li->getData().QuadPart, *ulPropTag, 0, nullptr, nullptr, false);
 		}
 
-		return strings::emptystring;
+		return value?value->propNum(*ulPropTag):strings::emptystring;
 	}
 } // namespace smartview
