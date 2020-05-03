@@ -381,10 +381,33 @@ namespace smartview
 		size_t getSize() const noexcept override { return b->getSize(); }
 		size_t getOffset() const noexcept override { return b->getOffset(); }
 
-		void getProp(SPropValue& prop) override { prop.Value.l = *b; }
+		void getProp(SPropValue& prop) override { prop.Value.b = *b; }
 
 	private:
 		std::shared_ptr<blockT<WORD>> b = emptyT<WORD>();
+	};
+
+	/* case PT_R4 */
+	class R4BLock : public PVBlock
+	{
+	public:
+		R4BLock(const std::shared_ptr<binaryParser>& parser, bool doNickname)
+		{
+			flt = blockT<float>::parse(parser);
+			if (doNickname) parser->advance(sizeof DWORD);
+		}
+		static std::shared_ptr<R4BLock> parse(const std::shared_ptr<binaryParser>& parser, bool doNickname)
+		{
+			return std::make_shared<R4BLock>(parser, doNickname);
+		}
+
+		size_t getSize() const noexcept override { return flt->getSize(); }
+		size_t getOffset() const noexcept override { return flt->getOffset(); }
+
+		void getProp(SPropValue& prop) override { prop.Value.flt = *flt; }
+
+	private:
+		std::shared_ptr<blockT<float>> flt = emptyT<float>();
 	};
 
 	void SPropValueStruct::parse()
@@ -413,8 +436,7 @@ namespace smartview
 			if (m_doNickname) m_Parser->advance(sizeof DWORD);
 			break;
 		case PT_R4:
-			flt = blockT<float>::parse(m_Parser);
-			if (m_doNickname) m_Parser->advance(sizeof DWORD);
+			value = R4BLock::parse(m_Parser, m_doNickname);
 			break;
 		case PT_DOUBLE:
 			dbl = blockT<double>::parse(m_Parser);
@@ -515,6 +537,7 @@ namespace smartview
 		case PT_BINARY:
 		case PT_UNICODE:
 		case PT_BOOLEAN:
+		case PT_R4:
 		case PT_MV_STRING8:
 		case PT_MV_UNICODE:
 		case PT_MV_BINARY:
@@ -524,11 +547,6 @@ namespace smartview
 				size = value->getSize();
 				offset = value->getOffset();
 			}
-			break;
-		case PT_R4:
-			prop.Value.flt = *flt;
-			size = flt->getSize();
-			offset = flt->getOffset();
 			break;
 		case PT_DOUBLE:
 			prop.Value.dbl = *dbl;
