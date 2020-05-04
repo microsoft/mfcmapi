@@ -10,7 +10,7 @@ namespace smartview
 	/* case PT_SYSTIME */
 	class FILETIMEBLock : public PVBlock
 	{
-	public:
+	private:
 		void parse() override
 		{
 			setOffset(m_Parser->getOffset());
@@ -21,7 +21,6 @@ namespace smartview
 			setSize(m_Parser->getOffset() - getOffset());
 		}
 
-	private:
 		void getProp(SPropValue& prop) override { prop.Value.ft = {*dwLowDateTime, *dwHighDateTime}; }
 		std::shared_ptr<blockT<DWORD>> dwLowDateTime = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> dwHighDateTime = emptyT<DWORD>();
@@ -30,7 +29,7 @@ namespace smartview
 	/* case PT_STRING8 */
 	class CountedStringA : public PVBlock
 	{
-	public:
+	private:
 		void parse() override
 		{
 			setOffset(m_Parser->getOffset());
@@ -58,7 +57,6 @@ namespace smartview
 			setSize(m_Parser->getOffset() - getOffset());
 		}
 
-	private:
 		void getProp(SPropValue& prop) override { prop.Value.lpszA = const_cast<LPSTR>(str->c_str()); }
 		std::shared_ptr<blockT<DWORD>> cb = emptyT<DWORD>();
 		std::shared_ptr<blockStringA> str = emptySA();
@@ -67,7 +65,7 @@ namespace smartview
 	/* case PT_UNICODE */
 	class CountedStringW : public PVBlock
 	{
-	public:
+	private:
 		void parse() override
 		{
 			setOffset(m_Parser->getOffset());
@@ -95,7 +93,6 @@ namespace smartview
 			setSize(m_Parser->getOffset() - getOffset());
 		}
 
-	private:
 		void getProp(SPropValue& prop) override { prop.Value.lpszW = const_cast<LPWSTR>(str->c_str()); }
 		std::shared_ptr<blockT<DWORD>> cb = emptyT<DWORD>();
 		std::shared_ptr<blockStringW> str = emptySW();
@@ -105,7 +102,10 @@ namespace smartview
 	class SBinaryBlock : public PVBlock
 	{
 	public:
-		void init(std::shared_ptr<binaryParser>& parser) { PVBlock::init(parser, false, true); }
+		void parse(std::shared_ptr<binaryParser>& parser) { PVBlock::parse(parser, false, true); }
+		operator SBinary() noexcept { return {*cb, const_cast<LPBYTE>(lpb->data())}; }
+
+	private:
 		void parse() override
 		{
 			setOffset(m_Parser->getOffset());
@@ -130,9 +130,6 @@ namespace smartview
 			setSize(m_Parser->getOffset() - getOffset());
 		}
 
-		operator SBinary() noexcept { return {*cb, const_cast<LPBYTE>(lpb->data())}; }
-
-	private:
 		void getProp(SPropValue& prop) override { prop.Value.bin = this->operator SBinary(); }
 		std::shared_ptr<blockT<ULONG>> cb = emptyT<ULONG>();
 		std::shared_ptr<blockBytes> lpb = emptyBB();
@@ -142,6 +139,12 @@ namespace smartview
 	class SBinaryArrayBlock : public PVBlock
 	{
 	public:
+		~SBinaryArrayBlock()
+		{
+			if (bin) delete[] bin;
+		}
+
+	private:
 		void parse() override
 		{
 			setOffset(m_Parser->getOffset());
@@ -161,20 +164,14 @@ namespace smartview
 				for (ULONG j = 0; j < *cValues; j++)
 				{
 					auto block = std::make_shared<SBinaryBlock>();
-					block->init(m_Parser);
-					block->parse();
+					block->parse(m_Parser);
 					lpbin.emplace_back(block);
 				}
 			}
 
 			setSize(m_Parser->getOffset() - getOffset());
 		}
-		~SBinaryArrayBlock()
-		{
-			if (bin) delete[] bin;
-		}
 
-	private:
 		void getProp(SPropValue& prop) override
 		{
 			if (*cValues && !bin)
@@ -200,7 +197,7 @@ namespace smartview
 	/* case PT_MV_STRING8 */
 	class StringArrayA : public PVBlock
 	{
-	public:
+	private:
 		void parse() override
 		{
 			setOffset(m_Parser->getOffset());
@@ -228,7 +225,6 @@ namespace smartview
 			setSize(m_Parser->getOffset() - getOffset());
 		}
 
-	private:
 		void getProp(SPropValue& prop) override { prop.Value.MVszA = SLPSTRArray{}; }
 		std::shared_ptr<blockT<ULONG>> cValues = emptyT<ULONG>();
 		std::vector<std::shared_ptr<blockStringA>> lppszA;
@@ -237,7 +233,7 @@ namespace smartview
 	/* case PT_MV_UNICODE */
 	class StringArrayW : public PVBlock
 	{
-	public:
+	private:
 		void parse() override
 		{
 			setOffset(m_Parser->getOffset());
@@ -264,7 +260,6 @@ namespace smartview
 			setSize(m_Parser->getOffset() - getOffset());
 		}
 
-	private:
 		void getProp(SPropValue& prop) override { prop.Value.MVszW = SWStringArray{}; }
 		std::shared_ptr<blockT<ULONG>> cValues = emptyT<ULONG>();
 		std::vector<std::shared_ptr<blockStringW>> lppszW;
@@ -273,7 +268,7 @@ namespace smartview
 	/* case PT_I2 */
 	class I2BLock : public PVBlock
 	{
-	public:
+	private:
 		void parse() override
 		{
 			setOffset(m_Parser->getOffset());
@@ -290,7 +285,6 @@ namespace smartview
 			return InterpretNumberAsString(*i, ulPropTag, 0, nullptr, nullptr, false);
 		}
 
-	private:
 		void getProp(SPropValue& prop) override { prop.Value.i = *i; }
 		std::shared_ptr<blockT<WORD>> i = emptyT<WORD>();
 	};
@@ -298,7 +292,7 @@ namespace smartview
 	/* case PT_LONG */
 	class LongBLock : public PVBlock
 	{
-	public:
+	private:
 		void parse() override
 		{
 			setOffset(m_Parser->getOffset());
@@ -314,7 +308,6 @@ namespace smartview
 			return InterpretNumberAsString(*l, ulPropTag, 0, nullptr, nullptr, false);
 		}
 
-	private:
 		void getProp(SPropValue& prop) override { prop.Value.l = *l; }
 		std::shared_ptr<blockT<LONG>> l = emptyT<LONG>();
 	};
@@ -322,7 +315,7 @@ namespace smartview
 	/* case PT_BOOLEAN */
 	class BooleanBlock : public PVBlock
 	{
-	public:
+	private:
 		void parse() override
 		{
 			setOffset(m_Parser->getOffset());
@@ -342,7 +335,6 @@ namespace smartview
 			setSize(m_Parser->getOffset() - getOffset());
 		}
 
-	private:
 		void getProp(SPropValue& prop) override { prop.Value.b = *b; }
 		std::shared_ptr<blockT<WORD>> b = emptyT<WORD>();
 	};
@@ -350,7 +342,7 @@ namespace smartview
 	/* case PT_R4 */
 	class R4BLock : public PVBlock
 	{
-	public:
+	private:
 		void parse() override
 		{
 			setOffset(m_Parser->getOffset());
@@ -361,7 +353,6 @@ namespace smartview
 			setSize(m_Parser->getOffset() - getOffset());
 		}
 
-	private:
 		void getProp(SPropValue& prop) override { prop.Value.flt = *flt; }
 		std::shared_ptr<blockT<float>> flt = emptyT<float>();
 	};
@@ -369,7 +360,7 @@ namespace smartview
 	/* case PT_DOUBLE */
 	class DoubleBlock : public PVBlock
 	{
-	public:
+	private:
 		void parse() override
 		{
 			setOffset(m_Parser->getOffset());
@@ -379,7 +370,6 @@ namespace smartview
 			setSize(m_Parser->getOffset() - getOffset());
 		}
 
-	private:
 		void getProp(SPropValue& prop) override { prop.Value.dbl = *dbl; }
 		std::shared_ptr<blockT<double>> dbl = emptyT<double>();
 	};
@@ -387,7 +377,7 @@ namespace smartview
 	/* case PT_CLSID */
 	class CLSIDBlock : public PVBlock
 	{
-	public:
+	private:
 		void parse() override
 		{
 			setOffset(m_Parser->getOffset());
@@ -398,7 +388,6 @@ namespace smartview
 			setSize(m_Parser->getOffset() - getOffset());
 		}
 
-	private:
 		void getProp(SPropValue& prop) override
 		{
 			auto guid = lpguid->getData();
@@ -410,7 +399,7 @@ namespace smartview
 	/* case PT_I8 */
 	class I8Block : public PVBlock
 	{
-	public:
+	private:
 		void parse() override
 		{
 			setOffset(m_Parser->getOffset());
@@ -425,7 +414,6 @@ namespace smartview
 			return InterpretNumberAsString(li->getData().QuadPart, ulPropTag, 0, nullptr, nullptr, false);
 		}
 
-	private:
 		void getProp(SPropValue& prop) override { prop.Value.li = li->getData(); }
 		std::shared_ptr<blockT<LARGE_INTEGER>> li = emptyT<LARGE_INTEGER>();
 	};
@@ -433,7 +421,7 @@ namespace smartview
 	/* case PT_ERROR */
 	class ErrorBlock : public PVBlock
 	{
-	public:
+	private:
 		void parse() override
 		{
 			setOffset(m_Parser->getOffset());
@@ -444,7 +432,6 @@ namespace smartview
 			setSize(m_Parser->getOffset() - getOffset());
 		}
 
-	private:
 		void getProp(SPropValue& prop) override { prop.Value.err = *err; }
 		std::shared_ptr<blockT<SCODE>> err = emptyT<SCODE>();
 	};
@@ -514,8 +501,7 @@ namespace smartview
 
 		if (value)
 		{
-			value->init(m_Parser, m_doNickname, m_doRuleProcessing);
-			value->parse();
+			value->parse(m_Parser, m_doNickname, m_doRuleProcessing);
 		}
 	}
 
