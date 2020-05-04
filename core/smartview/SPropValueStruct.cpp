@@ -102,7 +102,10 @@ namespace smartview
 	class SBinaryBlock : public PVBlock
 	{
 	public:
-		void parse(std::shared_ptr<binaryParser>& parser) { PVBlock::parse(parser, false, true); }
+		void parse(std::shared_ptr<binaryParser>& parser, ULONG ulPropTag)
+		{
+			PVBlock::parse(parser, ulPropTag, false, true);
+		}
 		operator SBinary() noexcept { return {*cb, const_cast<LPBYTE>(lpb->data())}; }
 
 	private:
@@ -164,7 +167,7 @@ namespace smartview
 				for (ULONG j = 0; j < *cValues; j++)
 				{
 					auto block = std::make_shared<SBinaryBlock>();
-					block->parse(m_Parser);
+					block->parse(m_Parser, m_ulPropTag);
 					lpbin.emplace_back(block);
 				}
 			}
@@ -280,10 +283,7 @@ namespace smartview
 			setSize(m_Parser->getOffset() - getOffset());
 		}
 
-		std::wstring propNum(ULONG ulPropTag) override
-		{
-			return InterpretNumberAsString(*i, ulPropTag, 0, nullptr, nullptr, false);
-		}
+		std::wstring propNum() override { return InterpretNumberAsString(*i, m_ulPropTag, 0, nullptr, nullptr, false); }
 
 		void getProp(SPropValue& prop) override { prop.Value.i = *i; }
 		std::shared_ptr<blockT<WORD>> i = emptyT<WORD>();
@@ -303,10 +303,7 @@ namespace smartview
 			setSize(m_Parser->getOffset() - getOffset());
 		}
 
-		std::wstring propNum(ULONG ulPropTag) override
-		{
-			return InterpretNumberAsString(*l, ulPropTag, 0, nullptr, nullptr, false);
-		}
+		std::wstring propNum() override { return InterpretNumberAsString(*l, m_ulPropTag, 0, nullptr, nullptr, false); }
 
 		void getProp(SPropValue& prop) override { prop.Value.l = *l; }
 		std::shared_ptr<blockT<LONG>> l = emptyT<LONG>();
@@ -409,9 +406,9 @@ namespace smartview
 			setSize(m_Parser->getOffset() - getOffset());
 		}
 
-		std::wstring propNum(ULONG ulPropTag) override
+		std::wstring propNum() override
 		{
-			return InterpretNumberAsString(li->getData().QuadPart, ulPropTag, 0, nullptr, nullptr, false);
+			return InterpretNumberAsString(li->getData().QuadPart, m_ulPropTag, 0, nullptr, nullptr, false);
 		}
 
 		void getProp(SPropValue& prop) override { prop.Value.li = li->getData(); }
@@ -501,7 +498,7 @@ namespace smartview
 
 		if (value)
 		{
-			value->parse(m_Parser, m_doNickname, m_doRuleProcessing);
+			value->parse(m_Parser, *ulPropTag, m_doNickname, m_doRuleProcessing);
 		}
 	}
 
@@ -530,19 +527,19 @@ namespace smartview
 		propRoot->terminateBlock();
 		if (value)
 		{
-			auto propString = value->PropBlock(*ulPropTag);
+			auto propString = value->PropBlock();
 			if (!propString->empty())
 			{
 				propRoot->addChild(propString, L"PropString = %1!ws!", propString->c_str());
 			}
 
-			auto alt = value->AltPropBlock(*ulPropTag);
+			auto alt = value->AltPropBlock();
 			if (!alt->empty())
 			{
 				propRoot->addChild(alt, L" AltPropString = %1!ws!", alt->c_str());
 			}
 
-			auto szSmartView = value->SmartViewBlock(*ulPropTag);
+			auto szSmartView = value->SmartViewBlock();
 			if (!szSmartView->empty())
 			{
 				propRoot->terminateBlock();
@@ -553,6 +550,6 @@ namespace smartview
 
 	_Check_return_ std::wstring SPropValueStruct::PropNum() const
 	{
-		return value ? value->propNum(*ulPropTag) : strings::emptystring;
+		return value ? value->propNum() : strings::emptystring;
 	}
 } // namespace smartview
