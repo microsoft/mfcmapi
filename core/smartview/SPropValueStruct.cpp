@@ -13,8 +13,12 @@ namespace smartview
 	public:
 		FILETIMEBLock(const std::shared_ptr<binaryParser>& parser)
 		{
+			setOffset(parser->getOffset());
+
 			dwHighDateTime = blockT<DWORD>::parse(parser);
 			dwLowDateTime = blockT<DWORD>::parse(parser);
+
+			setSize(parser->getOffset() - getOffset());
 		}
 		static std::shared_ptr<FILETIMEBLock>
 		parse(const std::shared_ptr<binaryParser>& parser, bool /*doNickname*/, bool /*doRuleProcessing*/)
@@ -23,8 +27,6 @@ namespace smartview
 		}
 
 	private:
-		size_t getSize() const noexcept override { return dwLowDateTime->getSize() + dwHighDateTime->getSize(); }
-		size_t getOffset() const noexcept override { return dwHighDateTime->getOffset(); }
 		void getProp(SPropValue& prop) override { prop.Value.ft = {*dwLowDateTime, *dwHighDateTime}; }
 		std::shared_ptr<blockT<DWORD>> dwLowDateTime = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> dwHighDateTime = emptyT<DWORD>();
@@ -36,6 +38,8 @@ namespace smartview
 	public:
 		CountedStringA(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool doRuleProcessing)
 		{
+			setOffset(parser->getOffset());
+
 			if (doRuleProcessing)
 			{
 				str = blockStringA::parse(parser);
@@ -55,6 +59,8 @@ namespace smartview
 
 				str = blockStringA::parse(parser, *cb);
 			}
+
+			setSize(parser->getOffset() - getOffset());
 		}
 		static std::shared_ptr<CountedStringA>
 		parse(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool doRuleProcessing)
@@ -63,8 +69,6 @@ namespace smartview
 		}
 
 	private:
-		size_t getSize() const noexcept override { return cb->getSize() + str->getSize(); }
-		size_t getOffset() const noexcept override { return cb->getOffset() ? cb->getOffset() : str->getOffset(); }
 		void getProp(SPropValue& prop) override { prop.Value.lpszA = const_cast<LPSTR>(str->c_str()); }
 		std::shared_ptr<blockT<DWORD>> cb = emptyT<DWORD>();
 		std::shared_ptr<blockStringA> str = emptySA();
@@ -76,6 +80,8 @@ namespace smartview
 	public:
 		CountedStringW(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool doRuleProcessing)
 		{
+			setOffset(parser->getOffset());
+
 			if (doRuleProcessing)
 			{
 				str = blockStringW::parse(parser);
@@ -95,6 +101,8 @@ namespace smartview
 
 				str = blockStringW::parse(parser, *cb / sizeof(WCHAR));
 			}
+
+			setSize(parser->getOffset() - getOffset());
 		}
 		static std::shared_ptr<CountedStringW>
 		parse(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool doRuleProcessing)
@@ -103,8 +111,6 @@ namespace smartview
 		}
 
 	private:
-		size_t getSize() const noexcept override { return cb->getSize() + str->getSize(); }
-		size_t getOffset() const noexcept override { return cb->getOffset() ? cb->getOffset() : str->getOffset(); }
 		void getProp(SPropValue& prop) override { prop.Value.lpszW = const_cast<LPWSTR>(str->c_str()); }
 		std::shared_ptr<blockT<DWORD>> cb = emptyT<DWORD>();
 		std::shared_ptr<blockStringW> str = emptySW();
@@ -117,6 +123,8 @@ namespace smartview
 		SBinaryBlock(const std::shared_ptr<binaryParser>& parser) : SBinaryBlock(parser, false, true) {}
 		SBinaryBlock(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool doRuleProcessing)
 		{
+			setOffset(parser->getOffset());
+
 			if (doNickname)
 			{
 				static_cast<void>(parser->advance(sizeof LARGE_INTEGER)); // union
@@ -133,6 +141,8 @@ namespace smartview
 
 			// Note that we're not placing a restriction on how large a binary property we can parse. May need to revisit this.
 			lpb = blockBytes::parse(parser, *cb);
+
+			setSize(parser->getOffset() - getOffset());
 		}
 		static std::shared_ptr<SBinaryBlock> parse(const std::shared_ptr<binaryParser>& parser)
 		{
@@ -147,8 +157,6 @@ namespace smartview
 		operator SBinary() noexcept { return {*cb, const_cast<LPBYTE>(lpb->data())}; }
 
 	private:
-		size_t getSize() const noexcept { return cb->getSize() + lpb->getSize(); }
-		size_t getOffset() const noexcept { return cb->getOffset() ? cb->getOffset() : lpb->getOffset(); }
 		void getProp(SPropValue& prop) override { prop.Value.bin = this->operator SBinary(); }
 		std::shared_ptr<blockT<ULONG>> cb = emptyT<ULONG>();
 		std::shared_ptr<blockBytes> lpb = emptyBB();
@@ -160,6 +168,8 @@ namespace smartview
 	public:
 		SBinaryArrayBlock(const std::shared_ptr<binaryParser>& parser, bool doNickname)
 		{
+			setOffset(parser->getOffset());
+
 			if (doNickname)
 			{
 				static_cast<void>(parser->advance(sizeof LARGE_INTEGER)); // union
@@ -177,6 +187,8 @@ namespace smartview
 					lpbin.emplace_back(SBinaryBlock::parse(parser));
 				}
 			}
+
+			setSize(parser->getOffset() - getOffset());
 		}
 		~SBinaryArrayBlock()
 		{
@@ -189,9 +201,6 @@ namespace smartview
 		}
 
 	private:
-		// TODO: Implement size and offset
-		size_t getSize() const noexcept { return {}; }
-		size_t getOffset() const noexcept { return {}; }
 		void getProp(SPropValue& prop) override
 		{
 			if (*cValues && !bin)
@@ -220,6 +229,8 @@ namespace smartview
 	public:
 		StringArrayA(const std::shared_ptr<binaryParser>& parser, bool doNickname)
 		{
+			setOffset(parser->getOffset());
+
 			if (doNickname)
 			{
 				static_cast<void>(parser->advance(sizeof LARGE_INTEGER)); // union
@@ -239,6 +250,8 @@ namespace smartview
 					lppszA.emplace_back(std::make_shared<blockStringA>(parser));
 				}
 			}
+
+			setSize(parser->getOffset() - getOffset());
 		}
 		static std::shared_ptr<StringArrayA>
 		parse(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool /*doRuleProcessing*/)
@@ -247,9 +260,6 @@ namespace smartview
 		}
 
 	private:
-		// TODO: Implement size and offset
-		size_t getSize() const noexcept { return {}; }
-		size_t getOffset() const noexcept { return {}; }
 		void getProp(SPropValue& prop) override { prop.Value.MVszA = SLPSTRArray{}; }
 		std::shared_ptr<blockT<ULONG>> cValues = emptyT<ULONG>();
 		std::vector<std::shared_ptr<blockStringA>> lppszA;
@@ -261,6 +271,8 @@ namespace smartview
 	public:
 		StringArrayW(const std::shared_ptr<binaryParser>& parser, bool doNickname)
 		{
+			setOffset(parser->getOffset());
+
 			if (doNickname)
 			{
 				static_cast<void>(parser->advance(sizeof LARGE_INTEGER)); // union
@@ -279,6 +291,8 @@ namespace smartview
 					lppszW.emplace_back(std::make_shared<blockStringW>(parser));
 				}
 			}
+
+			setSize(parser->getOffset() - getOffset());
 		}
 		static std::shared_ptr<StringArrayW>
 		parse(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool /*doRuleProcessing*/)
@@ -287,9 +301,6 @@ namespace smartview
 		}
 
 	private:
-		// TODO: Implement size and offset
-		size_t getSize() const noexcept { return {}; }
-		size_t getOffset() const noexcept { return {}; }
 		void getProp(SPropValue& prop) override { prop.Value.MVszW = SWStringArray{}; }
 		std::shared_ptr<blockT<ULONG>> cValues = emptyT<ULONG>();
 		std::vector<std::shared_ptr<blockStringW>> lppszW;
@@ -301,9 +312,13 @@ namespace smartview
 	public:
 		I2BLock(const std::shared_ptr<binaryParser>& parser, bool doNickname)
 		{
+			setOffset(parser->getOffset());
+
 			if (doNickname) i = blockT<WORD>::parse(parser); // TODO: This can't be right
 			if (doNickname) parser->advance(sizeof WORD);
 			if (doNickname) parser->advance(sizeof DWORD);
+
+			setSize(parser->getOffset() - getOffset());
 		}
 		static std::shared_ptr<I2BLock>
 		parse(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool /*doRuleProcessing*/)
@@ -317,8 +332,6 @@ namespace smartview
 		}
 
 	private:
-		size_t getSize() const noexcept override { return i->getSize(); }
-		size_t getOffset() const noexcept override { return i->getOffset(); }
 		void getProp(SPropValue& prop) override { prop.Value.i = *i; }
 		std::shared_ptr<blockT<WORD>> i = emptyT<WORD>();
 	};
@@ -329,8 +342,12 @@ namespace smartview
 	public:
 		LongBLock(const std::shared_ptr<binaryParser>& parser, bool doNickname)
 		{
+			setOffset(parser->getOffset());
+
 			l = blockT<LONG, DWORD>::parse(parser);
 			if (doNickname) parser->advance(sizeof DWORD);
+
+			setSize(parser->getOffset() - getOffset());
 		}
 		static std::shared_ptr<LongBLock>
 		parse(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool /*doRuleProcessing*/)
@@ -344,8 +361,6 @@ namespace smartview
 		}
 
 	private:
-		size_t getSize() const noexcept override { return l->getSize(); }
-		size_t getOffset() const noexcept override { return l->getOffset(); }
 		void getProp(SPropValue& prop) override { prop.Value.l = *l; }
 		std::shared_ptr<blockT<LONG>> l = emptyT<LONG>();
 	};
@@ -356,6 +371,8 @@ namespace smartview
 	public:
 		BooleanBLock(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool doRuleProcessing)
 		{
+			setOffset(parser->getOffset());
+
 			if (doRuleProcessing)
 			{
 				b = blockT<WORD, BYTE>::parse(parser);
@@ -367,6 +384,8 @@ namespace smartview
 
 			if (doNickname) parser->advance(sizeof WORD);
 			if (doNickname) parser->advance(sizeof DWORD);
+
+			setSize(parser->getOffset() - getOffset());
 		}
 		static std::shared_ptr<BooleanBLock>
 		parse(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool doRuleProcessing)
@@ -375,8 +394,6 @@ namespace smartview
 		}
 
 	private:
-		size_t getSize() const noexcept override { return b->getSize(); }
-		size_t getOffset() const noexcept override { return b->getOffset(); }
 		void getProp(SPropValue& prop) override { prop.Value.b = *b; }
 		std::shared_ptr<blockT<WORD>> b = emptyT<WORD>();
 	};
@@ -387,8 +404,12 @@ namespace smartview
 	public:
 		R4BLock(const std::shared_ptr<binaryParser>& parser, bool doNickname)
 		{
+			setOffset(parser->getOffset());
+
 			flt = blockT<float>::parse(parser);
 			if (doNickname) parser->advance(sizeof DWORD);
+
+			setSize(parser->getOffset() - getOffset());
 		}
 		static std::shared_ptr<R4BLock>
 		parse(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool /*doRuleProcessing*/)
@@ -397,8 +418,6 @@ namespace smartview
 		}
 
 	private:
-		size_t getSize() const noexcept override { return flt->getSize(); }
-		size_t getOffset() const noexcept override { return flt->getOffset(); }
 		void getProp(SPropValue& prop) override { prop.Value.flt = *flt; }
 		std::shared_ptr<blockT<float>> flt = emptyT<float>();
 	};
@@ -407,7 +426,14 @@ namespace smartview
 	class DoubleBlock : public PVBlock
 	{
 	public:
-		DoubleBlock(const std::shared_ptr<binaryParser>& parser) { dbl = blockT<double>::parse(parser); }
+		DoubleBlock(const std::shared_ptr<binaryParser>& parser)
+		{
+			setOffset(parser->getOffset());
+
+			dbl = blockT<double>::parse(parser);
+
+			setSize(parser->getOffset() - getOffset());
+		}
 		static std::shared_ptr<DoubleBlock>
 		parse(const std::shared_ptr<binaryParser>& parser, bool /*doNickname*/, bool /*doRuleProcessing*/)
 		{
@@ -415,8 +441,6 @@ namespace smartview
 		}
 
 	private:
-		size_t getSize() const noexcept override { return dbl->getSize(); }
-		size_t getOffset() const noexcept override { return dbl->getOffset(); }
 		void getProp(SPropValue& prop) override { prop.Value.dbl = *dbl; }
 		std::shared_ptr<blockT<double>> dbl = emptyT<double>();
 	};
@@ -427,8 +451,12 @@ namespace smartview
 	public:
 		CLSIDBlock(const std::shared_ptr<binaryParser>& parser, bool doNickname)
 		{
+			setOffset(parser->getOffset());
+
 			if (doNickname) static_cast<void>(parser->advance(sizeof LARGE_INTEGER)); // union
 			lpguid = blockT<GUID>::parse(parser);
+
+			setSize(parser->getOffset() - getOffset());
 		}
 		static std::shared_ptr<CLSIDBlock>
 		parse(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool /*doRuleProcessing*/)
@@ -437,11 +465,11 @@ namespace smartview
 		}
 
 	private:
-		size_t getSize() const noexcept override { return lpguid->getSize(); }
-		size_t getOffset() const noexcept override { return lpguid->getOffset(); }
-		void getProp(SPropValue& prop) override {
+		void getProp(SPropValue& prop) override
+		{
 			auto guid = lpguid->getData();
-			prop.Value.lpguid = &guid; }
+			prop.Value.lpguid = &guid;
+		}
 		std::shared_ptr<blockT<GUID>> lpguid = emptyT<GUID>();
 	};
 
@@ -449,7 +477,14 @@ namespace smartview
 	class I8Block : public PVBlock
 	{
 	public:
-		I8Block(const std::shared_ptr<binaryParser>& parser) { li = blockT<LARGE_INTEGER>::parse(parser); }
+		I8Block(const std::shared_ptr<binaryParser>& parser)
+		{
+			setOffset(parser->getOffset());
+
+			li = blockT<LARGE_INTEGER>::parse(parser);
+
+			setSize(parser->getOffset() - getOffset());
+		}
 		static std::shared_ptr<I8Block>
 		parse(const std::shared_ptr<binaryParser>& parser, bool /*doNickname*/, bool /*doRuleProcessing*/)
 		{
@@ -462,8 +497,6 @@ namespace smartview
 		}
 
 	private:
-		size_t getSize() const noexcept override { return li->getSize(); }
-		size_t getOffset() const noexcept override { return li->getOffset(); }
 		void getProp(SPropValue& prop) override { prop.Value.li = li->getData(); }
 		std::shared_ptr<blockT<LARGE_INTEGER>> li = emptyT<LARGE_INTEGER>();
 	};
@@ -474,8 +507,12 @@ namespace smartview
 	public:
 		ErrorBlock(const std::shared_ptr<binaryParser>& parser, bool doNickname)
 		{
+			setOffset(parser->getOffset());
+
 			err = blockT<SCODE, DWORD>::parse(parser);
 			if (doNickname) parser->advance(sizeof DWORD);
+
+			setSize(parser->getOffset() - getOffset());
 		}
 		static std::shared_ptr<ErrorBlock>
 		parse(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool /*doRuleProcessing*/)
@@ -484,8 +521,6 @@ namespace smartview
 		}
 
 	private:
-		size_t getSize() const noexcept override { return err->getSize(); }
-		size_t getOffset() const noexcept override { return err->getOffset(); }
 		void getProp(SPropValue& prop) override { prop.Value.err = *err; }
 		std::shared_ptr<blockT<SCODE>> err = emptyT<SCODE>();
 	};

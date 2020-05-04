@@ -36,8 +36,6 @@ namespace smartview
 		void ensurePropBlocks(ULONG ulPropTag)
 		{
 			if (propStringsGenerated) return;
-			auto size = getSize();
-			auto _offset = getOffset();
 			auto prop = SPropValue{};
 			prop.ulPropTag = ulPropTag;
 			getProp(prop);
@@ -46,20 +44,18 @@ namespace smartview
 			auto altPropString = std::wstring{};
 			property::parseProperty(&prop, &propString, &altPropString);
 
-			propBlock =
-				std::make_shared<blockStringW>(strings::RemoveInvalidCharactersW(propString, false), size, _offset);
+			propBlock = std::make_shared<blockStringW>(
+				strings::RemoveInvalidCharactersW(propString, false), getSize(), getOffset());
 
-			altPropBlock =
-				std::make_shared<blockStringW>(strings::RemoveInvalidCharactersW(altPropString, false), size, _offset);
+			altPropBlock = std::make_shared<blockStringW>(
+				strings::RemoveInvalidCharactersW(altPropString, false), getSize(), getOffset());
 
 			const auto smartViewString = parsePropertySmartView(&prop, nullptr, nullptr, nullptr, false, false);
-			smartViewBlock = std::make_shared<blockStringW>(smartViewString, size, _offset);
+			smartViewBlock = std::make_shared<blockStringW>(smartViewString, getSize(), getOffset());
 
 			propStringsGenerated = true;
 		}
 
-		virtual size_t getSize() const noexcept = 0;
-		virtual size_t getOffset() const noexcept = 0;
 		virtual void getProp(SPropValue& prop) = 0;
 		std::shared_ptr<blockStringW> propBlock = emptySW();
 		std::shared_ptr<blockStringW> altPropBlock = emptySW();
