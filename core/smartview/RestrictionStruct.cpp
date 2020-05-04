@@ -317,23 +317,27 @@ namespace smartview
 			if (!resContent.lpProp.Props().empty())
 			{
 				auto propBlock = std::make_shared<block>();
+				const ULONG ulPropTag = *resContent.lpProp.Props()[0]->ulPropTag;
 				rt->addChild(propBlock);
 
 				propBlock->addChild(
 					resContent.lpProp.Props()[0]->ulPropTag,
 					L"%1!ws!lpRes->res.resContent.lpProp->ulPropTag = %2!ws!\r\n",
 					szTabs.c_str(),
-					proptags::TagToString(*resContent.lpProp.Props()[0]->ulPropTag, nullptr, false, true).c_str());
-				propBlock->addChild(
-					resContent.lpProp.Props()[0]->PropBlock(),
-					L"%1!ws!lpRes->res.resContent.lpProp->Value = %2!ws!\r\n",
-					szTabs.c_str(),
-					resContent.lpProp.Props()[0]->PropBlock()->c_str());
-				propBlock->addChild(
-					resContent.lpProp.Props()[0]->AltPropBlock(),
-					L"%1!ws!\tAlt: %2!ws!\r\n",
-					szTabs.c_str(),
-					resContent.lpProp.Props()[0]->AltPropBlock()->c_str());
+					proptags::TagToString(ulPropTag, nullptr, false, true).c_str());
+				if (resContent.lpProp.Props()[0]->value)
+				{
+					propBlock->addChild(
+						resContent.lpProp.Props()[0]->value->PropBlock(ulPropTag),
+						L"%1!ws!lpRes->res.resContent.lpProp->Value = %2!ws!\r\n",
+						szTabs.c_str(),
+						resContent.lpProp.Props()[0]->value->PropBlock(ulPropTag)->c_str());
+					propBlock->addChild(
+						resContent.lpProp.Props()[0]->value->AltPropBlock(ulPropTag),
+						L"%1!ws!\tAlt: %2!ws!\r\n",
+						szTabs.c_str(),
+						resContent.lpProp.Props()[0]->value->AltPropBlock(ulPropTag)->c_str());
+				}
 			}
 		}
 		break;
@@ -353,21 +357,26 @@ namespace smartview
 
 			if (!resProperty.lpProp.Props().empty())
 			{
+				const ULONG ulPropTag = *resProperty.lpProp.Props()[0]->ulPropTag;
 				resProperty.ulPropTag->addChild(
 					resProperty.lpProp.Props()[0]->ulPropTag,
 					L"%1!ws!lpRes->res.resProperty.lpProp->ulPropTag = %2!ws!\r\n",
 					szTabs.c_str(),
-					proptags::TagToString(*resProperty.lpProp.Props()[0]->ulPropTag, nullptr, false, true).c_str());
-				resProperty.ulPropTag->addChild(
-					resProperty.lpProp.Props()[0]->PropBlock(),
-					L"%1!ws!lpRes->res.resProperty.lpProp->Value = %2!ws!\r\n",
-					szTabs.c_str(),
-					resProperty.lpProp.Props()[0]->PropBlock()->c_str());
-				resProperty.ulPropTag->addChild(
-					resProperty.lpProp.Props()[0]->AltPropBlock(),
-					L"%1!ws!\tAlt: %2!ws!\r\n",
-					szTabs.c_str(),
-					resProperty.lpProp.Props()[0]->AltPropBlock()->c_str());
+					proptags::TagToString(ulPropTag, nullptr, false, true).c_str());
+				if (resProperty.lpProp.Props()[0]->value)
+				{
+					resProperty.ulPropTag->addChild(
+						resProperty.lpProp.Props()[0]->value->PropBlock(ulPropTag),
+						L"%1!ws!lpRes->res.resProperty.lpProp->Value = %2!ws!\r\n",
+						szTabs.c_str(),
+						resProperty.lpProp.Props()[0]->value->PropBlock(ulPropTag)->c_str());
+					resProperty.ulPropTag->addChild(
+						resProperty.lpProp.Props()[0]->value->AltPropBlock(ulPropTag),
+						L"%1!ws!\tAlt: %2!ws!\r\n",
+						szTabs.c_str(),
+						resProperty.lpProp.Props()[0]->value->AltPropBlock(ulPropTag)->c_str());
+				}
+
 				szPropNum = resProperty.lpProp.Props()[0]->PropNum();
 				if (!szPropNum.empty())
 				{
@@ -453,21 +462,28 @@ namespace smartview
 			auto i = 0;
 			for (const auto& prop : resComment.lpProp.Props())
 			{
+				const ULONG ulPropTag = *prop->ulPropTag;
 				prop->ulPropTag->setText(
 					L"%1!ws!lpRes->res.resComment.lpProp[0x%2!08X!].ulPropTag = %3!ws!\r\n",
 					szTabs.c_str(),
 					i,
-					proptags::TagToString(*prop->ulPropTag, nullptr, false, true).c_str());
+					proptags::TagToString(ulPropTag, nullptr, false, true).c_str());
 				resComment.cValues->addChild(prop->ulPropTag);
 
-				prop->ulPropTag->addChild(
-					prop->PropBlock(),
-					L"%1!ws!lpRes->res.resComment.lpProp[0x%2!08X!].Value = %3!ws!\r\n",
-					szTabs.c_str(),
-					i,
-					prop->PropBlock()->c_str());
-				prop->ulPropTag->addChild(
-					prop->AltPropBlock(), L"%1!ws!\tAlt: %2!ws!\r\n", szTabs.c_str(), prop->AltPropBlock()->c_str());
+				if (prop->value)
+				{
+					prop->ulPropTag->addChild(
+						prop->value->PropBlock(ulPropTag),
+						L"%1!ws!lpRes->res.resComment.lpProp[0x%2!08X!].Value = %3!ws!\r\n",
+						szTabs.c_str(),
+						i,
+						prop->value->PropBlock(ulPropTag)->c_str());
+					prop->ulPropTag->addChild(
+						prop->value->AltPropBlock(ulPropTag),
+						L"%1!ws!\tAlt: %2!ws!\r\n",
+						szTabs.c_str(),
+						prop->value->AltPropBlock(ulPropTag)->c_str());
+				}
 
 				i++;
 			}
@@ -494,19 +510,26 @@ namespace smartview
 			{
 				resAnnotation.cValues->addChild(prop->ulPropTag);
 
+				const ULONG ulPropTag = *prop->ulPropTag;
 				prop->ulPropTag->setText(
 					L"%1!ws!lpRes->res.resAnnotation.lpProp[0x%2!08X!].ulPropTag = %3!ws!\r\n",
 					szTabs.c_str(),
 					i,
 					proptags::TagToString(*prop->ulPropTag, nullptr, false, true).c_str());
-				prop->ulPropTag->addChild(
-					prop->PropBlock(),
-					L"%1!ws!lpRes->res.resAnnotation.lpProp[0x%2!08X!].Value = %3!ws!\r\n",
-					szTabs.c_str(),
-					i,
-					prop->PropBlock()->c_str());
-				prop->ulPropTag->addChild(
-					prop->AltPropBlock(), L"%1!ws!\tAlt: %2!ws!\r\n", szTabs.c_str(), prop->AltPropBlock()->c_str());
+				if (prop->value)
+				{
+					prop->ulPropTag->addChild(
+						prop->value->PropBlock(ulPropTag),
+						L"%1!ws!lpRes->res.resAnnotation.lpProp[0x%2!08X!].Value = %3!ws!\r\n",
+						szTabs.c_str(),
+						i,
+						prop->value->PropBlock(ulPropTag)->c_str());
+					prop->ulPropTag->addChild(
+						prop->value->AltPropBlock(ulPropTag),
+						L"%1!ws!\tAlt: %2!ws!\r\n",
+						szTabs.c_str(),
+						prop->value->AltPropBlock(ulPropTag)->c_str());
+				}
 
 				i++;
 			}

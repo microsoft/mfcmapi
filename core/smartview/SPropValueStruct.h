@@ -78,19 +78,6 @@ namespace smartview
 		std::shared_ptr<blockT<ULONG>> ulPropTag = emptyT<ULONG>();
 		std::shared_ptr<PVBlock> value;
 
-		_Check_return_ std::shared_ptr<blockStringW> PropBlock()
-		{
-			return value ? value->PropBlock(*ulPropTag) : emptySW();
-		}
-		_Check_return_ std::shared_ptr<blockStringW> AltPropBlock()
-		{
-			return value ? value->AltPropBlock(*ulPropTag) : emptySW();
-		}
-		_Check_return_ std::shared_ptr<blockStringW> SmartViewBlock()
-		{
-			return value ? value->SmartViewBlock(*ulPropTag) : emptySW();
-		}
-
 		_Check_return_ std::wstring PropNum() const;
 
 	private:
