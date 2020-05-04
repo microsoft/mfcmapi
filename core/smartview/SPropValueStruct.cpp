@@ -13,12 +13,8 @@ namespace smartview
 	private:
 		void parse() override
 		{
-			setOffset(m_Parser->getOffset());
-
 			dwHighDateTime = blockT<DWORD>::parse(m_Parser);
 			dwLowDateTime = blockT<DWORD>::parse(m_Parser);
-
-			setSize(m_Parser->getOffset() - getOffset());
 		}
 
 		void getProp(SPropValue& prop) override { prop.Value.ft = {*dwLowDateTime, *dwHighDateTime}; }
@@ -32,8 +28,6 @@ namespace smartview
 	private:
 		void parse() override
 		{
-			setOffset(m_Parser->getOffset());
-
 			if (m_doRuleProcessing)
 			{
 				str = blockStringA::parse(m_Parser);
@@ -53,8 +47,6 @@ namespace smartview
 
 				str = blockStringA::parse(m_Parser, *cb);
 			}
-
-			setSize(m_Parser->getOffset() - getOffset());
 		}
 
 		void getProp(SPropValue& prop) override { prop.Value.lpszA = const_cast<LPSTR>(str->c_str()); }
@@ -68,8 +60,6 @@ namespace smartview
 	private:
 		void parse() override
 		{
-			setOffset(m_Parser->getOffset());
-
 			if (m_doRuleProcessing)
 			{
 				str = blockStringW::parse(m_Parser);
@@ -89,8 +79,6 @@ namespace smartview
 
 				str = blockStringW::parse(m_Parser, *cb / sizeof(WCHAR));
 			}
-
-			setSize(m_Parser->getOffset() - getOffset());
 		}
 
 		void getProp(SPropValue& prop) override { prop.Value.lpszW = const_cast<LPWSTR>(str->c_str()); }
@@ -111,8 +99,6 @@ namespace smartview
 	private:
 		void parse() override
 		{
-			setOffset(m_Parser->getOffset());
-
 			if (m_doNickname)
 			{
 				static_cast<void>(m_Parser->advance(sizeof LARGE_INTEGER)); // union
@@ -129,8 +115,6 @@ namespace smartview
 
 			// Note that we're not placing a restriction on how large a binary property we can parse. May need to revisit this.
 			lpb = blockBytes::parse(m_Parser, *cb);
-
-			setSize(m_Parser->getOffset() - getOffset());
 		}
 
 		void getProp(SPropValue& prop) override { prop.Value.bin = this->operator SBinary(); }
@@ -150,8 +134,6 @@ namespace smartview
 	private:
 		void parse() override
 		{
-			setOffset(m_Parser->getOffset());
-
 			if (m_doNickname)
 			{
 				static_cast<void>(m_Parser->advance(sizeof LARGE_INTEGER)); // union
@@ -171,8 +153,6 @@ namespace smartview
 					lpbin.emplace_back(block);
 				}
 			}
-
-			setSize(m_Parser->getOffset() - getOffset());
 		}
 
 		void getProp(SPropValue& prop) override
@@ -203,8 +183,6 @@ namespace smartview
 	private:
 		void parse() override
 		{
-			setOffset(m_Parser->getOffset());
-
 			if (m_doNickname)
 			{
 				static_cast<void>(m_Parser->advance(sizeof LARGE_INTEGER)); // union
@@ -224,8 +202,6 @@ namespace smartview
 					lppszA.emplace_back(std::make_shared<blockStringA>(m_Parser));
 				}
 			}
-
-			setSize(m_Parser->getOffset() - getOffset());
 		}
 
 		void getProp(SPropValue& prop) override { prop.Value.MVszA = SLPSTRArray{}; }
@@ -239,8 +215,6 @@ namespace smartview
 	private:
 		void parse() override
 		{
-			setOffset(m_Parser->getOffset());
-
 			if (m_doNickname)
 			{
 				static_cast<void>(m_Parser->advance(sizeof LARGE_INTEGER)); // union
@@ -259,8 +233,6 @@ namespace smartview
 					lppszW.emplace_back(std::make_shared<blockStringW>(m_Parser));
 				}
 			}
-
-			setSize(m_Parser->getOffset() - getOffset());
 		}
 
 		void getProp(SPropValue& prop) override { prop.Value.MVszW = SWStringArray{}; }
@@ -274,13 +246,9 @@ namespace smartview
 	private:
 		void parse() override
 		{
-			setOffset(m_Parser->getOffset());
-
 			if (m_doNickname) i = blockT<WORD>::parse(m_Parser); // TODO: This can't be right
 			if (m_doNickname) m_Parser->advance(sizeof WORD);
 			if (m_doNickname) m_Parser->advance(sizeof DWORD);
-
-			setSize(m_Parser->getOffset() - getOffset());
 		}
 
 		std::wstring propNum() override { return InterpretNumberAsString(*i, m_ulPropTag, 0, nullptr, nullptr, false); }
@@ -295,12 +263,8 @@ namespace smartview
 	private:
 		void parse() override
 		{
-			setOffset(m_Parser->getOffset());
-
 			l = blockT<LONG, DWORD>::parse(m_Parser);
 			if (m_doNickname) m_Parser->advance(sizeof DWORD);
-
-			setSize(m_Parser->getOffset() - getOffset());
 		}
 
 		std::wstring propNum() override { return InterpretNumberAsString(*l, m_ulPropTag, 0, nullptr, nullptr, false); }
@@ -315,8 +279,6 @@ namespace smartview
 	private:
 		void parse() override
 		{
-			setOffset(m_Parser->getOffset());
-
 			if (m_doRuleProcessing)
 			{
 				b = blockT<WORD, BYTE>::parse(m_Parser);
@@ -328,8 +290,6 @@ namespace smartview
 
 			if (m_doNickname) m_Parser->advance(sizeof WORD);
 			if (m_doNickname) m_Parser->advance(sizeof DWORD);
-
-			setSize(m_Parser->getOffset() - getOffset());
 		}
 
 		void getProp(SPropValue& prop) override { prop.Value.b = *b; }
@@ -342,12 +302,8 @@ namespace smartview
 	private:
 		void parse() override
 		{
-			setOffset(m_Parser->getOffset());
-
 			flt = blockT<float>::parse(m_Parser);
 			if (m_doNickname) m_Parser->advance(sizeof DWORD);
-
-			setSize(m_Parser->getOffset() - getOffset());
 		}
 
 		void getProp(SPropValue& prop) override { prop.Value.flt = *flt; }
@@ -358,14 +314,7 @@ namespace smartview
 	class DoubleBlock : public PVBlock
 	{
 	private:
-		void parse() override
-		{
-			setOffset(m_Parser->getOffset());
-
-			dbl = blockT<double>::parse(m_Parser);
-
-			setSize(m_Parser->getOffset() - getOffset());
-		}
+		void parse() override { dbl = blockT<double>::parse(m_Parser); }
 
 		void getProp(SPropValue& prop) override { prop.Value.dbl = *dbl; }
 		std::shared_ptr<blockT<double>> dbl = emptyT<double>();
@@ -377,12 +326,8 @@ namespace smartview
 	private:
 		void parse() override
 		{
-			setOffset(m_Parser->getOffset());
-
 			if (m_doNickname) static_cast<void>(m_Parser->advance(sizeof LARGE_INTEGER)); // union
 			lpguid = blockT<GUID>::parse(m_Parser);
-
-			setSize(m_Parser->getOffset() - getOffset());
 		}
 
 		void getProp(SPropValue& prop) override
@@ -397,14 +342,7 @@ namespace smartview
 	class I8Block : public PVBlock
 	{
 	private:
-		void parse() override
-		{
-			setOffset(m_Parser->getOffset());
-
-			li = blockT<LARGE_INTEGER>::parse(m_Parser);
-
-			setSize(m_Parser->getOffset() - getOffset());
-		}
+		void parse() override { li = blockT<LARGE_INTEGER>::parse(m_Parser); }
 
 		std::wstring propNum() override
 		{
@@ -421,12 +359,8 @@ namespace smartview
 	private:
 		void parse() override
 		{
-			setOffset(m_Parser->getOffset());
-
 			err = blockT<SCODE, DWORD>::parse(m_Parser);
 			if (m_doNickname) m_Parser->advance(sizeof DWORD);
-
-			setSize(m_Parser->getOffset() - getOffset());
 		}
 
 		void getProp(SPropValue& prop) override { prop.Value.err = *err; }

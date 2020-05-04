@@ -18,7 +18,12 @@ namespace smartview
 			m_doNickname = doNickname;
 			m_doRuleProcessing = doRuleProcessing;
 			m_ulPropTag = ulPropTag;
+
+			// Offset will always be where we start parsing
+			setOffset(m_Parser->getOffset());
 			parse();
+			// And size will always be how many bytes we consumed
+			setSize(m_Parser->getOffset() - getOffset());
 		}
 		PVBlock(const PVBlock&) = delete;
 		PVBlock& operator=(const PVBlock&) = delete;
