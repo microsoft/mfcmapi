@@ -31,8 +31,7 @@ namespace smartview
 			auto parser = std::make_shared<SPropValueStruct>();
 			if (parser)
 			{
-				parser->Init(dwPropCount++, m_NickName, m_RuleCondition);
-				parser->smartViewParser::parse(m_Parser, 0, false);
+				parser->parse(m_Parser, dwPropCount++, m_NickName, m_RuleCondition);
 			}
 
 			m_Props.emplace_back(parser);

@@ -8,11 +8,17 @@ namespace smartview
 	struct SPropValueStruct : public smartViewParser
 	{
 	public:
-		void Init(int index, bool doNickname, bool doRuleProcessing) noexcept
+		void parse(
+			const std::shared_ptr<binaryParser>& binaryParser,
+			int index,
+			bool doNickname,
+			bool doRuleProcessing) noexcept
 		{
 			m_index = index;
 			m_doNickname = doNickname;
 			m_doRuleProcessing = doRuleProcessing;
+
+			smartViewParser::parse(binaryParser, 0, false);
 		}
 
 		std::shared_ptr<blockT<WORD>> PropType = emptyT<WORD>();
