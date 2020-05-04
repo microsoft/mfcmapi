@@ -303,6 +303,9 @@
     <ClInclude Include="smartview\SPropValueStruct.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="smartview\block\blockPV.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="utility\strings.cpp">

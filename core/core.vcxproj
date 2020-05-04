@@ -578,6 +578,7 @@
     <ClInclude Include="smartview\binaryParser.h" />
     <ClInclude Include="smartview\block\block.h" />
     <ClInclude Include="smartview\block\blockBytes.h" />
+    <ClInclude Include="smartview\block\blockPV.h" />
     <ClInclude Include="smartview\block\blockStringA.h" />
     <ClInclude Include="smartview\block\blockStringW.h" />
     <ClInclude Include="smartview\block\blockT.h" />
