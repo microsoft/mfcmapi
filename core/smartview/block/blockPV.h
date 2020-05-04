@@ -58,8 +58,7 @@ namespace smartview
 		void ensurePropBlocks()
 		{
 			if (propStringsGenerated) return;
-			auto prop = SPropValue{};
-			prop.ulPropTag = m_ulPropTag;
+			auto prop = SPropValue{m_ulPropTag, 0, {}};
 			getProp(prop);
 
 			auto propString = std::wstring{};
@@ -86,7 +85,7 @@ namespace smartview
 		bool propStringsGenerated{};
 	};
 
-		/* case PT_SYSTIME */
+	/* case PT_SYSTIME */
 	class FILETIMEBLock : public blockPV
 	{
 	private:
@@ -116,7 +115,7 @@ namespace smartview
 			{
 				if (m_doNickname)
 				{
-					static_cast<void>(m_Parser->advance(sizeof LARGE_INTEGER)); // union
+					m_Parser->advance(sizeof LARGE_INTEGER);
 					cb = blockT<DWORD>::parse(m_Parser);
 				}
 				else
@@ -148,7 +147,7 @@ namespace smartview
 			{
 				if (m_doNickname)
 				{
-					static_cast<void>(m_Parser->advance(sizeof LARGE_INTEGER)); // union
+					m_Parser->advance(sizeof LARGE_INTEGER);
 					cb = blockT<DWORD>::parse(m_Parser);
 				}
 				else
@@ -180,7 +179,7 @@ namespace smartview
 		{
 			if (m_doNickname)
 			{
-				static_cast<void>(m_Parser->advance(sizeof LARGE_INTEGER)); // union
+				m_Parser->advance(sizeof LARGE_INTEGER);
 			}
 
 			if (m_doRuleProcessing || m_doNickname)
@@ -215,7 +214,7 @@ namespace smartview
 		{
 			if (m_doNickname)
 			{
-				static_cast<void>(m_Parser->advance(sizeof LARGE_INTEGER)); // union
+				m_Parser->advance(sizeof LARGE_INTEGER);
 				cValues = blockT<DWORD>::parse(m_Parser);
 			}
 			else
@@ -227,7 +226,7 @@ namespace smartview
 			{
 				for (ULONG j = 0; j < *cValues; j++)
 				{
-					auto block = std::make_shared<SBinaryBlock>();
+					const auto block = std::make_shared<SBinaryBlock>();
 					block->parse(m_Parser, m_ulPropTag);
 					lpbin.emplace_back(block);
 				}
@@ -238,7 +237,7 @@ namespace smartview
 		{
 			if (*cValues && !bin)
 			{
-				auto count = cValues->getData();
+				const auto count = cValues->getData();
 				bin = new (std::nothrow) SBinary[count];
 				if (bin)
 				{
@@ -264,7 +263,7 @@ namespace smartview
 		{
 			if (m_doNickname)
 			{
-				static_cast<void>(m_Parser->advance(sizeof LARGE_INTEGER)); // union
+				m_Parser->advance(sizeof LARGE_INTEGER);
 				cValues = blockT<DWORD>::parse(m_Parser);
 			}
 			else
@@ -283,7 +282,8 @@ namespace smartview
 			}
 		}
 
-		void getProp(SPropValue& prop) override { prop.Value.MVszA = SLPSTRArray{}; }
+		// TODO: Populate a SLPSTRArray struct here
+		void getProp(SPropValue& prop) override { prop.Value.MVszA = {}; }
 		std::shared_ptr<blockT<ULONG>> cValues = emptyT<ULONG>();
 		std::vector<std::shared_ptr<blockStringA>> lppszA;
 	};
@@ -296,7 +296,7 @@ namespace smartview
 		{
 			if (m_doNickname)
 			{
-				static_cast<void>(m_Parser->advance(sizeof LARGE_INTEGER)); // union
+				m_Parser->advance(sizeof LARGE_INTEGER);
 				cValues = blockT<DWORD>::parse(m_Parser);
 			}
 			else
@@ -314,7 +314,8 @@ namespace smartview
 			}
 		}
 
-		void getProp(SPropValue& prop) override { prop.Value.MVszW = SWStringArray{}; }
+		// TODO: Populate a SWStringArray struct here
+		void getProp(SPropValue& prop) override { prop.Value.MVszW = {}; }
 		std::shared_ptr<blockT<ULONG>> cValues = emptyT<ULONG>();
 		std::vector<std::shared_ptr<blockStringW>> lppszW;
 	};
@@ -413,7 +414,7 @@ namespace smartview
 	private:
 		void parse() override
 		{
-			if (m_doNickname) static_cast<void>(m_Parser->advance(sizeof LARGE_INTEGER)); // union
+			if (m_doNickname) m_Parser->advance(sizeof LARGE_INTEGER);
 			lpguid = blockT<GUID>::parse(m_Parser);
 		}
 
