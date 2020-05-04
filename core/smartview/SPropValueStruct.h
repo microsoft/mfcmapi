@@ -37,7 +37,7 @@ namespace smartview
 		{
 			if (propStringsGenerated) return;
 			auto size = getSize();
-			auto offset = getOffset();
+			auto _offset = getOffset();
 			auto prop = SPropValue{};
 			prop.ulPropTag = ulPropTag;
 			getProp(prop);
@@ -47,13 +47,13 @@ namespace smartview
 			property::parseProperty(&prop, &propString, &altPropString);
 
 			propBlock =
-				std::make_shared<blockStringW>(strings::RemoveInvalidCharactersW(propString, false), size, offset);
+				std::make_shared<blockStringW>(strings::RemoveInvalidCharactersW(propString, false), size, _offset);
 
 			altPropBlock =
-				std::make_shared<blockStringW>(strings::RemoveInvalidCharactersW(altPropString, false), size, offset);
+				std::make_shared<blockStringW>(strings::RemoveInvalidCharactersW(altPropString, false), size, _offset);
 
 			const auto smartViewString = parsePropertySmartView(&prop, nullptr, nullptr, nullptr, false, false);
-			smartViewBlock = std::make_shared<blockStringW>(smartViewString, size, offset);
+			smartViewBlock = std::make_shared<blockStringW>(smartViewString, size, _offset);
 
 			propStringsGenerated = true;
 		}

@@ -40,8 +40,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 								lpRes->res.resContent.ulFuzzyLevel = 0x3001F00 | 0xE = 0x03001F0E
 								lpRes->res.resContent.ulPropTag = 0x4100200E (0x000e | MV_INSTANCE)
 								lpRes->res.resContent.lpProp->ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-								lpRes->res.resContent.lpProp->Value = 
-									Alt: 
 							lpRes->res.resAnd.lpRes[0x00000001]
 								lpRes->rt = 0x0 = RES_AND
 								lpRes->res.resAnd.cRes = 0x00000061
@@ -80,8 +78,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 														lpRes->res.resContent.ulFuzzyLevel = 0x1000000 | FL_FULLSTRING = 0x01000000
 														lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 														lpRes->res.resContent.lpProp->ulPropTag = 0x1F0E0400 (0x0400)
-														lpRes->res.resContent.lpProp->Value = 
-															Alt: 
 													lpRes->res.resAnd.lpRes[0x00000003]
 														lpRes->rt = 0x0 = RES_AND
 														lpRes->res.resAnd.cRes = 0x00000E04
@@ -130,8 +126,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																					lpRes->res.resContent.ulFuzzyLevel = 0x1000000 | FL_FULLSTRING = 0x01000000
 																					lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																					lpRes->res.resContent.lpProp->ulPropTag = 0x1F0E0300 (0x0300)
-																					lpRes->res.resContent.lpProp->Value = 
-																						Alt: 
 																				lpRes->res.resAnd.lpRes[0x00000003]
 																					lpRes->rt = 0x0 = RES_AND
 																					lpRes->res.resAnd.cRes = 0x00000E03
@@ -180,8 +174,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = 0x1000000 | FL_FULLSTRING = 0x01000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F0E0400 (0x0400)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resAnd.lpRes[0x00000009]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000E04
@@ -225,8 +217,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = 0x1000000 | FL_FULLSTRING = 0x01000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F0E0300 (0x0300)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resAnd.lpRes[0x00000019]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000E03
@@ -270,8 +260,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = 0x1000000 | FL_FULLSTRING = 0x01000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F0E0400 (0x0400)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resAnd.lpRes[0x00000029]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000E04
@@ -332,8 +320,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = 0x3001F00 | 0xE = 0x03001F0E
 																									lpRes->res.resContent.ulPropTag = 0x4100200E (0x000e | MV_INSTANCE)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resAnd.lpRes[0x0000003F]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000061
@@ -372,8 +358,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = 0x1000000 | FL_FULLSTRING = 0x01000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F0E0400 (0x0400)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resAnd.lpRes[0x0000000B]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000E04
@@ -422,8 +406,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = 0x1000000 | FL_FULLSTRING = 0x01000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F0E0300 (0x0300)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resAnd.lpRes[0x0000001D]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000E03
@@ -472,8 +454,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = 0x1000000 | FL_FULLSTRING = 0x01000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F0E0400 (0x0400)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resAnd.lpRes[0x0000000D]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000E04
@@ -529,8 +509,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = FL_IGNORECASE | 0x601F00 | 0xE = 0x00611F0E
 																									lpRes->res.resContent.ulPropTag = 0x00610061 (0x0061): PR_END_DATE: (PidTagEndDate)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x00410020 (0x0020): PR_SENT_REPRESENTING_ENTRYID: (PidTagSentRepresentingEntryId, ptagSentRepresentingEntryId)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resAnd.lpRes[0x00000021]
 																									lpRes->rt = 0x61 = 0x61
 																								lpRes->res.resAnd.lpRes[0x00000022]
@@ -1267,8 +1245,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = FL_LOOSE | 0x1081500 | FL_FULLSTRING = 0x010C1500
 																									lpRes->res.resContent.ulPropTag = 0x07000000 (PT_UNSPECIFIED)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1E000000 (PT_UNSPECIFIED)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resAnd.lpRes[0x00000005]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00003001
@@ -1637,8 +1613,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = FL_LOOSE | 0x1081500 | FL_FULLSTRING = 0x010C1500
 																									lpRes->res.resContent.ulPropTag = 0x07000000 (PT_UNSPECIFIED)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x03000000 (PT_UNSPECIFIED)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resAnd.lpRes[0x00000033]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00003009
@@ -2541,8 +2515,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = FL_LOOSE | 0x1081500 | FL_FULLSTRING = 0x010C1500
 																									lpRes->res.resContent.ulPropTag = 0x07000000 (PT_UNSPECIFIED)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x02000000 (PT_UNSPECIFIED)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resAnd.lpRes[0x0000001B]
 																									lpRes->rt = 0x1 = RES_OR
 																									lpRes->res.resOr.cRes = 0x00003D0C
@@ -3269,8 +3241,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = FL_LOOSE | 0x1081500 | FL_FULLSTRING = 0x010C1500
 																									lpRes->res.resContent.ulPropTag = 0x07000000 (PT_UNSPECIFIED)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x00000000 (PT_UNSPECIFIED)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resAnd.lpRes[0x00000007]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000000
@@ -3732,8 +3702,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = FL_LOOSE | 0x1081500 | FL_FULLSTRING = 0x010C1500
 																									lpRes->res.resContent.ulPropTag = 0x07000000 (PT_UNSPECIFIED)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x01000000 (PT_UNSPECIFIED)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resAnd.lpRes[0x0000001B]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000000
@@ -4106,8 +4074,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = FL_LOOSE | 0x1081500 | FL_FULLSTRING = 0x010C1500
 																									lpRes->res.resContent.ulPropTag = 0x07000000 (PT_UNSPECIFIED)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x00000000 (PT_UNSPECIFIED)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resAnd.lpRes[0x00000007]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000000
@@ -4560,8 +4526,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = FL_LOOSE | 0x1081500 | FL_FULLSTRING = 0x010C1500
 																									lpRes->res.resContent.ulPropTag = 0x07000000 (PT_UNSPECIFIED)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x00000000 (PT_UNSPECIFIED)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resAnd.lpRes[0x00000019]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000000
@@ -5018,8 +4982,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = FL_LOOSE | 0x1081500 | FL_FULLSTRING = 0x010C1500
 																									lpRes->res.resContent.ulPropTag = 0x07000000 (PT_UNSPECIFIED)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x00000000 (PT_UNSPECIFIED)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resAnd.lpRes[0x0000001B]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000000
@@ -5482,8 +5444,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = FL_LOOSE | 0x1081500 | FL_FULLSTRING = 0x010C1500
 																									lpRes->res.resContent.ulPropTag = 0x07000000 (PT_UNSPECIFIED)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x48000000 (PT_UNSPECIFIED)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resAnd.lpRes[0x0000000B]
 																									lpRes->rt = 0xCD = 0xCD
 																								lpRes->res.resAnd.lpRes[0x0000000C]
@@ -7404,8 +7364,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = FL_LOOSE | 0x1081500 | FL_FULLSTRING = 0x010C1500
 																									lpRes->res.resContent.ulPropTag = 0x07000000 (PT_UNSPECIFIED)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x0D000000 (PT_UNSPECIFIED)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resAnd.lpRes[0x00000007]
 																									lpRes->rt = 0xF0 = 0xF0
 																								lpRes->res.resAnd.lpRes[0x00000008]
@@ -7766,8 +7724,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = FL_LOOSE | 0x1081500 | FL_FULLSTRING = 0x010C1500
 																									lpRes->res.resContent.ulPropTag = 0x00000000 (PT_UNSPECIFIED)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x00000000 (PT_UNSPECIFIED)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resAnd.lpRes[0x00000007]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000000
@@ -7794,8 +7750,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = 0x2000000 | FL_FULLSTRING = 0x02000000
 																									lpRes->res.resContent.ulPropTag = 0x1E000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1E001A00 (0x1a00)
-																									lpRes->res.resContent.lpProp->Value = 0: 
-																										Alt: 0: 
 																								lpRes->res.resAnd.lpRes[0x0000000F]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x0000001A
@@ -8362,8 +8316,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = FL_PHRASE_MATCH | FL_IGNORECASE | 0x8F10D1C0 | 0x7 = 0x8F11D1E7
 																									lpRes->res.resContent.ulPropTag = 0x5F8000B2 (0x00b2)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x00AC2E9F (0x0e9f | MV_INSTANCE)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resAnd.lpRes[0x00000072]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00005900
@@ -8707,8 +8659,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = 0x1000000 | FL_FULLSTRING = 0x01000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F0C1A00 (0x1a00)
-																									lpRes->res.resContent.lpProp->Value = 0: 
-																										Alt: 0: 
 																								lpRes->res.resAnd.lpRes[0x000000FB]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000C1A
@@ -8757,8 +8707,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = 0x1000000 | FL_FULLSTRING = 0x01000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F0C1A00 (0x1a00)
-																									lpRes->res.resContent.lpProp->Value = 0: 
-																										Alt: 0: 
 																								lpRes->res.resAnd.lpRes[0x0000010D]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000C1A
@@ -8825,98 +8773,36 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->rt = 0xC = RES_ANNOTATION
 																									lpRes->res.resAnnotation.cValues = 0x0000001F
 																									lpRes->res.resAnnotation.lpProp[0x00000000].ulPropTag = 0x180C1A00 (0x1a00)
-																									lpRes->res.resAnnotation.lpProp[0x00000000].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x00000001].ulPropTag = 0x61004100 (0x4100): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000001].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000002].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000002].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000003].ulPropTag = 0x41002000 (PT_UNSPECIFIED | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000003].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000004].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000004].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000005].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000005].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000006].ulPropTag = 0x00006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000006].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000007].ulPropTag = 0x00000300 (0x0300)
-																									lpRes->res.resAnnotation.lpProp[0x00000007].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000008].ulPropTag = 0x01000100 (0x0100)
-																									lpRes->res.resAnnotation.lpProp[0x00000008].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000009].ulPropTag = 0x1A001F00 (0x1f00)
-																									lpRes->res.resAnnotation.lpProp[0x00000009].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000A].ulPropTag = 0x1A001F0C (0x1f0c)
-																									lpRes->res.resAnnotation.lpProp[0x0000000A].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000B].ulPropTag = 0x41001A0C (0x1a0c)
-																									lpRes->res.resAnnotation.lpProp[0x0000000B].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000C].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x0000000C].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000D].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x0000000D].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000E].ulPropTag = 0x20006100 (0x4100 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x0000000E].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000F].ulPropTag = 0x61004100 (0x4100): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x0000000F].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000010].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000010].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000011].ulPropTag = 0x00006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000011].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000012].ulPropTag = 0x00000300 (0x0300)
-																									lpRes->res.resAnnotation.lpProp[0x00000012].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000013].ulPropTag = 0x01000100 (0x0100)
-																									lpRes->res.resAnnotation.lpProp[0x00000013].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000014].ulPropTag = 0x1A001F00 (0x1f00)
-																									lpRes->res.resAnnotation.lpProp[0x00000014].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x00000015].ulPropTag = 0x1A001F0C (0x1f0c)
-																									lpRes->res.resAnnotation.lpProp[0x00000015].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x00000016].ulPropTag = 0x41001A0C (0x1a0c)
-																									lpRes->res.resAnnotation.lpProp[0x00000016].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x00000017].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000017].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000018].ulPropTag = 0x41002000 (PT_UNSPECIFIED | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000018].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000019].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000019].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001A].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x0000001A].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001B].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x0000001B].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001C].ulPropTag = 0x00006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x0000001C].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001D].ulPropTag = 0x00000300 (0x0300)
-																									lpRes->res.resAnnotation.lpProp[0x0000001D].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001E].ulPropTag = 0x01000100 (0x0100)
-																									lpRes->res.resAnnotation.lpProp[0x0000001E].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpRes
 																								lpRes->res.resAnd.lpRes[0x00000126]
 																									lpRes->rt = 0x1F = 0x1F
@@ -8968,8 +8854,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = 0x1000000 | FL_FULLSTRING = 0x01000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F0C1A00 (0x1a00)
-																									lpRes->res.resContent.lpProp->Value = 0: 
-																										Alt: 0: 
 																								lpRes->res.resAnd.lpRes[0x00000139]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000C1A
@@ -9018,8 +8902,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = 0x1000000 | FL_FULLSTRING = 0x01000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F0C1A00 (0x1a00)
-																									lpRes->res.resContent.lpProp->Value = 0: 
-																										Alt: 0: 
 																								lpRes->res.resAnd.lpRes[0x0000014B]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000C1A
@@ -9081,98 +8963,36 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->rt = 0xC = RES_ANNOTATION
 																									lpRes->res.resAnnotation.cValues = 0x0000001F
 																									lpRes->res.resAnnotation.lpProp[0x00000000].ulPropTag = 0x1E0C1A00 (0x1a00)
-																									lpRes->res.resAnnotation.lpProp[0x00000000].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x00000001].ulPropTag = 0x61004100 (0x4100): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000001].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000002].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000002].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000003].ulPropTag = 0x20006100 (0x4100 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000003].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000004].ulPropTag = 0x61004100 (0x4100): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000004].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000005].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000005].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000006].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000006].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000007].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000007].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000008].ulPropTag = 0x03000000 (PT_UNSPECIFIED)
-																									lpRes->res.resAnnotation.lpProp[0x00000008].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000009].ulPropTag = 0x01000000 (PT_UNSPECIFIED)
-																									lpRes->res.resAnnotation.lpProp[0x00000009].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000A].ulPropTag = 0x1F000100 (0x0100)
-																									lpRes->res.resAnnotation.lpProp[0x0000000A].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000B].ulPropTag = 0x1F0C1A00 (0x1a00)
-																									lpRes->res.resAnnotation.lpProp[0x0000000B].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000C].ulPropTag = 0x1A0C1A00 (0x1a00)
-																									lpRes->res.resAnnotation.lpProp[0x0000000C].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000D].ulPropTag = 0x61004100 (0x4100): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x0000000D].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000E].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x0000000E].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000F].ulPropTag = 0x20006100 (0x4100 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x0000000F].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000010].ulPropTag = 0x61004100 (0x4100): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000010].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000011].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000011].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000012].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000012].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000013].ulPropTag = 0x03000000 (PT_UNSPECIFIED)
-																									lpRes->res.resAnnotation.lpProp[0x00000013].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000014].ulPropTag = 0x01000000 (PT_UNSPECIFIED)
-																									lpRes->res.resAnnotation.lpProp[0x00000014].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000015].ulPropTag = 0x1F000100 (0x0100)
-																									lpRes->res.resAnnotation.lpProp[0x00000015].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000016].ulPropTag = 0x1F0C1A00 (0x1a00)
-																									lpRes->res.resAnnotation.lpProp[0x00000016].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x00000017].ulPropTag = 0x200C1A00 (0x1a00)
-																									lpRes->res.resAnnotation.lpProp[0x00000017].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x00000018].ulPropTag = 0x61004100 (0x4100): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000018].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000019].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000019].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001A].ulPropTag = 0x20006100 (0x4100 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x0000001A].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001B].ulPropTag = 0x61004100 (0x4100): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x0000001B].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001C].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x0000001C].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001D].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x0000001D].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001E].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x0000001E].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpRes
 																								lpRes->res.resAnd.lpRes[0x00000162]
 																									lpRes->rt = 0x61 = 0x61
@@ -9184,8 +9004,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = 0x1000000 | FL_FULLSTRING = 0x01000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F0C1A00 (0x1a00)
-																									lpRes->res.resContent.lpProp->Value = 0: 
-																										Alt: 0: 
 																								lpRes->res.resAnd.lpRes[0x00000165]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000C1A
@@ -9234,8 +9052,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = 0x1000000 | FL_FULLSTRING = 0x01000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F0C1A00 (0x1a00)
-																									lpRes->res.resContent.lpProp->Value = 0: 
-																										Alt: 0: 
 																								lpRes->res.resAnd.lpRes[0x00000177]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000C1A
@@ -9292,98 +9108,36 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->rt = 0xC = RES_ANNOTATION
 																									lpRes->res.resAnnotation.cValues = 0x0000001F
 																									lpRes->res.resAnnotation.lpProp[0x00000000].ulPropTag = 0x1E0C1A00 (0x1a00)
-																									lpRes->res.resAnnotation.lpProp[0x00000000].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x00000001].ulPropTag = 0x61004100 (0x4100): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000001].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000002].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000002].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000003].ulPropTag = 0x20006100 (0x4100 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000003].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000004].ulPropTag = 0x61004100 (0x4100): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000004].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000005].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000005].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000006].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000006].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000007].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000007].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000008].ulPropTag = 0x03000000 (PT_UNSPECIFIED)
-																									lpRes->res.resAnnotation.lpProp[0x00000008].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000009].ulPropTag = 0x01000000 (PT_UNSPECIFIED)
-																									lpRes->res.resAnnotation.lpProp[0x00000009].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000A].ulPropTag = 0x1F000100 (0x0100)
-																									lpRes->res.resAnnotation.lpProp[0x0000000A].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000B].ulPropTag = 0x1F0C1A00 (0x1a00)
-																									lpRes->res.resAnnotation.lpProp[0x0000000B].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000C].ulPropTag = 0x160C1A00 (0x1a00)
-																									lpRes->res.resAnnotation.lpProp[0x0000000C].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000D].ulPropTag = 0x61004100 (0x4100): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x0000000D].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000E].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x0000000E].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000F].ulPropTag = 0x41002000 (PT_UNSPECIFIED | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x0000000F].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000010].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000010].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000011].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000011].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000012].ulPropTag = 0x03000000 (PT_UNSPECIFIED)
-																									lpRes->res.resAnnotation.lpProp[0x00000012].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000013].ulPropTag = 0x01000000 (PT_UNSPECIFIED)
-																									lpRes->res.resAnnotation.lpProp[0x00000013].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000014].ulPropTag = 0x1F000100 (0x0100)
-																									lpRes->res.resAnnotation.lpProp[0x00000014].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000015].ulPropTag = 0x1F0C1A00 (0x1a00)
-																									lpRes->res.resAnnotation.lpProp[0x00000015].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x00000016].ulPropTag = 0x220C1A00 (0x1a00)
-																									lpRes->res.resAnnotation.lpProp[0x00000016].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x00000017].ulPropTag = 0x61004100 (0x4100): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000017].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000018].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000018].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000019].ulPropTag = 0x41002000 (PT_UNSPECIFIED | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000019].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001A].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x0000001A].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001B].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x0000001B].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001C].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x0000001C].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001D].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x0000001D].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001E].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x0000001E].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpRes
 																								lpRes->res.resAnd.lpRes[0x0000018C]
 																									lpRes->rt = 0x0 = RES_AND
@@ -9403,98 +9157,36 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->rt = 0xC = RES_ANNOTATION
 																									lpRes->res.resAnnotation.cValues = 0x0000001F
 																									lpRes->res.resAnnotation.lpProp[0x00000000].ulPropTag = 0x140C1A00 (0x1a00)
-																									lpRes->res.resAnnotation.lpProp[0x00000000].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x00000001].ulPropTag = 0x61004100 (0x4100): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000001].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000002].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000002].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000003].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000003].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000004].ulPropTag = 0x41002000 (PT_UNSPECIFIED | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000004].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000005].ulPropTag = 0x00006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000005].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000006].ulPropTag = 0x00000300 (0x0300)
-																									lpRes->res.resAnnotation.lpProp[0x00000006].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000007].ulPropTag = 0x01000000 (PT_UNSPECIFIED)
-																									lpRes->res.resAnnotation.lpProp[0x00000007].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000008].ulPropTag = 0x1F001F00 (0x1f00)
-																									lpRes->res.resAnnotation.lpProp[0x00000008].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x00000009].ulPropTag = 0x1F001F0C (0x1f0c)
-																									lpRes->res.resAnnotation.lpProp[0x00000009].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000A].ulPropTag = 0x2F006A0C (0x4a0c | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x0000000A].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000B].ulPropTag = 0x3D006F00 (0x4f00 | MV_INSTANCE): PR_STORE_PROVIDERS: (PidTagStoreProviders)
-																									lpRes->res.resAnnotation.lpProp[0x0000000B].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000C].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x0000000C].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000D].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x0000000D].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000E].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x0000000E].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000F].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x0000000F].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000010].ulPropTag = 0x2F006100 (0x4100 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000010].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000011].ulPropTag = 0x75006F00 (0x4f00 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000011].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000012].ulPropTag = 0x6E003D00 (0x1d00 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000012].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x00000013].ulPropTag = 0x72006F00 (0x4f00 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000013].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000014].ulPropTag = 0x68007400 (0x5400 | MV_INSTANCE): PR_OAB_NAME: (PR_OAB_NAME_W, PidTagOfflineAddressBookName)
-																									lpRes->res.resAnnotation.lpProp[0x00000014].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x00000015].ulPropTag = 0x6D006100 (0x4100 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000015].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000016].ulPropTag = 0x72006500 (0x4500 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000016].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000017].ulPropTag = 0x63006900 (0x4900 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000017].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000018].ulPropTag = 0x2F006100 (0x4100 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000018].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000019].ulPropTag = 0x6E006300 (0x4300 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000019].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001A].ulPropTag = 0x52003D00 (0x1d00 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x0000001A].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001B].ulPropTag = 0x63006500 (0x4500 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x0000001B].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001C].ulPropTag = 0x70006900 (0x4900 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x0000001C].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001D].ulPropTag = 0x65006900 (0x4900 | MV_INSTANCE): ptagLISSubfolders
-																									lpRes->res.resAnnotation.lpProp[0x0000001D].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001E].ulPropTag = 0x74006E00 (0x4e00 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x0000001E].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpRes
 																								lpRes->res.resAnd.lpRes[0x00000192]
 																									lpRes->rt = 0x73 = 0x73
@@ -9531,8 +9223,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = FL_FULLSTRING = 0x00000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F0C1F00 (0x1f00)
-																									lpRes->res.resContent.lpProp->Value = 0: 
-																										Alt: 0: 
 																								lpRes->res.resAnd.lpRes[0x0000019F]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000C1F
@@ -9676,8 +9366,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = FL_FULLSTRING = 0x00000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F0C1F00 (0x1f00)
-																									lpRes->res.resContent.lpProp->Value = 0: 
-																										Alt: 0: 
 																								lpRes->res.resAnd.lpRes[0x000001D7]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000C1F
@@ -9879,98 +9567,36 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->rt = 0xC = RES_ANNOTATION
 																									lpRes->res.resAnnotation.cValues = 0x0000001F
 																									lpRes->res.resAnnotation.lpProp[0x00000000].ulPropTag = 0x960C1F00 (0x1f00)
-																									lpRes->res.resAnnotation.lpProp[0x00000000].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x00000001].ulPropTag = 0x6F002F00 (0x0f00 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000001].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000002].ulPropTag = 0x61003D00 (0x1d00 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000002].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x00000003].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000003].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000004].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000004].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000005].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000005].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000006].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000006].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000007].ulPropTag = 0x6F002F00 (0x0f00 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000007].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000008].ulPropTag = 0x3D007500 (0x5500 | MV_INSTANCE): PR_STORE_PROVIDERS: (PidTagStoreProviders)
-																									lpRes->res.resAnnotation.lpProp[0x00000008].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x00000009].ulPropTag = 0x6F006E00 (0x4e00 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000009].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000A].ulPropTag = 0x74007200 (0x5200 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x0000000A].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000B].ulPropTag = 0x61006800 (0x4800 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x0000000B].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000C].ulPropTag = 0x65006D00 (0x4d00 | MV_INSTANCE): ptagLISSubfolders
-																									lpRes->res.resAnnotation.lpProp[0x0000000C].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000D].ulPropTag = 0x69007200 (0x5200 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x0000000D].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000E].ulPropTag = 0x61006300 (0x4300 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x0000000E].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000F].ulPropTag = 0x63002F00 (0x0f00 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x0000000F].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000010].ulPropTag = 0x3D006E00 (0x4e00 | MV_INSTANCE): PR_STORE_PROVIDERS: (PidTagStoreProviders)
-																									lpRes->res.resAnnotation.lpProp[0x00000010].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000011].ulPropTag = 0x75006300 (0x4300 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000011].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000012].ulPropTag = 0x74007300 (0x5300 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000012].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x00000013].ulPropTag = 0x6D006F00 (0x4f00 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000013].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000014].ulPropTag = 0x72005F00 (0x5f00)
-																									lpRes->res.resAnnotation.lpProp[0x00000014].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x00000015].ulPropTag = 0x63006500 (0x4500 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000015].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000016].ulPropTag = 0x70006900 (0x4900 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000016].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000017].ulPropTag = 0x65006900 (0x4900 | MV_INSTANCE): ptagLISSubfolders
-																									lpRes->res.resAnnotation.lpProp[0x00000017].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000018].ulPropTag = 0x74006E00 (0x4e00 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000018].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000019].ulPropTag = 0x2F007300 (0x5300 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000019].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001A].ulPropTag = 0x6E006300 (0x4300 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x0000001A].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001B].ulPropTag = 0x61003D00 (0x1d00 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x0000001B].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001C].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x0000001C].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001D].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x0000001D].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001E].ulPropTag = 0x75005F00 (0x5f00)
-																									lpRes->res.resAnnotation.lpProp[0x0000001E].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpRes
 																								lpRes->res.resAnd.lpRes[0x00000226]
 																									lpRes->rt = 0x73 = 0x73
@@ -10025,98 +9651,36 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->rt = 0xC = RES_ANNOTATION
 																									lpRes->res.resAnnotation.cValues = 0x0000001F
 																									lpRes->res.resAnnotation.lpProp[0x00000000].ulPropTag = 0x680C1F00 (0x1f00)
-																									lpRes->res.resAnnotation.lpProp[0x00000000].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x00000001].ulPropTag = 0x4F002F00 (0x0f00 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000001].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000002].ulPropTag = 0x61003D00 (0x1d00 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000002].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x00000003].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000003].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000004].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000004].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000005].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000005].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000006].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000006].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000007].ulPropTag = 0x4F002F00 (0x0f00 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000007].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000008].ulPropTag = 0x3D005500 (0x5500): PR_STORE_PROVIDERS: (PidTagStoreProviders)
-																									lpRes->res.resAnnotation.lpProp[0x00000008].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x00000009].ulPropTag = 0x6F006E00 (0x4e00 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000009].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000A].ulPropTag = 0x74007200 (0x5200 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x0000000A].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000B].ulPropTag = 0x61006800 (0x4800 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x0000000B].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000C].ulPropTag = 0x65006D00 (0x4d00 | MV_INSTANCE): ptagLISSubfolders
-																									lpRes->res.resAnnotation.lpProp[0x0000000C].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000D].ulPropTag = 0x69007200 (0x5200 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x0000000D].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000E].ulPropTag = 0x61006300 (0x4300 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x0000000E].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000F].ulPropTag = 0x63002F00 (0x0f00 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x0000000F].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000010].ulPropTag = 0x3D006E00 (0x4e00 | MV_INSTANCE): PR_STORE_PROVIDERS: (PidTagStoreProviders)
-																									lpRes->res.resAnnotation.lpProp[0x00000010].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000011].ulPropTag = 0x65005200 (0x5200): ptagLISSubfolders
-																									lpRes->res.resAnnotation.lpProp[0x00000011].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x00000012].ulPropTag = 0x69006300 (0x4300 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000012].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000013].ulPropTag = 0x69007000 (0x5000 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000013].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x00000014].ulPropTag = 0x6E006500 (0x4500 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000014].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000015].ulPropTag = 0x73007400 (0x5400 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000015].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x00000016].ulPropTag = 0x63002F00 (0x0f00 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000016].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000017].ulPropTag = 0x3D006E00 (0x4e00 | MV_INSTANCE): PR_STORE_PROVIDERS: (PidTagStoreProviders)
-																									lpRes->res.resAnnotation.lpProp[0x00000017].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000018].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000018].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000019].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000019].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001A].ulPropTag = 0x00006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x0000001A].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001B].ulPropTag = 0x00000300 (0x0300)
-																									lpRes->res.resAnnotation.lpProp[0x0000001B].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001C].ulPropTag = 0x01000000 (PT_UNSPECIFIED)
-																									lpRes->res.resAnnotation.lpProp[0x0000001C].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001D].ulPropTag = 0x1F001F00 (0x1f00)
-																									lpRes->res.resAnnotation.lpProp[0x0000001D].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001E].ulPropTag = 0x1F001F0C (0x1f0c)
-																									lpRes->res.resAnnotation.lpProp[0x0000001E].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpRes
 																								lpRes->res.resAnd.lpRes[0x0000023A]
 																									lpRes->rt = 0x6E = 0x6E
@@ -10263,8 +9827,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = FL_FULLSTRING = 0x00000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F0C1F00 (0x1f00)
-																									lpRes->res.resContent.lpProp->Value = 0: 
-																										Alt: 0: 
 																								lpRes->res.resAnd.lpRes[0x00000273]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000C1F
@@ -10463,8 +10025,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = FL_FULLSTRING = 0x00000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F0C1F00 (0x1f00)
-																									lpRes->res.resContent.lpProp->Value = 0: 
-																										Alt: 0: 
 																								lpRes->res.resAnd.lpRes[0x000002C1]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000C1F
@@ -10613,8 +10173,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = FL_FULLSTRING = 0x00000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F0C1F00 (0x1f00)
-																									lpRes->res.resContent.lpProp->Value = 0: 
-																										Alt: 0: 
 																								lpRes->res.resAnd.lpRes[0x000002FB]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000C1F
@@ -10808,8 +10366,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = FL_FULLSTRING = 0x00000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F0C1F00 (0x1f00)
-																									lpRes->res.resContent.lpProp->Value = 0: 
-																										Alt: 0: 
 																								lpRes->res.resAnd.lpRes[0x00000043]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000C1F
@@ -11008,8 +10564,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = FL_FULLSTRING = 0x00000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F0C1F00 (0x1f00)
-																									lpRes->res.resContent.lpProp->Value = 0: 
-																										Alt: 0: 
 																							lpRes->res.resAnd.lpRes[0x00000003]
 																								lpRes->rt = 0x0 = RES_AND
 																								lpRes->res.resAnd.cRes = 0x00000C1F
@@ -11208,8 +10762,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = FL_FULLSTRING = 0x00000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F0C1F00 (0x1f00)
-																									lpRes->res.resContent.lpProp->Value = 0: 
-																										Alt: 0: 
 																								lpRes->res.resAnd.lpRes[0x0000001B]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000C1F
@@ -11366,98 +10918,36 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->rt = 0xC = RES_ANNOTATION
 																									lpRes->res.resAnnotation.cValues = 0x0000001F
 																									lpRes->res.resAnnotation.lpProp[0x00000000].ulPropTag = 0x680C1F00 (0x1f00)
-																									lpRes->res.resAnnotation.lpProp[0x00000000].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x00000001].ulPropTag = 0x6F002F00 (0x0f00 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000001].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000002].ulPropTag = 0x61003D00 (0x1d00 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000002].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x00000003].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000003].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000004].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000004].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000005].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000005].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000006].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000006].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000007].ulPropTag = 0x6F002F00 (0x0f00 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000007].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000008].ulPropTag = 0x3D007500 (0x5500 | MV_INSTANCE): PR_STORE_PROVIDERS: (PidTagStoreProviders)
-																									lpRes->res.resAnnotation.lpProp[0x00000008].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x00000009].ulPropTag = 0x6F006E00 (0x4e00 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000009].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000A].ulPropTag = 0x74007200 (0x5200 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x0000000A].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000B].ulPropTag = 0x61006800 (0x4800 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x0000000B].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000C].ulPropTag = 0x65006D00 (0x4d00 | MV_INSTANCE): ptagLISSubfolders
-																									lpRes->res.resAnnotation.lpProp[0x0000000C].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000D].ulPropTag = 0x69007200 (0x5200 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x0000000D].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000E].ulPropTag = 0x61006300 (0x4300 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x0000000E].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000F].ulPropTag = 0x63002F00 (0x0f00 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x0000000F].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000010].ulPropTag = 0x3D006E00 (0x4e00 | MV_INSTANCE): PR_STORE_PROVIDERS: (PidTagStoreProviders)
-																									lpRes->res.resAnnotation.lpProp[0x00000010].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000011].ulPropTag = 0x65005200 (0x5200): ptagLISSubfolders
-																									lpRes->res.resAnnotation.lpProp[0x00000011].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x00000012].ulPropTag = 0x69006300 (0x4300 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000012].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000013].ulPropTag = 0x69007000 (0x5000 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000013].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x00000014].ulPropTag = 0x6E006500 (0x4500 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000014].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000015].ulPropTag = 0x73007400 (0x5400 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000015].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x00000016].ulPropTag = 0x63002F00 (0x0f00 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000016].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000017].ulPropTag = 0x3D006E00 (0x4e00 | MV_INSTANCE): PR_STORE_PROVIDERS: (PidTagStoreProviders)
-																									lpRes->res.resAnnotation.lpProp[0x00000017].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000018].ulPropTag = 0x31003100 (0x1100 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000018].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x00000019].ulPropTag = 0x31003100 (0x1100 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000019].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001A].ulPropTag = 0x00003100 (0x1100 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x0000001A].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001B].ulPropTag = 0x00000300 (0x0300)
-																									lpRes->res.resAnnotation.lpProp[0x0000001B].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001C].ulPropTag = 0x01000000 (PT_UNSPECIFIED)
-																									lpRes->res.resAnnotation.lpProp[0x0000001C].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001D].ulPropTag = 0x1F001F00 (0x1f00)
-																									lpRes->res.resAnnotation.lpProp[0x0000001D].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001E].ulPropTag = 0x1F001F0C (0x1f0c)
-																									lpRes->res.resAnnotation.lpProp[0x0000001E].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpRes
 																								lpRes->res.resAnd.lpRes[0x00000058]
 																									lpRes->rt = 0x6C = 0x6C
@@ -11612,98 +11102,36 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->rt = 0xC = RES_ANNOTATION
 																									lpRes->res.resAnnotation.cValues = 0x0000001F
 																									lpRes->res.resAnnotation.lpProp[0x00000000].ulPropTag = 0x680C1F00 (0x1f00)
-																									lpRes->res.resAnnotation.lpProp[0x00000000].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x00000001].ulPropTag = 0x4F002F00 (0x0f00 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000001].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000002].ulPropTag = 0x61003D00 (0x1d00 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000002].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x00000003].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000003].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000004].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000004].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000005].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000005].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000006].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000006].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000007].ulPropTag = 0x4F002F00 (0x0f00 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000007].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000008].ulPropTag = 0x3D005500 (0x5500): PR_STORE_PROVIDERS: (PidTagStoreProviders)
-																									lpRes->res.resAnnotation.lpProp[0x00000008].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x00000009].ulPropTag = 0x6F006E00 (0x4e00 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000009].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000A].ulPropTag = 0x74007200 (0x5200 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x0000000A].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000B].ulPropTag = 0x61006800 (0x4800 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x0000000B].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000C].ulPropTag = 0x65006D00 (0x4d00 | MV_INSTANCE): ptagLISSubfolders
-																									lpRes->res.resAnnotation.lpProp[0x0000000C].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000D].ulPropTag = 0x69007200 (0x5200 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x0000000D].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000E].ulPropTag = 0x61006300 (0x4300 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x0000000E].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000F].ulPropTag = 0x63002F00 (0x0f00 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x0000000F].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000010].ulPropTag = 0x3D006E00 (0x4e00 | MV_INSTANCE): PR_STORE_PROVIDERS: (PidTagStoreProviders)
-																									lpRes->res.resAnnotation.lpProp[0x00000010].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000011].ulPropTag = 0x65005200 (0x5200): ptagLISSubfolders
-																									lpRes->res.resAnnotation.lpProp[0x00000011].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x00000012].ulPropTag = 0x69006300 (0x4300 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000012].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000013].ulPropTag = 0x69007000 (0x5000 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000013].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x00000014].ulPropTag = 0x6E006500 (0x4500 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000014].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000015].ulPropTag = 0x73007400 (0x5400 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000015].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x00000016].ulPropTag = 0x63002F00 (0x0f00 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000016].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000017].ulPropTag = 0x3D006E00 (0x4e00 | MV_INSTANCE): PR_STORE_PROVIDERS: (PidTagStoreProviders)
-																									lpRes->res.resAnnotation.lpProp[0x00000017].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000018].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000018].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000019].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000019].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001A].ulPropTag = 0x00006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x0000001A].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001B].ulPropTag = 0x00000300 (0x0300)
-																									lpRes->res.resAnnotation.lpProp[0x0000001B].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001C].ulPropTag = 0x01000000 (PT_UNSPECIFIED)
-																									lpRes->res.resAnnotation.lpProp[0x0000001C].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001D].ulPropTag = 0x1F001F00 (0x1f00)
-																									lpRes->res.resAnnotation.lpProp[0x0000001D].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001E].ulPropTag = 0x1F001F0C (0x1f0c)
-																									lpRes->res.resAnnotation.lpProp[0x0000001E].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpRes
 																								lpRes->res.resAnd.lpRes[0x00000020]
 																									lpRes->rt = 0x6E = 0x6E
@@ -11850,8 +11278,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = FL_FULLSTRING = 0x00000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F0C1F00 (0x1f00)
-																									lpRes->res.resContent.lpProp->Value = 0: 
-																										Alt: 0: 
 																								lpRes->res.resAnd.lpRes[0x00000059]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000C1F
@@ -12025,98 +11451,36 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->rt = 0xC = RES_ANNOTATION
 																									lpRes->res.resAnnotation.cValues = 0x0000001F
 																									lpRes->res.resAnnotation.lpProp[0x00000000].ulPropTag = 0x200C1A00 (0x1a00)
-																									lpRes->res.resAnnotation.lpProp[0x00000000].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x00000001].ulPropTag = 0x61004100 (0x4100): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000001].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000002].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000002].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000003].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000003].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000004].ulPropTag = 0x20006100 (0x4100 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000004].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000005].ulPropTag = 0x61004100 (0x4100): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000005].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000006].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000006].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000007].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000007].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000008].ulPropTag = 0x00006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000008].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000009].ulPropTag = 0x00000300 (0x0300)
-																									lpRes->res.resAnnotation.lpProp[0x00000009].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000A].ulPropTag = 0x01000100 (0x0100)
-																									lpRes->res.resAnnotation.lpProp[0x0000000A].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000B].ulPropTag = 0x1F001F00 (0x1f00)
-																									lpRes->res.resAnnotation.lpProp[0x0000000B].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000C].ulPropTag = 0x1F001F0C (0x1f0c)
-																									lpRes->res.resAnnotation.lpProp[0x0000000C].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000D].ulPropTag = 0x2F006A0C (0x4a0c | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x0000000D].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000E].ulPropTag = 0x3D006F00 (0x4f00 | MV_INSTANCE): PR_STORE_PROVIDERS: (PidTagStoreProviders)
-																									lpRes->res.resAnnotation.lpProp[0x0000000E].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000F].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x0000000F].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000010].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000010].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000011].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000011].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000012].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000012].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000013].ulPropTag = 0x2F006100 (0x4100 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000013].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000014].ulPropTag = 0x75006F00 (0x4f00 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000014].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000015].ulPropTag = 0x6E003D00 (0x1d00 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000015].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x00000016].ulPropTag = 0x72006F00 (0x4f00 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000016].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000017].ulPropTag = 0x68007400 (0x5400 | MV_INSTANCE): PR_OAB_NAME: (PR_OAB_NAME_W, PidTagOfflineAddressBookName)
-																									lpRes->res.resAnnotation.lpProp[0x00000017].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x00000018].ulPropTag = 0x6D006100 (0x4100 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000018].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000019].ulPropTag = 0x72006500 (0x4500 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000019].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001A].ulPropTag = 0x63006900 (0x4900 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x0000001A].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001B].ulPropTag = 0x2F006100 (0x4100 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x0000001B].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001C].ulPropTag = 0x6E006300 (0x4300 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x0000001C].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001D].ulPropTag = 0x52003D00 (0x1d00 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x0000001D].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001E].ulPropTag = 0x63006500 (0x4500 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x0000001E].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpRes
 																								lpRes->res.resAnd.lpRes[0x00000038]
 																									lpRes->rt = 0x69 = 0x69
@@ -12185,8 +11549,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = 0x1000000 | FL_FULLSTRING = 0x01000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F0E0400 (0x0400)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resAnd.lpRes[0x00000051]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000E04
@@ -12235,8 +11597,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																								lpRes->res.resContent.ulFuzzyLevel = 0x1000000 | FL_FULLSTRING = 0x01000000
 																								lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																								lpRes->res.resContent.lpProp->ulPropTag = 0x1F0E0300 (0x0300)
-																								lpRes->res.resContent.lpProp->Value = 
-																									Alt: 
 																							lpRes->res.resAnd.lpRes[0x0000000B]
 																								lpRes->rt = 0x0 = RES_AND
 																								lpRes->res.resAnd.cRes = 0x00000E03
@@ -12285,8 +11645,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = 0x1000000 | FL_FULLSTRING = 0x01000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F0E0400 (0x0400)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resAnd.lpRes[0x0000000F]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000E04
@@ -12352,8 +11710,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = 0x3001F00 | 0xE = 0x03001F0E
 																									lpRes->res.resContent.ulPropTag = 0x4100240E (0x040e | MV_INSTANCE)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resAnd.lpRes[0x00000027]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000061
@@ -12397,8 +11753,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = 0x1000000 | FL_FULLSTRING = 0x01000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F0E0400 (0x0400)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resAnd.lpRes[0x00000037]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000E04
@@ -12449,8 +11803,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = 0x3001F00 | 0xE = 0x03001F0E
 																									lpRes->res.resContent.ulPropTag = 0x4100180E (0x180e)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resAnd.lpRes[0x00000007]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000061
@@ -12479,8 +11831,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = 0x1000000 | FL_FULLSTRING = 0x01000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F0E0400 (0x0400)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resAnd.lpRes[0x00000011]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000E04
@@ -12524,8 +11874,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = 0x1000000 | FL_FULLSTRING = 0x01000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F0E0300 (0x0300)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resAnd.lpRes[0x00000021]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000E03
@@ -12569,8 +11917,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = 0x1000000 | FL_FULLSTRING = 0x01000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F0E0400 (0x0400)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resAnd.lpRes[0x00000031]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000E04
@@ -12614,8 +11960,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = 0x1000000 | FL_FULLSTRING = 0x01000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F0E0300 (0x0300)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resAnd.lpRes[0x00000041]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000E03
@@ -12659,8 +12003,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = 0x1000000 | FL_FULLSTRING = 0x01000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F0E0400 (0x0400)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resAnd.lpRes[0x00000051]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000E04
@@ -12704,8 +12046,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = 0x1000000 | FL_FULLSTRING = 0x01000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F0E0300 (0x0300)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																							lpRes->res.resAnd.lpRes[0x0000000F]
 																								lpRes->rt = 0x0 = RES_AND
 																								lpRes->res.resAnd.cRes = 0x00000E03
@@ -12749,8 +12089,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = 0x1000000 | FL_FULLSTRING = 0x01000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F0E0400 (0x0400)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resAnd.lpRes[0x0000000D]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000E04
@@ -12799,8 +12137,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = 0x1000000 | FL_FULLSTRING = 0x01000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F0E0300 (0x0300)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resAnd.lpRes[0x0000001F]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000E03
@@ -12849,8 +12185,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = 0x1000000 | FL_FULLSTRING = 0x01000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F0E0400 (0x0400)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resAnd.lpRes[0x00000031]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000E04
@@ -13039,8 +12373,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = 0x3001F00 | 0xE = 0x03001F0E
 																									lpRes->res.resContent.ulPropTag = 0x41001E0E (0x1e0e)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resOr.lpRes[0x00000013]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000061
@@ -13086,8 +12418,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resProperty.relop = 0xE = 0x0000000E
 																									lpRes->res.resProperty.ulPropTag = 0x0E04001F (PT_UNICODE): PR_DISPLAY_TO_W: (PidTagDisplayTo, PR_DISPLAY_TO, PR_DISPLAY_TO_A, ptagDisplayTo)
 																									lpRes->res.resProperty.lpProp->ulPropTag = 0x00410016 (0x0016): PR_SENT_REPRESENTING_ENTRYID: (PidTagSentRepresentingEntryId, ptagSentRepresentingEntryId)
-																									lpRes->res.resProperty.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resOr.lpRes[0x00000023]
 																									lpRes->rt = 0x61 = 0x61
 																								lpRes->res.resOr.lpRes[0x00000024]
@@ -13118,8 +12448,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = 0x1000000 | FL_FULLSTRING = 0x01000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F0E0300 (0x0300)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resOr.lpRes[0x0000002E]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000E03
@@ -13158,8 +12486,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = 0x1000000 | FL_FULLSTRING = 0x01000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F0E0400 (0x0400)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resOr.lpRes[0x0000003C]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000E04
@@ -13213,8 +12539,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = 0x1000000 | FL_FULLSTRING = 0x01000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F0E0300 (0x0300)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resOr.lpRes[0x00000050]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000E03
@@ -13268,8 +12592,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = 0x1000000 | FL_FULLSTRING = 0x01000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F0E0400 (0x0400)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resOr.lpRes[0x00000064]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000E04
@@ -13315,8 +12637,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = 0x3001F00 | 0xE = 0x03001F0E
 																									lpRes->res.resContent.ulPropTag = 0x4100140E (0x140e)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resOr.lpRes[0x00000074]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000061
@@ -13340,8 +12660,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = 0x1000000 | FL_FULLSTRING = 0x01000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F300300 (0x0300)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resOr.lpRes[0x0000007C]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00003003
@@ -13485,8 +12803,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = 0x1000000 | FL_FULLSTRING = 0x01000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F300300 (0x0300)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resOr.lpRes[0x000000B4]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00003003
@@ -13630,8 +12946,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = 0x1000000 | FL_FULLSTRING = 0x01000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F300300 (0x0300)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resOr.lpRes[0x000000EC]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00003003
@@ -13832,8 +13146,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = FL_PREFIX_ON_ANY_WORD | FL_PHRASE_MATCH | 0x3001F00 | FL_FULLSTRING = 0x03001F30
 																									lpRes->res.resContent.ulPropTag = 0x2F009630 (0x9630)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x3D006F00 (0x4f00 | MV_INSTANCE): PR_STORE_PROVIDERS: (PidTagStoreProviders)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resAnd.lpRes[0x00000039]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000061
@@ -14029,8 +13341,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = FL_PREFIX_ON_ANY_WORD | FL_PHRASE_MATCH | 0x3001F00 | FL_FULLSTRING = 0x03001F30
 																									lpRes->res.resContent.ulPropTag = 0x2F006830 (0x4830 | MV_INSTANCE)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x3D004F00 (0x4f00): PR_STORE_PROVIDERS: (PidTagStoreProviders)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resAnd.lpRes[0x00000011]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000061
@@ -14159,8 +13469,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = 0x1000000 | FL_FULLSTRING = 0x01000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F300300 (0x0300)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resAnd.lpRes[0x00000043]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00003003
@@ -14309,8 +13617,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = 0x1000000 | FL_FULLSTRING = 0x01000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F300300 (0x0300)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resAnd.lpRes[0x00000017]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00003003
@@ -14509,8 +13815,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = 0x1000000 | FL_FULLSTRING = 0x01000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F300300 (0x0300)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resAnd.lpRes[0x00000011]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00003003
@@ -14659,8 +13963,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = 0x1000000 | FL_FULLSTRING = 0x01000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F300300 (0x0300)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resAnd.lpRes[0x0000004B]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00003003
@@ -14854,8 +14156,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = 0x1000000 | FL_FULLSTRING = 0x01000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F300300 (0x0300)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resAnd.lpRes[0x00000037]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00003003
@@ -15054,8 +14354,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = 0x1000000 | FL_FULLSTRING = 0x01000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F300300 (0x0300)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resAnd.lpRes[0x00000011]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00003003
@@ -15254,8 +14552,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = 0x1000000 | FL_FULLSTRING = 0x01000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F300300 (0x0300)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																							lpRes->res.resAnd.lpRes[0x0000001E]
 																								lpRes->rt = 0x0 = RES_AND
 																								lpRes->res.resAnd.cRes = 0x00003003
@@ -15411,8 +14707,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = FL_PREFIX_ON_ANY_WORD | FL_PHRASE_MATCH | 0x3001F00 | FL_FULLSTRING = 0x03001F30
 																									lpRes->res.resContent.ulPropTag = 0x2F006830 (0x4830 | MV_INSTANCE)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x3D006F00 (0x4f00 | MV_INSTANCE): PR_STORE_PROVIDERS: (PidTagStoreProviders)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resAnd.lpRes[0x00000009]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000061
@@ -15541,8 +14835,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = 0x1000000 | FL_FULLSTRING = 0x01000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F300300 (0x0300)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resAnd.lpRes[0x0000003B]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00003003
@@ -15698,8 +14990,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = FL_PREFIX_ON_ANY_WORD | FL_PHRASE_MATCH | 0x3001F00 | FL_FULLSTRING = 0x03001F30
 																									lpRes->res.resContent.ulPropTag = 0x2F006830 (0x4830 | MV_INSTANCE)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x3D004F00 (0x4f00): PR_STORE_PROVIDERS: (PidTagStoreProviders)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resAnd.lpRes[0x00000015]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00000061
@@ -15828,8 +15118,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = 0x1000000 | FL_FULLSTRING = 0x01000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F300300 (0x0300)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resAnd.lpRes[0x00000047]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00003003
@@ -15978,8 +15266,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resContent.ulFuzzyLevel = 0x1000000 | FL_FULLSTRING = 0x01000000
 																									lpRes->res.resContent.ulPropTag = 0x1F000100 (0x0100)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x1F300300 (0x0300)
-																									lpRes->res.resContent.lpProp->Value = 
-																										Alt: 
 																								lpRes->res.resAnd.lpRes[0x0000000F]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00003003
@@ -16147,98 +15433,36 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->rt = 0xC = RES_ANNOTATION
 																									lpRes->res.resAnnotation.cValues = 0x0000001F
 																									lpRes->res.resAnnotation.lpProp[0x00000000].ulPropTag = 0x200C1A00 (0x1a00)
-																									lpRes->res.resAnnotation.lpProp[0x00000000].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x00000001].ulPropTag = 0x61004100 (0x4100): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000001].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000002].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000002].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000003].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000003].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000004].ulPropTag = 0x20006100 (0x4100 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000004].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000005].ulPropTag = 0x61004100 (0x4100): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000005].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000006].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000006].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000007].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000007].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000008].ulPropTag = 0x00006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000008].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000009].ulPropTag = 0x00000300 (0x0300)
-																									lpRes->res.resAnnotation.lpProp[0x00000009].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000A].ulPropTag = 0x01000100 (0x0100)
-																									lpRes->res.resAnnotation.lpProp[0x0000000A].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000B].ulPropTag = 0x1F001F00 (0x1f00)
-																									lpRes->res.resAnnotation.lpProp[0x0000000B].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000C].ulPropTag = 0x1F001F0C (0x1f0c)
-																									lpRes->res.resAnnotation.lpProp[0x0000000C].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000D].ulPropTag = 0x2F006A0C (0x4a0c | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x0000000D].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000E].ulPropTag = 0x3D006F00 (0x4f00 | MV_INSTANCE): PR_STORE_PROVIDERS: (PidTagStoreProviders)
-																									lpRes->res.resAnnotation.lpProp[0x0000000E].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000000F].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x0000000F].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000010].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000010].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000011].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000011].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000012].ulPropTag = 0x61006100 (0x4100 | MV_INSTANCE): PR_JUNK_INCLUDE_CONTACTS: (PidTagJunkIncludeContacts)
-																									lpRes->res.resAnnotation.lpProp[0x00000012].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000013].ulPropTag = 0x2F006100 (0x4100 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000013].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000014].ulPropTag = 0x75006F00 (0x4f00 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000014].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000015].ulPropTag = 0x6E003D00 (0x1d00 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000015].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x00000016].ulPropTag = 0x72006F00 (0x4f00 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000016].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000017].ulPropTag = 0x68007400 (0x5400 | MV_INSTANCE): PR_OAB_NAME: (PR_OAB_NAME_W, PidTagOfflineAddressBookName)
-																									lpRes->res.resAnnotation.lpProp[0x00000017].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x00000018].ulPropTag = 0x6D006100 (0x4100 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000018].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x00000019].ulPropTag = 0x72006500 (0x4500 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x00000019].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001A].ulPropTag = 0x63006900 (0x4900 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x0000001A].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001B].ulPropTag = 0x2F006100 (0x4100 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x0000001B].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001C].ulPropTag = 0x6E006300 (0x4300 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x0000001C].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001D].ulPropTag = 0x52003D00 (0x1d00 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x0000001D].Value = 0: 
-																										Alt: 0: 
 																									lpRes->res.resAnnotation.lpProp[0x0000001E].ulPropTag = 0x63006500 (0x4500 | MV_INSTANCE)
-																									lpRes->res.resAnnotation.lpProp[0x0000001E].Value = 
-																										Alt: 
 																									lpRes->res.resAnnotation.lpRes
 																								lpRes->res.resAnd.lpRes[0x00000050]
 																									lpRes->rt = 0x69 = 0x69

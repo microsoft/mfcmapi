@@ -8,8 +8,6 @@ lpRes->res.resAnd.lpRes[0x00000000]
 	lpRes->res.resContent.ulFuzzyLevel = FL_IGNORECASE | FL_SUBSTRING = 0x00010001
 	lpRes->res.resContent.ulPropTag = 0x007D84B0 (0x84b0): PR_TRANSPORT_MESSAGE_HEADERS: (PR_TRANSPORT_MESSAGE_HEADERS_A, PR_TRANSPORT_MESSAGE_HEADERS_W, PidTagTransportMessageHeaders)
 	lpRes->res.resContent.lpProp->ulPropTag = 0x007D84B0 (0x84b0): PR_TRANSPORT_MESSAGE_HEADERS: (PR_TRANSPORT_MESSAGE_HEADERS_A, PR_TRANSPORT_MESSAGE_HEADERS_W, PidTagTransportMessageHeaders)
-	lpRes->res.resContent.lpProp->Value = 
-		Alt: 
 lpRes->res.resAnd.lpRes[0x00000001]
 	lpRes->rt = 0x41 = 0x41
 Unparsed data size = 0x00000123

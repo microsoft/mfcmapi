@@ -23,7 +23,6 @@ Property[6]
 Property = 0x0008B9B4
 Name: PR_CONTENT_IDENTIFIER
 Other Matches: PR_CONTENT_IDENTIFIER_A, PR_CONTENT_IDENTIFIER_W, PidTagContentIdentifier
-PropString = 0:  AltPropString = 0: 
 Property[7]
 Property = 0x82E12F2B
 Property[8]
