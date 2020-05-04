@@ -373,13 +373,13 @@ namespace smartview
 						L"%1!ws!\tAlt: %2!ws!\r\n",
 						szTabs.c_str(),
 						resProperty.lpProp.Props()[0]->value->AltPropBlock()->c_str());
-				}
 
-				szPropNum = resProperty.lpProp.Props()[0]->PropNum();
-				if (!szPropNum.empty())
-				{
-					// TODO: use block
-					resProperty.ulPropTag->addHeader(L"%1!ws!\tFlags: %2!ws!", szTabs.c_str(), szPropNum.c_str());
+					szPropNum = resProperty.lpProp.Props()[0]->value->toNumberAsString();
+					if (!szPropNum.empty())
+					{
+						// TODO: use block
+						resProperty.ulPropTag->addHeader(L"%1!ws!\tFlags: %2!ws!", szTabs.c_str(), szPropNum.c_str());
+					}
 				}
 			}
 		}

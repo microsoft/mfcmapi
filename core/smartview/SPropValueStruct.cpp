@@ -243,6 +243,12 @@ namespace smartview
 	/* case PT_I2 */
 	class I2BLock : public PVBlock
 	{
+	public:
+		std::wstring toNumberAsString() override
+		{
+			return InterpretNumberAsString(*i, m_ulPropTag, 0, nullptr, nullptr, false);
+		}
+
 	private:
 		void parse() override
 		{
@@ -251,8 +257,6 @@ namespace smartview
 			if (m_doNickname) m_Parser->advance(sizeof DWORD);
 		}
 
-		std::wstring propNum() override { return InterpretNumberAsString(*i, m_ulPropTag, 0, nullptr, nullptr, false); }
-
 		void getProp(SPropValue& prop) override { prop.Value.i = *i; }
 		std::shared_ptr<blockT<WORD>> i = emptyT<WORD>();
 	};
@@ -260,14 +264,18 @@ namespace smartview
 	/* case PT_LONG */
 	class LongBLock : public PVBlock
 	{
+	public:
+		std::wstring toNumberAsString() override
+		{
+			return InterpretNumberAsString(*l, m_ulPropTag, 0, nullptr, nullptr, false);
+		}
+
 	private:
 		void parse() override
 		{
 			l = blockT<LONG, DWORD>::parse(m_Parser);
 			if (m_doNickname) m_Parser->advance(sizeof DWORD);
 		}
-
-		std::wstring propNum() override { return InterpretNumberAsString(*l, m_ulPropTag, 0, nullptr, nullptr, false); }
 
 		void getProp(SPropValue& prop) override { prop.Value.l = *l; }
 		std::shared_ptr<blockT<LONG>> l = emptyT<LONG>();
@@ -341,13 +349,14 @@ namespace smartview
 	/* case PT_I8 */
 	class I8Block : public PVBlock
 	{
-	private:
-		void parse() override { li = blockT<LARGE_INTEGER>::parse(m_Parser); }
-
-		std::wstring propNum() override
+	public:
+		std::wstring toNumberAsString() override
 		{
 			return InterpretNumberAsString(li->getData().QuadPart, m_ulPropTag, 0, nullptr, nullptr, false);
 		}
+
+	private:
+		void parse() override { li = blockT<LARGE_INTEGER>::parse(m_Parser); }
 
 		void getProp(SPropValue& prop) override { prop.Value.li = li->getData(); }
 		std::shared_ptr<blockT<LARGE_INTEGER>> li = emptyT<LARGE_INTEGER>();
@@ -480,10 +489,5 @@ namespace smartview
 				propRoot->addChild(szSmartView, L"Smart View: %1!ws!", szSmartView->c_str());
 			}
 		}
-	}
-
-	_Check_return_ std::wstring SPropValueStruct::PropNum() const
-	{
-		return value ? value->propNum() : strings::emptystring;
 	}
 } // namespace smartview

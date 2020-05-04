@@ -28,7 +28,7 @@ namespace smartview
 		PVBlock(const PVBlock&) = delete;
 		PVBlock& operator=(const PVBlock&) = delete;
 
-		virtual std::wstring propNum() { return strings::emptystring; }
+		virtual std::wstring toNumberAsString() { return strings::emptystring; }
 
 		_Check_return_ std::shared_ptr<blockStringW> PropBlock()
 		{
@@ -98,8 +98,6 @@ namespace smartview
 		std::shared_ptr<blockT<WORD>> PropID = emptyT<WORD>();
 		std::shared_ptr<blockT<ULONG>> ulPropTag = emptyT<ULONG>();
 		std::shared_ptr<PVBlock> value;
-
-		_Check_return_ std::wstring PropNum() const;
 
 	private:
 		void parse() override;
