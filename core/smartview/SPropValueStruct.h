@@ -7,10 +7,10 @@
 
 namespace smartview
 {
-	class PVBlock : public block
+	class blockPV : public block
 	{
 	public:
-		PVBlock() = default;
+		blockPV() = default;
 		void parse(std::shared_ptr<binaryParser>& parser, ULONG ulPropTag, bool doNickname, bool doRuleProcessing)
 
 		{
@@ -25,8 +25,8 @@ namespace smartview
 			// And size will always be how many bytes we consumed
 			setSize(m_Parser->getOffset() - getOffset());
 		}
-		PVBlock(const PVBlock&) = delete;
-		PVBlock& operator=(const PVBlock&) = delete;
+		blockPV(const blockPV&) = delete;
+		blockPV& operator=(const blockPV&) = delete;
 
 		virtual std::wstring toNumberAsString() { return strings::emptystring; }
 
@@ -97,7 +97,7 @@ namespace smartview
 		std::shared_ptr<blockT<WORD>> PropType = emptyT<WORD>();
 		std::shared_ptr<blockT<WORD>> PropID = emptyT<WORD>();
 		std::shared_ptr<blockT<ULONG>> ulPropTag = emptyT<ULONG>();
-		std::shared_ptr<PVBlock> value;
+		std::shared_ptr<blockPV> value;
 
 	private:
 		void parse() override;

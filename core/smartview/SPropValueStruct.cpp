@@ -8,7 +8,7 @@
 namespace smartview
 {
 	/* case PT_SYSTIME */
-	class FILETIMEBLock : public PVBlock
+	class FILETIMEBLock : public blockPV
 	{
 	private:
 		void parse() override
@@ -23,7 +23,7 @@ namespace smartview
 	};
 
 	/* case PT_STRING8 */
-	class CountedStringA : public PVBlock
+	class CountedStringA : public blockPV
 	{
 	private:
 		void parse() override
@@ -55,7 +55,7 @@ namespace smartview
 	};
 
 	/* case PT_UNICODE */
-	class CountedStringW : public PVBlock
+	class CountedStringW : public blockPV
 	{
 	private:
 		void parse() override
@@ -87,12 +87,12 @@ namespace smartview
 	};
 
 	/* case PT_BINARY */
-	class SBinaryBlock : public PVBlock
+	class SBinaryBlock : public blockPV
 	{
 	public:
 		void parse(std::shared_ptr<binaryParser>& parser, ULONG ulPropTag)
 		{
-			PVBlock::parse(parser, ulPropTag, false, true);
+			blockPV::parse(parser, ulPropTag, false, true);
 		}
 		operator SBinary() noexcept { return {*cb, const_cast<LPBYTE>(lpb->data())}; }
 
@@ -123,7 +123,7 @@ namespace smartview
 	};
 
 	/* case PT_MV_BINARY */
-	class SBinaryArrayBlock : public PVBlock
+	class SBinaryArrayBlock : public blockPV
 	{
 	public:
 		~SBinaryArrayBlock()
@@ -178,7 +178,7 @@ namespace smartview
 	};
 
 	/* case PT_MV_STRING8 */
-	class StringArrayA : public PVBlock
+	class StringArrayA : public blockPV
 	{
 	private:
 		void parse() override
@@ -210,7 +210,7 @@ namespace smartview
 	};
 
 	/* case PT_MV_UNICODE */
-	class StringArrayW : public PVBlock
+	class StringArrayW : public blockPV
 	{
 	private:
 		void parse() override
@@ -241,7 +241,7 @@ namespace smartview
 	};
 
 	/* case PT_I2 */
-	class I2BLock : public PVBlock
+	class I2BLock : public blockPV
 	{
 	public:
 		std::wstring toNumberAsString() override
@@ -262,7 +262,7 @@ namespace smartview
 	};
 
 	/* case PT_LONG */
-	class LongBLock : public PVBlock
+	class LongBLock : public blockPV
 	{
 	public:
 		std::wstring toNumberAsString() override
@@ -282,7 +282,7 @@ namespace smartview
 	};
 
 	/* case PT_BOOLEAN */
-	class BooleanBlock : public PVBlock
+	class BooleanBlock : public blockPV
 	{
 	private:
 		void parse() override
@@ -305,7 +305,7 @@ namespace smartview
 	};
 
 	/* case PT_R4 */
-	class R4BLock : public PVBlock
+	class R4BLock : public blockPV
 	{
 	private:
 		void parse() override
@@ -319,7 +319,7 @@ namespace smartview
 	};
 
 	/* case PT_DOUBLE */
-	class DoubleBlock : public PVBlock
+	class DoubleBlock : public blockPV
 	{
 	private:
 		void parse() override { dbl = blockT<double>::parse(m_Parser); }
@@ -329,7 +329,7 @@ namespace smartview
 	};
 
 	/* case PT_CLSID */
-	class CLSIDBlock : public PVBlock
+	class CLSIDBlock : public blockPV
 	{
 	private:
 		void parse() override
@@ -347,7 +347,7 @@ namespace smartview
 	};
 
 	/* case PT_I8 */
-	class I8Block : public PVBlock
+	class I8Block : public blockPV
 	{
 	public:
 		std::wstring toNumberAsString() override
@@ -363,7 +363,7 @@ namespace smartview
 	};
 
 	/* case PT_ERROR */
-	class ErrorBlock : public PVBlock
+	class ErrorBlock : public blockPV
 	{
 	private:
 		void parse() override
