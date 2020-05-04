@@ -11,8 +11,17 @@ namespace smartview
 	{
 	public:
 		PVBlock() = default;
+		void init(std::shared_ptr<binaryParser>& parser, bool doNickname, bool doRuleProcessing)
+
+		{
+			m_Parser = parser;
+			m_doNickname = doNickname;
+			m_doRuleProcessing = doRuleProcessing;
+		}
 		PVBlock(const PVBlock&) = delete;
 		PVBlock& operator=(const PVBlock&) = delete;
+
+		virtual void parse() = 0;
 
 		virtual std::wstring propNum(ULONG /*ulPropTag*/) { return strings::emptystring; }
 
@@ -31,6 +40,11 @@ namespace smartview
 			ensurePropBlocks(ulPropTag);
 			return smartViewBlock;
 		}
+
+	protected:
+		bool m_doNickname{};
+		bool m_doRuleProcessing{};
+		std::shared_ptr<binaryParser> m_Parser{};
 
 	private:
 		void ensurePropBlocks(ULONG ulPropTag)

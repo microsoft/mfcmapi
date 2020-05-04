@@ -11,19 +11,14 @@ namespace smartview
 	class FILETIMEBLock : public PVBlock
 	{
 	public:
-		FILETIMEBLock(const std::shared_ptr<binaryParser>& parser)
+		void parse() override
 		{
-			setOffset(parser->getOffset());
+			setOffset(m_Parser->getOffset());
 
-			dwHighDateTime = blockT<DWORD>::parse(parser);
-			dwLowDateTime = blockT<DWORD>::parse(parser);
+			dwHighDateTime = blockT<DWORD>::parse(m_Parser);
+			dwLowDateTime = blockT<DWORD>::parse(m_Parser);
 
-			setSize(parser->getOffset() - getOffset());
-		}
-		static std::shared_ptr<FILETIMEBLock>
-		parse(const std::shared_ptr<binaryParser>& parser, bool /*doNickname*/, bool /*doRuleProcessing*/)
-		{
-			return std::make_shared<FILETIMEBLock>(parser);
+			setSize(m_Parser->getOffset() - getOffset());
 		}
 
 	private:
@@ -36,36 +31,31 @@ namespace smartview
 	class CountedStringA : public PVBlock
 	{
 	public:
-		CountedStringA(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool doRuleProcessing)
+		void parse() override
 		{
-			setOffset(parser->getOffset());
+			setOffset(m_Parser->getOffset());
 
-			if (doRuleProcessing)
+			if (m_doRuleProcessing)
 			{
-				str = blockStringA::parse(parser);
+				str = blockStringA::parse(m_Parser);
 				cb->setData(static_cast<DWORD>(str->length()));
 			}
 			else
 			{
-				if (doNickname)
+				if (m_doNickname)
 				{
-					static_cast<void>(parser->advance(sizeof LARGE_INTEGER)); // union
-					cb = blockT<DWORD>::parse(parser);
+					static_cast<void>(m_Parser->advance(sizeof LARGE_INTEGER)); // union
+					cb = blockT<DWORD>::parse(m_Parser);
 				}
 				else
 				{
-					cb = blockT<DWORD, WORD>::parse(parser);
+					cb = blockT<DWORD, WORD>::parse(m_Parser);
 				}
 
-				str = blockStringA::parse(parser, *cb);
+				str = blockStringA::parse(m_Parser, *cb);
 			}
 
-			setSize(parser->getOffset() - getOffset());
-		}
-		static std::shared_ptr<CountedStringA>
-		parse(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool doRuleProcessing)
-		{
-			return std::make_shared<CountedStringA>(parser, doNickname, doRuleProcessing);
+			setSize(m_Parser->getOffset() - getOffset());
 		}
 
 	private:
@@ -78,36 +68,31 @@ namespace smartview
 	class CountedStringW : public PVBlock
 	{
 	public:
-		CountedStringW(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool doRuleProcessing)
+		void parse() override
 		{
-			setOffset(parser->getOffset());
+			setOffset(m_Parser->getOffset());
 
-			if (doRuleProcessing)
+			if (m_doRuleProcessing)
 			{
-				str = blockStringW::parse(parser);
+				str = blockStringW::parse(m_Parser);
 				cb->setData(static_cast<DWORD>(str->length()));
 			}
 			else
 			{
-				if (doNickname)
+				if (m_doNickname)
 				{
-					static_cast<void>(parser->advance(sizeof LARGE_INTEGER)); // union
-					cb = blockT<DWORD>::parse(parser);
+					static_cast<void>(m_Parser->advance(sizeof LARGE_INTEGER)); // union
+					cb = blockT<DWORD>::parse(m_Parser);
 				}
 				else
 				{
-					cb = blockT<DWORD, WORD>::parse(parser);
+					cb = blockT<DWORD, WORD>::parse(m_Parser);
 				}
 
-				str = blockStringW::parse(parser, *cb / sizeof(WCHAR));
+				str = blockStringW::parse(m_Parser, *cb / sizeof(WCHAR));
 			}
 
-			setSize(parser->getOffset() - getOffset());
-		}
-		static std::shared_ptr<CountedStringW>
-		parse(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool doRuleProcessing)
-		{
-			return std::make_shared<CountedStringW>(parser, doNickname, doRuleProcessing);
+			setSize(m_Parser->getOffset() - getOffset());
 		}
 
 	private:
@@ -120,38 +105,29 @@ namespace smartview
 	class SBinaryBlock : public PVBlock
 	{
 	public:
-		SBinaryBlock(const std::shared_ptr<binaryParser>& parser) : SBinaryBlock(parser, false, true) {}
-		SBinaryBlock(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool doRuleProcessing)
+		void init(std::shared_ptr<binaryParser>& parser) { PVBlock::init(parser, false, true); }
+		void parse() override
 		{
-			setOffset(parser->getOffset());
+			setOffset(m_Parser->getOffset());
 
-			if (doNickname)
+			if (m_doNickname)
 			{
-				static_cast<void>(parser->advance(sizeof LARGE_INTEGER)); // union
+				static_cast<void>(m_Parser->advance(sizeof LARGE_INTEGER)); // union
 			}
 
-			if (doRuleProcessing || doNickname)
+			if (m_doRuleProcessing || m_doNickname)
 			{
-				cb = blockT<DWORD>::parse(parser);
+				cb = blockT<DWORD>::parse(m_Parser);
 			}
 			else
 			{
-				cb = blockT<DWORD, WORD>::parse(parser);
+				cb = blockT<DWORD, WORD>::parse(m_Parser);
 			}
 
 			// Note that we're not placing a restriction on how large a binary property we can parse. May need to revisit this.
-			lpb = blockBytes::parse(parser, *cb);
+			lpb = blockBytes::parse(m_Parser, *cb);
 
-			setSize(parser->getOffset() - getOffset());
-		}
-		static std::shared_ptr<SBinaryBlock> parse(const std::shared_ptr<binaryParser>& parser)
-		{
-			return std::make_shared<SBinaryBlock>(parser);
-		}
-		static std::shared_ptr<SBinaryBlock>
-		parse(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool doRuleProcessing)
-		{
-			return std::make_shared<SBinaryBlock>(parser, doNickname, doRuleProcessing);
+			setSize(m_Parser->getOffset() - getOffset());
 		}
 
 		operator SBinary() noexcept { return {*cb, const_cast<LPBYTE>(lpb->data())}; }
@@ -166,38 +142,36 @@ namespace smartview
 	class SBinaryArrayBlock : public PVBlock
 	{
 	public:
-		SBinaryArrayBlock(const std::shared_ptr<binaryParser>& parser, bool doNickname)
+		void parse() override
 		{
-			setOffset(parser->getOffset());
+			setOffset(m_Parser->getOffset());
 
-			if (doNickname)
+			if (m_doNickname)
 			{
-				static_cast<void>(parser->advance(sizeof LARGE_INTEGER)); // union
-				cValues = blockT<DWORD>::parse(parser);
+				static_cast<void>(m_Parser->advance(sizeof LARGE_INTEGER)); // union
+				cValues = blockT<DWORD>::parse(m_Parser);
 			}
 			else
 			{
-				cValues = blockT<DWORD, WORD>::parse(parser);
+				cValues = blockT<DWORD, WORD>::parse(m_Parser);
 			}
 
 			if (cValues && *cValues < _MaxEntriesLarge)
 			{
 				for (ULONG j = 0; j < *cValues; j++)
 				{
-					lpbin.emplace_back(SBinaryBlock::parse(parser));
+					auto block = std::make_shared<SBinaryBlock>();
+					block->init(m_Parser);
+					block->parse();
+					lpbin.emplace_back(block);
 				}
 			}
 
-			setSize(parser->getOffset() - getOffset());
+			setSize(m_Parser->getOffset() - getOffset());
 		}
 		~SBinaryArrayBlock()
 		{
 			if (bin) delete[] bin;
-		}
-		static std::shared_ptr<SBinaryArrayBlock>
-		parse(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool /*doRuleProcessing*/)
-		{
-			return std::make_shared<SBinaryArrayBlock>(parser, doNickname);
 		}
 
 	private:
@@ -227,18 +201,18 @@ namespace smartview
 	class StringArrayA : public PVBlock
 	{
 	public:
-		StringArrayA(const std::shared_ptr<binaryParser>& parser, bool doNickname)
+		void parse() override
 		{
-			setOffset(parser->getOffset());
+			setOffset(m_Parser->getOffset());
 
-			if (doNickname)
+			if (m_doNickname)
 			{
-				static_cast<void>(parser->advance(sizeof LARGE_INTEGER)); // union
-				cValues = blockT<DWORD>::parse(parser);
+				static_cast<void>(m_Parser->advance(sizeof LARGE_INTEGER)); // union
+				cValues = blockT<DWORD>::parse(m_Parser);
 			}
 			else
 			{
-				cValues = blockT<DWORD, WORD>::parse(parser);
+				cValues = blockT<DWORD, WORD>::parse(m_Parser);
 			}
 
 			if (cValues)
@@ -247,16 +221,11 @@ namespace smartview
 				lppszA.reserve(*cValues);
 				for (ULONG j = 0; j < *cValues; j++)
 				{
-					lppszA.emplace_back(std::make_shared<blockStringA>(parser));
+					lppszA.emplace_back(std::make_shared<blockStringA>(m_Parser));
 				}
 			}
 
-			setSize(parser->getOffset() - getOffset());
-		}
-		static std::shared_ptr<StringArrayA>
-		parse(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool /*doRuleProcessing*/)
-		{
-			return std::make_shared<StringArrayA>(parser, doNickname);
+			setSize(m_Parser->getOffset() - getOffset());
 		}
 
 	private:
@@ -269,18 +238,18 @@ namespace smartview
 	class StringArrayW : public PVBlock
 	{
 	public:
-		StringArrayW(const std::shared_ptr<binaryParser>& parser, bool doNickname)
+		void parse() override
 		{
-			setOffset(parser->getOffset());
+			setOffset(m_Parser->getOffset());
 
-			if (doNickname)
+			if (m_doNickname)
 			{
-				static_cast<void>(parser->advance(sizeof LARGE_INTEGER)); // union
-				cValues = blockT<DWORD>::parse(parser);
+				static_cast<void>(m_Parser->advance(sizeof LARGE_INTEGER)); // union
+				cValues = blockT<DWORD>::parse(m_Parser);
 			}
 			else
 			{
-				cValues = blockT<DWORD, WORD>::parse(parser);
+				cValues = blockT<DWORD, WORD>::parse(m_Parser);
 			}
 
 			if (cValues && *cValues < _MaxEntriesLarge)
@@ -288,16 +257,11 @@ namespace smartview
 				lppszW.reserve(*cValues);
 				for (ULONG j = 0; j < *cValues; j++)
 				{
-					lppszW.emplace_back(std::make_shared<blockStringW>(parser));
+					lppszW.emplace_back(std::make_shared<blockStringW>(m_Parser));
 				}
 			}
 
-			setSize(parser->getOffset() - getOffset());
-		}
-		static std::shared_ptr<StringArrayW>
-		parse(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool /*doRuleProcessing*/)
-		{
-			return std::make_shared<StringArrayW>(parser, doNickname);
+			setSize(m_Parser->getOffset() - getOffset());
 		}
 
 	private:
@@ -310,20 +274,15 @@ namespace smartview
 	class I2BLock : public PVBlock
 	{
 	public:
-		I2BLock(const std::shared_ptr<binaryParser>& parser, bool doNickname)
+		void parse() override
 		{
-			setOffset(parser->getOffset());
+			setOffset(m_Parser->getOffset());
 
-			if (doNickname) i = blockT<WORD>::parse(parser); // TODO: This can't be right
-			if (doNickname) parser->advance(sizeof WORD);
-			if (doNickname) parser->advance(sizeof DWORD);
+			if (m_doNickname) i = blockT<WORD>::parse(m_Parser); // TODO: This can't be right
+			if (m_doNickname) m_Parser->advance(sizeof WORD);
+			if (m_doNickname) m_Parser->advance(sizeof DWORD);
 
-			setSize(parser->getOffset() - getOffset());
-		}
-		static std::shared_ptr<I2BLock>
-		parse(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool /*doRuleProcessing*/)
-		{
-			return std::make_shared<I2BLock>(parser, doNickname);
+			setSize(m_Parser->getOffset() - getOffset());
 		}
 
 		std::wstring propNum(ULONG ulPropTag) override
@@ -340,19 +299,14 @@ namespace smartview
 	class LongBLock : public PVBlock
 	{
 	public:
-		LongBLock(const std::shared_ptr<binaryParser>& parser, bool doNickname)
+		void parse() override
 		{
-			setOffset(parser->getOffset());
+			setOffset(m_Parser->getOffset());
 
-			l = blockT<LONG, DWORD>::parse(parser);
-			if (doNickname) parser->advance(sizeof DWORD);
+			l = blockT<LONG, DWORD>::parse(m_Parser);
+			if (m_doNickname) m_Parser->advance(sizeof DWORD);
 
-			setSize(parser->getOffset() - getOffset());
-		}
-		static std::shared_ptr<LongBLock>
-		parse(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool /*doRuleProcessing*/)
-		{
-			return std::make_shared<LongBLock>(parser, doNickname);
+			setSize(m_Parser->getOffset() - getOffset());
 		}
 
 		std::wstring propNum(ULONG ulPropTag) override
@@ -366,31 +320,26 @@ namespace smartview
 	};
 
 	/* case PT_BOOLEAN */
-	class BooleanBLock : public PVBlock
+	class BooleanBlock : public PVBlock
 	{
 	public:
-		BooleanBLock(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool doRuleProcessing)
+		void parse() override
 		{
-			setOffset(parser->getOffset());
+			setOffset(m_Parser->getOffset());
 
-			if (doRuleProcessing)
+			if (m_doRuleProcessing)
 			{
-				b = blockT<WORD, BYTE>::parse(parser);
+				b = blockT<WORD, BYTE>::parse(m_Parser);
 			}
 			else
 			{
-				b = blockT<WORD>::parse(parser);
+				b = blockT<WORD>::parse(m_Parser);
 			}
 
-			if (doNickname) parser->advance(sizeof WORD);
-			if (doNickname) parser->advance(sizeof DWORD);
+			if (m_doNickname) m_Parser->advance(sizeof WORD);
+			if (m_doNickname) m_Parser->advance(sizeof DWORD);
 
-			setSize(parser->getOffset() - getOffset());
-		}
-		static std::shared_ptr<BooleanBLock>
-		parse(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool doRuleProcessing)
-		{
-			return std::make_shared<BooleanBLock>(parser, doNickname, doRuleProcessing);
+			setSize(m_Parser->getOffset() - getOffset());
 		}
 
 	private:
@@ -402,19 +351,14 @@ namespace smartview
 	class R4BLock : public PVBlock
 	{
 	public:
-		R4BLock(const std::shared_ptr<binaryParser>& parser, bool doNickname)
+		void parse() override
 		{
-			setOffset(parser->getOffset());
+			setOffset(m_Parser->getOffset());
 
-			flt = blockT<float>::parse(parser);
-			if (doNickname) parser->advance(sizeof DWORD);
+			flt = blockT<float>::parse(m_Parser);
+			if (m_doNickname) m_Parser->advance(sizeof DWORD);
 
-			setSize(parser->getOffset() - getOffset());
-		}
-		static std::shared_ptr<R4BLock>
-		parse(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool /*doRuleProcessing*/)
-		{
-			return std::make_shared<R4BLock>(parser, doNickname);
+			setSize(m_Parser->getOffset() - getOffset());
 		}
 
 	private:
@@ -426,18 +370,13 @@ namespace smartview
 	class DoubleBlock : public PVBlock
 	{
 	public:
-		DoubleBlock(const std::shared_ptr<binaryParser>& parser)
+		void parse() override
 		{
-			setOffset(parser->getOffset());
+			setOffset(m_Parser->getOffset());
 
-			dbl = blockT<double>::parse(parser);
+			dbl = blockT<double>::parse(m_Parser);
 
-			setSize(parser->getOffset() - getOffset());
-		}
-		static std::shared_ptr<DoubleBlock>
-		parse(const std::shared_ptr<binaryParser>& parser, bool /*doNickname*/, bool /*doRuleProcessing*/)
-		{
-			return std::make_shared<DoubleBlock>(parser);
+			setSize(m_Parser->getOffset() - getOffset());
 		}
 
 	private:
@@ -449,19 +388,14 @@ namespace smartview
 	class CLSIDBlock : public PVBlock
 	{
 	public:
-		CLSIDBlock(const std::shared_ptr<binaryParser>& parser, bool doNickname)
+		void parse() override
 		{
-			setOffset(parser->getOffset());
+			setOffset(m_Parser->getOffset());
 
-			if (doNickname) static_cast<void>(parser->advance(sizeof LARGE_INTEGER)); // union
-			lpguid = blockT<GUID>::parse(parser);
+			if (m_doNickname) static_cast<void>(m_Parser->advance(sizeof LARGE_INTEGER)); // union
+			lpguid = blockT<GUID>::parse(m_Parser);
 
-			setSize(parser->getOffset() - getOffset());
-		}
-		static std::shared_ptr<CLSIDBlock>
-		parse(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool /*doRuleProcessing*/)
-		{
-			return std::make_shared<CLSIDBlock>(parser, doNickname);
+			setSize(m_Parser->getOffset() - getOffset());
 		}
 
 	private:
@@ -477,18 +411,13 @@ namespace smartview
 	class I8Block : public PVBlock
 	{
 	public:
-		I8Block(const std::shared_ptr<binaryParser>& parser)
+		void parse() override
 		{
-			setOffset(parser->getOffset());
+			setOffset(m_Parser->getOffset());
 
-			li = blockT<LARGE_INTEGER>::parse(parser);
+			li = blockT<LARGE_INTEGER>::parse(m_Parser);
 
-			setSize(parser->getOffset() - getOffset());
-		}
-		static std::shared_ptr<I8Block>
-		parse(const std::shared_ptr<binaryParser>& parser, bool /*doNickname*/, bool /*doRuleProcessing*/)
-		{
-			return std::make_shared<I8Block>(parser);
+			setSize(m_Parser->getOffset() - getOffset());
 		}
 
 		std::wstring propNum(ULONG ulPropTag) override
@@ -505,19 +434,14 @@ namespace smartview
 	class ErrorBlock : public PVBlock
 	{
 	public:
-		ErrorBlock(const std::shared_ptr<binaryParser>& parser, bool doNickname)
+		void parse() override
 		{
-			setOffset(parser->getOffset());
+			setOffset(m_Parser->getOffset());
 
-			err = blockT<SCODE, DWORD>::parse(parser);
-			if (doNickname) parser->advance(sizeof DWORD);
+			err = blockT<SCODE, DWORD>::parse(m_Parser);
+			if (m_doNickname) m_Parser->advance(sizeof DWORD);
 
-			setSize(parser->getOffset() - getOffset());
-		}
-		static std::shared_ptr<ErrorBlock>
-		parse(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool /*doRuleProcessing*/)
-		{
-			return std::make_shared<ErrorBlock>(parser, doNickname);
+			setSize(m_Parser->getOffset() - getOffset());
 		}
 
 	private:
@@ -540,52 +464,58 @@ namespace smartview
 		switch (*PropType)
 		{
 		case PT_I2:
-			value = I2BLock::parse(m_Parser, m_doNickname, m_doRuleProcessing);
+			value = std::make_shared<I2BLock>();
 			break;
 		case PT_LONG:
-			value = LongBLock::parse(m_Parser, m_doNickname, m_doRuleProcessing);
+			value = std::make_shared<LongBLock>();
 			break;
 		case PT_ERROR:
-			value = ErrorBlock::parse(m_Parser, m_doNickname, m_doRuleProcessing);
+			value = std::make_shared<ErrorBlock>();
 			break;
 		case PT_R4:
-			value = R4BLock::parse(m_Parser, m_doNickname, m_doRuleProcessing);
+			value = std::make_shared<R4BLock>();
 			break;
 		case PT_DOUBLE:
-			value = DoubleBlock::parse(m_Parser, m_doNickname, m_doRuleProcessing);
+			value = std::make_shared<DoubleBlock>();
 			break;
 		case PT_BOOLEAN:
-			value = BooleanBLock::parse(m_Parser, m_doNickname, m_doRuleProcessing);
+			value = std::make_shared<BooleanBlock>();
 			break;
 		case PT_I8:
-			value = I8Block::parse(m_Parser, m_doNickname, m_doRuleProcessing);
+			value = std::make_shared<I8Block>();
 			break;
 		case PT_SYSTIME:
-			value = FILETIMEBLock::parse(m_Parser, m_doNickname, m_doRuleProcessing);
+			value = std::make_shared<FILETIMEBLock>();
 			break;
 		case PT_STRING8:
-			value = CountedStringA::parse(m_Parser, m_doNickname, m_doRuleProcessing);
+			value = std::make_shared<CountedStringA>();
 			break;
 		case PT_BINARY:
-			value = SBinaryBlock::parse(m_Parser, m_doNickname, m_doRuleProcessing);
+			value = std::make_shared<SBinaryBlock>();
 			break;
 		case PT_UNICODE:
-			value = CountedStringW::parse(m_Parser, m_doNickname, m_doRuleProcessing);
+			value = std::make_shared<CountedStringW>();
 			break;
 		case PT_CLSID:
-			value = CLSIDBlock::parse(m_Parser, m_doNickname, m_doRuleProcessing);
+			value = std::make_shared<CLSIDBlock>();
 			break;
 		case PT_MV_STRING8:
-			value = StringArrayA::parse(m_Parser, m_doNickname, m_doRuleProcessing);
+			value = std::make_shared<StringArrayA>();
 			break;
 		case PT_MV_UNICODE:
-			value = StringArrayW::parse(m_Parser, m_doNickname, m_doRuleProcessing);
+			value = std::make_shared<StringArrayW>();
 			break;
 		case PT_MV_BINARY:
-			value = SBinaryArrayBlock::parse(m_Parser, m_doNickname, m_doRuleProcessing);
+			value = std::make_shared<SBinaryArrayBlock>();
 			break;
 		default:
 			break;
+		}
+
+		if (value)
+		{
+			value->init(m_Parser, m_doNickname, m_doRuleProcessing);
+			value->parse();
 		}
 	}
 
