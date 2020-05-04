@@ -80,7 +80,7 @@ namespace smartview
 		propRoot->setText(L"Property[%1!d!]\r\n", m_index);
 		propRoot->addChild(ulPropTag, L"Property = 0x%1!08X!", ulPropTag->getData());
 
-		auto propTagNames = proptags::PropTagToPropName(*ulPropTag, false);
+		const auto propTagNames = proptags::PropTagToPropName(*ulPropTag, false);
 		if (!propTagNames.bestGuess.empty())
 		{
 			// TODO: Add this as a child of ulPropTag
@@ -98,19 +98,19 @@ namespace smartview
 		propRoot->terminateBlock();
 		if (value)
 		{
-			auto propString = value->PropBlock();
+			const auto propString = value->PropBlock();
 			if (!propString->empty())
 			{
 				propRoot->addChild(propString, L"PropString = %1!ws!", propString->c_str());
 			}
 
-			auto alt = value->AltPropBlock();
+			const auto alt = value->AltPropBlock();
 			if (!alt->empty())
 			{
 				propRoot->addChild(alt, L" AltPropString = %1!ws!", alt->c_str());
 			}
 
-			auto szSmartView = value->SmartViewBlock();
+			const auto szSmartView = value->SmartViewBlock();
 			if (!szSmartView->empty())
 			{
 				propRoot->terminateBlock();
