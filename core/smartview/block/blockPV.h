@@ -78,7 +78,7 @@ namespace smartview
 		}
 
 		virtual void parse() = 0;
-		virtual void getProp(SPropValue& prop) noexcept = 0;
+		virtual const void getProp(SPropValue& prop) noexcept = 0;
 		std::shared_ptr<blockStringW> propBlock = emptySW();
 		std::shared_ptr<blockStringW> altPropBlock = emptySW();
 		std::shared_ptr<blockStringW> smartViewBlock = emptySW();
@@ -95,7 +95,7 @@ namespace smartview
 			dwLowDateTime = blockT<DWORD>::parse(m_Parser);
 		}
 
-		void getProp(SPropValue& prop) noexcept override { prop.Value.ft = {*dwLowDateTime, *dwHighDateTime}; }
+		const void getProp(SPropValue& prop) noexcept override { prop.Value.ft = {*dwLowDateTime, *dwHighDateTime}; }
 		std::shared_ptr<blockT<DWORD>> dwLowDateTime = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> dwHighDateTime = emptyT<DWORD>();
 	};
@@ -127,7 +127,7 @@ namespace smartview
 			}
 		}
 
-		void getProp(SPropValue& prop) noexcept override { prop.Value.lpszA = const_cast<LPSTR>(str->c_str()); }
+		const void getProp(SPropValue& prop) noexcept override { prop.Value.lpszA = const_cast<LPSTR>(str->c_str()); }
 		std::shared_ptr<blockT<DWORD>> cb = emptyT<DWORD>();
 		std::shared_ptr<blockStringA> str = emptySA();
 	};
@@ -159,7 +159,7 @@ namespace smartview
 			}
 		}
 
-		void getProp(SPropValue& prop) noexcept override { prop.Value.lpszW = const_cast<LPWSTR>(str->c_str()); }
+		const void getProp(SPropValue& prop) noexcept override { prop.Value.lpszW = const_cast<LPWSTR>(str->c_str()); }
 		std::shared_ptr<blockT<DWORD>> cb = emptyT<DWORD>();
 		std::shared_ptr<blockStringW> str = emptySW();
 	};
@@ -195,7 +195,7 @@ namespace smartview
 			lpb = blockBytes::parse(m_Parser, *cb);
 		}
 
-		void getProp(SPropValue& prop) noexcept override { prop.Value.bin = this->operator SBinary(); }
+		const void getProp(SPropValue& prop) noexcept override { prop.Value.bin = this->operator SBinary(); }
 		std::shared_ptr<blockT<ULONG>> cb = emptyT<ULONG>();
 		std::shared_ptr<blockBytes> lpb = emptyBB();
 	};
@@ -231,11 +231,10 @@ namespace smartview
 					lpbin.emplace_back(block);
 				}
 			}
-		}
 
-		void getProp(SPropValue& prop) noexcept override
-		{
-			if (*cValues && !bin)
+			if (bin) delete[] bin;
+			bin = nullptr;
+			if (*cValues)
 			{
 				const auto count = cValues->getData();
 				bin = new (std::nothrow) SBinary[count];
@@ -247,9 +246,9 @@ namespace smartview
 					}
 				}
 			}
-
-			prop.Value.MVbin = SBinaryArray{*cValues, bin};
 		}
+
+		const void getProp(SPropValue& prop) noexcept override { prop.Value.MVbin = SBinaryArray{*cValues, bin}; }
 		std::shared_ptr<blockT<ULONG>> cValues = emptyT<ULONG>();
 		std::vector<std::shared_ptr<SBinaryBlock>> lpbin;
 		SBinary* bin{};
@@ -283,7 +282,7 @@ namespace smartview
 		}
 
 		// TODO: Populate a SLPSTRArray struct here
-		void getProp(SPropValue& prop) noexcept override { prop.Value.MVszA = {}; }
+		const void getProp(SPropValue& prop) noexcept override { prop.Value.MVszA = {}; }
 		std::shared_ptr<blockT<ULONG>> cValues = emptyT<ULONG>();
 		std::vector<std::shared_ptr<blockStringA>> lppszA;
 	};
@@ -315,7 +314,7 @@ namespace smartview
 		}
 
 		// TODO: Populate a SWStringArray struct here
-		void getProp(SPropValue& prop) noexcept override { prop.Value.MVszW = {}; }
+		const void getProp(SPropValue& prop) noexcept override { prop.Value.MVszW = {}; }
 		std::shared_ptr<blockT<ULONG>> cValues = emptyT<ULONG>();
 		std::vector<std::shared_ptr<blockStringW>> lppszW;
 	};
@@ -337,7 +336,7 @@ namespace smartview
 			if (m_doNickname) m_Parser->advance(sizeof DWORD);
 		}
 
-		void getProp(SPropValue& prop) noexcept override { prop.Value.i = *i; }
+		const void getProp(SPropValue& prop) noexcept override { prop.Value.i = *i; }
 		std::shared_ptr<blockT<WORD>> i = emptyT<WORD>();
 	};
 
@@ -357,7 +356,7 @@ namespace smartview
 			if (m_doNickname) m_Parser->advance(sizeof DWORD);
 		}
 
-		void getProp(SPropValue& prop) noexcept override { prop.Value.l = *l; }
+		const void getProp(SPropValue& prop) noexcept override { prop.Value.l = *l; }
 		std::shared_ptr<blockT<LONG>> l = emptyT<LONG>();
 	};
 
@@ -380,7 +379,7 @@ namespace smartview
 			if (m_doNickname) m_Parser->advance(sizeof DWORD);
 		}
 
-		void getProp(SPropValue& prop) noexcept override { prop.Value.b = *b; }
+		const void getProp(SPropValue& prop) noexcept override { prop.Value.b = *b; }
 		std::shared_ptr<blockT<WORD>> b = emptyT<WORD>();
 	};
 
@@ -394,7 +393,7 @@ namespace smartview
 			if (m_doNickname) m_Parser->advance(sizeof DWORD);
 		}
 
-		void getProp(SPropValue& prop) noexcept override { prop.Value.flt = *flt; }
+		const void getProp(SPropValue& prop) noexcept override { prop.Value.flt = *flt; }
 		std::shared_ptr<blockT<float>> flt = emptyT<float>();
 	};
 
@@ -404,7 +403,7 @@ namespace smartview
 	private:
 		void parse() override { dbl = blockT<double>::parse(m_Parser); }
 
-		void getProp(SPropValue& prop) noexcept override { prop.Value.dbl = *dbl; }
+		const void getProp(SPropValue& prop) noexcept override { prop.Value.dbl = *dbl; }
 		std::shared_ptr<blockT<double>> dbl = emptyT<double>();
 	};
 
@@ -418,7 +417,7 @@ namespace smartview
 			lpguid = blockT<GUID>::parse(m_Parser);
 		}
 
-		void getProp(SPropValue& prop) noexcept override
+		const void getProp(SPropValue& prop) noexcept override
 		{
 			auto guid = lpguid->getData();
 			prop.Value.lpguid = &guid;
@@ -438,7 +437,7 @@ namespace smartview
 	private:
 		void parse() override { li = blockT<LARGE_INTEGER>::parse(m_Parser); }
 
-		void getProp(SPropValue& prop) noexcept override { prop.Value.li = li->getData(); }
+		const void getProp(SPropValue& prop) noexcept override { prop.Value.li = li->getData(); }
 		std::shared_ptr<blockT<LARGE_INTEGER>> li = emptyT<LARGE_INTEGER>();
 	};
 
@@ -452,7 +451,7 @@ namespace smartview
 			if (m_doNickname) m_Parser->advance(sizeof DWORD);
 		}
 
-		void getProp(SPropValue& prop) noexcept override { prop.Value.err = *err; }
+		const void getProp(SPropValue& prop) noexcept override { prop.Value.err = *err; }
 		std::shared_ptr<blockT<SCODE>> err = emptyT<SCODE>();
 	};
 } // namespace smartview
