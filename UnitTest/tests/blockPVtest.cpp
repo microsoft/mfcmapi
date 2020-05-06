@@ -42,16 +42,36 @@ namespace blockPVtest
 
 		TEST_METHOD(Test_PT_BINARY)
 		{
-			auto t1 = pvTestCase{
-				std::make_shared<smartview::SBinaryBlock>(),
-				PR_SENDER_SEARCH_KEY,
-				L"250000004449534E45595641434154494F4E434C5542404D41494C2E4456434D454D4245522E434F4D",
-				0,
-				0x29,
-				L"cb: 37 lpb: 4449534E45595641434154494F4E434C5542404D41494C2E4456434D454D4245522E434F4D",
-				false,
-				true};
+			auto t1 =
+				pvTestCase{std::make_shared<smartview::SBinaryBlock>(),
+						   PR_SENDER_SEARCH_KEY,
+						   L"250000004449534E45595641434154494F4E434C5542404D41494C2E4456434D454D4245522E434F4D",
+						   0,
+						   0x29,
+						   L"cb: 37 lpb: 4449534E45595641434154494F4E434C5542404D41494C2E4456434D454D4245522E434F4D",
+						   false,
+						   true};
 			testPV(t1);
+			auto t2 =
+				pvTestCase{std::make_shared<smartview::SBinaryBlock>(),
+						   PR_SENDER_SEARCH_KEY,
+						   L"25004449534E45595641434154494F4E434C5542404D41494C2E4456434D454D4245522E434F4D",
+						   0,
+						   0x27,
+						   L"cb: 37 lpb: 4449534E45595641434154494F4E434C5542404D41494C2E4456434D454D4245522E434F4D",
+						   false,
+						   false};
+			testPV(t2);
+			auto t3 =
+				pvTestCase{std::make_shared<smartview::SBinaryBlock>(),
+						   PR_SENDER_SEARCH_KEY,
+						   L"0000000000000000250000004449534E45595641434154494F4E434C5542404D41494C2E4456434D454D4245522E434F4D",
+						   0,
+						   0x31,
+						   L"cb: 37 lpb: 4449534E45595641434154494F4E434C5542404D41494C2E4456434D454D4245522E434F4D",
+						   true,
+						   false};
+			testPV(t3);
 		}
 	};
 } // namespace blockPVtest
