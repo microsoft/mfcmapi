@@ -12,7 +12,7 @@ namespace blockPVtest
 		{
 			std::shared_ptr<smartview::blockPV> block{};
 			ULONG ulPropTag;
-			std::shared_ptr<smartview::binaryParser> parser{};
+			std::wstring source{};
 			size_t offset;
 			size_t size;
 			std::wstring text;
@@ -22,7 +22,8 @@ namespace blockPVtest
 
 		void testPV(pvTestCase & data)
 		{
-			data.block->parse(data.parser, data.ulPropTag, data.doNickname, data.doRuleProcessing);
+			auto parser = makeParser(data.source);
+			data.block->parse(parser, data.ulPropTag, data.doNickname, data.doRuleProcessing);
 			Assert::AreEqual(data.offset, data.block->getOffset());
 			Assert::AreEqual(data.size, data.block->getSize());
 			Assert::AreEqual(data.text.c_str(), data.block->PropBlock()->c_str());
@@ -44,7 +45,7 @@ namespace blockPVtest
 			auto t1 = pvTestCase{
 				std::make_shared<smartview::SBinaryBlock>(),
 				PR_SENDER_SEARCH_KEY,
-				makeParser(L"250000004449534E45595641434154494F4E434C5542404D41494C2E4456434D454D4245522E434F4D"),
+				L"250000004449534E45595641434154494F4E434C5542404D41494C2E4456434D454D4245522E434F4D",
 				0,
 				0x29,
 				L"cb: 37 lpb: 4449534E45595641434154494F4E434C5542404D41494C2E4456434D454D4245522E434F4D",
