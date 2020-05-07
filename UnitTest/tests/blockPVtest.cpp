@@ -19,7 +19,7 @@ namespace blockPVtest
 			bool doRuleProcessing;
 		};
 
-		void testPV(pvTestCase & data)
+		void testPV(const pvTestCase & data)
 		{
 			auto block = smartview::getPVParser(PROP_TYPE(data.ulPropTag));
 			auto parser = makeParser(data.source);
@@ -30,9 +30,9 @@ namespace blockPVtest
 			Assert::AreEqual(data.text.c_str(), block->PropBlock()->c_str());
 		}
 
-		void testPV(std::vector<pvTestCase> & testCases)
+		void testPV(const std::vector<pvTestCase> & testCases)
 		{
-			for (auto test : testCases)
+			for (const auto test : testCases)
 			{
 				testPV(test);
 			}
@@ -51,7 +51,7 @@ namespace blockPVtest
 
 		TEST_METHOD(Test_PT_BINARY)
 		{
-			auto testData = std::vector<pvTestCase>{
+			testPV(std::vector<pvTestCase>{
 				pvTestCase{PR_SENDER_SEARCH_KEY,
 						   L"250000004449534E45595641434154494F4E434C5542404D41494C2E4456434D454D4245522E434F4D",
 						   0,
@@ -73,8 +73,7 @@ namespace blockPVtest
 						   0x31,
 						   L"cb: 37 lpb: 4449534E45595641434154494F4E434C5542404D41494C2E4456434D454D4245522E434F4D",
 						   true,
-						   false}};
-			testPV(testData);
+						   false}});
 		}
 	};
 } // namespace blockPVtest
