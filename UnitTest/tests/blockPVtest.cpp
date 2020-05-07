@@ -17,7 +17,8 @@ namespace blockPVtest
 			bool doRuleProcessing;
 			size_t offset;
 			size_t size;
-			std::wstring text;
+			std::wstring propblock;
+			std::wstring altpropblock;
 		};
 
 		void testPV(const pvTestCase& data)
@@ -28,7 +29,10 @@ namespace blockPVtest
 			block->parse(parser, data.ulPropTag, data.doNickname, data.doRuleProcessing);
 			Assert::AreEqual(data.offset, block->getOffset(), (data.testName + L"-offset").c_str());
 			Assert::AreEqual(data.size, block->getSize(), (data.testName + L"-size").c_str());
-			unittest::AreEqualEx(data.text.c_str(), block->PropBlock()->c_str(), (data.testName + L"-text").c_str());
+			unittest::AreEqualEx(
+				data.propblock.c_str(), block->PropBlock()->c_str(), (data.testName + L"-propblock").c_str());
+			unittest::AreEqualEx(
+				data.altpropblock.c_str(), block->AltPropBlock()->c_str(), (data.testName + L"-altpropblock").c_str());
 		}
 
 		void testPV(const std::vector<pvTestCase>& testCases)
@@ -52,32 +56,36 @@ namespace blockPVtest
 
 		TEST_METHOD(Test_PT_BINARY)
 		{
-			testPV(std::vector<pvTestCase>{
-				pvTestCase{L"bin-f-t",
-						   PR_CHANGE_KEY,
-						   L"14000000516B013F8BAD5B4D9A74CAB5B37B588400000006",
-						   false,
-						   true,
-						   0,
-						   0x18,
-						   L"cb: 20 lpb: 516B013F8BAD5B4D9A74CAB5B37B588400000006"},
-				pvTestCase{L"bin-f-f",
-						   PR_CHANGE_KEY,
-						   L"1400516B013F8BAD5B4D9A74CAB5B37B588400000006",
-						   false,
-						   false,
-						   0,
-						   0x16,
-						   L"cb: 20 lpb: 516B013F8BAD5B4D9A74CAB5B37B588400000006"},
-				pvTestCase{L"bin-t-f",
-						   PR_CHANGE_KEY,
-						   L"000000000000000014000000516B013F8BAD5B4D9A74CAB5B37B588400000006",
-						   true,
-						   false,
-						   0,
-						   0x20,
-						   L"cb: 20 lpb: 516B013F8BAD5B4D9A74CAB5B37B588400000006"}
-			});
+			auto propblock = std::wstring(L"cb: 20 lpb: 516B013F8BAD5B4D9A74CAB5B37B588400000006");
+			auto altpropblock = std::wstring(L"Qk.?.≠[M.t µ≥{X.....");
+			testPV(
+				std::vector<pvTestCase>{pvTestCase{L"bin-f-t",
+												   PR_CHANGE_KEY,
+												   L"14000000516B013F8BAD5B4D9A74CAB5B37B588400000006",
+												   false,
+												   true,
+												   0,
+												   0x18,
+												   propblock,
+												   altpropblock},
+										pvTestCase{L"bin-f-f",
+												   PR_CHANGE_KEY,
+												   L"1400516B013F8BAD5B4D9A74CAB5B37B588400000006",
+												   false,
+												   false,
+												   0,
+												   0x16,
+												   propblock,
+												   altpropblock},
+										pvTestCase{L"bin-t-f",
+												   PR_CHANGE_KEY,
+												   L"000000000000000014000000516B013F8BAD5B4D9A74CAB5B37B588400000006",
+												   true,
+												   false,
+												   0,
+												   0x20,
+												   propblock,
+												   altpropblock}});
 		}
 	};
 } // namespace blockPVtest
