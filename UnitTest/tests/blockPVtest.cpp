@@ -8,47 +8,34 @@ namespace blockPVtest
 	TEST_CLASS(blockPVtest)
 	{
 	private:
-		struct pvTestCase
-		{
-			std::wstring testName;
-			ULONG ulPropTag;
-			std::wstring source{};
-			bool doNickname;
-			bool doRuleProcessing;
-			size_t offset;
-			size_t size;
-			std::wstring propblock;
-			std::wstring altpropblock;
-			std::wstring smartview;
-		};
-
-		void testPV(const pvTestCase& data)
-		{
-			auto block = smartview::getPVParser(PROP_TYPE(data.ulPropTag));
-			auto parser = makeParser(data.source);
-
-			block->parse(parser, data.ulPropTag, data.doNickname, data.doRuleProcessing);
-			Assert::AreEqual(data.offset, block->getOffset(), (data.testName + L"-offset").c_str());
-			Assert::AreEqual(data.size, block->getSize(), (data.testName + L"-size").c_str());
-			unittest::AreEqualEx(
-				data.propblock.c_str(), block->PropBlock()->c_str(), (data.testName + L"-propblock").c_str());
-			unittest::AreEqualEx(
-				data.altpropblock.c_str(), block->AltPropBlock()->c_str(), (data.testName + L"-altpropblock").c_str());
-			unittest::AreEqualEx(
-				data.smartview.c_str(), block->SmartViewBlock()->c_str(), (data.testName + L"-smartview").c_str());
-		}
-
-		void testPV(const std::vector<pvTestCase>& testCases)
-		{
-			for (const auto test : testCases)
-			{
-				testPV(test);
-			}
-		}
-
 		std::shared_ptr<smartview::binaryParser> makeParser(const std::wstring& str)
 		{
 			return std::make_shared<smartview::binaryParser>(strings::HexStringToBin(str));
+		}
+
+		void testPV(
+			std::wstring testName,
+			ULONG ulPropTag,
+			std::wstring source,
+			bool doNickname,
+			bool doRuleProcessing,
+			size_t offset,
+			size_t size,
+			std::wstring propblock,
+			std::wstring altpropblock,
+			std::wstring smartview)
+		{
+			auto block = smartview::getPVParser(PROP_TYPE(ulPropTag));
+			auto parser = makeParser(source);
+
+			block->parse(parser, ulPropTag, doNickname, doRuleProcessing);
+			Assert::AreEqual(offset, block->getOffset(), (testName + L"-offset").c_str());
+			Assert::AreEqual(size, block->getSize(), (testName + L"-size").c_str());
+			unittest::AreEqualEx(propblock.c_str(), block->PropBlock()->c_str(), (testName + L"-propblock").c_str());
+			unittest::AreEqualEx(
+				altpropblock.c_str(), block->AltPropBlock()->c_str(), (testName + L"-altpropblock").c_str());
+			unittest::AreEqualEx(
+				smartview.c_str(), block->SmartViewBlock()->c_str(), (testName + L"-smartview").c_str());
 		}
 
 	public:
@@ -65,36 +52,38 @@ namespace blockPVtest
 										  L"NamespaceGuid = {3F016B51-AD8B-4D5B-9A74-CAB5B37B5884}\r\n"
 										  L"LocalId = cb: 4 lpb: 00000006");
 			testPV(
-				std::vector<pvTestCase>{pvTestCase{L"bin-f-t",
-												   PR_CHANGE_KEY,
-												   L"14000000516B013F8BAD5B4D9A74CAB5B37B588400000006",
-												   false,
-												   true,
-												   0,
-												   0x18,
-												   propblock,
-												   altpropblock,
-												   smartview},
-										pvTestCase{L"bin-f-f",
-												   PR_CHANGE_KEY,
-												   L"1400516B013F8BAD5B4D9A74CAB5B37B588400000006",
-												   false,
-												   false,
-												   0,
-												   0x16,
-												   propblock,
-												   altpropblock,
-												   smartview},
-										pvTestCase{L"bin-t-f",
-												   PR_CHANGE_KEY,
-												   L"000000000000000014000000516B013F8BAD5B4D9A74CAB5B37B588400000006",
-												   true,
-												   false,
-												   0,
-												   0x20,
-												   propblock,
-												   altpropblock,
-												   smartview}});
+				L"bin-f-t",
+				PR_CHANGE_KEY,
+				L"14000000516B013F8BAD5B4D9A74CAB5B37B588400000006",
+				false,
+				true,
+				0,
+				0x18,
+				propblock,
+				altpropblock,
+				smartview);
+			testPV(
+				L"bin-f-f",
+				PR_CHANGE_KEY,
+				L"1400516B013F8BAD5B4D9A74CAB5B37B588400000006",
+				false,
+				false,
+				0,
+				0x16,
+				propblock,
+				altpropblock,
+				smartview);
+			testPV(
+				L"bin-t-f",
+				PR_CHANGE_KEY,
+				L"000000000000000014000000516B013F8BAD5B4D9A74CAB5B37B588400000006",
+				true,
+				false,
+				0,
+				0x20,
+				propblock,
+				altpropblock,
+				smartview);
 		}
 	};
 } // namespace blockPVtest
