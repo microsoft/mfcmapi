@@ -10,6 +10,7 @@ namespace blockPVtest
 	private:
 		struct pvTestCase
 		{
+			std::wstring testName;
 			ULONG ulPropTag;
 			std::wstring source{};
 			size_t offset;
@@ -19,18 +20,18 @@ namespace blockPVtest
 			bool doRuleProcessing;
 		};
 
-		void testPV(const pvTestCase & data)
+		void testPV(const pvTestCase& data)
 		{
 			auto block = smartview::getPVParser(PROP_TYPE(data.ulPropTag));
 			auto parser = makeParser(data.source);
 
 			block->parse(parser, data.ulPropTag, data.doNickname, data.doRuleProcessing);
-			Assert::AreEqual(data.offset, block->getOffset());
-			Assert::AreEqual(data.size, block->getSize());
-			Assert::AreEqual(data.text.c_str(), block->PropBlock()->c_str());
+			Assert::AreEqual(data.offset, block->getOffset(), (data.testName + L"-offset").c_str());
+			Assert::AreEqual(data.size, block->getSize(), (data.testName + L"-size").c_str());
+			unittest::AreEqualEx(data.text.c_str(), block->PropBlock()->c_str(), (data.testName + L"-text").c_str());
 		}
 
-		void testPV(const std::vector<pvTestCase> & testCases)
+		void testPV(const std::vector<pvTestCase>& testCases)
 		{
 			for (const auto test : testCases)
 			{
@@ -52,21 +53,24 @@ namespace blockPVtest
 		TEST_METHOD(Test_PT_BINARY)
 		{
 			testPV(std::vector<pvTestCase>{
-				pvTestCase{PR_SENDER_SEARCH_KEY,
+				pvTestCase{L"bin-f-t",
+						   PR_SENDER_SEARCH_KEY,
 						   L"250000004449534E45595641434154494F4E434C5542404D41494C2E4456434D454D4245522E434F4D",
 						   0,
 						   0x29,
 						   L"cb: 37 lpb: 4449534E45595641434154494F4E434C5542404D41494C2E4456434D454D4245522E434F4D",
 						   false,
 						   true},
-				pvTestCase{PR_SENDER_SEARCH_KEY,
+				pvTestCase{L"bin-f-f",
+						   PR_SENDER_SEARCH_KEY,
 						   L"25004449534E45595641434154494F4E434C5542404D41494C2E4456434D454D4245522E434F4D",
 						   0,
 						   0x27,
 						   L"cb: 37 lpb: 4449534E45595641434154494F4E434C5542404D41494C2E4456434D454D4245522E434F4D",
 						   false,
 						   false},
-				pvTestCase{PR_SENDER_SEARCH_KEY,
+				pvTestCase{L"bin-t-f",
+						   PR_SENDER_SEARCH_KEY,
 						   L"0000000000000000250000004449534E45595641434154494F4E434C5542404D41494C2E4456434D454D424552"
 						   L"2E434F4D",
 						   0,
