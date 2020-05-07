@@ -13,11 +13,11 @@ namespace blockPVtest
 			std::wstring testName;
 			ULONG ulPropTag;
 			std::wstring source{};
+			bool doNickname;
+			bool doRuleProcessing;
 			size_t offset;
 			size_t size;
 			std::wstring text;
-			bool doNickname;
-			bool doRuleProcessing;
 		};
 
 		void testPV(const pvTestCase& data)
@@ -56,28 +56,28 @@ namespace blockPVtest
 				pvTestCase{L"bin-f-t",
 						   PR_SENDER_SEARCH_KEY,
 						   L"250000004449534E45595641434154494F4E434C5542404D41494C2E4456434D454D4245522E434F4D",
+						   false,
+						   true,
 						   0,
 						   0x29,
-						   L"cb: 37 lpb: 4449534E45595641434154494F4E434C5542404D41494C2E4456434D454D4245522E434F4D",
-						   false,
-						   true},
+						   L"cb: 37 lpb: 4449534E45595641434154494F4E434C5542404D41494C2E4456434D454D4245522E434F4D"},
 				pvTestCase{L"bin-f-f",
 						   PR_SENDER_SEARCH_KEY,
 						   L"25004449534E45595641434154494F4E434C5542404D41494C2E4456434D454D4245522E434F4D",
+						   false,
+						   false,
 						   0,
 						   0x27,
-						   L"cb: 37 lpb: 4449534E45595641434154494F4E434C5542404D41494C2E4456434D454D4245522E434F4D",
-						   false,
-						   false},
+						   L"cb: 37 lpb: 4449534E45595641434154494F4E434C5542404D41494C2E4456434D454D4245522E434F4D"},
 				pvTestCase{L"bin-t-f",
 						   PR_SENDER_SEARCH_KEY,
 						   L"0000000000000000250000004449534E45595641434154494F4E434C5542404D41494C2E4456434D454D424552"
 						   L"2E434F4D",
+						   true,
+						   false,
 						   0,
 						   0x31,
-						   L"cb: 37 lpb: 4449534E45595641434154494F4E434C5542404D41494C2E4456434D454D4245522E434F4D",
-						   true,
-						   false}});
+						   L"cb: 37 lpb: 4449534E45595641434154494F4E434C5542404D41494C2E4456434D454D4245522E434F4D"}});
 		}
 	};
 } // namespace blockPVtest
