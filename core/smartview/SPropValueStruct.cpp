@@ -16,57 +16,7 @@ namespace smartview
 
 		if (m_doNickname) static_cast<void>(m_Parser->advance(sizeof DWORD)); // reserved
 
-		switch (*PropType)
-		{
-		case PT_I2:
-			value = std::make_shared<I2BLock>();
-			break;
-		case PT_LONG:
-			value = std::make_shared<LongBLock>();
-			break;
-		case PT_ERROR:
-			value = std::make_shared<ErrorBlock>();
-			break;
-		case PT_R4:
-			value = std::make_shared<R4BLock>();
-			break;
-		case PT_DOUBLE:
-			value = std::make_shared<DoubleBlock>();
-			break;
-		case PT_BOOLEAN:
-			value = std::make_shared<BooleanBlock>();
-			break;
-		case PT_I8:
-			value = std::make_shared<I8Block>();
-			break;
-		case PT_SYSTIME:
-			value = std::make_shared<FILETIMEBLock>();
-			break;
-		case PT_STRING8:
-			value = std::make_shared<CountedStringA>();
-			break;
-		case PT_BINARY:
-			value = std::make_shared<SBinaryBlock>();
-			break;
-		case PT_UNICODE:
-			value = std::make_shared<CountedStringW>();
-			break;
-		case PT_CLSID:
-			value = std::make_shared<CLSIDBlock>();
-			break;
-		case PT_MV_STRING8:
-			value = std::make_shared<StringArrayA>();
-			break;
-		case PT_MV_UNICODE:
-			value = std::make_shared<StringArrayW>();
-			break;
-		case PT_MV_BINARY:
-			value = std::make_shared<SBinaryArrayBlock>();
-			break;
-		default:
-			break;
-		}
-
+		value = getPVParser(*PropType);
 		if (value)
 		{
 			value->parse(m_Parser, *ulPropTag, m_doNickname, m_doRuleProcessing);

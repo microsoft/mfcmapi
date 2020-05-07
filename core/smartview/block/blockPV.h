@@ -454,4 +454,43 @@ namespace smartview
 		const void getProp(SPropValue& prop) noexcept override { prop.Value.err = *err; }
 		std::shared_ptr<blockT<SCODE>> err = emptyT<SCODE>();
 	};
+
+	inline std::shared_ptr<blockPV> getPVParser(ULONG ulPropType)
+	{
+		switch (ulPropType)
+		{
+		case PT_I2:
+			return std::make_shared<I2BLock>();
+		case PT_LONG:
+			return std::make_shared<LongBLock>();
+		case PT_ERROR:
+			return std::make_shared<ErrorBlock>();
+		case PT_R4:
+			return std::make_shared<R4BLock>();
+		case PT_DOUBLE:
+			return std::make_shared<DoubleBlock>();
+		case PT_BOOLEAN:
+			return std::make_shared<BooleanBlock>();
+		case PT_I8:
+			return std::make_shared<I8Block>();
+		case PT_SYSTIME:
+			return std::make_shared<FILETIMEBLock>();
+		case PT_STRING8:
+			return std::make_shared<CountedStringA>();
+		case PT_BINARY:
+			return std::make_shared<SBinaryBlock>();
+		case PT_UNICODE:
+			return std::make_shared<CountedStringW>();
+		case PT_CLSID:
+			return std::make_shared<CLSIDBlock>();
+		case PT_MV_STRING8:
+			return std::make_shared<StringArrayA>();
+		case PT_MV_UNICODE:
+			return std::make_shared<StringArrayW>();
+		case PT_MV_BINARY:
+			return std::make_shared<SBinaryArrayBlock>();
+		default:
+			return nullptr;
+		}
+	}
 } // namespace smartview
