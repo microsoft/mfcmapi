@@ -19,6 +19,7 @@ namespace blockPVtest
 			size_t size;
 			std::wstring propblock;
 			std::wstring altpropblock;
+			std::wstring smartview;
 		};
 
 		void testPV(const pvTestCase& data)
@@ -33,6 +34,8 @@ namespace blockPVtest
 				data.propblock.c_str(), block->PropBlock()->c_str(), (data.testName + L"-propblock").c_str());
 			unittest::AreEqualEx(
 				data.altpropblock.c_str(), block->AltPropBlock()->c_str(), (data.testName + L"-altpropblock").c_str());
+			unittest::AreEqualEx(
+				data.smartview.c_str(), block->SmartViewBlock()->c_str(), (data.testName + L"-smartview").c_str());
 		}
 
 		void testPV(const std::vector<pvTestCase>& testCases)
@@ -58,6 +61,9 @@ namespace blockPVtest
 		{
 			auto propblock = std::wstring(L"cb: 20 lpb: 516B013F8BAD5B4D9A74CAB5B37B588400000006");
 			auto altpropblock = std::wstring(L"Qk.?.≠[M.t µ≥{X.....");
+			auto smartview = std::wstring(L"XID:\r\n"
+										  L"NamespaceGuid = {3F016B51-AD8B-4D5B-9A74-CAB5B37B5884}\r\n"
+										  L"LocalId = cb: 4 lpb: 00000006");
 			testPV(
 				std::vector<pvTestCase>{pvTestCase{L"bin-f-t",
 												   PR_CHANGE_KEY,
@@ -67,7 +73,8 @@ namespace blockPVtest
 												   0,
 												   0x18,
 												   propblock,
-												   altpropblock},
+												   altpropblock,
+												   smartview},
 										pvTestCase{L"bin-f-f",
 												   PR_CHANGE_KEY,
 												   L"1400516B013F8BAD5B4D9A74CAB5B37B588400000006",
@@ -76,7 +83,8 @@ namespace blockPVtest
 												   0,
 												   0x16,
 												   propblock,
-												   altpropblock},
+												   altpropblock,
+												   smartview},
 										pvTestCase{L"bin-t-f",
 												   PR_CHANGE_KEY,
 												   L"000000000000000014000000516B013F8BAD5B4D9A74CAB5B37B588400000006",
@@ -85,7 +93,8 @@ namespace blockPVtest
 												   0,
 												   0x20,
 												   propblock,
-												   altpropblock}});
+												   altpropblock,
+												   smartview}});
 		}
 	};
 } // namespace blockPVtest
