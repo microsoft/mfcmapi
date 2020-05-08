@@ -85,5 +85,45 @@ namespace blockPVtest
 				altpropblock,
 				smartview);
 		}
+
+		TEST_METHOD(Test_PT_UNICODE)
+		{
+			auto propblock = std::wstring(L"test string");
+			auto altpropblock = std::wstring(L"cb: 22 lpb: 7400650073007400200073007400720069006E006700");
+			auto smartview = std::wstring(L"");
+			testPV(
+				L"uni-f-t",
+				PR_SUBJECT_W,
+				L"7400650073007400200073007400720069006E0067000000",
+				false,
+				true,
+				0,
+				0x18,
+				propblock,
+				altpropblock,
+				smartview);
+			testPV(
+				L"uni-f-f",
+				PR_SUBJECT_W,
+				L"16007400650073007400200073007400720069006E006700",
+				false,
+				false,
+				0,
+				0x18,
+				propblock,
+				altpropblock,
+				smartview);
+			testPV(
+				L"uni-t-f",
+				PR_SUBJECT_W,
+				L"0000000000000000160000007400650073007400200073007400720069006E006700",
+				true,
+				false,
+				0,
+				0x22,
+				propblock,
+				altpropblock,
+				smartview);
+		}
 	};
 } // namespace blockPVtest
