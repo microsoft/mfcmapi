@@ -19,11 +19,11 @@ namespace blockPVtest
 			std::wstring source,
 			bool doNickname,
 			bool doRuleProcessing,
-			size_t offset,
-			size_t size,
 			std::wstring propblock,
 			std::wstring altpropblock,
-			std::wstring smartview)
+			std::wstring smartview,
+			size_t offset,
+			size_t size)
 		{
 			auto block = smartview::getPVParser(PROP_TYPE(ulPropTag));
 			auto parser = makeParser(source);
@@ -57,33 +57,33 @@ namespace blockPVtest
 				L"14000000516B013F8BAD5B4D9A74CAB5B37B588400000006",
 				false,
 				true,
-				0,
-				0x18,
 				propblock,
 				altpropblock,
-				smartview);
+				smartview,
+				0,
+				0x18);
 			testPV(
 				L"bin-f-f",
 				PR_CHANGE_KEY,
 				L"1400516B013F8BAD5B4D9A74CAB5B37B588400000006",
 				false,
 				false,
-				0,
-				0x16,
 				propblock,
 				altpropblock,
-				smartview);
+				smartview,
+				0,
+				0x16);
 			testPV(
 				L"bin-t-f",
 				PR_CHANGE_KEY,
 				L"000000000000000014000000516B013F8BAD5B4D9A74CAB5B37B588400000006",
 				true,
 				false,
-				0,
-				0x20,
 				propblock,
 				altpropblock,
-				smartview);
+				smartview,
+				0,
+				0x20);
 		}
 
 		TEST_METHOD(Test_PT_UNICODE)
@@ -97,33 +97,33 @@ namespace blockPVtest
 				L"7400650073007400200073007400720069006E0067000000",
 				false,
 				true,
-				0,
-				0x18,
 				propblock,
 				altpropblock,
-				smartview);
+				smartview,
+				0,
+				0x18);
 			testPV(
 				L"uni-f-f",
 				PR_SUBJECT_W,
 				L"16007400650073007400200073007400720069006E006700",
 				false,
 				false,
-				0,
-				0x18,
 				propblock,
 				altpropblock,
-				smartview);
+				smartview,
+				0,
+				0x18);
 			testPV(
 				L"uni-t-f",
 				PR_SUBJECT_W,
 				L"0000000000000000160000007400650073007400200073007400720069006E006700",
 				true,
 				false,
-				0,
-				0x22,
 				propblock,
 				altpropblock,
-				smartview);
+				smartview,
+				0,
+				0x22);
 		}
 	};
 } // namespace blockPVtest
