@@ -125,5 +125,25 @@ namespace blockPVtest
 				0,
 				0x22);
 		}
+
+		TEST_METHOD(Test_PT_LONG)
+		{
+			auto propblock = std::wstring(L"9");
+			auto altpropblock = std::wstring(L"0x9");
+			auto smartview = std::wstring(L"Flags: MAPI_PROFSECT");
+			testPV(L"long-f-t", PR_OBJECT_TYPE, L"09000000", false, true, propblock, altpropblock, smartview, 0, 0x4);
+			testPV(L"long-f-f", PR_OBJECT_TYPE, L"09000000", false, false, propblock, altpropblock, smartview, 0, 0x4);
+			testPV(
+				L"long-t-f",
+				PR_OBJECT_TYPE,
+				L"0900000000000000",
+				true,
+				false,
+				propblock,
+				altpropblock,
+				smartview,
+				0,
+				0x8);
+		}
 	};
 } // namespace blockPVtest
