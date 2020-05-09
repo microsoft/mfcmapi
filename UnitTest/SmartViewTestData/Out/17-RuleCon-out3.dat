@@ -452,8 +452,8 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																	lpRes->res.resAnnotation.lpProp[0x00000087].ulPropTag = 0x00000080 (0x0080): PR_REPORT_DISPOSITION: (PidTagReportDisposition)
 																	lpRes->res.resAnnotation.lpProp[0x00000088].ulPropTag = 0xF6F01F20 (0x1f20)
 																	lpRes->res.resAnnotation.lpProp[0x00000089].ulPropTag = 0x00000040 (PT_SYSTIME): PR_RECEIVED_BY_NAME: (PR_RECEIVED_BY_NAME_A, PR_RECEIVED_BY_NAME_W, PidTagReceivedByName)
-																	lpRes->res.resAnnotation.lpProp[0x00000089].Value = 01:13:10.030 PM 10/29/28268
-																		Alt: Low: 0x21048C0C High: 0x74CA0D00
+																	lpRes->res.resAnnotation.lpProp[0x00000089].Value = 02:53:48.535 AM 4/29/9140
+																		Alt: Low: 0x74CA0D00 High: 0x21048C0C
 																	lpRes->res.resAnnotation.lpProp[0x0000008A].ulPropTag = 0x904BAB01 (0x8b01 | MV_INSTANCE)
 																	lpRes->res.resAnnotation.lpProp[0x0000008B].ulPropTag = 0xFEB20280 (0x0280)
 																	lpRes->res.resAnnotation.lpRes
@@ -1072,8 +1072,8 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																				lpRes->res.resAnnotation.lpProp[0x00000087].ulPropTag = 0x03000330 (0x0330)
 																				lpRes->res.resAnnotation.lpProp[0x00000088].ulPropTag = 0x03600370 (0x0370)
 																				lpRes->res.resAnnotation.lpProp[0x00000089].ulPropTag = 0x00000040 (PT_SYSTIME): PR_RECEIVED_BY_NAME: (PR_RECEIVED_BY_NAME_A, PR_RECEIVED_BY_NAME_W, PidTagReceivedByName)
-																				lpRes->res.resAnnotation.lpProp[0x00000089].Value = Invalid systime
-																					Alt: Low: 0x00000010 High: 0xC0500130
+																				lpRes->res.resAnnotation.lpProp[0x00000089].Value = 01:59:54.594 AM 1/1/1601
+																					Alt: Low: 0xC0500130 High: 0x00000010
 																				lpRes->res.resAnnotation.lpProp[0x0000008A].ulPropTag = 0x00000070 (0x0070): PR_CONVERSATION_TOPIC: (PR_CONVERSATION_TOPIC_A, PR_CONVERSATION_TOPIC_W, PidTagConversationTopic, ptagConversationTopic)
 																				lpRes->res.resAnnotation.lpProp[0x0000008B].ulPropTag = 0x01000010 (0x0010)
 																				lpRes->res.resAnnotation.lpRes

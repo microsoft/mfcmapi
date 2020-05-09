@@ -90,8 +90,8 @@ namespace smartview
 	private:
 		void parse() override
 		{
-			dwHighDateTime = blockT<DWORD>::parse(m_Parser);
 			dwLowDateTime = blockT<DWORD>::parse(m_Parser);
+			dwHighDateTime = blockT<DWORD>::parse(m_Parser);
 		}
 
 		const void getProp(SPropValue& prop) noexcept override { prop.Value.ft = {*dwLowDateTime, *dwHighDateTime}; }

@@ -56,18 +56,6 @@ namespace blockPVtest
 										  L"NamespaceGuid = {3F016B51-AD8B-4D5B-9A74-CAB5B37B5884}\r\n"
 										  L"LocalId = cb: 4 lpb: 00000006");
 			testPV(
-				L"bin-f-t",
-				PR_CHANGE_KEY,
-				L"14000000516B013F8BAD5B4D9A74CAB5B37B588400000006",
-				false,
-				true,
-				propblock,
-				altpropblock,
-				smartview,
-				L"",
-				0,
-				0x18);
-			testPV(
 				L"bin-f-f",
 				PR_CHANGE_KEY,
 				L"1400516B013F8BAD5B4D9A74CAB5B37B588400000006",
@@ -79,6 +67,18 @@ namespace blockPVtest
 				L"",
 				0,
 				0x16);
+			testPV(
+				L"bin-f-t",
+				PR_CHANGE_KEY,
+				L"14000000516B013F8BAD5B4D9A74CAB5B37B588400000006",
+				false,
+				true,
+				propblock,
+				altpropblock,
+				smartview,
+				L"",
+				0,
+				0x18);
 			testPV(
 				L"bin-t-f",
 				PR_CHANGE_KEY,
@@ -99,11 +99,11 @@ namespace blockPVtest
 			auto altpropblock = std::wstring(L"cb: 22 lpb: 7400650073007400200073007400720069006E006700");
 			auto smartview = std::wstring(L"");
 			testPV(
-				L"uni-f-t",
+				L"uni-f-f",
 				PR_SUBJECT_W,
-				L"7400650073007400200073007400720069006E0067000000",
+				L"16007400650073007400200073007400720069006E006700",
 				false,
-				true,
+				false,
 				propblock,
 				altpropblock,
 				smartview,
@@ -111,11 +111,11 @@ namespace blockPVtest
 				0,
 				0x18);
 			testPV(
-				L"uni-f-f",
+				L"uni-f-t",
 				PR_SUBJECT_W,
-				L"16007400650073007400200073007400720069006E006700",
+				L"7400650073007400200073007400720069006E0067000000",
 				false,
-				false,
+				true,
 				propblock,
 				altpropblock,
 				smartview,
@@ -143,18 +143,6 @@ namespace blockPVtest
 			auto smartview = std::wstring(L"Flags: MAPI_PROFSECT");
 			auto toNum = std::wstring(L"MAPI_PROFSECT");
 			testPV(
-				L"long-f-t",
-				PR_OBJECT_TYPE,
-				L"09000000",
-				false,
-				true,
-				propblock,
-				altpropblock,
-				smartview,
-				toNum,
-				0,
-				0x4);
-			testPV(
 				L"long-f-f",
 				PR_OBJECT_TYPE,
 				L"09000000",
@@ -167,9 +155,65 @@ namespace blockPVtest
 				0,
 				0x4);
 			testPV(
+				L"long-f-t",
+				PR_OBJECT_TYPE,
+				L"09000000",
+				false,
+				true,
+				propblock,
+				altpropblock,
+				smartview,
+				toNum,
+				0,
+				0x4);
+			testPV(
 				L"long-t-f",
 				PR_OBJECT_TYPE,
 				L"0900000000000000",
+				true,
+				false,
+				propblock,
+				altpropblock,
+				smartview,
+				toNum,
+				0,
+				0x8);
+		}
+
+		TEST_METHOD(Test_PT_SYSTIME)
+		{
+			auto propblock = std::wstring(L"03:59:00.000 AM 5/10/2020");
+			auto altpropblock = std::wstring(L"Low: 0x5606DA00 High: 0x01D6267F");
+			auto smartview = std::wstring(L"");
+			auto toNum = std::wstring(L"");
+			testPV(
+				L"systime-f-f",
+				PR_MESSAGE_DELIVERY_TIME,
+				L"00DA06567F26D601",
+				false,
+				false,
+				propblock,
+				altpropblock,
+				smartview,
+				toNum,
+				0,
+				0x8);
+			testPV(
+				L"systime-f-t",
+				PR_MESSAGE_DELIVERY_TIME,
+				L"00DA06567F26D601",
+				false,
+				true,
+				propblock,
+				altpropblock,
+				smartview,
+				toNum,
+				0,
+				0x8);
+			testPV(
+				L"systime-t-f",
+				PR_MESSAGE_DELIVERY_TIME,
+				L"00DA06567F26D601",
 				true,
 				false,
 				propblock,
