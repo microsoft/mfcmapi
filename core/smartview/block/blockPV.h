@@ -14,7 +14,6 @@ namespace smartview
 	public:
 		blockPV() = default;
 		void parse(std::shared_ptr<binaryParser>& parser, ULONG ulPropTag, bool doNickname, bool doRuleProcessing)
-
 		{
 			m_Parser = parser;
 			m_doNickname = doNickname;
