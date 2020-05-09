@@ -22,6 +22,7 @@ namespace blockPVtest
 			std::wstring propblock,
 			std::wstring altpropblock,
 			std::wstring smartview,
+			std::wstring toNum,
 			size_t offset,
 			size_t size)
 		{
@@ -36,6 +37,7 @@ namespace blockPVtest
 				altpropblock.c_str(), block->AltPropBlock()->c_str(), (testName + L"-altpropblock").c_str());
 			unittest::AreEqualEx(
 				smartview.c_str(), block->SmartViewBlock()->c_str(), (testName + L"-smartview").c_str());
+			unittest::AreEqualEx(toNum, block->toNumberAsString(), (testName + L"-tonum").c_str());
 			// Check that we consumed the entire input
 			Assert::AreEqual(true, parser->empty(), (testName + L"-complete").c_str());
 		}
@@ -62,6 +64,7 @@ namespace blockPVtest
 				propblock,
 				altpropblock,
 				smartview,
+				L"",
 				0,
 				0x18);
 			testPV(
@@ -73,6 +76,7 @@ namespace blockPVtest
 				propblock,
 				altpropblock,
 				smartview,
+				L"",
 				0,
 				0x16);
 			testPV(
@@ -84,6 +88,7 @@ namespace blockPVtest
 				propblock,
 				altpropblock,
 				smartview,
+				L"",
 				0,
 				0x20);
 		}
@@ -102,6 +107,7 @@ namespace blockPVtest
 				propblock,
 				altpropblock,
 				smartview,
+				L"",
 				0,
 				0x18);
 			testPV(
@@ -113,6 +119,7 @@ namespace blockPVtest
 				propblock,
 				altpropblock,
 				smartview,
+				L"",
 				0,
 				0x18);
 			testPV(
@@ -124,6 +131,7 @@ namespace blockPVtest
 				propblock,
 				altpropblock,
 				smartview,
+				L"",
 				0,
 				0x22);
 		}
@@ -133,8 +141,31 @@ namespace blockPVtest
 			auto propblock = std::wstring(L"9");
 			auto altpropblock = std::wstring(L"0x9");
 			auto smartview = std::wstring(L"Flags: MAPI_PROFSECT");
-			testPV(L"long-f-t", PR_OBJECT_TYPE, L"09000000", false, true, propblock, altpropblock, smartview, 0, 0x4);
-			testPV(L"long-f-f", PR_OBJECT_TYPE, L"09000000", false, false, propblock, altpropblock, smartview, 0, 0x4);
+			auto toNum = std::wstring(L"MAPI_PROFSECT");
+			testPV(
+				L"long-f-t",
+				PR_OBJECT_TYPE,
+				L"09000000",
+				false,
+				true,
+				propblock,
+				altpropblock,
+				smartview,
+				toNum,
+				0,
+				0x4);
+			testPV(
+				L"long-f-f",
+				PR_OBJECT_TYPE,
+				L"09000000",
+				false,
+				false,
+				propblock,
+				altpropblock,
+				smartview,
+				toNum,
+				0,
+				0x4);
 			testPV(
 				L"long-t-f",
 				PR_OBJECT_TYPE,
@@ -144,6 +175,7 @@ namespace blockPVtest
 				propblock,
 				altpropblock,
 				smartview,
+				toNum,
 				0,
 				0x8);
 		}
