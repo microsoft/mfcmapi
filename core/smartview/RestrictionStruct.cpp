@@ -326,16 +326,23 @@ namespace smartview
 					proptags::TagToString(*resContent.lpProp.Props()[0]->ulPropTag, nullptr, false, true).c_str());
 				if (resContent.lpProp.Props()[0]->value)
 				{
-					propBlock->addChild(
-						resContent.lpProp.Props()[0]->value->PropBlock(),
-						L"%1!ws!lpRes->res.resContent.lpProp->Value = %2!ws!\r\n",
-						szTabs.c_str(),
-						resContent.lpProp.Props()[0]->value->PropBlock()->c_str());
-					propBlock->addChild(
-						resContent.lpProp.Props()[0]->value->AltPropBlock(),
-						L"%1!ws!\tAlt: %2!ws!\r\n",
-						szTabs.c_str(),
-						resContent.lpProp.Props()[0]->value->AltPropBlock()->c_str());
+					if (!resContent.lpProp.Props()[0]->value->PropBlock()->empty())
+					{
+						propBlock->addChild(
+							resContent.lpProp.Props()[0]->value->PropBlock(),
+							L"%1!ws!lpRes->res.resContent.lpProp->Value = %2!ws!\r\n",
+							szTabs.c_str(),
+							resContent.lpProp.Props()[0]->value->PropBlock()->c_str());
+					}
+
+					if (!resContent.lpProp.Props()[0]->value->AltPropBlock()->empty())
+					{
+						propBlock->addChild(
+							resContent.lpProp.Props()[0]->value->AltPropBlock(),
+							L"%1!ws!\tAlt: %2!ws!\r\n",
+							szTabs.c_str(),
+							resContent.lpProp.Props()[0]->value->AltPropBlock()->c_str());
+					}
 				}
 			}
 		}
@@ -363,16 +370,23 @@ namespace smartview
 					proptags::TagToString(*resProperty.lpProp.Props()[0]->ulPropTag, nullptr, false, true).c_str());
 				if (resProperty.lpProp.Props()[0]->value)
 				{
-					resProperty.ulPropTag->addChild(
-						resProperty.lpProp.Props()[0]->value->PropBlock(),
-						L"%1!ws!lpRes->res.resProperty.lpProp->Value = %2!ws!\r\n",
-						szTabs.c_str(),
-						resProperty.lpProp.Props()[0]->value->PropBlock()->c_str());
-					resProperty.ulPropTag->addChild(
-						resProperty.lpProp.Props()[0]->value->AltPropBlock(),
-						L"%1!ws!\tAlt: %2!ws!\r\n",
-						szTabs.c_str(),
-						resProperty.lpProp.Props()[0]->value->AltPropBlock()->c_str());
+					if (!resProperty.lpProp.Props()[0]->value->PropBlock()->empty())
+					{
+						resProperty.ulPropTag->addChild(
+							resProperty.lpProp.Props()[0]->value->PropBlock(),
+							L"%1!ws!lpRes->res.resProperty.lpProp->Value = %2!ws!\r\n",
+							szTabs.c_str(),
+							resProperty.lpProp.Props()[0]->value->PropBlock()->c_str());
+					}
+
+					if (!resProperty.lpProp.Props()[0]->value->AltPropBlock()->empty())
+					{
+						resProperty.ulPropTag->addChild(
+							resProperty.lpProp.Props()[0]->value->AltPropBlock(),
+							L"%1!ws!\tAlt: %2!ws!\r\n",
+							szTabs.c_str(),
+							resProperty.lpProp.Props()[0]->value->AltPropBlock()->c_str());
+					}
 
 					szPropNum = resProperty.lpProp.Props()[0]->value->toNumberAsString();
 					if (!szPropNum.empty())
@@ -469,17 +483,24 @@ namespace smartview
 
 				if (prop->value)
 				{
-					prop->ulPropTag->addChild(
-						prop->value->PropBlock(),
-						L"%1!ws!lpRes->res.resComment.lpProp[0x%2!08X!].Value = %3!ws!\r\n",
-						szTabs.c_str(),
-						i,
-						prop->value->PropBlock()->c_str());
-					prop->ulPropTag->addChild(
-						prop->value->AltPropBlock(),
-						L"%1!ws!\tAlt: %2!ws!\r\n",
-						szTabs.c_str(),
-						prop->value->AltPropBlock()->c_str());
+					if (!prop->value->PropBlock()->empty())
+					{
+						prop->ulPropTag->addChild(
+							prop->value->PropBlock(),
+							L"%1!ws!lpRes->res.resComment.lpProp[0x%2!08X!].Value = %3!ws!\r\n",
+							szTabs.c_str(),
+							i,
+							prop->value->PropBlock()->c_str());
+					}
+
+					if (!prop->value->AltPropBlock()->empty())
+					{
+						prop->ulPropTag->addChild(
+							prop->value->AltPropBlock(),
+							L"%1!ws!\tAlt: %2!ws!\r\n",
+							szTabs.c_str(),
+							prop->value->AltPropBlock()->c_str());
+					}
 				}
 
 				i++;
@@ -514,17 +535,24 @@ namespace smartview
 					proptags::TagToString(*prop->ulPropTag, nullptr, false, true).c_str());
 				if (prop->value)
 				{
-					prop->ulPropTag->addChild(
-						prop->value->PropBlock(),
-						L"%1!ws!lpRes->res.resAnnotation.lpProp[0x%2!08X!].Value = %3!ws!\r\n",
-						szTabs.c_str(),
-						i,
-						prop->value->PropBlock()->c_str());
-					prop->ulPropTag->addChild(
-						prop->value->AltPropBlock(),
-						L"%1!ws!\tAlt: %2!ws!\r\n",
-						szTabs.c_str(),
-						prop->value->AltPropBlock()->c_str());
+					if (!prop->value->PropBlock()->empty())
+					{
+						prop->ulPropTag->addChild(
+							prop->value->PropBlock(),
+							L"%1!ws!lpRes->res.resAnnotation.lpProp[0x%2!08X!].Value = %3!ws!\r\n",
+							szTabs.c_str(),
+							i,
+							prop->value->PropBlock()->c_str());
+					}
+
+					if (!prop->value->AltPropBlock()->empty())
+					{
+						prop->ulPropTag->addChild(
+							prop->value->AltPropBlock(),
+							L"%1!ws!\tAlt: %2!ws!\r\n",
+							szTabs.c_str(),
+							prop->value->AltPropBlock()->c_str());
+					}
 				}
 
 				i++;

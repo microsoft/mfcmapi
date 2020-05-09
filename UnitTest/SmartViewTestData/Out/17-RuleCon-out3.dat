@@ -1386,7 +1386,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resAnnotation.lpProp[0x0000004A].ulPropTag = 0x00021006 (PT_MV_CURRENCY): PR_ALTERNATE_RECIPIENT_ALLOWED: (PidTagAlternateRecipientAllowed, ptagAlternateRecipientAllowed, PR_CERT_ASYMETRIC_CAPS)
 																									lpRes->res.resAnnotation.lpProp[0x0000004B].ulPropTag = 0x90060005 (PT_DOUBLE)
 																									lpRes->res.resAnnotation.lpProp[0x0000004B].Value = 0.000000
-																										Alt: 
 																									lpRes->res.resAnnotation.lpProp[0x0000004C].ulPropTag = 0xF0064007 (0x4007)
 																									lpRes->res.resAnnotation.lpProp[0x0000004D].ulPropTag = 0x0000E006 (0xc006 | MV_INSTANCE)
 																									lpRes->res.resAnnotation.lpProp[0x0000004E].ulPropTag = 0x2300F001 (0xd001 | MV_INSTANCE)
