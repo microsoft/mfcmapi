@@ -15,7 +15,7 @@ namespace smartview
 		}
 		binaryParser(const std::vector<BYTE>& _bin)
 		{
-			bin = _bin ;
+			bin = _bin;
 			size = bin.size();
 		}
 
@@ -50,10 +50,11 @@ namespace smartview
 			}
 		}
 
+		bool overflow() const noexcept { return offset > size; }
 		// If we're before the end of the buffer, return the count of remaining bytes
 		// If we're at or past the end of the buffer, return 0
 		// If we're before the beginning of the buffer, return 0
-		size_t getSize() const noexcept { return offset > size ? 0 : size - offset; }
+		size_t getSize() const noexcept { return overflow() ? 0 : size - offset; }
 		bool checkSize(size_t cb) const noexcept { return cb <= getSize(); }
 
 	private:
