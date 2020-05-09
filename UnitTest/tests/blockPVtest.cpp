@@ -36,6 +36,8 @@ namespace blockPVtest
 				altpropblock.c_str(), block->AltPropBlock()->c_str(), (testName + L"-altpropblock").c_str());
 			unittest::AreEqualEx(
 				smartview.c_str(), block->SmartViewBlock()->c_str(), (testName + L"-smartview").c_str());
+			// Check that we consumed the entire input
+			Assert::AreEqual(true, parser->empty(), (testName + L"-complete").c_str());
 		}
 
 	public:
