@@ -38,8 +38,6 @@ namespace blockPVtest
 				smartview.c_str(), block->SmartViewBlock()->c_str(), (testName + L"-smartview").c_str());
 			// Check that we consumed the entire input
 			Assert::AreEqual(true, parser->empty(), (testName + L"-complete").c_str());
-			// overflow
-			Assert::AreEqual(false, parser->overflow(), (testName + L"-no-overflow").c_str());
 		}
 
 	public:
