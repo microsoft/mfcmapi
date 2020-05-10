@@ -105,6 +105,7 @@ namespace unittest
 		const auto data = static_cast<const BYTE*>(bytes);
 
 		// UTF 16 LE
+		// In Notepad++, this is UCS-2 LE BOM encoding
 		if (cb >= 2 && data[0] == 0xff && data[1] == 0xfe)
 		{
 			// Skip the byte order mark

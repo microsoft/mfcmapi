@@ -310,6 +310,7 @@ namespace SmartViewTest
 					parserType::RULECONDITION, unittest::parse_all, IDR_SV17RULECON3IN, IDR_SV17RULECON3OUT},
 				SmartViewTestResource{
 					parserType::RULECONDITION, unittest::parse_all, IDR_SV17RULECON4IN, IDR_SV17RULECON4OUT},
+				// Empty test case to be filled out later
 				SmartViewTestResource{
 					parserType::RULECONDITION, unittest::parse_all, IDR_SV17RULECON5IN, IDR_SV17RULECON5OUT},
 			}));
