@@ -64,39 +64,40 @@ namespace smartview
 
 			for (size_t i = 0; i < m_NamedPropertyInformation.PropId.size(); i++)
 			{
-				terminateBlock();
-				addHeader(L"Named Prop 0x%1!04X!\r\n", i);
+				auto namedProp = std::make_shared<block>();
+				addChild(namedProp);
+				namedProp->setText(L"Named Prop 0x%1!04X!\r\n", i);
 
-				addChild(
+				namedProp->addChild(
 					m_NamedPropertyInformation.PropId[i],
 					L"\tPropID = 0x%1!04X!\r\n",
 					m_NamedPropertyInformation.PropId[i]->getData());
 
-				addChild(
+				namedProp->addChild(
 					m_NamedPropertyInformation.PropertyName[i]->Kind,
 					L"\tKind = 0x%1!02X!\r\n",
 					m_NamedPropertyInformation.PropertyName[i]->Kind->getData());
-				addChild(
+				namedProp->addChild(
 					m_NamedPropertyInformation.PropertyName[i]->Guid,
 					L"\tGuid = %1!ws!\r\n",
 					guid::GUIDToString(*m_NamedPropertyInformation.PropertyName[i]->Guid).c_str());
 
 				if (m_NamedPropertyInformation.PropertyName[i]->Kind == MNID_ID)
 				{
-					addChild(
+					namedProp->addChild(
 						m_NamedPropertyInformation.PropertyName[i]->LID,
 						L"\tLID = 0x%1!08X!",
 						m_NamedPropertyInformation.PropertyName[i]->LID->getData());
 				}
 				else if (*m_NamedPropertyInformation.PropertyName[i]->Kind == MNID_STRING)
 				{
-					addChild(
+					namedProp->addChild(
 						m_NamedPropertyInformation.PropertyName[i]->NameSize,
 						L"\tNameSize = 0x%1!02X!\r\n",
 						m_NamedPropertyInformation.PropertyName[i]->NameSize->getData());
-					addHeader(L"\tName = ");
-					addChild(
+					namedProp->addChild(
 						m_NamedPropertyInformation.PropertyName[i]->Name,
+						L"\tName = %1!ws!",
 						m_NamedPropertyInformation.PropertyName[i]->Name->c_str());
 				}
 			}
