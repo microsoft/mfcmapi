@@ -64,6 +64,7 @@ namespace smartview
 
 			for (size_t i = 0; i < m_NamedPropertyInformation.PropId.size(); i++)
 			{
+				terminateBlock();
 				auto namedProp = std::make_shared<block>();
 				addChild(namedProp);
 				namedProp->setText(L"Named Prop 0x%1!04X!\r\n", i);
@@ -82,7 +83,7 @@ namespace smartview
 					L"\tGuid = %1!ws!\r\n",
 					guid::GUIDToString(*m_NamedPropertyInformation.PropertyName[i]->Guid).c_str());
 
-				if (m_NamedPropertyInformation.PropertyName[i]->Kind == MNID_ID)
+				if (*m_NamedPropertyInformation.PropertyName[i]->Kind == MNID_ID)
 				{
 					namedProp->addChild(
 						m_NamedPropertyInformation.PropertyName[i]->LID,
@@ -105,6 +106,7 @@ namespace smartview
 
 		if (m_lpRes && m_lpRes->hasData())
 		{
+			terminateBlock();
 			addChild(m_lpRes->getBlock());
 		}
 	}
