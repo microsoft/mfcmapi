@@ -406,15 +406,23 @@ namespace smartview
 				szTabs.c_str(),
 				flags::InterpretFlags(flagBitmask, *resBitMask.relBMR).c_str(),
 				resBitMask.relBMR->getData());
-			rt->addChild(
-				resBitMask.ulMask,
-				L"%1!ws!lpRes->res.resBitMask.ulMask = 0x%2!08X!",
-				szTabs.c_str(),
-				resBitMask.ulMask->getData());
 			szPropNum = InterpretNumberAsStringProp(*resBitMask.ulMask, *resBitMask.ulPropTag);
-			if (!szPropNum.empty())
+			if (szPropNum.empty())
 			{
-				rt->addChild(resBitMask.ulMask, L": %1!ws!", szPropNum.c_str());
+				rt->addChild(
+					resBitMask.ulMask,
+					L"%1!ws!lpRes->res.resBitMask.ulMask = 0x%2!08X!",
+					szTabs.c_str(),
+					resBitMask.ulMask->getData());
+			}
+			else
+			{
+				rt->addChild(
+					resBitMask.ulMask,
+					L"%1!ws!lpRes->res.resBitMask.ulMask = %2!ws! = 0x%3!08X!",
+					szTabs.c_str(),
+					szPropNum.c_str(),
+					resBitMask.ulMask->getData());
 			}
 
 			rt->terminateBlock();
