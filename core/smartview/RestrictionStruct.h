@@ -6,13 +6,35 @@
 namespace smartview
 {
 	class RestrictionStruct;
-
-	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxcdata/3d0e5e14-7464-4659-b83d-a601b81fbdf5
-	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxocfg/001660fe-9839-41b9-9d5f-cd2b1a577e3b
-	struct SAndRestrictionStruct
+	class blockRes : public block
 	{
-		std::shared_ptr<blockT<DWORD>> cRes = emptyT<DWORD>();
-		std::vector<std::shared_ptr<RestrictionStruct>> lpRes;
+	public:
+		blockRes() = default;
+		void parse(std::shared_ptr<binaryParser>& parser, ULONG ulDepth, bool bRuleCondition, bool bExtendedCount)
+		{
+			m_Parser = parser;
+			m_ulDepth = ulDepth;
+			m_bRuleCondition = bRuleCondition;
+			m_bExtendedCount = bExtendedCount;
+
+			// Offset will always be where we start parsing
+			setOffset(m_Parser->getOffset());
+			parse();
+			// And size will always be how many bytes we consumed
+			setSize(m_Parser->getOffset() - getOffset());
+		}
+		blockRes(const blockRes&) = delete;
+		blockRes& operator=(const blockRes&) = delete;
+		virtual void parseBlocks(ULONG ulTabLevel) = 0;
+
+	protected:
+		ULONG m_ulDepth{};
+		bool m_bRuleCondition{};
+		bool m_bExtendedCount{};
+		std::shared_ptr<binaryParser> m_Parser{};
+
+	private:
+		virtual void parse() = 0;
 	};
 
 	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxcdata/50a969db-a794-4e3c-9fc0-28f37bc1d7a2
@@ -130,6 +152,7 @@ namespace smartview
 			m_Parser = parser;
 			parse(ulDepth);
 		}
+		void parseBlocks(ULONG ulTabLevel);
 
 	private:
 		void parse() override { parse(0); }
@@ -139,11 +162,10 @@ namespace smartview
 			setRoot(L"Restriction:\r\n");
 			parseBlocks(0);
 		};
-		void parseBlocks(ULONG ulTabLevel);
 
 		std::shared_ptr<blockT<DWORD>> rt = emptyT<DWORD>(); /* Restriction type */
+		std::shared_ptr<blockRes> res1; // TODO: fix name
 		SComparePropsRestrictionStruct resCompareProps;
-		SAndRestrictionStruct resAnd;
 		SOrRestrictionStruct resOr;
 		SNotRestrictionStruct resNot;
 		SContentRestrictionStruct resContent;

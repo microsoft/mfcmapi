@@ -9,6 +9,63 @@
 
 namespace smartview
 {
+	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxcdata/3d0e5e14-7464-4659-b83d-a601b81fbdf5
+	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxocfg/001660fe-9839-41b9-9d5f-cd2b1a577e3b
+	class SAndRestrictionStruct : public blockRes
+	{
+	public:
+		void parse() override
+		{
+			if (!m_bRuleCondition || m_bExtendedCount)
+			{
+				cRes = blockT<DWORD>::parse(m_Parser);
+			}
+			else
+			{
+				cRes = blockT<DWORD, WORD>::parse(m_Parser);
+			}
+
+			if (*cRes && *cRes < _MaxEntriesExtraLarge && m_ulDepth < _MaxDepth)
+			{
+				lpRes.reserve(*cRes);
+				for (ULONG i = 0; i < *cRes; i++)
+				{
+					if (!m_Parser->getSize()) break;
+					lpRes.emplace_back(std::make_shared<RestrictionStruct>(
+						m_Parser, m_ulDepth + 1, m_bRuleCondition, m_bExtendedCount));
+				}
+
+				// TODO: Should we do this?
+				//srRestriction.resAnd.lpRes.shrink_to_fit();
+			}
+		}
+
+		void parseBlocks(ULONG ulTabLevel)
+		{
+			// TODO: find a different way to handle this
+			std::wstring szTabs{};
+			for (ULONG i = 0; i < ulTabLevel; i++)
+			{
+				szTabs += L"\t"; // STRING_OK
+			}
+
+			auto i = 0;
+			addChild(cRes, L"%1!ws!lpRes->res.resAnd.cRes = 0x%2!08X!\r\n", szTabs.c_str(), cRes->getData());
+
+			for (const auto& res : lpRes)
+			{
+				auto resBlock = std::make_shared<block>();
+				resBlock->setText(L"%1!ws!lpRes->res.resAnd.lpRes[0x%2!08X!]\r\n", szTabs.c_str(), i++);
+				res->parseBlocks(ulTabLevel + 1);
+				resBlock->addChild(res->getBlock());
+				cRes->addChild(resBlock);
+			}
+		}
+
+		std::shared_ptr<blockT<DWORD>> cRes = emptyT<DWORD>();
+		std::vector<std::shared_ptr<RestrictionStruct>> lpRes;
+	};
+
 	// If bRuleCondition is true, parse restrictions as defined in [MS-OXCDATA] 2.12
 	// If bRuleCondition is true, bExtendedCount controls whether the count fields in AND/OR restrictions is 16 or 32 bits
 	//   https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxcdata/5d554ba7-b82f-42b6-8802-97c19f760633
@@ -31,29 +88,11 @@ namespace smartview
 		switch (*rt)
 		{
 		case RES_AND:
-			if (!m_bRuleCondition || m_bExtendedCount)
-			{
-				resAnd.cRes = blockT<DWORD>::parse(m_Parser);
-			}
-			else
-			{
-				resAnd.cRes = blockT<DWORD, WORD>::parse(m_Parser);
-			}
-
-			if (*resAnd.cRes && *resAnd.cRes < _MaxEntriesExtraLarge && ulDepth < _MaxDepth)
-			{
-				resAnd.lpRes.reserve(*resAnd.cRes);
-				for (ULONG i = 0; i < *resAnd.cRes; i++)
-				{
-					if (!m_Parser->getSize()) break;
-					resAnd.lpRes.emplace_back(
-						std::make_shared<RestrictionStruct>(m_Parser, ulDepth + 1, m_bRuleCondition, m_bExtendedCount));
-				}
-
-				// TODO: Should we do this?
-				//srRestriction.resAnd.lpRes.shrink_to_fit();
-			}
-			break;
+		{
+			res1 = std::make_shared<SAndRestrictionStruct>();
+			res1->parse(m_Parser, ulDepth, m_bRuleCondition, m_bExtendedCount);
+		}
+		break;
 		case RES_OR:
 			if (!m_bRuleCondition || m_bExtendedCount)
 			{
@@ -232,17 +271,10 @@ namespace smartview
 			break;
 		case RES_AND:
 		{
-			auto i = 0;
-			rt->addChild(
-				resAnd.cRes, L"%1!ws!lpRes->res.resAnd.cRes = 0x%2!08X!\r\n", szTabs.c_str(), resAnd.cRes->getData());
-
-			for (const auto& res : resAnd.lpRes)
+			if (res1)
 			{
-				auto resBlock = std::make_shared<block>();
-				resBlock->setText(L"%1!ws!lpRes->res.resAnd.lpRes[0x%2!08X!]\r\n", szTabs.c_str(), i++);
-				res->parseBlocks(ulTabLevel + 1);
-				resBlock->addChild(res->getBlock());
-				resAnd.cRes->addChild(resBlock);
+				res1->parseBlocks(ulTabLevel);
+				addChild(res1);
 			}
 		}
 
