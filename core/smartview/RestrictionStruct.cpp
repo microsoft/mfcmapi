@@ -111,6 +111,40 @@ namespace smartview
 		std::shared_ptr<blockT<DWORD>> cRes = emptyT<DWORD>();
 		std::vector<std::shared_ptr<RestrictionStruct>> lpRes;
 	};
+
+	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxcdata/0abc5c41-9db7-4e6c-8d4d-b5c7e51d5355
+	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxocfg/f10fbc18-b384-4cd8-9490-a6955035e2ec
+	class SNotRestrictionStruct : public blockRes
+	{
+	public:
+		void parse() override
+		{
+			if (m_ulDepth < _MaxDepth && m_Parser->getSize())
+			{
+				lpRes =
+					std::make_shared<RestrictionStruct>(m_Parser, m_ulDepth + 1, m_bRuleCondition, m_bExtendedCount);
+			}
+		}
+
+		void parseBlocks(ULONG ulTabLevel)
+		{
+			const auto t = makeTabs(ulTabLevel);
+			const auto tabs = t.c_str();
+
+			auto notRoot = std::make_shared<block>();
+			notRoot->setText(L"%1!ws!lpRes->res.resNot.lpRes\r\n", tabs);
+			addChild(notRoot);
+
+			if (lpRes)
+			{
+				lpRes->parseBlocks(ulTabLevel + 1);
+				notRoot->addChild(lpRes->getBlock());
+			}
+		}
+
+		std::shared_ptr<RestrictionStruct> lpRes;
+	};
+
 	// If bRuleCondition is true, parse restrictions as defined in [MS-OXCDATA] 2.12
 	// If bRuleCondition is true, bExtendedCount controls whether the count fields in AND/OR restrictions is 16 or 32 bits
 	//   https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxcdata/5d554ba7-b82f-42b6-8802-97c19f760633
@@ -141,11 +175,8 @@ namespace smartview
 			res1->parse(m_Parser, ulDepth, m_bRuleCondition, m_bExtendedCount);
 			break;
 		case RES_NOT:
-			if (ulDepth < _MaxDepth && m_Parser->getSize())
-			{
-				resNot.lpRes =
-					std::make_shared<RestrictionStruct>(m_Parser, ulDepth + 1, m_bRuleCondition, m_bExtendedCount);
-			}
+			res1 = std::make_shared<SNotRestrictionStruct>();
+			res1->parse(m_Parser, ulDepth, m_bRuleCondition, m_bExtendedCount);
 			break;
 		case RES_CONTENT:
 			resContent.ulFuzzyLevel = blockT<DWORD>::parse(m_Parser);
@@ -297,6 +328,7 @@ namespace smartview
 			break;
 		case RES_AND:
 		case RES_OR:
+		case RES_NOT:
 			if (res1)
 			{
 				res1->parseBlocks(ulTabLevel);
@@ -304,20 +336,6 @@ namespace smartview
 			}
 
 			break;
-		case RES_NOT:
-		{
-			auto notRoot = std::make_shared<block>();
-			notRoot->setText(L"%1!ws!lpRes->res.resNot.lpRes\r\n", szTabs.c_str());
-			rt->addChild(notRoot);
-
-			if (resNot.lpRes)
-			{
-				resNot.lpRes->parseBlocks(ulTabLevel + 1);
-				notRoot->addChild(resNot.lpRes->getBlock());
-			}
-		}
-
-		break;
 		case RES_COUNT:
 		{
 			rt->addChild(

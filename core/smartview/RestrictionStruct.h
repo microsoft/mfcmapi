@@ -38,13 +38,6 @@ namespace smartview
 		virtual void parse() = 0;
 	};
 
-	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxcdata/0abc5c41-9db7-4e6c-8d4d-b5c7e51d5355
-	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxocfg/f10fbc18-b384-4cd8-9490-a6955035e2ec
-	struct SNotRestrictionStruct
-	{
-		std::shared_ptr<RestrictionStruct> lpRes;
-	};
-
 	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxcdata/c1526deb-d05d-4d42-af68-d0233e4cd064
 	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxocfg/e6ded216-f49e-49b9-8b26-e1743e76c897
 	struct SContentRestrictionStruct
@@ -159,7 +152,6 @@ namespace smartview
 		std::shared_ptr<blockT<DWORD>> rt = emptyT<DWORD>(); /* Restriction type */
 		std::shared_ptr<blockRes> res1; // TODO: fix name
 		SComparePropsRestrictionStruct resCompareProps;
-		SNotRestrictionStruct resNot;
 		SContentRestrictionStruct resContent;
 		SPropertyRestrictionStruct resProperty;
 		SBitMaskRestrictionStruct resBitMask;
