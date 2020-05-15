@@ -296,6 +296,8 @@ namespace SmartViewTest
 			test(loadTestData({
 				SmartViewTestResource{parserType::RESTRICTION, unittest::parse_all, IDR_SV16RES1IN, IDR_SV16RES1OUT},
 				SmartViewTestResource{parserType::RESTRICTION, unittest::parse_all, IDR_SV16RES2IN, IDR_SV16RES2OUT},
+				SmartViewTestResource{parserType::RESTRICTION, unittest::parse_all, IDR_SV16RES3IN, IDR_SV16RES3OUT},
+				SmartViewTestResource{parserType::RESTRICTION, unittest::parse_all, IDR_SV16RES4IN, IDR_SV16RES4OUT},
 			}));
 		}
 

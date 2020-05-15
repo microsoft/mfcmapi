@@ -457,6 +457,7 @@ namespace smartview
 					resBitMask.ulMask->getData());
 			}
 
+			// TODO: Tag should be before mask
 			rt->terminateBlock();
 			rt->addChild(
 				resBitMask.ulPropTag,
