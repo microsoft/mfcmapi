@@ -145,6 +145,74 @@ namespace smartview
 		std::shared_ptr<RestrictionStruct> lpRes;
 	};
 
+	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxcdata/c1526deb-d05d-4d42-af68-d0233e4cd064
+	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxocfg/e6ded216-f49e-49b9-8b26-e1743e76c897
+	class SContentRestrictionStruct : public blockRes
+	{
+	public:
+		void parse() override
+		{
+			ulFuzzyLevel = blockT<DWORD>::parse(m_Parser);
+			ulPropTag = blockT<DWORD>::parse(m_Parser);
+			lpProp.parse(m_Parser, 1, m_bRuleCondition);
+		}
+
+		void parseBlocks(ULONG ulTabLevel)
+		{
+			const auto t = makeTabs(ulTabLevel);
+			const auto tabs = t.c_str();
+
+			addChild(
+				ulFuzzyLevel,
+				L"%1!ws!lpRes->res.resContent.ulFuzzyLevel = %2!ws! = 0x%3!08X!\r\n",
+				tabs,
+				flags::InterpretFlags(flagFuzzyLevel, *ulFuzzyLevel).c_str(),
+				ulFuzzyLevel->getData());
+
+			addChild(
+				ulPropTag,
+				L"%1!ws!lpRes->res.resContent.ulPropTag = %2!ws!\r\n",
+				tabs,
+				proptags::TagToString(*ulPropTag, nullptr, false, true).c_str());
+
+			if (!lpProp.Props().empty())
+			{
+				auto propBlock = std::make_shared<block>();
+				addChild(propBlock);
+
+				propBlock->addChild(
+					lpProp.Props()[0]->ulPropTag,
+					L"%1!ws!lpRes->res.resContent.lpProp->ulPropTag = %2!ws!\r\n",
+					tabs,
+					proptags::TagToString(*lpProp.Props()[0]->ulPropTag, nullptr, false, true).c_str());
+				if (lpProp.Props()[0]->value)
+				{
+					if (!lpProp.Props()[0]->value->PropBlock()->empty())
+					{
+						propBlock->addChild(
+							lpProp.Props()[0]->value->PropBlock(),
+							L"%1!ws!lpRes->res.resContent.lpProp->Value = %2!ws!\r\n",
+							tabs,
+							lpProp.Props()[0]->value->PropBlock()->c_str());
+					}
+
+					if (!lpProp.Props()[0]->value->AltPropBlock()->empty())
+					{
+						propBlock->addChild(
+							lpProp.Props()[0]->value->AltPropBlock(),
+							L"%1!ws!\tAlt: %2!ws!\r\n",
+							tabs,
+							lpProp.Props()[0]->value->AltPropBlock()->c_str());
+					}
+				}
+			}
+		}
+
+		std::shared_ptr<blockT<DWORD>> ulFuzzyLevel = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> ulPropTag = emptyT<DWORD>();
+		PropertiesStruct lpProp;
+	};
+
 	// If bRuleCondition is true, parse restrictions as defined in [MS-OXCDATA] 2.12
 	// If bRuleCondition is true, bExtendedCount controls whether the count fields in AND/OR restrictions is 16 or 32 bits
 	//   https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxcdata/5d554ba7-b82f-42b6-8802-97c19f760633
@@ -179,9 +247,8 @@ namespace smartview
 			res1->parse(m_Parser, ulDepth, m_bRuleCondition, m_bExtendedCount);
 			break;
 		case RES_CONTENT:
-			resContent.ulFuzzyLevel = blockT<DWORD>::parse(m_Parser);
-			resContent.ulPropTag = blockT<DWORD>::parse(m_Parser);
-			resContent.lpProp.parse(m_Parser, 1, m_bRuleCondition);
+			res1 = std::make_shared<SContentRestrictionStruct>();
+			res1->parse(m_Parser, ulDepth, m_bRuleCondition, m_bExtendedCount);
 			break;
 		case RES_PROPERTY:
 			if (m_bRuleCondition)
@@ -329,6 +396,7 @@ namespace smartview
 		case RES_AND:
 		case RES_OR:
 		case RES_NOT:
+		case RES_CONTENT:
 			if (res1)
 			{
 				res1->parseBlocks(ulTabLevel);
@@ -355,54 +423,6 @@ namespace smartview
 			}
 		}
 
-		break;
-		case RES_CONTENT:
-		{
-			rt->addChild(
-				resContent.ulFuzzyLevel,
-				L"%1!ws!lpRes->res.resContent.ulFuzzyLevel = %2!ws! = 0x%3!08X!\r\n",
-				szTabs.c_str(),
-				flags::InterpretFlags(flagFuzzyLevel, *resContent.ulFuzzyLevel).c_str(),
-				resContent.ulFuzzyLevel->getData());
-
-			rt->addChild(
-				resContent.ulPropTag,
-				L"%1!ws!lpRes->res.resContent.ulPropTag = %2!ws!\r\n",
-				szTabs.c_str(),
-				proptags::TagToString(*resContent.ulPropTag, nullptr, false, true).c_str());
-
-			if (!resContent.lpProp.Props().empty())
-			{
-				auto propBlock = std::make_shared<block>();
-				rt->addChild(propBlock);
-
-				propBlock->addChild(
-					resContent.lpProp.Props()[0]->ulPropTag,
-					L"%1!ws!lpRes->res.resContent.lpProp->ulPropTag = %2!ws!\r\n",
-					szTabs.c_str(),
-					proptags::TagToString(*resContent.lpProp.Props()[0]->ulPropTag, nullptr, false, true).c_str());
-				if (resContent.lpProp.Props()[0]->value)
-				{
-					if (!resContent.lpProp.Props()[0]->value->PropBlock()->empty())
-					{
-						propBlock->addChild(
-							resContent.lpProp.Props()[0]->value->PropBlock(),
-							L"%1!ws!lpRes->res.resContent.lpProp->Value = %2!ws!\r\n",
-							szTabs.c_str(),
-							resContent.lpProp.Props()[0]->value->PropBlock()->c_str());
-					}
-
-					if (!resContent.lpProp.Props()[0]->value->AltPropBlock()->empty())
-					{
-						propBlock->addChild(
-							resContent.lpProp.Props()[0]->value->AltPropBlock(),
-							L"%1!ws!\tAlt: %2!ws!\r\n",
-							szTabs.c_str(),
-							resContent.lpProp.Props()[0]->value->AltPropBlock()->c_str());
-					}
-				}
-			}
-		}
 		break;
 		case RES_PROPERTY:
 		{

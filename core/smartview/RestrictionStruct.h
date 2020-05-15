@@ -38,15 +38,6 @@ namespace smartview
 		virtual void parse() = 0;
 	};
 
-	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxcdata/c1526deb-d05d-4d42-af68-d0233e4cd064
-	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxocfg/e6ded216-f49e-49b9-8b26-e1743e76c897
-	struct SContentRestrictionStruct
-	{
-		std::shared_ptr<blockT<DWORD>> ulFuzzyLevel = emptyT<DWORD>();
-		std::shared_ptr<blockT<DWORD>> ulPropTag = emptyT<DWORD>();
-		PropertiesStruct lpProp;
-	};
-
 	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxcdata/0c7fe9fe-b16a-49d1-ba9b-053524b5da97
 	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxocfg/46c50b53-f6b1-4d2d-ae79-ced052b261d1
 	struct SBitMaskRestrictionStruct
@@ -152,7 +143,6 @@ namespace smartview
 		std::shared_ptr<blockT<DWORD>> rt = emptyT<DWORD>(); /* Restriction type */
 		std::shared_ptr<blockRes> res1; // TODO: fix name
 		SComparePropsRestrictionStruct resCompareProps;
-		SContentRestrictionStruct resContent;
 		SPropertyRestrictionStruct resProperty;
 		SBitMaskRestrictionStruct resBitMask;
 		SSizeRestrictionStruct resSize;
