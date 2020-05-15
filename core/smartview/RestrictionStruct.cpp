@@ -698,57 +698,46 @@ namespace smartview
 		{
 		case RES_AND:
 			res = std::make_shared<SAndRestrictionStruct>();
-			res->parse(m_Parser, ulDepth, m_bRuleCondition, m_bExtendedCount);
 			break;
 		case RES_OR:
 			res = std::make_shared<SOrRestrictionStruct>();
-			res->parse(m_Parser, ulDepth, m_bRuleCondition, m_bExtendedCount);
 			break;
 		case RES_NOT:
 			res = std::make_shared<SNotRestrictionStruct>();
-			res->parse(m_Parser, ulDepth, m_bRuleCondition, m_bExtendedCount);
 			break;
 		case RES_CONTENT:
 			res = std::make_shared<SContentRestrictionStruct>();
-			res->parse(m_Parser, ulDepth, m_bRuleCondition, m_bExtendedCount);
 			break;
 		case RES_PROPERTY:
 			res = std::make_shared<SPropertyRestrictionStruct>();
-			res->parse(m_Parser, ulDepth, m_bRuleCondition, m_bExtendedCount);
 			break;
 		case RES_COMPAREPROPS:
 			res = std::make_shared<SComparePropsRestrictionStruct>();
-			res->parse(m_Parser, ulDepth, m_bRuleCondition, m_bExtendedCount);
 			break;
 		case RES_BITMASK:
 			res = std::make_shared<SBitMaskRestrictionStruct>();
-			res->parse(m_Parser, ulDepth, m_bRuleCondition, m_bExtendedCount);
 			break;
 		case RES_SIZE:
 			res = std::make_shared<SSizeRestrictionStruct>();
-			res->parse(m_Parser, ulDepth, m_bRuleCondition, m_bExtendedCount);
 			break;
 		case RES_EXIST:
 			res = std::make_shared<SExistRestrictionStruct>();
-			res->parse(m_Parser, ulDepth, m_bRuleCondition, m_bExtendedCount);
 			break;
 		case RES_SUBRESTRICTION:
 			res = std::make_shared<SSubRestrictionStruct>();
-			res->parse(m_Parser, ulDepth, m_bRuleCondition, m_bExtendedCount);
 			break;
 		case RES_COMMENT:
 			res = std::make_shared<SCommentRestrictionStruct>();
-			res->parse(m_Parser, ulDepth, m_bRuleCondition, m_bExtendedCount);
 			break;
 		case RES_ANNOTATION:
 			res = std::make_shared<SAnnotationRestrictionStruct>();
-			res->parse(m_Parser, ulDepth, m_bRuleCondition, m_bExtendedCount);
 			break;
 		case RES_COUNT:
 			res = std::make_shared<SCountRestrictionStruct>();
-			res->parse(m_Parser, ulDepth, m_bRuleCondition, m_bExtendedCount);
 			break;
 		}
+
+		res->parse(m_Parser, ulDepth, m_bRuleCondition, m_bExtendedCount);
 	}
 
 	// There may be restrictions with over 100 nested levels, but we're not going to try to parse them
