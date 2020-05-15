@@ -1,11 +1,9 @@
 #pragma once
 #include <core/smartview/smartViewParser.h>
-#include <core/smartview/PropertiesStruct.h>
 #include <core/smartview/block/blockT.h>
 
 namespace smartview
 {
-	class RestrictionStruct;
 	class blockRes : public block
 	{
 	public:
