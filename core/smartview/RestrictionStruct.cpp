@@ -438,12 +438,17 @@ namespace smartview
 				szTabs.c_str(),
 				flags::InterpretFlags(flagBitmask, *resBitMask.relBMR).c_str(),
 				resBitMask.relBMR->getData());
+			rt->addChild(
+				resBitMask.ulPropTag,
+				L"%1!ws!lpRes->res.resBitMask.ulPropTag = %2!ws!\r\n",
+				szTabs.c_str(),
+				proptags::TagToString(*resBitMask.ulPropTag, nullptr, false, true).c_str());
 			szPropNum = InterpretNumberAsStringProp(*resBitMask.ulMask, *resBitMask.ulPropTag);
 			if (szPropNum.empty())
 			{
 				rt->addChild(
 					resBitMask.ulMask,
-					L"%1!ws!lpRes->res.resBitMask.ulMask = 0x%2!08X!",
+					L"%1!ws!lpRes->res.resBitMask.ulMask = 0x%2!08X!\r\n",
 					szTabs.c_str(),
 					resBitMask.ulMask->getData());
 			}
@@ -451,19 +456,12 @@ namespace smartview
 			{
 				rt->addChild(
 					resBitMask.ulMask,
-					L"%1!ws!lpRes->res.resBitMask.ulMask = %2!ws! = 0x%3!08X!",
+					L"%1!ws!lpRes->res.resBitMask.ulMask = %2!ws! = 0x%3!08X!\r\n",
 					szTabs.c_str(),
 					szPropNum.c_str(),
 					resBitMask.ulMask->getData());
 			}
 
-			// TODO: Tag should be before mask
-			rt->terminateBlock();
-			rt->addChild(
-				resBitMask.ulPropTag,
-				L"%1!ws!lpRes->res.resBitMask.ulPropTag = %2!ws!\r\n",
-				szTabs.c_str(),
-				proptags::TagToString(*resBitMask.ulPropTag, nullptr, false, true).c_str());
 			break;
 		case RES_SIZE:
 			rt->addChild(
