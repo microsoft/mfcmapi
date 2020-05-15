@@ -42,20 +42,16 @@ namespace smartview
 
 		void parseBlocks(ULONG ulTabLevel)
 		{
-			// TODO: find a different way to handle this
-			std::wstring szTabs{};
-			for (ULONG i = 0; i < ulTabLevel; i++)
-			{
-				szTabs += L"\t"; // STRING_OK
-			}
+			const auto t = makeTabs(ulTabLevel);
+			const auto tabs = t.c_str();
 
 			auto i = 0;
-			addChild(cRes, L"%1!ws!lpRes->res.resAnd.cRes = 0x%2!08X!\r\n", szTabs.c_str(), cRes->getData());
+			addChild(cRes, L"%1!ws!lpRes->res.resAnd.cRes = 0x%2!08X!\r\n", tabs, cRes->getData());
 
 			for (const auto& res : lpRes)
 			{
 				auto resBlock = std::make_shared<block>();
-				resBlock->setText(L"%1!ws!lpRes->res.resAnd.lpRes[0x%2!08X!]\r\n", szTabs.c_str(), i++);
+				resBlock->setText(L"%1!ws!lpRes->res.resAnd.lpRes[0x%2!08X!]\r\n", tabs, i++);
 				res->parseBlocks(ulTabLevel + 1);
 				resBlock->addChild(res->getBlock());
 				cRes->addChild(resBlock);
@@ -66,6 +62,55 @@ namespace smartview
 		std::vector<std::shared_ptr<RestrictionStruct>> lpRes;
 	};
 
+	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxcdata/50a969db-a794-4e3c-9fc0-28f37bc1d7a2
+	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxocfg/09499990-ab00-4d4f-9c0d-cff61d9cddff
+	class SOrRestrictionStruct : public blockRes
+	{
+	public:
+		void parse() override
+		{
+			if (!m_bRuleCondition || m_bExtendedCount)
+			{
+				cRes = blockT<DWORD>::parse(m_Parser);
+			}
+			else
+			{
+				cRes = blockT<DWORD, WORD>::parse(m_Parser);
+			}
+
+			if (*cRes && *cRes < _MaxEntriesExtraLarge && m_ulDepth < _MaxDepth)
+			{
+				lpRes.reserve(*cRes);
+				for (ULONG i = 0; i < *cRes; i++)
+				{
+					if (!m_Parser->getSize()) break;
+					lpRes.emplace_back(std::make_shared<RestrictionStruct>(
+						m_Parser, m_ulDepth + 1, m_bRuleCondition, m_bExtendedCount));
+				}
+			}
+		}
+
+		void parseBlocks(ULONG ulTabLevel)
+		{
+			const auto t = makeTabs(ulTabLevel);
+			const auto tabs = t.c_str();
+
+			auto i = 0;
+			addChild(cRes, L"%1!ws!lpRes->res.resOr.cRes = 0x%2!08X!\r\n", tabs, cRes->getData());
+
+			for (const auto& res : lpRes)
+			{
+				auto resBlock = std::make_shared<block>();
+				resBlock->setText(L"%1!ws!lpRes->res.resOr.lpRes[0x%2!08X!]\r\n", tabs, i++);
+				res->parseBlocks(ulTabLevel + 1);
+				resBlock->addChild(res->getBlock());
+				cRes->addChild(resBlock);
+			}
+		}
+
+		std::shared_ptr<blockT<DWORD>> cRes = emptyT<DWORD>();
+		std::vector<std::shared_ptr<RestrictionStruct>> lpRes;
+	};
 	// If bRuleCondition is true, parse restrictions as defined in [MS-OXCDATA] 2.12
 	// If bRuleCondition is true, bExtendedCount controls whether the count fields in AND/OR restrictions is 16 or 32 bits
 	//   https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxcdata/5d554ba7-b82f-42b6-8802-97c19f760633
@@ -88,31 +133,12 @@ namespace smartview
 		switch (*rt)
 		{
 		case RES_AND:
-		{
 			res1 = std::make_shared<SAndRestrictionStruct>();
 			res1->parse(m_Parser, ulDepth, m_bRuleCondition, m_bExtendedCount);
-		}
-		break;
+			break;
 		case RES_OR:
-			if (!m_bRuleCondition || m_bExtendedCount)
-			{
-				resOr.cRes = blockT<DWORD>::parse(m_Parser);
-			}
-			else
-			{
-				resOr.cRes = blockT<DWORD, WORD>::parse(m_Parser);
-			}
-
-			if (*resOr.cRes && *resOr.cRes < _MaxEntriesExtraLarge && ulDepth < _MaxDepth)
-			{
-				resOr.lpRes.reserve(*resOr.cRes);
-				for (ULONG i = 0; i < *resOr.cRes; i++)
-				{
-					if (!m_Parser->getSize()) break;
-					resOr.lpRes.emplace_back(
-						std::make_shared<RestrictionStruct>(m_Parser, ulDepth + 1, m_bRuleCondition, m_bExtendedCount));
-				}
-			}
+			res1 = std::make_shared<SOrRestrictionStruct>();
+			res1->parse(m_Parser, ulDepth, m_bRuleCondition, m_bExtendedCount);
 			break;
 		case RES_NOT:
 			if (ulDepth < _MaxDepth && m_Parser->getSize())
@@ -270,33 +296,14 @@ namespace smartview
 				proptags::TagToString(*resCompareProps.ulPropTag2, nullptr, false, true).c_str());
 			break;
 		case RES_AND:
-		{
+		case RES_OR:
 			if (res1)
 			{
 				res1->parseBlocks(ulTabLevel);
 				addChild(res1);
 			}
-		}
 
-		break;
-		case RES_OR:
-		{
-			auto i = 0;
-
-			rt->addChild(
-				resOr.cRes, L"%1!ws!lpRes->res.resOr.cRes = 0x%2!08X!\r\n", szTabs.c_str(), resOr.cRes->getData());
-
-			for (const auto& res : resOr.lpRes)
-			{
-				auto resBlock = std::make_shared<block>();
-				resBlock->setText(L"%1!ws!lpRes->res.resOr.lpRes[0x%2!08X!]\r\n", szTabs.c_str(), i++);
-				res->parseBlocks(ulTabLevel + 1);
-				resBlock->addChild(res->getBlock());
-				resOr.cRes->addChild(resBlock);
-			}
-		}
-
-		break;
+			break;
 		case RES_NOT:
 		{
 			auto notRoot = std::make_shared<block>();

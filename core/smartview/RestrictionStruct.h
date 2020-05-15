@@ -28,6 +28,7 @@ namespace smartview
 		virtual void parseBlocks(ULONG ulTabLevel) = 0;
 
 	protected:
+		const inline std::wstring makeTabs(ULONG ulTabLevel) const { return std::wstring(ulTabLevel, L'\t'); }
 		ULONG m_ulDepth{};
 		bool m_bRuleCondition{};
 		bool m_bExtendedCount{};
@@ -35,14 +36,6 @@ namespace smartview
 
 	private:
 		virtual void parse() = 0;
-	};
-
-	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxcdata/50a969db-a794-4e3c-9fc0-28f37bc1d7a2
-	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxocfg/09499990-ab00-4d4f-9c0d-cff61d9cddff
-	struct SOrRestrictionStruct
-	{
-		std::shared_ptr<blockT<DWORD>> cRes = emptyT<DWORD>();
-		std::vector<std::shared_ptr<RestrictionStruct>> lpRes;
 	};
 
 	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxcdata/0abc5c41-9db7-4e6c-8d4d-b5c7e51d5355
@@ -166,7 +159,6 @@ namespace smartview
 		std::shared_ptr<blockT<DWORD>> rt = emptyT<DWORD>(); /* Restriction type */
 		std::shared_ptr<blockRes> res1; // TODO: fix name
 		SComparePropsRestrictionStruct resCompareProps;
-		SOrRestrictionStruct resOr;
 		SNotRestrictionStruct resNot;
 		SContentRestrictionStruct resContent;
 		SPropertyRestrictionStruct resProperty;
