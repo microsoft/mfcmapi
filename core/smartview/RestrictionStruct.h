@@ -67,7 +67,7 @@ namespace smartview
 		};
 
 		std::shared_ptr<blockT<DWORD>> rt = emptyT<DWORD>(); /* Restriction type */
-		std::shared_ptr<blockRes> res1; // TODO: fix name
+		std::shared_ptr<blockRes> res;
 
 		bool m_bRuleCondition{};
 		bool m_bExtendedCount{};
