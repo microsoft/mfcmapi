@@ -452,6 +452,10 @@ namespace viewpane
 		const auto eventMask = ::SendMessage(m_EditBox.GetSafeHwnd(), EM_SETEVENTMASK, 0, 0);
 		::SendMessage(m_EditBox.GetSafeHwnd(), WM_SETREDRAW, false, 0);
 
+		// Grab the original scroll position
+		const auto originalScroll = POINT{};
+		::SendMessage(m_EditBox.GetSafeHwnd(), EM_GETSCROLLPOS, 0, reinterpret_cast<LPARAM>(&originalScroll));
+
 		// Grab the original range so we can restore it later
 		const auto originalRange = CHARRANGE{};
 		::SendMessage(m_EditBox.GetSafeHwnd(), EM_EXGETSEL, 0, reinterpret_cast<LPARAM>(&originalRange));
@@ -484,6 +488,9 @@ namespace viewpane
 		// Set our original selection range back
 		::SendMessage(m_EditBox.GetSafeHwnd(), EM_EXSETSEL, 0, reinterpret_cast<LPARAM>(&originalRange));
 		::SendMessage(m_EditBox.GetSafeHwnd(), EM_HIDESELECTION, false, 0);
+
+		// Set our original scroll position
+		::SendMessage(m_EditBox.GetSafeHwnd(), EM_SETSCROLLPOS, 0, reinterpret_cast<LPARAM>(&originalScroll));
 
 		// Reenable redraw and events
 		::SendMessage(m_EditBox.GetSafeHwnd(), WM_SETREDRAW, true, 0);

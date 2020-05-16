@@ -578,6 +578,7 @@
     <ClInclude Include="smartview\binaryParser.h" />
     <ClInclude Include="smartview\block\block.h" />
     <ClInclude Include="smartview\block\blockBytes.h" />
+    <ClInclude Include="smartview\block\blockPV.h" />
     <ClInclude Include="smartview\block\blockStringA.h" />
     <ClInclude Include="smartview\block\blockStringW.h" />
     <ClInclude Include="smartview\block\blockT.h" />
@@ -615,6 +616,7 @@
     <ClInclude Include="sortlistdata\data.h" />
     <ClInclude Include="sortlistdata\mvPropData.h" />
     <ClInclude Include="sortlistdata\nodeData.h" />
+    <ClInclude Include="smartview\SPropValueStruct.h" />
     <ClInclude Include="sortlistdata\propListData.h" />
     <ClInclude Include="sortlistdata\resData.h" />
     <ClInclude Include="sortlistdata\sortListData.h" />
@@ -691,6 +693,7 @@
     <ClCompile Include="sortlistdata\contentsData.cpp" />
     <ClCompile Include="sortlistdata\mvPropData.cpp" />
     <ClCompile Include="sortlistdata\nodeData.cpp" />
+    <ClCompile Include="smartview\SPropValueStruct.cpp" />
     <ClCompile Include="sortlistdata\propListData.cpp" />
     <ClCompile Include="sortlistdata\resData.cpp" />
     <ClCompile Include="sortlistdata\sortListData.cpp" />

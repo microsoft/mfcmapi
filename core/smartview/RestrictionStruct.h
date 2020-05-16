@@ -1,93 +1,39 @@
 #pragma once
 #include <core/smartview/smartViewParser.h>
-#include <core/smartview/PropertiesStruct.h>
 #include <core/smartview/block/blockT.h>
 
 namespace smartview
 {
-	class RestrictionStruct;
-
-	struct SAndRestrictionStruct
+	class blockRes : public block
 	{
-		std::shared_ptr<blockT<DWORD>> cRes = emptyT<DWORD>();
-		std::vector<std::shared_ptr<RestrictionStruct>> lpRes;
-	};
+	public:
+		blockRes() = default;
+		void parse(std::shared_ptr<binaryParser>& parser, ULONG ulDepth, bool bRuleCondition, bool bExtendedCount)
+		{
+			m_Parser = parser;
+			m_ulDepth = ulDepth;
+			m_bRuleCondition = bRuleCondition;
+			m_bExtendedCount = bExtendedCount;
 
-	struct SOrRestrictionStruct
-	{
-		std::shared_ptr<blockT<DWORD>> cRes = emptyT<DWORD>();
-		std::vector<std::shared_ptr<RestrictionStruct>> lpRes;
-	};
+			// Offset will always be where we start parsing
+			setOffset(m_Parser->getOffset());
+			parse();
+			// And size will always be how many bytes we consumed
+			setSize(m_Parser->getOffset() - getOffset());
+		}
+		blockRes(const blockRes&) = delete;
+		blockRes& operator=(const blockRes&) = delete;
+		virtual void parseBlocks(ULONG ulTabLevel) = 0;
 
-	struct SNotRestrictionStruct
-	{
-		std::shared_ptr<RestrictionStruct> lpRes;
-	};
+	protected:
+		const inline std::wstring makeTabs(ULONG ulTabLevel) const { return std::wstring(ulTabLevel, L'\t'); }
+		ULONG m_ulDepth{};
+		bool m_bRuleCondition{};
+		bool m_bExtendedCount{};
+		std::shared_ptr<binaryParser> m_Parser{};
 
-	struct SContentRestrictionStruct
-	{
-		std::shared_ptr<blockT<DWORD>> ulFuzzyLevel = emptyT<DWORD>();
-		std::shared_ptr<blockT<DWORD>> ulPropTag = emptyT<DWORD>();
-		PropertiesStruct lpProp;
-	};
-
-	struct SBitMaskRestrictionStruct
-	{
-		std::shared_ptr<blockT<DWORD>> relBMR = emptyT<DWORD>();
-		std::shared_ptr<blockT<DWORD>> ulPropTag = emptyT<DWORD>();
-		std::shared_ptr<blockT<DWORD>> ulMask = emptyT<DWORD>();
-	};
-
-	struct SPropertyRestrictionStruct
-	{
-		std::shared_ptr<blockT<DWORD>> relop = emptyT<DWORD>();
-		std::shared_ptr<blockT<DWORD>> ulPropTag = emptyT<DWORD>();
-		PropertiesStruct lpProp;
-	};
-
-	struct SComparePropsRestrictionStruct
-	{
-		std::shared_ptr<blockT<DWORD>> relop = emptyT<DWORD>();
-		std::shared_ptr<blockT<DWORD>> ulPropTag1 = emptyT<DWORD>();
-		std::shared_ptr<blockT<DWORD>> ulPropTag2 = emptyT<DWORD>();
-	};
-
-	struct SSizeRestrictionStruct
-	{
-		std::shared_ptr<blockT<DWORD>> relop = emptyT<DWORD>();
-		std::shared_ptr<blockT<DWORD>> ulPropTag = emptyT<DWORD>();
-		std::shared_ptr<blockT<DWORD>> cb = emptyT<DWORD>();
-	};
-
-	struct SExistRestrictionStruct
-	{
-		std::shared_ptr<blockT<DWORD>> ulPropTag = emptyT<DWORD>();
-	};
-
-	struct SSubRestrictionStruct
-	{
-		std::shared_ptr<blockT<DWORD>> ulSubObject = emptyT<DWORD>();
-		std::shared_ptr<RestrictionStruct> lpRes;
-	};
-
-	struct SCommentRestrictionStruct
-	{
-		std::shared_ptr<blockT<DWORD>> cValues = emptyT<DWORD>(); /* # of properties in lpProp */
-		std::shared_ptr<RestrictionStruct> lpRes;
-		PropertiesStruct lpProp;
-	};
-
-	struct SAnnotationRestrictionStruct
-	{
-		std::shared_ptr<blockT<DWORD>> cValues = emptyT<DWORD>(); /* # of properties in lpProp */
-		std::shared_ptr<RestrictionStruct> lpRes;
-		PropertiesStruct lpProp;
-	};
-
-	struct SCountRestrictionStruct
-	{
-		std::shared_ptr<blockT<DWORD>> ulCount = emptyT<DWORD>();
-		std::shared_ptr<RestrictionStruct> lpRes;
+	private:
+		virtual void parse() = 0;
 	};
 
 	class RestrictionStruct : public smartViewParser
@@ -107,6 +53,7 @@ namespace smartview
 			m_Parser = parser;
 			parse(ulDepth);
 		}
+		void parseBlocks(ULONG ulTabLevel);
 
 	private:
 		void parse() override { parse(0); }
@@ -116,22 +63,9 @@ namespace smartview
 			setRoot(L"Restriction:\r\n");
 			parseBlocks(0);
 		};
-		void parseBlocks(ULONG ulTabLevel);
 
 		std::shared_ptr<blockT<DWORD>> rt = emptyT<DWORD>(); /* Restriction type */
-		SComparePropsRestrictionStruct resCompareProps;
-		SAndRestrictionStruct resAnd;
-		SOrRestrictionStruct resOr;
-		SNotRestrictionStruct resNot;
-		SContentRestrictionStruct resContent;
-		SPropertyRestrictionStruct resProperty;
-		SBitMaskRestrictionStruct resBitMask;
-		SSizeRestrictionStruct resSize;
-		SExistRestrictionStruct resExist;
-		SSubRestrictionStruct resSub;
-		SCommentRestrictionStruct resComment;
-		SAnnotationRestrictionStruct resAnnotation;
-		SCountRestrictionStruct resCount;
+		std::shared_ptr<blockRes> res;
 
 		bool m_bRuleCondition{};
 		bool m_bExtendedCount{};

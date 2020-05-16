@@ -1,64 +1,9 @@
 Extended Rule Condition
 Number of named props = 0x0000
 Restriction:
-lpRes->rt = 0x0 = RES_AND
-lpRes->res.resAnd.cRes = 0x00000002
-lpRes->res.resAnd.lpRes[0x00000000]
-	lpRes->rt = 0x1 = RES_OR
-	lpRes->res.resOr.cRes = 0x00000002
-	lpRes->res.resOr.lpRes[0x00000000]
-		lpRes->rt = 0x1 = RES_OR
-		lpRes->res.resOr.cRes = 0x00000000
-	lpRes->res.resOr.lpRes[0x00000001]
-		lpRes->rt = 0x0 = RES_AND
-		lpRes->res.resAnd.cRes = 0x00000002
-		lpRes->res.resAnd.lpRes[0x00000000]
-			lpRes->rt = 0x1 = RES_OR
-			lpRes->res.resOr.cRes = 0x00000002
-			lpRes->res.resOr.lpRes[0x00000000]
-				lpRes->rt = 0x0 = RES_AND
-				lpRes->res.resAnd.cRes = 0x00000002
-				lpRes->res.resAnd.lpRes[0x00000000]
-					lpRes->rt = 0x8 = RES_EXIST
-					lpRes->res.resExist.ulPropTag = 0x40760003 (PT_LONG): PR_CONTENT_FILTER_SCL: (PidTagContentFilterSpamConfidenceLevel, ptagContentFilterSCL)
-				lpRes->res.resAnd.lpRes[0x00000001]
-					lpRes->rt = 0x4 = RES_PROPERTY
-					lpRes->res.resProperty.relop = RELOP_GT = 0x00000002
-					lpRes->res.resProperty.ulPropTag = 0x40760003 (PT_LONG): PR_CONTENT_FILTER_SCL: (PidTagContentFilterSpamConfidenceLevel, ptagContentFilterSCL)
-					lpRes->res.resProperty.lpProp->ulPropTag = 0x40760003 (PT_LONG): PR_CONTENT_FILTER_SCL: (PidTagContentFilterSpamConfidenceLevel, ptagContentFilterSCL)
-					lpRes->res.resProperty.lpProp->Value = -1
-						Alt: 0xFFFFFFFF
-			lpRes->res.resOr.lpRes[0x00000001]
-				lpRes->rt = 0x1 = RES_OR
-				lpRes->res.resOr.cRes = 0x00000000
-		lpRes->res.resAnd.lpRes[0x00000001]
-			lpRes->rt = 0x2 = RES_NOT
-			lpRes->res.resNot.lpRes
-				lpRes->rt = 0x1 = RES_OR
-				lpRes->res.resOr.cRes = 0x00000002
-				lpRes->res.resOr.lpRes[0x00000000]
-					lpRes->rt = 0x1 = RES_OR
-					lpRes->res.resOr.cRes = 0x00000000
-				lpRes->res.resOr.lpRes[0x00000001]
-					lpRes->rt = 0x9 = RES_SUBRESTRICTION
-					lpRes->res.resSub.ulSubObject = 0x0E12000D (PT_OBJECT): PR_MESSAGE_RECIPIENTS: (PidTagMessageRecipients, ptagMessageRecipients)
-					lpRes->res.resSub.lpRes
-						lpRes->rt = 0x1 = RES_OR
-						lpRes->res.resOr.cRes = 0x00000000
-lpRes->res.resAnd.lpRes[0x00000001]
-	lpRes->rt = 0x2 = RES_NOT
-	lpRes->res.resNot.lpRes
-		lpRes->rt = 0x1 = RES_OR
-		lpRes->res.resOr.cRes = 0x00000003
-		lpRes->res.resOr.lpRes[0x00000000]
-			lpRes->rt = 0x1 = RES_OR
-			lpRes->res.resOr.cRes = 0x00000000
-		lpRes->res.resOr.lpRes[0x00000001]
-			lpRes->rt = 0x9 = RES_SUBRESTRICTION
-			lpRes->res.resSub.ulSubObject = 0x0E12000D (PT_OBJECT): PR_MESSAGE_RECIPIENTS: (PidTagMessageRecipients, ptagMessageRecipients)
-			lpRes->res.resSub.lpRes
-				lpRes->rt = 0x1 = RES_OR
-				lpRes->res.resOr.cRes = 0x00000000
-		lpRes->res.resOr.lpRes[0x00000002]
-			lpRes->rt = 0x1 = RES_OR
-			lpRes->res.resOr.cRes = 0x00000000
+lpRes->rt = 0x3 = RES_CONTENT
+lpRes->res.resContent.ulFuzzyLevel = FL_SUBSTRING = 0x00000001
+lpRes->res.resContent.ulPropTag = 0x0C1D0102 (PT_BINARY): PR_SENDER_SEARCH_KEY: (PidTagSenderSearchKey, ptagSenderSearchKey)
+lpRes->res.resContent.lpProp->ulPropTag = 0x0C1D0102 (PT_BINARY): PR_SENDER_SEARCH_KEY: (PidTagSenderSearchKey, ptagSenderSearchKey)
+lpRes->res.resContent.lpProp->Value = cb: 16 lpb: 7465737430314074657374312E434F4D
+	Alt: test01@test1.COM

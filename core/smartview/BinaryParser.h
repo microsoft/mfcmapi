@@ -13,6 +13,12 @@ namespace smartview
 			bin = _bin && cb ? std::vector<BYTE>(_bin, _bin + cb) : std::vector<BYTE>{};
 			size = bin.size();
 		}
+		binaryParser(const std::vector<BYTE>& _bin)
+		{
+			bin = _bin;
+			size = bin.size();
+		}
+
 		binaryParser(const binaryParser&) = delete;
 		binaryParser& operator=(const binaryParser&) = delete;
 

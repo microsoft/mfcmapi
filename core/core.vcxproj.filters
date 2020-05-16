@@ -300,6 +300,12 @@
     <ClInclude Include="mapi\cache\namedPropCache.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="smartview\SPropValueStruct.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\block\blockPV.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="utility\strings.cpp">
@@ -522,6 +528,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="mapi\cache\namedPropCache.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\SPropValueStruct.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

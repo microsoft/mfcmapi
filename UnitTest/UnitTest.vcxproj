@@ -524,6 +524,7 @@
     <ClInclude Include="UnitTest.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="tests\blockPVtest.cpp" />
     <ClCompile Include="tests\blocktest.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
