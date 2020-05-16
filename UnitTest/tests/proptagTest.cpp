@@ -24,8 +24,20 @@ namespace proptagTest
 				L"Other Names: PR_SUBJECT_A, ptagSubject, PR_SUBJECT_W, PidTagSubject\r\n"
 				L"DASL: http://schemas.microsoft.com/mapi/proptag/0x0037001E",
 				proptags::TagToString(PR_SUBJECT, nullptr, false, false));
+		}
+
+		TEST_METHOD(Test_PropTagToPropName)
+		{
 			unittest::AreEqualEx(L"PR_SUBJECT", proptags::PropTagToPropName(PR_SUBJECT, false).bestGuess);
-			unittest::AreEqualEx(L"PR_SUBJECT_A, ptagSubject, PR_SUBJECT_W, PidTagSubject", proptags::PropTagToPropName(PR_SUBJECT, false).otherMatches);
+			unittest::AreEqualEx(
+				L"PR_SUBJECT_A, ptagSubject, PR_SUBJECT_W, PidTagSubject",
+				proptags::PropTagToPropName(PR_SUBJECT, false).otherMatches);
+
+			unittest::AreEqualEx(L"PR_RW_RULES_STREAM", proptags::PropTagToPropName(0x68020102, false).bestGuess);
+			unittest::AreEqualEx(
+				L"PidTagRwRulesStream, PR_OAB_CONTAINER_GUID, PR_OAB_CONTAINER_GUID_W, "
+				L"PidTagOfflineAddressBookContainerGuid, PidTagSenderTelephoneNumber",
+				proptags::PropTagToPropName(0x68020102, false).otherMatches);
 		}
 	};
 } // namespace proptagTest
