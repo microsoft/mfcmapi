@@ -38,6 +38,7 @@ namespace proptagTest
 				L"PidTagRwRulesStream, PR_OAB_CONTAINER_GUID, PR_OAB_CONTAINER_GUID_W, "
 				L"PidTagOfflineAddressBookContainerGuid, PidTagSenderTelephoneNumber",
 				proptags::PropTagToPropName(0x68020102, false).otherMatches);
+			unittest::AreEqualEx(L"PR_RW_RULES_STREAM", proptags::PropTagToPropName(0x6802000A, false).bestGuess);
 		}
 	};
 } // namespace proptagTest
