@@ -737,7 +737,10 @@ namespace smartview
 			break;
 		}
 
-		res->parse(m_Parser, ulDepth, m_bRuleCondition, m_bExtendedCount);
+		if (res)
+		{
+			res->parse(m_Parser, ulDepth, m_bRuleCondition, m_bExtendedCount);
+		}
 	}
 
 	// There may be restrictions with over 100 nested levels, but we're not going to try to parse them
