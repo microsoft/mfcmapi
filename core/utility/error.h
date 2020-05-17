@@ -118,7 +118,7 @@ namespace error
 	}()
 
 // Execute a function, log and return the HRESULT
-// Logs a MAPI call trace under DBGMAPIFunctions
+// Logs a MAPI call trace under output::dbgLevel::MAPIFunctions
 // Will display dialog on error
 #define EC_MAPI(fnx) \
 	error::CheckMe([&]() -> HRESULT { \
@@ -128,7 +128,7 @@ namespace error
 	}())
 
 // Execute a function, log and swallow the HRESULT
-// Logs a MAPI call trace under DBGMAPIFunctions
+// Logs a MAPI call trace under output::dbgLevel::MAPIFunctions
 // Will display dialog on error
 #define EC_MAPI_S(fnx) \
 	[&]() -> void { \
@@ -137,7 +137,7 @@ namespace error
 	}()
 
 // Execute a function, log and return the HRESULT
-// Logs a MAPI call trace under DBGMAPIFunctions
+// Logs a MAPI call trace under output::dbgLevel::MAPIFunctions
 // Will not display an error dialog
 #define WC_MAPI(fnx) \
 	error::CheckMe([&]() -> HRESULT { \
@@ -147,7 +147,7 @@ namespace error
 	}())
 
 // Execute a function, log and swallow the HRESULT
-// Logs a MAPI call trace under DBGMAPIFunctions
+// Logs a MAPI call trace under output::dbgLevel::MAPIFunctions
 // Will not display an error dialog
 #define WC_MAPI_S(fnx) \
 	[&]() -> void { \
@@ -347,7 +347,7 @@ namespace error
 #define WC_H_GETPROPS_S(fnx) WC_H_IGNORE_S(MAPI_W_ERRORS_RETURNED, fnx)
 
 // Execute a function, log and return the HRESULT
-// Logs a MAPI call trace under DBGMAPIFunctions
+// Logs a MAPI call trace under output::dbgLevel::MAPIFunctions
 // Some MAPI functions allow MAPI_E_CANCEL or MAPI_E_USER_CANCEL.
 // I don't consider these to be errors.
 // Will display dialog on error
@@ -365,7 +365,7 @@ namespace error
 	}())
 
 // Execute a function, log and swallow the HRESULT
-// Logs a MAPI call trace under DBGMAPIFunctions
+// Logs a MAPI call trace under output::dbgLevel::MAPIFunctions
 // Some MAPI functions allow MAPI_E_CANCEL or MAPI_E_USER_CANCEL.
 // I don't consider these to be errors.
 // Will display dialog on error
