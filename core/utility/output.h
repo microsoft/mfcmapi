@@ -14,7 +14,6 @@ namespace output
 		NoDebug = 0x00000000,
 		Generic = 0x00000001,
 		VersionBanner = 0x00000002,
-		FatalError = 0x00000004,
 		RefCount = 0x00000008,
 		ConDes = 0x00000010,
 		Notify = 0x00000020,

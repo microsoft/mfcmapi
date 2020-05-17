@@ -1146,7 +1146,6 @@ Supported tags:\n\
 0x00000000 NoDebug\n\
 0x00000001 Generic\n\
 0x00000002 VersionBanner\n\
-0x00000004 FatalError\n\
 0x00000008 RefCount\n\
 0x00000010 ConDes\n\
 0x00000020 Notify\n\
