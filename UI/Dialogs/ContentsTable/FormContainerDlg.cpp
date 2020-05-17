@@ -238,18 +238,7 @@ namespace dialog
 					lpszPath.c_str()); // STRING_OK
 				hRes = WC_MAPI(m_lpFormContainer->InstallForm(
 					reinterpret_cast<ULONG_PTR>(hwnd), ulFlags, LPCTSTR(strings::wstringTostring(lpszPath).c_str())));
-				if (hRes == MAPI_E_EXTENDED_ERROR)
-				{
-					LPMAPIERROR lpErr = nullptr;
-					hRes = WC_MAPI(m_lpFormContainer->GetLastError(hRes, fMapiUnicode, &lpErr));
-					if (lpErr)
-					{
-						EC_MAPIERR(fMapiUnicode, lpErr);
-						MAPIFreeBuffer(lpErr);
-					}
-				}
-				else
-					CHECKHRES(hRes);
+				error::CheckExtendedError(hRes, m_lpFormContainer);
 
 				if (bShouldCancel(this, hRes)) break;
 			}

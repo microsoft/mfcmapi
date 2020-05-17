@@ -171,6 +171,7 @@ namespace mapi::mapiui
 						lpMAPIFormViewer,
 						IID_IMAPIForm, // riid
 						reinterpret_cast<LPVOID*>(&lpForm)));
+					error::CheckExtendedError(hRes, lpMAPIFormMgr);
 					lpMAPIFormMgr->Release();
 					lpMAPIFormMgr = nullptr;
 				}
@@ -211,6 +212,7 @@ namespace mapi::mapiui
 
 			MAPIFreeBuffer(lpspvaShow);
 		}
+
 		return hRes;
 	}
 

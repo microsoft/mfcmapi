@@ -72,6 +72,8 @@ namespace error
 	std::wstring ProblemArrayToString(_In_ const SPropProblemArray& problems);
 	std::wstring MAPIErrToString(ULONG ulFlags, _In_ const MAPIERROR& err);
 	std::wstring TnefProblemArrayToString(_In_ const STnefProblemArray& error);
+
+	template <typename T> void CheckExtendedError(HRESULT hRes, T lpObject);
 } // namespace error
 
 // Macros for debug output
