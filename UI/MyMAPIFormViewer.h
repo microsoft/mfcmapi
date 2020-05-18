@@ -26,42 +26,10 @@ namespace mapi::mapiui
 		STDMETHODIMP_(ULONG) AddRef() override;
 		STDMETHODIMP_(ULONG) Release() override;
 
-		STDMETHODIMP GetLastError(HRESULT hResult, ULONG ulFlags, LPMAPIERROR* lppMAPIError) override;
-
-		// IMAPIMessageSite
-		STDMETHODIMP GetSession(LPMAPISESSION* ppSession) override;
-		STDMETHODIMP GetStore(LPMDB* ppStore) override;
-		STDMETHODIMP GetFolder(LPMAPIFOLDER* ppFolder) override;
-		STDMETHODIMP GetMessage(LPMESSAGE* ppmsg) override;
-		STDMETHODIMP GetFormManager(LPMAPIFORMMGR* ppFormMgr) override;
-		STDMETHODIMP NewMessage(
-			ULONG fComposeInFolder,
-			LPMAPIFOLDER pFolderFocus,
-			LPPERSISTMESSAGE pPersistMessage,
-			LPMESSAGE* ppMessage,
-			LPMAPIMESSAGESITE* ppMessageSite,
-			LPMAPIVIEWCONTEXT* ppViewContext) override;
-		STDMETHODIMP CopyMessage(LPMAPIFOLDER pFolderDestination) override;
-		STDMETHODIMP
-		MoveMessage(LPMAPIFOLDER pFolderDestination, LPMAPIVIEWCONTEXT pViewContext, LPCRECT prcPosRect) override;
-		STDMETHODIMP DeleteMessage(LPMAPIVIEWCONTEXT pViewContext, LPCRECT prcPosRect) override;
-		STDMETHODIMP SaveMessage() override;
-		STDMETHODIMP SubmitMessage(ULONG ulFlags) override;
-		STDMETHODIMP GetSiteStatus(LPULONG lpulStatus) override;
-
-		// IMAPIViewAdviseSink
-		STDMETHODIMP OnShutdown() override;
-		STDMETHODIMP OnNewMessage() override;
-		STDMETHODIMP OnPrint(ULONG dwPageNumber, HRESULT hrStatus) override;
-		STDMETHODIMP OnSubmitted() override;
-		STDMETHODIMP OnSaved() override;
-
-		// IMAPIViewContext
-		STDMETHODIMP SetAdviseSink(LPMAPIFORMADVISESINK pmvns) override;
-		STDMETHODIMP ActivateNext(ULONG ulDir, LPCRECT lpRect) override;
-		STDMETHODIMP GetPrintSetup(ULONG ulFlags, LPFORMPRINTSETUP* lppFormPrintSetup) override;
-		STDMETHODIMP GetSaveStream(ULONG* pulFlags, ULONG* pulFormat, LPSTREAM* ppstm) override;
-		STDMETHODIMP GetViewStatus(LPULONG lpulStatus) override;
+		MAPI_GETLASTERROR_METHOD(IMPL);
+		MAPI_IMAPIMESSAGESITE_METHODS(IMPL);
+		MAPI_IMAPIVIEWADVISESINK_METHODS(IMPL);
+		MAPI_IMAPIVIEWCONTEXT_METHODS(IMPL);
 
 		_Check_return_ HRESULT CallDoVerb(_In_ LPMAPIFORM lpMapiForm, LONG lVerb, _In_opt_ LPCRECT lpRect);
 
