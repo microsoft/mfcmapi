@@ -96,6 +96,14 @@ namespace mapi::mapiui
 		output::DebugPrint(output::dbgLevel::FormViewer, L"GUID Requested: %ws\n", szGuid.c_str());
 
 		*ppvObj = nullptr;
+		if (riid == IID_IUnknown)
+		{
+			output::DebugPrint(output::dbgLevel::FormViewer, L"Requested IID_IUnknown\n");
+			*ppvObj = static_cast<IMAPIMessageSite*>(this);
+			AddRef();
+			return S_OK;
+		}
+
 		if (riid == IID_IMAPIMessageSite)
 		{
 			output::DebugPrint(output::dbgLevel::FormViewer, L"Requested IID_IMAPIMessageSite\n");
@@ -116,14 +124,6 @@ namespace mapi::mapiui
 		{
 			output::DebugPrint(output::dbgLevel::FormViewer, L"Requested IID_IMAPIViewContext\n");
 			*ppvObj = static_cast<IMAPIViewContext*>(this);
-			AddRef();
-			return S_OK;
-		}
-
-		if (riid == IID_IUnknown)
-		{
-			output::DebugPrint(output::dbgLevel::FormViewer, L"Requested IID_IUnknown\n");
-			*ppvObj = static_cast<IMAPIMessageSite*>(this);
 			AddRef();
 			return S_OK;
 		}

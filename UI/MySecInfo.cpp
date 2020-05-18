@@ -94,14 +94,14 @@ namespace mapi::mapiui
 		*ppvObj = nullptr;
 		if (riid == IID_ISecurityInformation || riid == IID_IUnknown)
 		{
-			*ppvObj = this;
+			*ppvObj = static_cast<ISecurityInformation*>(this);
 			AddRef();
 			return S_OK;
 		}
 
 		if (riid == IID_ISecurityInformation2)
 		{
-			*ppvObj = this;
+			*ppvObj = static_cast<ISecurityInformation2*>(this);
 			AddRef();
 			return S_OK;
 		}
