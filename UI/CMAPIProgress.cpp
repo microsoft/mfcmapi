@@ -49,7 +49,7 @@ namespace ui
 		*ppvObj = nullptr;
 		if (riid == IID_IMAPIProgress || riid == IID_IUnknown)
 		{
-			*ppvObj = this;
+			*ppvObj = static_cast<IMAPIProgress*>(this);
 			AddRef();
 			return S_OK;
 		}

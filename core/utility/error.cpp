@@ -145,4 +145,23 @@ namespace error
 
 		return szOut;
 	}
+
+	template <typename T> void CheckExtendedError(HRESULT hRes, T lpObject)
+	{
+		if (hRes == MAPI_E_EXTENDED_ERROR)
+		{
+			LPMAPIERROR lpErr = nullptr;
+			hRes = WC_MAPI(lpObject->GetLastError(hRes, fMapiUnicode, &lpErr));
+			if (lpErr)
+			{
+				EC_MAPIERR(fMapiUnicode, lpErr);
+				MAPIFreeBuffer(lpErr);
+			}
+		}
+		else
+			CHECKHRES(hRes);
+	}
+
+	template void CheckExtendedError<LPMAPIFORMCONTAINER>(HRESULT hRes, LPMAPIFORMCONTAINER lpObject);
+	template void CheckExtendedError<LPMAPIFORMMGR>(HRESULT hRes, LPMAPIFORMMGR lpObject);
 } // namespace error
