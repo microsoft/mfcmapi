@@ -1202,6 +1202,7 @@ namespace controls::sortlistctrl
 		ULONG ulPropTag = NULL;
 
 		if (!m_lpPropBag || m_lpPropBag->GetType() == propertybag::propBagType::Row) return;
+		auto lpPropBag = m_lpPropBag; // Hold the prop bag so it doesn't get deleted under us
 
 		GetSelectedPropTag(&ulPropTag);
 		if (!ulPropTag) return;
@@ -1213,7 +1214,7 @@ namespace controls::sortlistctrl
 			output::DebugPrintEx(
 				output::dbgLevel::Generic, CLASS, L"OnDeleteProperty", L"deleting property 0x%08X\n", ulPropTag);
 
-			const auto hRes = EC_H(m_lpPropBag->DeleteProp(ulPropTag));
+			const auto hRes = EC_H(lpPropBag->DeleteProp(ulPropTag));
 			if (SUCCEEDED(hRes))
 			{
 				// Refresh the display
@@ -1258,9 +1259,10 @@ namespace controls::sortlistctrl
 	void CSingleMAPIPropListCtrl::OnEditPropAsRestriction(ULONG ulPropTag)
 	{
 		if (!m_lpPropBag || !ulPropTag || PT_SRESTRICTION != PROP_TYPE(ulPropTag)) return;
+		auto lpPropBag = m_lpPropBag; // Hold the prop bag so it doesn't get deleted under us
 
 		LPSPropValue lpEditProp = nullptr;
-		WC_H_S(m_lpPropBag->GetProp(ulPropTag, &lpEditProp));
+		WC_H_S(lpPropBag->GetProp(ulPropTag, &lpEditProp));
 
 		LPSRestriction lpResIn = nullptr;
 		if (lpEditProp)
@@ -1269,7 +1271,7 @@ namespace controls::sortlistctrl
 		}
 
 		output::DebugPrint(output::dbgLevel::Generic, L"Source restriction before editing:\n");
-		output::outputRestriction(output::dbgLevel::Generic, nullptr, lpResIn, m_lpPropBag->GetMAPIProp());
+		output::outputRestriction(output::dbgLevel::Generic, nullptr, lpResIn, lpPropBag->GetMAPIProp());
 		dialog::editor::CRestrictEditor MyResEditor(
 			this,
 			nullptr, // No alloc parent - we must MAPIFreeBuffer the result
@@ -1280,7 +1282,7 @@ namespace controls::sortlistctrl
 			if (lpModRes)
 			{
 				output::DebugPrint(output::dbgLevel::Generic, L"Modified restriction:\n");
-				output::outputRestriction(output::dbgLevel::Generic, nullptr, lpModRes, m_lpPropBag->GetMAPIProp());
+				output::outputRestriction(output::dbgLevel::Generic, nullptr, lpModRes, lpPropBag->GetMAPIProp());
 
 				// need to merge the data we got back from the CRestrictEditor with our current prop set
 				// so that we can free lpModRes
@@ -1296,7 +1298,7 @@ namespace controls::sortlistctrl
 
 				ResProp.Value.lpszA = reinterpret_cast<LPSTR>(lpModRes);
 
-				auto hRes = EC_H(m_lpPropBag->SetProp(&ResProp));
+				auto hRes = EC_H(lpPropBag->SetProp(&ResProp));
 
 				// Remember, we had no alloc parent - this is safe to free
 				MAPIFreeBuffer(lpModRes);
@@ -1309,7 +1311,7 @@ namespace controls::sortlistctrl
 			}
 		}
 
-		m_lpPropBag->FreeBuffer(lpEditProp);
+		lpPropBag->FreeBuffer(lpEditProp);
 	}
 
 	void CSingleMAPIPropListCtrl::OnEditGivenProp(ULONG ulPropTag)
@@ -1318,6 +1320,7 @@ namespace controls::sortlistctrl
 		LPSPropValue lpEditProp = nullptr;
 
 		if (!m_lpPropBag) return;
+		auto lpPropBag = m_lpPropBag; // Hold the prop bag so it doesn't get deleted under us
 
 		// Explicit check since TagToString is expensive
 		if (fIsSet(output::dbgLevel::Generic))
@@ -1328,7 +1331,7 @@ namespace controls::sortlistctrl
 				L"OnEditGivenProp",
 				L"editing property 0x%X (= %ws)\n",
 				ulPropTag,
-				proptags::TagToString(ulPropTag, m_lpPropBag->GetMAPIProp(), m_bIsAB, true).c_str());
+				proptags::TagToString(ulPropTag, lpPropBag->GetMAPIProp(), m_bIsAB, true).c_str());
 		}
 
 		ulPropTag = PT_ERROR == PROP_TYPE(ulPropTag) ? CHANGE_PROP_TYPE(ulPropTag, PT_UNSPECIFIED) : ulPropTag;
@@ -1341,11 +1344,11 @@ namespace controls::sortlistctrl
 
 		if (PT_OBJECT == PROP_TYPE(ulPropTag))
 		{
-			EC_H_S(DisplayTable(m_lpPropBag->GetMAPIProp(), ulPropTag, dialog::objectType::default, m_lpHostDlg));
+			EC_H_S(DisplayTable(lpPropBag->GetMAPIProp(), ulPropTag, dialog::objectType::default, m_lpHostDlg));
 			return;
 		}
 
-		const auto lpSourceObj = m_lpPropBag->GetMAPIProp();
+		const auto lpSourceObj = lpPropBag->GetMAPIProp();
 
 		auto bUseStream = false;
 
@@ -1355,7 +1358,7 @@ namespace controls::sortlistctrl
 		}
 		else
 		{
-			hRes = WC_H(m_lpPropBag->GetProp(ulPropTag, &lpEditProp));
+			hRes = WC_H(lpPropBag->GetProp(ulPropTag, &lpEditProp));
 		}
 
 		if (hRes == MAPI_E_NOT_ENOUGH_MEMORY) bUseStream = true;
@@ -1401,7 +1404,7 @@ namespace controls::sortlistctrl
 			// If we didn't have a source object, we need to shove our results back in to the property bag
 			if (hRes == S_OK && !lpSourceObj && lpModProp)
 			{
-				hRes = EC_H(m_lpPropBag->SetProp(lpModProp));
+				hRes = EC_H(lpPropBag->SetProp(lpModProp));
 				// At this point, we're done with lpModProp - it was allocated off of lpSourceArray
 				// and freed when a new source array was allocated. Nothing to free here. Move along.
 			}
@@ -1412,7 +1415,7 @@ namespace controls::sortlistctrl
 			}
 		}
 
-		m_lpPropBag->FreeBuffer(lpEditProp);
+		lpPropBag->FreeBuffer(lpEditProp);
 	}
 
 	// Display the selected property as a stream using CStreamEditor
@@ -1421,6 +1424,7 @@ namespace controls::sortlistctrl
 		ULONG ulPropTag = NULL;
 
 		if (!m_lpPropBag) return;
+		auto lpPropBag = m_lpPropBag; // Hold the prop bag so it doesn't get deleted under us
 
 		GetSelectedPropTag(&ulPropTag);
 		if (!ulPropTag) return;
@@ -1434,7 +1438,7 @@ namespace controls::sortlistctrl
 				L"OnEditPropAsStream",
 				L"editing property 0x%X (= %ws) as stream, ulType = 0x%08X, bEditAsRTF = 0x%X\n",
 				ulPropTag,
-				proptags::TagToString(ulPropTag, m_lpPropBag->GetMAPIProp(), m_bIsAB, true).c_str(),
+				proptags::TagToString(ulPropTag, lpPropBag->GetMAPIProp(), m_bIsAB, true).c_str(),
 				ulType,
 				bEditAsRTF);
 		}
@@ -1459,13 +1463,13 @@ namespace controls::sortlistctrl
 				bUseWrapEx = true;
 				LPSPropValue lpProp = nullptr;
 
-				WC_H_S(m_lpPropBag->GetProp(PR_INTERNET_CPID, &lpProp));
+				WC_H_S(lpPropBag->GetProp(PR_INTERNET_CPID, &lpProp));
 				if (lpProp && PT_LONG == PROP_TYPE(lpProp[0].ulPropTag))
 				{
 					ulInCodePage = lpProp[0].Value.l;
 				}
 
-				m_lpPropBag->FreeBuffer(lpProp);
+				lpPropBag->FreeBuffer(lpProp);
 
 				dialog::editor::CEditor MyPrompt2(
 					this, IDS_WRAPEXFLAGS, IDS_WRAPEXFLAGSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
@@ -1488,7 +1492,7 @@ namespace controls::sortlistctrl
 			this,
 			IDS_PROPEDITOR,
 			IDS_STREAMEDITORPROMPT,
-			m_lpPropBag->GetMAPIProp(),
+			lpPropBag->GetMAPIProp(),
 			ulPropTag,
 			false, // No stream guessing
 			m_bIsAB,
@@ -1520,6 +1524,7 @@ namespace controls::sortlistctrl
 		// For now, we only paste to objects - copying to rows would be difficult to generalize
 		// TODO: Now that we have property bags, figure out how to generalize this
 		if (!m_lpHostDlg || !m_lpPropBag) return;
+		auto lpPropBag = m_lpPropBag; // Hold the prop bag so it doesn't get deleted under us
 
 		const auto ulSourcePropTag = cache::CGlobalCache::getInstance().GetPropertyToCopy();
 		auto lpSourcePropObj = cache::CGlobalCache::getInstance().GetSourcePropObject();
@@ -1573,7 +1578,7 @@ namespace controls::sortlistctrl
 				lpProgress ? reinterpret_cast<ULONG_PTR>(m_lpHostDlg->m_hWnd) : NULL, // ui param
 				lpProgress, // progress
 				&MyGUID,
-				m_lpPropBag->GetMAPIProp(),
+				lpPropBag->GetMAPIProp(),
 				ulCopyFlags,
 				&lpProblems));
 
@@ -1588,13 +1593,13 @@ namespace controls::sortlistctrl
 			if (SUCCEEDED(hRes) && ulValues && lpSourceProp && PT_ERROR != lpSourceProp->ulPropTag)
 			{
 				lpSourceProp->ulPropTag = ulTargetTag;
-				hRes = EC_H(m_lpPropBag->SetProps(ulValues, lpSourceProp));
+				hRes = EC_H(lpPropBag->SetProps(ulValues, lpSourceProp));
 			}
 		}
 		break;
 		case 2:
 			hRes =
-				EC_H(mapi::CopyPropertyAsStream(lpSourcePropObj, m_lpPropBag->GetMAPIProp(), ulSourceTag, ulTargetTag));
+				EC_H(mapi::CopyPropertyAsStream(lpSourcePropObj, lpPropBag->GetMAPIProp(), ulSourceTag, ulTargetTag));
 			break;
 		}
 
@@ -1603,7 +1608,7 @@ namespace controls::sortlistctrl
 
 		if (SUCCEEDED(hRes))
 		{
-			hRes = EC_H(m_lpPropBag->Commit());
+			hRes = EC_H(lpPropBag->Commit());
 
 			if (SUCCEEDED(hRes))
 			{
@@ -1648,17 +1653,18 @@ namespace controls::sortlistctrl
 
 		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"OnOpenProperty", L"asked to open 0x%X\n", ulPropTag);
 		LPSPropValue lpProp = nullptr;
-		if (m_lpPropBag)
+		auto lpPropBag = m_lpPropBag; // Hold the prop bag so it doesn't get deleted under us
+		if (lpPropBag)
 		{
-			hRes = EC_H(m_lpPropBag->GetProp(ulPropTag, &lpProp));
+			hRes = EC_H(lpPropBag->GetProp(ulPropTag, &lpProp));
 		}
 
 		if (SUCCEEDED(hRes) && lpProp)
 		{
-			if (m_lpPropBag && PT_OBJECT == PROP_TYPE(lpProp->ulPropTag))
+			if (lpPropBag && PT_OBJECT == PROP_TYPE(lpProp->ulPropTag))
 			{
 				EC_H_S(DisplayTable(
-					m_lpPropBag->GetMAPIProp(), lpProp->ulPropTag, dialog::objectType::default, m_lpHostDlg));
+					lpPropBag->GetMAPIProp(), lpProp->ulPropTag, dialog::objectType::default, m_lpHostDlg));
 			}
 			else if (PT_BINARY == PROP_TYPE(lpProp->ulPropTag) || PT_MV_BINARY == PROP_TYPE(lpProp->ulPropTag))
 			{
@@ -1690,9 +1696,9 @@ namespace controls::sortlistctrl
 			}
 		}
 
-		if (m_lpPropBag)
+		if (lpPropBag)
 		{
-			m_lpPropBag->FreeBuffer(lpProp);
+			lpPropBag->FreeBuffer(lpProp);
 		}
 	}
 
@@ -1743,6 +1749,7 @@ namespace controls::sortlistctrl
 	void CSingleMAPIPropListCtrl::OnOpenPropertyAsTable()
 	{
 		if (!m_lpPropBag) return;
+		auto lpPropBag = m_lpPropBag; // Hold the prop bag so it doesn't get deleted under us
 
 		// Display a dialog to get a property number.
 		dialog::editor::CPropertyTagEditor MyPropertyTag(
@@ -1750,7 +1757,7 @@ namespace controls::sortlistctrl
 			NULL, // prompt
 			NULL,
 			m_bIsAB,
-			m_lpPropBag->GetMAPIProp(),
+			lpPropBag->GetMAPIProp(),
 			this);
 		if (!MyPropertyTag.DisplayDialog()) return;
 		dialog::editor::CEditor MyData(
@@ -1762,7 +1769,7 @@ namespace controls::sortlistctrl
 		if (MyData.GetCheck(0))
 		{
 			EC_H_S(DisplayExchangeTable(
-				m_lpPropBag->GetMAPIProp(),
+				lpPropBag->GetMAPIProp(),
 				CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_OBJECT),
 				dialog::objectType::default,
 				m_lpHostDlg));
@@ -1770,7 +1777,7 @@ namespace controls::sortlistctrl
 		else
 		{
 			EC_H_S(DisplayTable(
-				m_lpPropBag->GetMAPIProp(),
+				lpPropBag->GetMAPIProp(),
 				CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_OBJECT),
 				dialog::objectType::default,
 				m_lpHostDlg));
@@ -1780,6 +1787,7 @@ namespace controls::sortlistctrl
 	void CSingleMAPIPropListCtrl::OnPasteNamedProps()
 	{
 		if (!m_lpPropBag) return;
+		auto lpPropBag = m_lpPropBag; // Hold the prop bag so it doesn't get deleted under us
 
 		const auto lpSourceMsgEID = cache::CGlobalCache::getInstance().GetMessagesToCopy();
 
@@ -1815,11 +1823,11 @@ namespace controls::sortlistctrl
 					&propSetGUID,
 					MyData.GetCheck(1),
 					MyData.GetCheck(2),
-					m_lpPropBag->GetMAPIProp(),
+					lpPropBag->GetMAPIProp(),
 					m_lpHostDlg->m_hWnd));
 				if (SUCCEEDED(hRes))
 				{
-					hRes = EC_H(m_lpPropBag->Commit());
+					hRes = EC_H(lpPropBag->Commit());
 				}
 
 				if (SUCCEEDED(hRes))

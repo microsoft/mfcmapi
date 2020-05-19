@@ -53,7 +53,8 @@ namespace controls::sortlistctrl
 			int iRow,
 			ULONG ulPropTag,
 			_In_opt_ const MAPINAMEID* lpNameID,
-			_In_opt_ const SBinary* lpMappingSignature, // optional mapping signature for object to speed named prop lookups
+			_In_opt_ const SBinary*
+				lpMappingSignature, // optional mapping signature for object to speed named prop lookups
 			_In_ LPSPropValue lpsPropToAdd);
 
 		_Check_return_ bool HandleAddInMenu(WORD wMenuSelect) const;
