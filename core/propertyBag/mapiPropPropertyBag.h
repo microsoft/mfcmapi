@@ -9,6 +9,8 @@ namespace propertybag
 	public:
 		mapiPropPropertyBag(LPMAPIPROP lpProp, sortlistdata::sortListData* lpListData);
 		~mapiPropPropertyBag();
+		mapiPropPropertyBag(const mapiPropPropertyBag&) = delete;
+		mapiPropPropertyBag& operator=(const mapiPropPropertyBag&) = delete;
 
 		propBagFlags GetFlags() const override;
 		propBagType GetType() const override { return propBagType::MAPIProp; }

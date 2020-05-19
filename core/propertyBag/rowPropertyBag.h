@@ -9,6 +9,8 @@ namespace propertybag
 	public:
 		rowPropertyBag(sortlistdata::sortListData* lpListData);
 		virtual ~rowPropertyBag() = default;
+		rowPropertyBag(const rowPropertyBag&) = delete;
+		rowPropertyBag& operator=(const rowPropertyBag&) = delete;
 
 		propBagFlags GetFlags() const override;
 		propBagType GetType() const override { return propBagType::Row; }
