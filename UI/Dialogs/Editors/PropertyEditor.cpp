@@ -94,7 +94,7 @@ namespace dialog::editor
 		return hRes;
 	}
 
-	static std::wstring SVCLASS = L"CPropertyEditor"; // STRING_OK
+	static std::wstring CLASS = L"CPropertyEditor"; // STRING_OK
 
 	// Create an editor for a MAPI property
 	CPropertyEditor::CPropertyEditor(
@@ -109,7 +109,7 @@ namespace dialog::editor
 		_In_opt_ const _SPropValue* lpsPropValue)
 		: CEditor(pParentWnd, uidTitle, uidPrompt, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)
 	{
-		TRACE_CONSTRUCTOR(SVCLASS);
+		TRACE_CONSTRUCTOR(CLASS);
 
 		m_bIsAB = bIsAB;
 		m_bMVRow = bMVRow;
@@ -138,7 +138,7 @@ namespace dialog::editor
 
 	CPropertyEditor::~CPropertyEditor()
 	{
-		TRACE_DESTRUCTOR(SVCLASS);
+		TRACE_DESTRUCTOR(CLASS);
 		if (m_lpMAPIProp) m_lpMAPIProp->Release();
 	}
 
