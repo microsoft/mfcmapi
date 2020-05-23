@@ -507,7 +507,7 @@ namespace mapi
 		return MAPI_E_USER_CANCEL;
 	}
 
-	_Check_return_ SBinary CopySBinary(_In_ const _SBinary& src, _In_ LPVOID parent)
+	_Check_return_ SBinary CopySBinary(_In_ const _SBinary& src, _In_ const VOID* parent)
 	{
 		const auto dst = SBinary{src.cb, mapi::allocate<LPBYTE>(src.cb, parent)};
 		if (src.cb) CopyMemory(dst.lpb, src.lpb, src.cb);
@@ -532,12 +532,12 @@ namespace mapi
 	// Parameters
 	// lpszDestination - Address of pointer to destination string
 	// szSource - Pointer to source string
-	// lpParent - Pointer to parent object (not, however, pointer to pointer!)
+	// parent - Pointer to parent object (not, however, pointer to pointer!)
 	//
 	// Purpose
 	// Uses MAPI to allocate a new string (szDestination) and copy szSource into it
-	// Uses lpParent as the parent for MAPIAllocateMore if possible
-	_Check_return_ LPSTR CopyStringA(_In_z_ LPCSTR src, _In_opt_ LPVOID pParent)
+	// Uses parent as the parent for MAPIAllocateMore if possible
+	_Check_return_ LPSTR CopyStringA(_In_z_ LPCSTR src, _In_opt_ const VOID* pParent)
 	{
 		if (!src) return nullptr;
 		auto cb = strnlen_s(src, RSIZE_MAX) + 1;
@@ -551,7 +551,7 @@ namespace mapi
 		return dst;
 	}
 
-	_Check_return_ LPWSTR CopyStringW(_In_z_ LPCWSTR src, _In_opt_ LPVOID pParent)
+	_Check_return_ LPWSTR CopyStringW(_In_z_ LPCWSTR src, _In_opt_ const VOID* pParent)
 	{
 		if (!src) return nullptr;
 		auto cch = wcsnlen_s(src, RSIZE_MAX) + 1;
@@ -1012,12 +1012,12 @@ namespace mapi
 
 	// Allocates and creates a restriction that looks for existence of
 	// a particular property that matches the given string
-	// If lpParent is passed in, it is used as the allocation parent.
+	// If parent is passed in, it is used as the allocation parent.
 	_Check_return_ LPSRestriction CreatePropertyStringRestriction(
 		ULONG ulPropTag,
 		_In_ const std::wstring& szString,
 		ULONG ulFuzzyLevel,
-		_In_opt_ LPVOID parent)
+		_In_opt_ const VOID* parent)
 	{
 		if (PROP_TYPE(ulPropTag) != PT_UNICODE) return nullptr;
 		if (szString.empty()) return nullptr;
@@ -1062,7 +1062,7 @@ namespace mapi
 	}
 
 	_Check_return_ LPSRestriction
-	CreateRangeRestriction(ULONG ulPropTag, _In_ const std::wstring& szString, _In_opt_ LPVOID parent)
+	CreateRangeRestriction(ULONG ulPropTag, _In_ const std::wstring& szString, _In_opt_ const VOID* parent)
 	{
 		if (szString.empty()) return nullptr;
 		if (PROP_TYPE(ulPropTag) != PT_UNICODE) return nullptr;
@@ -1426,11 +1426,11 @@ namespace mapi
 
 	// Converts vector<BYTE> to LPBYTE allocated with MAPIAllocateMore
 	// Will only return nullptr on allocation failure. Even empty bin will return pointer to 0 so MAPI handles empty strings properly
-	_Check_return_ LPBYTE ByteVectorToMAPI(const std::vector<BYTE>& bin, LPVOID lpParent)
+	_Check_return_ LPBYTE ByteVectorToMAPI(const std::vector<BYTE>& bin, const VOID* parent)
 	{
 		const auto binsize = static_cast<ULONG>(bin.size() + sizeof(WCHAR));
 		// We allocate a couple extra bytes (initialized to NULL) in case this buffer is printed.
-		const auto lpBin = mapi::allocate<LPBYTE>(binsize, lpParent);
+		const auto lpBin = mapi::allocate<LPBYTE>(binsize, parent);
 		if (lpBin)
 		{
 			memset(lpBin, 0, binsize);
@@ -2507,7 +2507,7 @@ namespace mapi
 	}
 
 	_Check_return_ HRESULT
-	HrDupPropset(int cprop, _In_count_(cprop) LPSPropValue rgprop, _In_ LPVOID lpObject, _In_ LPSPropValue* prgprop)
+	HrDupPropset(int cprop, _In_count_(cprop) LPSPropValue rgprop, _In_ const VOID* parent, _In_ LPSPropValue* prgprop)
 	{
 		ULONG cb = NULL;
 
@@ -2517,7 +2517,7 @@ namespace mapi
 		if (SUCCEEDED(hRes) && cb)
 		{
 			// Obtain memory
-			*prgprop = mapi::allocate<LPSPropValue>(cb, lpObject);
+			*prgprop = mapi::allocate<LPSPropValue>(cb, parent);
 			if (*prgprop)
 			{
 				// Copy the properties
@@ -2671,7 +2671,7 @@ namespace mapi
 	// swiped from EDK rules sample
 	_Check_return_ STDAPI HrCopyActions(
 		_In_ LPACTIONS lpActsSrc, // source action ptr
-		_In_ LPVOID lpObject, // ptr to existing MAPI buffer
+		_In_ const VOID* parent, // ptr to existing MAPI buffer
 		_In_ LPACTIONS* lppActsDst) // ptr to destination ACTIONS buffer
 	{
 		if (!lpActsSrc || !lppActsDst) return MAPI_E_INVALID_PARAMETER;
@@ -2679,8 +2679,8 @@ namespace mapi
 
 		auto hRes = S_OK;
 
-		*lppActsDst = mapi::allocate<LPACTIONS>(sizeof(ACTIONS), lpObject);
-		const auto lpAllocationParent = lpObject ? lpObject : *lppActsDst;
+		*lppActsDst = mapi::allocate<LPACTIONS>(sizeof(ACTIONS), parent);
+		const auto lpAllocationParent = parent ? parent : *lppActsDst;
 		// no short circuit returns after here
 
 		const auto lpActsDst = *lppActsDst;
@@ -2784,7 +2784,7 @@ namespace mapi
 							hRes = WC_MAPI(HrDupPropset(
 								lpActDst->lpadrlist->aEntries[j].cValues,
 								lpActSrc->lpadrlist->aEntries[j].rgPropVals,
-								lpObject,
+								parent,
 								&lpActDst->lpadrlist->aEntries[j].rgPropVals));
 							if (FAILED(hRes)) break;
 						}
@@ -2792,7 +2792,7 @@ namespace mapi
 					break;
 
 				case OP_TAG: // propTag
-					hRes = WC_H(MyPropCopyMore(&lpActDst->propTag, &lpActSrc->propTag, MAPIAllocateMore, lpObject));
+					hRes = WC_H(MyPropCopyMore(&lpActDst->propTag, &lpActSrc->propTag, MAPIAllocateMore, parent));
 					if (FAILED(hRes)) break;
 					break;
 
@@ -2812,7 +2812,7 @@ namespace mapi
 
 		if (FAILED(hRes))
 		{
-			if (!lpObject) MAPIFreeBuffer(*lppActsDst);
+			if (!parent) MAPIFreeBuffer(*lppActsDst);
 		}
 
 		return hRes;
@@ -2825,7 +2825,7 @@ namespace mapi
 		_In_ LPSPropValue lpSPropValueDest,
 		_In_ const _SPropValue* lpSPropValueSrc,
 		_In_ ALLOCATEMORE* lpfAllocMore,
-		_In_ LPVOID lpvObject)
+		_In_ const VOID* parent)
 	{
 		auto hRes = S_OK;
 		switch (PROP_TYPE(lpSPropValueSrc->ulPropTag))
@@ -2842,21 +2842,20 @@ namespace mapi
 			{
 				LPSRestriction lpNewRes = nullptr;
 				hRes = WC_H(HrCopyRestriction(
-					reinterpret_cast<LPSRestriction>(lpSPropValueSrc->Value.lpszA), lpvObject, &lpNewRes));
+					reinterpret_cast<LPSRestriction>(lpSPropValueSrc->Value.lpszA), parent, &lpNewRes));
 				lpSPropValueDest->Value.lpszA = reinterpret_cast<LPSTR>(lpNewRes);
 			}
 			else
 			{
 				ACTIONS* lpNewAct = nullptr;
-				hRes =
-					WC_H(HrCopyActions(reinterpret_cast<ACTIONS*>(lpSPropValueSrc->Value.lpszA), lpvObject, &lpNewAct));
+				hRes = WC_H(HrCopyActions(reinterpret_cast<ACTIONS*>(lpSPropValueSrc->Value.lpszA), parent, &lpNewAct));
 				lpSPropValueDest->Value.lpszA = reinterpret_cast<LPSTR>(lpNewAct);
 			}
 			break;
 		}
 		default:
-			hRes = WC_MAPI(
-				PropCopyMore(lpSPropValueDest, const_cast<LPSPropValue>(lpSPropValueSrc), lpfAllocMore, lpvObject));
+			hRes = WC_MAPI(PropCopyMore(
+				lpSPropValueDest, const_cast<LPSPropValue>(lpSPropValueSrc), lpfAllocMore, const_cast<LPVOID>(parent)));
 		}
 
 		return hRes;
