@@ -326,8 +326,7 @@ namespace dialog::editor
 		tmpPropVal.ulPropTag = m_ulPropTag & ~MV_FLAG;
 		tmpPropVal.Value = mvprop->m_val;
 
-		LPSPropValue lpNewValue = nullptr;
-		const auto hRes = WC_H(DisplayPropertyEditor(
+		const auto lpNewValue = DisplayPropertyEditor(
 			this,
 			IDS_EDITROW,
 			m_bIsAB,
@@ -335,11 +334,10 @@ namespace dialog::editor
 			m_lpMAPIProp,
 			NULL,
 			true, // This is a row from a multivalued property. Only case we pass true here.
-			&tmpPropVal,
-			&lpNewValue));
-
-		if (hRes == S_OK && lpNewValue)
+			&tmpPropVal);
+		if (lpNewValue)
 		{
+			// init takes ownership of the SPropValue
 			sortlistdata::mvPropData::init(lpData, lpNewValue);
 
 			// update the UI
@@ -348,8 +346,6 @@ namespace dialog::editor
 			return true;
 		}
 
-		// Remember we didn't have an allocation parent - this is safe
-		MAPIFreeBuffer(lpNewValue);
 		return false;
 	}
 
