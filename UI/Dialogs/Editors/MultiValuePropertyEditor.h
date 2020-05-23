@@ -9,7 +9,6 @@ namespace dialog::editor
 		CMultiValuePropertyEditor(
 			_In_ CWnd* pParentWnd,
 			UINT uidTitle,
-			UINT uidPrompt,
 			bool bIsAB,
 			_In_opt_ LPVOID lpAllocParent,
 			_In_opt_ LPMAPIPROP lpMAPIProp,

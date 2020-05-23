@@ -18,7 +18,6 @@ namespace dialog::editor
 	_Check_return_ HRESULT DisplayPropertyEditor(
 		_In_ CWnd* pParentWnd,
 		UINT uidTitle,
-		UINT uidPrompt,
 		bool bIsAB,
 		_In_opt_ LPVOID lpAllocParent,
 		_In_opt_ LPMAPIPROP lpMAPIProp,
@@ -72,7 +71,7 @@ namespace dialog::editor
 		if (PROP_TYPE(ulPropTag) & MV_FLAG)
 		{
 			CMultiValuePropertyEditor MyPropertyEditor(
-				pParentWnd, uidTitle, uidPrompt, bIsAB, lpAllocParent, lpMAPIProp, ulPropTag, lpsPropValue);
+				pParentWnd, uidTitle, bIsAB, lpAllocParent, lpMAPIProp, ulPropTag, lpsPropValue);
 			if (MyPropertyEditor.DisplayDialog())
 			{
 				if (lpNewValue) *lpNewValue = MyPropertyEditor.DetachModifiedSPropValue();
@@ -82,7 +81,7 @@ namespace dialog::editor
 		else
 		{
 			CPropertyEditor MyPropertyEditor(
-				pParentWnd, uidTitle, uidPrompt, bIsAB, bMVRow, lpAllocParent, lpMAPIProp, ulPropTag, lpsPropValue);
+				pParentWnd, uidTitle, bIsAB, bMVRow, lpAllocParent, lpMAPIProp, ulPropTag, lpsPropValue);
 			if (MyPropertyEditor.DisplayDialog())
 			{
 				if (lpNewValue) *lpNewValue = MyPropertyEditor.DetachModifiedSPropValue();
@@ -100,14 +99,13 @@ namespace dialog::editor
 	CPropertyEditor::CPropertyEditor(
 		_In_ CWnd* pParentWnd,
 		UINT uidTitle,
-		UINT uidPrompt,
 		bool bIsAB,
 		bool bMVRow,
 		_In_opt_ LPVOID lpAllocParent,
 		_In_opt_ LPMAPIPROP lpMAPIProp,
 		ULONG ulPropTag,
 		_In_opt_ const _SPropValue* lpsPropValue)
-		: CEditor(pParentWnd, uidTitle, uidPrompt, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL), m_bIsAB(bIsAB),
+		: CEditor(pParentWnd, uidTitle, NULL, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL), m_bIsAB(bIsAB),
 		  m_bMVRow(bMVRow), m_lpAllocParent(lpAllocParent), m_lpMAPIProp(lpMAPIProp), m_ulPropTag(ulPropTag),
 		  m_lpsInputValue(lpsPropValue)
 	{
@@ -119,12 +117,8 @@ namespace dialog::editor
 		// So by definition, we're already dirty
 		if (!m_lpsInputValue) m_bDirty = true;
 
-		const auto szPromptPostFix = strings::format(
-			L"%ws%ws",
-			uidPrompt ? L"\r\n" : L"",
-			proptags::TagToString(m_ulPropTag | (m_bMVRow ? MV_FLAG : NULL), m_lpMAPIProp, m_bIsAB, false)
-				.c_str()); // STRING_OK
-		SetPromptPostFix(szPromptPostFix);
+		SetPromptPostFix(
+			proptags::TagToString(m_ulPropTag | (m_bMVRow ? MV_FLAG : NULL), m_lpMAPIProp, m_bIsAB, false));
 
 		InitPropertyControls();
 	}

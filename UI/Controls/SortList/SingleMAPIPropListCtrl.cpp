@@ -1392,7 +1392,6 @@ namespace controls::sortlistctrl
 			hRes = WC_H(dialog::editor::DisplayPropertyEditor(
 				this,
 				IDS_PROPEDITOR,
-				NULL,
 				m_bIsAB,
 				nullptr,
 				lpSourceObj,
