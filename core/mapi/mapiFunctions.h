@@ -173,11 +173,11 @@ namespace mapi
 		bool bIsAB,
 		bool bAllowUI);
 
-	_Check_return_ SBinary CopySBinary(_In_ const _SBinary& src, _In_ LPVOID parent = nullptr);
+	_Check_return_ SBinary CopySBinary(_In_ const _SBinary& src, _In_ const VOID* parent = nullptr);
 	_Check_return_ LPSBinary CopySBinary(_In_ const _SBinary* src);
 
-	_Check_return_ LPSTR CopyStringA(_In_z_ LPCSTR src, _In_opt_ LPVOID pParent);
-	_Check_return_ LPWSTR CopyStringW(_In_z_ LPCWSTR src, _In_opt_ LPVOID pParent);
+	_Check_return_ LPSTR CopyStringA(_In_z_ LPCSTR src, _In_opt_ const VOID* parent);
+	_Check_return_ LPWSTR CopyStringW(_In_z_ LPCWSTR src, _In_opt_ const VOID* parent);
 #ifdef UNICODE
 #define CopyString CopyStringW
 #else
@@ -204,9 +204,9 @@ namespace mapi
 		ULONG ulPropTag,
 		_In_ const std::wstring& szString,
 		ULONG ulFuzzyLevel,
-		_In_opt_ LPVOID parent);
+		_In_opt_ const VOID* parent);
 	_Check_return_ LPSRestriction
-	CreateRangeRestriction(ULONG ulPropTag, _In_ const std::wstring& szString, _In_opt_ LPVOID);
+	CreateRangeRestriction(ULONG ulPropTag, _In_ const std::wstring& szString, _In_opt_ const VOID* parent);
 	_Check_return_ HRESULT DeleteProperty(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag);
 	_Check_return_ HRESULT
 	DeleteToDeletedItems(_In_ LPMDB lpMDB, _In_ LPMAPIFOLDER lpSourceFolder, _In_ LPENTRYLIST lpEIDs, _In_ HWND hWnd);
@@ -218,7 +218,7 @@ namespace mapi
 	IsAttachmentBlocked(_In_ LPMAPISESSION lpMAPISession, _In_z_ LPCWSTR pwszFileName, _Out_ bool* pfBlocked);
 	_Check_return_ bool IsDuplicateProp(_In_ LPSPropTagArray lpArray, ULONG ulPropTag) noexcept;
 	_Check_return_ HRESULT ManuallyEmptyFolder(_In_ LPMAPIFOLDER lpFolder, BOOL bAssoc, BOOL bHardDelete);
-	_Check_return_ LPBYTE ByteVectorToMAPI(const std::vector<BYTE>& bin, LPVOID lpParent);
+	_Check_return_ LPBYTE ByteVectorToMAPI(const std::vector<BYTE>& bin, const VOID* parent);
 	_Check_return_ HRESULT RemoveOneOff(_In_ LPMESSAGE lpMessage, bool bRemovePropDef);
 	_Check_return_ HRESULT ResendMessages(_In_ LPMAPIFOLDER lpFolder, _In_ HWND hWnd);
 	_Check_return_ HRESULT ResendSingleMessage(_In_ LPMAPIFOLDER lpFolder, _In_ LPSBinary MessageEID, _In_ HWND hWnd);
@@ -346,7 +346,7 @@ namespace mapi
 		_In_ LPSPropValue lpSPropValueDest,
 		_In_ const _SPropValue* lpSPropValueSrc,
 		_In_ ALLOCATEMORE* lpfAllocMore,
-		_In_ LPVOID lpvObject);
+		_In_ const VOID* parent);
 
 #pragma warning(push)
 #pragma warning(disable : 26482) // Warning C26482 Only index into arrays using constant expressions (bounds.2).

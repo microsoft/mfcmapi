@@ -13,41 +13,33 @@
 
 namespace dialog::editor
 {
-	static std::wstring MVCLASS = L"CMultiValuePropertyEditor"; // STRING_OK
+	static std::wstring CLASS = L"CMultiValuePropertyEditor"; // STRING_OK
 
 	// Create an editor for a MAPI property
 	CMultiValuePropertyEditor::CMultiValuePropertyEditor(
 		_In_ CWnd* pParentWnd,
 		UINT uidTitle,
-		UINT uidPrompt,
 		bool bIsAB,
 		_In_opt_ LPVOID lpAllocParent,
 		_In_opt_ LPMAPIPROP lpMAPIProp,
 		ULONG ulPropTag,
 		_In_opt_ const _SPropValue* lpsPropValue)
-		: CEditor(pParentWnd, uidTitle, uidPrompt, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)
+		: CEditor(pParentWnd, uidTitle, NULL, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL), m_bIsAB(bIsAB),
+		  m_lpAllocParent(lpAllocParent), m_lpMAPIProp(lpMAPIProp), m_ulPropTag(ulPropTag),
+		  m_lpsInputValue(lpsPropValue)
 	{
-		TRACE_CONSTRUCTOR(MVCLASS);
+		TRACE_CONSTRUCTOR(CLASS);
 
-		m_bIsAB = bIsAB;
-		m_lpAllocParent = lpAllocParent;
-		m_lpsOutputValue = nullptr;
-
-		m_lpMAPIProp = lpMAPIProp;
 		if (m_lpMAPIProp) m_lpMAPIProp->AddRef();
-		m_ulPropTag = ulPropTag;
-		m_lpsInputValue = lpsPropValue;
 
-		const auto szPromptPostFix = strings::format(
-			L"\r\n%ws", proptags::TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, false).c_str()); // STRING_OK
-		SetPromptPostFix(szPromptPostFix);
+		SetPromptPostFix(proptags::TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, false));
 
 		InitPropertyControls();
 	}
 
 	CMultiValuePropertyEditor::~CMultiValuePropertyEditor()
 	{
-		TRACE_DESTRUCTOR(MVCLASS);
+		TRACE_DESTRUCTOR(CLASS);
 		if (m_lpMAPIProp) m_lpMAPIProp->Release();
 	}
 
@@ -338,7 +330,6 @@ namespace dialog::editor
 		const auto hRes = WC_H(DisplayPropertyEditor(
 			this,
 			IDS_EDITROW,
-			NULL,
 			m_bIsAB,
 			NULL, // not passing an allocation parent because we know we're gonna free the result
 			m_lpMAPIProp,
