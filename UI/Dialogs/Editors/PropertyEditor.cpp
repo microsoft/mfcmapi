@@ -145,9 +145,6 @@ namespace dialog::editor
 	{
 		std::wstring szTemp1;
 		std::wstring szTemp2;
-		std::shared_ptr<viewpane::CountedTextPane> lpPane;
-		size_t cbStr = 0;
-		std::wstring szGuid;
 
 		switch (PROP_TYPE(m_ulPropTag))
 		{
@@ -199,20 +196,21 @@ namespace dialog::editor
 			AddPane(viewpane::CountedTextPane::Create(1, IDS_BIN, false, IDS_CB));
 			if (m_lpsInputValue && strings::CheckStringProp(m_lpsInputValue, PT_STRING8))
 			{
-				auto lpszA = std::string(m_lpsInputValue->Value.lpszA);
+				const auto lpszA = std::string(m_lpsInputValue->Value.lpszA);
+				const auto len = lpszA.length();
 				SetStringA(0, lpszA);
 
-				lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(GetPane(1));
+				auto lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(GetPane(1));
 				if (lpPane)
 				{
-					cbStr = lpszA.length() * sizeof(CHAR);
+					const auto cbStr = len * sizeof(CHAR);
 
 					lpPane->SetBinary(reinterpret_cast<const BYTE*>(lpszA.c_str()), cbStr);
 					lpPane->SetCount(cbStr);
 				}
 
 				lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(GetPane(0));
-				if (lpPane) lpPane->SetCount(cbStr);
+				if (lpPane) lpPane->SetCount(len);
 			}
 
 			break;
@@ -221,20 +219,21 @@ namespace dialog::editor
 			AddPane(viewpane::CountedTextPane::Create(1, IDS_BIN, false, IDS_CB));
 			if (m_lpsInputValue && strings::CheckStringProp(m_lpsInputValue, PT_UNICODE))
 			{
-				auto lpszW = std::wstring(m_lpsInputValue->Value.lpszW);
+				const auto lpszW = std::wstring(m_lpsInputValue->Value.lpszW);
+				const auto len = lpszW.length();
 				SetStringW(0, lpszW);
 
-				lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(GetPane(1));
+				auto lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(GetPane(1));
 				if (lpPane)
 				{
-					cbStr = lpszW.length() * sizeof(WCHAR);
+					const auto cbStr = len * sizeof(WCHAR);
 
 					lpPane->SetBinary(reinterpret_cast<const BYTE*>(lpszW.c_str()), cbStr);
 					lpPane->SetCount(cbStr);
 				}
 
 				lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(GetPane(0));
-				if (lpPane) lpPane->SetCount(lpszW.length());
+				if (lpPane) lpPane->SetCount(len);
 			}
 
 			break;
@@ -312,7 +311,7 @@ namespace dialog::editor
 			break;
 		case PT_BINARY:
 		{
-			lpPane = viewpane::CountedTextPane::Create(0, IDS_BIN, false, IDS_CB);
+			auto lpPane = viewpane::CountedTextPane::Create(0, IDS_BIN, false, IDS_CB);
 			AddPane(lpPane);
 			AddPane(viewpane::CountedTextPane::Create(1, IDS_TEXT, false, IDS_CCH));
 			auto smartViewPane = viewpane::SmartViewPane::Create(2, IDS_SMARTVIEW);
@@ -394,14 +393,13 @@ namespace dialog::editor
 			AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_GUID, false));
 			if (m_lpsInputValue)
 			{
-				szGuid = guid::GUIDToStringAndName(m_lpsInputValue->Value.lpguid);
+				SetStringW(0, guid::GUIDToStringAndName(m_lpsInputValue->Value.lpguid));
 			}
 			else
 			{
-				szGuid = guid::GUIDToStringAndName(nullptr);
+				SetStringW(0, guid::GUIDToStringAndName(nullptr));
 			}
 
-			SetStringW(0, szGuid);
 			break;
 		case PT_SRESTRICTION:
 			AddPane(viewpane::TextPane::CreateCollapsibleTextPane(0, IDS_RESTRICTION, true));
@@ -572,17 +570,7 @@ namespace dialog::editor
 
 		if (paneID == static_cast<ULONG>(-1)) return static_cast<ULONG>(-1);
 
-		std::wstring szTmpString;
-		std::wstring szTemp1;
-		std::wstring szTemp2;
 		auto sProp = SPropValue{};
-
-		//auto Bin = SBinary{};
-		std::vector<BYTE> bin;
-		std::string lpszA;
-		std::wstring lpszW;
-
-		std::shared_ptr<viewpane::CountedTextPane> lpPane = nullptr;
 
 		// If we get here, something changed - set the dirty flag
 		m_bDirty = true;
@@ -590,15 +578,14 @@ namespace dialog::editor
 		switch (PROP_TYPE(m_ulPropTag))
 		{
 		case PT_I2: // signed 16 bit
-			szTmpString = GetStringW(paneID);
 			if (paneID == 0)
 			{
-				sProp.Value.i = static_cast<short int>(strings::wstringToLong(szTmpString, 10));
+				sProp.Value.i = static_cast<short int>(strings::wstringToLong(GetStringW(0), 10));
 				SetHex(1, sProp.Value.i);
 			}
 			else if (paneID == 1)
 			{
-				sProp.Value.i = static_cast<short int>(strings::wstringToLong(szTmpString, 16));
+				sProp.Value.i = static_cast<short int>(strings::wstringToLong(GetStringW(1), 16));
 				SetDecimal(0, sProp.Value.i);
 			}
 
@@ -608,15 +595,14 @@ namespace dialog::editor
 
 			break;
 		case PT_LONG: // unsigned 32 bit
-			szTmpString = GetStringW(paneID);
 			if (paneID == 0)
 			{
-				sProp.Value.l = static_cast<LONG>(strings::wstringToUlong(szTmpString, 10));
+				sProp.Value.l = static_cast<LONG>(strings::wstringToUlong(GetStringW(0), 10));
 				SetHex(1, sProp.Value.l);
 			}
 			else if (paneID == 1)
 			{
-				sProp.Value.l = static_cast<LONG>(strings::wstringToUlong(szTmpString, 16));
+				sProp.Value.l = static_cast<LONG>(strings::wstringToUlong(GetStringW(1), 16));
 				SetStringf(0, L"%d", sProp.Value.l); // STRING_OK
 			}
 
@@ -628,16 +614,13 @@ namespace dialog::editor
 		case PT_CURRENCY:
 			if (paneID == 0 || paneID == 1)
 			{
-				szTmpString = GetStringW(0);
-				sProp.Value.cur.Hi = strings::wstringToUlong(szTmpString, 16, false);
-				szTmpString = GetStringW(1);
-				sProp.Value.cur.Lo = strings::wstringToUlong(szTmpString, 16, false);
+				sProp.Value.cur.Hi = strings::wstringToUlong(GetStringW(0), 16, false);
+				sProp.Value.cur.Lo = strings::wstringToUlong(GetStringW(1), 16, false);
 				SetStringW(2, strings::CurrencyToString(sProp.Value.cur));
 			}
 			else if (paneID == 2)
 			{
-				szTmpString = GetStringW(paneID);
-				sProp.Value.cur.int64 = strings::wstringToCurrency(szTmpString);
+				sProp.Value.cur.int64 = strings::wstringToCurrency(GetStringW(2));
 				SetHex(0, static_cast<int>(sProp.Value.cur.Hi));
 				SetHex(1, static_cast<int>(sProp.Value.cur.Lo));
 			}
@@ -646,16 +629,13 @@ namespace dialog::editor
 		case PT_I8:
 			if (paneID == 0 || paneID == 1)
 			{
-				szTmpString = GetStringW(0);
-				sProp.Value.li.HighPart = static_cast<long>(strings::wstringToUlong(szTmpString, 16, false));
-				szTmpString = GetStringW(1);
-				sProp.Value.li.LowPart = static_cast<long>(strings::wstringToUlong(szTmpString, 16, false));
+				sProp.Value.li.HighPart = static_cast<long>(strings::wstringToUlong(GetStringW(0), 16, false));
+				sProp.Value.li.LowPart = static_cast<long>(strings::wstringToUlong(GetStringW(1), 16, false));
 				SetStringf(2, L"%I64d", sProp.Value.li.QuadPart); // STRING_OK
 			}
 			else if (paneID == 2)
 			{
-				szTmpString = GetStringW(paneID);
-				sProp.Value.li.QuadPart = strings::wstringToInt64(szTmpString);
+				sProp.Value.li.QuadPart = strings::wstringToInt64(GetStringW(2));
 				SetHex(0, static_cast<int>(sProp.Value.li.HighPart));
 				SetHex(1, static_cast<int>(sProp.Value.li.LowPart));
 			}
@@ -666,16 +646,20 @@ namespace dialog::editor
 
 			break;
 		case PT_SYSTIME: // components are unsigned hex
-			szTmpString = GetStringW(0);
-			sProp.Value.ft.dwLowDateTime = strings::wstringToUlong(szTmpString, 16);
-			szTmpString = GetStringW(1);
-			sProp.Value.ft.dwHighDateTime = strings::wstringToUlong(szTmpString, 16);
+		{
 
-			strings::FileTimeToString(sProp.Value.ft, szTemp1, szTemp2);
-			SetStringW(2, szTemp1);
-			break;
+			sProp.Value.ft.dwLowDateTime = strings::wstringToUlong(GetStringW(0), 16);
+			sProp.Value.ft.dwHighDateTime = strings::wstringToUlong(GetStringW(1), 16);
+
+			std::wstring prop;
+			std::wstring altprop;
+			strings::FileTimeToString(sProp.Value.ft, prop, altprop);
+			SetStringW(2, prop);
+		}
+		break;
 		case PT_BINARY:
 		{
+			std::vector<BYTE> bin;
 			if (paneID == 0 || paneID == 2)
 			{
 				ClearHighlight(0);
@@ -685,15 +669,13 @@ namespace dialog::editor
 			}
 			else if (paneID == 1)
 			{
-				lpszA = GetStringA(1); // Do not free this
+				const auto lpszA = GetStringA(1); // Do not free this
 				bin =
 					std::vector<BYTE>{lpszA.c_str(), lpszA.c_str() + static_cast<ULONG>(sizeof(CHAR) * lpszA.length())};
 				SetBinary(0, bin.data(), static_cast<ULONG>(bin.size()));
 			}
 
-			mapi::setBin(sProp) = {static_cast<ULONG>(bin.size()), bin.data()};
-
-			lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(GetPane(0));
+			auto lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(GetPane(0));
 			if (lpPane) lpPane->SetCount(bin.size());
 
 			lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(GetPane(1));
@@ -711,9 +693,9 @@ namespace dialog::editor
 			if (paneID == 0)
 			{
 				size_t cbStr = 0;
-				lpszA = GetStringA(0);
+				const auto lpszA = GetStringA(0);
 
-				lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(GetPane(1));
+				auto lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(GetPane(1));
 				if (lpPane)
 				{
 					cbStr = lpszA.length() * sizeof(CHAR);
@@ -729,11 +711,11 @@ namespace dialog::editor
 			}
 			else if (paneID == 1)
 			{
-				bin = GetBinary(1);
+				const auto bin = GetBinary(1);
 
 				SetStringA(0, std::string(reinterpret_cast<LPCSTR>(bin.data()), bin.size()));
 
-				lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(GetPane(0));
+				auto lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(GetPane(0));
 				if (lpPane) lpPane->SetCount(bin.size());
 
 				lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(GetPane(1));
@@ -744,9 +726,9 @@ namespace dialog::editor
 		case PT_UNICODE:
 			if (paneID == 0)
 			{
-				lpszW = GetStringW(0);
+				const auto lpszW = GetStringW(0);
 
-				lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(GetPane(1));
+				auto lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(GetPane(1));
 				if (lpPane)
 				{
 					const auto cbStr = lpszW.length() * sizeof(WCHAR);
@@ -762,8 +744,8 @@ namespace dialog::editor
 			}
 			else if (paneID == 1)
 			{
-				lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(GetPane(0));
-				bin = GetBinary(1);
+				auto lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(GetPane(0));
+				const auto bin = GetBinary(1);
 				if (!(bin.size() % sizeof(WCHAR)))
 				{
 					SetStringW(0, std::wstring(reinterpret_cast<LPCWSTR>(bin.data()), bin.size() / sizeof(WCHAR)));
