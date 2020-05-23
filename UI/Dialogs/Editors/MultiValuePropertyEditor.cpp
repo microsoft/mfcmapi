@@ -25,18 +25,13 @@ namespace dialog::editor
 		_In_opt_ LPMAPIPROP lpMAPIProp,
 		ULONG ulPropTag,
 		_In_opt_ const _SPropValue* lpsPropValue)
-		: CEditor(pParentWnd, uidTitle, uidPrompt, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)
+		: CEditor(pParentWnd, uidTitle, uidPrompt, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL), m_bIsAB(bIsAB),
+		  m_lpAllocParent(lpAllocParent), m_lpMAPIProp(lpMAPIProp), m_ulPropTag(ulPropTag),
+		  m_lpsInputValue(lpsPropValue)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
 
-		m_bIsAB = bIsAB;
-		m_lpAllocParent = lpAllocParent;
-		m_lpsOutputValue = nullptr;
-
-		m_lpMAPIProp = lpMAPIProp;
 		if (m_lpMAPIProp) m_lpMAPIProp->AddRef();
-		m_ulPropTag = ulPropTag;
-		m_lpsInputValue = lpsPropValue;
 
 		const auto szPromptPostFix = strings::format(
 			L"\r\n%ws", proptags::TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, false).c_str()); // STRING_OK

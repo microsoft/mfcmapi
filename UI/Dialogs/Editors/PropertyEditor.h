@@ -43,16 +43,16 @@ namespace dialog::editor
 		void OnOK() override;
 
 		// source variables
-		LPMAPIPROP m_lpMAPIProp;
-		ULONG m_ulPropTag;
-		bool m_bIsAB; // whether the tag is from the AB or not
-		const _SPropValue* m_lpsInputValue;
-		LPSPropValue m_lpsOutputValue;
-		bool m_bDirty;
-		bool m_bMVRow; // whether this row came from a multivalued property. Used for smart view parsing.
+		LPMAPIPROP m_lpMAPIProp{};
+		ULONG m_ulPropTag{};
+		bool m_bIsAB{}; // whether the tag is from the AB or not
+		const _SPropValue* m_lpsInputValue{};
+		LPSPropValue m_lpsOutputValue{};
+		bool m_bDirty{};
+		bool m_bMVRow{}; // whether this row came from a multivalued property. Used for smart view parsing.
 
 		// all calls to MAPIAllocateMore will use m_lpAllocParent
 		// this is not something to be freed
-		LPVOID m_lpAllocParent;
+		LPVOID m_lpAllocParent{};
 	};
 } // namespace dialog::editor

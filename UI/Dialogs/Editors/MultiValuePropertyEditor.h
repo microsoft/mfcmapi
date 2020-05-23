@@ -35,14 +35,14 @@ namespace dialog::editor
 		void OnOK() override;
 
 		// source variables
-		LPMAPIPROP m_lpMAPIProp;
-		ULONG m_ulPropTag;
-		bool m_bIsAB; // whether the tag is from the AB or not
-		const _SPropValue* m_lpsInputValue;
-		LPSPropValue m_lpsOutputValue;
+		LPMAPIPROP m_lpMAPIProp{};
+		ULONG m_ulPropTag{};
+		bool m_bIsAB{}; // whether the tag is from the AB or not
+		const _SPropValue* m_lpsInputValue{};
+		LPSPropValue m_lpsOutputValue{};
 
 		// all calls to MAPIAllocateMore will use m_lpAllocParent
 		// this is not something to be freed
-		LPVOID m_lpAllocParent;
+		LPVOID m_lpAllocParent{};
 	};
 } // namespace dialog::editor
