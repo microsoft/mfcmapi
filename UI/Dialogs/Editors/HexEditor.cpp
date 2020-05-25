@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/Editors/HexEditor.h>
-#include <UI/FileDialogEx.h>
+#include <UI/file/FileDialogEx.h>
 #include <UI/ViewPane/CountedTextPane.h>
 #include <UI/ViewPane/SmartViewPane.h>
 #include <UI/ViewPane/SplitterPane.h>

@@ -32,6 +32,9 @@
     <Filter Include="Source Files\UI\Controls\StyleTree">
       <UniqueIdentifier>{2a1b6e1f-562f-4579-876b-5146fc79b8d9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\UI\file">
+      <UniqueIdentifier>{11d1d58d-bd1e-4378-aee8-c09e38056240}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />
@@ -89,6 +92,12 @@
     <ClInclude Include="UI\FakeSplitter.h">
       <Filter>Source Files\UI</Filter>
     </ClInclude>
+    <ClInclude Include="UI\file\FileDialogEx.h">
+      <Filter>Source Files\UI\file</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\file\exporter.h">
+      <Filter>Source Files\UI\file</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StdAfx.h">
@@ -141,18 +150,18 @@
     <ClCompile Include="UI\FakeSplitter.cpp">
       <Filter>Source Files\UI</Filter>
     </ClCompile>
+    <ClCompile Include="UI\file\FileDialogEx.cpp">
+      <Filter>Source Files\UI\file</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\file\exporter.cpp">
+      <Filter>Source Files\UI\file</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="UI\DoubleBuffer.cpp">
       <Filter>Source Files\UI</Filter>
     </ClCompile>
     <ClInclude Include="UI\DoubleBuffer.h">
-      <Filter>Source Files\UI</Filter>
-    </ClInclude>
-    <ClCompile Include="UI\FileDialogEx.cpp">
-      <Filter>Source Files\UI</Filter>
-    </ClCompile>
-    <ClInclude Include="UI\FileDialogEx.h">
       <Filter>Source Files\UI</Filter>
     </ClInclude>
     <ClCompile Include="UI\MAPIFormFunctions.cpp">

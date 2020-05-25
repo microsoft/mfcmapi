@@ -6,7 +6,7 @@
 #include <core/mapi/columnTags.h>
 #include <core/mapi/mapiProfileFunctions.h>
 #include <UI/profile.h>
-#include <UI/FileDialogEx.h>
+#include <UI/file/FileDialogEx.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/ContentsTable/MsgServiceTableDlg.h>
 #include <core/mapi/cache/globalCache.h>

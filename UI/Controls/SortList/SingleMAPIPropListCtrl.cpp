@@ -5,7 +5,7 @@
 #include <UI/UIFunctions.h>
 #include <UI/MySecInfo.h>
 #include <core/interpret/guid.h>
-#include <UI/FileDialogEx.h>
+#include <UI/file/FileDialogEx.h>
 #include <core/utility/import.h>
 #include <core/mapi/mapiProgress.h>
 #include <core/mapi/cache/namedProps.h>

@@ -13,7 +13,7 @@
 #include <core/utility/file.h>
 #include <UI/Dialogs/ContentsTable/AttachmentsDlg.h>
 #include <UI/MAPIFormFunctions.h>
-#include <UI/FileDialogEx.h>
+#include <UI/file/FileDialogEx.h>
 #include <core/mapi/extraPropTags.h>
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
 #include <core/mapi/mapiProgress.h>
@@ -29,6 +29,7 @@
 #include <core/mapi/mapiFile.h>
 #include <core/interpret/flags.h>
 #include <core/mapi/mapiFunctions.h>
+#include <UI/file/exporter.h>
 
 namespace dialog
 {
@@ -1361,31 +1362,32 @@ namespace dialog
 		}
 
 		if (!MyData.DisplayDialog()) return;
+		const auto exportType = static_cast<exporter::exportType>(MyData.GetDropDown(0));
 
 		LPCWSTR szExt = nullptr;
 		LPCWSTR szDotExt = nullptr;
 		std::wstring szFilter;
 		LPADRBOOK lpAddrBook = nullptr;
-		switch (MyData.GetDropDown(0))
+		switch (exportType)
 		{
-		case 0:
+		case exporter::exportType::text:
 			szExt = L"xml"; // STRING_OK
 			szDotExt = L".xml"; // STRING_OK
 			szFilter = strings::loadstring(IDS_XMLFILES);
 			break;
-		case 1:
-		case 2:
+		case exporter::exportType::msgAnsi:
+		case exporter::exportType::msgUnicode:
 			szExt = L"msg"; // STRING_OK
 			szDotExt = L".msg"; // STRING_OK
 			szFilter = strings::loadstring(IDS_MSGFILES);
 			break;
-		case 3:
-		case 4:
+		case exporter::exportType::eml:
+		case exporter::exportType::emlIConverter:
 			szExt = L"eml"; // STRING_OK
 			szDotExt = L".eml"; // STRING_OK
 			szFilter = strings::loadstring(IDS_EMLFILES);
 			break;
-		case 5:
+		case exporter::exportType::tnef:
 			szExt = L"tnef"; // STRING_OK
 			szDotExt = L".tnef"; // STRING_OK
 			szFilter = strings::loadstring(IDS_TNEFFILES);

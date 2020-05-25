@@ -23,6 +23,7 @@ namespace dialog
 
 		// Menu items
 		void OnRefreshView() override;
+		void OnSaveMessageToFile();
 		void OnAttachmentProperties();
 		void OnRecipientProperties();
 		void OnRTFSync();

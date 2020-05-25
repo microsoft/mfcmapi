@@ -598,7 +598,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="UI\Dialogs\Dialog.h" />
     <ClInclude Include="UI\Dialogs\Editors\Editor.h" />
     <ClInclude Include="UI\FakeSplitter.h" />
-    <ClInclude Include="UI\FileDialogEx.h" />
     <ClInclude Include="UI\Dialogs\ContentsTable\FolderDlg.h" />
     <ClInclude Include="UI\Dialogs\ContentsTable\FormContainerDlg.h" />
     <ClInclude Include="UI\Dialogs\Editors\HexEditor.h" />
@@ -606,6 +605,8 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="UI\Controls\StyleTree\HierarchyTableTreeCtrl.h" />
     <ClInclude Include="UI\Dialogs\ContentsTable\MailboxTableDlg.h" />
     <ClInclude Include="UI\Dialogs\ContentsTable\MainDlg.h" />
+    <ClInclude Include="UI\file\exporter.h" />
+    <ClInclude Include="UI\file\FileDialogEx.h" />
     <ClInclude Include="UI\profile.h" />
     <ClInclude Include="UI\OnNotify.h" />
     <ClInclude Include="UI\ViewPane\getpane.h" />
@@ -655,6 +656,8 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="UI\addinui.cpp" />
     <ClCompile Include="UI\Controls\SortList\SortHeader.cpp" />
     <ClCompile Include="UI\Controls\SortList\SortListCtrl.cpp" />
+    <ClCompile Include="UI\file\exporter.cpp" />
+    <ClCompile Include="UI\file\FileDialogEx.cpp" />
     <ClCompile Include="UI\profile.cpp" />
     <ClCompile Include="UI\ParentWnd.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
@@ -679,7 +682,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="UI\Dialogs\Dialog.cpp" />
     <ClCompile Include="UI\Dialogs\Editors\Editor.cpp" />
     <ClCompile Include="UI\FakeSplitter.cpp" />
-    <ClCompile Include="UI\FileDialogEx.cpp" />
     <ClCompile Include="UI\Dialogs\ContentsTable\FolderDlg.cpp" />
     <ClCompile Include="UI\Dialogs\ContentsTable\FormContainerDlg.cpp" />
     <ClCompile Include="UI\Dialogs\Editors\HexEditor.cpp" />

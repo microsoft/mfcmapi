@@ -4,7 +4,7 @@
 #include <core/interpret/guid.h>
 #include <core/mapi/mapiProgress.h>
 #include <core/utility/file.h>
-#include <UI/FileDialogEx.h>
+#include <UI/file/FileDialogEx.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/mapi/mapiMime.h>
 #include <core/utility/import.h>
