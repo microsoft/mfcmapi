@@ -4,6 +4,8 @@
 
 namespace dialog::editor
 {
+	// If lpAllocParent is passed, our SPropValue will be allocated off of it
+	// Otherwise caller will need to ensure the SPropValue is properly freed
 	_Check_return_ LPSPropValue DisplayPropertyEditor(
 		_In_ CWnd* pParentWnd,
 		UINT uidTitle,
