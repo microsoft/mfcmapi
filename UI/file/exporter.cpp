@@ -2,36 +2,59 @@
 #include <UI/file/exporter.h>
 #include <UI/Dialogs/Editors/Editor.h>
 
-#include <UI/Controls/SortList/ContentsTableListCtrl.h>
-#include <core/mapi/cache/mapiObjects.h>
-#include <core/mapi/mapiStoreFunctions.h>
-#include <core/mapi/mapiABFunctions.h>
-#include <UI/Controls/SortList/SingleMAPIPropListCtrl.h>
-#include <core/mapi/columnTags.h>
-#include <UI/Dialogs/MFCUtilityFunctions.h>
-#include <core/mapi/processor/dumpStore.h>
-#include <core/utility/file.h>
-#include <UI/Dialogs/ContentsTable/AttachmentsDlg.h>
-#include <UI/MAPIFormFunctions.h>
-#include <UI/file/FileDialogEx.h>
-#include <core/mapi/extraPropTags.h>
-#include <UI/Dialogs/Editors/PropertyTagEditor.h>
-#include <core/mapi/mapiProgress.h>
-#include <core/mapi/mapiMime.h>
-#include <core/sortlistdata/contentsData.h>
-#include <core/mapi/cache/globalCache.h>
-#include <core/mapi/mapiMemory.h>
-#include <UI/mapiui.h>
-#include <UI/addinui.h>
-#include <core/mapi/mapiOutput.h>
-#include <core/utility/strings.h>
-#include <core/utility/output.h>
-#include <core/mapi/mapiFile.h>
-#include <core/interpret/flags.h>
-#include <core/mapi/mapiFunctions.h>
+//#include <UI/Controls/SortList/ContentsTableListCtrl.h>
+//#include <core/mapi/cache/mapiObjects.h>
+//#include <core/mapi/mapiStoreFunctions.h>
+//#include <core/mapi/mapiABFunctions.h>
+//#include <UI/Controls/SortList/SingleMAPIPropListCtrl.h>
+//#include <core/mapi/columnTags.h>
+//#include <UI/Dialogs/MFCUtilityFunctions.h>
+//#include <core/mapi/processor/dumpStore.h>
+//#include <core/utility/file.h>
+//#include <UI/Dialogs/ContentsTable/AttachmentsDlg.h>
+//#include <UI/MAPIFormFunctions.h>
+//#include <UI/file/FileDialogEx.h>
+//#include <core/mapi/extraPropTags.h>
+//#include <UI/Dialogs/Editors/PropertyTagEditor.h>
+//#include <core/mapi/mapiProgress.h>
+//#include <core/mapi/mapiMime.h>
+//#include <core/sortlistdata/contentsData.h>
+//#include <core/mapi/cache/globalCache.h>
+//#include <core/mapi/mapiMemory.h>
+//#include <UI/mapiui.h>
+//#include <UI/addinui.h>
+//#include <core/mapi/mapiOutput.h>
+//#include <core/utility/strings.h>
+//#include <core/utility/output.h>
+//#include <core/mapi/mapiFile.h>
+//#include <core/interpret/flags.h>
+//#include <core/mapi/mapiFunctions.h>
 
 namespace exporter
 {
+	exportOptions getExportOptions(exporter::exportType exportType)
+	{
+		switch (exportType)
+		{
+		case exporter::exportType::text:
+			return {L"xml", L".xml", strings::loadstring(IDS_XMLFILES)};
+			break;
+		case exporter::exportType::msgAnsi:
+		case exporter::exportType::msgUnicode:
+			return {L"msg", L".msg", strings::loadstring(IDS_MSGFILES)};
+			break;
+		case exporter::exportType::eml:
+		case exporter::exportType::emlIConverter:
+			return {L"eml", L".eml", strings::loadstring(IDS_EMLFILES)};
+			break;
+		case exporter::exportType::tnef:
+			return {L"tnef", L".tnef", strings::loadstring(IDS_TNEFFILES)};
+			break;
+		default:
+			break;
+		}
+	}
+
 	//std::wstring getFileName(
 	//	LPMESSAGE lpMessage,
 	//	bool bPrompt,
@@ -297,4 +320,4 @@ namespace exporter
 	//		}
 	//	}
 	//}
-} // namespace export
+} // namespace exporter

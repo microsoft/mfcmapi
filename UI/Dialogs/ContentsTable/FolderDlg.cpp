@@ -1363,40 +1363,8 @@ namespace dialog
 
 		if (!MyData.DisplayDialog()) return;
 		const auto exportType = static_cast<exporter::exportType>(MyData.GetDropDown(0));
-
-		LPCWSTR szExt = nullptr;
-		LPCWSTR szDotExt = nullptr;
-		std::wstring szFilter;
-		LPADRBOOK lpAddrBook = nullptr;
-		switch (exportType)
-		{
-		case exporter::exportType::text:
-			szExt = L"xml"; // STRING_OK
-			szDotExt = L".xml"; // STRING_OK
-			szFilter = strings::loadstring(IDS_XMLFILES);
-			break;
-		case exporter::exportType::msgAnsi:
-		case exporter::exportType::msgUnicode:
-			szExt = L"msg"; // STRING_OK
-			szDotExt = L".msg"; // STRING_OK
-			szFilter = strings::loadstring(IDS_MSGFILES);
-			break;
-		case exporter::exportType::eml:
-		case exporter::exportType::emlIConverter:
-			szExt = L"eml"; // STRING_OK
-			szDotExt = L".eml"; // STRING_OK
-			szFilter = strings::loadstring(IDS_EMLFILES);
-			break;
-		case exporter::exportType::tnef:
-			szExt = L"tnef"; // STRING_OK
-			szDotExt = L".tnef"; // STRING_OK
-			szFilter = strings::loadstring(IDS_TNEFFILES);
-
-			lpAddrBook = m_lpMapiObjects->GetAddrBook(true); // do not release
-			break;
-		default:
-			break;
-		}
+		const auto exportOptions = exporter::getExportOptions(exportType);
+		LPADRBOOK lpAddrBook = m_lpMapiObjects->GetAddrBook(true); // do not release
 
 		std::wstring dir;
 		const auto bPrompt = numSelected == 1 || MyData.GetCheck(1);
@@ -1412,14 +1380,18 @@ namespace dialog
 			auto lpMessage = OpenMessage(iItem, modifyType::REQUEST_MODIFY);
 			if (lpMessage)
 			{
-				auto filename = file::BuildFileName(szDotExt, dir, lpMessage);
+				auto filename = file::BuildFileName(exportOptions.szDotExt, dir, lpMessage);
 				output::DebugPrint(
 					output::dbgLevel::Generic, L"BuildFileName built file name \"%ws\"\n", filename.c_str());
 
 				if (bPrompt)
 				{
 					filename = file::CFileDialogExW::SaveAs(
-						szExt, filename, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, szFilter, this);
+						exportOptions.szExt,
+						filename,
+						OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
+						exportOptions.szFilter,
+						this);
 				}
 
 				if (!filename.empty())
@@ -1457,11 +1429,14 @@ namespace dialog
 							this, &ulConvertFlags, &et, &mst, &ulWrapLines, &bDoAdrBook));
 						if (hRes == S_OK)
 						{
-							LPADRBOOK lpAdrBook = nullptr;
-							if (bDoAdrBook) lpAdrBook = m_lpMapiObjects->GetAddrBook(true); // do not release
-
 							hRes = EC_H(mapi::mapimime::ExportIMessageToEML(
-								lpMessage, filename.c_str(), ulConvertFlags, et, mst, ulWrapLines, lpAdrBook));
+								lpMessage,
+								filename.c_str(),
+								ulConvertFlags,
+								et,
+								mst,
+								ulWrapLines,
+								bDoAdrBook ? lpAddrBook : nullptr));
 						}
 					}
 

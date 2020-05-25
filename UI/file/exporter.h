@@ -10,4 +10,13 @@ namespace exporter
 		emlIConverter = 4,
 		tnef = 5
 	};
+
+	struct exportOptions
+	{
+		std::wstring szExt{};
+		std::wstring szDotExt{};
+		std::wstring szFilter{};
+	};
+
+	exportOptions getExportOptions(exporter::exportType exportType);
 } // namespace exporter
