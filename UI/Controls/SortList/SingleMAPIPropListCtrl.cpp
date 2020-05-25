@@ -1388,29 +1388,19 @@ namespace controls::sortlistctrl
 		{
 			if (lpEditProp) ulPropTag = lpEditProp->ulPropTag;
 
-			LPSPropValue lpModProp = nullptr;
-			hRes = WC_H(dialog::editor::DisplayPropertyEditor(
-				this,
-				IDS_PROPEDITOR,
-				m_bIsAB,
-				nullptr,
-				lpSourceObj,
-				ulPropTag,
-				false,
-				lpEditProp,
-				lpSourceObj ? nullptr : &lpModProp));
-
-			// If we didn't have a source object, we need to shove our results back in to the property bag
-			if (hRes == S_OK && !lpSourceObj && lpModProp)
+			const auto lpModProp = dialog::editor::DisplayPropertyEditor(
+				this, IDS_PROPEDITOR, m_bIsAB, nullptr, lpSourceObj, ulPropTag, false, lpEditProp);
+			if (lpModProp)
 			{
-				hRes = EC_H(lpPropBag->SetProp(lpModProp));
-				// At this point, we're done with lpModProp - it was allocated off of lpSourceArray
-				// and freed when a new source array was allocated. Nothing to free here. Move along.
-			}
+				// If we didn't have a source object, we need to shove our results back in to the property bag
+				if (!lpSourceObj)
+				{
+					// SetProp does not take ownership of memory
+					EC_H_S(lpPropBag->SetProp(lpModProp));
+				}
 
-			if (SUCCEEDED(hRes))
-			{
 				WC_H_S(RefreshMAPIPropList());
+				MAPIFreeBuffer(lpModProp);
 			}
 		}
 

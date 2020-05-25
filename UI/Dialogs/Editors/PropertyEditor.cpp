@@ -15,7 +15,7 @@
 
 namespace dialog::editor
 {
-	_Check_return_ HRESULT DisplayPropertyEditor(
+	_Check_return_ LPSPropValue DisplayPropertyEditor(
 		_In_ CWnd* pParentWnd,
 		UINT uidTitle,
 		bool bIsAB,
@@ -23,10 +23,10 @@ namespace dialog::editor
 		_In_opt_ LPMAPIPROP lpMAPIProp,
 		ULONG ulPropTag,
 		bool bMVRow,
-		_In_opt_ const _SPropValue* lpsPropValue,
-		_Inout_opt_ LPSPropValue* lpNewValue)
+		_In_opt_ const _SPropValue* lpsPropValue)
 	{
 		auto hRes = S_OK;
+		LPSPropValue lpNewValue{};
 
 		_SPropValue* sourceProp = nullptr;
 		// We got a MAPI prop object and no input value, go look one up
@@ -74,7 +74,7 @@ namespace dialog::editor
 				pParentWnd, uidTitle, bIsAB, lpAllocParent, lpMAPIProp, ulPropTag, lpsPropValue);
 			if (MyPropertyEditor.DisplayDialog())
 			{
-				if (lpNewValue) *lpNewValue = MyPropertyEditor.DetachModifiedSPropValue();
+				lpNewValue = MyPropertyEditor.getValue();
 			}
 		}
 		// Or the single value prop case
@@ -84,13 +84,13 @@ namespace dialog::editor
 				pParentWnd, uidTitle, bIsAB, bMVRow, lpAllocParent, lpMAPIProp, ulPropTag, lpsPropValue);
 			if (MyPropertyEditor.DisplayDialog())
 			{
-				if (lpNewValue) *lpNewValue = MyPropertyEditor.DetachModifiedSPropValue();
+				lpNewValue = MyPropertyEditor.getValue();
 			}
 		}
 
 		MAPIFreeBuffer(sourceProp);
 
-		return hRes;
+		return lpNewValue;
 	}
 
 	static std::wstring CLASS = L"CPropertyEditor"; // STRING_OK
@@ -550,13 +550,8 @@ namespace dialog::editor
 		}
 	}
 
-	// Callers beware: Detatches and returns the modified prop value - this must be MAPIFreeBuffered!
-	_Check_return_ LPSPropValue CPropertyEditor::DetachModifiedSPropValue() noexcept
-	{
-		const auto m_lpRet = m_lpsOutputValue;
-		m_lpsOutputValue = nullptr;
-		return m_lpRet;
-	}
+	// Returns the modified prop value - caller is responsible for freeing
+	_Check_return_ LPSPropValue CPropertyEditor::getValue() noexcept { return m_lpsOutputValue; }
 
 	_Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 	{

@@ -301,13 +301,8 @@ namespace dialog::editor
 		}
 	}
 
-	// Callers beware: Detatches and returns the modified prop value - this must be MAPIFreeBuffered!
-	_Check_return_ LPSPropValue CMultiValuePropertyEditor::DetachModifiedSPropValue() noexcept
-	{
-		const auto m_lpRet = m_lpsOutputValue;
-		m_lpsOutputValue = nullptr;
-		return m_lpRet;
-	}
+	// Returns the modified prop value - caller is responsible for freeing
+	_Check_return_ LPSPropValue CMultiValuePropertyEditor::getValue() noexcept { return m_lpsOutputValue; }
 
 	_Check_return_ bool
 	CMultiValuePropertyEditor::DoListEdit(ULONG /*ulListNum*/, int iItem, _In_ sortlistdata::sortListData* lpData)
@@ -326,8 +321,7 @@ namespace dialog::editor
 		tmpPropVal.ulPropTag = m_ulPropTag & ~MV_FLAG;
 		tmpPropVal.Value = mvprop->m_val;
 
-		LPSPropValue lpNewValue = nullptr;
-		const auto hRes = WC_H(DisplayPropertyEditor(
+		const auto lpNewValue = DisplayPropertyEditor(
 			this,
 			IDS_EDITROW,
 			m_bIsAB,
@@ -335,21 +329,18 @@ namespace dialog::editor
 			m_lpMAPIProp,
 			NULL,
 			true, // This is a row from a multivalued property. Only case we pass true here.
-			&tmpPropVal,
-			&lpNewValue));
-
-		if (hRes == S_OK && lpNewValue)
+			&tmpPropVal);
+		if (lpNewValue)
 		{
 			sortlistdata::mvPropData::init(lpData, lpNewValue);
 
 			// update the UI
 			UpdateListRow(lpNewValue, iItem);
 			UpdateSmartView();
+			MAPIFreeBuffer(lpNewValue);
 			return true;
 		}
 
-		// Remember we didn't have an allocation parent - this is safe
-		MAPIFreeBuffer(lpNewValue);
 		return false;
 	}
 

@@ -202,14 +202,13 @@ namespace dialog::editor
 		if (!m_lpAllocParent) return;
 
 		auto lpEditProp = m_lpOldProp;
-		LPSPropValue lpOutProp = nullptr;
 		if (m_lpNewProp) lpEditProp = m_lpNewProp;
 
-		const auto hRes = WC_H(DisplayPropertyEditor(
-			this, IDS_PROPEDITOR, false, m_lpAllocParent, NULL, GetPropTag(4), false, lpEditProp, &lpOutProp));
+		const auto lpOutProp =
+			DisplayPropertyEditor(this, IDS_PROPEDITOR, false, m_lpAllocParent, NULL, GetPropTag(4), false, lpEditProp);
 
 		// Since m_lpNewProp was owned by an m_lpAllocParent, we don't free it directly
-		if (hRes == S_OK && lpOutProp)
+		if (lpOutProp)
 		{
 			m_lpNewProp = lpOutProp;
 			std::wstring szProp;
@@ -747,11 +746,11 @@ namespace dialog::editor
 			lpSourceProp = &sProp;
 		}
 
-		const auto hRes = WC_H(DisplayPropertyEditor(
-			this, IDS_PROPEDITOR, false, m_lpAllocParent, NULL, NULL, false, lpSourceProp, &comment->m_lpNewProp));
+		comment->m_lpNewProp =
+			DisplayPropertyEditor(this, IDS_PROPEDITOR, false, m_lpAllocParent, NULL, NULL, false, lpSourceProp);
 
 		// Since lpData->data.Comment.lpNewProp was owned by an m_lpAllocParent, we don't free it directly
-		if (hRes == S_OK && comment->m_lpNewProp)
+		if (comment->m_lpNewProp)
 		{
 			std::wstring szTmp;
 			std::wstring szAltTmp;

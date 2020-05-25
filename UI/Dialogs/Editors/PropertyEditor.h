@@ -4,7 +4,9 @@
 
 namespace dialog::editor
 {
-	_Check_return_ HRESULT DisplayPropertyEditor(
+	// If lpAllocParent is passed, our SPropValue will be allocated off of it
+	// Otherwise caller will need to ensure the SPropValue is properly freed
+	_Check_return_ LPSPropValue DisplayPropertyEditor(
 		_In_ CWnd* pParentWnd,
 		UINT uidTitle,
 		bool bIsAB,
@@ -12,8 +14,7 @@ namespace dialog::editor
 		_In_opt_ LPMAPIPROP lpMAPIProp,
 		ULONG ulPropTag,
 		bool bMVRow,
-		_In_opt_ const _SPropValue* lpsPropValue,
-		_Inout_opt_ LPSPropValue* lpNewValue);
+		_In_opt_ const _SPropValue* lpsPropValue);
 
 	class CPropertyEditor : public CEditor
 	{
@@ -30,7 +31,7 @@ namespace dialog::editor
 		~CPropertyEditor();
 
 		// Get values after we've done the DisplayDialog
-		_Check_return_ LPSPropValue DetachModifiedSPropValue() noexcept;
+		_Check_return_ LPSPropValue getValue() noexcept;
 
 	private:
 		BOOL OnInitDialog() override;
