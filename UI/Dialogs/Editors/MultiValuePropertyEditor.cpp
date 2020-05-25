@@ -332,12 +332,12 @@ namespace dialog::editor
 			&tmpPropVal);
 		if (lpNewValue)
 		{
-			// init takes ownership of the SPropValue
 			sortlistdata::mvPropData::init(lpData, lpNewValue);
 
 			// update the UI
 			UpdateListRow(lpNewValue, iItem);
 			UpdateSmartView();
+			MAPIFreeBuffer(lpNewValue);
 			return true;
 		}
 
