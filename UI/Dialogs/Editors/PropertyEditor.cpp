@@ -74,7 +74,7 @@ namespace dialog::editor
 				pParentWnd, uidTitle, bIsAB, lpAllocParent, lpMAPIProp, ulPropTag, lpsPropValue);
 			if (MyPropertyEditor.DisplayDialog())
 			{
-				lpNewValue = MyPropertyEditor.DetachModifiedSPropValue();
+				lpNewValue = MyPropertyEditor.getValue();
 			}
 		}
 		// Or the single value prop case
@@ -84,7 +84,7 @@ namespace dialog::editor
 				pParentWnd, uidTitle, bIsAB, bMVRow, lpAllocParent, lpMAPIProp, ulPropTag, lpsPropValue);
 			if (MyPropertyEditor.DisplayDialog())
 			{
-				lpNewValue = MyPropertyEditor.DetachModifiedSPropValue();
+				lpNewValue = MyPropertyEditor.getValue();
 			}
 		}
 
@@ -550,13 +550,8 @@ namespace dialog::editor
 		}
 	}
 
-	// Callers beware: Detatches and returns the modified prop value - this must be MAPIFreeBuffered!
-	_Check_return_ LPSPropValue CPropertyEditor::DetachModifiedSPropValue() noexcept
-	{
-		const auto m_lpRet = m_lpsOutputValue;
-		m_lpsOutputValue = nullptr;
-		return m_lpRet;
-	}
+	// Returns the modified prop value - caller is responsible for freeing
+	_Check_return_ LPSPropValue CPropertyEditor::getValue() noexcept { return m_lpsOutputValue; }
 
 	_Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 	{

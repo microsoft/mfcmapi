@@ -29,7 +29,7 @@ namespace dialog::editor
 		~CPropertyEditor();
 
 		// Get values after we've done the DisplayDialog
-		_Check_return_ LPSPropValue DetachModifiedSPropValue() noexcept;
+		_Check_return_ LPSPropValue getValue() noexcept;
 
 	private:
 		BOOL OnInitDialog() override;

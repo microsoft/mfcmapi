@@ -301,13 +301,8 @@ namespace dialog::editor
 		}
 	}
 
-	// Callers beware: Detatches and returns the modified prop value - this must be MAPIFreeBuffered!
-	_Check_return_ LPSPropValue CMultiValuePropertyEditor::DetachModifiedSPropValue() noexcept
-	{
-		const auto m_lpRet = m_lpsOutputValue;
-		m_lpsOutputValue = nullptr;
-		return m_lpRet;
-	}
+	// Returns the modified prop value - caller is responsible for freeing
+	_Check_return_ LPSPropValue CMultiValuePropertyEditor::getValue() noexcept { return m_lpsOutputValue; }
 
 	_Check_return_ bool
 	CMultiValuePropertyEditor::DoListEdit(ULONG /*ulListNum*/, int iItem, _In_ sortlistdata::sortListData* lpData)
