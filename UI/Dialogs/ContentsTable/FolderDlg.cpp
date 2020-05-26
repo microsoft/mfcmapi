@@ -1396,57 +1396,7 @@ namespace dialog
 
 				if (!filename.empty())
 				{
-					switch (MyData.GetDropDown(0))
-					{
-					case 0:
-						// Idea is to capture anything that may be important about this message to disk so it can be analyzed.
-						{
-							mapi::processor::dumpStore MyDumpStore;
-							MyDumpStore.InitMessagePath(filename);
-							// Just assume this message might have attachments
-							MyDumpStore.ProcessMessage(lpMessage, true, nullptr);
-						}
-
-						break;
-					case 1:
-						hRes = EC_H(file::SaveToMSG(lpMessage, filename, false, m_hWnd, true));
-						break;
-					case 2:
-						hRes = EC_H(file::SaveToMSG(lpMessage, filename, true, m_hWnd, true));
-						break;
-					case 3:
-						hRes = EC_H(file::SaveToEML(lpMessage, filename));
-						break;
-					case 4:
-					{
-						auto ulConvertFlags = CCSF_SMTP;
-						auto et = IET_UNKNOWN;
-						auto mst = USE_DEFAULT_SAVETYPE;
-						ULONG ulWrapLines = USE_DEFAULT_WRAPPING;
-						auto bDoAdrBook = false;
-
-						hRes = EC_H(ui::mapiui::GetConversionToEMLOptions(
-							this, &ulConvertFlags, &et, &mst, &ulWrapLines, &bDoAdrBook));
-						if (hRes == S_OK)
-						{
-							hRes = EC_H(mapi::mapimime::ExportIMessageToEML(
-								lpMessage,
-								filename.c_str(),
-								ulConvertFlags,
-								et,
-								mst,
-								ulWrapLines,
-								bDoAdrBook ? lpAddrBook : nullptr));
-						}
-					}
-
-					break;
-					case 5:
-						hRes = EC_H(file::SaveToTNEF(lpMessage, lpAddrBook, filename));
-						break;
-					default:
-						break;
-					}
+					EC_H(exporter::exportMessage(exportType, filename, lpMessage, m_hWnd, lpAddrBook));
 				}
 				else
 				{

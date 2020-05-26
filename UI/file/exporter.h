@@ -19,4 +19,10 @@ namespace exporter
 	};
 
 	exportOptions getExportOptions(exporter::exportType exportType);
+	HRESULT exportMessage(
+		exporter::exportType exportType,
+		std::wstring filename,
+		LPMESSAGE lpMessage,
+		HWND hWnd,
+		LPADRBOOK lpAddrBook);
 } // namespace exporter
