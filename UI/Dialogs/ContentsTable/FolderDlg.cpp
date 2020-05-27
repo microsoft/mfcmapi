@@ -1362,17 +1362,15 @@ namespace dialog
 		}
 
 		if (!MyData.DisplayDialog()) return;
-		const auto exportType = static_cast<exporter::exportType>(MyData.GetDropDown(0));
-		const auto exportOptions = exporter::getExportOptions(exportType);
-		LPADRBOOK lpAddrBook = m_lpMapiObjects->GetAddrBook(true); // do not release
 
-		std::wstring dir;
 		const auto bPrompt = numSelected == 1 || MyData.GetCheck(1);
-		if (!bPrompt)
-		{
-			// If we weren't asked to prompt for each item, we still need to ask for a directory
-			dir = file::GetDirectoryPath(m_hWnd);
-		}
+
+		auto exporter = exporter::messageExporter();
+		exporter.init(
+			static_cast<exporter::exportType>(MyData.GetDropDown(0)),
+			m_hWnd,
+			m_lpMapiObjects->GetAddrBook(true),
+			bPrompt);
 
 		auto iItem = m_lpContentsTableListCtrl->GetNextItem(-1, LVNI_SELECTED);
 		while (-1 != iItem)
@@ -1380,29 +1378,7 @@ namespace dialog
 			auto lpMessage = OpenMessage(iItem, modifyType::REQUEST_MODIFY);
 			if (lpMessage)
 			{
-				auto filename = file::BuildFileName(exportOptions.szDotExt, dir, lpMessage);
-				output::DebugPrint(
-					output::dbgLevel::Generic, L"BuildFileName built file name \"%ws\"\n", filename.c_str());
-
-				if (bPrompt)
-				{
-					filename = file::CFileDialogExW::SaveAs(
-						exportOptions.szExt,
-						filename,
-						OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-						exportOptions.szFilter,
-						this);
-				}
-
-				if (!filename.empty())
-				{
-					EC_H(exporter::exportMessage(exportType, filename, lpMessage, m_hWnd, lpAddrBook));
-				}
-				else
-				{
-					hRes = MAPI_E_USER_CANCEL;
-				}
-
+				EC_H(exporter.exportMessage(lpMessage));
 				lpMessage->Release();
 			}
 			else

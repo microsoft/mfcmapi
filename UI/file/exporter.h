@@ -11,18 +11,20 @@ namespace exporter
 		tnef = 5
 	};
 
-	struct exportOptions
+	class messageExporter
 	{
+	public:
+		void init(exporter::exportType _exportType, HWND _hWnd, LPADRBOOK _lpAddrBook, bool _bPrompt);
+		HRESULT exportMessage(LPMESSAGE lpMessage);
+
+	private:
+		exporter::exportType exportType{};
 		std::wstring szExt{};
 		std::wstring szDotExt{};
 		std::wstring szFilter{};
+		std::wstring dir{};
+		HWND hWnd{};
+		LPADRBOOK lpAddrBook{};
+		bool bPrompt{};
 	};
-
-	exportOptions getExportOptions(exporter::exportType exportType);
-	HRESULT exportMessage(
-		exporter::exportType exportType,
-		std::wstring filename,
-		LPMESSAGE lpMessage,
-		HWND hWnd,
-		LPADRBOOK lpAddrBook);
 } // namespace exporter

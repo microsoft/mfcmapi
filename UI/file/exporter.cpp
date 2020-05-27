@@ -6,37 +6,67 @@
 #include <core/mapi/extraPropTags.h>
 #include <core/mapi/mapiMime.h>
 #include <core/mapi/mapiFile.h>
+#include <core/utility/file.h>
+#include <core/utility/output.h>
+#include <UI/file/FileDialogEx.h>
 #include <UI/mapiui.h> // TODO: Migrate export stuff from here
 
 namespace exporter
 {
-	exportOptions getExportOptions(exporter::exportType exportType)
+	void messageExporter::init(exporter::exportType _exportType, HWND _hWnd, LPADRBOOK _lpAddrBook, bool _bPrompt)
 	{
+		hWnd = _hWnd;
+		lpAddrBook = _lpAddrBook;
+		exportType = _exportType;
+		bPrompt = _bPrompt;
 		switch (exportType)
 		{
 		case exporter::exportType::text:
-			return {L"xml", L".xml", strings::loadstring(IDS_XMLFILES)};
+			szExt = L"xml";
+			szDotExt = L".xml";
+			szFilter = strings::loadstring(IDS_XMLFILES);
+			break;
 		case exporter::exportType::msgAnsi:
 		case exporter::exportType::msgUnicode:
-			return {L"msg", L".msg", strings::loadstring(IDS_MSGFILES)};
+			szExt = L"msg";
+			szDotExt = L".msg";
+			szFilter = strings::loadstring(IDS_MSGFILES);
+			break;
 		case exporter::exportType::eml:
 		case exporter::exportType::emlIConverter:
-			return {L"eml", L".eml", strings::loadstring(IDS_EMLFILES)};
+			szExt = L"eml";
+			szDotExt = L".eml";
+			szFilter = strings::loadstring(IDS_EMLFILES);
+			break;
 		case exporter::exportType::tnef:
-			return {L"tnef", L".tnef", strings::loadstring(IDS_TNEFFILES)};
-		default:
-			return {};
+			szExt = L"tnef";
+			szDotExt = L".tnef";
+			szFilter = strings::loadstring(IDS_TNEFFILES);
+			break;
+		}
+
+		if (!bPrompt)
+		{
+			// If we weren't asked to prompt for each item, we still need to ask for a directory
+			dir = file::GetDirectoryPath(hWnd);
 		}
 	}
 
-	HRESULT exportMessage(
-		exporter::exportType exportType,
-		std::wstring filename,
-		LPMESSAGE lpMessage,
-		HWND hWnd,
-		LPADRBOOK lpAddrBook)
+	HRESULT messageExporter::exportMessage(LPMESSAGE lpMessage)
 	{
 		auto hRes = S_OK;
+
+		auto filename = file::BuildFileName(szDotExt, dir, lpMessage);
+		output::DebugPrint(output::dbgLevel::Generic, L"BuildFileName built file name \"%ws\"\n", filename.c_str());
+
+		if (bPrompt)
+		{
+			filename = file::CFileDialogExW::SaveAs(
+				szExt, filename, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, szFilter, CWnd::FromHandle(hWnd));
+		}
+
+		if (filename.empty()) return MAPI_E_USER_CANCEL;
+
 		switch (exportType)
 		{
 		case exporter::exportType::text:
@@ -50,13 +80,13 @@ namespace exporter
 
 			break;
 		case exporter::exportType::msgAnsi:
-			hRes = EC_H(file::SaveToMSG(lpMessage, filename, false, hWnd, true));
+			return EC_H(file::SaveToMSG(lpMessage, filename, false, hWnd, true));
 			break;
 		case exporter::exportType::msgUnicode:
-			hRes = EC_H(file::SaveToMSG(lpMessage, filename, true, hWnd, true));
+			return EC_H(file::SaveToMSG(lpMessage, filename, true, hWnd, true));
 			break;
 		case exporter::exportType::eml:
-			hRes = EC_H(file::SaveToEML(lpMessage, filename));
+			return EC_H(file::SaveToEML(lpMessage, filename));
 			break;
 		case exporter::exportType::emlIConverter:
 		{
@@ -70,7 +100,7 @@ namespace exporter
 				CWnd::FromHandle(hWnd), &ulConvertFlags, &et, &mst, &ulWrapLines, &bDoAdrBook));
 			if (hRes == S_OK)
 			{
-				hRes = EC_H(mapi::mapimime::ExportIMessageToEML(
+				return EC_H(mapi::mapimime::ExportIMessageToEML(
 					lpMessage,
 					filename.c_str(),
 					ulConvertFlags,
@@ -83,7 +113,7 @@ namespace exporter
 
 		break;
 		case exporter::exportType::tnef:
-			hRes = EC_H(file::SaveToTNEF(lpMessage, lpAddrBook, filename));
+			return EC_H(file::SaveToTNEF(lpMessage, lpAddrBook, filename));
 			break;
 		default:
 			break;
