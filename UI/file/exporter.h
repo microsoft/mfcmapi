@@ -15,17 +15,17 @@ namespace file
 	class exporter
 	{
 	public:
-		bool init(CWnd* pParentWnd, bool bMultiSelect, HWND _hWnd, LPADRBOOK _lpAddrBook);
+		bool init(CWnd* _pParentWnd, bool bMultiSelect, LPADRBOOK _lpAddrBook);
 		HRESULT exportMessage(LPMESSAGE lpMessage);
 
 	private:
+		CWnd* pParentWnd{};
+		LPADRBOOK lpAddrBook{};
+		bool bPrompt{};
 		exportType exportType{};
 		std::wstring szExt{};
 		std::wstring szDotExt{};
 		std::wstring szFilter{};
 		std::wstring dir{};
-		HWND hWnd{};
-		LPADRBOOK lpAddrBook{};
-		bool bPrompt{};
 	};
 } // namespace file

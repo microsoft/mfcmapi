@@ -1346,7 +1346,7 @@ namespace dialog
 
 		bool bMultiSelect = numSelected > 1;
 		auto exporter = file::exporter();
-		if (!WC_B(exporter.init(this, bMultiSelect, m_hWnd, m_lpMapiObjects->GetAddrBook(true))))
+		if (!WC_B(exporter.init(this, bMultiSelect, m_lpMapiObjects->GetAddrBook(true))))
 		{
 			return;
 		}

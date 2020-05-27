@@ -15,13 +15,9 @@
 
 namespace file
 {
-	bool exporter::init(
-		CWnd* pParentWnd,
-		bool bMultiSelect,
-		HWND _hWnd,
-		LPADRBOOK _lpAddrBook)
+	bool exporter::init(CWnd* _pParentWnd, bool bMultiSelect, LPADRBOOK _lpAddrBook)
 	{
-		hWnd = _hWnd;
+		pParentWnd = _pParentWnd;
 		lpAddrBook = _lpAddrBook;
 
 		dialog::editor::CEditor MyData(
@@ -74,7 +70,7 @@ namespace file
 		if (!bPrompt)
 		{
 			// If we weren't asked to prompt for each item, we still need to ask for a directory
-			dir = file::GetDirectoryPath(hWnd);
+			dir = file::GetDirectoryPath(pParentWnd->GetSafeHwnd());
 		}
 
 		return true;
@@ -90,7 +86,7 @@ namespace file
 		if (bPrompt)
 		{
 			filename = file::CFileDialogExW::SaveAs(
-				szExt, filename, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, szFilter, CWnd::FromHandle(hWnd));
+				szExt, filename, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, szFilter, pParentWnd);
 		}
 
 		if (filename.empty()) return MAPI_E_USER_CANCEL;
@@ -108,10 +104,10 @@ namespace file
 
 			break;
 		case exportType::msgAnsi:
-			return EC_H(file::SaveToMSG(lpMessage, filename, false, hWnd, true));
+			return EC_H(file::SaveToMSG(lpMessage, filename, false, pParentWnd->GetSafeHwnd(), true));
 			break;
 		case exportType::msgUnicode:
-			return EC_H(file::SaveToMSG(lpMessage, filename, true, hWnd, true));
+			return EC_H(file::SaveToMSG(lpMessage, filename, true, pParentWnd->GetSafeHwnd(), true));
 			break;
 		case exportType::eml:
 			return EC_H(file::SaveToEML(lpMessage, filename));
@@ -125,7 +121,7 @@ namespace file
 			auto bDoAdrBook = false;
 
 			hRes = EC_H(ui::mapiui::GetConversionToEMLOptions(
-				CWnd::FromHandle(hWnd), &ulConvertFlags, &et, &mst, &ulWrapLines, &bDoAdrBook));
+				pParentWnd, &ulConvertFlags, &et, &mst, &ulWrapLines, &bDoAdrBook));
 			if (hRes == S_OK)
 			{
 				return EC_H(mapi::mapimime::ExportIMessageToEML(
