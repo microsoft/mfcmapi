@@ -1365,12 +1365,9 @@ namespace dialog
 
 		const auto bPrompt = numSelected == 1 || MyData.GetCheck(1);
 
-		auto exporter = exporter::messageExporter();
+		auto exporter = file::exporter();
 		exporter.init(
-			static_cast<exporter::exportType>(MyData.GetDropDown(0)),
-			m_hWnd,
-			m_lpMapiObjects->GetAddrBook(true),
-			bPrompt);
+			static_cast<file::exportType>(MyData.GetDropDown(0)), m_hWnd, m_lpMapiObjects->GetAddrBook(true), bPrompt);
 
 		auto iItem = m_lpContentsTableListCtrl->GetNextItem(-1, LVNI_SELECTED);
 		while (-1 != iItem)
@@ -1378,7 +1375,7 @@ namespace dialog
 			auto lpMessage = OpenMessage(iItem, modifyType::REQUEST_MODIFY);
 			if (lpMessage)
 			{
-				EC_H(exporter.exportMessage(lpMessage));
+				hRes = EC_H(exporter.exportMessage(lpMessage));
 				lpMessage->Release();
 			}
 			else

@@ -1,5 +1,5 @@
 
-namespace exporter
+namespace file
 {
 	enum class exportType
 	{
@@ -11,14 +11,14 @@ namespace exporter
 		tnef = 5
 	};
 
-	class messageExporter
+	class exporter
 	{
 	public:
-		void init(exporter::exportType _exportType, HWND _hWnd, LPADRBOOK _lpAddrBook, bool _bPrompt);
+		void init(exportType _exportType, HWND _hWnd, LPADRBOOK _lpAddrBook, bool _bPrompt);
 		HRESULT exportMessage(LPMESSAGE lpMessage);
 
 	private:
-		exporter::exportType exportType{};
+		exportType exportType{};
 		std::wstring szExt{};
 		std::wstring szDotExt{};
 		std::wstring szFilter{};
@@ -27,4 +27,4 @@ namespace exporter
 		LPADRBOOK lpAddrBook{};
 		bool bPrompt{};
 	};
-} // namespace exporter
+} // namespace file

@@ -11,9 +11,9 @@
 #include <UI/file/FileDialogEx.h>
 #include <UI/mapiui.h> // TODO: Migrate export stuff from here
 
-namespace exporter
+namespace file
 {
-	void messageExporter::init(exporter::exportType _exportType, HWND _hWnd, LPADRBOOK _lpAddrBook, bool _bPrompt)
+	void exporter::init(file::exportType _exportType, HWND _hWnd, LPADRBOOK _lpAddrBook, bool _bPrompt)
 	{
 		hWnd = _hWnd;
 		lpAddrBook = _lpAddrBook;
@@ -21,24 +21,24 @@ namespace exporter
 		bPrompt = _bPrompt;
 		switch (exportType)
 		{
-		case exporter::exportType::text:
+		case exportType::text:
 			szExt = L"xml";
 			szDotExt = L".xml";
 			szFilter = strings::loadstring(IDS_XMLFILES);
 			break;
-		case exporter::exportType::msgAnsi:
-		case exporter::exportType::msgUnicode:
+		case exportType::msgAnsi:
+		case exportType::msgUnicode:
 			szExt = L"msg";
 			szDotExt = L".msg";
 			szFilter = strings::loadstring(IDS_MSGFILES);
 			break;
-		case exporter::exportType::eml:
-		case exporter::exportType::emlIConverter:
+		case exportType::eml:
+		case exportType::emlIConverter:
 			szExt = L"eml";
 			szDotExt = L".eml";
 			szFilter = strings::loadstring(IDS_EMLFILES);
 			break;
-		case exporter::exportType::tnef:
+		case exportType::tnef:
 			szExt = L"tnef";
 			szDotExt = L".tnef";
 			szFilter = strings::loadstring(IDS_TNEFFILES);
@@ -52,7 +52,7 @@ namespace exporter
 		}
 	}
 
-	HRESULT messageExporter::exportMessage(LPMESSAGE lpMessage)
+	HRESULT exporter::exportMessage(LPMESSAGE lpMessage)
 	{
 		auto hRes = S_OK;
 
@@ -69,7 +69,7 @@ namespace exporter
 
 		switch (exportType)
 		{
-		case exporter::exportType::text:
+		case exportType::text:
 			// Idea is to capture anything that may be important about this message to disk so it can be analyzed.
 			{
 				mapi::processor::dumpStore MyDumpStore;
@@ -79,16 +79,16 @@ namespace exporter
 			}
 
 			break;
-		case exporter::exportType::msgAnsi:
+		case exportType::msgAnsi:
 			return EC_H(file::SaveToMSG(lpMessage, filename, false, hWnd, true));
 			break;
-		case exporter::exportType::msgUnicode:
+		case exportType::msgUnicode:
 			return EC_H(file::SaveToMSG(lpMessage, filename, true, hWnd, true));
 			break;
-		case exporter::exportType::eml:
+		case exportType::eml:
 			return EC_H(file::SaveToEML(lpMessage, filename));
 			break;
-		case exporter::exportType::emlIConverter:
+		case exportType::emlIConverter:
 		{
 			auto ulConvertFlags = CCSF_SMTP;
 			auto et = IET_UNKNOWN;
@@ -112,7 +112,7 @@ namespace exporter
 		}
 
 		break;
-		case exporter::exportType::tnef:
+		case exportType::tnef:
 			return EC_H(file::SaveToTNEF(lpMessage, lpAddrBook, filename));
 			break;
 		default:
@@ -121,4 +121,4 @@ namespace exporter
 
 		return hRes;
 	}
-} // namespace exporter
+} // namespace file
