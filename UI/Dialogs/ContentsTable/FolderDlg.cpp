@@ -7,9 +7,7 @@
 #include <core/mapi/mapiABFunctions.h>
 #include <UI/Controls/SortList/SingleMAPIPropListCtrl.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
-#include <UI/Dialogs/Editors/Editor.h>
 #include <core/mapi/processor/dumpStore.h>
-#include <UI/Dialogs/ContentsTable/AttachmentsDlg.h>
 #include <UI/MAPIFormFunctions.h>
 #include <UI/file/FileDialogEx.h>
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
