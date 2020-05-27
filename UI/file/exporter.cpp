@@ -8,14 +8,43 @@
 #include <core/mapi/mapiFile.h>
 #include <core/utility/file.h>
 #include <core/utility/output.h>
+#include <core/addin/mfcmapi.h>
 #include <UI/file/FileDialogEx.h>
+#include <UI/Dialogs/Editors/Editor.h>
 #include <UI/mapiui.h> // TODO: Migrate export stuff from here
 
 namespace file
 {
-	exporter::exporter(file::exportType _exportType, HWND _hWnd, LPADRBOOK _lpAddrBook, bool _bPrompt)
-		: hWnd(_hWnd), lpAddrBook(_lpAddrBook), exportType(_exportType), bPrompt(_bPrompt)
+	bool exporter::init(
+		CWnd* pParentWnd,
+		bool bMultiSelect,
+		HWND _hWnd,
+		LPADRBOOK _lpAddrBook)
 	{
+		hWnd = _hWnd;
+		lpAddrBook = _lpAddrBook;
+
+		dialog::editor::CEditor MyData(
+			pParentWnd, IDS_SAVEMESSAGETOFILE, IDS_SAVEMESSAGETOFILEPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+
+		UINT uidDropDown[] = {IDS_DDTEXTFILE,
+							  IDS_DDMSGFILEANSI,
+							  IDS_DDMSGFILEUNICODE,
+							  IDS_DDEMLFILE,
+							  IDS_DDEMLFILEUSINGICONVERTERSESSION,
+							  IDS_DDTNEFFILE};
+		MyData.AddPane(
+			viewpane::DropDownPane::Create(0, IDS_FORMATTOSAVEMESSAGE, _countof(uidDropDown), uidDropDown, true));
+		if (bMultiSelect)
+		{
+			MyData.AddPane(viewpane::CheckPane::Create(1, IDS_EXPORTPROMPTLOCATION, false, false));
+		}
+
+		if (!MyData.DisplayDialog()) return false;
+
+		exportType = static_cast<file::exportType>(MyData.GetDropDown(0));
+		bPrompt = !bMultiSelect || MyData.GetCheck(1);
+
 		switch (exportType)
 		{
 		case exportType::text:
@@ -47,6 +76,8 @@ namespace file
 			// If we weren't asked to prompt for each item, we still need to ask for a directory
 			dir = file::GetDirectoryPath(hWnd);
 		}
+
+		return true;
 	}
 
 	HRESULT exporter::exportMessage(LPMESSAGE lpMessage)

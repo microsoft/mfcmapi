@@ -15,7 +15,7 @@ namespace file
 	class exporter
 	{
 	public:
-		exporter(exportType _exportType, HWND _hWnd, LPADRBOOK _lpAddrBook, bool _bPrompt);
+		bool init(CWnd* pParentWnd, bool bMultiSelect, HWND _hWnd, LPADRBOOK _lpAddrBook);
 		HRESULT exportMessage(LPMESSAGE lpMessage);
 
 	private:

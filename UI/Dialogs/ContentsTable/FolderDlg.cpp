@@ -1337,33 +1337,19 @@ namespace dialog
 
 	void CFolderDlg::OnSaveMessageToFile()
 	{
+		const auto numSelected = m_lpContentsTableListCtrl->GetSelectedCount();
+		if (!numSelected) return;
+
 		auto hRes = S_OK;
 
 		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"OnSaveMessageToFile", L"\n");
 
-		editor::CEditor MyData(
-			this, IDS_SAVEMESSAGETOFILE, IDS_SAVEMESSAGETOFILEPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-
-		UINT uidDropDown[] = {IDS_DDTEXTFILE,
-							  IDS_DDMSGFILEANSI,
-							  IDS_DDMSGFILEUNICODE,
-							  IDS_DDEMLFILE,
-							  IDS_DDEMLFILEUSINGICONVERTERSESSION,
-							  IDS_DDTNEFFILE};
-		MyData.AddPane(
-			viewpane::DropDownPane::Create(0, IDS_FORMATTOSAVEMESSAGE, _countof(uidDropDown), uidDropDown, true));
-		const auto numSelected = m_lpContentsTableListCtrl->GetSelectedCount();
-		if (numSelected > 1)
+		bool bMultiSelect = numSelected > 1;
+		auto exporter = file::exporter();
+		if (!WC_B(exporter.init(this, bMultiSelect, m_hWnd, m_lpMapiObjects->GetAddrBook(true))))
 		{
-			MyData.AddPane(viewpane::CheckPane::Create(1, IDS_EXPORTPROMPTLOCATION, false, false));
+			return;
 		}
-
-		if (!MyData.DisplayDialog()) return;
-
-		const auto bPrompt = numSelected == 1 || MyData.GetCheck(1);
-
-		auto exporter = file::exporter(
-			static_cast<file::exportType>(MyData.GetDropDown(0)), m_hWnd, m_lpMapiObjects->GetAddrBook(true), bPrompt);
 
 		auto iItem = m_lpContentsTableListCtrl->GetNextItem(-1, LVNI_SELECTED);
 		while (-1 != iItem)
