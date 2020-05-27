@@ -6,15 +6,12 @@
 #include <core/mapi/mapiStoreFunctions.h>
 #include <core/mapi/mapiABFunctions.h>
 #include <UI/Controls/SortList/SingleMAPIPropListCtrl.h>
-#include <core/mapi/columnTags.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <core/mapi/processor/dumpStore.h>
-#include <core/utility/file.h>
 #include <UI/Dialogs/ContentsTable/AttachmentsDlg.h>
 #include <UI/MAPIFormFunctions.h>
 #include <UI/file/FileDialogEx.h>
-#include <core/mapi/extraPropTags.h>
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
 #include <core/mapi/mapiProgress.h>
 #include <core/mapi/mapiMime.h>
