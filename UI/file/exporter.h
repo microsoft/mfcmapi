@@ -14,7 +14,7 @@ namespace file
 	class exporter
 	{
 	public:
-		void init(exportType _exportType, HWND _hWnd, LPADRBOOK _lpAddrBook, bool _bPrompt);
+		exporter(exportType _exportType, HWND _hWnd, LPADRBOOK _lpAddrBook, bool _bPrompt);
 		HRESULT exportMessage(LPMESSAGE lpMessage);
 
 	private:

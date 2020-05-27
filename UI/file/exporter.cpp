@@ -13,12 +13,9 @@
 
 namespace file
 {
-	void exporter::init(file::exportType _exportType, HWND _hWnd, LPADRBOOK _lpAddrBook, bool _bPrompt)
+	exporter::exporter(file::exportType _exportType, HWND _hWnd, LPADRBOOK _lpAddrBook, bool _bPrompt)
+		: hWnd(_hWnd), lpAddrBook(_lpAddrBook), exportType(_exportType), bPrompt(_bPrompt)
 	{
-		hWnd = _hWnd;
-		lpAddrBook = _lpAddrBook;
-		exportType = _exportType;
-		bPrompt = _bPrompt;
 		switch (exportType)
 		{
 		case exportType::text:

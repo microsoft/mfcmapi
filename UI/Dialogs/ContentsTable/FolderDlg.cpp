@@ -1365,8 +1365,7 @@ namespace dialog
 
 		const auto bPrompt = numSelected == 1 || MyData.GetCheck(1);
 
-		auto exporter = file::exporter();
-		exporter.init(
+		auto exporter = file::exporter(
 			static_cast<file::exportType>(MyData.GetDropDown(0)), m_hWnd, m_lpMapiObjects->GetAddrBook(true), bPrompt);
 
 		auto iItem = m_lpContentsTableListCtrl->GetNextItem(-1, LVNI_SELECTED);
