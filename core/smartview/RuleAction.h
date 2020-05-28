@@ -23,33 +23,51 @@ namespace smartview
 
 	// [MS-OXORULE] 2.2.5.1.2 ActionData Structure
 	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxorule/0c74ec4f-896d-425e-9e6d-20c531fe83ce
+	class ActionData : public block
+	{
+	public:
+		ActionData() = default;
+		void parse(std::shared_ptr<binaryParser>& parser, bool bExtended)
+		{
+			m_Parser = parser;
+			m_bExtended = bExtended;
 
-	// 2.2.5.1.2.1 OP_MOVE and OP_COPY ActionData Structure
-	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxorule/78bc6a96-f94c-43c6-afd3-7f8c39a2340c
+			// Offset will always be where we start parsing
+			setOffset(m_Parser->getOffset());
+			parse();
+			// And size will always be how many bytes we consumed
+			setSize(m_Parser->getOffset() - getOffset());
+		}
+		ActionData(const ActionData&) = delete;
+		ActionData& operator=(const ActionData&) = delete;
+		virtual void parseBlocks(ULONG ulTabLevel) = 0;
 
-	// 2.2.5.1.2.1.1 ServerEid Structure
-	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxorule/07e8c314-0ab2-440e-9138-b96f93682bf1
+	protected:
+		bool m_bExtended{};
+		std::shared_ptr<binaryParser> m_Parser{};
 
-	// 2.2.5.1.2.2 OP_REPLY and OP_OOF_REPLY ActionData Structure
-	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxorule/d5c14d2f-3557-4b78-acfe-d949ef325792
+	private:
+		virtual void parse() = 0;
+	};
 
-	// 2.2.5.1.2.3 OP_DEFER_ACTION ActionData Structure
-	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxorule/1d66ff31-fdc1-4b36-a040-75207e31dd18
+	class ActionBlock : public block
+	{
+	public:
+		void parse(std::shared_ptr<binaryParser>& parser, bool bExtended)
+		{
+			// Offset will always be where we start parsing
+			setOffset(parser->getOffset());
+			// And size will always be how many bytes we consumed
+			setSize(parser->getOffset() - getOffset());
+		}
 
-	// 2.2.5.1.2.4 OP_FORWARD and OP_DELEGATE ActionData Structure
-	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxorule/1b8a2b3f-9fff-4e07-9820-c3d2287a8e5c
-
-	// 2.2.5.1.2.4.1 RecipientBlockData Structure
-	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxorule/c6ad133d-7906-43aa-8420-3b40ac6be494
-
-	// 2.2.5.1.2.5 OP_BOUNCE ActionData Structure
-	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxorule/c6ceb0c2-96a2-4337-a4fb-f2e23cfe4284
-
-	// 2.2.5.1.2.6 OP_TAG ActionData Structure
-	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxorule/2fe6b110-5e1e-4a97-aeeb-9103cf76a0e0
-
-	// 2.2.5.1.2.7 OP_DELETE or OP_MARK_AS_READ ActionData Structure
-	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxorule/c180c7cb-474a-46f2-95ee-568ec61f1043
+	private:
+		bool m_bExtended{};
+		std::shared_ptr<blockT<WORD>> ActionLength = emptyT<WORD>();
+		std::shared_ptr<blockT<BYTE>> ActionType = emptyT<BYTE>();
+		std::shared_ptr<blockT<DWORD>> ActionFlavor = emptyT<DWORD>();
+		std::shared_ptr<ActionData> ActionData;
+	};
 
 	class RuleAction : public smartViewParser
 	{
@@ -61,5 +79,7 @@ namespace smartview
 		void parseBlocks() override;
 
 		bool m_bExtended{};
+		std::shared_ptr<blockT<DWORD>> NoOfActions = emptyT<DWORD>();
+		std::vector<std::shared_ptr<ActionBlock>> ActionBlocks;
 	};
 } // namespace smartview
