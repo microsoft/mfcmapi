@@ -15,7 +15,7 @@
 #include <core/utility/import.h>
 #include <UI/Dialogs/AboutDlg.h>
 #include <UI/Dialogs/ContentsTable/FormContainerDlg.h>
-#include <UI/FileDialogEx.h>
+#include <UI/file/FileDialogEx.h>
 #include <core/mapi/mapiMime.h>
 #include <UI/QuickStart.h>
 #include <UI/UIFunctions.h>

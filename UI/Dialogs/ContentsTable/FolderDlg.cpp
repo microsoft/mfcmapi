@@ -6,15 +6,10 @@
 #include <core/mapi/mapiStoreFunctions.h>
 #include <core/mapi/mapiABFunctions.h>
 #include <UI/Controls/SortList/SingleMAPIPropListCtrl.h>
-#include <core/mapi/columnTags.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
-#include <UI/Dialogs/Editors/Editor.h>
 #include <core/mapi/processor/dumpStore.h>
-#include <core/utility/file.h>
-#include <UI/Dialogs/ContentsTable/AttachmentsDlg.h>
 #include <UI/MAPIFormFunctions.h>
-#include <UI/FileDialogEx.h>
-#include <core/mapi/extraPropTags.h>
+#include <UI/file/FileDialogEx.h>
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
 #include <core/mapi/mapiProgress.h>
 #include <core/mapi/mapiMime.h>
@@ -29,6 +24,7 @@
 #include <core/mapi/mapiFile.h>
 #include <core/interpret/flags.h>
 #include <core/mapi/mapiFunctions.h>
+#include <UI/file/exporter.h>
 
 namespace dialog
 {
@@ -1339,69 +1335,18 @@ namespace dialog
 
 	void CFolderDlg::OnSaveMessageToFile()
 	{
+		const auto numSelected = m_lpContentsTableListCtrl->GetSelectedCount();
+		if (!numSelected) return;
+
 		auto hRes = S_OK;
 
 		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"OnSaveMessageToFile", L"\n");
 
-		editor::CEditor MyData(
-			this, IDS_SAVEMESSAGETOFILE, IDS_SAVEMESSAGETOFILEPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-
-		UINT uidDropDown[] = {IDS_DDTEXTFILE,
-							  IDS_DDMSGFILEANSI,
-							  IDS_DDMSGFILEUNICODE,
-							  IDS_DDEMLFILE,
-							  IDS_DDEMLFILEUSINGICONVERTERSESSION,
-							  IDS_DDTNEFFILE};
-		MyData.AddPane(
-			viewpane::DropDownPane::Create(0, IDS_FORMATTOSAVEMESSAGE, _countof(uidDropDown), uidDropDown, true));
-		const auto numSelected = m_lpContentsTableListCtrl->GetSelectedCount();
-		if (numSelected > 1)
+		bool bMultiSelect = numSelected > 1;
+		auto exporter = file::exporter();
+		if (!WC_B(exporter.init(this, bMultiSelect, m_lpMapiObjects->GetAddrBook(true))))
 		{
-			MyData.AddPane(viewpane::CheckPane::Create(1, IDS_EXPORTPROMPTLOCATION, false, false));
-		}
-
-		if (!MyData.DisplayDialog()) return;
-
-		LPCWSTR szExt = nullptr;
-		LPCWSTR szDotExt = nullptr;
-		std::wstring szFilter;
-		LPADRBOOK lpAddrBook = nullptr;
-		switch (MyData.GetDropDown(0))
-		{
-		case 0:
-			szExt = L"xml"; // STRING_OK
-			szDotExt = L".xml"; // STRING_OK
-			szFilter = strings::loadstring(IDS_XMLFILES);
-			break;
-		case 1:
-		case 2:
-			szExt = L"msg"; // STRING_OK
-			szDotExt = L".msg"; // STRING_OK
-			szFilter = strings::loadstring(IDS_MSGFILES);
-			break;
-		case 3:
-		case 4:
-			szExt = L"eml"; // STRING_OK
-			szDotExt = L".eml"; // STRING_OK
-			szFilter = strings::loadstring(IDS_EMLFILES);
-			break;
-		case 5:
-			szExt = L"tnef"; // STRING_OK
-			szDotExt = L".tnef"; // STRING_OK
-			szFilter = strings::loadstring(IDS_TNEFFILES);
-
-			lpAddrBook = m_lpMapiObjects->GetAddrBook(true); // do not release
-			break;
-		default:
-			break;
-		}
-
-		std::wstring dir;
-		const auto bPrompt = numSelected == 1 || MyData.GetCheck(1);
-		if (!bPrompt)
-		{
-			// If we weren't asked to prompt for each item, we still need to ask for a directory
-			dir = file::GetDirectoryPath(m_hWnd);
+			return;
 		}
 
 		auto iItem = m_lpContentsTableListCtrl->GetNextItem(-1, LVNI_SELECTED);
@@ -1410,72 +1355,7 @@ namespace dialog
 			auto lpMessage = OpenMessage(iItem, modifyType::REQUEST_MODIFY);
 			if (lpMessage)
 			{
-				auto filename = file::BuildFileName(szDotExt, dir, lpMessage);
-				output::DebugPrint(
-					output::dbgLevel::Generic, L"BuildFileName built file name \"%ws\"\n", filename.c_str());
-
-				if (bPrompt)
-				{
-					filename = file::CFileDialogExW::SaveAs(
-						szExt, filename, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, szFilter, this);
-				}
-
-				if (!filename.empty())
-				{
-					switch (MyData.GetDropDown(0))
-					{
-					case 0:
-						// Idea is to capture anything that may be important about this message to disk so it can be analyzed.
-						{
-							mapi::processor::dumpStore MyDumpStore;
-							MyDumpStore.InitMessagePath(filename);
-							// Just assume this message might have attachments
-							MyDumpStore.ProcessMessage(lpMessage, true, nullptr);
-						}
-
-						break;
-					case 1:
-						hRes = EC_H(file::SaveToMSG(lpMessage, filename, false, m_hWnd, true));
-						break;
-					case 2:
-						hRes = EC_H(file::SaveToMSG(lpMessage, filename, true, m_hWnd, true));
-						break;
-					case 3:
-						hRes = EC_H(file::SaveToEML(lpMessage, filename));
-						break;
-					case 4:
-					{
-						auto ulConvertFlags = CCSF_SMTP;
-						auto et = IET_UNKNOWN;
-						auto mst = USE_DEFAULT_SAVETYPE;
-						ULONG ulWrapLines = USE_DEFAULT_WRAPPING;
-						auto bDoAdrBook = false;
-
-						hRes = EC_H(ui::mapiui::GetConversionToEMLOptions(
-							this, &ulConvertFlags, &et, &mst, &ulWrapLines, &bDoAdrBook));
-						if (hRes == S_OK)
-						{
-							LPADRBOOK lpAdrBook = nullptr;
-							if (bDoAdrBook) lpAdrBook = m_lpMapiObjects->GetAddrBook(true); // do not release
-
-							hRes = EC_H(mapi::mapimime::ExportIMessageToEML(
-								lpMessage, filename.c_str(), ulConvertFlags, et, mst, ulWrapLines, lpAdrBook));
-						}
-					}
-
-					break;
-					case 5:
-						hRes = EC_H(file::SaveToTNEF(lpMessage, lpAddrBook, filename));
-						break;
-					default:
-						break;
-					}
-				}
-				else
-				{
-					hRes = MAPI_E_USER_CANCEL;
-				}
-
+				hRes = EC_H(exporter.exportMessage(lpMessage));
 				lpMessage->Release();
 			}
 			else

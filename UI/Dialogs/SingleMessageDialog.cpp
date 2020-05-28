@@ -8,6 +8,8 @@
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 #include <core/mapi/mapiFunctions.h>
+#include <core/mapi/cache/mapiObjects.h>
+#include <UI/file/exporter.h>
 
 namespace dialog
 {
@@ -53,6 +55,7 @@ namespace dialog
 
 	BEGIN_MESSAGE_MAP(SingleMessageDialog, CBaseDialog)
 	ON_COMMAND(ID_REFRESHVIEW, OnRefreshView)
+	ON_COMMAND(ID_SAVEMESSAGETOFILE, OnSaveMessageToFile)
 	ON_COMMAND(ID_ATTACHMENTPROPERTIES, OnAttachmentProperties)
 	ON_COMMAND(ID_RECIPIENTPROPERTIES, OnRecipientProperties)
 	ON_COMMAND(ID_RTFSYNC, OnRTFSync)
@@ -67,6 +70,16 @@ namespace dialog
 	{
 		if (!m_lpPropDisplay) return;
 		static_cast<void>(m_lpPropDisplay->RefreshMAPIPropList());
+	}
+
+	void SingleMessageDialog::OnSaveMessageToFile()
+	{
+		if (!m_lpMessage) return;
+		auto exporter = file::exporter();
+		if (exporter.init(this, false, m_lpMapiObjects->GetAddrBook(true)))
+		{
+			EC_H_S(exporter.exportMessage(m_lpMessage));
+		}
 	}
 
 	void SingleMessageDialog::OnAttachmentProperties()

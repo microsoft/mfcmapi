@@ -2,7 +2,7 @@
 #include <UI/Dialogs/ContentsTable/ContentsTableDlg.h>
 #include <UI/Controls/SortList/ContentsTableListCtrl.h>
 #include <UI/FakeSplitter.h>
-#include <UI/FileDialogEx.h>
+#include <UI/file/FileDialogEx.h>
 #include <UI/Controls/SortList/SingleMAPIPropListCtrl.h>
 #include <core/mapi/cache/mapiObjects.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>

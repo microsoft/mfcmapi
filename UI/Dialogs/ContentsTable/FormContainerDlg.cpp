@@ -7,7 +7,7 @@
 #include <core/mapi/columnTags.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>
-#include <UI/FileDialogEx.h>
+#include <UI/file/FileDialogEx.h>
 #include <core/mapi/mapiMemory.h>
 #include <UI/addinui.h>
 #include <core/utility/strings.h>

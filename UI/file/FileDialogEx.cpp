@@ -1,5 +1,5 @@
 #include <StdAfx.h>
-#include <UI/FileDialogEx.h>
+#include <UI/file/FileDialogEx.h>
 #include <core/utility/strings.h>
 
 namespace file
