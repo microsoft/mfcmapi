@@ -8,6 +8,7 @@
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 #include <core/mapi/mapiFunctions.h>
+#include <core/mapi/cache/mapiObjects.h>
 #include <UI/file/exporter.h>
 
 namespace dialog
@@ -74,7 +75,11 @@ namespace dialog
 	void SingleMessageDialog::OnSaveMessageToFile()
 	{
 		if (!m_lpMessage) return;
-		// TODO:: call something over in exporter
+		auto exporter = file::exporter();
+		if (exporter.init(this, false, m_lpMapiObjects->GetAddrBook(true)))
+		{
+			EC_H_S(exporter.exportMessage(m_lpMessage));
+		}
 	}
 
 	void SingleMessageDialog::OnAttachmentProperties()
