@@ -11,6 +11,7 @@ namespace smartview
 		{parserType::ENTRYID, L"Entry Id"}, // STRING_OK
 		{parserType::ENTRYLIST, L"Entry List"}, // STRING_OK
 		{parserType::EXTENDEDFOLDERFLAGS, L"Extended Folder Flags"}, // STRING_OK
+		{parserType::EXTENDEDRULEACTION, L"Extended Rule Action"}, // STRING_OK
 		{parserType::EXTENDEDRULECONDITION, L"Extended Rule Condition"}, // STRING_OK
 		{parserType::FLATENTRYLIST, L"Flat Entry List"}, // STRING_OK
 		{parserType::FOLDERUSERFIELDS, L"Folder User Fields Stream"}, // STRING_OK
@@ -21,6 +22,7 @@ namespace smartview
 		{parserType::RECURRENCEPATTERN, L"Recurrence Pattern"}, // STRING_OK
 		{parserType::REPORTTAG, L"Report Tag"}, // STRING_OK
 		{parserType::RESTRICTION, L"Restriction"}, // STRING_OK
+		{parserType::RULEACTION, L"Rule Action"}, // STRING_OK
 		{parserType::RULECONDITION, L"Rule Condition"}, // STRING_OK
 		{parserType::SEARCHFOLDERDEFINITION, L"Search Folder Definition"}, // STRING_OK
 		{parserType::SECURITYDESCRIPTOR, L"Security Descriptor"}, // STRING_OK
@@ -58,6 +60,7 @@ namespace smartview
 		BINARY_STRUCTURE_ENTRY(PR_NT_SECURITY_DESCRIPTOR, parserType::SECURITYDESCRIPTOR)
 		BINARY_STRUCTURE_ENTRY(PR_CREATOR_SID, parserType::SID)
 		BINARY_STRUCTURE_ENTRY(PR_LAST_MODIFIER_SID, parserType::SID)
+		BINARY_STRUCTURE_ENTRY(PR_EXTENDED_RULE_ACTIONS, parserType::EXTENDEDRULEACTION)
 		BINARY_STRUCTURE_ENTRY(PR_EXTENDED_RULE_MSG_CONDITION, parserType::EXTENDEDRULECONDITION)
 		BINARY_STRUCTURE_ENTRY(PR_FREEBUSY_NT_SECURITY_DESCRIPTOR, parserType::FBSECURITYDESCRIPTOR)
 		BINARY_STRUCTURE_ENTRY(PR_STORE_ENTRYID, parserType::ENTRYID)

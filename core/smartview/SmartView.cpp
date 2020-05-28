@@ -24,6 +24,7 @@
 #include <core/smartview/PropertyDefinitionStream.h>
 #include <core/smartview/SearchFolderDefinition.h>
 #include <core/smartview/EntryList.h>
+#include <core/smartview/RuleAction.h>
 #include <core/smartview/RuleCondition.h>
 #include <core/smartview/RestrictionStruct.h>
 #include <core/smartview/PropertiesStruct.h>
@@ -78,6 +79,18 @@ namespace smartview
 			return std::make_shared<SearchFolderDefinition>();
 		case parserType::ENTRYLIST:
 			return std::make_shared<EntryList>();
+		case parserType::RULEACTION:
+			{
+				auto parser = std::make_shared<RuleAction>();
+				if (parser) parser->Init(false);
+				return parser;
+			}
+		case parserType::EXTENDEDRULEACTION:
+		{
+			auto parser = std::make_shared<RuleAction>();
+			if (parser) parser->Init(true);
+			return parser;
+		}
 		case parserType::RULECONDITION:
 		{
 			auto parser = std::make_shared<RuleCondition>();

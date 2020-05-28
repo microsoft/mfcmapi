@@ -498,5 +498,13 @@ namespace SmartViewTest
 				SmartViewTestResource{parserType::XID, unittest::parse_all, IDR_SV32XID4IN, IDR_SV32XID4OUT},
 			}));
 		}
+
+		TEST_METHOD(Test_RULEACTION)
+		{
+		}
+
+		TEST_METHOD(Test_EXTENDEDRULEACTION)
+		{
+		}
 	};
 } // namespace SmartViewTest
