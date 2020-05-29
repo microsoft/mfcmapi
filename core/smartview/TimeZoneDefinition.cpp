@@ -56,7 +56,7 @@ namespace smartview
 
 	void TimeZoneDefinition::parseBlocks()
 	{
-		setRoot(L"Time Zone Definition: \r\n");
+		setText(L"Time Zone Definition: \r\n");
 		addChild(m_bMajorVersion, L"bMajorVersion = 0x%1!02X! (%1!d!)\r\n", m_bMajorVersion->getData());
 		addChild(m_bMinorVersion, L"bMinorVersion = 0x%1!02X! (%1!d!)\r\n", m_bMinorVersion->getData());
 		addChild(m_cbHeader, L"cbHeader = 0x%1!04X! (%1!d!)\r\n", m_cbHeader->getData());

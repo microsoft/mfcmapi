@@ -84,7 +84,7 @@ namespace smartview
 
 	void ExtendedFlags::parseBlocks()
 	{
-		setRoot(L"Extended Flags:\r\n");
+		setText(L"Extended Flags:\r\n");
 		addHeader(L"Number of flags = %1!d!", m_pefExtendedFlags.size());
 
 		if (m_pefExtendedFlags.size())

@@ -69,7 +69,7 @@ namespace smartview
 
 	void RecurrencePattern::parseBlocks()
 	{
-		setRoot(L"Recurrence Pattern: \r\n");
+		setText(L"Recurrence Pattern: \r\n");
 		addChild(m_ReaderVersion, L"ReaderVersion: 0x%1!04X!\r\n", m_ReaderVersion->getData());
 		addChild(m_WriterVersion, L"WriterVersion: 0x%1!04X!\r\n", m_WriterVersion->getData());
 		auto szRecurFrequency = flags::InterpretFlags(flagRecurFrequency, *m_RecurFrequency);

@@ -62,7 +62,7 @@ namespace smartview
 
 	void VerbStream::parseBlocks()
 	{
-		setRoot(L"Verb Stream\r\n");
+		setText(L"Verb Stream\r\n");
 		addChild(m_Version, L"Version = 0x%1!04X!\r\n", m_Version->getData());
 		addChild(m_Count, L"Count = 0x%1!08X!", m_Count->getData());
 

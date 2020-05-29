@@ -40,7 +40,7 @@ namespace smartview
 
 	void RecipientRowStream::parseBlocks()
 	{
-		setRoot(L"Recipient Row Stream\r\n");
+		setText(L"Recipient Row Stream\r\n");
 		addChild(m_cVersion, L"cVersion = %1!d!\r\n", m_cVersion->getData());
 		addChild(m_cRowCount, L"cRowCount = %1!d!\r\n", m_cRowCount->getData());
 		if (!m_lpAdrEntry.empty())

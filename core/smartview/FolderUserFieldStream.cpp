@@ -74,7 +74,7 @@ namespace smartview
 
 	void FolderUserFieldStream::parseBlocks()
 	{
-		setRoot(L"Folder User Field Stream\r\n");
+		setText(L"Folder User Field Stream\r\n");
 		addChild(
 			m_FolderUserFieldsAnsiCount,
 			L"FolderUserFieldAnsi.FieldDefinitionCount = %1!d!\r\n",

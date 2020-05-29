@@ -35,7 +35,7 @@ namespace smartview
 
 	void EntryList::parseBlocks()
 	{
-		setRoot(m_EntryCount, L"EntryCount = 0x%1!08X!\r\n", m_EntryCount->getData());
+		addChild(m_EntryCount, L"EntryCount = 0x%1!08X!\r\n", m_EntryCount->getData());
 		addChild(m_Pad, L"Pad = 0x%1!08X!", m_Pad->getData());
 
 		auto i = 0;

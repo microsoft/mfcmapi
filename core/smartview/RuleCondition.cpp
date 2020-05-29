@@ -54,7 +54,7 @@ namespace smartview
 
 	void RuleCondition::parseBlocks()
 	{
-		setRoot(m_bExtended ? L"Extended Rule Condition\r\n" : L"Rule Condition\r\n");
+		setText(m_bExtended ? L"Extended Rule Condition\r\n" : L"Rule Condition\r\n");
 
 		addChild(
 			m_NamedPropertyInformation.NoOfNamedProps,

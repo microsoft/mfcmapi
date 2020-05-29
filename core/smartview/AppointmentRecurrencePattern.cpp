@@ -157,7 +157,7 @@ namespace smartview
 
 	void AppointmentRecurrencePattern::parseBlocks()
 	{
-		setRoot(m_RecurrencePattern);
+		addChild(m_RecurrencePattern);
 		terminateBlock();
 
 		auto arpBlock = std::make_shared<block>();

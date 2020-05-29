@@ -156,7 +156,7 @@ namespace smartview
 
 	void PropertyDefinitionStream::parseBlocks()
 	{
-		setRoot(L"Property Definition Stream\r\n");
+		setText(L"Property Definition Stream\r\n");
 		auto szVersion = flags::InterpretFlags(flagPropDefVersion, *m_wVersion);
 		addChild(m_wVersion, L"Version = 0x%1!04X! = %2!ws!\r\n", m_wVersion->getData(), szVersion.c_str());
 		addChild(m_dwFieldDefinitionCount, L"FieldDefinitionCount = 0x%1!08X!", m_dwFieldDefinitionCount->getData());

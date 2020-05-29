@@ -46,20 +46,6 @@ namespace smartview
 	protected:
 		std::shared_ptr<binaryParser> m_Parser;
 
-		// Nu style parsing data
-		template <typename... Args> void setRoot(const std::wstring& text, const Args... args)
-		{
-			block::setText(text, args...);
-		}
-
-		void setRoot(const std::shared_ptr<block>& _data) noexcept { addChild(_data); }
-
-		template <typename... Args>
-		void setRoot(const std::shared_ptr<block>& _data, const std::wstring& text, const Args... args)
-		{
-			addChild(_data, text, args...);
-		}
-
 	private:
 		void ensureParsed();
 		virtual void parse() = 0;

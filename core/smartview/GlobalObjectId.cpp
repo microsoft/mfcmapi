@@ -38,7 +38,7 @@ namespace smartview
 
 	void GlobalObjectId::parseBlocks()
 	{
-		setRoot(L"Global Object ID:\r\n");
+		setText(L"Global Object ID:\r\n");
 		if (m_Id->isSet())
 		{
 			auto id = std::make_shared<block>(L"Byte Array ID = ");

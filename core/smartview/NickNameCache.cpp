@@ -45,7 +45,7 @@ namespace smartview
 
 	void NickNameCache::parseBlocks()
 	{
-		setRoot(L"Nickname Cache\r\n");
+		setText(L"Nickname Cache\r\n");
 		addLabeledChild(L"Metadata1 = ", m_Metadata1);
 
 		addChild(m_ulMajorVersion, L"Major Version = %1!d!\r\n", m_ulMajorVersion->getData());

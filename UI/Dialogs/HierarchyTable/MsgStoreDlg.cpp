@@ -64,7 +64,7 @@ namespace dialog
 						MAPI_BEST_ACCESS,
 						nullptr);
 
-					SetRootContainer(container);
+					setTextContainer(container);
 					container->Release();
 				}
 			}

@@ -14,7 +14,7 @@ namespace smartview
 			auto sidAccount = sid::LookupAccountSid(*m_SIDbin);
 			auto sidString = sid::GetTextualSid(*m_SIDbin);
 
-			setRoot(L"SID: \r\n");
+			setText(L"SID: \r\n");
 			addHeader(L"User: %1!ws!\\%2!ws!\r\n", sidAccount.getDomain().c_str(), sidAccount.getName().c_str());
 
 			if (sidString.empty()) sidString = strings::formatmessage(IDS_NOSID);

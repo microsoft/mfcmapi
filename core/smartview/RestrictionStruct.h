@@ -60,7 +60,7 @@ namespace smartview
 		void parse(ULONG ulDepth);
 		void parseBlocks() override
 		{
-			setRoot(L"Restriction:\r\n");
+			setText(L"Restriction:\r\n");
 			parseBlocks(0);
 		};
 
