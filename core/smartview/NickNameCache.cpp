@@ -11,9 +11,10 @@ namespace smartview
 		{
 			if (*cValues < _MaxEntriesSmall)
 			{
-				lpProps.EnableNickNameParsing();
-				lpProps.SetMaxEntries(*cValues);
-				lpProps.smartViewParser::parse(parser, false);
+				lpProps = std::make_shared<PropertiesStruct>();
+				lpProps->EnableNickNameParsing();
+				lpProps->SetMaxEntries(*cValues);
+				lpProps->smartViewParser::parse(parser, false);
 			}
 		}
 	} // namespace smartview
@@ -61,7 +62,7 @@ namespace smartview
 				auto rowBlock = std::make_shared<block>(strings::formatmessage(L"Row %1!d!\r\n", i));
 				addChild(rowBlock);
 				rowBlock->addChild(row->cValues, L"cValues = 0x%1!08X! = %1!d!\r\n", row->cValues->getData());
-				rowBlock->addChild(row->lpProps.getBlock());
+				rowBlock->addChild(row->lpProps);
 
 				i++;
 			}

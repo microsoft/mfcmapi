@@ -24,7 +24,6 @@ namespace smartview
 		{
 			m_Parser = std::make_shared<binaryParser>(_cb, _bin);
 			parsed = false;
-			data = std::make_shared<block>();
 			enableJunk = true;
 		}
 
@@ -44,52 +43,50 @@ namespace smartview
 
 		std::wstring toString();
 
-		std::shared_ptr<block>& getBlock() noexcept { return data; }
-		bool hasData() const noexcept { return data->hasData(); }
-
 	protected:
 		std::shared_ptr<binaryParser> m_Parser;
 
 		// Nu style parsing data
 		template <typename... Args> void setRoot(const std::wstring& text, const Args... args)
 		{
-			data->setText(text, args...);
+			block::setText(text, args...);
 		}
 
-		void setRoot(const std::shared_ptr<block>& _data) noexcept { data = _data; }
+		void setRoot(const std::shared_ptr<block>& _data) noexcept { addChild(_data); }
 
 		template <typename... Args>
 		void setRoot(const std::shared_ptr<block>& _data, const std::wstring& text, const Args... args)
 		{
-			data = _data;
-			data->setText(text, args...);
+			addChild(_data, text, args...);
 		}
 
 		template <typename... Args> void addHeader(const std::wstring& text, const Args... args)
 		{
-			data->addHeader(text, args...);
+			block::addHeader(text, args...);
 		}
 
-		void addChild(const std::shared_ptr<block>& _block, const std::wstring& _text) { data->addChild(_block, _text); }
+		void addChild(const std::shared_ptr<block>& _block, const std::wstring& _text)
+		{
+			block::addChild(_block, _text);
+		}
 		template <typename... Args>
 		void addChild(const std::shared_ptr<block>& _block, const std::wstring& _text, const Args... args)
 		{
-			data->addChild(_block, _text, args...);
+			block::addChild(_block, _text, args...);
 		}
 		void addLabeledChild(const std::wstring& _text, const std::shared_ptr<block>& _block)
 		{
-			data->addLabeledChild(_text, _block);
+			block::addLabeledChild(_text, _block);
 		}
-		void addChild(const std::shared_ptr<block>& child) { data->addChild(child); }
-		void terminateBlock() { data->terminateBlock(); }
-		void addBlankLine() { data->addBlankLine(); }
+		void addChild(const std::shared_ptr<block>& child) { block::addChild(child); }
+		void terminateBlock() { block::terminateBlock(); }
+		void addBlankLine() { block::addBlankLine(); }
 
 	private:
 		void ensureParsed();
 		virtual void parse() = 0;
 		virtual void parseBlocks() = 0;
 
-		std::shared_ptr<block> data = std::make_shared<block>();
 		bool enableJunk{true};
 		bool parsed{false};
 	};

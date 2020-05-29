@@ -9,7 +9,8 @@ namespace smartview
 		StartTime = blockT<DWORD>::parse(parser);
 		EndTime = blockT<DWORD>::parse(parser);
 		GlobalObjectIdSize = blockT<DWORD>::parse(parser);
-		GlobalObjectId.smartViewParser::parse(parser, *GlobalObjectIdSize, false);
+		GlobalObjectId = std::make_shared<smartview::GlobalObjectId>();
+		GlobalObjectId->smartViewParser::parse(parser, *GlobalObjectIdSize, false);
 		UsernameSize = blockT<WORD>::parse(parser);
 		szUsername = blockStringA::parse(parser, *UsernameSize);
 	}
@@ -80,7 +81,7 @@ namespace smartview
 				record->GlobalObjectIdSize,
 				L"GlobalObjectIdSize = 0x%1!08X!\r\n",
 				record->GlobalObjectIdSize->getData());
-			addChild(record->GlobalObjectId.getBlock());
+			addChild(record->GlobalObjectId);
 			terminateBlock();
 
 			addChild(record->UsernameSize, L"UsernameSize= 0x%1!04X!\r\n", record->UsernameSize->getData());

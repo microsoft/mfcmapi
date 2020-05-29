@@ -13,7 +13,7 @@ namespace smartview
 	{
 		std::shared_ptr<blockT<DWORD>> PropertyCount = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> Pad = emptyT<DWORD>();
-		PropertiesStruct Props;
+		std::shared_ptr<PropertiesStruct> Props;
 
 		AddressListEntryStruct(const std::shared_ptr<binaryParser>& parser);
 	};
@@ -37,7 +37,7 @@ namespace smartview
 		std::shared_ptr<blockT<WORD>> m_FolderList1LengthExtended = emptyT<WORD>();
 		std::shared_ptr<blockStringW> m_FolderList1 = emptySW();
 		std::shared_ptr<blockT<DWORD>> m_FolderList2Length = emptyT<DWORD>();
-		EntryList m_FolderList2;
+		std::shared_ptr<EntryList> m_FolderList2;
 		std::shared_ptr<blockT<DWORD>> m_AddressCount = emptyT<DWORD>(); // SFST_BINARY
 		std::vector<std::shared_ptr<AddressListEntryStruct>> m_Addresses; // SFST_BINARY
 		std::shared_ptr<blockT<DWORD>> m_SkipLen2 = emptyT<DWORD>();

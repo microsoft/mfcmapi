@@ -9,7 +9,7 @@ namespace smartview
 	struct SRowStruct
 	{
 		std::shared_ptr<blockT<DWORD>> cValues = emptyT<DWORD>();
-		PropertiesStruct lpProps;
+		std::shared_ptr<PropertiesStruct> lpProps;
 
 		SRowStruct(const std::shared_ptr<binaryParser>& parser);
 	};

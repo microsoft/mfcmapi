@@ -53,7 +53,7 @@ namespace smartview
 				auto resBlock = std::make_shared<block>();
 				resBlock->setText(L"%1!ws!lpRes->res.resAnd.lpRes[0x%2!08X!]\r\n", tabs, i++);
 				res->parseBlocks(ulTabLevel + 1);
-				resBlock->addChild(res->getBlock());
+				resBlock->addChild(res);
 				cRes->addChild(resBlock);
 			}
 		}
@@ -103,7 +103,7 @@ namespace smartview
 				auto resBlock = std::make_shared<block>();
 				resBlock->setText(L"%1!ws!lpRes->res.resOr.lpRes[0x%2!08X!]\r\n", tabs, i++);
 				res->parseBlocks(ulTabLevel + 1);
-				resBlock->addChild(res->getBlock());
+				resBlock->addChild(res);
 				cRes->addChild(resBlock);
 			}
 		}
@@ -138,7 +138,7 @@ namespace smartview
 			if (lpRes)
 			{
 				lpRes->parseBlocks(ulTabLevel + 1);
-				notRoot->addChild(lpRes->getBlock());
+				notRoot->addChild(lpRes);
 			}
 		}
 
@@ -285,7 +285,7 @@ namespace smartview
 			if (lpRes)
 			{
 				lpRes->parseBlocks(ulTabLevel + 1);
-				countRoot->addChild(lpRes->getBlock());
+				countRoot->addChild(lpRes);
 			}
 		}
 
@@ -513,7 +513,7 @@ namespace smartview
 			if (lpRes)
 			{
 				lpRes->parseBlocks(ulTabLevel + 1);
-				ulSubObject->addChild(lpRes->getBlock());
+				ulSubObject->addChild(lpRes);
 			}
 		}
 
@@ -590,7 +590,7 @@ namespace smartview
 			if (lpRes)
 			{
 				lpRes->parseBlocks(ulTabLevel + 1);
-				addChild(lpRes->getBlock());
+				addChild(lpRes);
 			}
 		}
 
@@ -666,7 +666,7 @@ namespace smartview
 			if (lpRes)
 			{
 				lpRes->parseBlocks(ulTabLevel + 1);
-				addChild(lpRes->getBlock());
+				addChild(lpRes);
 			}
 		}
 

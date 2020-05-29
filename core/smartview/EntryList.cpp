@@ -26,7 +26,8 @@ namespace smartview
 
 				for (DWORD i = 0; i < *m_EntryCount; i++)
 				{
-					m_Entry[i]->EntryId.smartViewParser::parse(m_Parser, *m_Entry[i]->EntryLength, true);
+					m_Entry[i]->EntryId = std::make_shared<EntryIdStruct>();
+					m_Entry[i]->EntryId->smartViewParser::parse(m_Parser, *m_Entry[i]->EntryLength, true);
 				}
 			}
 		}
@@ -44,7 +45,7 @@ namespace smartview
 			addHeader(L"EntryId[%1!d!]:\r\n", i);
 			addChild(entry->EntryLength, L"EntryLength = 0x%1!08X!\r\n", entry->EntryLength->getData());
 			addChild(entry->EntryLengthPad, L"EntryLengthPad = 0x%1!08X!\r\n", entry->EntryLengthPad->getData());
-			addLabeledChild(L"Entry Id = ", entry->EntryId.getBlock());
+			addLabeledChild(L"Entry Id = ", entry->EntryId);
 
 			i++;
 		}

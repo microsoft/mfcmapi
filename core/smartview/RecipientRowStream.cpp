@@ -13,8 +13,9 @@ namespace smartview
 		{
 			if (*cValues < _MaxEntriesSmall)
 			{
-				rgPropVals.SetMaxEntries(*cValues);
-				rgPropVals.smartViewParser::parse(parser, false);
+				rgPropVals = std::make_shared<PropertiesStruct>();
+				rgPropVals->SetMaxEntries(*cValues);
+				rgPropVals->smartViewParser::parse(parser, false);
 			}
 		}
 	}
@@ -52,7 +53,7 @@ namespace smartview
 				addHeader(L"Row %1!d!\r\n", i);
 				addChild(entry->cValues, L"cValues = 0x%1!08X! = %1!d!\r\n", entry->cValues->getData());
 				addChild(entry->ulReserved1, L"ulReserved1 = 0x%1!08X! = %1!d!\r\n", entry->ulReserved1->getData());
-				addChild(entry->rgPropVals.getBlock());
+				addChild(entry->rgPropVals);
 
 				i++;
 			}

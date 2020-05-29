@@ -448,7 +448,7 @@ namespace smartview
 				break;
 			}
 
-			addChild(m_ContactAddressBookObject.lpEntryID->getBlock());
+			addChild(m_ContactAddressBookObject.lpEntryID);
 		}
 		else if (EIDStructType::WAB == m_ObjectType)
 		{
@@ -459,7 +459,7 @@ namespace smartview
 				m_WAB.Type->getData(),
 				flags::InterpretFlags(flagWABEntryIDType, *m_WAB.Type).c_str());
 
-			addChild(m_WAB.lpEntryID->getBlock());
+			addChild(m_WAB.lpEntryID);
 		}
 		else if (EIDStructType::messageDatabase == m_ObjectType)
 		{

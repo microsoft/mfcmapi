@@ -42,7 +42,7 @@ namespace smartview
 	{
 		for (const auto& prop : m_Props)
 		{
-			addChild(prop->getBlock());
+			addChild(prop);
 			terminateBlock();
 		}
 	}

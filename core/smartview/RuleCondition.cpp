@@ -113,7 +113,7 @@ namespace smartview
 		if (m_lpRes && m_lpRes->hasData())
 		{
 			terminateBlock();
-			addChild(m_lpRes->getBlock());
+			addChild(m_lpRes);
 		}
 	}
 } // namespace smartview

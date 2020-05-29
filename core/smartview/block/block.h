@@ -57,12 +57,12 @@ namespace smartview
 		// Add a block as a child
 		void addChild(const std::shared_ptr<block>& child)
 		{
-			if (child->isSet()) addChild(child, child->toStringInternal());
+			if (child && child->isSet()) addChild(child, child->toStringInternal());
 		}
 
 		void addChild(const std::shared_ptr<block>& child, const std::wstring& _text)
 		{
-			if (!child->isSet()) return;
+			if (!child || !child->isSet()) return;
 			child->text = _text;
 			children.push_back(child);
 		}

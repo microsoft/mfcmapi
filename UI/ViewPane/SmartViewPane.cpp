@@ -191,7 +191,7 @@ namespace viewpane
 			{
 				svp->init(bin.size(), bin.data());
 				parsedData = svp->toString();
-				auto node = svp->getBlock();
+				auto node = svp;
 				node->setSource(source++);
 				if (m_bins.size() == 1)
 				{

@@ -13,8 +13,9 @@ namespace smartview
 		Pad = blockT<DWORD>::parse(parser);
 		if (*PropertyCount)
 		{
-			Props.SetMaxEntries(*PropertyCount);
-			Props.smartViewParser::parse(parser, false);
+			Props = std::make_shared<PropertiesStruct>();
+			Props->SetMaxEntries(*PropertyCount);
+			Props->smartViewParser::parse(parser, false);
 		}
 	}
 
@@ -59,7 +60,8 @@ namespace smartview
 
 		if (m_FolderList2Length)
 		{
-			m_FolderList2.smartViewParser::parse(m_Parser, *m_FolderList2Length, true);
+			m_FolderList2 = std::make_shared<EntryList>();
+			m_FolderList2->smartViewParser::parse(m_Parser, *m_FolderList2Length, true);
 		}
 
 		if (*m_Flags & SFST_BINARY)
@@ -153,11 +155,11 @@ namespace smartview
 		terminateBlock();
 		addChild(m_FolderList2Length, L"Folder List 2 Length = 0x%1!08X!", m_FolderList2Length->getData());
 
-		if (m_FolderList2.hasData())
+		if (m_FolderList2)
 		{
 			terminateBlock();
 			addHeader(L"FolderList2 = \r\n");
-			addChild(m_FolderList2.getBlock());
+			addChild(m_FolderList2);
 		}
 
 		if (*m_Flags & SFST_BINARY)
@@ -177,7 +179,7 @@ namespace smartview
 				addChild(address->Pad, L"Addresses[%1!d!].Pad = 0x%2!08X!\r\n", i, address->Pad->getData());
 
 				addHeader(L"Properties[%1!d!]:\r\n", i);
-				addChild(address->Props.getBlock());
+				addChild(address->Props);
 				i++;
 			}
 		}
@@ -190,7 +192,7 @@ namespace smartview
 		if (m_Restriction && m_Restriction->hasData())
 		{
 			terminateBlock();
-			addChild(m_Restriction->getBlock());
+			addChild(m_Restriction);
 		}
 
 		if (*m_Flags & SFST_FILTERSTREAM)

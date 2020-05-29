@@ -11,7 +11,7 @@ namespace smartview
 		std::shared_ptr<blockT<DWORD>> StartTime = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> EndTime = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> GlobalObjectIdSize = emptyT<DWORD>();
-		GlobalObjectId GlobalObjectId;
+		std::shared_ptr<GlobalObjectId> GlobalObjectId;
 		std::shared_ptr<blockT<WORD>> UsernameSize = emptyT<WORD>();
 		std::shared_ptr<blockStringA> szUsername = emptySA();
 

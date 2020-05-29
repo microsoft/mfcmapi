@@ -72,7 +72,7 @@ namespace smartview
 		void parse() override;
 		void parseBlocks() override;
 
-		RecurrencePattern m_RecurrencePattern;
+		std::shared_ptr<RecurrencePattern> m_RecurrencePattern;
 		std::shared_ptr<blockT<DWORD>> m_ReaderVersion2 = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> m_WriterVersion2 = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> m_StartTimeOffset = emptyT<DWORD>();
