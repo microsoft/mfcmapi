@@ -60,28 +60,6 @@ namespace smartview
 			addChild(_data, text, args...);
 		}
 
-		template <typename... Args> void addHeader(const std::wstring& text, const Args... args)
-		{
-			block::addHeader(text, args...);
-		}
-
-		void addChild(const std::shared_ptr<block>& _block, const std::wstring& _text)
-		{
-			block::addChild(_block, _text);
-		}
-		template <typename... Args>
-		void addChild(const std::shared_ptr<block>& _block, const std::wstring& _text, const Args... args)
-		{
-			block::addChild(_block, _text, args...);
-		}
-		void addLabeledChild(const std::wstring& _text, const std::shared_ptr<block>& _block)
-		{
-			block::addLabeledChild(_text, _block);
-		}
-		void addChild(const std::shared_ptr<block>& child) { block::addChild(child); }
-		void terminateBlock() { block::terminateBlock(); }
-		void addBlankLine() { block::addBlankLine(); }
-
 	private:
 		void ensureParsed();
 		virtual void parse() = 0;
