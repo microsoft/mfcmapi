@@ -36,10 +36,10 @@ namespace smartview
 
 	void ReportTag::addEID(
 		const std::wstring& label,
-		const std::shared_ptr<blockT<ULONG>>& cb,
+		const std::shared_ptr<blockT<ULONG>>& _cb,
 		const std::shared_ptr<blockBytes>& eid)
 	{
-		if (*cb)
+		if (*_cb)
 		{
 			terminateBlock();
 			addLabeledChild(label, eid);

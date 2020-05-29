@@ -12,7 +12,7 @@
 
 namespace smartview
 {
-	class smartViewParser
+	class smartViewParser : public block
 	{
 	public:
 		smartViewParser() = default;
@@ -20,9 +20,9 @@ namespace smartview
 		smartViewParser(const smartViewParser&) = delete;
 		smartViewParser& operator=(const smartViewParser&) = delete;
 
-		void init(size_t cb, _In_count_(cb) const BYTE* _bin)
+		void init(size_t _cb, _In_count_(_cb) const BYTE* _bin)
 		{
-			m_Parser = std::make_shared<binaryParser>(cb, _bin);
+			m_Parser = std::make_shared<binaryParser>(_cb, _bin);
 			parsed = false;
 			data = std::make_shared<block>();
 			enableJunk = true;
@@ -70,11 +70,11 @@ namespace smartview
 			data->addHeader(text, args...);
 		}
 
-		void addChild(const std::shared_ptr<block>& _block, const std::wstring& text) { data->addChild(_block, text); }
+		void addChild(const std::shared_ptr<block>& _block, const std::wstring& _text) { data->addChild(_block, _text); }
 		template <typename... Args>
-		void addChild(const std::shared_ptr<block>& _block, const std::wstring& text, const Args... args)
+		void addChild(const std::shared_ptr<block>& _block, const std::wstring& _text, const Args... args)
 		{
-			data->addChild(_block, text, args...);
+			data->addChild(_block, _text, args...);
 		}
 		void addLabeledChild(const std::wstring& _text, const std::shared_ptr<block>& _block)
 		{
