@@ -1,5 +1,5 @@
 #pragma once
-#include <core/smartview/smartViewParser.h>
+#include <core/smartview/block/smartViewParser.h>
 #include <core/smartview/EntryList.h>
 #include <core/smartview/PropertiesStruct.h>
 #include <core/smartview/RestrictionStruct.h>

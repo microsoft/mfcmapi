@@ -11,7 +11,7 @@
 #include <core/mapi/mapiFunctions.h>
 #include <core/utility/error.h>
 
-#include <core/smartview/smartViewParser.h>
+#include <core/smartview/block/smartViewParser.h>
 #include <core/smartview/PCL.h>
 #include <core/smartview/TombStone.h>
 #include <core/smartview/VerbStream.h>

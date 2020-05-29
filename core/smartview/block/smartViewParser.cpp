@@ -1,5 +1,5 @@
 #include <core/stdafx.h>
-#include <core/smartview/smartViewParser.h>
+#include <core/smartview/block/smartViewParser.h>
 #include <core/utility/strings.h>
 #include <core/smartview/block/blockBytes.h>
 

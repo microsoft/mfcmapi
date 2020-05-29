@@ -1,5 +1,5 @@
 #pragma once
-#include <core/smartview/smartViewParser.h>
+#include <core/smartview/block/smartViewParser.h>
 #include <core/smartview/RecurrencePattern.h>
 #include <core/smartview/block/blockStringA.h>
 #include <core/smartview/block/blockStringW.h>

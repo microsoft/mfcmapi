@@ -1,5 +1,5 @@
 #pragma once
-#include <core/smartview/smartViewParser.h>
+#include <core/smartview/block/smartViewParser.h>
 #include <core/smartview/TimeZone.h>
 #include <core/smartview/block/blockStringW.h>
 #include <core/smartview/block/blockBytes.h>

@@ -1,5 +1,5 @@
 #pragma once
-#include <core/smartview/smartViewParser.h>
+#include <core/smartview/block/smartViewParser.h>
 #include <core/smartview/SmartView.h>
 #include <core/property/parseProperty.h>
 #include <core/smartview/block/blockStringA.h>
