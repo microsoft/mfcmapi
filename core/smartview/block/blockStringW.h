@@ -18,13 +18,6 @@ namespace smartview
 		_NODISCARD std::wstring::size_type length() const noexcept { return data.length(); }
 		_NODISCARD bool empty() const noexcept { return data.empty(); }
 
-		blockStringW(const std::shared_ptr<binaryParser>& parser, size_t _cchChar = -1)
-		{
-			m_Parser = parser;
-			cchChar = _cchChar;
-			ensureParsed();
-		}
-
 		static std::shared_ptr<blockStringW> parse(const std::wstring& _data, size_t _size, size_t _offset)
 		{
 			auto ret = std::make_shared<blockStringW>();
@@ -38,7 +31,11 @@ namespace smartview
 
 		static std::shared_ptr<blockStringW> parse(const std::shared_ptr<binaryParser>& parser, size_t cchChar = -1)
 		{
-			return std::make_shared<blockStringW>(parser, cchChar);
+			auto ret = std::make_shared<blockStringW>();
+			ret->m_Parser = parser;
+			ret->cchChar = cchChar;
+			ret->ensureParsed();
+			return ret;
 		}
 
 		void parse() override
