@@ -1,9 +1,9 @@
 #pragma once
-#include <core/smartview/block/block.h>
+#include <core/smartview/block/smartViewParser.h>
 
 namespace smartview
 {
-	class blockStringW : public block
+	class blockStringW : public smartViewParser
 	{
 	public:
 		blockStringW() = default;
@@ -49,6 +49,9 @@ namespace smartview
 		{
 			return std::make_shared<blockStringW>(parser, cchChar);
 		}
+
+		void parse() override{};
+		void parseBlocks() override{};
 
 	private:
 		std::wstring toStringInternal() const override { return data; }
