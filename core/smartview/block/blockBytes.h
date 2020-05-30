@@ -10,25 +10,6 @@ namespace smartview
 		blockBytes() = default;
 		blockBytes(const blockBytes&) = delete;
 		blockBytes& operator=(const blockBytes&) = delete;
-		// Construct blockBytes directly from a parser, optionally supplying cbBytes and cbMaxBytes
-		blockBytes(const std::shared_ptr<binaryParser>& parser, size_t cbBytes, size_t cbMaxBytes = -1)
-		{
-			if (cbBytes && parser->checkSize(cbBytes) &&
-				(cbMaxBytes == static_cast<size_t>(-1) || cbBytes <= cbMaxBytes))
-			{
-				// TODO: Should we track when the returned byte length is less than requested?
-				setOffset(parser->getOffset());
-
-				_data = std::vector<BYTE>{const_cast<LPBYTE>(parser->getAddress()),
-										  const_cast<LPBYTE>(parser->getAddress() + cbBytes)};
-				parser->advance(cbBytes);
-
-				// Important that we set our size after getting data, because we may not have gotten the requested byte length
-				setSize(size() * sizeof(BYTE));
-
-				set = true;
-			}
-		}
 
 		bool isSet() const noexcept override { return set; }
 
@@ -39,9 +20,13 @@ namespace smartview
 		const BYTE* data() const noexcept { return _data.data(); }
 
 		static std::shared_ptr<blockBytes>
-		parse(const std::shared_ptr<binaryParser>& parser, size_t cbBytes, size_t cbMaxBytes = -1)
+		parse(const std::shared_ptr<binaryParser>& parser, size_t _cbBytes, size_t _cbMaxBytes = -1)
 		{
-			return std::make_shared<blockBytes>(parser, cbBytes, cbMaxBytes);
+			auto ret = std::make_shared<blockBytes>();
+			ret->m_Parser = parser;
+			ret->cbBytes = _cbBytes;ret->cbMaxBytes=  _cbMaxBytes;
+			ret->ensureParsed();
+			return ret;
 		}
 
 		std::wstring toTextString(bool bMultiLine) const
@@ -59,6 +44,14 @@ namespace smartview
 
 		void parse() override
 		{
+			if (cbBytes && m_Parser->checkSize(cbBytes) &&
+				(cbMaxBytes == static_cast<size_t>(-1) || cbBytes <= cbMaxBytes))
+			{
+				_data = std::vector<BYTE>{const_cast<LPBYTE>(m_Parser->getAddress()),
+										  const_cast<LPBYTE>(m_Parser->getAddress() + cbBytes)};
+				m_Parser->advance(cbBytes);
+				set = true;
+			}
 		};
 		void parseBlocks() override{};
 
@@ -67,6 +60,9 @@ namespace smartview
 		// TODO: Would it be better to hold the parser and size/offset data and build this as needed?
 		std::vector<BYTE> _data;
 		bool set{false};
+
+		size_t cbBytes{};
+		size_t cbMaxBytes{};
 	};
 
 	inline std::shared_ptr<blockBytes> emptyBB() { return std::make_shared<blockBytes>(); }
