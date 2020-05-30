@@ -1,10 +1,10 @@
 #pragma once
-#include <core/smartview/block/block.h>
+#include <core/smartview/block/smartViewParser.h>
 #include <core/smartview/block/binaryParser.h>
 
 namespace smartview
 {
-	class blockBytes : public block
+	class blockBytes : public smartViewParser
 	{
 	public:
 		blockBytes() = default;
@@ -56,6 +56,11 @@ namespace smartview
 			if (_cb != _data.size()) return false;
 			return memcmp(_data.data(), _bin, _cb) == 0;
 		}
+
+		void parse() override
+		{
+		};
+		void parseBlocks() override{};
 
 	private:
 		std::wstring toStringInternal() const override { return toHexString(true); }
