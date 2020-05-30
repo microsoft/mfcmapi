@@ -18,23 +18,11 @@ namespace smartview
 		_NODISCARD std::wstring::size_type length() const noexcept { return data.length(); }
 		_NODISCARD bool empty() const noexcept { return data.empty(); }
 
-		blockStringW(const std::shared_ptr<binaryParser>& parser, size_t cchChar = -1)
+		blockStringW(const std::shared_ptr<binaryParser>& parser, size_t _cchChar = -1)
 		{
-			if (cchChar == static_cast<size_t>(-1))
-			{
-				cchChar =
-					wcsnlen_s(reinterpret_cast<LPCWSTR>(parser->getAddress()), (parser->getSize()) / sizeof WCHAR) + 1;
-			}
-
-			if (cchChar && parser->checkSize(sizeof WCHAR * cchChar))
-			{
-				setOffset(parser->getOffset());
-				data = strings::RemoveInvalidCharactersW(
-					std::wstring(reinterpret_cast<LPCWSTR>(parser->getAddress()), cchChar));
-				setSize(sizeof WCHAR * cchChar);
-				parser->advance(sizeof WCHAR * cchChar);
-				set = true;
-			}
+			m_Parser = parser;
+			cchChar = _cchChar;
+			ensureParsed();
 		}
 
 		blockStringW(const std::wstring& _data, size_t _size, size_t _offset)
@@ -50,13 +38,33 @@ namespace smartview
 			return std::make_shared<blockStringW>(parser, cchChar);
 		}
 
-		void parse() override{};
+		void parse() override
+		{
+			if (cchChar == static_cast<size_t>(-1))
+			{
+				cchChar =
+					wcsnlen_s(reinterpret_cast<LPCWSTR>(m_Parser->getAddress()), (m_Parser->getSize()) / sizeof WCHAR) +
+					1;
+			}
+
+			if (cchChar && m_Parser->checkSize(sizeof WCHAR * cchChar))
+			{
+				setOffset(m_Parser->getOffset());
+				data = strings::RemoveInvalidCharactersW(
+					std::wstring(reinterpret_cast<LPCWSTR>(m_Parser->getAddress()), cchChar));
+				setSize(sizeof WCHAR * cchChar);
+				m_Parser->advance(sizeof WCHAR * cchChar);
+				set = true;
+			}
+		};
 		void parseBlocks() override{};
 
 	private:
 		std::wstring toStringInternal() const override { return data; }
 		std::wstring data;
 		bool set{false};
+
+		size_t cchChar{};
 	};
 
 	inline std::shared_ptr<blockStringW> emptySW() { return std::make_shared<blockStringW>(); }
