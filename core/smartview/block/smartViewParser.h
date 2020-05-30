@@ -41,6 +41,21 @@ namespace smartview
 			m_Parser->clearCap();
 		}
 
+		template <typename T>
+		static std::shared_ptr<T> parse(const std::shared_ptr<binaryParser>& binaryParser, bool _enableJunk)
+		{
+			return parse<T>(binaryParser, 0, _enableJunk);
+		}
+
+		template <typename T>
+		static std::shared_ptr<T>
+		parse(const std::shared_ptr<binaryParser>& binaryParser, size_t cbBin, bool _enableJunk)
+		{
+			auto ret = std::make_shared<T>();
+			ret->smartViewParser::parse(binaryParser, cbBin, _enableJunk);
+			return ret;
+		}
+
 		std::wstring toString();
 
 	protected:

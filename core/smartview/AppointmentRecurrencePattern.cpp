@@ -119,8 +119,7 @@ namespace smartview
 
 	void AppointmentRecurrencePattern::parse()
 	{
-		m_RecurrencePattern = std::make_shared<RecurrencePattern>();
-		m_RecurrencePattern->smartViewParser::parse(m_Parser, false);
+		m_RecurrencePattern = smartViewParser::parse<RecurrencePattern>(m_Parser, false);
 
 		m_ReaderVersion2 = blockT<DWORD>::parse(m_Parser);
 		m_WriterVersion2 = blockT<DWORD>::parse(m_Parser);

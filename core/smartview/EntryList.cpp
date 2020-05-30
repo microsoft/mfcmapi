@@ -26,8 +26,8 @@ namespace smartview
 
 				for (DWORD i = 0; i < *m_EntryCount; i++)
 				{
-					m_Entry[i]->EntryId = std::make_shared<EntryIdStruct>();
-					m_Entry[i]->EntryId->smartViewParser::parse(m_Parser, *m_Entry[i]->EntryLength, true);
+					m_Entry[i]->EntryId =
+						smartViewParser::parse<EntryIdStruct>(m_Parser, *m_Entry[i]->EntryLength, true);
 				}
 			}
 		}

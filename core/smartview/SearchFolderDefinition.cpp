@@ -60,8 +60,7 @@ namespace smartview
 
 		if (m_FolderList2Length)
 		{
-			m_FolderList2 = std::make_shared<EntryList>();
-			m_FolderList2->smartViewParser::parse(m_Parser, *m_FolderList2Length, true);
+			m_FolderList2 = smartViewParser::parse<EntryList>(m_Parser, *m_FolderList2Length, true);
 		}
 
 		if (*m_Flags & SFST_BINARY)
