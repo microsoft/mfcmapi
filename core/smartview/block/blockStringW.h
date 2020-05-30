@@ -49,10 +49,8 @@ namespace smartview
 
 			if (cchChar && m_Parser->checkSize(sizeof WCHAR * cchChar))
 			{
-				setOffset(m_Parser->getOffset());
 				data = strings::RemoveInvalidCharactersW(
 					std::wstring(reinterpret_cast<LPCWSTR>(m_Parser->getAddress()), cchChar));
-				setSize(sizeof WCHAR * cchChar);
 				m_Parser->advance(sizeof WCHAR * cchChar);
 				set = true;
 			}
