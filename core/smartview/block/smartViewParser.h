@@ -46,12 +46,12 @@ namespace smartview
 	protected:
 		void ensureParsed();
 		std::shared_ptr<binaryParser> m_Parser;
+		bool parsed{false};
 
 	private:
 		virtual void parse() = 0;
 		virtual void parseBlocks() = 0;
 
 		bool enableJunk{true};
-		bool parsed{false};
 	};
 } // namespace smartview

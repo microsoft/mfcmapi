@@ -64,14 +64,14 @@ namespace smartview
 			auto altPropString = std::wstring{};
 			property::parseProperty(&prop, &propString, &altPropString);
 
-			propBlock = std::make_shared<blockStringW>(
-				strings::RemoveInvalidCharactersW(propString, false), getSize(), getOffset());
+			propBlock =
+				blockStringW::parse(strings::RemoveInvalidCharactersW(propString, false), getSize(), getOffset());
 
-			altPropBlock = std::make_shared<blockStringW>(
-				strings::RemoveInvalidCharactersW(altPropString, false), getSize(), getOffset());
+			altPropBlock =
+				blockStringW::parse(strings::RemoveInvalidCharactersW(altPropString, false), getSize(), getOffset());
 
 			const auto smartViewString = parsePropertySmartView(&prop, nullptr, nullptr, nullptr, false, false);
-			smartViewBlock = std::make_shared<blockStringW>(smartViewString, getSize(), getOffset());
+			smartViewBlock = blockStringW::parse(smartViewString, getSize(), getOffset());
 
 			propStringsGenerated = true;
 		}

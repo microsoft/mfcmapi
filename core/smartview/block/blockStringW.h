@@ -25,12 +25,15 @@ namespace smartview
 			ensureParsed();
 		}
 
-		blockStringW(const std::wstring& _data, size_t _size, size_t _offset)
+		static std::shared_ptr<blockStringW> parse(const std::wstring& _data, size_t _size, size_t _offset)
 		{
-			set = true;
-			data = _data;
-			setSize(_size);
-			setOffset(_offset);
+			auto ret = std::make_shared<blockStringW>();
+			ret->parsed = true;
+			ret->set = true;
+			ret->data = _data;
+			ret->setSize(_size);
+			ret->setOffset(_offset);
+			return ret;
 		}
 
 		static std::shared_ptr<blockStringW> parse(const std::shared_ptr<binaryParser>& parser, size_t cchChar = -1)
