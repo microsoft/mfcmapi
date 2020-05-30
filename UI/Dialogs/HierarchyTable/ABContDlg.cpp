@@ -33,7 +33,7 @@ namespace dialog
 				// Open root address book (container).
 				const auto container = mapi::CallOpenEntry<LPUNKNOWN>(
 					nullptr, lpAddrBook, nullptr, nullptr, nullptr, nullptr, MAPI_BEST_ACCESS, nullptr);
-				setTextContainer(container);
+				SetRootContainer(container);
 			}
 		}
 

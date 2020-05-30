@@ -29,7 +29,7 @@ namespace dialog
 		void OnInitMenu(_In_ CMenu* pMenu) override;
 		// Get the current root container - does not addref
 		LPMAPICONTAINER GetRootContainer() const noexcept { return m_lpContainer; }
-		void setTextContainer(LPUNKNOWN container);
+		void SetRootContainer(LPUNKNOWN container);
 
 		controls::CHierarchyTableTreeCtrl m_lpHierarchyTableTreeCtrl{};
 		tableDisplayFlags m_displayFlags{tableDisplayFlags::dfNormal};
