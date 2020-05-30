@@ -1,10 +1,10 @@
 #pragma once
-#include <core/smartview/block/block.h>
+#include <core/smartview/block/smartViewParser.h>
 #include <core/smartview/block/binaryParser.h>
 
 namespace smartview
 {
-	template <typename T, typename SOURCE_T = T> class blockT : public block
+	template <typename T, typename SOURCE_T = T> class blockT : public smartViewParser
 	{
 	public:
 		blockT() = default;
@@ -55,6 +55,11 @@ namespace smartview
 		{
 			return std::make_shared<blockT<T>>(_data, _size, _offset);
 		}
+
+		void parse() override
+		{
+		};
+		void parseBlocks() override{};
 
 	private:
 		// Construct directly from a parser
