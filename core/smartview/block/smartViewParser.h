@@ -44,10 +44,10 @@ namespace smartview
 		std::wstring toString();
 
 	protected:
+		void ensureParsed();
 		std::shared_ptr<binaryParser> m_Parser;
 
 	private:
-		void ensureParsed();
 		virtual void parse() = 0;
 		virtual void parseBlocks() = 0;
 
