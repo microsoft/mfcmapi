@@ -275,7 +275,7 @@ namespace smartview
 				lppszA.reserve(*cValues);
 				for (ULONG j = 0; j < *cValues; j++)
 				{
-					lppszA.emplace_back(std::make_shared<blockStringA>(m_Parser));
+					lppszA.emplace_back(blockStringA::parse(m_Parser));
 				}
 			}
 		}

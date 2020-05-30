@@ -18,16 +18,13 @@ namespace smartview
 		_NODISCARD std::string::size_type length() const noexcept { return data.length(); }
 		_NODISCARD bool empty() const noexcept { return data.empty(); }
 
-		blockStringA(const std::shared_ptr<binaryParser>& parser, size_t _cchChar = -1)
-		{
-			m_Parser = parser;
-			cchChar = _cchChar;
-			ensureParsed();
-		}
-
 		static std::shared_ptr<blockStringA> parse(const std::shared_ptr<binaryParser>& parser, size_t cchChar = -1)
 		{
-			return std::make_shared<blockStringA>(parser, cchChar);
+			auto ret = std::make_shared<blockStringA>();
+			ret->m_Parser = parser;
+			ret->cchChar = cchChar;
+			ret->ensureParsed();
+			return ret;
 		}
 
 		void parse() override
