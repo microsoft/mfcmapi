@@ -25,46 +25,44 @@ namespace smartview
 
 	void SPropValueStruct::parseBlocks()
 	{
-		auto propRoot = std::make_shared<block>();
-		addChild(propRoot);
-		propRoot->setText(L"Property[%1!d!]\r\n", m_index);
-		propRoot->addChild(ulPropTag, L"Property = 0x%1!08X!", ulPropTag->getData());
+		setText(L"Property[%1!d!]\r\n", m_index);
+		addChild(ulPropTag, L"Property = 0x%1!08X!", ulPropTag->getData());
 
 		const auto propTagNames = proptags::PropTagToPropName(*ulPropTag, false);
 		if (!propTagNames.bestGuess.empty())
 		{
 			// TODO: Add this as a child of ulPropTag
-			propRoot->terminateBlock();
-			propRoot->addHeader(L"Name: %1!ws!", propTagNames.bestGuess.c_str());
+			terminateBlock();
+			addHeader(L"Name: %1!ws!", propTagNames.bestGuess.c_str());
 		}
 
 		if (!propTagNames.otherMatches.empty())
 		{
 			// TODO: Add this as a child of ulPropTag
-			propRoot->terminateBlock();
-			propRoot->addHeader(L"Other Matches: %1!ws!", propTagNames.otherMatches.c_str());
+			terminateBlock();
+			addHeader(L"Other Matches: %1!ws!", propTagNames.otherMatches.c_str());
 		}
 
-		propRoot->terminateBlock();
+		terminateBlock();
 		if (value)
 		{
 			const auto propString = value->PropBlock();
 			if (!propString->empty())
 			{
-				propRoot->addChild(propString, L"PropString = %1!ws!", propString->c_str());
+				addChild(propString, L"PropString = %1!ws!", propString->c_str());
 			}
 
 			const auto alt = value->AltPropBlock();
 			if (!alt->empty())
 			{
-				propRoot->addChild(alt, L" AltPropString = %1!ws!", alt->c_str());
+				addChild(alt, L" AltPropString = %1!ws!", alt->c_str());
 			}
 
 			const auto szSmartView = value->SmartViewBlock();
 			if (!szSmartView->empty())
 			{
-				propRoot->terminateBlock();
-				propRoot->addChild(szSmartView, L"Smart View: %1!ws!", szSmartView->c_str());
+				terminateBlock();
+				addChild(szSmartView, L"Smart View: %1!ws!", szSmartView->c_str());
 			}
 		}
 	}
