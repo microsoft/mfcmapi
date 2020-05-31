@@ -44,7 +44,6 @@ namespace smartview
 				set = true;
 			}
 		};
-		void parseBlocks() override{};
 
 	private:
 		std::wstring toStringInternal() const override { return strings::stringTowstring(data); }

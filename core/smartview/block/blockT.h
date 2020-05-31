@@ -61,7 +61,6 @@ namespace smartview
 			m_Parser->advance(sizeof T);
 			set = true;
 		};
-		void parseBlocks() override{};
 
 	private:
 		// Construct directly from a parser

@@ -64,10 +64,10 @@ namespace smartview
 		bool parsed{false};
 
 	private:
-		// Consume binaryParser and populate (which should also inherit from smarViewParser)
+		// Consume binaryParser and populate (which may also inherit from smarViewParser)
 		virtual void parse() = 0;
 		// (optional) Stiches smartViewParser submembers into a tree
-		virtual void parseBlocks() = 0;
+		virtual void parseBlocks(){};
 
 		bool enableJunk{true};
 	};

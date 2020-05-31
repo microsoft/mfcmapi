@@ -72,7 +72,6 @@ namespace smartview
 		}
 
 		void parse() override = 0;
-		void parseBlocks() override{};
 		virtual const void getProp(SPropValue& prop) noexcept = 0;
 		std::shared_ptr<blockStringW> propBlock = emptySW();
 		std::shared_ptr<blockStringW> altPropBlock = emptySW();

@@ -24,7 +24,8 @@ namespace smartview
 		{
 			auto ret = std::make_shared<blockBytes>();
 			ret->m_Parser = parser;
-			ret->cbBytes = _cbBytes;ret->cbMaxBytes=  _cbMaxBytes;
+			ret->cbBytes = _cbBytes;
+			ret->cbMaxBytes = _cbMaxBytes;
 			ret->ensureParsed();
 			return ret;
 		}
@@ -53,7 +54,6 @@ namespace smartview
 				set = true;
 			}
 		};
-		void parseBlocks() override{};
 
 	private:
 		std::wstring toStringInternal() const override { return toHexString(true); }
