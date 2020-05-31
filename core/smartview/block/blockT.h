@@ -12,13 +12,13 @@ namespace smartview
 		blockT& operator=(const blockT&) = delete;
 		blockT(const T& _data, size_t _size, size_t _offset) noexcept
 		{
-			set = true;
+			parsed = true;
 			data = _data;
 			setSize(_size);
 			setOffset(_offset);
 		}
 
-		bool isSet() const noexcept override { return set; }
+		bool isSet() const noexcept override { return parsed; }
 
 		// Mimic type T
 		void setData(const T& _data) noexcept { data = _data; }
@@ -49,24 +49,24 @@ namespace smartview
 		static std::shared_ptr<blockT<T>> create(const T& _data, size_t _size, size_t _offset)
 		{
 			const auto ret = std::make_shared<blockT<T>>(_data, _size, _offset);
-			ret->set = true;
+			ret->parsed = true;
 			return ret;
 		}
 
 		void parse() override
 		{
+			parsed = false;
 			if (!m_Parser->checkSize(sizeof T)) return;
 
 			data = *reinterpret_cast<const T*>(m_Parser->getAddress());
 			m_Parser->advance(sizeof T);
-			set = true;
+			parsed = true;
 		};
 
 	private:
 		// Construct directly from a parser
 		blockT(const std::shared_ptr<binaryParser>& parser) { parse<T>(parser); }
 		T data{};
-		bool set{false};
 	};
 
 	template <typename T> std::shared_ptr<blockT<T>> emptyT() { return std::make_shared<blockT<T>>(); }
