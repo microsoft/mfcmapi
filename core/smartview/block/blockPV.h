@@ -21,11 +21,6 @@ namespace smartview
 			m_ulPropTag = ulPropTag;
 
 			ensureParsed();
-			//// Offset will always be where we start parsing
-			//setOffset(m_Parser->getOffset());
-			//parse();
-			//// And size will always be how many bytes we consumed
-			//setSize(m_Parser->getOffset() - getOffset());
 		}
 		blockPV(const blockPV&) = delete;
 		blockPV& operator=(const blockPV&) = delete;
