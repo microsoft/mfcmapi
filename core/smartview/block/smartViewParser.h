@@ -58,6 +58,8 @@ namespace smartview
 
 		std::wstring toString();
 
+		bool isSet() const noexcept override { return parsed; }
+
 	protected:
 		void ensureParsed();
 		std::shared_ptr<binaryParser> m_Parser;

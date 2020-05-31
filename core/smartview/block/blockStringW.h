@@ -10,8 +10,6 @@ namespace smartview
 		blockStringW(const blockStringW&) = delete;
 		blockStringW& operator=(const blockStringW&) = delete;
 
-		bool isSet() const noexcept override { return parsed; }
-
 		// Mimic std::wstring
 		operator const std::wstring&() const noexcept { return data; }
 		_NODISCARD _Ret_z_ const wchar_t* c_str() const noexcept { return data.c_str(); }

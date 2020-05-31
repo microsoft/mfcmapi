@@ -11,8 +11,6 @@ namespace smartview
 		blockBytes(const blockBytes&) = delete;
 		blockBytes& operator=(const blockBytes&) = delete;
 
-		bool isSet() const noexcept override { return parsed; }
-
 		// Mimic std::vector<BYTE>
 		operator const std::vector<BYTE>&() const noexcept { return _data; }
 		size_t size() const noexcept { return _data.size(); }

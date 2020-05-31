@@ -48,6 +48,7 @@ namespace smartview
 		{
 			m_Parser = parser;
 			parse(ulDepth);
+			parsed = true;
 		}
 		void parseBlocks(ULONG ulTabLevel);
 

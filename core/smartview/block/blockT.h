@@ -18,8 +18,6 @@ namespace smartview
 			setOffset(_offset);
 		}
 
-		bool isSet() const noexcept override { return parsed; }
-
 		// Mimic type T
 		void setData(const T& _data) noexcept { data = _data; }
 		T getData() const noexcept { return data; }
