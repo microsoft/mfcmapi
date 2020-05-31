@@ -5,23 +5,19 @@
 
 namespace smartview
 {
-	void PropertyName::parse(std::shared_ptr<binaryParser>& parser)
+	void PropertyName::parse()
 	{
-		// Offset will always be where we start parsing
-		setOffset(parser->getOffset());
-		Kind = blockT<BYTE>::parse(parser);
-		Guid = blockT<GUID>::parse(parser);
+		Kind = blockT<BYTE>::parse(m_Parser);
+		Guid = blockT<GUID>::parse(m_Parser);
 		if (*Kind == MNID_ID)
 		{
-			LID = blockT<DWORD>::parse(parser);
+			LID = blockT<DWORD>::parse(m_Parser);
 		}
 		else if (*Kind == MNID_STRING)
 		{
-			NameSize = blockT<BYTE>::parse(parser);
-			Name = blockStringW::parse(parser, *NameSize / sizeof(WCHAR));
+			NameSize = blockT<BYTE>::parse(m_Parser);
+			Name = blockStringW::parse(m_Parser, *NameSize / sizeof(WCHAR));
 		}
-		// And size will always be how many bytes we consumed
-		setSize(parser->getOffset() - getOffset());
 	}
 
 	void RuleCondition::Init(bool bExtended) noexcept { m_bExtended = bExtended; }
@@ -42,8 +38,7 @@ namespace smartview
 			m_NamedPropertyInformation.PropertyName.reserve(*m_NamedPropertyInformation.NoOfNamedProps);
 			for (auto i = 0; i < *m_NamedPropertyInformation.NoOfNamedProps; i++)
 			{
-				auto namedProp = std::make_shared<PropertyName>();
-				namedProp->parse(m_Parser);
+				auto namedProp = smartViewParser::parse<PropertyName>(m_Parser, false);
 				m_NamedPropertyInformation.PropertyName.emplace_back(namedProp);
 			}
 		}
