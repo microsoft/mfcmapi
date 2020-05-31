@@ -11,7 +11,7 @@ namespace smartview
 		blockBytes(const blockBytes&) = delete;
 		blockBytes& operator=(const blockBytes&) = delete;
 
-		bool isSet() const noexcept override { return set; }
+		bool isSet() const noexcept override { return parsed; }
 
 		// Mimic std::vector<BYTE>
 		operator const std::vector<BYTE>&() const noexcept { return _data; }
@@ -45,13 +45,14 @@ namespace smartview
 
 		void parse() override
 		{
+			parsed = false;
 			if (cbBytes && m_Parser->checkSize(cbBytes) &&
 				(cbMaxBytes == static_cast<size_t>(-1) || cbBytes <= cbMaxBytes))
 			{
 				_data = std::vector<BYTE>{const_cast<LPBYTE>(m_Parser->getAddress()),
 										  const_cast<LPBYTE>(m_Parser->getAddress() + cbBytes)};
 				m_Parser->advance(cbBytes);
-				set = true;
+				parsed = true;
 			}
 		};
 
@@ -59,7 +60,6 @@ namespace smartview
 		std::wstring toStringInternal() const override { return toHexString(true); }
 		// TODO: Would it be better to hold the parser and size/offset data and build this as needed?
 		std::vector<BYTE> _data;
-		bool set{false};
 
 		size_t cbBytes{};
 		size_t cbMaxBytes{};
