@@ -41,11 +41,9 @@ namespace smartview
 		{
 			auto ret = std::make_shared<blockT<T>>();
 			static constexpr size_t sizeU = sizeof U;
-			// TODO: Consider what a failure block really looks like
 			if (!parser->checkSize(sizeU)) return ret;
 
 			ret->setOffset(parser->getOffset());
-			// TODO: Can we remove this cast?
 			ret->setData(*reinterpret_cast<const U*>(parser->getAddress()));
 			ret->setSize(sizeU);
 			parser->advance(sizeU);
@@ -61,14 +59,10 @@ namespace smartview
 
 		void parse() override
 		{
-			static constexpr size_t sizeT = sizeof T;
-			// TODO: Consider what a failure block really looks like
-			if (!m_Parser->checkSize(sizeT)) return;
+			if (!m_Parser->checkSize(sizeof T)) return;
 
-			// TODO: Can we remove this cast?
-			setData(*reinterpret_cast<const T*>(m_Parser->getAddress()));
-			m_Parser->advance(sizeT);
-
+			data = *reinterpret_cast<const T*>(m_Parser->getAddress());
+			m_Parser->advance(sizeof T);
 			set = true;
 		};
 		void parseBlocks() override{};
