@@ -50,11 +50,8 @@ namespace smartview
 
 			for (const auto& res : lpRes)
 			{
-				auto resBlock = std::make_shared<block>();
-				resBlock->setText(L"%1!ws!lpRes->res.resAnd.lpRes[0x%2!08X!]\r\n", tabs, i++);
 				res->parseBlocks(ulTabLevel + 1);
-				resBlock->addChild(res);
-				cRes->addChild(resBlock);
+				cRes->addChild(res, L"%1!ws!lpRes->res.resAnd.lpRes[0x%2!08X!]\r\n", tabs, i++);
 			}
 		}
 
@@ -100,11 +97,8 @@ namespace smartview
 
 			for (const auto& res : lpRes)
 			{
-				auto resBlock = std::make_shared<block>();
-				resBlock->setText(L"%1!ws!lpRes->res.resOr.lpRes[0x%2!08X!]\r\n", tabs, i++);
 				res->parseBlocks(ulTabLevel + 1);
-				resBlock->addChild(res);
-				cRes->addChild(resBlock);
+				cRes->addChild(res, L"%1!ws!lpRes->res.resOr.lpRes[0x%2!08X!]\r\n", tabs, i++);
 			}
 		}
 
