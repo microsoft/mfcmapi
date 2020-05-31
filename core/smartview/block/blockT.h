@@ -26,9 +26,6 @@ namespace smartview
 		operator T&() noexcept { return data; }
 		operator T() const noexcept { return data; }
 
-		void setSet(bool _set) { set = _set; }
-		// Build and return object of type T, reading from type SOURCE_T
-		// Usage: std::shared_ptr<blockT<T>> tmp = blockT<T, SOURCE_T>::parser(parser);
 		static std::shared_ptr<blockT<T>> parse(const std::shared_ptr<binaryParser>& parser)
 		{
 			auto ret = std::make_shared<blockT<T>>();
@@ -37,24 +34,24 @@ namespace smartview
 			return ret;
 		}
 
+		// Build and return object of type T, reading from type U
+		// Usage: std::shared_ptr<blockT<T>> tmp = blockT<T>::parser<U>(parser);
 		template <typename U> static std::shared_ptr<blockT<T>> parse(const std::shared_ptr<binaryParser>& parser)
 		{
 			auto ret = std::make_shared<blockT<T>>();
-			static constexpr size_t sizeU = sizeof U;
-			if (!parser->checkSize(sizeU)) return ret;
+			if (!parser->checkSize(sizeof U)) return {};
 
-			ret->setOffset(parser->getOffset());
-			ret->setData(*reinterpret_cast<const U*>(parser->getAddress()));
-			ret->setSize(sizeU);
-			parser->advance(sizeU);
-
-			ret->setSet(true);
-			return ret;
+			const U _data = *reinterpret_cast<const U*>(parser->getAddress());
+			const auto offset = parser->getOffset();
+			parser->advance(sizeof U);
+			return create(_data, sizeof U, offset);
 		}
 
 		static std::shared_ptr<blockT<T>> create(const T& _data, size_t _size, size_t _offset)
 		{
-			return std::make_shared<blockT<T>>(_data, _size, _offset);
+			const auto ret = std::make_shared<blockT<T>>(_data, _size, _offset);
+			ret->set = true;
+			return ret;
 		}
 
 		void parse() override
