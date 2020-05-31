@@ -8,6 +8,7 @@ namespace smartview
 	void smartViewParser::ensureParsed()
 	{
 		if (parsed || m_Parser->empty()) return;
+		parsed = true; // parse can unset this if needed
 		const auto startOffset = m_Parser->getOffset();
 
 		parse();
@@ -27,7 +28,6 @@ namespace smartview
 		setOffset(startOffset);
 		setSize(endOffset - startOffset);
 
-		parsed = true;
 	}
 
 	std::wstring smartViewParser::toString()

@@ -10,7 +10,7 @@ namespace smartview
 		blockStringA(const blockStringA&) = delete;
 		blockStringA& operator=(const blockStringA&) = delete;
 
-		bool isSet() const noexcept override { return set; }
+		bool isSet() const noexcept override { return parsed; }
 
 		// Mimic std::string
 		operator const std::string&() const noexcept { return data; }
@@ -29,6 +29,7 @@ namespace smartview
 
 		void parse() override
 		{
+			parsed = false;
 			if (cchChar == static_cast<size_t>(-1))
 			{
 				cchChar =
@@ -41,14 +42,13 @@ namespace smartview
 				data = strings::RemoveInvalidCharactersA(
 					std::string(reinterpret_cast<LPCSTR>(m_Parser->getAddress()), cchChar));
 				m_Parser->advance(sizeof CHAR * cchChar);
-				set = true;
+				parsed = true;
 			}
 		};
 
 	private:
 		std::wstring toStringInternal() const override { return strings::stringTowstring(data); }
 		std::string data;
-		bool set{false};
 
 		size_t cchChar{};
 	};
