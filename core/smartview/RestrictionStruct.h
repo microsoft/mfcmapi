@@ -4,7 +4,7 @@
 
 namespace smartview
 {
-	class blockRes : public block
+	class blockRes : public smartViewParser
 	{
 	public:
 		blockRes() = default;
@@ -15,11 +15,7 @@ namespace smartview
 			m_bRuleCondition = bRuleCondition;
 			m_bExtendedCount = bExtendedCount;
 
-			// Offset will always be where we start parsing
-			setOffset(m_Parser->getOffset());
-			parse();
-			// And size will always be how many bytes we consumed
-			setSize(m_Parser->getOffset() - getOffset());
+			ensureParsed();
 		}
 		blockRes(const blockRes&) = delete;
 		blockRes& operator=(const blockRes&) = delete;
@@ -30,10 +26,10 @@ namespace smartview
 		ULONG m_ulDepth{};
 		bool m_bRuleCondition{};
 		bool m_bExtendedCount{};
-		std::shared_ptr<binaryParser> m_Parser{};
 
 	private:
-		virtual void parse() = 0;
+		void parse() override = 0;
+		void parseBlocks() override{};
 	};
 
 	class RestrictionStruct : public smartViewParser
