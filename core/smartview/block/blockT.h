@@ -38,8 +38,7 @@ namespace smartview
 		// Usage: std::shared_ptr<blockT<T>> tmp = blockT<T>::parser<U>(parser);
 		template <typename U> static std::shared_ptr<blockT<T>> parse(const std::shared_ptr<binaryParser>& parser)
 		{
-			auto ret = std::make_shared<blockT<T>>();
-			if (!parser->checkSize(sizeof U)) return {};
+			if (!parser->checkSize(sizeof U)) return std::make_shared<blockT<T>>();
 
 			const U _data = *reinterpret_cast<const U*>(parser->getAddress());
 			const auto offset = parser->getOffset();
