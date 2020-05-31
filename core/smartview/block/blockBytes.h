@@ -41,6 +41,7 @@ namespace smartview
 			return memcmp(_data.data(), _bin, _cb) == 0;
 		}
 
+	private:
 		void parse() override
 		{
 			parsed = false;
@@ -54,7 +55,6 @@ namespace smartview
 			}
 		};
 
-	private:
 		std::wstring toStringInternal() const override { return toHexString(true); }
 		// TODO: Would it be better to hold the parser and size/offset data and build this as needed?
 		std::vector<BYTE> _data;

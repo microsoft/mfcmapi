@@ -25,6 +25,7 @@ namespace smartview
 			return ret;
 		}
 
+	private:
 		void parse() override
 		{
 			parsed = false;
@@ -44,7 +45,6 @@ namespace smartview
 			}
 		};
 
-	private:
 		std::wstring toStringInternal() const override { return strings::stringTowstring(data); }
 		std::string data;
 

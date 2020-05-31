@@ -51,6 +51,7 @@ namespace smartview
 			return ret;
 		}
 
+	private:
 		void parse() override
 		{
 			parsed = false;
@@ -61,7 +62,6 @@ namespace smartview
 			parsed = true;
 		};
 
-	private:
 		// Construct directly from a parser
 		blockT(const std::shared_ptr<binaryParser>& parser) { parse<T>(parser); }
 		T data{};
