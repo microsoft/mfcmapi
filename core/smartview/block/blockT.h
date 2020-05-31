@@ -32,17 +32,8 @@ namespace smartview
 		static std::shared_ptr<blockT<T>> parse(const std::shared_ptr<binaryParser>& parser)
 		{
 			auto ret = std::make_shared<blockT<T>>();
-			static constexpr size_t sizeT = sizeof T;
-			// TODO: Consider what a failure block really looks like
-			if (!parser->checkSize(sizeT)) return ret;
-
-			ret->setOffset(parser->getOffset());
-			// TODO: Can we remove this cast?
-			ret->setData(*reinterpret_cast<const T*>(parser->getAddress()));
-			ret->setSize(sizeT);
-			parser->advance(sizeT);
-
-			ret->setSet(true);
+			ret->m_Parser = parser;
+			ret->ensureParsed();
 			return ret;
 		}
 
@@ -68,7 +59,18 @@ namespace smartview
 			return std::make_shared<blockT<T>>(_data, _size, _offset);
 		}
 
-		void parse() override{};
+		void parse() override
+		{
+			static constexpr size_t sizeT = sizeof T;
+			// TODO: Consider what a failure block really looks like
+			if (!m_Parser->checkSize(sizeT)) return;
+
+			// TODO: Can we remove this cast?
+			setData(*reinterpret_cast<const T*>(m_Parser->getAddress()));
+			m_Parser->advance(sizeT);
+
+			set = true;
+		};
 		void parseBlocks() override{};
 
 	private:
