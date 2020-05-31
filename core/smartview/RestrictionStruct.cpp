@@ -22,7 +22,7 @@ namespace smartview
 			}
 			else
 			{
-				cRes = blockT<DWORD, WORD>::parse(m_Parser);
+				cRes = blockT<DWORD>::parse<WORD>(m_Parser);
 			}
 
 			if (*cRes && *cRes < _MaxEntriesExtraLarge && m_ulDepth < _MaxDepth)
@@ -75,7 +75,7 @@ namespace smartview
 			}
 			else
 			{
-				cRes = blockT<DWORD, WORD>::parse(m_Parser);
+				cRes = blockT<DWORD>::parse<WORD>(m_Parser);
 			}
 
 			if (*cRes && *cRes < _MaxEntriesExtraLarge && m_ulDepth < _MaxDepth)
@@ -153,7 +153,7 @@ namespace smartview
 		void parse() override
 		{
 			if (m_bRuleCondition)
-				relop = blockT<DWORD, BYTE>::parse(m_Parser);
+				relop = blockT<DWORD>::parse<BYTE>(m_Parser);
 			else
 				relop = blockT<DWORD>::parse(m_Parser);
 
@@ -301,7 +301,7 @@ namespace smartview
 		void parse() override
 		{
 			if (m_bRuleCondition)
-				relop = blockT<DWORD, BYTE>::parse(m_Parser);
+				relop = blockT<DWORD>::parse<BYTE>(m_Parser);
 			else
 				relop = blockT<DWORD>::parse(m_Parser);
 
@@ -376,7 +376,7 @@ namespace smartview
 		void parse() override
 		{
 			if (m_bRuleCondition)
-				relBMR = blockT<DWORD, BYTE>::parse(m_Parser);
+				relBMR = blockT<DWORD>::parse<BYTE>(m_Parser);
 			else
 				relBMR = blockT<DWORD>::parse(m_Parser);
 
@@ -429,7 +429,7 @@ namespace smartview
 		void parse() override
 		{
 			if (m_bRuleCondition)
-				relop = blockT<DWORD, BYTE>::parse(m_Parser);
+				relop = blockT<DWORD>::parse<BYTE>(m_Parser);
 			else
 				relop = blockT<DWORD>::parse(m_Parser);
 
@@ -529,7 +529,7 @@ namespace smartview
 		void parse() override
 		{
 			if (m_bRuleCondition)
-				cValues = blockT<DWORD, BYTE>::parse(m_Parser);
+				cValues = blockT<DWORD>::parse<BYTE>(m_Parser);
 			else
 				cValues = blockT<DWORD>::parse(m_Parser);
 
@@ -605,7 +605,7 @@ namespace smartview
 		void parse() override
 		{
 			if (m_bRuleCondition)
-				cValues = blockT<DWORD, BYTE>::parse(m_Parser);
+				cValues = blockT<DWORD>::parse<BYTE>(m_Parser);
 			else
 				cValues = blockT<DWORD>::parse(m_Parser);
 
@@ -687,7 +687,7 @@ namespace smartview
 	{
 		if (m_bRuleCondition)
 		{
-			rt = blockT<DWORD, BYTE>::parse(m_Parser);
+			rt = blockT<DWORD>::parse<BYTE>(m_Parser);
 		}
 		else
 		{

@@ -119,7 +119,7 @@ namespace smartview
 				}
 				else
 				{
-					cb = blockT<DWORD, WORD>::parse(m_Parser);
+					cb = blockT<DWORD>::parse<WORD>(m_Parser);
 				}
 
 				str = blockStringA::parse(m_Parser, *cb);
@@ -151,7 +151,7 @@ namespace smartview
 				}
 				else
 				{
-					cb = blockT<DWORD, WORD>::parse(m_Parser);
+					cb = blockT<DWORD>::parse<WORD>(m_Parser);
 				}
 
 				str = blockStringW::parse(m_Parser, *cb / sizeof(WCHAR));
@@ -187,7 +187,7 @@ namespace smartview
 			}
 			else
 			{
-				cb = blockT<DWORD, WORD>::parse(m_Parser);
+				cb = blockT<DWORD>::parse<WORD>(m_Parser);
 			}
 
 			// Note that we're not placing a restriction on how large a binary property we can parse. May need to revisit this.
@@ -218,7 +218,7 @@ namespace smartview
 			}
 			else
 			{
-				cValues = blockT<DWORD, WORD>::parse(m_Parser);
+				cValues = blockT<DWORD>::parse<WORD>(m_Parser);
 			}
 
 			if (cValues && *cValues < _MaxEntriesLarge)
@@ -266,7 +266,7 @@ namespace smartview
 			}
 			else
 			{
-				cValues = blockT<DWORD, WORD>::parse(m_Parser);
+				cValues = blockT<DWORD>::parse<WORD>(m_Parser);
 			}
 
 			if (cValues)
@@ -299,7 +299,7 @@ namespace smartview
 			}
 			else
 			{
-				cValues = blockT<DWORD, WORD>::parse(m_Parser);
+				cValues = blockT<DWORD>::parse<WORD>(m_Parser);
 			}
 
 			if (cValues && *cValues < _MaxEntriesLarge)
@@ -351,7 +351,7 @@ namespace smartview
 	private:
 		void parse() override
 		{
-			l = blockT<LONG, DWORD>::parse(m_Parser);
+			l = blockT<LONG>::parse<DWORD>(m_Parser);
 			if (m_doNickname) m_Parser->advance(sizeof DWORD);
 		}
 
@@ -367,7 +367,7 @@ namespace smartview
 		{
 			if (m_doRuleProcessing)
 			{
-				b = blockT<WORD, BYTE>::parse(m_Parser);
+				b = blockT<WORD>::parse<BYTE>(m_Parser);
 			}
 			else
 			{
@@ -446,7 +446,7 @@ namespace smartview
 	private:
 		void parse() override
 		{
-			err = blockT<SCODE, DWORD>::parse(m_Parser);
+			err = blockT<SCODE>::parse<DWORD>(m_Parser);
 			if (m_doNickname) m_Parser->advance(sizeof DWORD);
 		}
 
