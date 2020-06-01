@@ -1,5 +1,4 @@
 #pragma once
-#include <core/smartview/block/binaryParser.h>
 #include <core/smartview/block/block.h>
 
 #define _MaxBytes 0xFFFF
@@ -62,15 +61,11 @@ namespace smartview
 
 	protected:
 		void ensureParsed();
-		std::shared_ptr<binaryParser> m_Parser;
-		bool parsed{false};
 
 	private:
 		// Consume binaryParser and populate (which may also inherit from smarViewParser)
 		virtual void parse() = 0;
 		// (optional) Stiches smartViewParser submembers into a tree
 		virtual void parseBlocks(){};
-
-		bool enableJunk{true};
 	};
 } // namespace smartview

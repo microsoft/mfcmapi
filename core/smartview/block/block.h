@@ -1,4 +1,5 @@
 #pragma once
+#include <core/smartview/block/binaryParser.h>
 #include <core/utility/strings.h>
 
 namespace smartview
@@ -107,11 +108,17 @@ namespace smartview
 
 		bool hasData() const noexcept { return !text.empty() || !children.empty(); }
 
+	protected:
+		std::shared_ptr<binaryParser> m_Parser;
+		bool parsed{false};
+		bool enableJunk{true};
+
 	private:
+		virtual std::wstring toStringInternal() const { return text; }
+
 		size_t offset{};
 		size_t cb{};
 		ULONG source{};
-		virtual std::wstring toStringInternal() const { return text; }
 		std::wstring text;
 		std::vector<std::shared_ptr<block>> children;
 		bool blank{false};
