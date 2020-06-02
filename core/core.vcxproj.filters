@@ -306,6 +306,9 @@
     <ClInclude Include="smartview\block\binaryParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="smartview\block\scratchBlock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="utility\strings.cpp">

@@ -4,6 +4,7 @@
 #include <core/interpret/guid.h>
 #include <core/interpret/flags.h>
 #include <core/mapi/extraPropTags.h>
+#include <core/smartview/block/scratchBlock.h>
 
 namespace smartview
 {
@@ -288,10 +289,7 @@ namespace smartview
 		if (m_abFlags23->empty()) return;
 		if (0 == (*m_abFlags0 | *m_abFlags1 | m_abFlags23->data()[0] | m_abFlags23->data()[1]))
 		{
-			auto tempBlock = std::make_shared<block>();
-			tempBlock->setOffset(m_abFlags0->getOffset());
-			tempBlock->setSize(4);
-			addChild(tempBlock, L"abFlags = 0x00000000\r\n");
+			addChild(smartview::scratchBlock::create(4, m_abFlags0->getOffset(), L"abFlags = 0x00000000\r\n"));
 		}
 		else if (0 == (*m_abFlags1 | m_abFlags23->data()[0] | m_abFlags23->data()[1]))
 		{
@@ -300,10 +298,7 @@ namespace smartview
 				L"abFlags[0] = 0x%1!02X!= %2!ws!\r\n",
 				m_abFlags0->getData(),
 				flags::InterpretFlags(flagEntryId0, *m_abFlags0).c_str());
-			auto tempBlock = std::make_shared<block>();
-			tempBlock->setOffset(m_abFlags1->getOffset());
-			tempBlock->setSize(3);
-			addChild(tempBlock, L"abFlags[1..3] = 0x000000\r\n");
+			addChild(smartview::scratchBlock::create(3, m_abFlags1->getOffset(), L"abFlags[1..3] = 0x000000\r\n"));
 		}
 		else
 		{

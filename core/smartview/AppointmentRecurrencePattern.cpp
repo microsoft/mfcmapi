@@ -4,6 +4,7 @@
 #include <core/interpret/flags.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/interpret/guid.h>
+#include <core/smartview/block/scratchBlock.h>
 
 namespace smartview
 {
@@ -159,10 +160,9 @@ namespace smartview
 		addChild(m_RecurrencePattern);
 		terminateBlock();
 
-		auto arpBlock = std::make_shared<block>();
+		auto arpBlock = smartview::scratchBlock::create(L"Appointment Recurrence Pattern: \r\n");
 		addChild(arpBlock);
 
-		arpBlock->setText(L"Appointment Recurrence Pattern: \r\n");
 		arpBlock->addChild(m_ReaderVersion2, L"ReaderVersion2: 0x%1!08X!\r\n", m_ReaderVersion2->getData());
 		arpBlock->addChild(m_WriterVersion2, L"WriterVersion2: 0x%1!08X!\r\n", m_WriterVersion2->getData());
 		arpBlock->addChild(
@@ -184,7 +184,7 @@ namespace smartview
 			auto i = 0;
 			for (const auto& info : m_ExceptionInfo)
 			{
-				auto exception = std::make_shared<block>();
+				auto exception = smartview::scratchBlock::create();
 				m_ExceptionCount->addChild(exception);
 
 				exception->addChild(
@@ -331,7 +331,7 @@ namespace smartview
 			auto i = UINT{};
 			for (const auto& ee : m_ExtendedException)
 			{
-				auto exception = std::make_shared<block>();
+				auto exception = smartview::scratchBlock::create();
 				arpBlock->addChild(exception);
 
 				if (*m_WriterVersion2 >= 0x00003009)

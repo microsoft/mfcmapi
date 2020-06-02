@@ -1,6 +1,7 @@
 #include <core/stdafx.h>
 #include <core/smartview/PCL.h>
 #include <core/interpret/guid.h>
+#include <core/smartview/block/scratchBlock.h>
 
 namespace smartview
 {
@@ -58,7 +59,7 @@ namespace smartview
 			for (const auto& xid : m_lpXID)
 			{
 				terminateBlock();
-				auto xidBlock = std::make_shared<block>(strings::formatmessage(L"XID[%1!d!]:\r\n", i));
+				auto xidBlock = smartview::scratchBlock::create(L"XID[%1!d!]:\r\n", i);
 				addChild(xidBlock);
 				xidBlock->addChild(xid->XidSize, L"XidSize = 0x%1!08X! = %1!d!\r\n", xid->XidSize->getData());
 				xidBlock->addChild(

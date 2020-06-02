@@ -3,6 +3,7 @@
 #include <core/interpret/guid.h>
 #include <core/interpret/flags.h>
 #include <core/mapi/extraPropTags.h>
+#include <core/smartview/block/scratchBlock.h>
 
 namespace smartview
 {
@@ -89,8 +90,7 @@ namespace smartview
 				m_FolderUserFieldsAnsiCount->terminateBlock();
 				m_FolderUserFieldsAnsiCount->addBlankLine();
 
-				auto fieldBlock = std::make_shared<block>();
-				fieldBlock->setText(L"Field %1!d!\r\n", i++);
+				auto fieldBlock = smartview::scratchBlock::create(L"Field %1!d!\r\n", i++);
 				m_FolderUserFieldsAnsiCount->addChild(fieldBlock);
 
 				auto szFieldType = flags::InterpretFlags(flagFolderType, *fieldDefinition->FieldType);
@@ -154,8 +154,7 @@ namespace smartview
 				m_FolderUserFieldsUnicodeCount->terminateBlock();
 				m_FolderUserFieldsUnicodeCount->addBlankLine();
 
-				auto fieldBlock = std::make_shared<block>();
-				fieldBlock->setText(L"Field %1!d!\r\n", i++);
+				auto fieldBlock = smartview::scratchBlock::create(L"Field %1!d!\r\n", i++);
 				m_FolderUserFieldsUnicodeCount->addChild(fieldBlock);
 
 				auto szFieldType = flags::InterpretFlags(flagFolderType, *fieldDefinition->FieldType);

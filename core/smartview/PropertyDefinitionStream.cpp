@@ -5,6 +5,7 @@
 #include <core/utility/strings.h>
 #include <core/mapi/cache/namedProps.h>
 #include <core/interpret/proptags.h>
+#include <core/smartview/block/scratchBlock.h>
 
 namespace smartview
 {
@@ -165,9 +166,8 @@ namespace smartview
 		for (const auto& def : m_pfdFieldDefinitions)
 		{
 			terminateBlock();
-			auto fieldDef = std::make_shared<block>();
+			auto fieldDef = smartview::scratchBlock::create(L"Definition: %1!d!\r\n", iDef);
 			addChild(fieldDef);
-			fieldDef->setText(L"Definition: %1!d!\r\n", iDef);
 
 			auto szFlags = flags::InterpretFlags(flagPDOFlag, *def->dwFlags);
 			fieldDef->addChild(
@@ -231,9 +231,8 @@ namespace smartview
 				for (const auto& sb : def->psbSkipBlocks)
 				{
 					fieldDef->terminateBlock();
-					auto skipBlock = std::make_shared<block>();
+					auto skipBlock = smartview::scratchBlock::create(L"\tSkipBlock: %1!d!\r\n", iSkipBlock);
 					fieldDef->addChild(skipBlock);
-					skipBlock->setText(L"\tSkipBlock: %1!d!\r\n", iSkipBlock);
 					skipBlock->addChild(sb->dwSize, L"\t\tSize = 0x%1!08X!", sb->dwSize->getData());
 
 					if (iSkipBlock == 0)

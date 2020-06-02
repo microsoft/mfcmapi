@@ -1,5 +1,6 @@
 #include <core/stdafx.h>
 #include <core/smartview/NickNameCache.h>
+#include <core/smartview/block/scratchBlock.h>
 
 namespace smartview
 {
@@ -59,7 +60,7 @@ namespace smartview
 			{
 				terminateBlock();
 				if (i > 0) addBlankLine();
-				auto rowBlock = std::make_shared<block>(strings::formatmessage(L"Row %1!d!\r\n", i));
+				auto rowBlock = smartview::scratchBlock::create(L"Row %1!d!\r\n", i);
 				addChild(rowBlock);
 				rowBlock->addChild(row->cValues, L"cValues = 0x%1!08X! = %1!d!\r\n", row->cValues->getData());
 				rowBlock->addChild(row->lpProps);

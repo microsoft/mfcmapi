@@ -3,6 +3,7 @@
 #include <core/interpret/flags.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/utility/strings.h>
+#include <core/smartview/block/scratchBlock.h>
 
 namespace smartview
 {
@@ -41,7 +42,7 @@ namespace smartview
 		setText(L"Global Object ID:\r\n");
 		if (m_Id->isSet())
 		{
-			auto id = std::make_shared<block>(L"Byte Array ID = ");
+			auto id = smartview::scratchBlock::create(L"Byte Array ID = ");
 			addChild(id);
 			id->addChild(m_Id);
 

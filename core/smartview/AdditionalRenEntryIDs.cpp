@@ -2,6 +2,7 @@
 #include <core/smartview/AdditionalRenEntryIDs.h>
 #include <core/interpret/flags.h>
 #include <core/mapi/extraPropTags.h>
+#include <core/smartview/block/scratchBlock.h>
 
 namespace smartview
 {
@@ -102,10 +103,9 @@ namespace smartview
 			{
 				terminateBlock();
 				addBlankLine();
-				auto element = std::make_shared<block>();
+				auto element = smartview::scratchBlock::create(L"Persist Element %1!d!:\r\n", iPersistElement);
 				addChild(element);
 
-				element->setText(L"Persist Element %1!d!:\r\n", iPersistElement);
 				element->addChild(
 					persistData->wPersistID,
 					L"PersistID = 0x%1!04X! = %2!ws!\r\n",
@@ -122,8 +122,7 @@ namespace smartview
 					for (const auto& dataElement : persistData->ppeDataElement)
 					{
 						element->terminateBlock();
-						auto de =
-							std::make_shared<block>(strings::formatmessage(L"DataElement: %1!d!\r\n", iDataElement));
+						auto de = smartview::scratchBlock::create(L"DataElement: %1!d!\r\n", iDataElement);
 						element->addChild(de);
 
 						de->addChild(

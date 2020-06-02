@@ -6,6 +6,7 @@
 #include <core/mapi/extraPropTags.h>
 #include <core/smartview/SmartView.h>
 #include <core/interpret/proptags.h>
+#include <core/smartview/block/scratchBlock.h>
 
 namespace smartview
 {
@@ -125,8 +126,7 @@ namespace smartview
 			const auto t = makeTabs(ulTabLevel);
 			const auto tabs = t.c_str();
 
-			auto notRoot = std::make_shared<block>();
-			notRoot->setText(L"%1!ws!lpRes->res.resNot.lpRes\r\n", tabs);
+			auto notRoot = smartview::scratchBlock::create(L"%1!ws!lpRes->res.resNot.lpRes\r\n", tabs);
 			addChild(notRoot);
 
 			if (lpRes)
@@ -215,7 +215,7 @@ namespace smartview
 
 			if (!lpProp.Props().empty())
 			{
-				auto propBlock = std::make_shared<block>();
+				auto propBlock = smartview::scratchBlock::create();
 				addChild(propBlock);
 
 				propBlock->addChild(
@@ -272,8 +272,7 @@ namespace smartview
 
 			addChild(ulCount, L"%1!ws!lpRes->res.resCount.ulCount = 0x%2!08X!\r\n", tabs, ulCount->getData());
 
-			auto countRoot = std::make_shared<block>();
-			countRoot->setText(L"%1!ws!lpRes->res.resCount.lpRes\r\n", tabs);
+			auto countRoot = smartview::scratchBlock::create(L"%1!ws!lpRes->res.resCount.lpRes\r\n", tabs);
 			addChild(countRoot);
 
 			if (lpRes)
