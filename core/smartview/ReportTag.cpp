@@ -2,6 +2,7 @@
 #include <core/smartview/ReportTag.h>
 #include <core/interpret/flags.h>
 #include <core/mapi/extraPropTags.h>
+#include <core/smartview/block/scratchBlock.h>
 
 namespace smartview
 {
@@ -42,14 +43,14 @@ namespace smartview
 		if (*_cb)
 		{
 			terminateBlock();
-			addLabeledChild(label, eid);
+			addChild(labeledBlock(label, eid));
 		}
 	}
 
 	void ReportTag::parseBlocks()
 	{
 		setText(L"Report Tag: \r\n");
-		addLabeledChild(L"Cookie = ", m_Cookie);
+		addChild(labeledBlock(L"Cookie = ", m_Cookie));
 
 		terminateBlock();
 		auto szFlags = flags::InterpretFlags(flagReportTagVersion, *m_Version);

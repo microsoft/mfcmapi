@@ -74,19 +74,6 @@ namespace smartview
 			if (child->isSet()) addChild(child, strings::formatmessage(_text.c_str(), args...));
 		}
 
-		void addLabeledChild(const std::wstring& _text, const std::shared_ptr<block>& _block)
-		{
-			if (_block->isSet())
-			{
-				auto node = std::make_shared<block>(_text);
-				node->setOffset(_block->getOffset());
-				node->setSize(_block->getSize());
-				node->addChild(_block);
-				addChild(node);
-				terminateBlock();
-			}
-		}
-
 		void terminateBlock()
 		{
 			if (children.empty())

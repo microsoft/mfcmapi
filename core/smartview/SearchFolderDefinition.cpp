@@ -4,6 +4,7 @@
 #include <core/smartview/PropertiesStruct.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/smartview/SmartView.h>
+#include <core/smartview/block/scratchBlock.h>
 
 namespace smartview
 {
@@ -125,7 +126,7 @@ namespace smartview
 				m_TextSearchLengthExtended,
 				L"Text Search Length Extended = 0x%1!04X!\r\n",
 				m_TextSearchLengthExtended->getData());
-			addLabeledChild(L"Text Search = ", m_TextSearch);
+			addChild(labeledBlock(L"Text Search = ", m_TextSearch));
 		}
 
 		terminateBlock();
@@ -134,7 +135,7 @@ namespace smartview
 		if (*m_SkipLen1)
 		{
 			terminateBlock();
-			addLabeledChild(L"SkipBytes1 = ", m_SkipBytes1);
+			addChild(labeledBlock(L"SkipBytes1 = ", m_SkipBytes1));
 		}
 
 		terminateBlock();
@@ -148,7 +149,7 @@ namespace smartview
 				m_FolderList1LengthExtended,
 				L"Folder List 1 Length Extended = 0x%1!04X!\r\n",
 				m_FolderList1LengthExtended->getData());
-			addLabeledChild(L"Folder List 1 = ", m_FolderList1);
+			addChild(labeledBlock(L"Folder List 1 = ", m_FolderList1));
 		}
 
 		terminateBlock();
@@ -186,7 +187,7 @@ namespace smartview
 		terminateBlock();
 		addChild(m_SkipLen2, L"SkipLen2 = 0x%1!08X!", m_SkipLen2->getData());
 
-		addLabeledChild(L"SkipBytes2 = ", m_SkipBytes2);
+		addChild(labeledBlock(L"SkipBytes2 = ", m_SkipBytes2));
 
 		if (m_Restriction && m_Restriction->hasData())
 		{
@@ -202,13 +203,13 @@ namespace smartview
 			if (!m_AdvancedSearchBytes->empty())
 			{
 				terminateBlock();
-				addLabeledChild(L"AdvancedSearchBytes = ", m_AdvancedSearchBytes);
+				addChild(labeledBlock(L"AdvancedSearchBytes = ", m_AdvancedSearchBytes));
 			}
 		}
 
 		terminateBlock();
 		addChild(m_SkipLen3, L"SkipLen3 = 0x%1!08X!", m_SkipLen3->getData());
 
-		addLabeledChild(L"SkipBytes3 = ", m_SkipBytes3);
+		addChild(labeledBlock(L"SkipBytes3 = ", m_SkipBytes3));
 	}
 } // namespace smartview

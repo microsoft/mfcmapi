@@ -3,6 +3,7 @@
 #include <core/interpret/guid.h>
 #include <core/interpret/flags.h>
 #include <core/mapi/extraPropTags.h>
+#include <core/smartview/block/scratchBlock.h>
 
 namespace smartview
 {
@@ -133,7 +134,7 @@ namespace smartview
 				if (extendedFlag->lpUnknownData->size())
 				{
 					terminateBlock();
-					addLabeledChild(L"\tUnknown Data = ", extendedFlag->lpUnknownData);
+					addChild(labeledBlock(L"\tUnknown Data = ", extendedFlag->lpUnknownData));
 				}
 			}
 		}

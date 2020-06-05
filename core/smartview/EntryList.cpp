@@ -1,5 +1,6 @@
 #include <core/stdafx.h>
 #include <core/smartview/EntryList.h>
+#include <core/smartview/block/scratchBlock.h>
 
 namespace smartview
 {
@@ -45,7 +46,7 @@ namespace smartview
 			addHeader(L"EntryId[%1!d!]:\r\n", i);
 			addChild(entry->EntryLength, L"EntryLength = 0x%1!08X!\r\n", entry->EntryLength->getData());
 			addChild(entry->EntryLengthPad, L"EntryLengthPad = 0x%1!08X!\r\n", entry->EntryLengthPad->getData());
-			addLabeledChild(L"Entry Id = ", entry->EntryId);
+			addChild(labeledBlock(L"Entry Id = ", entry->EntryId));
 
 			i++;
 		}
