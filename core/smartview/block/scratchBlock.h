@@ -7,17 +7,12 @@ namespace smartview
 	class scratchBlock : public smartViewParser
 	{
 	public:
-		static std::shared_ptr<scratchBlock> create()
-		{
-			auto ret = std::make_shared<scratchBlock>();
-			ret->parsed = true;
-			return ret;
-		}
+		scratchBlock() { parsed = true; }
 
 		template <typename... Args>
 		static std::shared_ptr<scratchBlock> create(size_t size, size_t offset, const std::wstring& _text, Args... args)
 		{
-			auto ret = create();
+			auto ret = smartview::create();
 			ret->setSize(size);
 			ret->setOffset(offset);
 			ret->setText(strings::formatmessage(_text.c_str(), args...));
@@ -26,7 +21,7 @@ namespace smartview
 
 		template <typename... Args> static std::shared_ptr<scratchBlock> create(const std::wstring& _text, Args... args)
 		{
-			auto ret = create();
+			auto ret = smartview::create();
 			ret->setText(strings::formatmessage(_text.c_str(), args...));
 			return ret;
 		}
@@ -34,4 +29,6 @@ namespace smartview
 	private:
 		void parse() override{};
 	};
+
+	static std::shared_ptr<scratchBlock> create() { return std::make_shared<scratchBlock>(); }
 } // namespace smartview

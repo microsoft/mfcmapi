@@ -215,7 +215,7 @@ namespace smartview
 
 			if (!lpProp.Props().empty())
 			{
-				auto propBlock = smartview::scratchBlock::create();
+				auto propBlock = smartview::create();
 				addChild(propBlock);
 
 				propBlock->addChild(

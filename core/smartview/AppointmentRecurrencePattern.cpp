@@ -184,7 +184,7 @@ namespace smartview
 			auto i = 0;
 			for (const auto& info : m_ExceptionInfo)
 			{
-				auto exception = smartview::scratchBlock::create();
+				auto exception = smartview::create();
 				m_ExceptionCount->addChild(exception);
 
 				exception->addChild(
@@ -331,7 +331,7 @@ namespace smartview
 			auto i = UINT{};
 			for (const auto& ee : m_ExtendedException)
 			{
-				auto exception = smartview::scratchBlock::create();
+				auto exception = smartview::create();
 				arpBlock->addChild(exception);
 
 				if (*m_WriterVersion2 >= 0x00003009)
