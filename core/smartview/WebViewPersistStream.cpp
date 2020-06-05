@@ -3,6 +3,7 @@
 #include <core/interpret/flags.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/utility/strings.h>
+#include <core/smartview/block/scratchBlock.h>
 
 namespace smartview
 {
@@ -56,7 +57,7 @@ namespace smartview
 		for (const auto& view : m_lpWebViews)
 		{
 			terminateBlock();
-			addBlankLine();
+			addChild(blankLine());
 
 			addHeader(L"Web View %1!d!\r\n", i);
 			addChild(

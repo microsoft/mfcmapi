@@ -1,6 +1,7 @@
 #include <core/stdafx.h>
 #include <core/smartview/FlatEntryList.h>
 #include <core/utility/strings.h>
+#include <core/smartview/block/scratchBlock.h>
 
 namespace smartview
 {
@@ -47,7 +48,7 @@ namespace smartview
 		for (const auto& entry : m_pEntryIDs)
 		{
 			terminateBlock();
-			addBlankLine();
+			addChild(blankLine());
 			if (entry->dwSize->isSet())
 			{
 				addHeader(L"Entry[%1!d!] ", i);

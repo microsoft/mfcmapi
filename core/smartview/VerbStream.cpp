@@ -2,6 +2,7 @@
 #include <core/smartview/VerbStream.h>
 #include <core/smartview/SmartView.h>
 #include <core/mapi/extraPropTags.h>
+#include <core/smartview/block/scratchBlock.h>
 
 namespace smartview
 {
@@ -70,7 +71,7 @@ namespace smartview
 		for (const auto& verbData : m_lpVerbData)
 		{
 			terminateBlock();
-			addBlankLine();
+			addChild(blankLine());
 			addHeader(L"VerbData[%1!d!]\r\n", i);
 			addChild(verbData->VerbType, L"VerbType = 0x%1!08X!\r\n", verbData->VerbType->getData());
 			addChild(
@@ -110,14 +111,14 @@ namespace smartview
 		}
 
 		terminateBlock();
-		addBlankLine();
+		addChild(blankLine());
 		addChild(m_Version2, L"Version2 = 0x%1!04X!", m_Version2->getData());
 
 		i = 0;
 		for (const auto& ved : m_lpVerbExtraData)
 		{
 			terminateBlock();
-			addBlankLine();
+			addChild(blankLine());
 			addHeader(L"VerbExtraData[%1!d!]\r\n", i);
 			addChild(ved->DisplayNameCount, L"DisplayNameCount = 0x%1!02X!\r\n", ved->DisplayNameCount->getData());
 			addChild(ved->DisplayName, L"DisplayName = \"%1!ws!\"\r\n", ved->DisplayName->c_str());

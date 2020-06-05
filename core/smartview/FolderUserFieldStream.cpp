@@ -88,7 +88,7 @@ namespace smartview
 			for (auto& fieldDefinition : m_FieldDefinitionsA)
 			{
 				m_FolderUserFieldsAnsiCount->terminateBlock();
-				m_FolderUserFieldsAnsiCount->addBlankLine();
+				m_FolderUserFieldsAnsiCount->addChild(blankLine());
 
 				auto fieldBlock = smartview::scratchBlock::create(L"Field %1!d!\r\n", i++);
 				m_FolderUserFieldsAnsiCount->addChild(fieldBlock);
@@ -139,7 +139,7 @@ namespace smartview
 			}
 		}
 
-		addBlankLine();
+		addChild(blankLine());
 		addChild(
 			m_FolderUserFieldsUnicodeCount,
 			L"FolderUserFieldUnicode.FieldDefinitionCount = %1!d!\r\n",
@@ -152,7 +152,7 @@ namespace smartview
 			for (const auto& fieldDefinition : m_FieldDefinitionsW)
 			{
 				m_FolderUserFieldsUnicodeCount->terminateBlock();
-				m_FolderUserFieldsUnicodeCount->addBlankLine();
+				m_FolderUserFieldsUnicodeCount->addChild(blankLine());
 
 				auto fieldBlock = smartview::scratchBlock::create(L"Field %1!d!\r\n", i++);
 				m_FolderUserFieldsUnicodeCount->addChild(fieldBlock);

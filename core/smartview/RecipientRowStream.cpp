@@ -1,6 +1,7 @@
 #include <core/stdafx.h>
 #include <core/smartview/RecipientRowStream.h>
 #include <core/smartview/PropertiesStruct.h>
+#include <core/smartview/block/scratchBlock.h>
 
 namespace smartview
 {
@@ -45,7 +46,7 @@ namespace smartview
 		addChild(m_cRowCount, L"cRowCount = %1!d!\r\n", m_cRowCount->getData());
 		if (!m_lpAdrEntry.empty())
 		{
-			addBlankLine();
+			addChild(blankLine());
 			auto i = DWORD{};
 			for (const auto& entry : m_lpAdrEntry)
 			{

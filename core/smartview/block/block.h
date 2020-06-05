@@ -99,12 +99,7 @@ namespace smartview
 			}
 		}
 
-		void addBlankLine()
-		{
-			auto child = std::make_shared<block>();
-			child->blank = true;
-			children.push_back(child);
-		}
+		void setBlank(bool _blank) { blank = _blank; }
 
 		bool hasData() const noexcept { return !text.empty() || !children.empty(); }
 

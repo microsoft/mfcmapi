@@ -30,5 +30,11 @@ namespace smartview
 		void parse() override{};
 	};
 
-	static std::shared_ptr<scratchBlock> create() { return std::make_shared<scratchBlock>(); }
+	inline std::shared_ptr<scratchBlock> create() { return std::make_shared<scratchBlock>(); }
+	inline std::shared_ptr<scratchBlock> blankLine()
+	{
+		auto ret = create();
+		ret->setBlank(true);
+		return ret;
+	}
 } // namespace smartview
