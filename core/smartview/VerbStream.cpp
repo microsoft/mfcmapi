@@ -72,7 +72,7 @@ namespace smartview
 		{
 			terminateBlock();
 			addChild(blankLine());
-			addHeader(L"VerbData[%1!d!]\r\n", i);
+			addChild(header(L"VerbData[%1!d!]\r\n", i));
 			addChild(verbData->VerbType, L"VerbType = 0x%1!08X!\r\n", verbData->VerbType->getData());
 			addChild(
 				verbData->DisplayNameCount, L"DisplayNameCount = 0x%1!02X!\r\n", verbData->DisplayNameCount->getData());
@@ -119,7 +119,7 @@ namespace smartview
 		{
 			terminateBlock();
 			addChild(blankLine());
-			addHeader(L"VerbExtraData[%1!d!]\r\n", i);
+			addChild(header(L"VerbExtraData[%1!d!]\r\n", i));
 			addChild(ved->DisplayNameCount, L"DisplayNameCount = 0x%1!02X!\r\n", ved->DisplayNameCount->getData());
 			addChild(ved->DisplayName, L"DisplayName = \"%1!ws!\"\r\n", ved->DisplayName->c_str());
 			addChild(

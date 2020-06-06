@@ -2,6 +2,7 @@
 #include <core/smartview/block/smartViewParser.h>
 #include <core/utility/strings.h>
 #include <core/smartview/block/blockBytes.h>
+#include <core/smartview/block/scratchBlock.h>
 
 namespace smartview
 {
@@ -18,7 +19,7 @@ namespace smartview
 		{
 			auto junkData = blockBytes::parse(m_Parser, m_Parser->getSize());
 			terminateBlock();
-			addHeader(L"Unparsed data size = 0x%1!08X!\r\n", junkData->size());
+			addChild(header(L"Unparsed data size = 0x%1!08X!\r\n", junkData->size()));
 			addChild(junkData);
 		}
 

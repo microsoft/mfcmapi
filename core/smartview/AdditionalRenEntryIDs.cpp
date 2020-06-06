@@ -94,7 +94,7 @@ namespace smartview
 	void AdditionalRenEntryIDs::parseBlocks()
 	{
 		setText(L"Additional Ren Entry IDs\r\n");
-		addHeader(L"PersistDataCount = %1!d!", m_ppdPersistData.size());
+		addChild(header(L"PersistDataCount = %1!d!", m_ppdPersistData.size()));
 
 		if (!m_ppdPersistData.empty())
 		{
@@ -144,7 +144,7 @@ namespace smartview
 				if (!persistData->JunkData->empty())
 				{
 					element->terminateBlock();
-					element->addHeader(L"Unparsed data size = 0x%1!08X!\r\n", persistData->JunkData->size());
+					element->addChild(header(L"Unparsed data size = 0x%1!08X!\r\n", persistData->JunkData->size()));
 					element->addChild(persistData->JunkData);
 				}
 

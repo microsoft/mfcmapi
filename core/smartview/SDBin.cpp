@@ -4,6 +4,7 @@
 #include <core/interpret/flags.h>
 #include <core/interpret/sid.h>
 #include <core/mapi/mapiFunctions.h>
+#include <core/smartview/block/scratchBlock.h>
 
 namespace smartview
 {
@@ -42,15 +43,15 @@ namespace smartview
 			// TODO: more accurately break this parsing into blocks with proper offsets
 			const auto sd = SDToString(*m_SDbin, acetype);
 			setText(L"Security Descriptor:\r\n");
-			addHeader(L"Security Info: ");
+			addChild(header(L"Security Info: "));
 			addChild(m_SDbin, sd.info);
 
 			terminateBlock();
 			const auto sdVersion = SECURITY_DESCRIPTOR_VERSION(m_SDbin->data());
 			auto szFlags = flags::InterpretFlags(flagSecurityVersion, sdVersion);
-			addHeader(L"Security Version: 0x%1!04X! = %2!ws!\r\n", sdVersion, szFlags.c_str());
-			addHeader(L"Descriptor:\r\n");
-			addHeader(sd.dacl);
+			addChild(header(L"Security Version: 0x%1!04X! = %2!ws!\r\n", sdVersion, szFlags.c_str()));
+			addChild(header(L"Descriptor:\r\n"));
+			addChild(header(sd.dacl));
 		}
 	}
 } // namespace smartview

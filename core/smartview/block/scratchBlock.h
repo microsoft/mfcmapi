@@ -53,4 +53,8 @@ namespace smartview
 		return {};
 	}
 
+	template <typename... Args> std::shared_ptr<scratchBlock> header(const std::wstring& _text, Args... args)
+	{
+		return scratchBlock::create(_text, args...);
+	}
 } // namespace smartview

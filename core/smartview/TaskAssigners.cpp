@@ -40,7 +40,7 @@ namespace smartview
 		for (const auto& ta : m_lpTaskAssigners)
 		{
 			terminateBlock();
-			addHeader(L"Task Assigner[%1!d!]\r\n", i);
+			addChild(header(L"Task Assigner[%1!d!]\r\n", i));
 			addChild(ta->cbEntryID, L"\tcbEntryID = 0x%1!08X! = %1!d!\r\n", ta->cbEntryID->getData());
 			addChild(labeledBlock(L"\tlpEntryID = ", ta->lpEntryID));
 			addChild(ta->szDisplayName, L"\tszDisplayName (ANSI) = %1!hs!\r\n", ta->szDisplayName->c_str());

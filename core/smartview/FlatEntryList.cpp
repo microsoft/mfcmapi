@@ -51,7 +51,7 @@ namespace smartview
 			addChild(blankLine());
 			if (entry->dwSize->isSet())
 			{
-				addHeader(L"Entry[%1!d!] ", i);
+				addChild(header(L"Entry[%1!d!] ", i));
 				addChild(entry->dwSize, L"Size = 0x%1!08X!", entry->dwSize->getData());
 			}
 
@@ -64,7 +64,7 @@ namespace smartview
 			if (!entry->padding->empty())
 			{
 				terminateBlock();
-				addHeader(L"Entry[%1!d!] Padding:\r\n", i);
+				addChild(header(L"Entry[%1!d!] Padding:\r\n", i));
 				if (entry->padding) addChild(entry->padding, entry->padding->toHexString(true));
 			}
 

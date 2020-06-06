@@ -123,7 +123,7 @@ namespace smartview
 
 		if (szCharacters->length())
 		{
-			data->addHeader(L" Characters = ");
+			data->addChild(header(L" Characters = "));
 			data->addChild(szCharacters);
 		}
 
@@ -147,7 +147,7 @@ namespace smartview
 
 		if (szCharacters->length())
 		{
-			data->addHeader(L" Characters = ");
+			data->addChild(header(L" Characters = "));
 			data->addChild(szCharacters, szCharacters->c_str());
 		}
 
@@ -183,12 +183,12 @@ namespace smartview
 					auto propTagNames = proptags::PropTagToPropName(*def->dwDispid, false);
 					if (!propTagNames.bestGuess.empty())
 					{
-						def->dwDispid->addHeader(L" = %1!ws!", propTagNames.bestGuess.c_str());
+						def->dwDispid->addChild(header(L" = %1!ws!", propTagNames.bestGuess.c_str()));
 					}
 
 					if (!propTagNames.otherMatches.empty())
 					{
-						def->dwDispid->addHeader(L": (%1!ws!)", propTagNames.otherMatches.c_str());
+						def->dwDispid->addChild(header(L": (%1!ws!)", propTagNames.otherMatches.c_str()));
 					}
 				}
 				else
@@ -201,7 +201,7 @@ namespace smartview
 					szDispidName = strings::join(cache::NameIDToPropNames(&mnid), L", ");
 					if (!szDispidName.empty())
 					{
-						def->dwDispid->addHeader(L" = %1!ws!", szDispidName.c_str());
+						def->dwDispid->addChild(header(L" = %1!ws!", szDispidName.c_str()));
 					}
 				}
 			}
@@ -225,7 +225,7 @@ namespace smartview
 					L"\tInternalType = 0x%1!08X! = %2!ws!\r\n",
 					def->dwInternalType->getData(),
 					szFlags.c_str());
-				fieldDef->addHeader(L"\tSkipBlockCount = %1!d!", def->psbSkipBlocks.size());
+				fieldDef->addChild(header(L"\tSkipBlockCount = %1!d!", def->psbSkipBlocks.size()));
 
 				auto iSkipBlock = 0;
 				for (const auto& sb : def->psbSkipBlocks)

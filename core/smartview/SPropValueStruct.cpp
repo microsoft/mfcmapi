@@ -1,6 +1,7 @@
 #include <core/stdafx.h>
 #include <core/smartview/SPropValueStruct.h>
 #include <core/interpret/proptags.h>
+#include <core/smartview/block/scratchBlock.h>
 
 namespace smartview
 {
@@ -33,14 +34,14 @@ namespace smartview
 		{
 			// TODO: Add this as a child of ulPropTag
 			terminateBlock();
-			addHeader(L"Name: %1!ws!", propTagNames.bestGuess.c_str());
+			addChild(header(L"Name: %1!ws!", propTagNames.bestGuess.c_str()));
 		}
 
 		if (!propTagNames.otherMatches.empty())
 		{
 			// TODO: Add this as a child of ulPropTag
 			terminateBlock();
-			addHeader(L"Other Matches: %1!ws!", propTagNames.otherMatches.c_str());
+			addChild(header(L"Other Matches: %1!ws!", propTagNames.otherMatches.c_str()));
 		}
 
 		terminateBlock();

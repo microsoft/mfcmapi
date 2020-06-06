@@ -52,14 +52,14 @@ namespace smartview
 	void WebViewPersistStream::parseBlocks()
 	{
 		setText(L"Web View Persistence Object Stream\r\n");
-		addHeader(L"cWebViews = %1!d!", m_lpWebViews.size());
+		addChild(header(L"cWebViews = %1!d!", m_lpWebViews.size()));
 		auto i = 0;
 		for (const auto& view : m_lpWebViews)
 		{
 			terminateBlock();
 			addChild(blankLine());
 
-			addHeader(L"Web View %1!d!\r\n", i);
+			addChild(header(L"Web View %1!d!\r\n", i));
 			addChild(
 				view->dwVersion,
 				L"dwVersion = 0x%1!08X! = %2!ws!\r\n",
@@ -84,7 +84,7 @@ namespace smartview
 			{
 			case WEBVIEWURL:
 			{
-				addHeader(L"wzURL = ");
+				addChild(header(L"wzURL = "));
 				addChild(view->lpData, view->lpData->toTextString(false));
 				break;
 			}

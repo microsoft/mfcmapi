@@ -1,6 +1,7 @@
 #include <core/stdafx.h>
 #include <core/smartview/TombStone.h>
 #include <core/smartview/SmartView.h>
+#include <core/smartview/block/scratchBlock.h>
 
 namespace smartview
 {
@@ -58,14 +59,14 @@ namespace smartview
 		addChild(m_HeaderSize, L"HeaderSize = 0x%1!08X!\r\n", m_HeaderSize->getData());
 		addChild(m_Version, L"Version = 0x%1!08X!\r\n", m_Version->getData());
 		addChild(m_RecordsCount, L"RecordsCount = 0x%1!08X!\r\n", m_RecordsCount->getData());
-		addHeader(L"ActualRecordsCount (computed) = 0x%1!08X!\r\n", m_lpRecords.size());
+		addChild(header(L"ActualRecordsCount (computed) = 0x%1!08X!\r\n", m_lpRecords.size()));
 		addChild(m_RecordsSize, L"RecordsSize = 0x%1!08X!", m_RecordsSize->getData());
 
 		auto i = 0;
 		for (const auto& record : m_lpRecords)
 		{
 			terminateBlock();
-			addHeader(L"Record[%1!d!]\r\n", i++);
+			addChild(header(L"Record[%1!d!]\r\n", i++));
 			addChild(
 				record->StartTime,
 				L"StartTime = 0x%1!08X! = %2!ws!\r\n",
