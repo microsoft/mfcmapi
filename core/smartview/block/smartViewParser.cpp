@@ -33,7 +33,7 @@ namespace smartview
 
 	std::wstring smartViewParser::toString()
 	{
-		if (m_Parser->empty()) return L"";
+		if (!m_Parser || m_Parser->empty()) return block::toString();
 		ensureParsed();
 
 		auto parsedString = strings::trimWhitespace(block::toString());

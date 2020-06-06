@@ -3,6 +3,7 @@
 #include <UI/ViewPane/SplitterPane.h>
 #include <UI/ViewPane/TreePane.h>
 #include <core/smartview/block/smartViewParser.h>
+#include <core/smartview/block/scratchBlock.h>
 
 enum class parserType;
 
@@ -39,7 +40,7 @@ namespace viewpane
 			int iEditHeight) override; // height of an edit control
 
 		std::vector<std::vector<BYTE>> m_bins;
-		std::shared_ptr<smartview::block> treeData = std::make_shared<smartview::block>();
+		std::shared_ptr<smartview::block> treeData = smartview::create();
 		std::shared_ptr<SplitterPane> m_Splitter;
 		std::shared_ptr<TreePane> m_TreePane;
 		bool m_bHasData{false};

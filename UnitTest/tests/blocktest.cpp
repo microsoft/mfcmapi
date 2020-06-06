@@ -18,9 +18,9 @@ namespace blocktest
 		TEST_CLASS_INITIALIZE(initialize) { unittest::init(); }
 		TEST_METHOD(Test_block)
 		{
-			auto block1 = std::make_shared<smartview::block>(L"test");
-			auto block2 = std::make_shared<smartview::block>(L"block2");
-			auto block3 = std::make_shared<smartview::block>(L"");
+			auto block1 = smartview::scratchBlock::create(L"test");
+			auto block2 = smartview::scratchBlock::create(L"block2");
+			auto block3 = smartview::scratchBlock::create(L"");
 			Assert::AreEqual(block1->isHeader(), true);
 			block1->setSize(5);
 			Assert::AreEqual(block1->isHeader(), false);
