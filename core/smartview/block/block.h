@@ -19,7 +19,7 @@ namespace smartview
 			enableJunk = true;
 		}
 
-		virtual bool isSet() const noexcept { return true; }
+		bool isSet() const noexcept { return parsed; }
 		const std::wstring& getText() const noexcept { return text; }
 		const std::vector<std::shared_ptr<block>>& getChildren() const noexcept { return children; }
 		bool isHeader() const noexcept { return cb == 0 && offset == 0; }
