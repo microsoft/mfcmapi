@@ -19,13 +19,6 @@ namespace smartview
 		smartViewParser(const smartViewParser&) = delete;
 		smartViewParser& operator=(const smartViewParser&) = delete;
 
-		void init(size_t _cb, _In_count_(_cb) const BYTE* _bin)
-		{
-			m_Parser = std::make_shared<binaryParser>(_cb, _bin);
-			parsed = false;
-			enableJunk = true;
-		}
-
 		virtual void parse(const std::shared_ptr<binaryParser>& binaryParser, bool bDoJunk)
 		{
 			parse(binaryParser, 0, bDoJunk);

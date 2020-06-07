@@ -12,6 +12,13 @@ namespace smartview
 		block(const block&) = delete;
 		block& operator=(const block&) = delete;
 
+		void init(size_t _cb, _In_count_(_cb) const BYTE* _bin)
+		{
+			m_Parser = std::make_shared<binaryParser>(_cb, _bin);
+			parsed = false;
+			enableJunk = true;
+		}
+
 		virtual bool isSet() const noexcept { return true; }
 		const std::wstring& getText() const noexcept { return text; }
 		const std::vector<std::shared_ptr<block>>& getChildren() const noexcept { return children; }
