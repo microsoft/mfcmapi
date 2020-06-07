@@ -1,14 +1,6 @@
 #pragma once
 #include <core/smartview/block/block.h>
 
-#define _MaxBytes 0xFFFF
-#define _MaxDepth 25
-#define _MaxEID 500
-#define _MaxEntriesSmall 500
-#define _MaxEntriesLarge 1000
-#define _MaxEntriesExtraLarge 1500
-#define _MaxEntriesEnormous 10000
-
 namespace smartview
 {
 	class smartViewParser : public block
