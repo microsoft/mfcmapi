@@ -44,11 +44,7 @@ namespace smartview
 
 	protected:
 		void ensureParsed();
-
-	private:
-		// Consume binaryParser and populate (which may also inherit from smarViewParser)
-		virtual void parse() = 0;
-		// (optional) Stiches smartViewParser submembers into a tree
-		virtual void parseBlocks(){};
+		// Temp until we finish moving everything
+		void parse() override {}
 	};
 } // namespace smartview

@@ -105,6 +105,11 @@ namespace smartview
 		bool parsed{false};
 		bool enableJunk{true};
 
+		// Consume binaryParser and populate (which may also inherit from smarViewParser)
+		virtual void parse() = 0;
+		// (optional) Stiches smartViewParser submembers into a tree
+		virtual void parseBlocks(){};
+
 	private:
 		virtual std::wstring toStringInternal() const { return text; }
 
