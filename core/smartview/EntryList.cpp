@@ -28,7 +28,7 @@ namespace smartview
 				for (DWORD i = 0; i < *m_EntryCount; i++)
 				{
 					m_Entry[i]->EntryId =
-						smartViewParser::parse<EntryIdStruct>(m_Parser, *m_Entry[i]->EntryLength, true);
+						block::parse<EntryIdStruct>(m_Parser, *m_Entry[i]->EntryLength, true);
 				}
 			}
 		}

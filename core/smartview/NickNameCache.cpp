@@ -15,7 +15,7 @@ namespace smartview
 				lpProps = std::make_shared<PropertiesStruct>();
 				lpProps->EnableNickNameParsing();
 				lpProps->SetMaxEntries(*cValues);
-				lpProps->smartViewParser::parse(parser, false);
+				lpProps->block::parse(parser, false);
 			}
 		}
 	} // namespace smartview

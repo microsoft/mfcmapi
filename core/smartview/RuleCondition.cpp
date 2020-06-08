@@ -38,13 +38,13 @@ namespace smartview
 			m_NamedPropertyInformation.PropertyName.reserve(*m_NamedPropertyInformation.NoOfNamedProps);
 			for (auto i = 0; i < *m_NamedPropertyInformation.NoOfNamedProps; i++)
 			{
-				auto namedProp = smartViewParser::parse<PropertyName>(m_Parser, false);
+				auto namedProp = block::parse<PropertyName>(m_Parser, false);
 				m_NamedPropertyInformation.PropertyName.emplace_back(namedProp);
 			}
 		}
 
 		m_lpRes = std::make_shared<RestrictionStruct>(true, m_bExtended);
-		m_lpRes->smartViewParser::parse(m_Parser, false);
+		m_lpRes->block::parse(m_Parser, false);
 	}
 
 	void RuleCondition::parseBlocks()

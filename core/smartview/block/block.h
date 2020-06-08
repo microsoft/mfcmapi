@@ -100,6 +100,35 @@ namespace smartview
 
 		bool hasData() const noexcept { return !text.empty() || !children.empty(); }
 
+		virtual void parse(const std::shared_ptr<binaryParser>& binaryParser, bool bDoJunk)
+		{
+			parse(binaryParser, 0, bDoJunk);
+		}
+
+		virtual void parse(const std::shared_ptr<binaryParser>& binaryParser, size_t cbBin, bool _enableJunk)
+		{
+			m_Parser = binaryParser;
+			m_Parser->setCap(cbBin);
+			enableJunk = _enableJunk;
+			ensureParsed();
+			m_Parser->clearCap();
+		}
+
+		template <typename T>
+		static std::shared_ptr<T> parse(const std::shared_ptr<binaryParser>& binaryParser, bool _enableJunk)
+		{
+			return parse<T>(binaryParser, 0, _enableJunk);
+		}
+
+		template <typename T>
+		static std::shared_ptr<T>
+		parse(const std::shared_ptr<binaryParser>& binaryParser, size_t cbBin, bool _enableJunk)
+		{
+			auto ret = std::make_shared<T>();
+			ret->block::parse(binaryParser, cbBin, _enableJunk);
+			return ret;
+		}
+
 	protected:
 		void ensureParsed();
 		std::shared_ptr<binaryParser> m_Parser;

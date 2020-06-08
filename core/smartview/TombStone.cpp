@@ -10,7 +10,7 @@ namespace smartview
 		StartTime = blockT<DWORD>::parse(parser);
 		EndTime = blockT<DWORD>::parse(parser);
 		GlobalObjectIdSize = blockT<DWORD>::parse(parser);
-		GlobalObjectId = smartViewParser::parse<smartview::GlobalObjectId>(parser, *GlobalObjectIdSize, false);
+		GlobalObjectId = block::parse<smartview::GlobalObjectId>(parser, *GlobalObjectIdSize, false);
 		UsernameSize = blockT<WORD>::parse(parser);
 		szUsername = blockStringA::parse(parser, *UsernameSize);
 	}

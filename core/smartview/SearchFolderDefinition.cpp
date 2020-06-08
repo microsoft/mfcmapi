@@ -16,7 +16,7 @@ namespace smartview
 		{
 			Props = std::make_shared<PropertiesStruct>();
 			Props->SetMaxEntries(*PropertyCount);
-			Props->smartViewParser::parse(parser, false);
+			Props->block::parse(parser, false);
 		}
 	}
 
@@ -61,7 +61,7 @@ namespace smartview
 
 		if (m_FolderList2Length)
 		{
-			m_FolderList2 = smartViewParser::parse<EntryList>(m_Parser, *m_FolderList2Length, true);
+			m_FolderList2 = block::parse<EntryList>(m_Parser, *m_FolderList2Length, true);
 		}
 
 		if (*m_Flags & SFST_BINARY)
@@ -86,7 +86,7 @@ namespace smartview
 		if (*m_Flags & SFST_MRES)
 		{
 			m_Restriction = std::make_shared<RestrictionStruct>(false, true);
-			m_Restriction->smartViewParser::parse(m_Parser, false);
+			m_Restriction->block::parse(m_Parser, false);
 		}
 
 		if (*m_Flags & SFST_FILTERSTREAM)

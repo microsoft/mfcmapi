@@ -129,11 +129,11 @@ namespace smartview
 		EntryIdStruct() = default;
 		EntryIdStruct(const std::shared_ptr<binaryParser>& binaryParser, bool bEnableJunk)
 		{
-			smartViewParser::parse(binaryParser, 0, bEnableJunk);
+			block::parse(binaryParser, 0, bEnableJunk);
 		}
 		EntryIdStruct(const std::shared_ptr<binaryParser>& binaryParser, size_t cbBin, bool bEnableJunk)
 		{
-			smartViewParser::parse(binaryParser, cbBin, bEnableJunk);
+			block::parse(binaryParser, cbBin, bEnableJunk);
 		}
 
 	private:

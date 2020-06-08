@@ -12,7 +12,7 @@ namespace smartview
 		dwSize = blockT<DWORD>::parse(parser);
 		const auto ulSize = min(*dwSize, parser->getSize());
 
-		lpEntryID = smartViewParser::parse<EntryIdStruct>(parser, ulSize, true);
+		lpEntryID = block::parse<EntryIdStruct>(parser, ulSize, true);
 
 		const auto dwPAD = 3 - (*dwSize + 3) % 4;
 		if (dwPAD > 0)

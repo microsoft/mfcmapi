@@ -8,7 +8,7 @@ namespace smartview
 	{
 		SetMaxEntries(cValues);
 		if (bRuleCondition) EnableRuleConditionParsing();
-		smartViewParser::parse(parser, false);
+		block::parse(parser, false);
 	}
 
 	void PropertiesStruct::parse()
