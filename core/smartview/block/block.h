@@ -32,7 +32,7 @@ namespace smartview
 		const std::vector<std::shared_ptr<block>>& getChildren() const noexcept { return children; }
 		bool isHeader() const noexcept { return cb == 0 && offset == 0; }
 
-		virtual std::wstring toString() const;
+		std::wstring toBlockString() const;
 
 		size_t getSize() const noexcept { return cb; }
 		void setSize(size_t _size) noexcept { cb = _size; }

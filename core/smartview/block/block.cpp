@@ -29,7 +29,7 @@ namespace smartview
 		setSize(endOffset - startOffset);
 	}
 
-	std::wstring block::toString() const
+	std::wstring block::toBlockString() const
 	{
 		std::vector<std::wstring> items;
 		items.reserve(children.size() + 1);
@@ -37,7 +37,7 @@ namespace smartview
 
 		for (const auto& item : children)
 		{
-			items.emplace_back(item->toString());
+			items.emplace_back(item->toBlockString());
 		}
 
 		return strings::join(items, strings::emptystring);
