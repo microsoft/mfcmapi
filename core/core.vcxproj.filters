@@ -536,6 +536,9 @@
     <ClCompile Include="smartview\block\smartViewParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="smartview\block\block.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\MFCMapi.rc2">

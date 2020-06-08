@@ -43,7 +43,6 @@ namespace smartview
 		std::wstring toString();
 
 	protected:
-		void ensureParsed();
 		// Temp until we finish moving everything
 		void parse() override {}
 	};

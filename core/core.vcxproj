@@ -682,6 +682,7 @@
     <ClCompile Include="smartview\SIDBin.cpp" />
     <ClCompile Include="smartview\SmartView.cpp" />
     <ClCompile Include="smartview\block\smartViewParser.cpp" />
+    <ClCompile Include="smartview\block\block.cpp" />
     <ClCompile Include="smartview\TaskAssigners.cpp" />
     <ClCompile Include="smartview\TimeZone.cpp" />
     <ClCompile Include="smartview\TimeZoneDefinition.cpp" />

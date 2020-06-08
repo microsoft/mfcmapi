@@ -101,6 +101,7 @@ namespace smartview
 		bool hasData() const noexcept { return !text.empty() || !children.empty(); }
 
 	protected:
+		void ensureParsed();
 		std::shared_ptr<binaryParser> m_Parser;
 		bool parsed{false};
 		bool enableJunk{true};
