@@ -28,4 +28,18 @@ namespace smartview
 		setOffset(startOffset);
 		setSize(endOffset - startOffset);
 	}
+
+	std::wstring block::toString() const
+	{
+		std::vector<std::wstring> items;
+		items.reserve(children.size() + 1);
+		items.push_back(blank ? L"\r\n" : text);
+
+		for (const auto& item : children)
+		{
+			items.emplace_back(item->toString());
+		}
+
+		return strings::join(items, strings::emptystring);
+	}
 } // namespace smartview
