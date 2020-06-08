@@ -12,9 +12,5 @@ namespace smartview
 		smartViewParser& operator=(const smartViewParser&) = delete;
 
 		std::wstring toString();
-
-	protected:
-		// Temp until we finish moving everything
-		void parse() override {}
 	};
 } // namespace smartview
