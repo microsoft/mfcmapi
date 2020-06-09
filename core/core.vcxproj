@@ -603,7 +603,6 @@
     <ClInclude Include="smartview\SearchFolderDefinition.h" />
     <ClInclude Include="smartview\SIDBin.h" />
     <ClInclude Include="smartview\SmartView.h" />
-    <ClInclude Include="smartview\block\smartViewParser.h" />
     <ClInclude Include="smartview\TaskAssigners.h" />
     <ClInclude Include="smartview\TimeZone.h" />
     <ClInclude Include="smartview\TimeZoneDefinition.h" />
@@ -681,7 +680,6 @@
     <ClCompile Include="smartview\SearchFolderDefinition.cpp" />
     <ClCompile Include="smartview\SIDBin.cpp" />
     <ClCompile Include="smartview\SmartView.cpp" />
-    <ClCompile Include="smartview\block\smartViewParser.cpp" />
     <ClCompile Include="smartview\block\block.cpp" />
     <ClCompile Include="smartview\TaskAssigners.cpp" />
     <ClCompile Include="smartview\TimeZone.cpp" />

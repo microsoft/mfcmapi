@@ -1,10 +1,10 @@
 #pragma once
-#include <core/smartview/block/smartViewParser.h>
+#include <core/smartview/block/block.h>
 #include <core/smartview/block/binaryParser.h>
 
 namespace smartview
 {
-	class blockBytes : public smartViewParser
+	class blockBytes : public block
 	{
 	public:
 		blockBytes() = default;

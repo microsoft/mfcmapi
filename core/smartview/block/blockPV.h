@@ -1,5 +1,5 @@
 #pragma once
-#include <core/smartview/block/smartViewParser.h>
+#include <core/smartview/block/block.h>
 #include <core/smartview/SmartView.h>
 #include <core/property/parseProperty.h>
 #include <core/smartview/block/blockStringA.h>
@@ -9,7 +9,7 @@
 
 namespace smartview
 {
-	class blockPV : public smartViewParser
+	class blockPV : public block
 	{
 	public:
 		blockPV() = default;

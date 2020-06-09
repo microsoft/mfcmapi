@@ -1,5 +1,5 @@
 #pragma once
-#include <core/smartview/block/smartViewParser.h>
+#include <core/smartview/block/block.h>
 #include <core/smartview/PropertiesStruct.h>
 #include <core/smartview/block/blockT.h>
 
@@ -14,7 +14,7 @@ namespace smartview
 		ADRENTRYStruct(const std::shared_ptr<binaryParser>& parser);
 	};
 
-	class RecipientRowStream : public smartViewParser
+	class RecipientRowStream : public block
 	{
 	private:
 		void parse() override;

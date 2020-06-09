@@ -1,10 +1,10 @@
 #pragma once
-#include <core/smartview/block/smartViewParser.h>
+#include <core/smartview/block/block.h>
 #include <core/smartview/block/blockBytes.h>
 
 namespace smartview
 {
-	class SIDBin : public smartViewParser
+	class SIDBin : public block
 	{
 	private:
 		void parse() override;

@@ -1,5 +1,5 @@
 #pragma once
-#include <core/smartview/block/smartViewParser.h>
+#include <core/smartview/block/block.h>
 #include <core/smartview/RestrictionStruct.h>
 #include <core/smartview/block/blockStringW.h>
 #include <core/smartview/block/blockT.h>
@@ -19,7 +19,7 @@ namespace smartview
 	// http://msdn.microsoft.com/en-us/library/ee158295.aspx
 	//   This structure specifies a Property Name
 	//
-	struct PropertyName : public smartViewParser
+	struct PropertyName : public block
 	{
 	public:
 		PropertyName() = default;
@@ -50,7 +50,7 @@ namespace smartview
 		std::vector<std::shared_ptr<PropertyName>> PropertyName;
 	};
 
-	class RuleCondition : public smartViewParser
+	class RuleCondition : public block
 	{
 	public:
 		void Init(bool bExtended) noexcept;

@@ -1,10 +1,10 @@
 #pragma once
-#include <core/smartview/block/smartViewParser.h>
+#include <core/smartview/block/block.h>
 
 namespace smartview
 {
 	struct SPropValueStruct;
-	class PropertiesStruct : public smartViewParser
+	class PropertiesStruct : public block
 	{
 	public:
 		void parse(const std::shared_ptr<binaryParser>& parser, DWORD cValues, bool bRuleCondition);

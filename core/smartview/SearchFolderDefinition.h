@@ -1,5 +1,5 @@
 #pragma once
-#include <core/smartview/block/smartViewParser.h>
+#include <core/smartview/block/block.h>
 #include <core/smartview/EntryList.h>
 #include <core/smartview/PropertiesStruct.h>
 #include <core/smartview/RestrictionStruct.h>
@@ -18,7 +18,7 @@ namespace smartview
 		AddressListEntryStruct(const std::shared_ptr<binaryParser>& parser);
 	};
 
-	class SearchFolderDefinition : public smartViewParser
+	class SearchFolderDefinition : public block
 	{
 	private:
 		void parse() override;

@@ -1,5 +1,5 @@
 #pragma once
-#include <core/smartview/block/smartViewParser.h>
+#include <core/smartview/block/block.h>
 #include <core/smartview/EntryIdStruct.h>
 
 namespace smartview
@@ -13,7 +13,7 @@ namespace smartview
 		EntryListEntryStruct(const std::shared_ptr<binaryParser>& parser);
 	};
 
-	class EntryList : public smartViewParser
+	class EntryList : public block
 	{
 	private:
 		void parse() override;

@@ -2,7 +2,7 @@
 #include <UI/ViewPane/DropDownPane.h>
 #include <UI/ViewPane/SplitterPane.h>
 #include <UI/ViewPane/TreePane.h>
-#include <core/smartview/block/smartViewParser.h>
+#include <core/smartview/block/block.h>
 #include <core/smartview/block/scratchBlock.h>
 
 enum class parserType;

@@ -1,5 +1,5 @@
 #pragma once
-#include <core/smartview/block/smartViewParser.h>
+#include <core/smartview/block/block.h>
 #include <core/smartview/block/blockBytes.h>
 #include <core/smartview/block/blockT.h>
 
@@ -22,7 +22,7 @@ namespace smartview
 		ExtendedFlag(const std::shared_ptr<binaryParser>& parser);
 	};
 
-	class ExtendedFlags : public smartViewParser
+	class ExtendedFlags : public block
 	{
 	private:
 		void parse() override;

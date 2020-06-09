@@ -1,5 +1,5 @@
 #pragma once
-#include <core/smartview/block/smartViewParser.h>
+#include <core/smartview/block/block.h>
 #include <core/smartview/block/blockStringA.h>
 #include <core/smartview/block/blockStringW.h>
 #include <core/smartview/block/blockBytes.h>
@@ -20,7 +20,7 @@ namespace smartview
 		TaskAssigner(const std::shared_ptr<binaryParser>& parser);
 	};
 
-	class TaskAssigners : public smartViewParser
+	class TaskAssigners : public block
 	{
 	private:
 		void parse() override;

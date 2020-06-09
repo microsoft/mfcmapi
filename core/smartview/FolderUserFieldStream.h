@@ -1,5 +1,5 @@
 #pragma once
-#include <core/smartview/block/smartViewParser.h>
+#include <core/smartview/block/block.h>
 #include <core/smartview/block/blockStringA.h>
 #include <core/smartview/block/blockStringW.h>
 #include <core/smartview/block/blockT.h>
@@ -40,7 +40,7 @@ namespace smartview
 		FolderFieldDefinitionW(const std::shared_ptr<binaryParser>& parser);
 	};
 
-	class FolderUserFieldStream : public smartViewParser
+	class FolderUserFieldStream : public block
 	{
 	private:
 		void parse() override;

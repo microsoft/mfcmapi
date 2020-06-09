@@ -1,10 +1,10 @@
 #pragma once
-#include <core/smartview/block/smartViewParser.h>
+#include <core/smartview/block/block.h>
 #include <core/smartview/block/blockT.h>
 
 namespace smartview
 {
-	class blockRes : public smartViewParser
+	class blockRes : public block
 	{
 	public:
 		blockRes() = default;
@@ -32,7 +32,7 @@ namespace smartview
 		void parseBlocks() override{};
 	};
 
-	class RestrictionStruct : public smartViewParser
+	class RestrictionStruct : public block
 	{
 	public:
 		RestrictionStruct(bool bRuleCondition, bool bExtendedCount)

@@ -300,9 +300,6 @@
     <ClInclude Include="smartview\block\blockPV.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="smartview\block\smartViewParser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="smartview\block\binaryParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -531,9 +528,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="smartview\SPropValueStruct.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="smartview\block\smartViewParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="smartview\block\block.cpp">

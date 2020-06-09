@@ -1,11 +1,11 @@
 #pragma once
-#include <core/smartview/block/smartViewParser.h>
+#include <core/smartview/block/block.h>
 #include <core/smartview/block/blockT.h>
 #include <core/smartview/block/blockPV.h>
 
 namespace smartview
 {
-	struct SPropValueStruct : public smartViewParser
+	struct SPropValueStruct : public block
 	{
 	public:
 		void parse(

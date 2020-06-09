@@ -1,9 +1,9 @@
 #pragma once
-#include <core/smartview/block/smartViewParser.h>
+#include <core/smartview/block/block.h>
 
 namespace smartview
 {
-	class blockStringA : public smartViewParser
+	class blockStringA : public block
 	{
 	public:
 		blockStringA() = default;

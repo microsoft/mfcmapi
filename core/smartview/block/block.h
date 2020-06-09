@@ -126,7 +126,7 @@ namespace smartview
 
 		// Consume binaryParser and populate (which may also inherit from smarViewParser)
 		virtual void parse() = 0;
-		// (optional) Stiches smartViewParser submembers into a tree
+		// (optional) Stiches block submembers into a tree
 		virtual void parseBlocks(){};
 
 	private:

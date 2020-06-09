@@ -1,10 +1,10 @@
 #pragma once
-#include <core/smartview/block/smartViewParser.h>
+#include <core/smartview/block/block.h>
 #include <core/utility/strings.h>
 
 namespace smartview
 {
-	class scratchBlock : public smartViewParser
+	class scratchBlock : public block
 	{
 	public:
 		scratchBlock() { parsed = true; }

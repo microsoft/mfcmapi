@@ -1,5 +1,5 @@
 #pragma once
-#include <core/smartview/block/smartViewParser.h>
+#include <core/smartview/block/block.h>
 #include <core/smartview/block/blockT.h>
 
 namespace smartview
@@ -20,7 +20,7 @@ namespace smartview
 		} MonthNthRecurrencePattern;
 	};
 
-	class RecurrencePattern : public smartViewParser
+	class RecurrencePattern : public block
 	{
 	public:
 		std::shared_ptr<blockT<DWORD>> m_ModifiedInstanceCount;

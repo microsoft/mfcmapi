@@ -1,5 +1,5 @@
 #pragma once
-#include <core/smartview/block/smartViewParser.h>
+#include <core/smartview/block/block.h>
 #include <core/smartview/RecurrencePattern.h>
 #include <core/smartview/block/blockStringA.h>
 #include <core/smartview/block/blockStringW.h>
@@ -66,7 +66,7 @@ namespace smartview
 	// =====================
 	//   This structure specifies a recurrence pattern for a calendar object
 	//   including information about exception property values.
-	class AppointmentRecurrencePattern : public smartViewParser
+	class AppointmentRecurrencePattern : public block
 	{
 	private:
 		void parse() override;
