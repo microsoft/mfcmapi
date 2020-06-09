@@ -34,14 +34,14 @@ namespace smartview
 		{
 			// TODO: Add this as a child of ulPropTag
 			terminateBlock();
-			addChild(header(L"Name: %1!ws!", propTagNames.bestGuess.c_str()));
+			addHeader(L"Name: %1!ws!", propTagNames.bestGuess.c_str());
 		}
 
 		if (!propTagNames.otherMatches.empty())
 		{
 			// TODO: Add this as a child of ulPropTag
 			terminateBlock();
-			addChild(header(L"Other Matches: %1!ws!", propTagNames.otherMatches.c_str()));
+			addHeader(L"Other Matches: %1!ws!", propTagNames.otherMatches.c_str());
 		}
 
 		terminateBlock();

@@ -158,7 +158,7 @@ namespace smartview
 		if (m_FolderList2)
 		{
 			terminateBlock();
-			addChild(header(L"FolderList2 = \r\n"));
+			addHeader(L"FolderList2 = \r\n");
 			addChild(m_FolderList2);
 		}
 
@@ -178,7 +178,7 @@ namespace smartview
 					address->PropertyCount->getData());
 				addChild(address->Pad, L"Addresses[%1!d!].Pad = 0x%2!08X!\r\n", i, address->Pad->getData());
 
-				addChild(header(L"Properties[%1!d!]:\r\n", i));
+				addHeader(L"Properties[%1!d!]:\r\n", i);
 				addChild(address->Props);
 				i++;
 			}
@@ -198,7 +198,7 @@ namespace smartview
 		if (*m_Flags & SFST_FILTERSTREAM)
 		{
 			terminateBlock();
-			addChild(header(L"AdvancedSearchLen = 0x%1!08X!", m_AdvancedSearchBytes->size()));
+			addHeader(L"AdvancedSearchLen = 0x%1!08X!", m_AdvancedSearchBytes->size());
 
 			if (!m_AdvancedSearchBytes->empty())
 			{

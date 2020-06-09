@@ -48,11 +48,11 @@ namespace smartview
 
 			if (m_Id->equal(sizeof s_rgbSPlus, s_rgbSPlus))
 			{
-				m_Id->addChild(header(L" = s_rgbSPlus\r\n"));
+				m_Id->addHeader(L" = s_rgbSPlus\r\n");
 			}
 			else
 			{
-				m_Id->addChild(header(L" = Unknown GUID\r\n"));
+				m_Id->addHeader(L" = Unknown GUID\r\n");
 			}
 		}
 

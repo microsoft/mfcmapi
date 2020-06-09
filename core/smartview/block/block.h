@@ -47,6 +47,12 @@ namespace smartview
 			}
 		}
 
+		void addHeader(const std::wstring& _text);
+		template <typename... Args> void addHeader(const std::wstring& _text, Args... args)
+		{
+			addHeader(strings::formatmessage(_text.c_str(), args...));
+		}
+
 		template <typename... Args> void setText(const std::wstring& _text, Args... args)
 		{
 			text = strings::formatmessage(_text.c_str(), args...);

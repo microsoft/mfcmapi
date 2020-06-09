@@ -37,7 +37,7 @@ namespace blocktest
 
 			block1->setText(L"the %1!ws!", L"other");
 			Assert::AreEqual(block1->getText(), std::wstring(L"the other"));
-			block1->addChild(smartview::header(L" this %1!ws!", L"that"));
+			block1->addHeader(L" this %1!ws!", L"that");
 			Assert::AreEqual(block1->toString(), std::wstring(L"the other this that"));
 
 			block1->setText(L"hello");

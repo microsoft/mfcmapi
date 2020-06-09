@@ -5,6 +5,11 @@
 
 namespace smartview
 {
+	void block::addHeader(const std::wstring& _text)
+	{
+		addChild(create(_text));
+	}
+
 	void block::ensureParsed()
 	{
 		if (parsed || !m_Parser || m_Parser->empty()) return;
@@ -18,7 +23,7 @@ namespace smartview
 		{
 			auto junkData = blockBytes::parse(m_Parser, m_Parser->getSize());
 			terminateBlock();
-			addChild(header(L"Unparsed data size = 0x%1!08X!\r\n", junkData->size()));
+			addHeader(L"Unparsed data size = 0x%1!08X!\r\n", junkData->size());
 			addChild(junkData);
 		}
 

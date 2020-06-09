@@ -90,7 +90,7 @@ namespace smartview
 				rule->wTZRuleFlags->getData(),
 				flags::InterpretFlags(flagTZRule, *rule->wTZRuleFlags).c_str());
 			addChild(rule->wYear, L"TZRule[0x%1!X!].wYear = 0x%2!04X! (%2!d!)\r\n", i, rule->wYear->getData());
-			addChild(header(L"TZRule[0x%1!X!].X = ", i));
+			addHeader(L"TZRule[0x%1!X!].X = ", i);
 			addChild(rule->X);
 
 			terminateBlock();

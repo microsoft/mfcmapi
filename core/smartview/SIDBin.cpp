@@ -2,7 +2,6 @@
 #include <core/smartview/SIDBin.h>
 #include <core/utility/strings.h>
 #include <core/interpret/sid.h>
-#include <core/smartview/block/scratchBlock.h>
 
 namespace smartview
 {
@@ -16,7 +15,7 @@ namespace smartview
 			auto sidString = sid::GetTextualSid(*m_SIDbin);
 
 			setText(L"SID: \r\n");
-			addChild(header(L"User: %1!ws!\\%2!ws!\r\n", sidAccount.getDomain().c_str(), sidAccount.getName().c_str()));
+			addHeader(L"User: %1!ws!\\%2!ws!\r\n", sidAccount.getDomain().c_str(), sidAccount.getName().c_str());
 
 			if (sidString.empty()) sidString = strings::formatmessage(IDS_NOSID);
 			addChild(m_SIDbin, L"Textual SID: %1!ws!", sidString.c_str());

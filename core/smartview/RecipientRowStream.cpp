@@ -51,7 +51,7 @@ namespace smartview
 			for (const auto& entry : m_lpAdrEntry)
 			{
 				terminateBlock();
-				addChild(header(L"Row %1!d!\r\n", i));
+				addHeader(L"Row %1!d!\r\n", i);
 				addChild(entry->cValues, L"cValues = 0x%1!08X! = %1!d!\r\n", entry->cValues->getData());
 				addChild(entry->ulReserved1, L"ulReserved1 = 0x%1!08X! = %1!d!\r\n", entry->ulReserved1->getData());
 				addChild(entry->rgPropVals);

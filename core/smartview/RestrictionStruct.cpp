@@ -350,7 +350,7 @@ namespace smartview
 					if (!szPropNum.empty())
 					{
 						// TODO: use block
-						ulPropTag->addChild(header(L"%1!ws!\tFlags: %2!ws!", tabs, szPropNum.c_str()));
+						ulPropTag->addHeader(L"%1!ws!\tFlags: %2!ws!", tabs, szPropNum.c_str());
 					}
 				}
 			}
@@ -501,7 +501,7 @@ namespace smartview
 				L"%1!ws!lpRes->res.resSub.ulSubObject = %2!ws!\r\n",
 				tabs,
 				proptags::TagToString(*ulSubObject, nullptr, false, true).c_str());
-			ulSubObject->addChild(header(L"%1!ws!lpRes->res.resSub.lpRes\r\n", tabs));
+			ulSubObject->addHeader(L"%1!ws!lpRes->res.resSub.lpRes\r\n", tabs);
 
 			if (lpRes)
 			{
@@ -579,7 +579,7 @@ namespace smartview
 				i++;
 			}
 
-			addChild(header(L"%1!ws!lpRes->res.resComment.lpRes\r\n", tabs));
+			addHeader(L"%1!ws!lpRes->res.resComment.lpRes\r\n", tabs);
 			if (lpRes)
 			{
 				lpRes->parseBlocks(ulTabLevel + 1);
@@ -655,7 +655,7 @@ namespace smartview
 				i++;
 			}
 
-			addChild(header(L"%1!ws!lpRes->res.resAnnotation.lpRes\r\n", tabs));
+			addHeader(L"%1!ws!lpRes->res.resAnnotation.lpRes\r\n", tabs);
 			if (lpRes)
 			{
 				lpRes->parseBlocks(ulTabLevel + 1);
@@ -743,7 +743,7 @@ namespace smartview
 	{
 		if (ulTabLevel > _MaxRestrictionNesting)
 		{
-			addChild(header(L"Restriction nested too many (%d) levels.", _MaxRestrictionNesting));
+			addHeader(L"Restriction nested too many (%d) levels.", _MaxRestrictionNesting);
 			return;
 		}
 
