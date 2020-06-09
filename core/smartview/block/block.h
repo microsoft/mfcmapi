@@ -56,20 +56,29 @@ namespace smartview
 		// Add a block as a child
 		void addChild(const std::shared_ptr<block>& child)
 		{
-			if (child && child->isSet()) addChild(child, child->text);
+			if (child && child->isSet())
+			{
+				children.push_back(child);
+			}
 		}
 
 		void addChild(const std::shared_ptr<block>& child, const std::wstring& _text)
 		{
-			if (!child || !child->isSet()) return;
-			child->text = _text;
-			children.push_back(child);
+			if (child && child->isSet())
+			{
+				child->text = _text;
+				children.push_back(child);
+			}
 		}
 
 		template <typename... Args>
 		void addChild(const std::shared_ptr<block>& child, const std::wstring& _text, Args... args)
 		{
-			if (child->isSet()) addChild(child, strings::formatmessage(_text.c_str(), args...));
+			if (child && child->isSet())
+			{
+				child->text = strings::formatmessage(_text.c_str(), args...);
+				children.push_back(child);
+			}
 		}
 
 		void terminateBlock()
@@ -125,9 +134,9 @@ namespace smartview
 
 	private:
 		std::wstring toStringInternal() const;
-		// Consume binaryParser and populate (which may also inherit from smarViewParser)
+		// Consume binaryParser and populate members(which may also inherit from block)
 		virtual void parse() = 0;
-		// (optional) Stiches block submembers into a tree
+		// (optional) Stiches block submembers into a tree vis children member
 		virtual void parseBlocks(){};
 
 		size_t offset{};
