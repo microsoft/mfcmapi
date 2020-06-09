@@ -22,6 +22,7 @@ namespace smartview
 		{
 			auto ret = std::make_shared<blockBytes>();
 			ret->m_Parser = parser;
+			ret->enableJunk = false;
 			ret->cbBytes = _cbBytes;
 			ret->cbMaxBytes = _cbMaxBytes;
 			ret->ensureParsed();
@@ -51,11 +52,11 @@ namespace smartview
 				_data = std::vector<BYTE>{const_cast<LPBYTE>(m_Parser->getAddress()),
 										  const_cast<LPBYTE>(m_Parser->getAddress() + cbBytes)};
 				m_Parser->advance(cbBytes);
+				setText(toHexString(true));
 				parsed = true;
 			}
 		};
 
-		std::wstring toStringInternal() const override { return toHexString(true); }
 		// TODO: Would it be better to hold the parser and size/offset data and build this as needed?
 		std::vector<BYTE> _data;
 
