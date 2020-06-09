@@ -60,7 +60,7 @@ namespace smartview
 			{
 				terminateBlock();
 				if (i > 0) addChild(blankLine());
-				auto rowBlock = smartview::scratchBlock::create(L"Row %1!d!\r\n", i);
+				auto rowBlock = smartview::create(L"Row %1!d!\r\n", i);
 				addChild(rowBlock);
 				rowBlock->addChild(row->cValues, L"cValues = 0x%1!08X! = %1!d!\r\n", row->cValues->getData());
 				rowBlock->addChild(row->lpProps);

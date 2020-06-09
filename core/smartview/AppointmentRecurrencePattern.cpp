@@ -160,7 +160,7 @@ namespace smartview
 		addChild(m_RecurrencePattern);
 		terminateBlock();
 
-		auto arpBlock = smartview::scratchBlock::create(L"Appointment Recurrence Pattern: \r\n");
+		auto arpBlock = smartview::create(L"Appointment Recurrence Pattern: \r\n");
 		addChild(arpBlock);
 
 		arpBlock->addChild(m_ReaderVersion2, L"ReaderVersion2: 0x%1!08X!\r\n", m_ReaderVersion2->getData());

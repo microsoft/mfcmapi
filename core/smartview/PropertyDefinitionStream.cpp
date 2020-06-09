@@ -166,7 +166,7 @@ namespace smartview
 		for (const auto& def : m_pfdFieldDefinitions)
 		{
 			terminateBlock();
-			auto fieldDef = smartview::scratchBlock::create(L"Definition: %1!d!\r\n", iDef);
+			auto fieldDef = smartview::create(L"Definition: %1!d!\r\n", iDef);
 			addChild(fieldDef);
 
 			auto szFlags = flags::InterpretFlags(flagPDOFlag, *def->dwFlags);
@@ -231,7 +231,7 @@ namespace smartview
 				for (const auto& sb : def->psbSkipBlocks)
 				{
 					fieldDef->terminateBlock();
-					auto skipBlock = smartview::scratchBlock::create(L"\tSkipBlock: %1!d!\r\n", iSkipBlock);
+					auto skipBlock = smartview::create(L"\tSkipBlock: %1!d!\r\n", iSkipBlock);
 					fieldDef->addChild(skipBlock);
 					skipBlock->addChild(sb->dwSize, L"\t\tSize = 0x%1!08X!", sb->dwSize->getData());
 

@@ -7,36 +7,38 @@ namespace smartview
 	class scratchBlock : public block
 	{
 	public:
-		scratchBlock() { parsed = true; }
-
-		template <typename... Args>
-		static std::shared_ptr<scratchBlock> create(size_t size, size_t offset, const std::wstring& _text, Args... args)
-		{
-			auto ret = smartview::create();
-			ret->setSize(size);
-			ret->setOffset(offset);
-			ret->setText(strings::formatmessage(_text.c_str(), args...));
-			return ret;
-		}
-
-		template <typename... Args> static std::shared_ptr<scratchBlock> create(const std::wstring& _text, Args... args)
-		{
-			auto ret = smartview::create();
-			ret->setText(strings::formatmessage(_text.c_str(), args...));
-			return ret;
-		}
+		scratchBlock() noexcept { parsed = true; }
 
 	private:
 		void parse() override{};
 	};
 
 	inline std::shared_ptr<scratchBlock> create() { return std::make_shared<scratchBlock>(); }
+
+	template <typename... Args>
+	static std::shared_ptr<scratchBlock> create(size_t size, size_t offset, const std::wstring& _text, Args... args)
+	{
+		auto ret = create();
+		ret->setSize(size);
+		ret->setOffset(offset);
+		ret->setText(strings::formatmessage(_text.c_str(), args...));
+		return ret;
+	}
+
+	template <typename... Args> static std::shared_ptr<scratchBlock> create(const std::wstring& _text, Args... args)
+	{
+		auto ret = create();
+		ret->setText(strings::formatmessage(_text.c_str(), args...));
+		return ret;
+	}
+
 	inline std::shared_ptr<scratchBlock> blankLine()
 	{
 		auto ret = create();
 		ret->setBlank(true);
 		return ret;
 	}
+
 	inline std::shared_ptr<scratchBlock> labeledBlock(const std::wstring& _text, const std::shared_ptr<block>& _block)
 	{
 		if (_block->isSet())
@@ -55,6 +57,6 @@ namespace smartview
 
 	template <typename... Args> std::shared_ptr<scratchBlock> header(const std::wstring& _text, Args... args)
 	{
-		return scratchBlock::create(_text, args...);
+		return create(_text, args...);
 	}
 } // namespace smartview
