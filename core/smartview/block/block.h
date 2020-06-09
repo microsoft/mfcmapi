@@ -122,7 +122,6 @@ namespace smartview
 		void ensureParsed();
 		std::shared_ptr<binaryParser> m_Parser;
 		bool parsed{false};
-		bool enableJunk{true};
 
 	private:
 		virtual std::wstring toStringInternal() const { return text; }
@@ -137,5 +136,6 @@ namespace smartview
 		std::wstring text;
 		std::vector<std::shared_ptr<block>> children;
 		bool blank{false};
+		bool enableJunk{true};
 	};
 } // namespace smartview
