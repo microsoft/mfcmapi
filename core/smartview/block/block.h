@@ -16,7 +16,6 @@ namespace smartview
 	{
 	public:
 		block() = default;
-		explicit block(std::wstring _text) noexcept : text(std::move(_text)) {}
 		block(const block&) = delete;
 		block& operator=(const block&) = delete;
 
