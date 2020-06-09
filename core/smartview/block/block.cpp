@@ -7,7 +7,7 @@ namespace smartview
 {
 	void block::ensureParsed()
 	{
-		if (parsed || m_Parser->empty()) return;
+		if (parsed || !m_Parser || m_Parser->empty()) return;
 		parsed = true; // parse can unset this if needed
 		const auto startOffset = m_Parser->getOffset();
 
@@ -45,7 +45,6 @@ namespace smartview
 
 	std::wstring block::toString()
 	{
-		if (!m_Parser || m_Parser->empty()) return toBlockString();
 		ensureParsed();
 
 		auto parsedString = strings::trimWhitespace(toBlockString());

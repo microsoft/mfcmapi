@@ -32,7 +32,6 @@ namespace smartview
 		const std::vector<std::shared_ptr<block>>& getChildren() const noexcept { return children; }
 		bool isHeader() const noexcept { return cb == 0 && offset == 0; }
 
-		std::wstring toBlockString() const;
 		std::wstring toString();
 
 		size_t getSize() const noexcept { return cb; }
@@ -89,9 +88,9 @@ namespace smartview
 
 		bool hasData() const noexcept { return !text.empty() || !children.empty(); }
 
-		virtual void parse(const std::shared_ptr<binaryParser>& binaryParser, bool bDoJunk)
+		virtual void parse(const std::shared_ptr<binaryParser>& binaryParser, bool _enableJunk)
 		{
-			parse(binaryParser, 0, bDoJunk);
+			parse(binaryParser, 0, _enableJunk);
 		}
 
 		virtual void parse(const std::shared_ptr<binaryParser>& binaryParser, size_t cbBin, bool _enableJunk)
@@ -122,9 +121,11 @@ namespace smartview
 		void ensureParsed();
 		std::shared_ptr<binaryParser> m_Parser;
 		bool parsed{false};
+		bool enableJunk{true};
 
 	private:
 		virtual std::wstring toStringInternal() const { return text; }
+		std::wstring toBlockString() const;
 		// Consume binaryParser and populate (which may also inherit from smarViewParser)
 		virtual void parse() = 0;
 		// (optional) Stiches block submembers into a tree
@@ -136,6 +137,5 @@ namespace smartview
 		std::wstring text;
 		std::vector<std::shared_ptr<block>> children;
 		bool blank{false};
-		bool enableJunk{true};
 	};
 } // namespace smartview

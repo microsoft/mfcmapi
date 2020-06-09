@@ -263,7 +263,7 @@ namespace viewpane
 		{
 			if (registry::hexDialogDiag)
 			{
-				SetStringW(lpData->toBlockString());
+				SetStringW(lpData->toString());
 			}
 
 			if (OnItemSelected)

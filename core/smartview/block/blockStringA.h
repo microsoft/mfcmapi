@@ -20,6 +20,7 @@ namespace smartview
 		{
 			auto ret = std::make_shared<blockStringA>();
 			ret->m_Parser = parser;
+			ret->enableJunk = false;
 			ret->cchChar = cchChar;
 			ret->ensureParsed();
 			return ret;
@@ -41,11 +42,11 @@ namespace smartview
 				data = strings::RemoveInvalidCharactersA(
 					std::string(reinterpret_cast<LPCSTR>(m_Parser->getAddress()), cchChar));
 				m_Parser->advance(sizeof CHAR * cchChar);
+				setText(strings::stringTowstring(data));
 				parsed = true;
 			}
 		};
 
-		std::wstring toStringInternal() const override { return strings::stringTowstring(data); }
 		std::string data;
 
 		size_t cchChar{};
