@@ -29,7 +29,7 @@ namespace smartview
 		setSize(endOffset - startOffset);
 	}
 
-	std::wstring block::toBlockString() const
+	std::wstring block::toStringInternal() const
 	{
 		std::vector<std::wstring> items;
 		items.reserve(children.size() + 1);
@@ -37,7 +37,7 @@ namespace smartview
 
 		for (const auto& item : children)
 		{
-			items.emplace_back(item->toBlockString());
+			items.emplace_back(item->toStringInternal());
 		}
 
 		return strings::join(items, strings::emptystring);
@@ -47,7 +47,7 @@ namespace smartview
 	{
 		ensureParsed();
 
-		auto parsedString = strings::trimWhitespace(toBlockString());
+		auto parsedString = strings::trimWhitespace(toStringInternal());
 
 		// If we built a string with embedded nulls in it, replace them with dots.
 		std::replace_if(
