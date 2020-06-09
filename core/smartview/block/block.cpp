@@ -42,4 +42,18 @@ namespace smartview
 
 		return strings::join(items, strings::emptystring);
 	}
+
+	std::wstring block::toString()
+	{
+		if (!m_Parser || m_Parser->empty()) return toBlockString();
+		ensureParsed();
+
+		auto parsedString = strings::trimWhitespace(toBlockString());
+
+		// If we built a string with embedded nulls in it, replace them with dots.
+		std::replace_if(
+			parsedString.begin(), parsedString.end(), [](const WCHAR& chr) { return chr == L'\0'; }, L'.');
+
+		return parsedString;
+	}
 } // namespace smartview

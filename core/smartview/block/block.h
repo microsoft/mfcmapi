@@ -33,6 +33,7 @@ namespace smartview
 		bool isHeader() const noexcept { return cb == 0 && offset == 0; }
 
 		std::wstring toBlockString() const;
+		std::wstring toString();
 
 		size_t getSize() const noexcept { return cb; }
 		void setSize(size_t _size) noexcept { cb = _size; }

@@ -10,7 +10,5 @@ namespace smartview
 		virtual ~smartViewParser() = default;
 		smartViewParser(const smartViewParser&) = delete;
 		smartViewParser& operator=(const smartViewParser&) = delete;
-
-		std::wstring toString();
 	};
 } // namespace smartview
