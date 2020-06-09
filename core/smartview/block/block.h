@@ -56,7 +56,7 @@ namespace smartview
 		// Add a block as a child
 		void addChild(const std::shared_ptr<block>& child)
 		{
-			if (child && child->isSet()) addChild(child, child->toStringInternal());
+			if (child && child->isSet()) addChild(child, child->text);
 		}
 
 		void addChild(const std::shared_ptr<block>& child, const std::wstring& _text)
@@ -124,7 +124,6 @@ namespace smartview
 		bool enableJunk{true};
 
 	private:
-		virtual std::wstring toStringInternal() const { return text; }
 		std::wstring toBlockString() const;
 		// Consume binaryParser and populate (which may also inherit from smarViewParser)
 		virtual void parse() = 0;
