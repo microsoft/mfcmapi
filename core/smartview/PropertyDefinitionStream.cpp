@@ -243,7 +243,7 @@ namespace smartview
 					else if (!sb->lpbContent->empty())
 					{
 						skipBlock->terminateBlock();
-						skipBlock->addChild(labeledBlock(L"\t\tContent = ", sb->lpbContent));
+						skipBlock->addLabeledChild(L"\t\tContent = ", sb->lpbContent);
 					}
 
 					iSkipBlock++;

@@ -136,7 +136,7 @@ namespace smartview
 							L"\tElementDataSize = 0x%1!04X!\r\n",
 							dataElement->wElementDataSize->getData());
 
-						de->addChild(labeledBlock(L"\tElementData = ", dataElement->lpbElementData));
+						de->addLabeledChild(L"\tElementData = ", dataElement->lpbElementData);
 						iDataElement++;
 					}
 				}

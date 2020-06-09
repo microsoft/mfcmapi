@@ -31,20 +31,4 @@ namespace smartview
 		ret->setText(strings::formatmessage(_text.c_str(), args...));
 		return ret;
 	}
-
-	inline std::shared_ptr<scratchBlock> labeledBlock(const std::wstring& _text, const std::shared_ptr<block>& _block)
-	{
-		if (_block->isSet())
-		{
-			auto node = create();
-			node->setText(_text);
-			node->setOffset(_block->getOffset());
-			node->setSize(_block->getSize());
-			node->addChild(_block);
-			node->terminateBlock();
-			return node;
-		}
-
-		return {};
-	}
 } // namespace smartview

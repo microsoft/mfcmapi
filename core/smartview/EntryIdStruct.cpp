@@ -538,7 +538,7 @@ namespace smartview
 				addChild(m_MessageDatabaseObject.v2DN, L"DN = %1!hs!\r\n", m_MessageDatabaseObject.v2DN->c_str());
 				addChild(m_MessageDatabaseObject.v2FQDN, L"FQDN = %1!ws!\r\n", m_MessageDatabaseObject.v2FQDN->c_str());
 
-				addChild(labeledBlock(L"Reserved Bytes = ", m_MessageDatabaseObject.v2Reserved));
+				addLabeledChild(L"Reserved Bytes = ", m_MessageDatabaseObject.v2Reserved);
 			}
 			break;
 			case MDB_STORE_EID_V3_MAGIC:
@@ -569,7 +569,7 @@ namespace smartview
 					L"SmtpAddress = %1!ws!\r\n",
 					m_MessageDatabaseObject.v3SmtpAddress->c_str());
 
-				addChild(labeledBlock(L"Reserved Bytes = ", m_MessageDatabaseObject.v2Reserved));
+				addLabeledChild(L"Reserved Bytes = ", m_MessageDatabaseObject.v2Reserved);
 			}
 			break;
 			}
@@ -587,10 +587,10 @@ namespace smartview
 				m_FolderOrMessage.FolderObject.DatabaseGUID,
 				L"Database GUID = %1!ws!\r\n",
 				guid::GUIDToStringAndName(*m_FolderOrMessage.FolderObject.DatabaseGUID).c_str());
-			addChild(labeledBlock(L"GlobalCounter = ", m_FolderOrMessage.FolderObject.GlobalCounter));
+			addLabeledChild(L"GlobalCounter = ", m_FolderOrMessage.FolderObject.GlobalCounter);
 			terminateBlock();
 
-			addChild(labeledBlock(L"Pad = ", m_FolderOrMessage.FolderObject.Pad));
+			addLabeledChild(L"Pad = ", m_FolderOrMessage.FolderObject.Pad);
 		}
 		else if (EIDStructType::message == m_ObjectType)
 		{
@@ -605,17 +605,17 @@ namespace smartview
 				m_FolderOrMessage.MessageObject.FolderDatabaseGUID,
 				L"Folder Database GUID = %1!ws!\r\n",
 				guid::GUIDToStringAndName(*m_FolderOrMessage.MessageObject.FolderDatabaseGUID).c_str());
-			addChild(labeledBlock(L"Folder GlobalCounter = ", m_FolderOrMessage.MessageObject.FolderGlobalCounter));
+			addLabeledChild(L"Folder GlobalCounter = ", m_FolderOrMessage.MessageObject.FolderGlobalCounter);
 
-			addChild(labeledBlock(L"Pad1 = ", m_FolderOrMessage.MessageObject.Pad1));
+			addLabeledChild(L"Pad1 = ", m_FolderOrMessage.MessageObject.Pad1);
 
 			addChild(
 				m_FolderOrMessage.MessageObject.MessageDatabaseGUID,
 				L"Message Database GUID = %1!ws!\r\n",
 				guid::GUIDToStringAndName(*m_FolderOrMessage.MessageObject.MessageDatabaseGUID).c_str());
-			addChild(labeledBlock(L"Message GlobalCounter = ", m_FolderOrMessage.MessageObject.MessageGlobalCounter));
+			addLabeledChild(L"Message GlobalCounter = ", m_FolderOrMessage.MessageObject.MessageGlobalCounter);
 
-			addChild(labeledBlock(L"Pad2 = ", m_FolderOrMessage.MessageObject.Pad2));
+			addLabeledChild(L"Pad2 = ", m_FolderOrMessage.MessageObject.Pad2);
 		}
 	}
 } // namespace smartview

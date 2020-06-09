@@ -45,7 +45,7 @@ namespace smartview
 			addHeader(L"EntryId[%1!d!]:\r\n", i);
 			addChild(entry->EntryLength, L"EntryLength = 0x%1!08X!\r\n", entry->EntryLength->getData());
 			addChild(entry->EntryLengthPad, L"EntryLengthPad = 0x%1!08X!\r\n", entry->EntryLengthPad->getData());
-			addChild(labeledBlock(L"Entry Id = ", entry->EntryId));
+			addLabeledChild(L"Entry Id = ", entry->EntryId);
 
 			i++;
 		}

@@ -52,7 +52,7 @@ namespace blocktest
 			Assert::AreEqual(block1->toString(), std::wstring(L"hello world this that\r\nblock2"));
 
 			block1->addBlankLine();
-			block1->addChild(smartview::labeledBlock(L"Label: ", block2));
+			block1->addLabeledChild(L"Label: ", block2);
 			Assert::AreEqual(block1->toString(), std::wstring(L"hello world this that\r\nblock2\r\n\r\nLabel: block2"));
 
 			Assert::AreEqual(block3->hasData(), false);

@@ -43,14 +43,14 @@ namespace smartview
 		if (*_cb)
 		{
 			terminateBlock();
-			addChild(labeledBlock(label, eid));
+			addLabeledChild(label, eid);
 		}
 	}
 
 	void ReportTag::parseBlocks()
 	{
 		setText(L"Report Tag: \r\n");
-		addChild(labeledBlock(L"Cookie = ", m_Cookie));
+		addLabeledChild(L"Cookie = ", m_Cookie);
 
 		terminateBlock();
 		auto szFlags = flags::InterpretFlags(flagReportTagVersion, *m_Version);
