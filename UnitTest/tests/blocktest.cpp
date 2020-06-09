@@ -5,7 +5,6 @@
 #include <core/smartview/block/blockStringA.h>
 #include <core/smartview/block/blockStringW.h>
 #include <core/smartview/block/blockT.h>
-#include <core/smartview/block/scratchBlock.h>
 
 namespace blocktest
 {
@@ -18,9 +17,9 @@ namespace blocktest
 		TEST_CLASS_INITIALIZE(initialize) { unittest::init(); }
 		TEST_METHOD(Test_block)
 		{
-			auto block1 = smartview::create(L"test");
-			auto block2 = smartview::create(L"block2");
-			auto block3 = smartview::create(L"");
+			auto block1 = smartview::block::create(L"test");
+			auto block2 = smartview::block::create(L"block2");
+			auto block3 = smartview::block::create(L"");
 			Assert::AreEqual(block1->isHeader(), true);
 			block1->setSize(5);
 			Assert::AreEqual(block1->isHeader(), false);

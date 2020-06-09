@@ -1,7 +1,6 @@
 #include <core/stdafx.h>
 #include <core/smartview/PCL.h>
 #include <core/interpret/guid.h>
-#include <core/smartview/block/scratchBlock.h>
 
 namespace smartview
 {

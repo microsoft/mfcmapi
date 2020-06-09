@@ -4,7 +4,6 @@
 #include <core/interpret/flags.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/interpret/guid.h>
-#include <core/smartview/block/scratchBlock.h>
 
 namespace smartview
 {

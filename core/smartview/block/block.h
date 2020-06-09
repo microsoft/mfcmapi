@@ -19,6 +19,24 @@ namespace smartview
 		block(const block&) = delete;
 		block& operator=(const block&) = delete;
 
+		static std::shared_ptr<block> create();
+		template <typename... Args>
+		static std::shared_ptr<block> create(size_t size, size_t offset, const std::wstring& _text, Args... args)
+		{
+			auto ret = create();
+			ret->setSize(size);
+			ret->setOffset(offset);
+			ret->setText(strings::formatmessage(_text.c_str(), args...));
+			return ret;
+		}
+
+		template <typename... Args> static std::shared_ptr<block> create(const std::wstring& _text, Args... args)
+		{
+			auto ret = create();
+			ret->setText(strings::formatmessage(_text.c_str(), args...));
+			return ret;
+		}
+
 		void init(size_t _cb, _In_count_(_cb) const BYTE* _bin)
 		{
 			m_Parser = std::make_shared<binaryParser>(_cb, _bin);

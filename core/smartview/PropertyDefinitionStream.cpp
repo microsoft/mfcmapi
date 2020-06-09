@@ -5,7 +5,6 @@
 #include <core/utility/strings.h>
 #include <core/mapi/cache/namedProps.h>
 #include <core/interpret/proptags.h>
-#include <core/smartview/block/scratchBlock.h>
 
 namespace smartview
 {

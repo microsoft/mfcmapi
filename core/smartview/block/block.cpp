@@ -5,6 +5,8 @@
 
 namespace smartview
 {
+	std::shared_ptr<block> block::create() { return std::make_shared<scratchBlock>(); }
+
 	void block::addHeader(const std::wstring& _text) { addChild(create(_text)); }
 
 	void block::addBlankLine()
