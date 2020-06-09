@@ -102,7 +102,7 @@ namespace smartview
 			for (const auto& persistData : m_ppdPersistData)
 			{
 				terminateBlock();
-				addChild(blankLine());
+				addBlankLine();
 				auto element = create(L"Persist Element %1!d!:\r\n", iPersistElement);
 				addChild(element);
 

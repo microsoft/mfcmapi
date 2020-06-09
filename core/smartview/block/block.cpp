@@ -10,6 +10,13 @@ namespace smartview
 		addChild(create(_text));
 	}
 
+	void block::addBlankLine()
+	{
+		auto ret = create();
+		ret->blank = true;
+		children.push_back(ret);
+	}
+
 	void block::ensureParsed()
 	{
 		if (parsed || !m_Parser || m_Parser->empty()) return;

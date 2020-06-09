@@ -48,7 +48,7 @@ namespace smartview
 		for (const auto& entry : m_pEntryIDs)
 		{
 			terminateBlock();
-			addChild(blankLine());
+			addBlankLine();
 			if (entry->dwSize->isSet())
 			{
 				addHeader(L"Entry[%1!d!] ", i);

@@ -59,7 +59,7 @@ namespace smartview
 			for (const auto& row : m_lpRows)
 			{
 				terminateBlock();
-				if (i > 0) addChild(blankLine());
+				if (i > 0) addBlankLine();
 				auto rowBlock = create(L"Row %1!d!\r\n", i);
 				addChild(rowBlock);
 				rowBlock->addChild(row->cValues, L"cValues = 0x%1!08X! = %1!d!\r\n", row->cValues->getData());
@@ -70,7 +70,7 @@ namespace smartview
 		}
 
 		terminateBlock();
-		addChild(blankLine());
+		addBlankLine();
 
 		addChild(labeledBlock(L"Extra Info = ", m_lpbEI));
 

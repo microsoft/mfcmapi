@@ -98,7 +98,7 @@ namespace smartview
 			}
 		}
 
-		void setBlank(bool _blank) noexcept { blank = _blank; }
+		void addBlankLine();
 
 		bool hasData() const noexcept { return !text.empty() || !children.empty(); }
 

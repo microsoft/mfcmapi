@@ -57,7 +57,7 @@ namespace smartview
 		for (const auto& view : m_lpWebViews)
 		{
 			terminateBlock();
-			addChild(blankLine());
+			addBlankLine();
 
 			addHeader(L"Web View %1!d!\r\n", i);
 			addChild(

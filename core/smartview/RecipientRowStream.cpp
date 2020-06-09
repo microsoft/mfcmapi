@@ -46,7 +46,7 @@ namespace smartview
 		addChild(m_cRowCount, L"cRowCount = %1!d!\r\n", m_cRowCount->getData());
 		if (!m_lpAdrEntry.empty())
 		{
-			addChild(blankLine());
+			addBlankLine();
 			auto i = DWORD{};
 			for (const auto& entry : m_lpAdrEntry)
 			{

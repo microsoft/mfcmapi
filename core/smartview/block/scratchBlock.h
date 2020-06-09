@@ -32,13 +32,6 @@ namespace smartview
 		return ret;
 	}
 
-	inline std::shared_ptr<scratchBlock> blankLine()
-	{
-		auto ret = create();
-		ret->setBlank(true);
-		return ret;
-	}
-
 	inline std::shared_ptr<scratchBlock> labeledBlock(const std::wstring& _text, const std::shared_ptr<block>& _block)
 	{
 		if (_block->isSet())

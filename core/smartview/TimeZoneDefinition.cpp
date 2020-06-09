@@ -70,7 +70,7 @@ namespace smartview
 		for (const auto& rule : m_lpTZRule)
 		{
 			terminateBlock();
-			addChild(blankLine());
+			addBlankLine();
 			addChild(
 				rule->bMajorVersion,
 				L"TZRule[0x%1!X!].bMajorVersion = 0x%2!02X! (%2!d!)\r\n",
@@ -105,7 +105,7 @@ namespace smartview
 				L"TZRule[0x%1!X!].lDaylightBias = 0x%2!08X! (%2!d!)\r\n",
 				i,
 				rule->lDaylightBias->getData());
-			addChild(blankLine());
+			addBlankLine();
 			addChild(
 				rule->stStandardDate.wYear,
 				L"TZRule[0x%1!X!].stStandardDate.wYear = 0x%2!X! (%2!d!)\r\n",
@@ -146,7 +146,7 @@ namespace smartview
 				L"TZRule[0x%1!X!].stStandardDate.wMilliseconds = 0x%2!X! (%2!d!)\r\n",
 				i,
 				rule->stStandardDate.wMilliseconds->getData());
-			addChild(blankLine());
+			addBlankLine();
 			addChild(
 				rule->stDaylightDate.wYear,
 				L"TZRule[0x%1!X!].stDaylightDate.wYear = 0x%2!X! (%2!d!)\r\n",
