@@ -4,7 +4,6 @@
 #include <core/smartview/PropertiesStruct.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/smartview/SmartView.h>
-#include <core/smartview/block/scratchBlock.h>
 
 namespace smartview
 {

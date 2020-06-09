@@ -1,6 +1,5 @@
 #include <core/stdafx.h>
 #include <core/smartview/EntryList.h>
-#include <core/smartview/block/scratchBlock.h>
 
 namespace smartview
 {

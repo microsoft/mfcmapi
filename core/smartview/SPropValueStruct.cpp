@@ -1,7 +1,6 @@
 #include <core/stdafx.h>
 #include <core/smartview/SPropValueStruct.h>
 #include <core/interpret/proptags.h>
-#include <core/smartview/block/scratchBlock.h>
 
 namespace smartview
 {

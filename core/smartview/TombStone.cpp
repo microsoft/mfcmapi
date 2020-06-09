@@ -1,7 +1,6 @@
 #include <core/stdafx.h>
 #include <core/smartview/TombStone.h>
 #include <core/smartview/SmartView.h>
-#include <core/smartview/block/scratchBlock.h>
 
 namespace smartview
 {
