@@ -103,7 +103,7 @@ namespace smartview
 			{
 				terminateBlock();
 				addChild(blankLine());
-				auto element = smartview::create(L"Persist Element %1!d!:\r\n", iPersistElement);
+				auto element = create(L"Persist Element %1!d!:\r\n", iPersistElement);
 				addChild(element);
 
 				element->addChild(
@@ -122,7 +122,7 @@ namespace smartview
 					for (const auto& dataElement : persistData->ppeDataElement)
 					{
 						element->terminateBlock();
-						auto de = smartview::create(L"DataElement: %1!d!\r\n", iDataElement);
+						auto de = create(L"DataElement: %1!d!\r\n", iDataElement);
 						element->addChild(de);
 
 						de->addChild(

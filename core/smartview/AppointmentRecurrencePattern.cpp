@@ -160,7 +160,7 @@ namespace smartview
 		addChild(m_RecurrencePattern);
 		terminateBlock();
 
-		auto arpBlock = smartview::create(L"Appointment Recurrence Pattern: \r\n");
+		auto arpBlock = create(L"Appointment Recurrence Pattern: \r\n");
 		addChild(arpBlock);
 
 		arpBlock->addChild(m_ReaderVersion2, L"ReaderVersion2: 0x%1!08X!\r\n", m_ReaderVersion2->getData());
@@ -184,7 +184,7 @@ namespace smartview
 			auto i = 0;
 			for (const auto& info : m_ExceptionInfo)
 			{
-				auto exception = smartview::create();
+				auto exception = create();
 				m_ExceptionCount->addChild(exception);
 
 				exception->addChild(
@@ -331,7 +331,7 @@ namespace smartview
 			auto i = UINT{};
 			for (const auto& ee : m_ExtendedException)
 			{
-				auto exception = smartview::create();
+				auto exception = create();
 				arpBlock->addChild(exception);
 
 				if (*m_WriterVersion2 >= 0x00003009)

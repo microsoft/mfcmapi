@@ -126,7 +126,7 @@ namespace smartview
 			const auto t = makeTabs(ulTabLevel);
 			const auto tabs = t.c_str();
 
-			auto notRoot = smartview::create(L"%1!ws!lpRes->res.resNot.lpRes\r\n", tabs);
+			auto notRoot = create(L"%1!ws!lpRes->res.resNot.lpRes\r\n", tabs);
 			addChild(notRoot);
 
 			if (lpRes)
@@ -215,7 +215,7 @@ namespace smartview
 
 			if (!lpProp.Props().empty())
 			{
-				auto propBlock = smartview::create();
+				auto propBlock = create();
 				addChild(propBlock);
 
 				propBlock->addChild(
@@ -272,7 +272,7 @@ namespace smartview
 
 			addChild(ulCount, L"%1!ws!lpRes->res.resCount.ulCount = 0x%2!08X!\r\n", tabs, ulCount->getData());
 
-			auto countRoot = smartview::create(L"%1!ws!lpRes->res.resCount.lpRes\r\n", tabs);
+			auto countRoot = create(L"%1!ws!lpRes->res.resCount.lpRes\r\n", tabs);
 			addChild(countRoot);
 
 			if (lpRes)

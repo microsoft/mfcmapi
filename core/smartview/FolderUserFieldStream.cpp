@@ -90,7 +90,7 @@ namespace smartview
 				m_FolderUserFieldsAnsiCount->terminateBlock();
 				m_FolderUserFieldsAnsiCount->addChild(blankLine());
 
-				auto fieldBlock = smartview::create(L"Field %1!d!\r\n", i++);
+				auto fieldBlock = create(L"Field %1!d!\r\n", i++);
 				m_FolderUserFieldsAnsiCount->addChild(fieldBlock);
 
 				auto szFieldType = flags::InterpretFlags(flagFolderType, *fieldDefinition->FieldType);
@@ -154,7 +154,7 @@ namespace smartview
 				m_FolderUserFieldsUnicodeCount->terminateBlock();
 				m_FolderUserFieldsUnicodeCount->addChild(blankLine());
 
-				auto fieldBlock = smartview::create(L"Field %1!d!\r\n", i++);
+				auto fieldBlock = create(L"Field %1!d!\r\n", i++);
 				m_FolderUserFieldsUnicodeCount->addChild(fieldBlock);
 
 				auto szFieldType = flags::InterpretFlags(flagFolderType, *fieldDefinition->FieldType);

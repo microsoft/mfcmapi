@@ -42,7 +42,7 @@ namespace smartview
 		setText(L"Global Object ID:\r\n");
 		if (m_Id->isSet())
 		{
-			auto id = smartview::create(L"Byte Array ID = ");
+			auto id = create(L"Byte Array ID = ");
 			addChild(id);
 			id->addChild(m_Id);
 

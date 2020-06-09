@@ -289,7 +289,7 @@ namespace smartview
 		if (m_abFlags23->empty()) return;
 		if (0 == (*m_abFlags0 | *m_abFlags1 | m_abFlags23->data()[0] | m_abFlags23->data()[1]))
 		{
-			addChild(smartview::create(4, m_abFlags0->getOffset(), L"abFlags = 0x00000000\r\n"));
+			addChild(create(4, m_abFlags0->getOffset(), L"abFlags = 0x00000000\r\n"));
 		}
 		else if (0 == (*m_abFlags1 | m_abFlags23->data()[0] | m_abFlags23->data()[1]))
 		{
@@ -298,7 +298,7 @@ namespace smartview
 				L"abFlags[0] = 0x%1!02X!= %2!ws!\r\n",
 				m_abFlags0->getData(),
 				flags::InterpretFlags(flagEntryId0, *m_abFlags0).c_str());
-			addChild(smartview::create(3, m_abFlags1->getOffset(), L"abFlags[1..3] = 0x000000\r\n"));
+			addChild(create(3, m_abFlags1->getOffset(), L"abFlags[1..3] = 0x000000\r\n"));
 		}
 		else
 		{
