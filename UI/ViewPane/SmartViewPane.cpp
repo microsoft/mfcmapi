@@ -191,15 +191,14 @@ namespace viewpane
 			{
 				svp->init(bin.size(), bin.data());
 				parsedData = svp->toString();
-				auto node = svp;
-				node->setSource(source++);
+				svp->setSource(source++);
 				if (m_bins.size() == 1)
 				{
-					treeData = node;
+					treeData = svp;
 				}
 				else
 				{
-					treeData->addChild(node);
+					treeData->addChild(svp);
 				}
 			}
 
