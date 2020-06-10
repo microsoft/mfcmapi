@@ -4,13 +4,13 @@
 
 namespace smartview
 {
-#define _MaxBytes 0xFFFF
-#define _MaxDepth 25
-#define _MaxEID 500
-#define _MaxEntriesSmall 500
-#define _MaxEntriesLarge 1000
-#define _MaxEntriesExtraLarge 1500
-#define _MaxEntriesEnormous 10000
+	constexpr ULONG _MaxBytes = 0xFFFF;
+	constexpr ULONG _MaxDepth = 25;
+	constexpr ULONG _MaxEID = 500;
+	constexpr ULONG _MaxEntriesSmall = 500;
+	constexpr ULONG _MaxEntriesLarge = 1000;
+	constexpr ULONG _MaxEntriesExtraLarge = 1500;
+	constexpr ULONG _MaxEntriesEnormous = 10000;
 
 	class block
 	{
