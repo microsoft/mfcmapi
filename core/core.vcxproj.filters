@@ -228,9 +228,6 @@
     <ClInclude Include="mapi\mapiStoreFunctions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="smartview\binaryParser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="mapi\processor\mapiProcessor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -250,9 +247,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="utility\cli.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="smartview\smartViewParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="sortlistdata\binaryData.h">
@@ -304,6 +298,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="smartview\block\blockPV.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\block\binaryParser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\block\scratchBlock.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="smartview\RuleAction.h">
@@ -491,9 +491,6 @@
     <ClCompile Include="utility\cli.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="smartview\smartViewParser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="sortlistdata\binaryData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -534,6 +531,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="smartview\SPropValueStruct.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\block\block.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="smartview\RuleAction.cpp">

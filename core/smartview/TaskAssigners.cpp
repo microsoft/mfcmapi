@@ -18,21 +18,21 @@ namespace smartview
 
 	void TaskAssigners::parse()
 	{
-		m_cAssigners = blockT<DWORD>::parse(m_Parser);
+		m_cAssigners = blockT<DWORD>::parse(parser);
 
 		if (*m_cAssigners && *m_cAssigners < _MaxEntriesSmall)
 		{
 			m_lpTaskAssigners.reserve(*m_cAssigners);
 			for (DWORD i = 0; i < *m_cAssigners; i++)
 			{
-				m_lpTaskAssigners.emplace_back(std::make_shared<TaskAssigner>(m_Parser));
+				m_lpTaskAssigners.emplace_back(std::make_shared<TaskAssigner>(parser));
 			}
 		}
 	}
 
 	void TaskAssigners::parseBlocks()
 	{
-		setRoot(L"Task Assigners: \r\n");
+		setText(L"Task Assigners: \r\n");
 		addChild(m_cAssigners, L"cAssigners = 0x%1!08X! = %1!d!", m_cAssigners->getData());
 
 		auto i = 0;

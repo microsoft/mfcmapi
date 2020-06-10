@@ -20,7 +20,7 @@ namespace smartview
 		m_bFB = bFB;
 	}
 
-	void SDBin::parse() { m_SDbin = blockBytes::parse(m_Parser, m_Parser->getSize()); }
+	void SDBin::parse() { m_SDbin = blockBytes::parse(parser, parser->getSize()); }
 
 	void SDBin::parseBlocks()
 	{
@@ -41,7 +41,7 @@ namespace smartview
 		{
 			// TODO: more accurately break this parsing into blocks with proper offsets
 			const auto sd = SDToString(*m_SDbin, acetype);
-			setRoot(L"Security Descriptor:\r\n");
+			setText(L"Security Descriptor:\r\n");
 			addHeader(L"Security Info: ");
 			addChild(m_SDbin, sd.info);
 

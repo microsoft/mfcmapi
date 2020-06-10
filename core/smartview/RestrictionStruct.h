@@ -1,5 +1,5 @@
 #pragma once
-#include <core/smartview/smartViewParser.h>
+#include <core/smartview/block/block.h>
 #include <core/smartview/block/blockT.h>
 
 namespace smartview
@@ -8,18 +8,14 @@ namespace smartview
 	{
 	public:
 		blockRes() = default;
-		void parse(std::shared_ptr<binaryParser>& parser, ULONG ulDepth, bool bRuleCondition, bool bExtendedCount)
+		void parse(std::shared_ptr<binaryParser>& _parser, ULONG ulDepth, bool bRuleCondition, bool bExtendedCount)
 		{
-			m_Parser = parser;
+			parser = _parser;
 			m_ulDepth = ulDepth;
 			m_bRuleCondition = bRuleCondition;
 			m_bExtendedCount = bExtendedCount;
 
-			// Offset will always be where we start parsing
-			setOffset(m_Parser->getOffset());
-			parse();
-			// And size will always be how many bytes we consumed
-			setSize(m_Parser->getOffset() - getOffset());
+			ensureParsed();
 		}
 		blockRes(const blockRes&) = delete;
 		blockRes& operator=(const blockRes&) = delete;
@@ -30,13 +26,13 @@ namespace smartview
 		ULONG m_ulDepth{};
 		bool m_bRuleCondition{};
 		bool m_bExtendedCount{};
-		std::shared_ptr<binaryParser> m_Parser{};
 
 	private:
-		virtual void parse() = 0;
+		void parse() override = 0;
+		void parseBlocks() override{};
 	};
 
-	class RestrictionStruct : public smartViewParser
+	class RestrictionStruct : public block
 	{
 	public:
 		RestrictionStruct(bool bRuleCondition, bool bExtendedCount)
@@ -44,14 +40,15 @@ namespace smartview
 		{
 		}
 		RestrictionStruct(
-			const std::shared_ptr<binaryParser>& parser,
+			const std::shared_ptr<binaryParser>& _parser,
 			ULONG ulDepth,
 			bool bRuleCondition,
 			bool bExtendedCount)
 			: m_bRuleCondition(bRuleCondition), m_bExtendedCount(bExtendedCount)
 		{
-			m_Parser = parser;
+			parser = _parser;
 			parse(ulDepth);
+			parsed = true;
 		}
 		void parseBlocks(ULONG ulTabLevel);
 
@@ -60,7 +57,7 @@ namespace smartview
 		void parse(ULONG ulDepth);
 		void parseBlocks() override
 		{
-			setRoot(L"Restriction:\r\n");
+			setText(L"Restriction:\r\n");
 			parseBlocks(0);
 		};
 

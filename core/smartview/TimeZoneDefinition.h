@@ -1,5 +1,5 @@
 #pragma once
-#include <core/smartview/smartViewParser.h>
+#include <core/smartview/block/block.h>
 #include <core/smartview/TimeZone.h>
 #include <core/smartview/block/blockStringW.h>
 #include <core/smartview/block/blockBytes.h>
@@ -34,7 +34,7 @@ namespace smartview
 	// =====================
 	//   This represents an entire timezone including all historical, current
 	//   and future timezone shift rules for daylight savings time, etc.
-	class TimeZoneDefinition : public smartViewParser
+	class TimeZoneDefinition : public block
 	{
 	private:
 		void parse() override;

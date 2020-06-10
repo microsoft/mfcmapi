@@ -11,19 +11,20 @@ namespace smartview
 		{
 			if (*cValues < _MaxEntriesSmall)
 			{
-				lpProps.EnableNickNameParsing();
-				lpProps.SetMaxEntries(*cValues);
-				lpProps.smartViewParser::parse(parser, false);
+				lpProps = std::make_shared<PropertiesStruct>();
+				lpProps->EnableNickNameParsing();
+				lpProps->SetMaxEntries(*cValues);
+				lpProps->block::parse(parser, false);
 			}
 		}
 	} // namespace smartview
 
 	void NickNameCache::parse()
 	{
-		m_Metadata1 = blockBytes::parse(m_Parser, 4);
-		m_ulMajorVersion = blockT<DWORD>::parse(m_Parser);
-		m_ulMinorVersion = blockT<DWORD>::parse(m_Parser);
-		m_cRowCount = blockT<DWORD>::parse(m_Parser);
+		m_Metadata1 = blockBytes::parse(parser, 4);
+		m_ulMajorVersion = blockT<DWORD>::parse(parser);
+		m_ulMinorVersion = blockT<DWORD>::parse(parser);
+		m_cRowCount = blockT<DWORD>::parse(parser);
 
 		if (*m_cRowCount)
 		{
@@ -32,19 +33,19 @@ namespace smartview
 				m_lpRows.reserve(*m_cRowCount);
 				for (DWORD i = 0; i < *m_cRowCount; i++)
 				{
-					m_lpRows.emplace_back(std::make_shared<SRowStruct>(m_Parser));
+					m_lpRows.emplace_back(std::make_shared<SRowStruct>(parser));
 				}
 			}
 		}
 
-		m_cbEI = blockT<DWORD>::parse(m_Parser);
-		m_lpbEI = blockBytes::parse(m_Parser, *m_cbEI, _MaxBytes);
-		m_Metadata2 = blockBytes::parse(m_Parser, 8);
+		m_cbEI = blockT<DWORD>::parse(parser);
+		m_lpbEI = blockBytes::parse(parser, *m_cbEI, _MaxBytes);
+		m_Metadata2 = blockBytes::parse(parser, 8);
 	}
 
 	void NickNameCache::parseBlocks()
 	{
-		setRoot(L"Nickname Cache\r\n");
+		setText(L"Nickname Cache\r\n");
 		addLabeledChild(L"Metadata1 = ", m_Metadata1);
 
 		addChild(m_ulMajorVersion, L"Major Version = %1!d!\r\n", m_ulMajorVersion->getData());
@@ -58,10 +59,10 @@ namespace smartview
 			{
 				terminateBlock();
 				if (i > 0) addBlankLine();
-				auto rowBlock = std::make_shared<block>(strings::formatmessage(L"Row %1!d!\r\n", i));
+				auto rowBlock = create(L"Row %1!d!\r\n", i);
 				addChild(rowBlock);
 				rowBlock->addChild(row->cValues, L"cValues = 0x%1!08X! = %1!d!\r\n", row->cValues->getData());
-				rowBlock->addChild(row->lpProps.getBlock());
+				rowBlock->addChild(row->lpProps);
 
 				i++;
 			}

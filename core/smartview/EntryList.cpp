@@ -11,8 +11,8 @@ namespace smartview
 
 	void EntryList::parse()
 	{
-		m_EntryCount = blockT<DWORD>::parse(m_Parser);
-		m_Pad = blockT<DWORD>::parse(m_Parser);
+		m_EntryCount = blockT<DWORD>::parse(parser);
+		m_Pad = blockT<DWORD>::parse(parser);
 
 		if (*m_EntryCount)
 		{
@@ -21,12 +21,12 @@ namespace smartview
 				m_Entry.reserve(*m_EntryCount);
 				for (DWORD i = 0; i < *m_EntryCount; i++)
 				{
-					m_Entry.emplace_back(std::make_shared<EntryListEntryStruct>(m_Parser));
+					m_Entry.emplace_back(std::make_shared<EntryListEntryStruct>(parser));
 				}
 
 				for (DWORD i = 0; i < *m_EntryCount; i++)
 				{
-					m_Entry[i]->EntryId.smartViewParser::parse(m_Parser, *m_Entry[i]->EntryLength, true);
+					m_Entry[i]->EntryId = block::parse<EntryIdStruct>(parser, *m_Entry[i]->EntryLength, true);
 				}
 			}
 		}
@@ -34,7 +34,7 @@ namespace smartview
 
 	void EntryList::parseBlocks()
 	{
-		setRoot(m_EntryCount, L"EntryCount = 0x%1!08X!\r\n", m_EntryCount->getData());
+		addChild(m_EntryCount, L"EntryCount = 0x%1!08X!\r\n", m_EntryCount->getData());
 		addChild(m_Pad, L"Pad = 0x%1!08X!", m_Pad->getData());
 
 		auto i = 0;
@@ -44,7 +44,7 @@ namespace smartview
 			addHeader(L"EntryId[%1!d!]:\r\n", i);
 			addChild(entry->EntryLength, L"EntryLength = 0x%1!08X!\r\n", entry->EntryLength->getData());
 			addChild(entry->EntryLengthPad, L"EntryLengthPad = 0x%1!08X!\r\n", entry->EntryLengthPad->getData());
-			addLabeledChild(L"Entry Id = ", entry->EntryId.getBlock());
+			addLabeledChild(L"Entry Id = ", entry->EntryId);
 
 			i++;
 		}

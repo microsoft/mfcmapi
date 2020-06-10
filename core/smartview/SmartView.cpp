@@ -11,7 +11,6 @@
 #include <core/mapi/mapiFunctions.h>
 #include <core/utility/error.h>
 
-#include <core/smartview/smartViewParser.h>
 #include <core/smartview/PCL.h>
 #include <core/smartview/TombStone.h>
 #include <core/smartview/VerbStream.h>
@@ -49,7 +48,7 @@ namespace smartview
 	_Check_return_ std::wstring PTI8ToSzString(LARGE_INTEGER liI8, bool bLabel);
 	// End: Functions to parse PT_LONG/PT-I2 properties
 
-	std::shared_ptr<smartViewParser> GetSmartViewParser(parserType type, _In_opt_ LPMAPIPROP lpMAPIProp)
+	std::shared_ptr<block> GetSmartViewParser(parserType type, _In_opt_ LPMAPIPROP lpMAPIProp)
 	{
 		switch (type)
 		{
@@ -80,11 +79,11 @@ namespace smartview
 		case parserType::ENTRYLIST:
 			return std::make_shared<EntryList>();
 		case parserType::RULEACTION:
-			{
-				auto parser = std::make_shared<RuleAction>();
-				if (parser) parser->Init(false);
-				return parser;
-			}
+		{
+			auto parser = std::make_shared<RuleAction>();
+			if (parser) parser->Init(false);
+			return parser;
+		}
 		case parserType::EXTENDEDRULEACTION:
 		{
 			auto parser = std::make_shared<RuleAction>();
@@ -205,9 +204,9 @@ namespace smartview
 		const auto ulIndex = BuildFlagIndexFromTag(ulPropTag, ulPropNameID, nullptr, lpguidNamedProp);
 		const auto bMV = (PROP_TYPE(ulPropTag) & MV_FLAG) == MV_FLAG;
 
-		for (const auto& smartViewParser : SmartViewParserArray)
+		for (const auto& block : SmartViewParserArray)
 		{
-			if (smartViewParser.ulIndex == ulIndex && smartViewParser.bMV == bMV) return smartViewParser.type;
+			if (block.ulIndex == ulIndex && block.bMV == bMV) return block.type;
 		}
 
 		return parserType::NOPARSING;

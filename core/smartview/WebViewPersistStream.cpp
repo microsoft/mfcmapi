@@ -24,33 +24,33 @@ namespace smartview
 		for (;;)
 		{
 			// Must have at least 2 bytes left to have another struct
-			if (m_Parser->getSize() < sizeof(DWORD) * 11) break;
-			m_Parser->advance(sizeof(DWORD) * 10);
-			const auto cbData = blockT<DWORD>::parse(m_Parser);
+			if (parser->getSize() < sizeof(DWORD) * 11) break;
+			parser->advance(sizeof(DWORD) * 10);
+			const auto cbData = blockT<DWORD>::parse(parser);
 
 			// Must have at least cbData bytes left to be a valid flag
-			if (m_Parser->getSize() < *cbData) break;
+			if (parser->getSize() < *cbData) break;
 
-			m_Parser->advance(*cbData);
+			parser->advance(*cbData);
 			cWebViews++;
 		}
 
 		// Now we parse for real
-		m_Parser->rewind();
+		parser->rewind();
 
 		if (cWebViews && cWebViews < _MaxEntriesSmall)
 		{
 			m_lpWebViews.reserve(cWebViews);
 			for (auto i = 0; i < cWebViews; i++)
 			{
-				m_lpWebViews.emplace_back(std::make_shared<WebViewPersist>(m_Parser));
+				m_lpWebViews.emplace_back(std::make_shared<WebViewPersist>(parser));
 			}
 		}
 	}
 
 	void WebViewPersistStream::parseBlocks()
 	{
-		setRoot(L"Web View Persistence Object Stream\r\n");
+		setText(L"Web View Persistence Object Stream\r\n");
 		addHeader(L"cWebViews = %1!d!", m_lpWebViews.size());
 		auto i = 0;
 		for (const auto& view : m_lpWebViews)

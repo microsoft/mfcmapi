@@ -1,5 +1,5 @@
 #pragma once
-#include <core/smartview/smartViewParser.h>
+#include <core/smartview/block/block.h>
 #include <core/smartview/RestrictionStruct.h>
 #include <core/smartview/block/blockStringW.h>
 #include <core/smartview/block/blockT.h>
@@ -27,41 +27,21 @@ namespace smartview
 	{
 	public:
 		ActionData() = default;
-		void parse(std::shared_ptr<binaryParser>& parser, bool bExtended)
-		{
-			m_Parser = parser;
-			m_bExtended = bExtended;
+		ActionData(bool bExtended) : m_bExtended(bExtended) {}
 
-			// Offset will always be where we start parsing
-			setOffset(m_Parser->getOffset());
-			parse();
-			// And size will always be how many bytes we consumed
-			setSize(m_Parser->getOffset() - getOffset());
-		}
-		ActionData(const ActionData&) = delete;
-		ActionData& operator=(const ActionData&) = delete;
-		virtual void parseBlocks(ULONG ulTabLevel) = 0;
 
 	protected:
+		virtual void parseBlocks(ULONG ulTabLevel) = 0;
 		bool m_bExtended{};
-		std::shared_ptr<binaryParser> m_Parser{};
-
-	private:
-		virtual void parse() = 0;
 	};
 
 	class ActionBlock : public block
 	{
 	public:
-		void parse(std::shared_ptr<binaryParser>& parser, bool bExtended)
-		{
-			// Offset will always be where we start parsing
-			setOffset(parser->getOffset());
-			// And size will always be how many bytes we consumed
-			setSize(parser->getOffset() - getOffset());
-		}
+		ActionBlock(bool bExtended) : m_bExtended(bExtended) {}
 
 	private:
+		void parse() override {}
 		bool m_bExtended{};
 		std::shared_ptr<blockT<WORD>> ActionLength = emptyT<WORD>();
 		std::shared_ptr<blockT<BYTE>> ActionType = emptyT<BYTE>();
@@ -69,7 +49,7 @@ namespace smartview
 		std::shared_ptr<ActionData> ActionData;
 	};
 
-	class RuleAction : public smartViewParser
+	class RuleAction : public block
 	{
 	public:
 		void Init(bool bExtended) noexcept;

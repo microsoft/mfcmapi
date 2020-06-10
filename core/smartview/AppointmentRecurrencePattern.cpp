@@ -119,50 +119,49 @@ namespace smartview
 
 	void AppointmentRecurrencePattern::parse()
 	{
-		m_RecurrencePattern.smartViewParser::parse(m_Parser, false);
+		m_RecurrencePattern = block::parse<RecurrencePattern>(parser, false);
 
-		m_ReaderVersion2 = blockT<DWORD>::parse(m_Parser);
-		m_WriterVersion2 = blockT<DWORD>::parse(m_Parser);
-		m_StartTimeOffset = blockT<DWORD>::parse(m_Parser);
-		m_EndTimeOffset = blockT<DWORD>::parse(m_Parser);
-		m_ExceptionCount = blockT<WORD>::parse(m_Parser);
+		m_ReaderVersion2 = blockT<DWORD>::parse(parser);
+		m_WriterVersion2 = blockT<DWORD>::parse(parser);
+		m_StartTimeOffset = blockT<DWORD>::parse(parser);
+		m_EndTimeOffset = blockT<DWORD>::parse(parser);
+		m_ExceptionCount = blockT<WORD>::parse(parser);
 
-		if (*m_ExceptionCount && *m_ExceptionCount == *m_RecurrencePattern.m_ModifiedInstanceCount &&
+		if (*m_ExceptionCount && *m_ExceptionCount == *m_RecurrencePattern->m_ModifiedInstanceCount &&
 			*m_ExceptionCount < _MaxEntriesSmall)
 		{
 			m_ExceptionInfo.reserve(*m_ExceptionCount);
 			for (WORD i = 0; i < *m_ExceptionCount; i++)
 			{
-				m_ExceptionInfo.emplace_back(std::make_shared<ExceptionInfo>(m_Parser));
+				m_ExceptionInfo.emplace_back(std::make_shared<ExceptionInfo>(parser));
 			}
 		}
 
-		m_ReservedBlock1Size = blockT<DWORD>::parse(m_Parser);
-		m_ReservedBlock1 = blockBytes::parse(m_Parser, *m_ReservedBlock1Size, _MaxBytes);
+		m_ReservedBlock1Size = blockT<DWORD>::parse(parser);
+		m_ReservedBlock1 = blockBytes::parse(parser, *m_ReservedBlock1Size, _MaxBytes);
 
-		if (*m_ExceptionCount && *m_ExceptionCount == *m_RecurrencePattern.m_ModifiedInstanceCount &&
+		if (*m_ExceptionCount && *m_ExceptionCount == *m_RecurrencePattern->m_ModifiedInstanceCount &&
 			*m_ExceptionCount < _MaxEntriesSmall && !m_ExceptionInfo.empty())
 		{
 			for (WORD i = 0; i < *m_ExceptionCount; i++)
 			{
-				m_ExtendedException.emplace_back(std::make_shared<ExtendedException>(
-					m_Parser, *m_WriterVersion2, *m_ExceptionInfo[i]->OverrideFlags));
+				m_ExtendedException.emplace_back(
+					std::make_shared<ExtendedException>(parser, *m_WriterVersion2, *m_ExceptionInfo[i]->OverrideFlags));
 			}
 		}
 
-		m_ReservedBlock2Size = blockT<DWORD>::parse(m_Parser);
-		m_ReservedBlock2 = blockBytes::parse(m_Parser, *m_ReservedBlock2Size, _MaxBytes);
+		m_ReservedBlock2Size = blockT<DWORD>::parse(parser);
+		m_ReservedBlock2 = blockBytes::parse(parser, *m_ReservedBlock2Size, _MaxBytes);
 	}
 
 	void AppointmentRecurrencePattern::parseBlocks()
 	{
-		setRoot(m_RecurrencePattern.getBlock());
+		addChild(m_RecurrencePattern);
 		terminateBlock();
 
-		auto arpBlock = std::make_shared<block>();
+		auto arpBlock = create(L"Appointment Recurrence Pattern: \r\n");
 		addChild(arpBlock);
 
-		arpBlock->setText(L"Appointment Recurrence Pattern: \r\n");
 		arpBlock->addChild(m_ReaderVersion2, L"ReaderVersion2: 0x%1!08X!\r\n", m_ReaderVersion2->getData());
 		arpBlock->addChild(m_WriterVersion2, L"WriterVersion2: 0x%1!08X!\r\n", m_WriterVersion2->getData());
 		arpBlock->addChild(
@@ -184,7 +183,7 @@ namespace smartview
 			auto i = 0;
 			for (const auto& info : m_ExceptionInfo)
 			{
-				auto exception = std::make_shared<block>();
+				auto exception = create();
 				m_ExceptionCount->addChild(exception);
 
 				exception->addChild(
@@ -331,7 +330,7 @@ namespace smartview
 			auto i = UINT{};
 			for (const auto& ee : m_ExtendedException)
 			{
-				auto exception = std::make_shared<block>();
+				auto exception = create();
 				arpBlock->addChild(exception);
 
 				if (*m_WriterVersion2 >= 0x00003009)

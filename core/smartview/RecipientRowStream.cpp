@@ -13,16 +13,17 @@ namespace smartview
 		{
 			if (*cValues < _MaxEntriesSmall)
 			{
-				rgPropVals.SetMaxEntries(*cValues);
-				rgPropVals.smartViewParser::parse(parser, false);
+				rgPropVals = std::make_shared<PropertiesStruct>();
+				rgPropVals->SetMaxEntries(*cValues);
+				rgPropVals->block::parse(parser, false);
 			}
 		}
 	}
 
 	void RecipientRowStream::parse()
 	{
-		m_cVersion = blockT<DWORD>::parse(m_Parser);
-		m_cRowCount = blockT<DWORD>::parse(m_Parser);
+		m_cVersion = blockT<DWORD>::parse(parser);
+		m_cRowCount = blockT<DWORD>::parse(parser);
 
 		if (*m_cRowCount)
 		{
@@ -31,7 +32,7 @@ namespace smartview
 				m_lpAdrEntry.reserve(*m_cRowCount);
 				for (DWORD i = 0; i < *m_cRowCount; i++)
 				{
-					m_lpAdrEntry.emplace_back(std::make_shared<ADRENTRYStruct>(m_Parser));
+					m_lpAdrEntry.emplace_back(std::make_shared<ADRENTRYStruct>(parser));
 				}
 			}
 		}
@@ -39,7 +40,7 @@ namespace smartview
 
 	void RecipientRowStream::parseBlocks()
 	{
-		setRoot(L"Recipient Row Stream\r\n");
+		setText(L"Recipient Row Stream\r\n");
 		addChild(m_cVersion, L"cVersion = %1!d!\r\n", m_cVersion->getData());
 		addChild(m_cRowCount, L"cRowCount = %1!d!\r\n", m_cRowCount->getData());
 		if (!m_lpAdrEntry.empty())
@@ -52,7 +53,7 @@ namespace smartview
 				addHeader(L"Row %1!d!\r\n", i);
 				addChild(entry->cValues, L"cValues = 0x%1!08X! = %1!d!\r\n", entry->cValues->getData());
 				addChild(entry->ulReserved1, L"ulReserved1 = 0x%1!08X! = %1!d!\r\n", entry->ulReserved1->getData());
-				addChild(entry->rgPropVals.getBlock());
+				addChild(entry->rgPropVals);
 
 				i++;
 			}

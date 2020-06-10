@@ -1,5 +1,5 @@
 #pragma once
-#include <core/smartview/smartViewParser.h>
+#include <core/smartview/block/block.h>
 #include <core/smartview/block/blockBytes.h>
 #include <core/smartview/block/blockT.h>
 
@@ -27,7 +27,7 @@ namespace smartview
 		PersistData(const std::shared_ptr<binaryParser>& parser);
 	};
 
-	class AdditionalRenEntryIDs : public smartViewParser
+	class AdditionalRenEntryIDs : public block
 	{
 	private:
 		void parse() override;

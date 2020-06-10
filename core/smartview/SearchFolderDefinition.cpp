@@ -13,58 +13,59 @@ namespace smartview
 		Pad = blockT<DWORD>::parse(parser);
 		if (*PropertyCount)
 		{
-			Props.SetMaxEntries(*PropertyCount);
-			Props.smartViewParser::parse(parser, false);
+			Props = std::make_shared<PropertiesStruct>();
+			Props->SetMaxEntries(*PropertyCount);
+			Props->block::parse(parser, false);
 		}
 	}
 
 	void SearchFolderDefinition::parse()
 	{
-		m_Version = blockT<DWORD>::parse(m_Parser);
-		m_Flags = blockT<DWORD>::parse(m_Parser);
-		m_NumericSearch = blockT<DWORD>::parse(m_Parser);
+		m_Version = blockT<DWORD>::parse(parser);
+		m_Flags = blockT<DWORD>::parse(parser);
+		m_NumericSearch = blockT<DWORD>::parse(parser);
 
-		m_TextSearchLength = blockT<BYTE>::parse(m_Parser);
+		m_TextSearchLength = blockT<BYTE>::parse(parser);
 		size_t cchTextSearch = *m_TextSearchLength;
 		if (*m_TextSearchLength == 255)
 		{
-			m_TextSearchLengthExtended = blockT<WORD>::parse(m_Parser);
+			m_TextSearchLengthExtended = blockT<WORD>::parse(parser);
 			cchTextSearch = *m_TextSearchLengthExtended;
 		}
 
 		if (cchTextSearch)
 		{
-			m_TextSearch = blockStringW::parse(m_Parser, cchTextSearch);
+			m_TextSearch = blockStringW::parse(parser, cchTextSearch);
 		}
 
-		m_SkipLen1 = blockT<DWORD>::parse(m_Parser);
-		m_SkipBytes1 = blockBytes::parse(m_Parser, *m_SkipLen1, _MaxBytes);
+		m_SkipLen1 = blockT<DWORD>::parse(parser);
+		m_SkipBytes1 = blockBytes::parse(parser, *m_SkipLen1, _MaxBytes);
 
-		m_DeepSearch = blockT<DWORD>::parse(m_Parser);
+		m_DeepSearch = blockT<DWORD>::parse(parser);
 
-		m_FolderList1Length = blockT<BYTE>::parse(m_Parser);
+		m_FolderList1Length = blockT<BYTE>::parse(parser);
 		size_t cchFolderList1 = *m_FolderList1Length;
 		if (*m_FolderList1Length == 255)
 		{
-			m_FolderList1LengthExtended = blockT<WORD>::parse(m_Parser);
+			m_FolderList1LengthExtended = blockT<WORD>::parse(parser);
 			cchFolderList1 = *m_FolderList1LengthExtended;
 		}
 
 		if (cchFolderList1)
 		{
-			m_FolderList1 = blockStringW::parse(m_Parser, cchFolderList1);
+			m_FolderList1 = blockStringW::parse(parser, cchFolderList1);
 		}
 
-		m_FolderList2Length = blockT<DWORD>::parse(m_Parser);
+		m_FolderList2Length = blockT<DWORD>::parse(parser);
 
 		if (m_FolderList2Length)
 		{
-			m_FolderList2.smartViewParser::parse(m_Parser, *m_FolderList2Length, true);
+			m_FolderList2 = block::parse<EntryList>(parser, *m_FolderList2Length, true);
 		}
 
 		if (*m_Flags & SFST_BINARY)
 		{
-			m_AddressCount = blockT<DWORD>::parse(m_Parser);
+			m_AddressCount = blockT<DWORD>::parse(parser);
 			if (*m_AddressCount)
 			{
 				if (*m_AddressCount < _MaxEntriesSmall)
@@ -72,42 +73,42 @@ namespace smartview
 					m_Addresses.reserve(*m_AddressCount);
 					for (DWORD i = 0; i < *m_AddressCount; i++)
 					{
-						m_Addresses.emplace_back(std::make_shared<AddressListEntryStruct>(m_Parser));
+						m_Addresses.emplace_back(std::make_shared<AddressListEntryStruct>(parser));
 					}
 				}
 			}
 		}
 
-		m_SkipLen2 = blockT<DWORD>::parse(m_Parser);
-		m_SkipBytes2 = blockBytes::parse(m_Parser, *m_SkipLen2, _MaxBytes);
+		m_SkipLen2 = blockT<DWORD>::parse(parser);
+		m_SkipBytes2 = blockBytes::parse(parser, *m_SkipLen2, _MaxBytes);
 
 		if (*m_Flags & SFST_MRES)
 		{
 			m_Restriction = std::make_shared<RestrictionStruct>(false, true);
-			m_Restriction->smartViewParser::parse(m_Parser, false);
+			m_Restriction->block::parse(parser, false);
 		}
 
 		if (*m_Flags & SFST_FILTERSTREAM)
 		{
-			const auto cbRemainingBytes = m_Parser->getSize();
+			const auto cbRemainingBytes = parser->getSize();
 			// Since the format for SFST_FILTERSTREAM isn't documented, just assume that everything remaining
 			// is part of this bucket. We leave DWORD space for the final skip block, which should be empty
 			if (cbRemainingBytes > sizeof DWORD)
 			{
-				m_AdvancedSearchBytes = blockBytes::parse(m_Parser, cbRemainingBytes - sizeof DWORD);
+				m_AdvancedSearchBytes = blockBytes::parse(parser, cbRemainingBytes - sizeof DWORD);
 			}
 		}
 
-		m_SkipLen3 = blockT<DWORD>::parse(m_Parser);
+		m_SkipLen3 = blockT<DWORD>::parse(parser);
 		if (m_SkipLen3)
 		{
-			m_SkipBytes3 = blockBytes::parse(m_Parser, *m_SkipLen3, _MaxBytes);
+			m_SkipBytes3 = blockBytes::parse(parser, *m_SkipLen3, _MaxBytes);
 		}
 	}
 
 	void SearchFolderDefinition::parseBlocks()
 	{
-		setRoot(L"Search Folder Definition:\r\n");
+		setText(L"Search Folder Definition:\r\n");
 		addChild(m_Version, L"Version = 0x%1!08X!\r\n", m_Version->getData());
 		addChild(
 			m_Flags,
@@ -153,11 +154,11 @@ namespace smartview
 		terminateBlock();
 		addChild(m_FolderList2Length, L"Folder List 2 Length = 0x%1!08X!", m_FolderList2Length->getData());
 
-		if (m_FolderList2.hasData())
+		if (m_FolderList2)
 		{
 			terminateBlock();
 			addHeader(L"FolderList2 = \r\n");
-			addChild(m_FolderList2.getBlock());
+			addChild(m_FolderList2);
 		}
 
 		if (*m_Flags & SFST_BINARY)
@@ -177,7 +178,7 @@ namespace smartview
 				addChild(address->Pad, L"Addresses[%1!d!].Pad = 0x%2!08X!\r\n", i, address->Pad->getData());
 
 				addHeader(L"Properties[%1!d!]:\r\n", i);
-				addChild(address->Props.getBlock());
+				addChild(address->Props);
 				i++;
 			}
 		}
@@ -190,7 +191,7 @@ namespace smartview
 		if (m_Restriction && m_Restriction->hasData())
 		{
 			terminateBlock();
-			addChild(m_Restriction->getBlock());
+			addChild(m_Restriction);
 		}
 
 		if (*m_Flags & SFST_FILTERSTREAM)

@@ -18,11 +18,11 @@ namespace smartview
 		{
 			if (!m_bRuleCondition || m_bExtendedCount)
 			{
-				cRes = blockT<DWORD>::parse(m_Parser);
+				cRes = blockT<DWORD>::parse(parser);
 			}
 			else
 			{
-				cRes = blockT<DWORD, WORD>::parse(m_Parser);
+				cRes = blockT<DWORD>::parse<WORD>(parser);
 			}
 
 			if (*cRes && *cRes < _MaxEntriesExtraLarge && m_ulDepth < _MaxDepth)
@@ -30,9 +30,9 @@ namespace smartview
 				lpRes.reserve(*cRes);
 				for (ULONG i = 0; i < *cRes; i++)
 				{
-					if (!m_Parser->getSize()) break;
-					lpRes.emplace_back(std::make_shared<RestrictionStruct>(
-						m_Parser, m_ulDepth + 1, m_bRuleCondition, m_bExtendedCount));
+					if (!parser->getSize()) break;
+					lpRes.emplace_back(
+						std::make_shared<RestrictionStruct>(parser, m_ulDepth + 1, m_bRuleCondition, m_bExtendedCount));
 				}
 
 				// TODO: Should we do this?
@@ -50,11 +50,8 @@ namespace smartview
 
 			for (const auto& res : lpRes)
 			{
-				auto resBlock = std::make_shared<block>();
-				resBlock->setText(L"%1!ws!lpRes->res.resAnd.lpRes[0x%2!08X!]\r\n", tabs, i++);
 				res->parseBlocks(ulTabLevel + 1);
-				resBlock->addChild(res->getBlock());
-				cRes->addChild(resBlock);
+				cRes->addChild(res, L"%1!ws!lpRes->res.resAnd.lpRes[0x%2!08X!]\r\n", tabs, i++);
 			}
 		}
 
@@ -71,11 +68,11 @@ namespace smartview
 		{
 			if (!m_bRuleCondition || m_bExtendedCount)
 			{
-				cRes = blockT<DWORD>::parse(m_Parser);
+				cRes = blockT<DWORD>::parse(parser);
 			}
 			else
 			{
-				cRes = blockT<DWORD, WORD>::parse(m_Parser);
+				cRes = blockT<DWORD>::parse<WORD>(parser);
 			}
 
 			if (*cRes && *cRes < _MaxEntriesExtraLarge && m_ulDepth < _MaxDepth)
@@ -83,9 +80,9 @@ namespace smartview
 				lpRes.reserve(*cRes);
 				for (ULONG i = 0; i < *cRes; i++)
 				{
-					if (!m_Parser->getSize()) break;
-					lpRes.emplace_back(std::make_shared<RestrictionStruct>(
-						m_Parser, m_ulDepth + 1, m_bRuleCondition, m_bExtendedCount));
+					if (!parser->getSize()) break;
+					lpRes.emplace_back(
+						std::make_shared<RestrictionStruct>(parser, m_ulDepth + 1, m_bRuleCondition, m_bExtendedCount));
 				}
 			}
 		}
@@ -100,11 +97,8 @@ namespace smartview
 
 			for (const auto& res : lpRes)
 			{
-				auto resBlock = std::make_shared<block>();
-				resBlock->setText(L"%1!ws!lpRes->res.resOr.lpRes[0x%2!08X!]\r\n", tabs, i++);
 				res->parseBlocks(ulTabLevel + 1);
-				resBlock->addChild(res->getBlock());
-				cRes->addChild(resBlock);
+				cRes->addChild(res, L"%1!ws!lpRes->res.resOr.lpRes[0x%2!08X!]\r\n", tabs, i++);
 			}
 		}
 
@@ -119,10 +113,9 @@ namespace smartview
 	public:
 		void parse() override
 		{
-			if (m_ulDepth < _MaxDepth && m_Parser->getSize())
+			if (m_ulDepth < _MaxDepth && parser->getSize())
 			{
-				lpRes =
-					std::make_shared<RestrictionStruct>(m_Parser, m_ulDepth + 1, m_bRuleCondition, m_bExtendedCount);
+				lpRes = std::make_shared<RestrictionStruct>(parser, m_ulDepth + 1, m_bRuleCondition, m_bExtendedCount);
 			}
 		}
 
@@ -131,14 +124,13 @@ namespace smartview
 			const auto t = makeTabs(ulTabLevel);
 			const auto tabs = t.c_str();
 
-			auto notRoot = std::make_shared<block>();
-			notRoot->setText(L"%1!ws!lpRes->res.resNot.lpRes\r\n", tabs);
+			auto notRoot = create(L"%1!ws!lpRes->res.resNot.lpRes\r\n", tabs);
 			addChild(notRoot);
 
 			if (lpRes)
 			{
 				lpRes->parseBlocks(ulTabLevel + 1);
-				notRoot->addChild(lpRes->getBlock());
+				notRoot->addChild(lpRes);
 			}
 		}
 
@@ -153,12 +145,12 @@ namespace smartview
 		void parse() override
 		{
 			if (m_bRuleCondition)
-				relop = blockT<DWORD, BYTE>::parse(m_Parser);
+				relop = blockT<DWORD>::parse<BYTE>(parser);
 			else
-				relop = blockT<DWORD>::parse(m_Parser);
+				relop = blockT<DWORD>::parse(parser);
 
-			ulPropTag1 = blockT<DWORD>::parse(m_Parser);
-			ulPropTag2 = blockT<DWORD>::parse(m_Parser);
+			ulPropTag1 = blockT<DWORD>::parse(parser);
+			ulPropTag2 = blockT<DWORD>::parse(parser);
 		}
 
 		void parseBlocks(ULONG ulTabLevel)
@@ -196,9 +188,9 @@ namespace smartview
 	public:
 		void parse() override
 		{
-			ulFuzzyLevel = blockT<DWORD>::parse(m_Parser);
-			ulPropTag = blockT<DWORD>::parse(m_Parser);
-			lpProp.parse(m_Parser, 1, m_bRuleCondition);
+			ulFuzzyLevel = blockT<DWORD>::parse(parser);
+			ulPropTag = blockT<DWORD>::parse(parser);
+			lpProp.parse(parser, 1, m_bRuleCondition);
 		}
 
 		void parseBlocks(ULONG ulTabLevel)
@@ -221,7 +213,7 @@ namespace smartview
 
 			if (!lpProp.Props().empty())
 			{
-				auto propBlock = std::make_shared<block>();
+				auto propBlock = create();
 				addChild(propBlock);
 
 				propBlock->addChild(
@@ -263,11 +255,10 @@ namespace smartview
 	public:
 		void parse() override
 		{
-			ulCount = blockT<DWORD>::parse(m_Parser);
-			if (m_ulDepth < _MaxDepth && m_Parser->getSize())
+			ulCount = blockT<DWORD>::parse(parser);
+			if (m_ulDepth < _MaxDepth && parser->getSize())
 			{
-				lpRes =
-					std::make_shared<RestrictionStruct>(m_Parser, m_ulDepth + 1, m_bRuleCondition, m_bExtendedCount);
+				lpRes = std::make_shared<RestrictionStruct>(parser, m_ulDepth + 1, m_bRuleCondition, m_bExtendedCount);
 			}
 		}
 
@@ -278,14 +269,13 @@ namespace smartview
 
 			addChild(ulCount, L"%1!ws!lpRes->res.resCount.ulCount = 0x%2!08X!\r\n", tabs, ulCount->getData());
 
-			auto countRoot = std::make_shared<block>();
-			countRoot->setText(L"%1!ws!lpRes->res.resCount.lpRes\r\n", tabs);
+			auto countRoot = create(L"%1!ws!lpRes->res.resCount.lpRes\r\n", tabs);
 			addChild(countRoot);
 
 			if (lpRes)
 			{
 				lpRes->parseBlocks(ulTabLevel + 1);
-				countRoot->addChild(lpRes->getBlock());
+				countRoot->addChild(lpRes);
 			}
 		}
 
@@ -301,12 +291,12 @@ namespace smartview
 		void parse() override
 		{
 			if (m_bRuleCondition)
-				relop = blockT<DWORD, BYTE>::parse(m_Parser);
+				relop = blockT<DWORD>::parse<BYTE>(parser);
 			else
-				relop = blockT<DWORD>::parse(m_Parser);
+				relop = blockT<DWORD>::parse(parser);
 
-			ulPropTag = blockT<DWORD>::parse(m_Parser);
-			lpProp.parse(m_Parser, 1, m_bRuleCondition);
+			ulPropTag = blockT<DWORD>::parse(parser);
+			lpProp.parse(parser, 1, m_bRuleCondition);
 		}
 
 		void parseBlocks(ULONG ulTabLevel)
@@ -376,12 +366,12 @@ namespace smartview
 		void parse() override
 		{
 			if (m_bRuleCondition)
-				relBMR = blockT<DWORD, BYTE>::parse(m_Parser);
+				relBMR = blockT<DWORD>::parse<BYTE>(parser);
 			else
-				relBMR = blockT<DWORD>::parse(m_Parser);
+				relBMR = blockT<DWORD>::parse(parser);
 
-			ulPropTag = blockT<DWORD>::parse(m_Parser);
-			ulMask = blockT<DWORD>::parse(m_Parser);
+			ulPropTag = blockT<DWORD>::parse(parser);
+			ulMask = blockT<DWORD>::parse(parser);
 		}
 
 		void parseBlocks(ULONG ulTabLevel)
@@ -429,12 +419,12 @@ namespace smartview
 		void parse() override
 		{
 			if (m_bRuleCondition)
-				relop = blockT<DWORD, BYTE>::parse(m_Parser);
+				relop = blockT<DWORD>::parse<BYTE>(parser);
 			else
-				relop = blockT<DWORD>::parse(m_Parser);
+				relop = blockT<DWORD>::parse(parser);
 
-			ulPropTag = blockT<DWORD>::parse(m_Parser);
-			cb = blockT<DWORD>::parse(m_Parser);
+			ulPropTag = blockT<DWORD>::parse(parser);
+			cb = blockT<DWORD>::parse(parser);
 		}
 
 		void parseBlocks(ULONG ulTabLevel)
@@ -466,7 +456,7 @@ namespace smartview
 	class SExistRestrictionStruct : public blockRes
 	{
 	public:
-		void parse() override { ulPropTag = blockT<DWORD>::parse(m_Parser); }
+		void parse() override { ulPropTag = blockT<DWORD>::parse(parser); }
 
 		void parseBlocks(ULONG ulTabLevel)
 		{
@@ -490,11 +480,10 @@ namespace smartview
 	public:
 		void parse() override
 		{
-			ulSubObject = blockT<DWORD>::parse(m_Parser);
-			if (m_ulDepth < _MaxDepth && m_Parser->getSize())
+			ulSubObject = blockT<DWORD>::parse(parser);
+			if (m_ulDepth < _MaxDepth && parser->getSize())
 			{
-				lpRes =
-					std::make_shared<RestrictionStruct>(m_Parser, m_ulDepth + 1, m_bRuleCondition, m_bExtendedCount);
+				lpRes = std::make_shared<RestrictionStruct>(parser, m_ulDepth + 1, m_bRuleCondition, m_bExtendedCount);
 			}
 		}
 
@@ -513,7 +502,7 @@ namespace smartview
 			if (lpRes)
 			{
 				lpRes->parseBlocks(ulTabLevel + 1);
-				ulSubObject->addChild(lpRes->getBlock());
+				ulSubObject->addChild(lpRes);
 			}
 		}
 
@@ -529,18 +518,17 @@ namespace smartview
 		void parse() override
 		{
 			if (m_bRuleCondition)
-				cValues = blockT<DWORD, BYTE>::parse(m_Parser);
+				cValues = blockT<DWORD>::parse<BYTE>(parser);
 			else
-				cValues = blockT<DWORD>::parse(m_Parser);
+				cValues = blockT<DWORD>::parse(parser);
 
-			lpProp.parse(m_Parser, *cValues, m_bRuleCondition);
+			lpProp.parse(parser, *cValues, m_bRuleCondition);
 
 			// Check if a restriction is present
-			const auto resExists = blockT<BYTE>::parse(m_Parser);
-			if (*resExists && m_ulDepth < _MaxDepth && m_Parser->getSize())
+			const auto resExists = blockT<BYTE>::parse(parser);
+			if (*resExists && m_ulDepth < _MaxDepth && parser->getSize())
 			{
-				lpRes =
-					std::make_shared<RestrictionStruct>(m_Parser, m_ulDepth + 1, m_bRuleCondition, m_bExtendedCount);
+				lpRes = std::make_shared<RestrictionStruct>(parser, m_ulDepth + 1, m_bRuleCondition, m_bExtendedCount);
 			}
 		}
 
@@ -590,7 +578,7 @@ namespace smartview
 			if (lpRes)
 			{
 				lpRes->parseBlocks(ulTabLevel + 1);
-				addChild(lpRes->getBlock());
+				addChild(lpRes);
 			}
 		}
 
@@ -605,18 +593,17 @@ namespace smartview
 		void parse() override
 		{
 			if (m_bRuleCondition)
-				cValues = blockT<DWORD, BYTE>::parse(m_Parser);
+				cValues = blockT<DWORD>::parse<BYTE>(parser);
 			else
-				cValues = blockT<DWORD>::parse(m_Parser);
+				cValues = blockT<DWORD>::parse(parser);
 
-			lpProp.parse(m_Parser, *cValues, m_bRuleCondition);
+			lpProp.parse(parser, *cValues, m_bRuleCondition);
 
 			// Check if a restriction is present
-			const auto& resExists = blockT<BYTE>::parse(m_Parser);
-			if (*resExists && m_ulDepth < _MaxDepth && m_Parser->getSize())
+			const auto& resExists = blockT<BYTE>::parse(parser);
+			if (*resExists && m_ulDepth < _MaxDepth && parser->getSize())
 			{
-				lpRes =
-					std::make_shared<RestrictionStruct>(m_Parser, m_ulDepth + 1, m_bRuleCondition, m_bExtendedCount);
+				lpRes = std::make_shared<RestrictionStruct>(parser, m_ulDepth + 1, m_bRuleCondition, m_bExtendedCount);
 			}
 		}
 
@@ -666,7 +653,7 @@ namespace smartview
 			if (lpRes)
 			{
 				lpRes->parseBlocks(ulTabLevel + 1);
-				addChild(lpRes->getBlock());
+				addChild(lpRes);
 			}
 		}
 
@@ -687,11 +674,11 @@ namespace smartview
 	{
 		if (m_bRuleCondition)
 		{
-			rt = blockT<DWORD, BYTE>::parse(m_Parser);
+			rt = blockT<DWORD>::parse<BYTE>(parser);
 		}
 		else
 		{
-			rt = blockT<DWORD>::parse(m_Parser);
+			rt = blockT<DWORD>::parse(parser);
 		}
 
 		switch (*rt)
@@ -739,7 +726,7 @@ namespace smartview
 
 		if (res)
 		{
-			res->parse(m_Parser, ulDepth, m_bRuleCondition, m_bExtendedCount);
+			res->parse(parser, ulDepth, m_bRuleCondition, m_bExtendedCount);
 		}
 	}
 

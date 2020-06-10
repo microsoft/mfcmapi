@@ -1,11 +1,11 @@
 #pragma once
-#include <core/smartview/smartViewParser.h>
+#include <core/smartview/block/block.h>
 #include <core/smartview/block/blockT.h>
 #include <core/smartview/block/blockPV.h>
 
 namespace smartview
 {
-	struct SPropValueStruct : public smartViewParser
+	struct SPropValueStruct : public block
 	{
 	public:
 		void parse(
@@ -18,7 +18,7 @@ namespace smartview
 			m_doNickname = doNickname;
 			m_doRuleProcessing = doRuleProcessing;
 
-			smartViewParser::parse(binaryParser, 0, false);
+			block::parse(binaryParser, 0, false);
 		}
 
 		std::shared_ptr<blockT<WORD>> PropType = emptyT<WORD>();

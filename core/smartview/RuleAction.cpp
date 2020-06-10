@@ -28,7 +28,7 @@ namespace smartview
 	class ActionDataBounce : public ActionData
 	{
 	public:
-		void parse() override { BounceCode = blockT<DWORD>::parse(m_Parser); }
+		void parse() override { BounceCode = blockT<DWORD>::parse(parser); }
 
 		void parseBlocks()
 		{
@@ -52,15 +52,15 @@ namespace smartview
 
 	void RuleAction::parseBlocks()
 	{
-		setRoot(m_bExtended ? L"Extended Rule Action\r\n" : L"Rule Action\r\n");
-		NoOfActions = m_bExtended ? blockT<DWORD>::parse(m_Parser) : blockT<DWORD, WORD>::parse(m_Parser);
-		ActionBlocks.reserve(*NoOfActions);
+		setText(m_bExtended ? L"Extended Rule Action\r\n" : L"Rule Action\r\n");
+		NoOfActions = m_bExtended ? blockT<DWORD>::parse(parser) : blockT<DWORD>::parse<WORD>(parser);
 		if (*NoOfActions < _MaxEntriesSmall)
 		{
+			ActionBlocks.reserve(*NoOfActions);
 			for (auto i = 0; i < *NoOfActions; i++)
 			{
-				auto actionBlock = std::make_shared<ActionBlock>();
-				actionBlock->parse(m_Parser, m_bExtended);
+				auto actionBlock = std::make_shared<ActionBlock>(m_bExtended);
+				actionBlock->block::parse(parser, false);
 				ActionBlocks.push_back(actionBlock);
 			}
 		}

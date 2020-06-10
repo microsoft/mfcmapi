@@ -1,5 +1,5 @@
 #pragma once
-#include <core/smartview/smartViewParser.h>
+#include <core/smartview/block/block.h>
 #include <core/smartview/block/blockT.h>
 
 namespace smartview
@@ -15,7 +15,7 @@ namespace smartview
 		ResponseLevel(const std::shared_ptr<binaryParser>& parser);
 	};
 
-	class ConversationIndex : public smartViewParser
+	class ConversationIndex : public block
 	{
 	private:
 		void parse() override;
