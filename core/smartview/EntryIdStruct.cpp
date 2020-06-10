@@ -117,8 +117,7 @@ namespace smartview
 					cbRemainingBytes = *m_ContactAddressBookObject.EntryIDCount;
 				}
 
-				m_ContactAddressBookObject.lpEntryID =
-					std::make_shared<EntryIdStruct>(m_Parser, cbRemainingBytes, false);
+				m_ContactAddressBookObject.lpEntryID = block::parse<EntryIdStruct>(m_Parser, cbRemainingBytes, false);
 			}
 			break;
 			case EIDStructType::WAB:
@@ -126,7 +125,7 @@ namespace smartview
 				m_ObjectType = EIDStructType::WAB;
 
 				m_WAB.Type = blockT<byte>::parse(m_Parser);
-				m_WAB.lpEntryID = std::make_shared<EntryIdStruct>(m_Parser, false);
+				m_WAB.lpEntryID = block::parse<EntryIdStruct>(m_Parser, false);
 			}
 			break;
 			// message store objects
