@@ -122,12 +122,12 @@ namespace smartview
 
 		bool hasData() const noexcept { return !text.empty() || !children.empty(); }
 
-		virtual void parse(const std::shared_ptr<binaryParser>& binaryParser, bool _enableJunk)
+		void parse(const std::shared_ptr<binaryParser>& binaryParser, bool _enableJunk)
 		{
 			parse(binaryParser, 0, _enableJunk);
 		}
 
-		virtual void parse(const std::shared_ptr<binaryParser>& binaryParser, size_t cbBin, bool _enableJunk)
+		void parse(const std::shared_ptr<binaryParser>& binaryParser, size_t cbBin, bool _enableJunk)
 		{
 			m_Parser = binaryParser;
 			m_Parser->setCap(cbBin);
