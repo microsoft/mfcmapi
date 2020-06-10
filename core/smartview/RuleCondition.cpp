@@ -5,10 +5,8 @@
 
 namespace smartview
 {
-	void PropertyName::parse(std::shared_ptr<binaryParser>& parser)
+	void PropertyName::parse()
 	{
-		// Offset will always be where we start parsing
-		setOffset(parser->getOffset());
 		Kind = blockT<BYTE>::parse(parser);
 		Guid = blockT<GUID>::parse(parser);
 		if (*Kind == MNID_ID)
@@ -20,41 +18,38 @@ namespace smartview
 			NameSize = blockT<BYTE>::parse(parser);
 			Name = blockStringW::parse(parser, *NameSize / sizeof(WCHAR));
 		}
-		// And size will always be how many bytes we consumed
-		setSize(parser->getOffset() - getOffset());
 	}
 
 	void RuleCondition::Init(bool bExtended) noexcept { m_bExtended = bExtended; }
 
 	void RuleCondition::parse()
 	{
-		m_NamedPropertyInformation.NoOfNamedProps = blockT<WORD>::parse(m_Parser);
+		m_NamedPropertyInformation.NoOfNamedProps = blockT<WORD>::parse(parser);
 		if (*m_NamedPropertyInformation.NoOfNamedProps && *m_NamedPropertyInformation.NoOfNamedProps < _MaxEntriesLarge)
 		{
 			m_NamedPropertyInformation.PropId.reserve(*m_NamedPropertyInformation.NoOfNamedProps);
 			for (auto i = 0; i < *m_NamedPropertyInformation.NoOfNamedProps; i++)
 			{
-				m_NamedPropertyInformation.PropId.push_back(blockT<WORD>::parse(m_Parser));
+				m_NamedPropertyInformation.PropId.push_back(blockT<WORD>::parse(parser));
 			}
 
-			m_NamedPropertyInformation.NamedPropertiesSize = blockT<DWORD>::parse(m_Parser);
+			m_NamedPropertyInformation.NamedPropertiesSize = blockT<DWORD>::parse(parser);
 
 			m_NamedPropertyInformation.PropertyName.reserve(*m_NamedPropertyInformation.NoOfNamedProps);
 			for (auto i = 0; i < *m_NamedPropertyInformation.NoOfNamedProps; i++)
 			{
-				auto namedProp = std::make_shared<PropertyName>();
-				namedProp->parse(m_Parser);
+				auto namedProp = block::parse<PropertyName>(parser, false);
 				m_NamedPropertyInformation.PropertyName.emplace_back(namedProp);
 			}
 		}
 
 		m_lpRes = std::make_shared<RestrictionStruct>(true, m_bExtended);
-		m_lpRes->smartViewParser::parse(m_Parser, false);
+		m_lpRes->block::parse(parser, false);
 	}
 
 	void RuleCondition::parseBlocks()
 	{
-		setRoot(m_bExtended ? L"Extended Rule Condition\r\n" : L"Rule Condition\r\n");
+		setText(m_bExtended ? L"Extended Rule Condition\r\n" : L"Rule Condition\r\n");
 
 		addChild(
 			m_NamedPropertyInformation.NoOfNamedProps,
@@ -113,7 +108,7 @@ namespace smartview
 		if (m_lpRes && m_lpRes->hasData())
 		{
 			terminateBlock();
-			addChild(m_lpRes->getBlock());
+			addChild(m_lpRes);
 		}
 	}
 } // namespace smartview

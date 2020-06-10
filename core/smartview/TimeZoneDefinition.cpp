@@ -36,27 +36,27 @@ namespace smartview
 
 	void TimeZoneDefinition::parse()
 	{
-		m_bMajorVersion = blockT<BYTE>::parse(m_Parser);
-		m_bMinorVersion = blockT<BYTE>::parse(m_Parser);
-		m_cbHeader = blockT<WORD>::parse(m_Parser);
-		m_wReserved = blockT<WORD>::parse(m_Parser);
-		m_cchKeyName = blockT<WORD>::parse(m_Parser);
-		m_szKeyName = blockStringW::parse(m_Parser, *m_cchKeyName);
-		m_cRules = blockT<WORD>::parse(m_Parser);
+		m_bMajorVersion = blockT<BYTE>::parse(parser);
+		m_bMinorVersion = blockT<BYTE>::parse(parser);
+		m_cbHeader = blockT<WORD>::parse(parser);
+		m_wReserved = blockT<WORD>::parse(parser);
+		m_cchKeyName = blockT<WORD>::parse(parser);
+		m_szKeyName = blockStringW::parse(parser, *m_cchKeyName);
+		m_cRules = blockT<WORD>::parse(parser);
 
 		if (*m_cRules && *m_cRules < _MaxEntriesSmall)
 		{
 			m_lpTZRule.reserve(*m_cRules);
 			for (WORD i = 0; i < *m_cRules; i++)
 			{
-				m_lpTZRule.emplace_back(std::make_shared<TZRule>(m_Parser));
+				m_lpTZRule.emplace_back(std::make_shared<TZRule>(parser));
 			}
 		}
 	}
 
 	void TimeZoneDefinition::parseBlocks()
 	{
-		setRoot(L"Time Zone Definition: \r\n");
+		setText(L"Time Zone Definition: \r\n");
 		addChild(m_bMajorVersion, L"bMajorVersion = 0x%1!02X! (%1!d!)\r\n", m_bMajorVersion->getData());
 		addChild(m_bMinorVersion, L"bMinorVersion = 0x%1!02X! (%1!d!)\r\n", m_bMinorVersion->getData());
 		addChild(m_cbHeader, L"cbHeader = 0x%1!04X! (%1!d!)\r\n", m_cbHeader->getData());

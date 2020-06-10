@@ -8,50 +8,50 @@ namespace smartview
 {
 	void RecurrencePattern::parse()
 	{
-		m_ReaderVersion = blockT<WORD>::parse(m_Parser);
-		m_WriterVersion = blockT<WORD>::parse(m_Parser);
-		m_RecurFrequency = blockT<WORD>::parse(m_Parser);
-		m_PatternType = blockT<WORD>::parse(m_Parser);
-		m_CalendarType = blockT<WORD>::parse(m_Parser);
-		m_FirstDateTime = blockT<DWORD>::parse(m_Parser);
-		m_Period = blockT<DWORD>::parse(m_Parser);
-		m_SlidingFlag = blockT<DWORD>::parse(m_Parser);
+		m_ReaderVersion = blockT<WORD>::parse(parser);
+		m_WriterVersion = blockT<WORD>::parse(parser);
+		m_RecurFrequency = blockT<WORD>::parse(parser);
+		m_PatternType = blockT<WORD>::parse(parser);
+		m_CalendarType = blockT<WORD>::parse(parser);
+		m_FirstDateTime = blockT<DWORD>::parse(parser);
+		m_Period = blockT<DWORD>::parse(parser);
+		m_SlidingFlag = blockT<DWORD>::parse(parser);
 
 		switch (*m_PatternType)
 		{
 		case rptMinute:
 			break;
 		case rptWeek:
-			m_PatternTypeSpecific.WeekRecurrencePattern = blockT<DWORD>::parse(m_Parser);
+			m_PatternTypeSpecific.WeekRecurrencePattern = blockT<DWORD>::parse(parser);
 			break;
 		case rptMonth:
 		case rptMonthEnd:
 		case rptHjMonth:
 		case rptHjMonthEnd:
-			m_PatternTypeSpecific.MonthRecurrencePattern = blockT<DWORD>::parse(m_Parser);
+			m_PatternTypeSpecific.MonthRecurrencePattern = blockT<DWORD>::parse(parser);
 			break;
 		case rptMonthNth:
 		case rptHjMonthNth:
-			m_PatternTypeSpecific.MonthNthRecurrencePattern.DayOfWeek = blockT<DWORD>::parse(m_Parser);
-			m_PatternTypeSpecific.MonthNthRecurrencePattern.N = blockT<DWORD>::parse(m_Parser);
+			m_PatternTypeSpecific.MonthNthRecurrencePattern.DayOfWeek = blockT<DWORD>::parse(parser);
+			m_PatternTypeSpecific.MonthNthRecurrencePattern.N = blockT<DWORD>::parse(parser);
 			break;
 		}
 
-		m_EndType = blockT<DWORD>::parse(m_Parser);
-		m_OccurrenceCount = blockT<DWORD>::parse(m_Parser);
-		m_FirstDOW = blockT<DWORD>::parse(m_Parser);
-		m_DeletedInstanceCount = blockT<DWORD>::parse(m_Parser);
+		m_EndType = blockT<DWORD>::parse(parser);
+		m_OccurrenceCount = blockT<DWORD>::parse(parser);
+		m_FirstDOW = blockT<DWORD>::parse(parser);
+		m_DeletedInstanceCount = blockT<DWORD>::parse(parser);
 
 		if (*m_DeletedInstanceCount && *m_DeletedInstanceCount < _MaxEntriesSmall)
 		{
 			m_DeletedInstanceDates.reserve(*m_DeletedInstanceCount);
 			for (DWORD i = 0; i < *m_DeletedInstanceCount; i++)
 			{
-				m_DeletedInstanceDates.emplace_back(blockT<DWORD>::parse(m_Parser));
+				m_DeletedInstanceDates.emplace_back(blockT<DWORD>::parse(parser));
 			}
 		}
 
-		m_ModifiedInstanceCount = blockT<DWORD>::parse(m_Parser);
+		m_ModifiedInstanceCount = blockT<DWORD>::parse(parser);
 
 		if (*m_ModifiedInstanceCount && *m_ModifiedInstanceCount <= *m_DeletedInstanceCount &&
 			*m_ModifiedInstanceCount < _MaxEntriesSmall)
@@ -59,17 +59,17 @@ namespace smartview
 			m_ModifiedInstanceDates.reserve(*m_ModifiedInstanceCount);
 			for (DWORD i = 0; i < *m_ModifiedInstanceCount; i++)
 			{
-				m_ModifiedInstanceDates.emplace_back(blockT<DWORD>::parse(m_Parser));
+				m_ModifiedInstanceDates.emplace_back(blockT<DWORD>::parse(parser));
 			}
 		}
 
-		m_StartDate = blockT<DWORD>::parse(m_Parser);
-		m_EndDate = blockT<DWORD>::parse(m_Parser);
+		m_StartDate = blockT<DWORD>::parse(parser);
+		m_EndDate = blockT<DWORD>::parse(parser);
 	}
 
 	void RecurrencePattern::parseBlocks()
 	{
-		setRoot(L"Recurrence Pattern: \r\n");
+		setText(L"Recurrence Pattern: \r\n");
 		addChild(m_ReaderVersion, L"ReaderVersion: 0x%1!04X!\r\n", m_ReaderVersion->getData());
 		addChild(m_WriterVersion, L"WriterVersion: 0x%1!04X!\r\n", m_WriterVersion->getData());
 		auto szRecurFrequency = flags::InterpretFlags(flagRecurFrequency, *m_RecurFrequency);

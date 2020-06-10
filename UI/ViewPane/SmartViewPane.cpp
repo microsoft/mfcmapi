@@ -181,7 +181,7 @@ namespace viewpane
 
 		const auto iStructType = static_cast<parserType>(GetDropDownSelectionValue());
 		auto szSmartViewArray = std::vector<std::wstring>{};
-		treeData = std::make_shared<smartview::block>();
+		treeData = smartview::block::create();
 		auto svp = smartview::GetSmartViewParser(iStructType, nullptr);
 		auto source = 0;
 		for (auto& bin : m_bins)
@@ -191,22 +191,21 @@ namespace viewpane
 			{
 				svp->init(bin.size(), bin.data());
 				parsedData = svp->toString();
-				auto node = svp->getBlock();
-				node->setSource(source++);
+				svp->setSource(source++);
 				if (m_bins.size() == 1)
 				{
-					treeData = node;
+					treeData = svp;
 				}
 				else
 				{
-					treeData->addChild(node);
+					treeData->addChild(svp);
 				}
 			}
 
 			if (parsedData.empty())
 			{
-				parsedData =
-					smartview::InterpretBinaryAsString(SBinary{static_cast<ULONG>(bin.size()), bin.data()}, iStructType, nullptr);
+				parsedData = smartview::InterpretBinaryAsString(
+					SBinary{static_cast<ULONG>(bin.size()), bin.data()}, iStructType, nullptr);
 			}
 
 			szSmartViewArray.push_back(parsedData);

@@ -5,32 +5,32 @@ namespace smartview
 {
 	void TimeZone::parse()
 	{
-		m_lBias = blockT<DWORD>::parse(m_Parser);
-		m_lStandardBias = blockT<DWORD>::parse(m_Parser);
-		m_lDaylightBias = blockT<DWORD>::parse(m_Parser);
-		m_wStandardYear = blockT<WORD>::parse(m_Parser);
-		m_stStandardDate.wYear = blockT<WORD>::parse(m_Parser);
-		m_stStandardDate.wMonth = blockT<WORD>::parse(m_Parser);
-		m_stStandardDate.wDayOfWeek = blockT<WORD>::parse(m_Parser);
-		m_stStandardDate.wDay = blockT<WORD>::parse(m_Parser);
-		m_stStandardDate.wHour = blockT<WORD>::parse(m_Parser);
-		m_stStandardDate.wMinute = blockT<WORD>::parse(m_Parser);
-		m_stStandardDate.wSecond = blockT<WORD>::parse(m_Parser);
-		m_stStandardDate.wMilliseconds = blockT<WORD>::parse(m_Parser);
-		m_wDaylightDate = blockT<WORD>::parse(m_Parser);
-		m_stDaylightDate.wYear = blockT<WORD>::parse(m_Parser);
-		m_stDaylightDate.wMonth = blockT<WORD>::parse(m_Parser);
-		m_stDaylightDate.wDayOfWeek = blockT<WORD>::parse(m_Parser);
-		m_stDaylightDate.wDay = blockT<WORD>::parse(m_Parser);
-		m_stDaylightDate.wHour = blockT<WORD>::parse(m_Parser);
-		m_stDaylightDate.wMinute = blockT<WORD>::parse(m_Parser);
-		m_stDaylightDate.wSecond = blockT<WORD>::parse(m_Parser);
-		m_stDaylightDate.wMilliseconds = blockT<WORD>::parse(m_Parser);
+		m_lBias = blockT<DWORD>::parse(parser);
+		m_lStandardBias = blockT<DWORD>::parse(parser);
+		m_lDaylightBias = blockT<DWORD>::parse(parser);
+		m_wStandardYear = blockT<WORD>::parse(parser);
+		m_stStandardDate.wYear = blockT<WORD>::parse(parser);
+		m_stStandardDate.wMonth = blockT<WORD>::parse(parser);
+		m_stStandardDate.wDayOfWeek = blockT<WORD>::parse(parser);
+		m_stStandardDate.wDay = blockT<WORD>::parse(parser);
+		m_stStandardDate.wHour = blockT<WORD>::parse(parser);
+		m_stStandardDate.wMinute = blockT<WORD>::parse(parser);
+		m_stStandardDate.wSecond = blockT<WORD>::parse(parser);
+		m_stStandardDate.wMilliseconds = blockT<WORD>::parse(parser);
+		m_wDaylightDate = blockT<WORD>::parse(parser);
+		m_stDaylightDate.wYear = blockT<WORD>::parse(parser);
+		m_stDaylightDate.wMonth = blockT<WORD>::parse(parser);
+		m_stDaylightDate.wDayOfWeek = blockT<WORD>::parse(parser);
+		m_stDaylightDate.wDay = blockT<WORD>::parse(parser);
+		m_stDaylightDate.wHour = blockT<WORD>::parse(parser);
+		m_stDaylightDate.wMinute = blockT<WORD>::parse(parser);
+		m_stDaylightDate.wSecond = blockT<WORD>::parse(parser);
+		m_stDaylightDate.wMilliseconds = blockT<WORD>::parse(parser);
 	}
 
 	void TimeZone::parseBlocks()
 	{
-		setRoot(L"Time Zone: \r\n");
+		setText(L"Time Zone: \r\n");
 		addChild(m_lBias, L"lBias = 0x%1!08X! (%1!d!)\r\n", m_lBias->getData());
 		addChild(m_lStandardBias, L"lStandardBias = 0x%1!08X! (%1!d!)\r\n", m_lStandardBias->getData());
 		addChild(m_lDaylightBias, L"lDaylightBias = 0x%1!08X! (%1!d!)\r\n", m_lDaylightBias->getData());

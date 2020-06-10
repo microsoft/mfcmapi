@@ -34,25 +34,25 @@ namespace smartview
 
 	void FolderUserFieldStream::parse()
 	{
-		m_FolderUserFieldsAnsiCount = blockT<DWORD>::parse(m_Parser);
+		m_FolderUserFieldsAnsiCount = blockT<DWORD>::parse(parser);
 		if (*m_FolderUserFieldsAnsiCount && *m_FolderUserFieldsAnsiCount < _MaxEntriesSmall)
 		{
 			m_FieldDefinitionsA.reserve(*m_FolderUserFieldsAnsiCount);
 			for (DWORD i = 0; i < *m_FolderUserFieldsAnsiCount; i++)
 			{
-				if (m_Parser->empty()) continue;
-				m_FieldDefinitionsA.emplace_back(std::make_shared<FolderFieldDefinitionA>(m_Parser));
+				if (parser->empty()) continue;
+				m_FieldDefinitionsA.emplace_back(std::make_shared<FolderFieldDefinitionA>(parser));
 			}
 		}
 
-		m_FolderUserFieldsUnicodeCount = blockT<DWORD>::parse(m_Parser);
+		m_FolderUserFieldsUnicodeCount = blockT<DWORD>::parse(parser);
 		if (*m_FolderUserFieldsUnicodeCount && *m_FolderUserFieldsUnicodeCount < _MaxEntriesSmall)
 		{
 			m_FieldDefinitionsW.reserve(*m_FolderUserFieldsUnicodeCount);
 			for (DWORD i = 0; i < *m_FolderUserFieldsUnicodeCount; i++)
 			{
-				if (m_Parser->empty()) continue;
-				m_FieldDefinitionsW.emplace_back(std::make_shared<FolderFieldDefinitionW>(m_Parser));
+				if (parser->empty()) continue;
+				m_FieldDefinitionsW.emplace_back(std::make_shared<FolderFieldDefinitionW>(parser));
 			}
 		}
 	}
@@ -74,7 +74,7 @@ namespace smartview
 
 	void FolderUserFieldStream::parseBlocks()
 	{
-		setRoot(L"Folder User Field Stream\r\n");
+		setText(L"Folder User Field Stream\r\n");
 		addChild(
 			m_FolderUserFieldsAnsiCount,
 			L"FolderUserFieldAnsi.FieldDefinitionCount = %1!d!\r\n",
@@ -89,8 +89,7 @@ namespace smartview
 				m_FolderUserFieldsAnsiCount->terminateBlock();
 				m_FolderUserFieldsAnsiCount->addBlankLine();
 
-				auto fieldBlock = std::make_shared<block>();
-				fieldBlock->setText(L"Field %1!d!\r\n", i++);
+				auto fieldBlock = create(L"Field %1!d!\r\n", i++);
 				m_FolderUserFieldsAnsiCount->addChild(fieldBlock);
 
 				auto szFieldType = flags::InterpretFlags(flagFolderType, *fieldDefinition->FieldType);
@@ -154,8 +153,7 @@ namespace smartview
 				m_FolderUserFieldsUnicodeCount->terminateBlock();
 				m_FolderUserFieldsUnicodeCount->addBlankLine();
 
-				auto fieldBlock = std::make_shared<block>();
-				fieldBlock->setText(L"Field %1!d!\r\n", i++);
+				auto fieldBlock = create(L"Field %1!d!\r\n", i++);
 				m_FolderUserFieldsUnicodeCount->addChild(fieldBlock);
 
 				auto szFieldType = flags::InterpretFlags(flagFolderType, *fieldDefinition->FieldType);

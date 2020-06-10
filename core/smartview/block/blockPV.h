@@ -1,5 +1,5 @@
 #pragma once
-#include <core/smartview/smartViewParser.h>
+#include <core/smartview/block/block.h>
 #include <core/smartview/SmartView.h>
 #include <core/property/parseProperty.h>
 #include <core/smartview/block/blockStringA.h>
@@ -13,18 +13,14 @@ namespace smartview
 	{
 	public:
 		blockPV() = default;
-		void parse(std::shared_ptr<binaryParser>& parser, ULONG ulPropTag, bool doNickname, bool doRuleProcessing)
+		void parse(std::shared_ptr<binaryParser>& _parser, ULONG ulPropTag, bool doNickname, bool doRuleProcessing)
 		{
-			m_Parser = parser;
+			parser = _parser;
 			m_doNickname = doNickname;
 			m_doRuleProcessing = doRuleProcessing;
 			m_ulPropTag = ulPropTag;
 
-			// Offset will always be where we start parsing
-			setOffset(m_Parser->getOffset());
-			parse();
-			// And size will always be how many bytes we consumed
-			setSize(m_Parser->getOffset() - getOffset());
+			ensureParsed();
 		}
 		blockPV(const blockPV&) = delete;
 		blockPV& operator=(const blockPV&) = delete;
@@ -50,7 +46,6 @@ namespace smartview
 	protected:
 		bool m_doNickname{};
 		bool m_doRuleProcessing{};
-		std::shared_ptr<binaryParser> m_Parser{};
 		ULONG m_ulPropTag{};
 
 	private:
@@ -64,19 +59,19 @@ namespace smartview
 			auto altPropString = std::wstring{};
 			property::parseProperty(&prop, &propString, &altPropString);
 
-			propBlock = std::make_shared<blockStringW>(
-				strings::RemoveInvalidCharactersW(propString, false), getSize(), getOffset());
+			propBlock =
+				blockStringW::parse(strings::RemoveInvalidCharactersW(propString, false), getSize(), getOffset());
 
-			altPropBlock = std::make_shared<blockStringW>(
-				strings::RemoveInvalidCharactersW(altPropString, false), getSize(), getOffset());
+			altPropBlock =
+				blockStringW::parse(strings::RemoveInvalidCharactersW(altPropString, false), getSize(), getOffset());
 
 			const auto smartViewString = parsePropertySmartView(&prop, nullptr, nullptr, nullptr, false, false);
-			smartViewBlock = std::make_shared<blockStringW>(smartViewString, getSize(), getOffset());
+			smartViewBlock = blockStringW::parse(smartViewString, getSize(), getOffset());
 
 			propStringsGenerated = true;
 		}
 
-		virtual void parse() = 0;
+		void parse() override = 0;
 		virtual const void getProp(SPropValue& prop) noexcept = 0;
 		std::shared_ptr<blockStringW> propBlock = emptySW();
 		std::shared_ptr<blockStringW> altPropBlock = emptySW();
@@ -90,8 +85,8 @@ namespace smartview
 	private:
 		void parse() override
 		{
-			dwLowDateTime = blockT<DWORD>::parse(m_Parser);
-			dwHighDateTime = blockT<DWORD>::parse(m_Parser);
+			dwLowDateTime = blockT<DWORD>::parse(parser);
+			dwHighDateTime = blockT<DWORD>::parse(parser);
 		}
 
 		const void getProp(SPropValue& prop) noexcept override { prop.Value.ft = {*dwLowDateTime, *dwHighDateTime}; }
@@ -107,22 +102,22 @@ namespace smartview
 		{
 			if (m_doRuleProcessing)
 			{
-				str = blockStringA::parse(m_Parser);
+				str = blockStringA::parse(parser);
 				cb->setData(static_cast<DWORD>(str->length()));
 			}
 			else
 			{
 				if (m_doNickname)
 				{
-					m_Parser->advance(sizeof LARGE_INTEGER);
-					cb = blockT<DWORD>::parse(m_Parser);
+					parser->advance(sizeof LARGE_INTEGER);
+					cb = blockT<DWORD>::parse(parser);
 				}
 				else
 				{
-					cb = blockT<DWORD, WORD>::parse(m_Parser);
+					cb = blockT<DWORD>::parse<WORD>(parser);
 				}
 
-				str = blockStringA::parse(m_Parser, *cb);
+				str = blockStringA::parse(parser, *cb);
 			}
 		}
 
@@ -139,22 +134,22 @@ namespace smartview
 		{
 			if (m_doRuleProcessing)
 			{
-				str = blockStringW::parse(m_Parser);
+				str = blockStringW::parse(parser);
 				cb->setData(static_cast<DWORD>(str->length()));
 			}
 			else
 			{
 				if (m_doNickname)
 				{
-					m_Parser->advance(sizeof LARGE_INTEGER);
-					cb = blockT<DWORD>::parse(m_Parser);
+					parser->advance(sizeof LARGE_INTEGER);
+					cb = blockT<DWORD>::parse(parser);
 				}
 				else
 				{
-					cb = blockT<DWORD, WORD>::parse(m_Parser);
+					cb = blockT<DWORD>::parse<WORD>(parser);
 				}
 
-				str = blockStringW::parse(m_Parser, *cb / sizeof(WCHAR));
+				str = blockStringW::parse(parser, *cb / sizeof(WCHAR));
 			}
 		}
 
@@ -167,9 +162,9 @@ namespace smartview
 	class SBinaryBlock : public blockPV
 	{
 	public:
-		void parse(std::shared_ptr<binaryParser>& parser, ULONG ulPropTag)
+		void parse(std::shared_ptr<binaryParser>& _parser, ULONG ulPropTag)
 		{
-			blockPV::parse(parser, ulPropTag, false, true);
+			blockPV::parse(_parser, ulPropTag, false, true);
 		}
 		operator SBinary() noexcept { return {*cb, const_cast<LPBYTE>(lpb->data())}; }
 
@@ -178,20 +173,20 @@ namespace smartview
 		{
 			if (m_doNickname)
 			{
-				m_Parser->advance(sizeof LARGE_INTEGER);
+				parser->advance(sizeof LARGE_INTEGER);
 			}
 
 			if (m_doRuleProcessing || m_doNickname)
 			{
-				cb = blockT<DWORD>::parse(m_Parser);
+				cb = blockT<DWORD>::parse(parser);
 			}
 			else
 			{
-				cb = blockT<DWORD, WORD>::parse(m_Parser);
+				cb = blockT<DWORD>::parse<WORD>(parser);
 			}
 
 			// Note that we're not placing a restriction on how large a binary property we can parse. May need to revisit this.
-			lpb = blockBytes::parse(m_Parser, *cb);
+			lpb = blockBytes::parse(parser, *cb);
 		}
 
 		const void getProp(SPropValue& prop) noexcept override { prop.Value.bin = this->operator SBinary(); }
@@ -213,12 +208,12 @@ namespace smartview
 		{
 			if (m_doNickname)
 			{
-				m_Parser->advance(sizeof LARGE_INTEGER);
-				cValues = blockT<DWORD>::parse(m_Parser);
+				parser->advance(sizeof LARGE_INTEGER);
+				cValues = blockT<DWORD>::parse(parser);
 			}
 			else
 			{
-				cValues = blockT<DWORD, WORD>::parse(m_Parser);
+				cValues = blockT<DWORD>::parse<WORD>(parser);
 			}
 
 			if (cValues && *cValues < _MaxEntriesLarge)
@@ -226,7 +221,7 @@ namespace smartview
 				for (ULONG j = 0; j < *cValues; j++)
 				{
 					const auto block = std::make_shared<SBinaryBlock>();
-					block->parse(m_Parser, m_ulPropTag);
+					block->parse(parser, m_ulPropTag);
 					lpbin.emplace_back(block);
 				}
 			}
@@ -261,12 +256,12 @@ namespace smartview
 		{
 			if (m_doNickname)
 			{
-				m_Parser->advance(sizeof LARGE_INTEGER);
-				cValues = blockT<DWORD>::parse(m_Parser);
+				parser->advance(sizeof LARGE_INTEGER);
+				cValues = blockT<DWORD>::parse(parser);
 			}
 			else
 			{
-				cValues = blockT<DWORD, WORD>::parse(m_Parser);
+				cValues = blockT<DWORD>::parse<WORD>(parser);
 			}
 
 			if (cValues)
@@ -275,7 +270,7 @@ namespace smartview
 				lppszA.reserve(*cValues);
 				for (ULONG j = 0; j < *cValues; j++)
 				{
-					lppszA.emplace_back(std::make_shared<blockStringA>(m_Parser));
+					lppszA.emplace_back(blockStringA::parse(parser));
 				}
 			}
 		}
@@ -294,12 +289,12 @@ namespace smartview
 		{
 			if (m_doNickname)
 			{
-				m_Parser->advance(sizeof LARGE_INTEGER);
-				cValues = blockT<DWORD>::parse(m_Parser);
+				parser->advance(sizeof LARGE_INTEGER);
+				cValues = blockT<DWORD>::parse(parser);
 			}
 			else
 			{
-				cValues = blockT<DWORD, WORD>::parse(m_Parser);
+				cValues = blockT<DWORD>::parse<WORD>(parser);
 			}
 
 			if (cValues && *cValues < _MaxEntriesLarge)
@@ -307,7 +302,7 @@ namespace smartview
 				lppszW.reserve(*cValues);
 				for (ULONG j = 0; j < *cValues; j++)
 				{
-					lppszW.emplace_back(std::make_shared<blockStringW>(m_Parser));
+					lppszW.emplace_back(blockStringW::parse(parser));
 				}
 			}
 		}
@@ -330,9 +325,9 @@ namespace smartview
 	private:
 		void parse() override
 		{
-			if (m_doNickname) i = blockT<WORD>::parse(m_Parser); // TODO: This can't be right
-			if (m_doNickname) m_Parser->advance(sizeof WORD);
-			if (m_doNickname) m_Parser->advance(sizeof DWORD);
+			if (m_doNickname) i = blockT<WORD>::parse(parser); // TODO: This can't be right
+			if (m_doNickname) parser->advance(sizeof WORD);
+			if (m_doNickname) parser->advance(sizeof DWORD);
 		}
 
 		const void getProp(SPropValue& prop) noexcept override { prop.Value.i = *i; }
@@ -351,8 +346,8 @@ namespace smartview
 	private:
 		void parse() override
 		{
-			l = blockT<LONG, DWORD>::parse(m_Parser);
-			if (m_doNickname) m_Parser->advance(sizeof DWORD);
+			l = blockT<LONG>::parse<DWORD>(parser);
+			if (m_doNickname) parser->advance(sizeof DWORD);
 		}
 
 		const void getProp(SPropValue& prop) noexcept override { prop.Value.l = *l; }
@@ -367,15 +362,15 @@ namespace smartview
 		{
 			if (m_doRuleProcessing)
 			{
-				b = blockT<WORD, BYTE>::parse(m_Parser);
+				b = blockT<WORD>::parse<BYTE>(parser);
 			}
 			else
 			{
-				b = blockT<WORD>::parse(m_Parser);
+				b = blockT<WORD>::parse(parser);
 			}
 
-			if (m_doNickname) m_Parser->advance(sizeof WORD);
-			if (m_doNickname) m_Parser->advance(sizeof DWORD);
+			if (m_doNickname) parser->advance(sizeof WORD);
+			if (m_doNickname) parser->advance(sizeof DWORD);
 		}
 
 		const void getProp(SPropValue& prop) noexcept override { prop.Value.b = *b; }
@@ -388,8 +383,8 @@ namespace smartview
 	private:
 		void parse() override
 		{
-			flt = blockT<float>::parse(m_Parser);
-			if (m_doNickname) m_Parser->advance(sizeof DWORD);
+			flt = blockT<float>::parse(parser);
+			if (m_doNickname) parser->advance(sizeof DWORD);
 		}
 
 		const void getProp(SPropValue& prop) noexcept override { prop.Value.flt = *flt; }
@@ -400,7 +395,7 @@ namespace smartview
 	class DoubleBlock : public blockPV
 	{
 	private:
-		void parse() override { dbl = blockT<double>::parse(m_Parser); }
+		void parse() override { dbl = blockT<double>::parse(parser); }
 
 		const void getProp(SPropValue& prop) noexcept override { prop.Value.dbl = *dbl; }
 		std::shared_ptr<blockT<double>> dbl = emptyT<double>();
@@ -412,8 +407,8 @@ namespace smartview
 	private:
 		void parse() override
 		{
-			if (m_doNickname) m_Parser->advance(sizeof LARGE_INTEGER);
-			lpguid = blockT<GUID>::parse(m_Parser);
+			if (m_doNickname) parser->advance(sizeof LARGE_INTEGER);
+			lpguid = blockT<GUID>::parse(parser);
 		}
 
 		const void getProp(SPropValue& prop) noexcept override
@@ -434,7 +429,7 @@ namespace smartview
 		}
 
 	private:
-		void parse() override { li = blockT<LARGE_INTEGER>::parse(m_Parser); }
+		void parse() override { li = blockT<LARGE_INTEGER>::parse(parser); }
 
 		const void getProp(SPropValue& prop) noexcept override { prop.Value.li = li->getData(); }
 		std::shared_ptr<blockT<LARGE_INTEGER>> li = emptyT<LARGE_INTEGER>();
@@ -446,8 +441,8 @@ namespace smartview
 	private:
 		void parse() override
 		{
-			err = blockT<SCODE, DWORD>::parse(m_Parser);
-			if (m_doNickname) m_Parser->advance(sizeof DWORD);
+			err = blockT<SCODE>::parse<DWORD>(parser);
+			if (m_doNickname) parser->advance(sizeof DWORD);
 		}
 
 		const void getProp(SPropValue& prop) noexcept override { prop.Value.err = *err; }

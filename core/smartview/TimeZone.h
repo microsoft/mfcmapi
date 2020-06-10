@@ -1,5 +1,5 @@
 #pragma once
-#include <core/smartview/smartViewParser.h>
+#include <core/smartview/block/block.h>
 #include <core/smartview/block/blockT.h>
 
 namespace smartview
@@ -23,7 +23,7 @@ namespace smartview
 	//   far the shift is.  This is basically the same as
 	//   TIME_ZONE_INFORMATION documented in MSDN, except that the strings
 	//   describing the names 'daylight' and 'standard' time are omitted.
-	class TimeZone : public smartViewParser
+	class TimeZone : public block
 	{
 	private:
 		void parse() override;

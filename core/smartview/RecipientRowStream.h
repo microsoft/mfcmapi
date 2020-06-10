@@ -1,5 +1,5 @@
 #pragma once
-#include <core/smartview/smartViewParser.h>
+#include <core/smartview/block/block.h>
 #include <core/smartview/PropertiesStruct.h>
 #include <core/smartview/block/blockT.h>
 
@@ -9,12 +9,12 @@ namespace smartview
 	{
 		std::shared_ptr<blockT<DWORD>> ulReserved1 = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> cValues = emptyT<DWORD>();
-		PropertiesStruct rgPropVals;
+		std::shared_ptr<PropertiesStruct> rgPropVals;
 
 		ADRENTRYStruct(const std::shared_ptr<binaryParser>& parser);
 	};
 
-	class RecipientRowStream : public smartViewParser
+	class RecipientRowStream : public block
 	{
 	private:
 		void parse() override;

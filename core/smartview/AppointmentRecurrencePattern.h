@@ -1,5 +1,5 @@
 #pragma once
-#include <core/smartview/smartViewParser.h>
+#include <core/smartview/block/block.h>
 #include <core/smartview/RecurrencePattern.h>
 #include <core/smartview/block/blockStringA.h>
 #include <core/smartview/block/blockStringW.h>
@@ -66,13 +66,13 @@ namespace smartview
 	// =====================
 	//   This structure specifies a recurrence pattern for a calendar object
 	//   including information about exception property values.
-	class AppointmentRecurrencePattern : public smartViewParser
+	class AppointmentRecurrencePattern : public block
 	{
 	private:
 		void parse() override;
 		void parseBlocks() override;
 
-		RecurrencePattern m_RecurrencePattern;
+		std::shared_ptr<RecurrencePattern> m_RecurrencePattern;
 		std::shared_ptr<blockT<DWORD>> m_ReaderVersion2 = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> m_WriterVersion2 = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> m_StartTimeOffset = emptyT<DWORD>();

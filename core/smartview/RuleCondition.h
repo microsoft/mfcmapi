@@ -1,5 +1,5 @@
 #pragma once
-#include <core/smartview/smartViewParser.h>
+#include <core/smartview/block/block.h>
 #include <core/smartview/RestrictionStruct.h>
 #include <core/smartview/block/blockStringW.h>
 #include <core/smartview/block/blockT.h>
@@ -23,7 +23,6 @@ namespace smartview
 	{
 	public:
 		PropertyName() = default;
-		void parse(std::shared_ptr<binaryParser>& parser);
 		PropertyName(const PropertyName&) = delete;
 		PropertyName& operator=(const PropertyName&) = delete;
 
@@ -32,6 +31,10 @@ namespace smartview
 		std::shared_ptr<blockT<DWORD>> LID = emptyT<DWORD>();
 		std::shared_ptr<blockT<BYTE>> NameSize = emptyT<BYTE>();
 		std::shared_ptr<blockStringW> Name = emptySW();
+
+	private:
+		void parse() override;
+		void parseBlocks() override{};
 	};
 
 	// [MS-OXORULE] 2.2.4.2 NamedPropertyInformation Structure
@@ -47,7 +50,7 @@ namespace smartview
 		std::vector<std::shared_ptr<PropertyName>> PropertyName;
 	};
 
-	class RuleCondition : public smartViewParser
+	class RuleCondition : public block
 	{
 	public:
 		void Init(bool bExtended) noexcept;

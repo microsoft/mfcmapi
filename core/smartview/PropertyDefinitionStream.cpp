@@ -92,15 +92,15 @@ namespace smartview
 
 	void PropertyDefinitionStream::parse()
 	{
-		m_wVersion = blockT<WORD>::parse(m_Parser);
-		m_dwFieldDefinitionCount = blockT<DWORD>::parse(m_Parser);
+		m_wVersion = blockT<WORD>::parse(parser);
+		m_dwFieldDefinitionCount = blockT<DWORD>::parse(parser);
 		if (*m_dwFieldDefinitionCount)
 		{
 			if (*m_dwFieldDefinitionCount < _MaxEntriesLarge)
 			{
 				for (DWORD i = 0; i < *m_dwFieldDefinitionCount; i++)
 				{
-					m_pfdFieldDefinitions.emplace_back(std::make_shared<FieldDefinition>(m_Parser, *m_wVersion));
+					m_pfdFieldDefinitions.emplace_back(std::make_shared<FieldDefinition>(parser, *m_wVersion));
 				}
 			}
 		}
@@ -156,7 +156,7 @@ namespace smartview
 
 	void PropertyDefinitionStream::parseBlocks()
 	{
-		setRoot(L"Property Definition Stream\r\n");
+		setText(L"Property Definition Stream\r\n");
 		auto szVersion = flags::InterpretFlags(flagPropDefVersion, *m_wVersion);
 		addChild(m_wVersion, L"Version = 0x%1!04X! = %2!ws!\r\n", m_wVersion->getData(), szVersion.c_str());
 		addChild(m_dwFieldDefinitionCount, L"FieldDefinitionCount = 0x%1!08X!", m_dwFieldDefinitionCount->getData());
@@ -165,9 +165,8 @@ namespace smartview
 		for (const auto& def : m_pfdFieldDefinitions)
 		{
 			terminateBlock();
-			auto fieldDef = std::make_shared<block>();
+			auto fieldDef = create(L"Definition: %1!d!\r\n", iDef);
 			addChild(fieldDef);
-			fieldDef->setText(L"Definition: %1!d!\r\n", iDef);
 
 			auto szFlags = flags::InterpretFlags(flagPDOFlag, *def->dwFlags);
 			fieldDef->addChild(
@@ -231,9 +230,8 @@ namespace smartview
 				for (const auto& sb : def->psbSkipBlocks)
 				{
 					fieldDef->terminateBlock();
-					auto skipBlock = std::make_shared<block>();
+					auto skipBlock = create(L"\tSkipBlock: %1!d!\r\n", iSkipBlock);
 					fieldDef->addChild(skipBlock);
-					skipBlock->setText(L"\tSkipBlock: %1!d!\r\n", iSkipBlock);
 					skipBlock->addChild(sb->dwSize, L"\t\tSize = 0x%1!08X!", sb->dwSize->getData());
 
 					if (iSkipBlock == 0)

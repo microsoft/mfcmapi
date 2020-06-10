@@ -36,33 +36,33 @@ namespace smartview
 
 	void VerbStream::parse()
 	{
-		m_Version = blockT<WORD>::parse(m_Parser);
-		m_Count = blockT<DWORD>::parse(m_Parser);
+		m_Version = blockT<WORD>::parse(parser);
+		m_Count = blockT<DWORD>::parse(parser);
 
 		if (*m_Count && *m_Count < _MaxEntriesSmall)
 		{
 			m_lpVerbData.reserve(*m_Count);
 			for (DWORD i = 0; i < *m_Count; i++)
 			{
-				m_lpVerbData.emplace_back(std::make_shared<VerbData>(m_Parser));
+				m_lpVerbData.emplace_back(std::make_shared<VerbData>(parser));
 			}
 		}
 
-		m_Version2 = blockT<WORD>::parse(m_Parser);
+		m_Version2 = blockT<WORD>::parse(parser);
 
 		if (*m_Count && *m_Count < _MaxEntriesSmall)
 		{
 			m_lpVerbExtraData.reserve(*m_Count);
 			for (DWORD i = 0; i < *m_Count; i++)
 			{
-				m_lpVerbExtraData.emplace_back(std::make_shared<VerbExtraData>(m_Parser));
+				m_lpVerbExtraData.emplace_back(std::make_shared<VerbExtraData>(parser));
 			}
 		}
 	}
 
 	void VerbStream::parseBlocks()
 	{
-		setRoot(L"Verb Stream\r\n");
+		setText(L"Verb Stream\r\n");
 		addChild(m_Version, L"Version = 0x%1!04X!\r\n", m_Version->getData());
 		addChild(m_Count, L"Count = 0x%1!08X!", m_Count->getData());
 

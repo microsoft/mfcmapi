@@ -17,9 +17,9 @@ namespace blocktest
 		TEST_CLASS_INITIALIZE(initialize) { unittest::init(); }
 		TEST_METHOD(Test_block)
 		{
-			auto block1 = std::make_shared<smartview::block>(L"test");
-			auto block2 = std::make_shared<smartview::block>(L"block2");
-			auto block3 = std::make_shared<smartview::block>(L"");
+			auto block1 = smartview::block::create(L"test");
+			auto block2 = smartview::block::create(L"block2");
+			auto block3 = smartview::block::create(L"");
 			Assert::AreEqual(block1->isHeader(), true);
 			block1->setSize(5);
 			Assert::AreEqual(block1->isHeader(), false);
@@ -52,8 +52,7 @@ namespace blocktest
 
 			block1->addBlankLine();
 			block1->addLabeledChild(L"Label: ", block2);
-			Assert::AreEqual(
-				block1->toString(), std::wstring(L"hello world this that\r\nblock2\r\n\r\nLabel: block2\r\n"));
+			Assert::AreEqual(block1->toString(), std::wstring(L"hello world this that\r\nblock2\r\n\r\nLabel: block2"));
 
 			Assert::AreEqual(block3->hasData(), false);
 			block3->addChild(block1);
@@ -67,15 +66,13 @@ namespace blocktest
 		{
 			auto block1 = std::make_shared<smartview::blockStringA>();
 			Assert::AreEqual(block1->isSet(), false);
-			auto block2 = std::make_shared<smartview::blockStringA>(std::string("test"), 4, 5);
-			Assert::AreEqual(block2->length(), size_t(4));
 		}
 
 		TEST_METHOD(Test_blockStringW)
 		{
 			auto block1 = std::make_shared<smartview::blockStringW>();
 			Assert::AreEqual(block1->isSet(), false);
-			auto block2 = std::make_shared<smartview::blockStringW>(std::wstring(L"test"), 4, 5);
+			auto block2 = smartview::blockStringW::parse(std::wstring(L"test"), 4, 5);
 			Assert::AreEqual(block2->length(), size_t(4));
 		}
 	};

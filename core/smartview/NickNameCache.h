@@ -1,5 +1,5 @@
 #pragma once
-#include <core/smartview/smartViewParser.h>
+#include <core/smartview/block/block.h>
 #include <core/smartview/PropertiesStruct.h>
 #include <core/smartview/block/blockBytes.h>
 #include <core/smartview/block/blockT.h>
@@ -9,12 +9,12 @@ namespace smartview
 	struct SRowStruct
 	{
 		std::shared_ptr<blockT<DWORD>> cValues = emptyT<DWORD>();
-		PropertiesStruct lpProps;
+		std::shared_ptr<PropertiesStruct> lpProps;
 
 		SRowStruct(const std::shared_ptr<binaryParser>& parser);
 	};
 
-	class NickNameCache : public smartViewParser
+	class NickNameCache : public block
 	{
 	private:
 		void parse() override;

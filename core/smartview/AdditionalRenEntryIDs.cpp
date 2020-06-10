@@ -20,27 +20,27 @@ namespace smartview
 	{
 		WORD wPersistDataCount = 0;
 		// Run through the parser once to count the number of PersistData structs
-		while (m_Parser->getSize() >= 2 * sizeof(WORD))
+		while (parser->getSize() >= 2 * sizeof(WORD))
 		{
-			const auto& wPersistID = blockT<WORD>::parse(m_Parser);
-			const auto& wDataElementSize = blockT<WORD>::parse(m_Parser);
+			const auto& wPersistID = blockT<WORD>::parse(parser);
+			const auto& wDataElementSize = blockT<WORD>::parse(parser);
 			// Must have at least wDataElementSize bytes left to be a valid data element
-			if (m_Parser->getSize() < *wDataElementSize) break;
+			if (parser->getSize() < *wDataElementSize) break;
 
-			m_Parser->advance(*wDataElementSize);
+			parser->advance(*wDataElementSize);
 			wPersistDataCount++;
 			if (wPersistID == PersistData::PERISIST_SENTINEL) break;
 		}
 
 		// Now we parse for real
-		m_Parser->rewind();
+		parser->rewind();
 
 		if (wPersistDataCount && wPersistDataCount < _MaxEntriesSmall)
 		{
 			m_ppdPersistData.reserve(wPersistDataCount);
 			for (WORD iPersistElement = 0; iPersistElement < wPersistDataCount; iPersistElement++)
 			{
-				m_ppdPersistData.emplace_back(std::make_shared<PersistData>(m_Parser));
+				m_ppdPersistData.emplace_back(std::make_shared<PersistData>(parser));
 			}
 		}
 	}
@@ -92,7 +92,7 @@ namespace smartview
 
 	void AdditionalRenEntryIDs::parseBlocks()
 	{
-		setRoot(L"Additional Ren Entry IDs\r\n");
+		setText(L"Additional Ren Entry IDs\r\n");
 		addHeader(L"PersistDataCount = %1!d!", m_ppdPersistData.size());
 
 		if (!m_ppdPersistData.empty())
@@ -102,10 +102,9 @@ namespace smartview
 			{
 				terminateBlock();
 				addBlankLine();
-				auto element = std::make_shared<block>();
+				auto element = create(L"Persist Element %1!d!:\r\n", iPersistElement);
 				addChild(element);
 
-				element->setText(L"Persist Element %1!d!:\r\n", iPersistElement);
 				element->addChild(
 					persistData->wPersistID,
 					L"PersistID = 0x%1!04X! = %2!ws!\r\n",
@@ -122,8 +121,7 @@ namespace smartview
 					for (const auto& dataElement : persistData->ppeDataElement)
 					{
 						element->terminateBlock();
-						auto de =
-							std::make_shared<block>(strings::formatmessage(L"DataElement: %1!d!\r\n", iDataElement));
+						auto de = create(L"DataElement: %1!d!\r\n", iDataElement);
 						element->addChild(de);
 
 						de->addChild(

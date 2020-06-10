@@ -18,30 +18,30 @@ namespace smartview
 
 	void GlobalObjectId::parse()
 	{
-		m_Id = blockBytes::parse(m_Parser, 16);
+		m_Id = blockBytes::parse(parser, 16);
 
-		const auto b1 = blockT<BYTE>::parse(m_Parser);
-		const auto b2 = blockT<BYTE>::parse(m_Parser);
+		const auto b1 = blockT<BYTE>::parse(parser);
+		const auto b2 = blockT<BYTE>::parse(parser);
 		m_Year =
 			blockT<WORD>::create(static_cast<WORD>(*b1 << 8 | *b2), b1->getSize() + b2->getSize(), b1->getOffset());
 
-		m_Month = blockT<BYTE>::parse(m_Parser);
+		m_Month = blockT<BYTE>::parse(parser);
 		const auto szFlags = flags::InterpretFlags(flagGlobalObjectIdMonth, *m_Month);
 
-		m_Day = blockT<BYTE>::parse(m_Parser);
+		m_Day = blockT<BYTE>::parse(parser);
 
-		m_CreationTime = blockT<FILETIME>::parse(m_Parser);
-		m_X = blockT<LARGE_INTEGER>::parse(m_Parser);
-		m_dwSize = blockT<DWORD>::parse(m_Parser);
-		m_lpData = blockBytes::parse(m_Parser, *m_dwSize, _MaxBytes);
+		m_CreationTime = blockT<FILETIME>::parse(parser);
+		m_X = blockT<LARGE_INTEGER>::parse(parser);
+		m_dwSize = blockT<DWORD>::parse(parser);
+		m_lpData = blockBytes::parse(parser, *m_dwSize, _MaxBytes);
 	}
 
 	void GlobalObjectId::parseBlocks()
 	{
-		setRoot(L"Global Object ID:\r\n");
+		setText(L"Global Object ID:\r\n");
 		if (m_Id->isSet())
 		{
-			auto id = std::make_shared<block>(L"Byte Array ID = ");
+			auto id = create(L"Byte Array ID = ");
 			addChild(id);
 			id->addChild(m_Id);
 
