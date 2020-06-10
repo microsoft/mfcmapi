@@ -19,24 +19,6 @@ namespace smartview
 		block(const block&) = delete;
 		block& operator=(const block&) = delete;
 
-		static std::shared_ptr<block> create();
-		template <typename... Args>
-		static std::shared_ptr<block> create(size_t size, size_t offset, const std::wstring& _text, Args... args)
-		{
-			auto ret = create();
-			ret->setSize(size);
-			ret->setOffset(offset);
-			ret->setText(strings::formatmessage(_text.c_str(), args...));
-			return ret;
-		}
-
-		template <typename... Args> static std::shared_ptr<block> create(const std::wstring& _text, Args... args)
-		{
-			auto ret = create();
-			ret->setText(strings::formatmessage(_text.c_str(), args...));
-			return ret;
-		}
-
 		void init(size_t _cb, _In_count_(_cb) const BYTE* _bin)
 		{
 			m_Parser = std::make_shared<binaryParser>(_cb, _bin);
@@ -44,13 +26,17 @@ namespace smartview
 			enableJunk = true;
 		}
 
-		bool isSet() const noexcept { return parsed; }
+		// Getters and setters
+		// Get the text for just this block
 		const std::wstring& getText() const noexcept { return text; }
-		const std::vector<std::shared_ptr<block>>& getChildren() const noexcept { return children; }
-		bool isHeader() const noexcept { return cb == 0 && offset == 0; }
-
+		// Get the text for this and all child blocks
 		std::wstring toString();
+		template <typename... Args> void setText(const std::wstring& _text, Args... args)
+		{
+			text = strings::formatmessage(_text.c_str(), args...);
+		}
 
+		const std::vector<std::shared_ptr<block>>& getChildren() const noexcept { return children; }
 		size_t getSize() const noexcept { return cb; }
 		void setSize(size_t _size) noexcept { cb = _size; }
 		size_t getOffset() const noexcept { return offset; }
@@ -65,17 +51,25 @@ namespace smartview
 			}
 		}
 
-		void addHeader(const std::wstring& _text);
-		template <typename... Args> void addHeader(const std::wstring& _text, Args... args)
+		bool isSet() const noexcept { return parsed; }
+		bool isHeader() const noexcept { return cb == 0 && offset == 0; }
+		bool hasData() const noexcept { return !text.empty() || !children.empty(); }
+
+		// Put CRLF on the end of the last child
+		// Essentially ensures that the next child added will be on a new line
+		void terminateBlock()
 		{
-			addHeader(strings::formatmessage(_text.c_str(), args...));
+			if (children.empty())
+			{
+				text = strings::ensureCRLF(text);
+			}
+			else
+			{
+				children.back()->terminateBlock();
+			}
 		}
 
-		template <typename... Args> void setText(const std::wstring& _text, Args... args)
-		{
-			text = strings::formatmessage(_text.c_str(), args...);
-		}
-
+		// Add child blocks of various types
 		void addChild(const std::shared_ptr<block>& child)
 		{
 			if (child && child->isSet())
@@ -93,6 +87,12 @@ namespace smartview
 			}
 		}
 
+		void addHeader(const std::wstring& _text);
+		template <typename... Args> void addHeader(const std::wstring& _text, Args... args)
+		{
+			addHeader(strings::formatmessage(_text.c_str(), args...));
+		}
+
 		template <typename... Args>
 		void addChild(const std::shared_ptr<block>& child, const std::wstring& _text, Args... args)
 		{
@@ -105,36 +105,29 @@ namespace smartview
 
 		void addLabeledChild(const std::wstring& _text, const std::shared_ptr<block>& _block);
 
-		void terminateBlock()
-		{
-			if (children.empty())
-			{
-				text = strings::ensureCRLF(text);
-			}
-			else
-			{
-				children.back()->terminateBlock();
-			}
-		}
-
 		void addBlankLine();
 
-		bool hasData() const noexcept { return !text.empty() || !children.empty(); }
+		// Static create functions returns a non parsing block
+		static std::shared_ptr<block> create();
 
-		void parse(const std::shared_ptr<binaryParser>& binaryParser, bool _enableJunk)
+		template <typename... Args>
+		static std::shared_ptr<block> create(size_t size, size_t offset, const std::wstring& _text, Args... args)
 		{
-			parse(binaryParser, 0, _enableJunk);
+			auto ret = create();
+			ret->setSize(size);
+			ret->setOffset(offset);
+			ret->setText(strings::formatmessage(_text.c_str(), args...));
+			return ret;
 		}
 
-		void parse(const std::shared_ptr<binaryParser>& binaryParser, size_t cbBin, bool _enableJunk)
+		template <typename... Args> static std::shared_ptr<block> create(const std::wstring& _text, Args... args)
 		{
-			m_Parser = binaryParser;
-			m_Parser->setCap(cbBin);
-			enableJunk = _enableJunk;
-			ensureParsed();
-			m_Parser->clearCap();
+			auto ret = create();
+			ret->setText(strings::formatmessage(_text.c_str(), args...));
+			return ret;
 		}
 
+		// Static parse functions return a parsing block based on a binaryParser
 		template <typename T>
 		static std::shared_ptr<T> parse(const std::shared_ptr<binaryParser>& binaryParser, bool _enableJunk)
 		{
@@ -148,6 +141,21 @@ namespace smartview
 			auto ret = std::make_shared<T>();
 			ret->block::parse(binaryParser, cbBin, _enableJunk);
 			return ret;
+		}
+
+		// Non-static parse functions actually do the parsing
+		void parse(const std::shared_ptr<binaryParser>& binaryParser, bool _enableJunk)
+		{
+			parse(binaryParser, 0, _enableJunk);
+		}
+
+		void parse(const std::shared_ptr<binaryParser>& binaryParser, size_t cbBin, bool _enableJunk)
+		{
+			m_Parser = binaryParser;
+			m_Parser->setCap(cbBin);
+			enableJunk = _enableJunk;
+			ensureParsed();
+			m_Parser->clearCap();
 		}
 
 	protected:
