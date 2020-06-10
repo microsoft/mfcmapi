@@ -19,7 +19,7 @@ namespace smartview
 		static std::shared_ptr<blockStringA> parse(const std::shared_ptr<binaryParser>& parser, size_t cchChar = -1)
 		{
 			auto ret = std::make_shared<blockStringA>();
-			ret->m_Parser = parser;
+			ret->parser = parser;
 			ret->enableJunk = false;
 			ret->cchChar = cchChar;
 			ret->ensureParsed();
@@ -33,15 +33,14 @@ namespace smartview
 			if (cchChar == static_cast<size_t>(-1))
 			{
 				cchChar =
-					strnlen_s(reinterpret_cast<LPCSTR>(m_Parser->getAddress()), (m_Parser->getSize()) / sizeof CHAR) +
-					1;
+					strnlen_s(reinterpret_cast<LPCSTR>(parser->getAddress()), (parser->getSize()) / sizeof CHAR) + 1;
 			}
 
-			if (cchChar && m_Parser->checkSize(sizeof CHAR * cchChar))
+			if (cchChar && parser->checkSize(sizeof CHAR * cchChar))
 			{
 				data = strings::RemoveInvalidCharactersA(
-					std::string(reinterpret_cast<LPCSTR>(m_Parser->getAddress()), cchChar));
-				m_Parser->advance(sizeof CHAR * cchChar);
+					std::string(reinterpret_cast<LPCSTR>(parser->getAddress()), cchChar));
+				parser->advance(sizeof CHAR * cchChar);
 				setText(strings::stringTowstring(data));
 				parsed = true;
 			}

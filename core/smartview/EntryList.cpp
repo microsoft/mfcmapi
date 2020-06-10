@@ -11,8 +11,8 @@ namespace smartview
 
 	void EntryList::parse()
 	{
-		m_EntryCount = blockT<DWORD>::parse(m_Parser);
-		m_Pad = blockT<DWORD>::parse(m_Parser);
+		m_EntryCount = blockT<DWORD>::parse(parser);
+		m_Pad = blockT<DWORD>::parse(parser);
 
 		if (*m_EntryCount)
 		{
@@ -21,12 +21,12 @@ namespace smartview
 				m_Entry.reserve(*m_EntryCount);
 				for (DWORD i = 0; i < *m_EntryCount; i++)
 				{
-					m_Entry.emplace_back(std::make_shared<EntryListEntryStruct>(m_Parser));
+					m_Entry.emplace_back(std::make_shared<EntryListEntryStruct>(parser));
 				}
 
 				for (DWORD i = 0; i < *m_EntryCount; i++)
 				{
-					m_Entry[i]->EntryId = block::parse<EntryIdStruct>(m_Parser, *m_Entry[i]->EntryLength, true);
+					m_Entry[i]->EntryId = block::parse<EntryIdStruct>(parser, *m_Entry[i]->EntryLength, true);
 				}
 			}
 		}

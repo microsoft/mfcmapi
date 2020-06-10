@@ -8,9 +8,9 @@ namespace smartview
 	{
 	public:
 		blockRes() = default;
-		void parse(std::shared_ptr<binaryParser>& parser, ULONG ulDepth, bool bRuleCondition, bool bExtendedCount)
+		void parse(std::shared_ptr<binaryParser>& _parser, ULONG ulDepth, bool bRuleCondition, bool bExtendedCount)
 		{
-			m_Parser = parser;
+			parser = _parser;
 			m_ulDepth = ulDepth;
 			m_bRuleCondition = bRuleCondition;
 			m_bExtendedCount = bExtendedCount;
@@ -40,13 +40,13 @@ namespace smartview
 		{
 		}
 		RestrictionStruct(
-			const std::shared_ptr<binaryParser>& parser,
+			const std::shared_ptr<binaryParser>& _parser,
 			ULONG ulDepth,
 			bool bRuleCondition,
 			bool bExtendedCount)
 			: m_bRuleCondition(bRuleCondition), m_bExtendedCount(bExtendedCount)
 		{
-			m_Parser = parser;
+			parser = _parser;
 			parse(ulDepth);
 			parsed = true;
 		}

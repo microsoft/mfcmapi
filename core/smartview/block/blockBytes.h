@@ -21,7 +21,7 @@ namespace smartview
 		parse(const std::shared_ptr<binaryParser>& parser, size_t _cbBytes, size_t _cbMaxBytes = -1)
 		{
 			auto ret = std::make_shared<blockBytes>();
-			ret->m_Parser = parser;
+			ret->parser = parser;
 			ret->enableJunk = false;
 			ret->cbBytes = _cbBytes;
 			ret->cbMaxBytes = _cbMaxBytes;
@@ -46,12 +46,12 @@ namespace smartview
 		void parse() override
 		{
 			parsed = false;
-			if (cbBytes && m_Parser->checkSize(cbBytes) &&
+			if (cbBytes && parser->checkSize(cbBytes) &&
 				(cbMaxBytes == static_cast<size_t>(-1) || cbBytes <= cbMaxBytes))
 			{
-				_data = std::vector<BYTE>{const_cast<LPBYTE>(m_Parser->getAddress()),
-										  const_cast<LPBYTE>(m_Parser->getAddress() + cbBytes)};
-				m_Parser->advance(cbBytes);
+				_data = std::vector<BYTE>{const_cast<LPBYTE>(parser->getAddress()),
+										  const_cast<LPBYTE>(parser->getAddress() + cbBytes)};
+				parser->advance(cbBytes);
 				setText(toHexString(true));
 				parsed = true;
 			}

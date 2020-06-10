@@ -92,15 +92,15 @@ namespace smartview
 
 	void PropertyDefinitionStream::parse()
 	{
-		m_wVersion = blockT<WORD>::parse(m_Parser);
-		m_dwFieldDefinitionCount = blockT<DWORD>::parse(m_Parser);
+		m_wVersion = blockT<WORD>::parse(parser);
+		m_dwFieldDefinitionCount = blockT<DWORD>::parse(parser);
 		if (*m_dwFieldDefinitionCount)
 		{
 			if (*m_dwFieldDefinitionCount < _MaxEntriesLarge)
 			{
 				for (DWORD i = 0; i < *m_dwFieldDefinitionCount; i++)
 				{
-					m_pfdFieldDefinitions.emplace_back(std::make_shared<FieldDefinition>(m_Parser, *m_wVersion));
+					m_pfdFieldDefinitions.emplace_back(std::make_shared<FieldDefinition>(parser, *m_wVersion));
 				}
 			}
 		}

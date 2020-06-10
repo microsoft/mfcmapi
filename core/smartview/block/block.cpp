@@ -32,22 +32,22 @@ namespace smartview
 
 	void block::ensureParsed()
 	{
-		if (parsed || !m_Parser || m_Parser->empty()) return;
+		if (parsed || !parser || parser->empty()) return;
 		parsed = true; // parse can unset this if needed
-		const auto startOffset = m_Parser->getOffset();
+		const auto startOffset = parser->getOffset();
 
 		parse();
 		parseBlocks();
 
-		if (this->hasData() && enableJunk && m_Parser->getSize())
+		if (this->hasData() && enableJunk && parser->getSize())
 		{
-			auto junkData = blockBytes::parse(m_Parser, m_Parser->getSize());
+			auto junkData = blockBytes::parse(parser, parser->getSize());
 			terminateBlock();
 			addHeader(L"Unparsed data size = 0x%1!08X!\r\n", junkData->size());
 			addChild(junkData);
 		}
 
-		const auto endOffset = m_Parser->getOffset();
+		const auto endOffset = parser->getOffset();
 
 		// Ensure we are tagged with offset and size so all top level blocks get proper highlighting
 		setOffset(startOffset);

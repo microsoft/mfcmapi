@@ -20,28 +20,28 @@ namespace smartview
 		auto cXID = 0;
 		// Run through the parser once to count the number of flag structs
 		// Must have at least 1 byte left to have another XID
-		while (m_Parser->getSize() > sizeof(BYTE))
+		while (parser->getSize() > sizeof(BYTE))
 		{
-			const auto XidSize = blockT<BYTE>::parse(m_Parser);
-			if (m_Parser->getSize() >= *XidSize)
+			const auto XidSize = blockT<BYTE>::parse(parser);
+			if (parser->getSize() >= *XidSize)
 			{
-				m_Parser->advance(*XidSize);
+				parser->advance(*XidSize);
 			}
 
 			cXID++;
 		}
 
 		// Now we parse for real
-		m_Parser->rewind();
+		parser->rewind();
 
 		if (cXID && cXID < _MaxEntriesSmall)
 		{
 			m_lpXID.reserve(cXID);
 			for (auto i = 0; i < cXID; i++)
 			{
-				const auto oldSize = m_Parser->getSize();
-				m_lpXID.emplace_back(std::make_shared<SizedXID>(m_Parser));
-				const auto newSize = m_Parser->getSize();
+				const auto oldSize = parser->getSize();
+				m_lpXID.emplace_back(std::make_shared<SizedXID>(parser));
+				const auto newSize = parser->getSize();
 				if (newSize == 0 || newSize == oldSize) break;
 			}
 		}

@@ -22,8 +22,8 @@ namespace smartview
 
 	void RecipientRowStream::parse()
 	{
-		m_cVersion = blockT<DWORD>::parse(m_Parser);
-		m_cRowCount = blockT<DWORD>::parse(m_Parser);
+		m_cVersion = blockT<DWORD>::parse(parser);
+		m_cRowCount = blockT<DWORD>::parse(parser);
 
 		if (*m_cRowCount)
 		{
@@ -32,7 +32,7 @@ namespace smartview
 				m_lpAdrEntry.reserve(*m_cRowCount);
 				for (DWORD i = 0; i < *m_cRowCount; i++)
 				{
-					m_lpAdrEntry.emplace_back(std::make_shared<ADRENTRYStruct>(m_Parser));
+					m_lpAdrEntry.emplace_back(std::make_shared<ADRENTRYStruct>(parser));
 				}
 			}
 		}

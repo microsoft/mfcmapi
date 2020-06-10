@@ -20,7 +20,7 @@ namespace smartview
 		m_bFB = bFB;
 	}
 
-	void SDBin::parse() { m_SDbin = blockBytes::parse(m_Parser, m_Parser->getSize()); }
+	void SDBin::parse() { m_SDbin = blockBytes::parse(parser, parser->getSize()); }
 
 	void SDBin::parseBlocks()
 	{

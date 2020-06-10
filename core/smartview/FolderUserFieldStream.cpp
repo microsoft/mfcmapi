@@ -34,25 +34,25 @@ namespace smartview
 
 	void FolderUserFieldStream::parse()
 	{
-		m_FolderUserFieldsAnsiCount = blockT<DWORD>::parse(m_Parser);
+		m_FolderUserFieldsAnsiCount = blockT<DWORD>::parse(parser);
 		if (*m_FolderUserFieldsAnsiCount && *m_FolderUserFieldsAnsiCount < _MaxEntriesSmall)
 		{
 			m_FieldDefinitionsA.reserve(*m_FolderUserFieldsAnsiCount);
 			for (DWORD i = 0; i < *m_FolderUserFieldsAnsiCount; i++)
 			{
-				if (m_Parser->empty()) continue;
-				m_FieldDefinitionsA.emplace_back(std::make_shared<FolderFieldDefinitionA>(m_Parser));
+				if (parser->empty()) continue;
+				m_FieldDefinitionsA.emplace_back(std::make_shared<FolderFieldDefinitionA>(parser));
 			}
 		}
 
-		m_FolderUserFieldsUnicodeCount = blockT<DWORD>::parse(m_Parser);
+		m_FolderUserFieldsUnicodeCount = blockT<DWORD>::parse(parser);
 		if (*m_FolderUserFieldsUnicodeCount && *m_FolderUserFieldsUnicodeCount < _MaxEntriesSmall)
 		{
 			m_FieldDefinitionsW.reserve(*m_FolderUserFieldsUnicodeCount);
 			for (DWORD i = 0; i < *m_FolderUserFieldsUnicodeCount; i++)
 			{
-				if (m_Parser->empty()) continue;
-				m_FieldDefinitionsW.emplace_back(std::make_shared<FolderFieldDefinitionW>(m_Parser));
+				if (parser->empty()) continue;
+				m_FieldDefinitionsW.emplace_back(std::make_shared<FolderFieldDefinitionW>(parser));
 			}
 		}
 	}

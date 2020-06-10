@@ -57,25 +57,25 @@ namespace smartview
 		for (;;)
 		{
 			// Must have at least 2 bytes left to have another flag
-			if (m_Parser->getSize() < 2) break;
-			m_Parser->advance(sizeof BYTE);
-			const auto cbData = blockT<BYTE>::parse(m_Parser);
+			if (parser->getSize() < 2) break;
+			parser->advance(sizeof BYTE);
+			const auto cbData = blockT<BYTE>::parse(parser);
 			// Must have at least cbData bytes left to be a valid flag
-			if (m_Parser->getSize() < *cbData) break;
+			if (parser->getSize() < *cbData) break;
 
-			m_Parser->advance(*cbData);
+			parser->advance(*cbData);
 			ulNumFlags++;
 		}
 
 		// Now we parse for real
-		m_Parser->rewind();
+		parser->rewind();
 
 		if (ulNumFlags && ulNumFlags < _MaxEntriesSmall)
 		{
 			m_pefExtendedFlags.reserve(ulNumFlags);
 			for (ULONG i = 0; i < ulNumFlags; i++)
 			{
-				const auto flag = std::make_shared<ExtendedFlag>(m_Parser);
+				const auto flag = std::make_shared<ExtendedFlag>(parser);
 				m_pefExtendedFlags.push_back(flag);
 				if (flag->bBadData) break;
 			}

@@ -16,37 +16,37 @@ namespace smartview
 
 	void TombStone::parse()
 	{
-		m_Identifier = blockT<DWORD>::parse(m_Parser);
-		m_HeaderSize = blockT<DWORD>::parse(m_Parser);
-		m_Version = blockT<DWORD>::parse(m_Parser);
-		m_RecordsCount = blockT<DWORD>::parse(m_Parser);
-		m_RecordsSize = blockT<DWORD>::parse(m_Parser);
+		m_Identifier = blockT<DWORD>::parse(parser);
+		m_HeaderSize = blockT<DWORD>::parse(parser);
+		m_Version = blockT<DWORD>::parse(parser);
+		m_RecordsCount = blockT<DWORD>::parse(parser);
+		m_RecordsSize = blockT<DWORD>::parse(parser);
 
 		// Run through the parser once to count the number of flag structs
-		const auto ulFlagOffset = m_Parser->getOffset();
+		const auto ulFlagOffset = parser->getOffset();
 		auto actualRecordsCount = 0;
 		for (;;)
 		{
 			// Must have at least 2 bytes left to have another flag
-			if (m_Parser->getSize() < sizeof(DWORD) * 3 + sizeof(WORD)) break;
-			static_cast<void>(m_Parser->advance(sizeof DWORD));
-			static_cast<void>(m_Parser->advance(sizeof DWORD));
-			const auto len1 = blockT<DWORD>::parse(m_Parser);
-			m_Parser->advance(*len1);
-			const auto len2 = blockT<WORD>::parse(m_Parser);
-			m_Parser->advance(*len2);
+			if (parser->getSize() < sizeof(DWORD) * 3 + sizeof(WORD)) break;
+			static_cast<void>(parser->advance(sizeof DWORD));
+			static_cast<void>(parser->advance(sizeof DWORD));
+			const auto len1 = blockT<DWORD>::parse(parser);
+			parser->advance(*len1);
+			const auto len2 = blockT<WORD>::parse(parser);
+			parser->advance(*len2);
 			actualRecordsCount++;
 		}
 
 		// Now we parse for real
-		m_Parser->setOffset(ulFlagOffset);
+		parser->setOffset(ulFlagOffset);
 
 		if (actualRecordsCount && actualRecordsCount < _MaxEntriesSmall)
 		{
 			m_lpRecords.reserve(actualRecordsCount);
 			for (auto i = 0; i < actualRecordsCount; i++)
 			{
-				m_lpRecords.emplace_back(std::make_shared<TombstoneRecord>(m_Parser));
+				m_lpRecords.emplace_back(std::make_shared<TombstoneRecord>(parser));
 			}
 		}
 	}

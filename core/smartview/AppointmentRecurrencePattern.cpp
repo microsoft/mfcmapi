@@ -119,13 +119,13 @@ namespace smartview
 
 	void AppointmentRecurrencePattern::parse()
 	{
-		m_RecurrencePattern = block::parse<RecurrencePattern>(m_Parser, false);
+		m_RecurrencePattern = block::parse<RecurrencePattern>(parser, false);
 
-		m_ReaderVersion2 = blockT<DWORD>::parse(m_Parser);
-		m_WriterVersion2 = blockT<DWORD>::parse(m_Parser);
-		m_StartTimeOffset = blockT<DWORD>::parse(m_Parser);
-		m_EndTimeOffset = blockT<DWORD>::parse(m_Parser);
-		m_ExceptionCount = blockT<WORD>::parse(m_Parser);
+		m_ReaderVersion2 = blockT<DWORD>::parse(parser);
+		m_WriterVersion2 = blockT<DWORD>::parse(parser);
+		m_StartTimeOffset = blockT<DWORD>::parse(parser);
+		m_EndTimeOffset = blockT<DWORD>::parse(parser);
+		m_ExceptionCount = blockT<WORD>::parse(parser);
 
 		if (*m_ExceptionCount && *m_ExceptionCount == *m_RecurrencePattern->m_ModifiedInstanceCount &&
 			*m_ExceptionCount < _MaxEntriesSmall)
@@ -133,25 +133,25 @@ namespace smartview
 			m_ExceptionInfo.reserve(*m_ExceptionCount);
 			for (WORD i = 0; i < *m_ExceptionCount; i++)
 			{
-				m_ExceptionInfo.emplace_back(std::make_shared<ExceptionInfo>(m_Parser));
+				m_ExceptionInfo.emplace_back(std::make_shared<ExceptionInfo>(parser));
 			}
 		}
 
-		m_ReservedBlock1Size = blockT<DWORD>::parse(m_Parser);
-		m_ReservedBlock1 = blockBytes::parse(m_Parser, *m_ReservedBlock1Size, _MaxBytes);
+		m_ReservedBlock1Size = blockT<DWORD>::parse(parser);
+		m_ReservedBlock1 = blockBytes::parse(parser, *m_ReservedBlock1Size, _MaxBytes);
 
 		if (*m_ExceptionCount && *m_ExceptionCount == *m_RecurrencePattern->m_ModifiedInstanceCount &&
 			*m_ExceptionCount < _MaxEntriesSmall && !m_ExceptionInfo.empty())
 		{
 			for (WORD i = 0; i < *m_ExceptionCount; i++)
 			{
-				m_ExtendedException.emplace_back(std::make_shared<ExtendedException>(
-					m_Parser, *m_WriterVersion2, *m_ExceptionInfo[i]->OverrideFlags));
+				m_ExtendedException.emplace_back(
+					std::make_shared<ExtendedException>(parser, *m_WriterVersion2, *m_ExceptionInfo[i]->OverrideFlags));
 			}
 		}
 
-		m_ReservedBlock2Size = blockT<DWORD>::parse(m_Parser);
-		m_ReservedBlock2 = blockBytes::parse(m_Parser, *m_ReservedBlock2Size, _MaxBytes);
+		m_ReservedBlock2Size = blockT<DWORD>::parse(parser);
+		m_ReservedBlock2 = blockBytes::parse(parser, *m_ReservedBlock2Size, _MaxBytes);
 	}
 
 	void AppointmentRecurrencePattern::parseBlocks()

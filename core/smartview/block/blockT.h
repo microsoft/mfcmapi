@@ -27,7 +27,7 @@ namespace smartview
 		static std::shared_ptr<blockT<T>> parse(const std::shared_ptr<binaryParser>& parser)
 		{
 			auto ret = std::make_shared<blockT<T>>();
-			ret->m_Parser = parser;
+			ret->parser = parser;
 			ret->ensureParsed();
 			return ret;
 		}
@@ -55,10 +55,10 @@ namespace smartview
 		void parse() override
 		{
 			parsed = false;
-			if (!m_Parser->checkSize(sizeof T)) return;
+			if (!parser->checkSize(sizeof T)) return;
 
-			data = *reinterpret_cast<const T*>(m_Parser->getAddress());
-			m_Parser->advance(sizeof T);
+			data = *reinterpret_cast<const T*>(parser->getAddress());
+			parser->advance(sizeof T);
 			parsed = true;
 		};
 

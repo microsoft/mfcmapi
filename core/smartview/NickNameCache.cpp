@@ -21,10 +21,10 @@ namespace smartview
 
 	void NickNameCache::parse()
 	{
-		m_Metadata1 = blockBytes::parse(m_Parser, 4);
-		m_ulMajorVersion = blockT<DWORD>::parse(m_Parser);
-		m_ulMinorVersion = blockT<DWORD>::parse(m_Parser);
-		m_cRowCount = blockT<DWORD>::parse(m_Parser);
+		m_Metadata1 = blockBytes::parse(parser, 4);
+		m_ulMajorVersion = blockT<DWORD>::parse(parser);
+		m_ulMinorVersion = blockT<DWORD>::parse(parser);
+		m_cRowCount = blockT<DWORD>::parse(parser);
 
 		if (*m_cRowCount)
 		{
@@ -33,14 +33,14 @@ namespace smartview
 				m_lpRows.reserve(*m_cRowCount);
 				for (DWORD i = 0; i < *m_cRowCount; i++)
 				{
-					m_lpRows.emplace_back(std::make_shared<SRowStruct>(m_Parser));
+					m_lpRows.emplace_back(std::make_shared<SRowStruct>(parser));
 				}
 			}
 		}
 
-		m_cbEI = blockT<DWORD>::parse(m_Parser);
-		m_lpbEI = blockBytes::parse(m_Parser, *m_cbEI, _MaxBytes);
-		m_Metadata2 = blockBytes::parse(m_Parser, 8);
+		m_cbEI = blockT<DWORD>::parse(parser);
+		m_lpbEI = blockBytes::parse(parser, *m_cbEI, _MaxBytes);
+		m_Metadata2 = blockBytes::parse(parser, 8);
 	}
 
 	void NickNameCache::parseBlocks()

@@ -36,20 +36,20 @@ namespace smartview
 
 	void TimeZoneDefinition::parse()
 	{
-		m_bMajorVersion = blockT<BYTE>::parse(m_Parser);
-		m_bMinorVersion = blockT<BYTE>::parse(m_Parser);
-		m_cbHeader = blockT<WORD>::parse(m_Parser);
-		m_wReserved = blockT<WORD>::parse(m_Parser);
-		m_cchKeyName = blockT<WORD>::parse(m_Parser);
-		m_szKeyName = blockStringW::parse(m_Parser, *m_cchKeyName);
-		m_cRules = blockT<WORD>::parse(m_Parser);
+		m_bMajorVersion = blockT<BYTE>::parse(parser);
+		m_bMinorVersion = blockT<BYTE>::parse(parser);
+		m_cbHeader = blockT<WORD>::parse(parser);
+		m_wReserved = blockT<WORD>::parse(parser);
+		m_cchKeyName = blockT<WORD>::parse(parser);
+		m_szKeyName = blockStringW::parse(parser, *m_cchKeyName);
+		m_cRules = blockT<WORD>::parse(parser);
 
 		if (*m_cRules && *m_cRules < _MaxEntriesSmall)
 		{
 			m_lpTZRule.reserve(*m_cRules);
 			for (WORD i = 0; i < *m_cRules; i++)
 			{
-				m_lpTZRule.emplace_back(std::make_shared<TZRule>(m_Parser));
+				m_lpTZRule.emplace_back(std::make_shared<TZRule>(parser));
 			}
 		}
 	}

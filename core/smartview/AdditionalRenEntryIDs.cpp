@@ -20,27 +20,27 @@ namespace smartview
 	{
 		WORD wPersistDataCount = 0;
 		// Run through the parser once to count the number of PersistData structs
-		while (m_Parser->getSize() >= 2 * sizeof(WORD))
+		while (parser->getSize() >= 2 * sizeof(WORD))
 		{
-			const auto& wPersistID = blockT<WORD>::parse(m_Parser);
-			const auto& wDataElementSize = blockT<WORD>::parse(m_Parser);
+			const auto& wPersistID = blockT<WORD>::parse(parser);
+			const auto& wDataElementSize = blockT<WORD>::parse(parser);
 			// Must have at least wDataElementSize bytes left to be a valid data element
-			if (m_Parser->getSize() < *wDataElementSize) break;
+			if (parser->getSize() < *wDataElementSize) break;
 
-			m_Parser->advance(*wDataElementSize);
+			parser->advance(*wDataElementSize);
 			wPersistDataCount++;
 			if (wPersistID == PersistData::PERISIST_SENTINEL) break;
 		}
 
 		// Now we parse for real
-		m_Parser->rewind();
+		parser->rewind();
 
 		if (wPersistDataCount && wPersistDataCount < _MaxEntriesSmall)
 		{
 			m_ppdPersistData.reserve(wPersistDataCount);
 			for (WORD iPersistElement = 0; iPersistElement < wPersistDataCount; iPersistElement++)
 			{
-				m_ppdPersistData.emplace_back(std::make_shared<PersistData>(m_Parser));
+				m_ppdPersistData.emplace_back(std::make_shared<PersistData>(parser));
 			}
 		}
 	}

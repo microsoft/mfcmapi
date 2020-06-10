@@ -21,7 +21,7 @@ namespace smartview
 
 		void init(size_t _cb, _In_count_(_cb) const BYTE* _bin)
 		{
-			m_Parser = std::make_shared<binaryParser>(_cb, _bin);
+			parser = std::make_shared<binaryParser>(_cb, _bin);
 			parsed = false;
 			enableJunk = true;
 		}
@@ -151,16 +151,16 @@ namespace smartview
 
 		void parse(const std::shared_ptr<binaryParser>& binaryParser, size_t cbBin, bool _enableJunk)
 		{
-			m_Parser = binaryParser;
-			m_Parser->setCap(cbBin);
+			parser = binaryParser;
+			parser->setCap(cbBin);
 			enableJunk = _enableJunk;
 			ensureParsed();
-			m_Parser->clearCap();
+			parser->clearCap();
 		}
 
 	protected:
 		void ensureParsed();
-		std::shared_ptr<binaryParser> m_Parser;
+		std::shared_ptr<binaryParser> parser;
 		bool parsed{false};
 		bool enableJunk{true};
 

@@ -4,11 +4,11 @@
 
 namespace smartview
 {
-	void PropertiesStruct::parse(const std::shared_ptr<binaryParser>& parser, DWORD cValues, bool bRuleCondition)
+	void PropertiesStruct::parse(const std::shared_ptr<binaryParser>& _parser, DWORD cValues, bool bRuleCondition)
 	{
 		SetMaxEntries(cValues);
 		if (bRuleCondition) EnableRuleConditionParsing();
-		block::parse(parser, false);
+		block::parse(_parser, false);
 	}
 
 	void PropertiesStruct::parse()
@@ -28,13 +28,13 @@ namespace smartview
 		for (;;)
 		{
 			if (dwPropCount >= m_MaxEntries) break;
-			auto parser = std::make_shared<SPropValueStruct>();
-			if (parser)
+			auto sPropValueStruct = std::make_shared<SPropValueStruct>();
+			if (sPropValueStruct)
 			{
-				parser->parse(m_Parser, dwPropCount++, m_NickName, m_RuleCondition);
+				sPropValueStruct->parse(parser, dwPropCount++, m_NickName, m_RuleCondition);
 			}
 
-			m_Props.emplace_back(parser);
+			m_Props.emplace_back(sPropValueStruct);
 		}
 	}
 

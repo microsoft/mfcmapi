@@ -6,20 +6,20 @@ namespace smartview
 {
 	void SPropValueStruct::parse()
 	{
-		const auto ulCurrOffset = m_Parser->getOffset();
+		const auto ulCurrOffset = parser->getOffset();
 
-		PropType = blockT<WORD>::parse(m_Parser);
-		PropID = blockT<WORD>::parse(m_Parser);
+		PropType = blockT<WORD>::parse(parser);
+		PropID = blockT<WORD>::parse(parser);
 
 		ulPropTag = blockT<ULONG>::create(
 			PROP_TAG(*PropType, *PropID), PropType->getSize() + PropID->getSize(), PropType->getOffset());
 
-		if (m_doNickname) static_cast<void>(m_Parser->advance(sizeof DWORD)); // reserved
+		if (m_doNickname) static_cast<void>(parser->advance(sizeof DWORD)); // reserved
 
 		value = getPVParser(*PropType);
 		if (value)
 		{
-			value->parse(m_Parser, *ulPropTag, m_doNickname, m_doRuleProcessing);
+			value->parse(parser, *ulPropTag, m_doNickname, m_doRuleProcessing);
 		}
 	}
 

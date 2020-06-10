@@ -10,11 +10,11 @@ namespace smartview
 	void EntryIdStruct::parse()
 	{
 		m_ObjectType = EIDStructType::unknown;
-		if (m_Parser->getSize() < 4) return;
-		m_abFlags0 = blockT<byte>::parse(m_Parser);
-		m_abFlags1 = blockT<byte>::parse(m_Parser);
-		m_abFlags23 = blockBytes::parse(m_Parser, 2);
-		m_ProviderUID = blockT<GUID>::parse(m_Parser);
+		if (parser->getSize() < 4) return;
+		m_abFlags0 = blockT<byte>::parse(parser);
+		m_abFlags1 = blockT<byte>::parse(parser);
+		m_abFlags23 = blockBytes::parse(parser, 2);
+		m_ProviderUID = blockT<GUID>::parse(parser);
 
 		// Ephemeral entry ID:
 		if (*m_abFlags0 == EPHEMERAL)
@@ -48,7 +48,7 @@ namespace smartview
 		// We can recognize Exchange message store folder and message entry IDs by their size
 		else
 		{
-			const auto ulRemainingBytes = m_Parser->getSize();
+			const auto ulRemainingBytes = parser->getSize();
 
 			if (sizeof(WORD) + sizeof(GUID) + 6 * sizeof(BYTE) + 2 * sizeof(BYTE) == ulRemainingBytes)
 			{
@@ -66,49 +66,49 @@ namespace smartview
 			{
 				// Ephemeral Recipient
 			case EIDStructType::ephemeral:
-				m_EphemeralObject.Version = blockT<DWORD>::parse(m_Parser);
-				m_EphemeralObject.Type = blockT<DWORD>::parse(m_Parser);
+				m_EphemeralObject.Version = blockT<DWORD>::parse(parser);
+				m_EphemeralObject.Type = blockT<DWORD>::parse(parser);
 				break;
 				// One Off Recipient
 			case EIDStructType::oneOff:
-				m_OneOffRecipientObject.Bitmask = blockT<DWORD>::parse(m_Parser);
+				m_OneOffRecipientObject.Bitmask = blockT<DWORD>::parse(parser);
 				if (*m_OneOffRecipientObject.Bitmask & MAPI_UNICODE)
 				{
-					m_OneOffRecipientObject.Unicode.DisplayName = blockStringW::parse(m_Parser);
-					m_OneOffRecipientObject.Unicode.AddressType = blockStringW::parse(m_Parser);
-					m_OneOffRecipientObject.Unicode.EmailAddress = blockStringW::parse(m_Parser);
+					m_OneOffRecipientObject.Unicode.DisplayName = blockStringW::parse(parser);
+					m_OneOffRecipientObject.Unicode.AddressType = blockStringW::parse(parser);
+					m_OneOffRecipientObject.Unicode.EmailAddress = blockStringW::parse(parser);
 				}
 				else
 				{
-					m_OneOffRecipientObject.ANSI.DisplayName = blockStringA::parse(m_Parser);
-					m_OneOffRecipientObject.ANSI.AddressType = blockStringA::parse(m_Parser);
-					m_OneOffRecipientObject.ANSI.EmailAddress = blockStringA::parse(m_Parser);
+					m_OneOffRecipientObject.ANSI.DisplayName = blockStringA::parse(parser);
+					m_OneOffRecipientObject.ANSI.AddressType = blockStringA::parse(parser);
+					m_OneOffRecipientObject.ANSI.EmailAddress = blockStringA::parse(parser);
 				}
 				break;
 				// Address Book Recipient
 			case EIDStructType::addressBook:
-				m_AddressBookObject.Version = blockT<DWORD>::parse(m_Parser);
-				m_AddressBookObject.Type = blockT<DWORD>::parse(m_Parser);
-				m_AddressBookObject.X500DN = blockStringA::parse(m_Parser);
+				m_AddressBookObject.Version = blockT<DWORD>::parse(parser);
+				m_AddressBookObject.Type = blockT<DWORD>::parse(parser);
+				m_AddressBookObject.X500DN = blockStringA::parse(parser);
 				break;
 				// Contact Address Book / Personal Distribution List (PDL)
 			case EIDStructType::contact:
 			{
-				m_ContactAddressBookObject.Version = blockT<DWORD>::parse(m_Parser);
-				m_ContactAddressBookObject.Type = blockT<DWORD>::parse(m_Parser);
+				m_ContactAddressBookObject.Version = blockT<DWORD>::parse(parser);
+				m_ContactAddressBookObject.Type = blockT<DWORD>::parse(parser);
 
 				if (*m_ContactAddressBookObject.Type == CONTAB_CONTAINER)
 				{
-					m_ContactAddressBookObject.muidID = blockT<GUID>::parse(m_Parser);
+					m_ContactAddressBookObject.muidID = blockT<GUID>::parse(parser);
 				}
 				else // Assume we've got some variation on the user/distlist format
 				{
-					m_ContactAddressBookObject.Index = blockT<DWORD>::parse(m_Parser);
-					m_ContactAddressBookObject.EntryIDCount = blockT<DWORD>::parse(m_Parser);
+					m_ContactAddressBookObject.Index = blockT<DWORD>::parse(parser);
+					m_ContactAddressBookObject.EntryIDCount = blockT<DWORD>::parse(parser);
 				}
 
 				// Read the wrapped entry ID from the remaining data
-				auto cbRemainingBytes = m_Parser->getSize();
+				auto cbRemainingBytes = parser->getSize();
 
 				// If we already got a size, use it, else we just read the rest of the structure
 				if (m_ContactAddressBookObject.EntryIDCount != 0 &&
@@ -117,22 +117,22 @@ namespace smartview
 					cbRemainingBytes = *m_ContactAddressBookObject.EntryIDCount;
 				}
 
-				m_ContactAddressBookObject.lpEntryID = block::parse<EntryIdStruct>(m_Parser, cbRemainingBytes, false);
+				m_ContactAddressBookObject.lpEntryID = block::parse<EntryIdStruct>(parser, cbRemainingBytes, false);
 			}
 			break;
 			case EIDStructType::WAB:
 			{
 				m_ObjectType = EIDStructType::WAB;
 
-				m_WAB.Type = blockT<byte>::parse(m_Parser);
-				m_WAB.lpEntryID = block::parse<EntryIdStruct>(m_Parser, false);
+				m_WAB.Type = blockT<byte>::parse(parser);
+				m_WAB.lpEntryID = block::parse<EntryIdStruct>(parser, false);
 			}
 			break;
 			// message store objects
 			case EIDStructType::messageDatabase:
-				m_MessageDatabaseObject.Version = blockT<byte>::parse(m_Parser);
-				m_MessageDatabaseObject.Flag = blockT<byte>::parse(m_Parser);
-				m_MessageDatabaseObject.DLLFileName = blockStringA::parse(m_Parser);
+				m_MessageDatabaseObject.Version = blockT<byte>::parse(parser);
+				m_MessageDatabaseObject.Flag = blockT<byte>::parse(parser);
+				m_MessageDatabaseObject.DLLFileName = blockStringA::parse(parser);
 				m_MessageDatabaseObject.bIsExchange = false;
 
 				// We only know how to parse emsmdb.dll's wrapped entry IDs
@@ -146,20 +146,20 @@ namespace smartview
 									  -1))
 				{
 					m_MessageDatabaseObject.bIsExchange = true;
-					auto cbRead = m_Parser->getOffset();
+					auto cbRead = parser->getOffset();
 					// Advance to the next multiple of 4
-					m_Parser->advance(3 - (cbRead + 3) % 4);
-					m_MessageDatabaseObject.WrappedFlags = blockT<DWORD>::parse(m_Parser);
-					m_MessageDatabaseObject.WrappedProviderUID = blockT<GUID>::parse(m_Parser);
-					m_MessageDatabaseObject.WrappedType = blockT<DWORD>::parse(m_Parser);
-					m_MessageDatabaseObject.ServerShortname = blockStringA::parse(m_Parser);
+					parser->advance(3 - (cbRead + 3) % 4);
+					m_MessageDatabaseObject.WrappedFlags = blockT<DWORD>::parse(parser);
+					m_MessageDatabaseObject.WrappedProviderUID = blockT<GUID>::parse(parser);
+					m_MessageDatabaseObject.WrappedType = blockT<DWORD>::parse(parser);
+					m_MessageDatabaseObject.ServerShortname = blockStringA::parse(parser);
 
 					// Test if we have a magic value. Some PF EIDs also have a mailbox DN and we need to accomodate them
 					if (*m_MessageDatabaseObject.WrappedType & OPENSTORE_PUBLIC)
 					{
-						cbRead = m_Parser->getOffset();
-						m_MessageDatabaseObject.MagicVersion = blockT<DWORD>::parse(m_Parser);
-						m_Parser->setOffset(cbRead);
+						cbRead = parser->getOffset();
+						m_MessageDatabaseObject.MagicVersion = blockT<DWORD>::parse(parser);
+						parser->setOffset(cbRead);
 					}
 					else
 					{
@@ -173,50 +173,50 @@ namespace smartview
 						*m_MessageDatabaseObject.MagicVersion != MDB_STORE_EID_V2_MAGIC &&
 							*m_MessageDatabaseObject.MagicVersion != MDB_STORE_EID_V3_MAGIC)
 					{
-						m_MessageDatabaseObject.MailboxDN = blockStringA::parse(m_Parser);
+						m_MessageDatabaseObject.MailboxDN = blockStringA::parse(parser);
 					}
 
 					// Check again for a magic value
-					cbRead = m_Parser->getOffset();
-					m_MessageDatabaseObject.MagicVersion = blockT<DWORD>::parse(m_Parser);
-					m_Parser->setOffset(cbRead);
+					cbRead = parser->getOffset();
+					m_MessageDatabaseObject.MagicVersion = blockT<DWORD>::parse(parser);
+					parser->setOffset(cbRead);
 
 					switch (*m_MessageDatabaseObject.MagicVersion)
 					{
 					case MDB_STORE_EID_V2_MAGIC:
-						if (m_Parser->getSize() >= MDB_STORE_EID_V2::size + sizeof(WCHAR))
+						if (parser->getSize() >= MDB_STORE_EID_V2::size + sizeof(WCHAR))
 						{
-							m_MessageDatabaseObject.v2.ulMagic = blockT<DWORD>::parse(m_Parser);
-							m_MessageDatabaseObject.v2.ulSize = blockT<DWORD>::parse(m_Parser);
-							m_MessageDatabaseObject.v2.ulVersion = blockT<DWORD>::parse(m_Parser);
-							m_MessageDatabaseObject.v2.ulOffsetDN = blockT<DWORD>::parse(m_Parser);
-							m_MessageDatabaseObject.v2.ulOffsetFQDN = blockT<DWORD>::parse(m_Parser);
+							m_MessageDatabaseObject.v2.ulMagic = blockT<DWORD>::parse(parser);
+							m_MessageDatabaseObject.v2.ulSize = blockT<DWORD>::parse(parser);
+							m_MessageDatabaseObject.v2.ulVersion = blockT<DWORD>::parse(parser);
+							m_MessageDatabaseObject.v2.ulOffsetDN = blockT<DWORD>::parse(parser);
+							m_MessageDatabaseObject.v2.ulOffsetFQDN = blockT<DWORD>::parse(parser);
 							if (*m_MessageDatabaseObject.v2.ulOffsetDN)
 							{
-								m_MessageDatabaseObject.v2DN = blockStringA::parse(m_Parser);
+								m_MessageDatabaseObject.v2DN = blockStringA::parse(parser);
 							}
 
 							if (*m_MessageDatabaseObject.v2.ulOffsetFQDN)
 							{
-								m_MessageDatabaseObject.v2FQDN = blockStringW::parse(m_Parser);
+								m_MessageDatabaseObject.v2FQDN = blockStringW::parse(parser);
 							}
 
-							m_MessageDatabaseObject.v2Reserved = blockBytes::parse(m_Parser, 2);
+							m_MessageDatabaseObject.v2Reserved = blockBytes::parse(parser, 2);
 						}
 						break;
 					case MDB_STORE_EID_V3_MAGIC:
-						if (m_Parser->getSize() >= MDB_STORE_EID_V3::size + sizeof(WCHAR))
+						if (parser->getSize() >= MDB_STORE_EID_V3::size + sizeof(WCHAR))
 						{
-							m_MessageDatabaseObject.v3.ulMagic = blockT<DWORD>::parse(m_Parser);
-							m_MessageDatabaseObject.v3.ulSize = blockT<DWORD>::parse(m_Parser);
-							m_MessageDatabaseObject.v3.ulVersion = blockT<DWORD>::parse(m_Parser);
-							m_MessageDatabaseObject.v3.ulOffsetSmtpAddress = blockT<DWORD>::parse(m_Parser);
+							m_MessageDatabaseObject.v3.ulMagic = blockT<DWORD>::parse(parser);
+							m_MessageDatabaseObject.v3.ulSize = blockT<DWORD>::parse(parser);
+							m_MessageDatabaseObject.v3.ulVersion = blockT<DWORD>::parse(parser);
+							m_MessageDatabaseObject.v3.ulOffsetSmtpAddress = blockT<DWORD>::parse(parser);
 							if (m_MessageDatabaseObject.v3.ulOffsetSmtpAddress)
 							{
-								m_MessageDatabaseObject.v3SmtpAddress = blockStringW::parse(m_Parser);
+								m_MessageDatabaseObject.v3SmtpAddress = blockStringW::parse(parser);
 							}
 
-							m_MessageDatabaseObject.v2Reserved = blockBytes::parse(m_Parser, 2);
+							m_MessageDatabaseObject.v2Reserved = blockBytes::parse(parser, 2);
 						}
 						break;
 					}
@@ -224,21 +224,21 @@ namespace smartview
 				break;
 				// Exchange message store folder
 			case EIDStructType::folder:
-				m_FolderOrMessage.Type = blockT<WORD>::parse(m_Parser);
-				m_FolderOrMessage.FolderObject.DatabaseGUID = blockT<GUID>::parse(m_Parser);
-				m_FolderOrMessage.FolderObject.GlobalCounter = blockBytes::parse(m_Parser, 6);
-				m_FolderOrMessage.FolderObject.Pad = blockBytes::parse(m_Parser, 2);
+				m_FolderOrMessage.Type = blockT<WORD>::parse(parser);
+				m_FolderOrMessage.FolderObject.DatabaseGUID = blockT<GUID>::parse(parser);
+				m_FolderOrMessage.FolderObject.GlobalCounter = blockBytes::parse(parser, 6);
+				m_FolderOrMessage.FolderObject.Pad = blockBytes::parse(parser, 2);
 				break;
 				// Exchange message store message
 			case EIDStructType::message:
-				m_FolderOrMessage.Type = blockT<WORD>::parse(m_Parser);
-				m_FolderOrMessage.MessageObject.FolderDatabaseGUID = blockT<GUID>::parse(m_Parser);
-				m_FolderOrMessage.MessageObject.FolderGlobalCounter = blockBytes::parse(m_Parser, 6);
-				m_FolderOrMessage.MessageObject.Pad1 = blockBytes::parse(m_Parser, 2);
+				m_FolderOrMessage.Type = blockT<WORD>::parse(parser);
+				m_FolderOrMessage.MessageObject.FolderDatabaseGUID = blockT<GUID>::parse(parser);
+				m_FolderOrMessage.MessageObject.FolderGlobalCounter = blockBytes::parse(parser, 6);
+				m_FolderOrMessage.MessageObject.Pad1 = blockBytes::parse(parser, 2);
 
-				m_FolderOrMessage.MessageObject.MessageDatabaseGUID = blockT<GUID>::parse(m_Parser);
-				m_FolderOrMessage.MessageObject.MessageGlobalCounter = blockBytes::parse(m_Parser, 6);
-				m_FolderOrMessage.MessageObject.Pad2 = blockBytes::parse(m_Parser, 2);
+				m_FolderOrMessage.MessageObject.MessageDatabaseGUID = blockT<GUID>::parse(parser);
+				m_FolderOrMessage.MessageObject.MessageGlobalCounter = blockBytes::parse(parser, 6);
+				m_FolderOrMessage.MessageObject.Pad2 = blockBytes::parse(parser, 2);
 				break;
 			}
 		}
