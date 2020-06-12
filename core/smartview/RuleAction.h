@@ -12,12 +12,6 @@ namespace smartview
 	// [MS-OXORULE] 2.2.4.1.9 PidTagExtendedRuleMessageActions Property
 	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxorule/86d88af3-8c76-4737-aa51-6a299964ba01
 
-	// [MS-OXORULE] 2.2.5 RuleAction Structure
-	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxorule/a31c67b8-405e-4c4f-bfda-e5be0091041a
-
-	// [MS-OXORULE] 2.2.5.1 ActionBlock Structure
-	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxorule/0c74ec4f-896d-425e-9e6d-20c531fe83ce
-
 	// 2.2.5.1.1 Action Flavors
 	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxorule/07f635f5-c521-41a5-b01e-712a9ba781d2
 
@@ -29,26 +23,45 @@ namespace smartview
 		ActionData() = default;
 		ActionData(bool bExtended) : m_bExtended(bExtended) {}
 
-
 	protected:
-		virtual void parseBlocks(ULONG ulTabLevel) = 0;
+		void parse() override {}
+		virtual void parseBlocks() = 0;
 		bool m_bExtended{};
 	};
 
+	// [MS-OXORULE] 2.2.5.1 ActionBlock Structure
+	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxorule/0c74ec4f-896d-425e-9e6d-20c531fe83ce
 	class ActionBlock : public block
 	{
 	public:
 		ActionBlock(bool bExtended) : m_bExtended(bExtended) {}
 
 	private:
-		void parse() override {}
 		bool m_bExtended{};
-		std::shared_ptr<blockT<WORD>> ActionLength = emptyT<WORD>();
+		std::shared_ptr<blockT<DWORD>> ActionLength = emptyT<DWORD>();
 		std::shared_ptr<blockT<BYTE>> ActionType = emptyT<BYTE>();
 		std::shared_ptr<blockT<DWORD>> ActionFlavor = emptyT<DWORD>();
 		std::shared_ptr<ActionData> ActionData;
+
+		void parse() override
+		{
+			if (m_bExtended)
+			{
+				ActionLength = blockT<DWORD>::parse(parser);
+			}
+			else
+			{
+				ActionLength = blockT<DWORD>::parse<WORD>(parser);
+			}
+
+			ActionType = blockT<BYTE>::parse(parser);
+			ActionFlavor = blockT<DWORD>::parse(parser);
+			ActionData->block::parse(parser, false);
+		}
 	};
 
+	// [MS-OXORULE] 2.2.5 RuleAction Structure
+	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxorule/a31c67b8-405e-4c4f-bfda-e5be0091041a
 	class RuleAction : public block
 	{
 	public:

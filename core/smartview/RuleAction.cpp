@@ -1,12 +1,115 @@
 #include <core/stdafx.h>
 #include <core/smartview/RuleAction.h>
-#include <core/smartview/RestrictionStruct.h>
+#include <core/smartview/EntryIdStruct.h>
 #include <core/interpret/guid.h>
 
 namespace smartview
 {
+	class ServerEID : public block
+	{
+	private:
+		std::shared_ptr<blockT<BYTE>> Ours = emptyT<BYTE>();
+		std::shared_ptr<blockT<LARGE_INTEGER>> FolderId = emptyT<LARGE_INTEGER>();
+		std::shared_ptr<blockT<LARGE_INTEGER>> MessageId = emptyT<LARGE_INTEGER>();
+		std::shared_ptr<blockT<DWORD>> Instance = emptyT<DWORD>();
+
+		void parse() override
+		{
+			Ours = blockT<BYTE>::parse(parser);
+			FolderId = blockT<LARGE_INTEGER>::parse(parser);
+			MessageId = blockT<LARGE_INTEGER>::parse(parser);
+			Instance = blockT<DWORD>::parse(parser);
+		};
+		void parseBlocks() override
+		{
+			setText(L"ServerEID:\r\n");
+			addChild(Ours);
+			addChild(FolderId);
+			addChild(MessageId);
+			addChild(Instance);
+		};
+	};
+
 	// 2.2.5.1.2.1 OP_MOVE and OP_COPY ActionData Structure
 	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxorule/78bc6a96-f94c-43c6-afd3-7f8c39a2340c
+	class ActionDataMoveCopy : public ActionData
+	{
+	protected:
+		std::shared_ptr<blockT<BYTE>> FolderInThisStore = emptyT<BYTE>();
+		std::shared_ptr<blockT<DWORD>> StoreEIDSize = emptyT<DWORD>();
+		std::shared_ptr<EntryIdStruct> StoreEID;
+		std::shared_ptr<blockBytes> StoreEIDBytes;
+		std::shared_ptr<blockT<DWORD>> FolderEIDSize = emptyT<DWORD>();
+		std::shared_ptr<ServerEID> FolderEID;
+		std::shared_ptr<blockBytes> FolderEIDBytes;
+		void parse() override
+		{
+			if (m_bExtended)
+			{
+				StoreEIDSize = blockT<DWORD>::parse(parser);
+				StoreEIDBytes = blockBytes::parse(parser, *StoreEIDSize);
+				FolderEIDSize = blockT<DWORD>::parse(parser);
+				FolderEID = block::parse<ServerEID>(parser, *FolderEIDSize, true);
+			}
+			else
+			{
+				FolderInThisStore = blockT<BYTE>::parse(parser);
+				StoreEIDSize = blockT<DWORD>::parse<WORD>(parser);
+				if (*FolderInThisStore)
+				{
+					StoreEID = block::parse<EntryIdStruct>(parser, *StoreEIDSize, true);
+				}
+				else
+				{
+					StoreEIDBytes = blockBytes::parse(parser, *StoreEIDSize);
+				}
+
+				FolderEIDSize = blockT<DWORD>::parse<WORD>(parser);
+				if (*FolderInThisStore)
+				{
+					FolderEID = block::parse<ServerEID>(parser, *FolderEIDSize, true);
+				}
+				else
+				{
+					FolderEIDBytes = blockBytes::parse(parser, *FolderEIDSize);
+				}
+			}
+		}
+		void parseBlocks()
+		{
+			setText(L"ActionDataMoveCopy:\r\n");
+			if (m_bExtended)
+			{
+				addChild(StoreEIDSize);
+				addChild(StoreEIDBytes);
+				addChild(FolderEIDSize);
+				addChild(FolderEID);
+			}
+			else
+			{
+				addChild(FolderInThisStore);
+				addChild(StoreEIDSize);
+				if (*FolderInThisStore)
+				{
+					addChild(StoreEID);
+				}
+				else
+				{
+					addChild(StoreEIDBytes);
+				}
+
+				addChild(FolderEIDSize);
+				if (*FolderInThisStore)
+				{
+					addChild(FolderEID);
+				}
+				else
+				{
+					addChild(FolderEIDBytes);
+				}
+			}
+		};
+	};
 
 	// 2.2.5.1.2.1.1 ServerEid Structure
 	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxorule/07e8c314-0ab2-440e-9138-b96f93682bf1
