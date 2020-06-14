@@ -93,10 +93,11 @@ namespace smartview
 			if (m_bExtended)
 			{
 				addChild(namedPropertyInformation);
-				addChild(RuleVersion);
+				terminateBlock();
+				addChild(RuleVersion, L"RuleVersion");
 			}
 
-			addChild(NoOfActions);
+			addChild(NoOfActions, L"NoOfActions");
 			for (const auto actionBlock : ActionBlocks)
 			{
 				addChild(actionBlock);
