@@ -1,4 +1,5 @@
 Extended Rule Condition
+NamedPropertyInformation
 Number of named props = 0x0000
 Restriction:
 lpRes->rt = 0x3 = RES_CONTENT

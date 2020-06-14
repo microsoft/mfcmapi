@@ -3,6 +3,7 @@
 #include <core/smartview/RestrictionStruct.h>
 #include <core/smartview/block/blockStringW.h>
 #include <core/smartview/block/blockT.h>
+#include <core/smartview/RuleCondition.h>
 
 namespace smartview
 {
@@ -61,10 +62,18 @@ namespace smartview
 
 	private:
 		bool m_bExtended{};
+		std::shared_ptr<NamedPropertyInformation> namedPropertyInformation;
+		std::shared_ptr<blockT<DWORD>> RuleVersion = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> NoOfActions = emptyT<DWORD>();
 		std::vector<std::shared_ptr<ActionBlock>> ActionBlocks;
 		void parse() override
 		{
+			if (m_bExtended)
+			{
+				namedPropertyInformation = block::parse<NamedPropertyInformation>(parser, 0, false);
+				RuleVersion = blockT<DWORD>::parse(parser);
+			}
+
 			NoOfActions = m_bExtended ? blockT<DWORD>::parse(parser) : blockT<DWORD>::parse<WORD>(parser);
 			if (*NoOfActions < _MaxEntriesSmall)
 			{
@@ -81,6 +90,12 @@ namespace smartview
 		void parseBlocks() override
 		{
 			setText(m_bExtended ? L"Extended Rule Action\r\n" : L"Rule Action\r\n");
+			if (m_bExtended)
+			{
+				addChild(namedPropertyInformation);
+				addChild(RuleVersion);
+			}
+
 			addChild(NoOfActions);
 			for (const auto actionBlock : ActionBlocks)
 			{
