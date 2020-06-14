@@ -21,7 +21,12 @@ namespace smartview
 	{
 	public:
 		ActionData() = default;
-		ActionData(bool bExtended) : m_bExtended(bExtended) {}
+		void parse(std::shared_ptr<binaryParser>& _parser, bool bExtended)
+		{
+			parser = _parser;
+			m_bExtended = bExtended;
+			ensureParsed();
+		}
 
 	protected:
 		void parse() override {}
@@ -43,21 +48,8 @@ namespace smartview
 		std::shared_ptr<blockT<DWORD>> ActionFlavor = emptyT<DWORD>();
 		std::shared_ptr<ActionData> ActionData;
 
-		void parse() override
-		{
-			if (m_bExtended)
-			{
-				ActionLength = blockT<DWORD>::parse(parser);
-			}
-			else
-			{
-				ActionLength = blockT<DWORD>::parse<WORD>(parser);
-			}
-
-			ActionType = blockT<BYTE>::parse(parser);
-			ActionFlavor = blockT<DWORD>::parse(parser);
-			ActionData->block::parse(parser, false);
-		}
+		void parse() override;
+		void parseBlocks() override;
 	};
 
 	// [MS-OXORULE] 2.2.5 RuleAction Structure
@@ -65,14 +57,36 @@ namespace smartview
 	class RuleAction : public block
 	{
 	public:
-		void Init(bool bExtended) noexcept;
+		void Init(bool bExtended) noexcept { m_bExtended = bExtended; }
 
 	private:
-		void parse() override;
-		void parseBlocks() override;
-
 		bool m_bExtended{};
 		std::shared_ptr<blockT<DWORD>> NoOfActions = emptyT<DWORD>();
 		std::vector<std::shared_ptr<ActionBlock>> ActionBlocks;
+		void parse() override
+		{
+			NoOfActions = m_bExtended ? blockT<DWORD>::parse(parser) : blockT<DWORD>::parse<WORD>(parser);
+			if (*NoOfActions < _MaxEntriesSmall)
+			{
+				ActionBlocks.reserve(*NoOfActions);
+				for (auto i = 0; i < *NoOfActions; i++)
+				{
+					auto actionBlock = std::make_shared<ActionBlock>(m_bExtended);
+					actionBlock->block::parse(parser, false);
+					ActionBlocks.push_back(actionBlock);
+				}
+			}
+		}
+
+		void parseBlocks() override
+		{
+			setText(m_bExtended ? L"Extended Rule Action\r\n" : L"Rule Action\r\n");
+			addChild(NoOfActions);
+			for (const auto actionBlock : ActionBlocks)
+			{
+				addChild(actionBlock);
+				terminateBlock();
+			}
+		}
 	};
 } // namespace smartview
