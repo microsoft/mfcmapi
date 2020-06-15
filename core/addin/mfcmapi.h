@@ -104,7 +104,7 @@ struct FLAG_ARRAY_ENTRY
 	ULONG ulFlagName;
 	LONG lFlagValue;
 	ULONG ulFlagType;
-	LPWSTR lpszName; // Must stay raw string for add-ins
+	LPCWSTR lpszName; // Must stay raw string for add-ins
 };
 typedef FLAG_ARRAY_ENTRY* LPFLAG_ARRAY_ENTRY;
 
