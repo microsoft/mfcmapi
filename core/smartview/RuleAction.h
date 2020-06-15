@@ -94,13 +94,14 @@ namespace smartview
 			{
 				addChild(namedPropertyInformation);
 				terminateBlock();
-				addChild(RuleVersion, L"RuleVersion");
+				addChild(RuleVersion, L"RuleVersion: 0x%1!04X!\r\n", RuleVersion->getData());
 			}
 
-			addChild(NoOfActions, L"NoOfActions");
+			addChild(NoOfActions, L"NoOfActions: 0x%1!04X!\r\n", NoOfActions->getData());
+			auto i = 0;
 			for (const auto actionBlock : ActionBlocks)
 			{
-				addChild(actionBlock);
+				addChild(actionBlock, L"ActionBlocks[%1!d!]\r\n", i++);
 				terminateBlock();
 			}
 		}
