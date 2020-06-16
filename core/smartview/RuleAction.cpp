@@ -96,7 +96,7 @@ namespace smartview
 				addChild(StoreEIDSize, L"StoreEIDSize: 0x%1!08X!\r\n", StoreEIDSize->getData());
 				addChild(StoreEIDBytes, L"StoreEIDBytes");
 				addChild(FolderEIDSize, L"FolderEIDSize: 0x%1!08X!\r\n", FolderEIDSize->getData());
-				addChild(FolderEID, L"FolderEID");
+				addChild(FolderEID);
 			}
 			else
 			{
@@ -104,21 +104,21 @@ namespace smartview
 				addChild(StoreEIDSize, L"StoreEIDSize: 0x%1!08X!\r\n", StoreEIDSize->getData());
 				if (*FolderInThisStore)
 				{
-					addChild(StoreEID, L"StoreEID");
+					addChild(StoreEID, L"StoreEID\r\n");
 				}
 				else
 				{
-					addChild(StoreEIDBytes, L"StoreEIDBytes");
+					addChild(StoreEIDBytes, L"StoreEIDBytes\r\n");
 				}
 
-				addChild(FolderEIDSize, L"StoreEIDBytes");
+				addChild(FolderEIDSize, L"StoreEIDBytes\r\n");
 				if (*FolderInThisStore)
 				{
-					addChild(FolderEID, L"FolderEID");
+					addChild(FolderEID, L"FolderEID\r\n");
 				}
 				else
 				{
-					addChild(FolderEIDBytes, L"FolderEIDBytes");
+					addChild(FolderEIDBytes, L"FolderEIDBytes\r\n");
 				}
 			}
 		};
@@ -355,12 +355,16 @@ namespace smartview
 			ActionData->parse(parser, m_bExtended);
 		}
 	}
+
 	void ActionBlock ::parseBlocks()
 	{
 		setText(L"ActionBlock:\r\n");
 		addChild(ActionLength, L"ActionLength: 0x%1!08X!\r\n", ActionLength->getData());
-		addChild(ActionType, L"ActionType: 0x%1!01X!\r\n", ActionType->getData());
-		addChild(ActionFlavor, L"ActionFlavor: %1!ws!\r\n", flags::InterpretFlags(flagActionType, ActionFlavor->getData()).c_str());
-		addChild(ActionData, L"ActionData\r\n");
+		addChild(
+			ActionType,
+			L"ActionType: %1!ws!\r\n",
+			flags::InterpretFlags(flagActionType, ActionType->getData()).c_str());
+		addChild(ActionFlavor, L"ActionFlavor: 0x%1!08X!\r\n", ActionFlavor->getData());
+		addChild(ActionData);
 	}
 } // namespace smartview
