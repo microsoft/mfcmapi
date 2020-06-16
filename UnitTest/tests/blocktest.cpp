@@ -30,9 +30,9 @@ namespace blocktest
 			Assert::AreEqual(block1->getText(), std::wstring(L"test"));
 			Assert::AreEqual(block1->getChildren().empty(), true);
 			Assert::AreEqual(block1->toString(), std::wstring(L"test"));
-			Assert::AreEqual(block1->getSize(), size_t(5));
-			Assert::AreEqual(block1->getOffset(), size_t(6));
-			Assert::AreEqual(block1->getSource(), ULONG(7));
+			Assert::AreEqual(block1->getSize(), size_t{5});
+			Assert::AreEqual(block1->getOffset(), size_t{6});
+			Assert::AreEqual(block1->getSource(), ULONG{7});
 
 			block1->setText(L"the %1!ws!", L"other");
 			Assert::AreEqual(block1->getText(), std::wstring(L"the other"));
@@ -41,6 +41,10 @@ namespace blocktest
 
 			block1->setText(L"hello");
 			Assert::AreEqual(block1->getText(), std::wstring(L"hello"));
+
+			// Text with % and no arguments should go straight in
+			block1->setText(L"%d %ws %");
+			Assert::AreEqual(block1->getText(), std::wstring(L"%d %ws %"));
 
 			block1->setText(L"hello %1!ws!", L"world");
 			Assert::AreEqual(block1->getText(), std::wstring(L"hello world"));
@@ -58,8 +62,8 @@ namespace blocktest
 			block3->addChild(block1);
 			Assert::AreEqual(block3->hasData(), true);
 			block3->setSource(42);
-			Assert::AreEqual(block3->getSource(), ULONG(42));
-			Assert::AreEqual(block1->getSource(), ULONG(42));
+			Assert::AreEqual(block3->getSource(), ULONG{42});
+			Assert::AreEqual(block1->getSource(), ULONG{42});
 		}
 
 		TEST_METHOD(Test_blockStringA)

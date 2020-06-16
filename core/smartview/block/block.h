@@ -35,6 +35,7 @@ namespace smartview
 		{
 			text = strings::formatmessage(_text.c_str(), args...);
 		}
+		void setText(const std::wstring& _text) { text = _text.c_str(); }
 
 		const std::vector<std::shared_ptr<block>>& getChildren() const noexcept { return children; }
 		size_t getSize() const noexcept { return cb; }
