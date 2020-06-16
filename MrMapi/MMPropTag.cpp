@@ -616,7 +616,7 @@ void DoFlagSearch() noexcept
 	{
 		if (strings::compareInsensitive(flag.lpszName, lpszFlagName))
 		{
-			printf("%ws = 0x%08lX\n", flag.lpszName.c_str(), flag.lFlagValue);
+			printf("%ws = 0x%08lX\n", flag.lpszName, flag.lFlagValue);
 			break;
 		}
 	}

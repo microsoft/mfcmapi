@@ -188,12 +188,12 @@ namespace flags
 				if (bHex)
 				{
 					szFlagString += strings::formatmessage(
-						IDS_FLAGTOSTRINGHEX, FlagArray[ulCurEntry].lFlagValue, FlagArray[ulCurEntry].lpszName.c_str());
+						IDS_FLAGTOSTRINGHEX, FlagArray[ulCurEntry].lFlagValue, FlagArray[ulCurEntry].lpszName);
 				}
 				else
 				{
 					szFlagString += strings::formatmessage(
-						IDS_FLAGTOSTRINGDEC, FlagArray[ulCurEntry].lFlagValue, FlagArray[ulCurEntry].lpszName.c_str());
+						IDS_FLAGTOSTRINGDEC, FlagArray[ulCurEntry].lFlagValue, FlagArray[ulCurEntry].lpszName);
 				}
 			}
 		}
