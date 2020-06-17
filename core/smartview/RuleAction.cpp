@@ -53,16 +53,18 @@ namespace smartview
 		std::shared_ptr<EntryIdStruct> StoreEID;
 		std::shared_ptr<blockBytes> StoreEIDBytes;
 		std::shared_ptr<blockT<DWORD>> FolderEIDSize = emptyT<DWORD>();
-		std::shared_ptr<ServerEID> FolderEID;
+		std::shared_ptr<EntryIdStruct> FolderEID;
+		std::shared_ptr<ServerEID> FolderEIDserverEID;
 		std::shared_ptr<blockBytes> FolderEIDBytes;
 		void parse() override
 		{
 			if (m_bExtended)
 			{
+				FolderInThisStore = blockT<BYTE>::parse(parser);
 				StoreEIDSize = blockT<DWORD>::parse(parser);
 				StoreEIDBytes = blockBytes::parse(parser, *StoreEIDSize);
 				FolderEIDSize = blockT<DWORD>::parse(parser);
-				FolderEID = block::parse<ServerEID>(parser, *FolderEIDSize, true);
+				FolderEID = block::parse<EntryIdStruct>(parser, *FolderEIDSize, true);
 			}
 			else
 			{
@@ -70,17 +72,17 @@ namespace smartview
 				StoreEIDSize = blockT<DWORD>::parse<WORD>(parser);
 				if (*FolderInThisStore)
 				{
-					StoreEID = block::parse<EntryIdStruct>(parser, *StoreEIDSize, true);
+					StoreEIDBytes = blockBytes::parse(parser, *StoreEIDSize);
 				}
 				else
 				{
-					StoreEIDBytes = blockBytes::parse(parser, *StoreEIDSize);
+					StoreEID = block::parse<EntryIdStruct>(parser, *StoreEIDSize, true);
 				}
 
 				FolderEIDSize = blockT<DWORD>::parse<WORD>(parser);
 				if (*FolderInThisStore)
 				{
-					FolderEID = block::parse<ServerEID>(parser, *FolderEIDSize, true);
+					FolderEIDserverEID = block::parse<ServerEID>(parser, *FolderEIDSize, true);
 				}
 				else
 				{
@@ -93,32 +95,33 @@ namespace smartview
 			setText(L"ActionDataMoveCopy:\r\n");
 			if (m_bExtended)
 			{
+				addChild(FolderInThisStore, L"FolderInThisStore: %1!ws!\r\n", *FolderInThisStore ? L"true" : L"false");
 				addChild(StoreEIDSize, L"StoreEIDSize: 0x%1!08X!\r\n", StoreEIDSize->getData());
-				addChild(StoreEIDBytes, L"StoreEIDBytes");
+				addLabeledChild(L"StoreEIDBytes = ", StoreEIDBytes);
 				addChild(FolderEIDSize, L"FolderEIDSize: 0x%1!08X!\r\n", FolderEIDSize->getData());
-				addChild(FolderEID);
+				addLabeledChild(L"FolderEID = ", FolderEID);
 			}
 			else
 			{
 				addChild(FolderInThisStore, L"FolderInThisStore: %1!ws!\r\n", *FolderInThisStore ? L"true" : L"false");
-				addChild(StoreEIDSize, L"StoreEIDSize: 0x%1!08X!\r\n", StoreEIDSize->getData());
+				addChild(StoreEIDSize, L"StoreEIDSize: 0x%1!04X!\r\n", StoreEIDSize->getData());
 				if (*FolderInThisStore)
 				{
 					addChild(StoreEID, L"StoreEID\r\n");
 				}
 				else
 				{
-					addChild(StoreEIDBytes, L"StoreEIDBytes\r\n");
+					addLabeledChild(L"StoreEIDBytes = ", StoreEIDBytes);
 				}
 
-				addChild(FolderEIDSize, L"StoreEIDBytes\r\n");
+				addChild(FolderEIDSize, L"FolderEIDSize: 0x%1!04X!\r\n", FolderEIDSize->getData());
 				if (*FolderInThisStore)
 				{
-					addChild(FolderEID, L"FolderEID\r\n");
+					addLabeledChild(L"FolderEIDserverEID = ", FolderEIDserverEID);
 				}
 				else
 				{
-					addChild(FolderEIDBytes, L"FolderEIDBytes\r\n");
+					addLabeledChild(L"FolderEIDBytes = ", FolderEIDBytes);
 				}
 			}
 		};
@@ -294,7 +297,7 @@ namespace smartview
 		void parseBlocks() { setText(L"ActionDataDeleteMarkRead:\r\n"); }
 	};
 
-	std::shared_ptr<ActionData> getActionDataParser(BYTE at)
+	std::shared_ptr<ActionData> getActionDataParser(DWORD at)
 	{
 		switch (at)
 		{
@@ -347,7 +350,7 @@ namespace smartview
 			ActionLength = blockT<DWORD>::parse<WORD>(parser);
 		}
 
-		ActionType = blockT<BYTE>::parse(parser);
+		ActionType = blockT<DWORD>::parse(parser); // TODO: not m_bExtended may be 1 byte
 		ActionFlavor = blockT<DWORD>::parse(parser);
 		ActionData = getActionDataParser(*ActionType);
 		if (ActionData)

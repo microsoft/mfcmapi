@@ -45,7 +45,7 @@ namespace smartview
 	private:
 		bool m_bExtended{};
 		std::shared_ptr<blockT<DWORD>> ActionLength = emptyT<DWORD>();
-		std::shared_ptr<blockT<BYTE>> ActionType = emptyT<BYTE>();
+		std::shared_ptr<blockT<DWORD>> ActionType = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> ActionFlavor = emptyT<DWORD>();
 		std::shared_ptr<ActionData> ActionData;
 
@@ -78,7 +78,7 @@ namespace smartview
 			if (*NoOfActions < _MaxEntriesSmall)
 			{
 				ActionBlocks.reserve(*NoOfActions);
-				for (auto i = 0; i < *NoOfActions; i++)
+				for (DWORD i = 0; i < *NoOfActions; i++)
 				{
 					auto actionBlock = std::make_shared<ActionBlock>(m_bExtended);
 					actionBlock->block::parse(parser, false);
