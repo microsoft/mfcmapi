@@ -278,12 +278,18 @@ namespace smartview
 	class ActionDataTag : public ActionData
 	{
 	private:
+		std::shared_ptr<blockT<BYTE>> Unknown = emptyT<BYTE>();
 		std::shared_ptr<SPropValueStruct> TaggedPropertyValue;
-		void parse() override { TaggedPropertyValue = block::parse<SPropValueStruct>(parser, false); }
+		void parse() override
+		{
+			Unknown = blockT<BYTE>::parse(parser);
+			TaggedPropertyValue = block::parse<SPropValueStruct>(parser, false);
+		}
 
 		void parseBlocks()
 		{
 			setText(L"ActionDataTag:\r\n");
+			addChild(Unknown, L"Unknown: 0x%1!02X!\r\n", Unknown->getData());
 			addChild(TaggedPropertyValue, L"TaggedPropertyValue");
 		}
 	};
@@ -365,8 +371,9 @@ namespace smartview
 		addChild(ActionLength, L"ActionLength: 0x%1!08X!\r\n", ActionLength->getData());
 		addChild(
 			ActionType,
-			L"ActionType: %1!ws!\r\n",
-			flags::InterpretFlags(flagActionType, ActionType->getData()).c_str());
+			L"ActionType: %1!ws! = %2!d!\r\n",
+			flags::InterpretFlags(flagActionType, ActionType->getData()).c_str(),
+			ActionType->getData());
 		addChild(ActionFlavor, L"ActionFlavor: 0x%1!08X!\r\n", ActionFlavor->getData());
 		addChild(ActionData);
 	}

@@ -26,6 +26,7 @@ namespace smartview
 		{
 			parser = _parser;
 			m_bExtended = bExtended;
+			enableJunk = false;
 			ensureParsed();
 		}
 
