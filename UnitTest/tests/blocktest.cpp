@@ -36,8 +36,11 @@ namespace blocktest
 
 			block1->setText(L"the %1!ws!", L"other");
 			Assert::AreEqual(block1->getText(), std::wstring(L"the other"));
-			block1->addHeader(L" this %1!ws!", L"that");
-			Assert::AreEqual(block1->toString(), std::wstring(L"the other this that"));
+			block1->addHeader(L"this %1!ws!", L"that");
+			Assert::AreEqual(
+				block1->toString(),
+				std::wstring(L"the other\r\n"
+							 "\tthis that"));
 
 			block1->setText(L"hello");
 			Assert::AreEqual(block1->getText(), std::wstring(L"hello"));
@@ -52,11 +55,21 @@ namespace blocktest
 			block1->terminateBlock();
 			block1->terminateBlock();
 			block1->addChild(block2);
-			Assert::AreEqual(block1->toString(), std::wstring(L"hello world this that\r\nblock2"));
+			Assert::AreEqual(
+				block1->toString(),
+				std::wstring(L"hello world\r\n"
+							 "\tthis that\r\n"
+							 "\tblock2"));
 
 			block1->addBlankLine();
-			block1->addLabeledChild(L"Label: ", block2);
-			Assert::AreEqual(block1->toString(), std::wstring(L"hello world this that\r\nblock2\r\n\r\nLabel: block2"));
+			block1->addLabeledChild(L"Label:", block2);
+			Assert::AreEqual(
+				block1->toString(),
+				std::wstring(L"hello world\r\n"
+							 "\tthis that\r\n"
+							 "\tblock2\r\n"
+							 "\tLabel:\r\n"
+							 "\t\tblock2"));
 
 			Assert::AreEqual(block3->hasData(), false);
 			block3->addChild(block1);
