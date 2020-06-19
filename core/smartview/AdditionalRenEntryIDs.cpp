@@ -92,7 +92,7 @@ namespace smartview
 
 	void AdditionalRenEntryIDs::parseBlocks()
 	{
-		setText(L"Additional Ren Entry IDs\r\n");
+		setText(L"Additional Ren Entry IDs");
 		addHeader(L"PersistDataCount = %1!d!", m_ppdPersistData.size());
 
 		if (!m_ppdPersistData.empty())
@@ -102,12 +102,12 @@ namespace smartview
 			{
 				terminateBlock();
 				addBlankLine();
-				auto element = create(L"Persist Element %1!d!:\r\n", iPersistElement);
+				auto element = create(L"Persist Element %1!d!:", iPersistElement);
 				addChild(element);
 
 				element->addChild(
 					persistData->wPersistID,
-					L"PersistID = 0x%1!04X! = %2!ws!\r\n",
+					L"PersistID = 0x%1!04X! = %2!ws!",
 					persistData->wPersistID->getData(),
 					flags::InterpretFlags(flagPersistID, persistData->wPersistID->getData()).c_str());
 				element->addChild(
@@ -121,21 +121,21 @@ namespace smartview
 					for (const auto& dataElement : persistData->ppeDataElement)
 					{
 						element->terminateBlock();
-						auto de = create(L"DataElement: %1!d!\r\n", iDataElement);
+						auto de = create(L"DataElement: %1!d!", iDataElement);
 						element->addChild(de);
 
 						de->addChild(
 							dataElement->wElementID,
-							L"\tElementID = 0x%1!04X! = %2!ws!\r\n",
+							L"ElementID = 0x%1!04X! = %2!ws!",
 							dataElement->wElementID->getData(),
 							flags::InterpretFlags(flagElementID, dataElement->wElementID->getData()).c_str());
 
 						de->addChild(
 							dataElement->wElementDataSize,
-							L"\tElementDataSize = 0x%1!04X!\r\n",
+							L"ElementDataSize = 0x%1!04X!",
 							dataElement->wElementDataSize->getData());
 
-						de->addLabeledChild(L"\tElementData = ", dataElement->lpbElementData);
+						de->addLabeledChild(L"ElementData = ", dataElement->lpbElementData);
 						iDataElement++;
 					}
 				}
@@ -143,7 +143,7 @@ namespace smartview
 				if (!persistData->JunkData->empty())
 				{
 					element->terminateBlock();
-					element->addHeader(L"Unparsed data size = 0x%1!08X!\r\n", persistData->JunkData->size());
+					element->addHeader(L"Unparsed data size = 0x%1!08X!", persistData->JunkData->size());
 					element->addChild(persistData->JunkData);
 				}
 

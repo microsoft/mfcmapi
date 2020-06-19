@@ -60,14 +60,8 @@ namespace smartview
 		// Essentially ensures that the next child added will be on a new line
 		void terminateBlock()
 		{
-			if (children.empty())
-			{
-				text = strings::ensureCRLF(text);
-			}
-			else
-			{
-				children.back()->terminateBlock();
-			}
+			// TODO: Remvoe this altogether
+			return;
 		}
 
 		// Add child blocks of various types

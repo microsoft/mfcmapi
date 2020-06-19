@@ -43,7 +43,7 @@ namespace smartview
 		{
 			auto junkData = blockBytes::parse(parser, parser->getSize());
 			terminateBlock();
-			addHeader(L"Unparsed data size = 0x%1!08X!\r\n", junkData->size());
+			addHeader(L"Unparsed data size = 0x%1!08X!", junkData->size());
 			addChild(junkData);
 		}
 
@@ -73,7 +73,7 @@ namespace smartview
 	{
 		std::vector<std::wstring> strings;
 		strings.reserve(children.size() + 1);
-		strings.push_back(blank ? L"\r\n" : text);
+		if (!blank) strings.push_back(text + L"\r\n");
 
 		for (const auto& child : children)
 		{
@@ -88,7 +88,8 @@ namespace smartview
 	{
 		ensureParsed();
 
-		auto parsedString = strings::trimWhitespace(strings::join(toStringsInternal(), strings::emptystring));
+		auto strings = toStringsInternal();
+		auto parsedString = strings::trimWhitespace(strings::join(strings, strings::emptystring));
 
 		// If we built a string with embedded nulls in it, replace them with dots.
 		std::replace_if(
