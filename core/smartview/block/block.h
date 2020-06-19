@@ -166,7 +166,7 @@ namespace smartview
 		bool enableJunk{true};
 
 	private:
-		std::wstring toStringInternal() const;
+		std::vector<std::wstring> toStringsInternal() const;
 		// Consume binaryParser and populate members(which may also inherit from block)
 		virtual void parse() = 0;
 		// (optional) Stitches block submembers into a tree vis children member
