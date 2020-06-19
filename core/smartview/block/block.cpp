@@ -54,6 +54,21 @@ namespace smartview
 		setSize(endOffset - startOffset);
 	}
 
+	std::vector<std::wstring> tabStrings(const std::vector<std::wstring>& elems)
+	{
+		if (elems.empty()) return {};
+
+		std::vector<std::wstring> strings;
+		strings.reserve(elems.size());
+		auto iter = elems.begin();
+		for (const auto& elem : elems)
+		{
+			strings.emplace_back(L"\t" + elem);
+		}
+
+		return strings;
+	}
+
 	std::vector<std::wstring> block::toStringsInternal() const
 	{
 		std::vector<std::wstring> strings;
@@ -62,7 +77,7 @@ namespace smartview
 
 		for (const auto& child : children)
 		{
-			auto childStrings = child->toStringsInternal();
+			auto childStrings = tabStrings(child->toStringsInternal());
 			strings.insert(std::end(strings), std::begin(childStrings), std::end(childStrings));
 		}
 
