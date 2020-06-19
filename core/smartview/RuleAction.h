@@ -22,12 +22,10 @@ namespace smartview
 	{
 	public:
 		ActionData() = default;
-		void parse(std::shared_ptr<binaryParser>& _parser, bool bExtended)
+		void parse(std::shared_ptr<binaryParser>& _parser, size_t size, bool bExtended)
 		{
-			parser = _parser;
 			m_bExtended = bExtended;
-			enableJunk = false;
-			ensureParsed();
+			block::parse(_parser, size, false);
 		}
 
 	protected:

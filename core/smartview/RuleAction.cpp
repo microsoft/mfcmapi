@@ -185,9 +185,14 @@ namespace smartview
 	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxorule/1d66ff31-fdc1-4b36-a040-75207e31dd18
 	class ActionDataDefer : public ActionData
 	{
-	protected:
-		void parse() override {}
-		void parseBlocks() { setText(L"ActionDataDefer:\r\n"); };
+	private:
+		std::shared_ptr<blockBytes> deferBytes;
+		void parse() override { deferBytes = blockBytes::parse(parser, parser->getSize()); }
+		void parseBlocks()
+		{
+			setText(L"ActionDataDefer:\r\n");
+			addLabeledChild(L"deferBytes = ", deferBytes);
+		};
 	};
 
 	// 2.2.5.1.2.4.1 RecipientBlockData Structure
@@ -361,7 +366,7 @@ namespace smartview
 		ActionData = getActionDataParser(*ActionType);
 		if (ActionData)
 		{
-			ActionData->parse(parser, m_bExtended);
+			ActionData->parse(parser, 0, m_bExtended);
 		}
 	}
 
