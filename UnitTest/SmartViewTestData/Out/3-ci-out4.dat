@@ -1,28 +1,28 @@
-Conversation Index: 
-Unnamed byte = 0x01 = 1
-Current FILETIME: (Low = 0xF84A0000, High = 0x01CA697F) = 01:22:48.084 AM 11/20/2009
-GUID = {28B660A5-B37D-4058-B462-AF2C2CE5CCA6}
-ResponseLevel[0].DeltaCode = 1
-ResponseLevel[0].TimeDelta = 0x00011C47 = 72775
-ResponseLevel[0].Random = 0x06 = 6
-ResponseLevel[0].ResponseLevel = 0x00 = 0
-ResponseLevel[1].DeltaCode = 0
-ResponseLevel[1].TimeDelta = 0x00005ABB = 23227
-ResponseLevel[1].Random = 0x04 = 4
-ResponseLevel[1].ResponseLevel = 0x00 = 0
-ResponseLevel[2].DeltaCode = 0
-ResponseLevel[2].TimeDelta = 0x001A3E64 = 1719908
-ResponseLevel[2].Random = 0x09 = 9
-ResponseLevel[2].ResponseLevel = 0x00 = 0
-ResponseLevel[3].DeltaCode = 0
-ResponseLevel[3].TimeDelta = 0x000246F8 = 149240
-ResponseLevel[3].Random = 0x0A = 10
-ResponseLevel[3].ResponseLevel = 0x00 = 0
-ResponseLevel[4].DeltaCode = 0
-ResponseLevel[4].TimeDelta = 0x0005A625 = 370213
-ResponseLevel[4].Random = 0x0B = 11
-ResponseLevel[4].ResponseLevel = 0x00 = 0
-ResponseLevel[5].DeltaCode = 0
-ResponseLevel[5].TimeDelta = 0x0009B7BB = 636859
-ResponseLevel[5].Random = 0x0F = 15
-ResponseLevel[5].ResponseLevel = 0x00 = 0
+Conversation Index:
+	Unnamed byte = 0x01 = 1
+	Current FILETIME: (Low = 0xF84A0000, High = 0x01CA697F) = 01:22:48.084 AM 11/20/2009
+	GUID = {28B660A5-B37D-4058-B462-AF2C2CE5CCA6}
+	ResponseLevel[0].DeltaCode = 1
+	ResponseLevel[0].TimeDelta = 0x00011C47 = 72775
+	ResponseLevel[0].Random = 0x06 = 6
+	ResponseLevel[0].ResponseLevel = 0x00 = 0
+	ResponseLevel[1].DeltaCode = 0
+	ResponseLevel[1].TimeDelta = 0x00005ABB = 23227
+	ResponseLevel[1].Random = 0x04 = 4
+	ResponseLevel[1].ResponseLevel = 0x00 = 0
+	ResponseLevel[2].DeltaCode = 0
+	ResponseLevel[2].TimeDelta = 0x001A3E64 = 1719908
+	ResponseLevel[2].Random = 0x09 = 9
+	ResponseLevel[2].ResponseLevel = 0x00 = 0
+	ResponseLevel[3].DeltaCode = 0
+	ResponseLevel[3].TimeDelta = 0x000246F8 = 149240
+	ResponseLevel[3].Random = 0x0A = 10
+	ResponseLevel[3].ResponseLevel = 0x00 = 0
+	ResponseLevel[4].DeltaCode = 0
+	ResponseLevel[4].TimeDelta = 0x0005A625 = 370213
+	ResponseLevel[4].Random = 0x0B = 11
+	ResponseLevel[4].ResponseLevel = 0x00 = 0
+	ResponseLevel[5].DeltaCode = 0
+	ResponseLevel[5].TimeDelta = 0x0009B7BB = 636859
+	ResponseLevel[5].Random = 0x0F = 15
+	ResponseLevel[5].ResponseLevel = 0x00 = 0

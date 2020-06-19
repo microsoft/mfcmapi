@@ -91,15 +91,15 @@ namespace smartview
 
 	void ConversationIndex::parseBlocks()
 	{
-		setText(L"Conversation Index: \r\n");
+		setText(L"Conversation Index:");
 
 		std::wstring PropString;
 		std::wstring AltPropString;
 		strings::FileTimeToString(*m_ftCurrent, PropString, AltPropString);
-		addChild(m_UnnamedByte, L"Unnamed byte = 0x%1!02X! = %1!d!\r\n", m_UnnamedByte->getData());
+		addChild(m_UnnamedByte, L"Unnamed byte = 0x%1!02X! = %1!d!", m_UnnamedByte->getData());
 		addChild(
 			m_ftCurrent,
-			L"Current FILETIME: (Low = 0x%1!08X!, High = 0x%2!08X!) = %3!ws!\r\n",
+			L"Current FILETIME: (Low = 0x%1!08X!, High = 0x%2!08X!) = %3!ws!",
 			m_ftCurrent->getData().dwLowDateTime,
 			m_ftCurrent->getData().dwHighDateTime,
 			PropString.c_str());
@@ -113,17 +113,17 @@ namespace smartview
 				terminateBlock();
 				addChild(
 					responseLevel->DeltaCode,
-					L"ResponseLevel[%1!d!].DeltaCode = %2!d!\r\n",
+					L"ResponseLevel[%1!d!].DeltaCode = %2!d!",
 					i,
 					responseLevel->DeltaCode->getData());
 				addChild(
 					responseLevel->TimeDelta,
-					L"ResponseLevel[%1!d!].TimeDelta = 0x%2!08X! = %2!d!\r\n",
+					L"ResponseLevel[%1!d!].TimeDelta = 0x%2!08X! = %2!d!",
 					i,
 					responseLevel->TimeDelta->getData());
 				addChild(
 					responseLevel->Random,
-					L"ResponseLevel[%1!d!].Random = 0x%2!02X! = %2!d!\r\n",
+					L"ResponseLevel[%1!d!].Random = 0x%2!02X! = %2!d!",
 					i,
 					responseLevel->Random->getData());
 				addChild(
