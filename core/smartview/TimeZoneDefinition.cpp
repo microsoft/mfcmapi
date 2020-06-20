@@ -56,135 +56,101 @@ namespace smartview
 
 	void TimeZoneDefinition::parseBlocks()
 	{
-		setText(L"Time Zone Definition: \r\n");
-		addChild(m_bMajorVersion, L"bMajorVersion = 0x%1!02X! (%1!d!)\r\n", m_bMajorVersion->getData());
-		addChild(m_bMinorVersion, L"bMinorVersion = 0x%1!02X! (%1!d!)\r\n", m_bMinorVersion->getData());
-		addChild(m_cbHeader, L"cbHeader = 0x%1!04X! (%1!d!)\r\n", m_cbHeader->getData());
-		addChild(m_wReserved, L"wReserved = 0x%1!04X! (%1!d!)\r\n", m_wReserved->getData());
-		addChild(m_cchKeyName, L"cchKeyName = 0x%1!04X! (%1!d!)\r\n", m_cchKeyName->getData());
-		addChild(m_szKeyName, L"szKeyName = %1!ws!\r\n", m_szKeyName->c_str());
+		setText(L"Time Zone Definition:");
+		addChild(m_bMajorVersion, L"bMajorVersion = 0x%1!02X! (%1!d!)", m_bMajorVersion->getData());
+		addChild(m_bMinorVersion, L"bMinorVersion = 0x%1!02X! (%1!d!)", m_bMinorVersion->getData());
+		addChild(m_cbHeader, L"cbHeader = 0x%1!04X! (%1!d!)", m_cbHeader->getData());
+		addChild(m_wReserved, L"wReserved = 0x%1!04X! (%1!d!)", m_wReserved->getData());
+		addChild(m_cchKeyName, L"cchKeyName = 0x%1!04X! (%1!d!)", m_cchKeyName->getData());
+		addChild(m_szKeyName, L"szKeyName = %1!ws!", m_szKeyName->c_str());
 		addChild(m_cRules, L"cRules = 0x%1!04X! (%1!d!)", m_cRules->getData());
 
 		auto i = 0;
 		for (const auto& rule : m_lpTZRule)
 		{
-			terminateBlock();
-			addBlankLine();
-			addChild(
-				rule->bMajorVersion,
-				L"TZRule[0x%1!X!].bMajorVersion = 0x%2!02X! (%2!d!)\r\n",
-				i,
-				rule->bMajorVersion->getData());
-			addChild(
-				rule->bMinorVersion,
-				L"TZRule[0x%1!X!].bMinorVersion = 0x%2!02X! (%2!d!)\r\n",
-				i,
-				rule->bMinorVersion->getData());
-			addChild(
-				rule->wReserved, L"TZRule[0x%1!X!].wReserved = 0x%2!04X! (%2!d!)\r\n", i, rule->wReserved->getData());
-			addChild(
+			auto ruleBlock = create(L"TZRule[0x%1!X!]", i);
+			addChild(ruleBlock);
+			ruleBlock->addChild(
+				rule->bMajorVersion, L"bMajorVersion = 0x%1!02X! (%1!d!)", rule->bMajorVersion->getData());
+			ruleBlock->addChild(
+				rule->bMinorVersion, L"bMinorVersion = 0x%1!02X! (%1!d!)", rule->bMinorVersion->getData());
+			ruleBlock->addChild(rule->wReserved, L"wReserved = 0x%1!04X! (%1!d!)", rule->wReserved->getData());
+			ruleBlock->addChild(
 				rule->wTZRuleFlags,
-				L"TZRule[0x%1!X!].wTZRuleFlags = 0x%2!04X! = %3!ws!\r\n",
-				i,
+				L"wTZRuleFlags = 0x%1!04X! = %2!ws!",
 				rule->wTZRuleFlags->getData(),
 				flags::InterpretFlags(flagTZRule, *rule->wTZRuleFlags).c_str());
-			addChild(rule->wYear, L"TZRule[0x%1!X!].wYear = 0x%2!04X! (%2!d!)\r\n", i, rule->wYear->getData());
-			addHeader(L"TZRule[0x%1!X!].X = ", i);
-			addChild(rule->X);
+			ruleBlock->addChild(rule->wYear, L"wYear = 0x%1!04X! (%1!d!)", rule->wYear->getData());
+			ruleBlock->addLabeledChild(L"X =", rule->X);
 
-			terminateBlock();
-			addChild(rule->lBias, L"TZRule[0x%1!X!].lBias = 0x%2!08X! (%2!d!)\r\n", i, rule->lBias->getData());
-			addChild(
-				rule->lStandardBias,
-				L"TZRule[0x%1!X!].lStandardBias = 0x%2!08X! (%2!d!)\r\n",
-				i,
-				rule->lStandardBias->getData());
-			addChild(
-				rule->lDaylightBias,
-				L"TZRule[0x%1!X!].lDaylightBias = 0x%2!08X! (%2!d!)\r\n",
-				i,
-				rule->lDaylightBias->getData());
-			addBlankLine();
-			addChild(
+			ruleBlock->addChild(rule->lBias, L"lBias = 0x%1!08X! (%1!d!)", rule->lBias->getData());
+			ruleBlock->addChild(
+				rule->lStandardBias, L"lStandardBias = 0x%1!08X! (%1!d!)", rule->lStandardBias->getData());
+			ruleBlock->addChild(
+				rule->lDaylightBias, L"lDaylightBias = 0x%1!08X! (%1!d!)", rule->lDaylightBias->getData());
+			ruleBlock->addChild(
 				rule->stStandardDate.wYear,
-				L"TZRule[0x%1!X!].stStandardDate.wYear = 0x%2!X! (%2!d!)\r\n",
-				i,
+				L"stStandardDate.wYear = 0x%1!X! (%1!d!)",
 				rule->stStandardDate.wYear->getData());
-			addChild(
+			ruleBlock->addChild(
 				rule->stStandardDate.wMonth,
-				L"TZRule[0x%1!X!].stStandardDate.wMonth = 0x%2!X! (%2!d!)\r\n",
-				i,
+				L"stStandardDate.wMonth = 0x%1!X! (%1!d!)",
 				rule->stStandardDate.wMonth->getData());
-			addChild(
+			ruleBlock->addChild(
 				rule->stStandardDate.wDayOfWeek,
-				L"TZRule[0x%1!X!].stStandardDate.wDayOfWeek = 0x%2!X! (%2!d!)\r\n",
-				i,
+				L"stStandardDate.wDayOfWeek = 0x%1!X! (%1!d!)",
 				rule->stStandardDate.wDayOfWeek->getData());
-			addChild(
+			ruleBlock->addChild(
 				rule->stStandardDate.wDay,
-				L"TZRule[0x%1!X!].stStandardDate.wDay = 0x%2!X! (%2!d!)\r\n",
-				i,
+				L"stStandardDate.wDay = 0x%1!X! (%1!d!)",
 				rule->stStandardDate.wDay->getData());
-			addChild(
+			ruleBlock->addChild(
 				rule->stStandardDate.wHour,
-				L"TZRule[0x%1!X!].stStandardDate.wHour = 0x%2!X! (%2!d!)\r\n",
-				i,
+				L"stStandardDate.wHour = 0x%1!X! (%1!d!)",
 				rule->stStandardDate.wHour->getData());
-			addChild(
+			ruleBlock->addChild(
 				rule->stStandardDate.wMinute,
-				L"TZRule[0x%1!X!].stStandardDate.wMinute = 0x%2!X! (%2!d!)\r\n",
-				i,
+				L"stStandardDate.wMinute = 0x%1!X! (%1!d!)",
 				rule->stStandardDate.wMinute->getData());
-			addChild(
+			ruleBlock->addChild(
 				rule->stStandardDate.wSecond,
-				L"TZRule[0x%1!X!].stStandardDate.wSecond = 0x%2!X! (%2!d!)\r\n",
-				i,
+				L"stStandardDate.wSecond = 0x%1!X! (%1!d!)",
 				rule->stStandardDate.wSecond->getData());
-			addChild(
+			ruleBlock->addChild(
 				rule->stStandardDate.wMilliseconds,
-				L"TZRule[0x%1!X!].stStandardDate.wMilliseconds = 0x%2!X! (%2!d!)\r\n",
-				i,
+				L"stStandardDate.wMilliseconds = 0x%1!X! (%1!d!)",
 				rule->stStandardDate.wMilliseconds->getData());
-			addBlankLine();
-			addChild(
+			ruleBlock->addChild(
 				rule->stDaylightDate.wYear,
-				L"TZRule[0x%1!X!].stDaylightDate.wYear = 0x%2!X! (%2!d!)\r\n",
-				i,
+				L"stDaylightDate.wYear = 0x%1!X! (%1!d!)",
 				rule->stDaylightDate.wYear->getData());
-			addChild(
+			ruleBlock->addChild(
 				rule->stDaylightDate.wMonth,
-				L"TZRule[0x%1!X!].stDaylightDate.wMonth = 0x%2!X! (%2!d!)\r\n",
-				i,
+				L"stDaylightDate.wMonth = 0x%1!X! (%1!d!)",
 				rule->stDaylightDate.wMonth->getData());
-			addChild(
+			ruleBlock->addChild(
 				rule->stDaylightDate.wDayOfWeek,
-				L"TZRule[0x%1!X!].stDaylightDate.wDayOfWeek = 0x%2!X! (%2!d!)\r\n",
-				i,
+				L"stDaylightDate.wDayOfWeek = 0x%1!X! (%1!d!)",
 				rule->stDaylightDate.wDayOfWeek->getData());
-			addChild(
+			ruleBlock->addChild(
 				rule->stDaylightDate.wDay,
-				L"TZRule[0x%1!X!].stDaylightDate.wDay = 0x%2!X! (%2!d!)\r\n",
-				i,
+				L"stDaylightDate.wDay = 0x%1!X! (%1!d!)",
 				rule->stDaylightDate.wDay->getData());
-			addChild(
+			ruleBlock->addChild(
 				rule->stDaylightDate.wHour,
-				L"TZRule[0x%1!X!].stDaylightDate.wHour = 0x%2!X! (%2!d!)\r\n",
-				i,
+				L"stDaylightDate.wHour = 0x%1!X! (%1!d!)",
 				rule->stDaylightDate.wHour->getData());
-			addChild(
+			ruleBlock->addChild(
 				rule->stDaylightDate.wMinute,
-				L"TZRule[0x%1!X!].stDaylightDate.wMinute = 0x%2!X! (%2!d!)\r\n",
-				i,
+				L"stDaylightDate.wMinute = 0x%1!X! (%1!d!)",
 				rule->stDaylightDate.wMinute->getData());
-			addChild(
+			ruleBlock->addChild(
 				rule->stDaylightDate.wSecond,
-				L"TZRule[0x%1!X!].stDaylightDate.wSecond = 0x%2!X! (%2!d!)\r\n",
-				i,
+				L"stDaylightDate.wSecond = 0x%1!X! (%1!d!)",
 				rule->stDaylightDate.wSecond->getData());
-			addChild(
+			ruleBlock->addChild(
 				rule->stDaylightDate.wMilliseconds,
-				L"TZRule[0x%1!X!].stDaylightDate.wMilliseconds = 0x%2!X! (%2!d!)",
-				i,
+				L"stDaylightDate.wMilliseconds = 0x%1!X! (%1!d!)",
 				rule->stDaylightDate.wMilliseconds->getData());
 
 			i++;

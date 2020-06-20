@@ -49,11 +49,11 @@ namespace smartview
 
 	void RuleCondition::parseBlocks()
 	{
-		setText(m_bExtended ? L"Extended Rule Condition\r\n" : L"Rule Condition\r\n");
+		setText(m_bExtended ? L"Extended Rule Condition" : L"Rule Condition");
 
 		addChild(
 			m_NamedPropertyInformation.NoOfNamedProps,
-			L"Number of named props = 0x%1!04X!\r\n",
+			L"Number of named props = 0x%1!04X!",
 			m_NamedPropertyInformation.NoOfNamedProps->getData());
 		if (!m_NamedPropertyInformation.PropId.empty())
 		{
@@ -68,38 +68,38 @@ namespace smartview
 				terminateBlock();
 				auto namedProp = m_NamedPropertyInformation.PropertyName[i];
 				addChild(namedProp);
-				namedProp->setText(L"Named Prop 0x%1!04X!\r\n", i);
+				namedProp->setText(L"Named Prop 0x%1!04X!", i);
 
 				namedProp->addChild(
 					m_NamedPropertyInformation.PropId[i],
-					L"\tPropID = 0x%1!04X!\r\n",
+					L"PropID = 0x%1!04X!",
 					m_NamedPropertyInformation.PropId[i]->getData());
 
 				namedProp->addChild(
 					m_NamedPropertyInformation.PropertyName[i]->Kind,
-					L"\tKind = 0x%1!02X!\r\n",
+					L"Kind = 0x%1!02X!",
 					m_NamedPropertyInformation.PropertyName[i]->Kind->getData());
 				namedProp->addChild(
 					m_NamedPropertyInformation.PropertyName[i]->Guid,
-					L"\tGuid = %1!ws!\r\n",
+					L"Guid = %1!ws!",
 					guid::GUIDToString(*m_NamedPropertyInformation.PropertyName[i]->Guid).c_str());
 
 				if (*m_NamedPropertyInformation.PropertyName[i]->Kind == MNID_ID)
 				{
 					namedProp->addChild(
 						m_NamedPropertyInformation.PropertyName[i]->LID,
-						L"\tLID = 0x%1!08X!",
+						L"LID = 0x%1!08X!",
 						m_NamedPropertyInformation.PropertyName[i]->LID->getData());
 				}
 				else if (*m_NamedPropertyInformation.PropertyName[i]->Kind == MNID_STRING)
 				{
 					namedProp->addChild(
 						m_NamedPropertyInformation.PropertyName[i]->NameSize,
-						L"\tNameSize = 0x%1!02X!\r\n",
+						L"NameSize = 0x%1!02X!",
 						m_NamedPropertyInformation.PropertyName[i]->NameSize->getData());
 					namedProp->addChild(
 						m_NamedPropertyInformation.PropertyName[i]->Name,
-						L"\tName = %1!ws!",
+						L"Name = %1!ws!",
 						m_NamedPropertyInformation.PropertyName[i]->Name->c_str());
 				}
 			}

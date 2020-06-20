@@ -15,9 +15,9 @@ namespace smartview
 
 	void XID::parseBlocks()
 	{
-		setText(L"XID:\r\n");
+		setText(L"XID:");
 		addChild(
-			m_NamespaceGuid, L"NamespaceGuid = %1!ws!\r\n", guid::GUIDToString(m_NamespaceGuid->getData()).c_str());
+			m_NamespaceGuid, L"NamespaceGuid = %1!ws!", guid::GUIDToString(m_NamespaceGuid->getData()).c_str());
 		if (m_LocalID) addChild(m_LocalID, L"LocalId = %1!ws!", m_LocalID->toHexString(true).c_str());
 	}
 } // namespace smartview

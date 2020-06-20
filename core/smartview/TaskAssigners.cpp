@@ -32,24 +32,23 @@ namespace smartview
 
 	void TaskAssigners::parseBlocks()
 	{
-		setText(L"Task Assigners: \r\n");
+		setText(L"Task Assigners:");
 		addChild(m_cAssigners, L"cAssigners = 0x%1!08X! = %1!d!", m_cAssigners->getData());
 
 		auto i = 0;
 		for (const auto& ta : m_lpTaskAssigners)
 		{
-			terminateBlock();
-			addHeader(L"Task Assigner[%1!d!]\r\n", i);
-			addChild(ta->cbEntryID, L"\tcbEntryID = 0x%1!08X! = %1!d!\r\n", ta->cbEntryID->getData());
-			addLabeledChild(L"\tlpEntryID = ", ta->lpEntryID);
-			addChild(ta->szDisplayName, L"\tszDisplayName (ANSI) = %1!hs!\r\n", ta->szDisplayName->c_str());
-			addChild(ta->wzDisplayName, L"\tszDisplayName (Unicode) = %1!ws!", ta->wzDisplayName->c_str());
+			auto taBlock = create(L"Task Assigner[%1!d!]", i);
+			addChild(taBlock);
+			taBlock->addChild(ta->cbEntryID, L"cbEntryID = 0x%1!08X! = %1!d!", ta->cbEntryID->getData());
+			taBlock->addLabeledChild(L"lpEntryID =", ta->lpEntryID);
+			taBlock->addChild(ta->szDisplayName, L"szDisplayName (ANSI) = %1!hs!", ta->szDisplayName->c_str());
+			taBlock->addChild(ta->wzDisplayName, L"szDisplayName (Unicode) = %1!ws!", ta->wzDisplayName->c_str());
 
 			if (!ta->JunkData->empty())
 			{
-				terminateBlock();
-				addChild(ta->JunkData, L"\tUnparsed Data Size = 0x%1!08X!\r\n", ta->JunkData->size());
-				addChild(ta->JunkData);
+				taBlock->addChild(ta->JunkData, L"Unparsed Data Size = 0x%1!08X!", ta->JunkData->size());
+				taBlock->addChild(ta->JunkData);
 			}
 
 			i++;

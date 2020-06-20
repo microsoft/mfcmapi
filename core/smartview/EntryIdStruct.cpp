@@ -253,65 +253,65 @@ namespace smartview
 		switch (m_ObjectType)
 		{
 		case EIDStructType::unknown:
-			setText(L"Entry ID:\r\n");
+			setText(L"Entry ID:");
 			break;
 		case EIDStructType::ephemeral:
-			setText(L"Ephemeral Entry ID:\r\n");
+			setText(L"Ephemeral Entry ID:");
 			break;
 		case EIDStructType::shortTerm:
-			setText(L"Short Term Entry ID:\r\n");
+			setText(L"Short Term Entry ID:");
 			break;
 		case EIDStructType::folder:
-			setText(L"Exchange Folder Entry ID:\r\n");
+			setText(L"Exchange Folder Entry ID:");
 			break;
 		case EIDStructType::message:
-			setText(L"Exchange Message Entry ID:\r\n");
+			setText(L"Exchange Message Entry ID:");
 			break;
 		case EIDStructType::messageDatabase:
-			setText(L"MAPI Message Store Entry ID:\r\n");
+			setText(L"MAPI Message Store Entry ID:");
 			break;
 		case EIDStructType::oneOff:
-			setText(L"MAPI One Off Recipient Entry ID:\r\n");
+			setText(L"MAPI One Off Recipient Entry ID:");
 			break;
 		case EIDStructType::addressBook:
-			setText(L"Exchange Address Entry ID:\r\n");
+			setText(L"Exchange Address Entry ID:");
 			break;
 		case EIDStructType::contact:
-			setText(L"Contact Address Book / PDL Entry ID:\r\n");
+			setText(L"Contact Address Book / PDL Entry ID:");
 			break;
 		case EIDStructType::WAB:
-			setText(L"Wrapped Entry ID:\r\n");
+			setText(L"Wrapped Entry ID:");
 			break;
 		}
 
 		if (m_abFlags23->empty()) return;
 		if (0 == (*m_abFlags0 | *m_abFlags1 | m_abFlags23->data()[0] | m_abFlags23->data()[1]))
 		{
-			addChild(create(4, m_abFlags0->getOffset(), L"abFlags = 0x00000000\r\n"));
+			addChild(create(4, m_abFlags0->getOffset(), L"abFlags = 0x00000000"));
 		}
 		else if (0 == (*m_abFlags1 | m_abFlags23->data()[0] | m_abFlags23->data()[1]))
 		{
 			addChild(
 				m_abFlags0,
-				L"abFlags[0] = 0x%1!02X!= %2!ws!\r\n",
+				L"abFlags[0] = 0x%1!02X!= %2!ws!",
 				m_abFlags0->getData(),
 				flags::InterpretFlags(flagEntryId0, *m_abFlags0).c_str());
-			addChild(create(3, m_abFlags1->getOffset(), L"abFlags[1..3] = 0x000000\r\n"));
+			addChild(create(3, m_abFlags1->getOffset(), L"abFlags[1..3] = 0x000000"));
 		}
 		else
 		{
 			addChild(
 				m_abFlags0,
-				L"abFlags[0] = 0x%1!02X!= %2!ws!\r\n",
+				L"abFlags[0] = 0x%1!02X!= %2!ws!",
 				m_abFlags0->getData(),
 				flags::InterpretFlags(flagEntryId0, *m_abFlags0).c_str());
 			addChild(
 				m_abFlags1,
-				L"abFlags[1] = 0x%1!02X!= %2!ws!\r\n",
+				L"abFlags[1] = 0x%1!02X!= %2!ws!",
 				m_abFlags1->getData(),
 				flags::InterpretFlags(flagEntryId1, *m_abFlags1).c_str());
 			addChild(
-				m_abFlags23, L"abFlags[2..3] = 0x%1!02X!%2!02X!\r\n", m_abFlags23->data()[0], m_abFlags23->data()[1]);
+				m_abFlags23, L"abFlags[2..3] = 0x%1!02X!%2!02X!", m_abFlags23->data()[0], m_abFlags23->data()[1]);
 		}
 
 		addChild(m_ProviderUID, L"Provider GUID = %1!ws!", guid::GUIDToStringAndName(*m_ProviderUID).c_str());
@@ -323,7 +323,7 @@ namespace smartview
 			auto szVersion = flags::InterpretFlags(flagExchangeABVersion, *m_EphemeralObject.Version);
 			addChild(
 				m_EphemeralObject.Version,
-				L"Version = 0x%1!08X! = %2!ws!\r\n",
+				L"Version = 0x%1!08X! = %2!ws!",
 				m_EphemeralObject.Version->getData(),
 				szVersion.c_str());
 
@@ -342,16 +342,16 @@ namespace smartview
 				terminateBlock();
 				addChild(
 					m_OneOffRecipientObject.Bitmask,
-					L"dwBitmask: 0x%1!08X! = %2!ws!\r\n",
+					L"dwBitmask: 0x%1!08X! = %2!ws!",
 					m_OneOffRecipientObject.Bitmask->getData(),
 					szFlags.c_str());
 				addChild(
 					m_OneOffRecipientObject.Unicode.DisplayName,
-					L"szDisplayName = %1!ws!\r\n",
+					L"szDisplayName = %1!ws!",
 					m_OneOffRecipientObject.Unicode.DisplayName->c_str());
 				addChild(
 					m_OneOffRecipientObject.Unicode.AddressType,
-					L"szAddressType = %1!ws!\r\n",
+					L"szAddressType = %1!ws!",
 					m_OneOffRecipientObject.Unicode.AddressType->c_str());
 				addChild(
 					m_OneOffRecipientObject.Unicode.EmailAddress,
@@ -363,16 +363,16 @@ namespace smartview
 				terminateBlock();
 				addChild(
 					m_OneOffRecipientObject.Bitmask,
-					L"dwBitmask: 0x%1!08X! = %2!ws!\r\n",
+					L"dwBitmask: 0x%1!08X! = %2!ws!",
 					m_OneOffRecipientObject.Bitmask->getData(),
 					szFlags.c_str());
 				addChild(
 					m_OneOffRecipientObject.ANSI.DisplayName,
-					L"szDisplayName = %1!hs!\r\n",
+					L"szDisplayName = %1!hs!",
 					m_OneOffRecipientObject.ANSI.DisplayName->c_str());
 				addChild(
 					m_OneOffRecipientObject.ANSI.AddressType,
-					L"szAddressType = %1!hs!\r\n",
+					L"szAddressType = %1!hs!",
 					m_OneOffRecipientObject.ANSI.AddressType->c_str());
 				addChild(
 					m_OneOffRecipientObject.ANSI.EmailAddress,
@@ -386,13 +386,13 @@ namespace smartview
 			auto szVersion = flags::InterpretFlags(flagExchangeABVersion, *m_AddressBookObject.Version);
 			addChild(
 				m_AddressBookObject.Version,
-				L"Version = 0x%1!08X! = %2!ws!\r\n",
+				L"Version = 0x%1!08X! = %2!ws!",
 				m_AddressBookObject.Version->getData(),
 				szVersion.c_str());
 			auto szType = InterpretNumberAsStringProp(*m_AddressBookObject.Type, PR_DISPLAY_TYPE);
 			addChild(
 				m_AddressBookObject.Type,
-				L"Type = 0x%1!08X! = %2!ws!\r\n",
+				L"Type = 0x%1!08X! = %2!ws!",
 				m_AddressBookObject.Type->getData(),
 				szType.c_str());
 			addChild(m_AddressBookObject.X500DN, L"X500DN = %1!hs!", m_AddressBookObject.X500DN->c_str());
@@ -404,14 +404,14 @@ namespace smartview
 			auto szVersion = flags::InterpretFlags(flagContabVersion, *m_ContactAddressBookObject.Version);
 			addChild(
 				m_ContactAddressBookObject.Version,
-				L"Version = 0x%1!08X! = %2!ws!\r\n",
+				L"Version = 0x%1!08X! = %2!ws!",
 				m_ContactAddressBookObject.Version->getData(),
 				szVersion.c_str());
 
 			auto szType = flags::InterpretFlags(flagContabType, *m_ContactAddressBookObject.Type);
 			addChild(
 				m_ContactAddressBookObject.Type,
-				L"Type = 0x%1!08X! = %2!ws!\r\n",
+				L"Type = 0x%1!08X! = %2!ws!",
 				m_ContactAddressBookObject.Type->getData(),
 				szType.c_str());
 
@@ -421,12 +421,12 @@ namespace smartview
 			case CONTAB_DISTLIST:
 				addChild(
 					m_ContactAddressBookObject.Index,
-					L"Index = 0x%1!08X! = %2!ws!\r\n",
+					L"Index = 0x%1!08X! = %2!ws!",
 					m_ContactAddressBookObject.Index->getData(),
 					flags::InterpretFlags(flagContabIndex, *m_ContactAddressBookObject.Index).c_str());
 				addChild(
 					m_ContactAddressBookObject.EntryIDCount,
-					L"EntryIDCount = 0x%1!08X!\r\n",
+					L"EntryIDCount = 0x%1!08X!",
 					m_ContactAddressBookObject.EntryIDCount->getData());
 				break;
 			case CONTAB_ROOT:
@@ -434,7 +434,7 @@ namespace smartview
 			case CONTAB_SUBROOT:
 				addChild(
 					m_ContactAddressBookObject.muidID,
-					L"muidID = %1!ws!\r\n",
+					L"muidID = %1!ws!",
 					guid::GUIDToStringAndName(*m_ContactAddressBookObject.muidID).c_str());
 				break;
 			default:
@@ -448,7 +448,7 @@ namespace smartview
 			terminateBlock();
 			addChild(
 				m_WAB.Type,
-				L"Wrapped Entry Type = 0x%1!02X! = %2!ws!\r\n",
+				L"Wrapped Entry Type = 0x%1!02X! = %2!ws!",
 				m_WAB.Type->getData(),
 				flags::InterpretFlags(flagWABEntryIDType, *m_WAB.Type).c_str());
 
@@ -460,14 +460,14 @@ namespace smartview
 			auto szVersion = flags::InterpretFlags(flagMDBVersion, *m_MessageDatabaseObject.Version);
 			addChild(
 				m_MessageDatabaseObject.Version,
-				L"Version = 0x%1!02X! = %2!ws!\r\n",
+				L"Version = 0x%1!02X! = %2!ws!",
 				m_MessageDatabaseObject.Version->getData(),
 				szVersion.c_str());
 
 			auto szFlag = flags::InterpretFlags(flagMDBFlag, *m_MessageDatabaseObject.Flag);
 			addChild(
 				m_MessageDatabaseObject.Flag,
-				L"Flag = 0x%1!02X! = %2!ws!\r\n",
+				L"Flag = 0x%1!02X! = %2!ws!",
 				m_MessageDatabaseObject.Flag->getData(),
 				szFlag.c_str());
 
@@ -483,20 +483,20 @@ namespace smartview
 					InterpretNumberAsStringProp(*m_MessageDatabaseObject.WrappedType, PR_PROFILE_OPEN_FLAGS);
 				addChild(
 					m_MessageDatabaseObject.WrappedFlags,
-					L"Wrapped Flags = 0x%1!08X!\r\n",
+					L"Wrapped Flags = 0x%1!08X!",
 					m_MessageDatabaseObject.WrappedFlags->getData());
 				addChild(
 					m_MessageDatabaseObject.WrappedProviderUID,
-					L"WrappedProviderUID = %1!ws!\r\n",
+					L"WrappedProviderUID = %1!ws!",
 					guid::GUIDToStringAndName(*m_MessageDatabaseObject.WrappedProviderUID).c_str());
 				addChild(
 					m_MessageDatabaseObject.WrappedType,
-					L"WrappedType = 0x%1!08X! = %2!ws!\r\n",
+					L"WrappedType = 0x%1!08X! = %2!ws!",
 					m_MessageDatabaseObject.WrappedType->getData(),
 					szWrappedType.c_str());
 				addChild(
 					m_MessageDatabaseObject.ServerShortname,
-					L"ServerShortname = %1!hs!\r\n",
+					L"ServerShortname = %1!hs!",
 					m_MessageDatabaseObject.ServerShortname->c_str());
 				addChild(
 					m_MessageDatabaseObject.MailboxDN,
@@ -517,24 +517,24 @@ namespace smartview
 					szV2Magic.c_str());
 				addChild(
 					m_MessageDatabaseObject.v2.ulSize,
-					L"Size = 0x%1!08X! = %1!d!\r\n",
+					L"Size = 0x%1!08X! = %1!d!",
 					m_MessageDatabaseObject.v2.ulSize->getData());
 				auto szV2Version = flags::InterpretFlags(flagEidVersion, *m_MessageDatabaseObject.v2.ulVersion);
 				addChild(
 					m_MessageDatabaseObject.v2.ulVersion,
-					L"Version = 0x%1!08X! = %2!ws!\r\n",
+					L"Version = 0x%1!08X! = %2!ws!",
 					m_MessageDatabaseObject.v2.ulVersion->getData(),
 					szV2Version.c_str());
 				addChild(
 					m_MessageDatabaseObject.v2.ulOffsetDN,
-					L"OffsetDN = 0x%1!08X!\r\n",
+					L"OffsetDN = 0x%1!08X!",
 					m_MessageDatabaseObject.v2.ulOffsetDN->getData());
 				addChild(
 					m_MessageDatabaseObject.v2.ulOffsetFQDN,
-					L"OffsetFQDN = 0x%1!08X!\r\n",
+					L"OffsetFQDN = 0x%1!08X!",
 					m_MessageDatabaseObject.v2.ulOffsetFQDN->getData());
-				addChild(m_MessageDatabaseObject.v2DN, L"DN = %1!hs!\r\n", m_MessageDatabaseObject.v2DN->c_str());
-				addChild(m_MessageDatabaseObject.v2FQDN, L"FQDN = %1!ws!\r\n", m_MessageDatabaseObject.v2FQDN->c_str());
+				addChild(m_MessageDatabaseObject.v2DN, L"DN = %1!hs!", m_MessageDatabaseObject.v2DN->c_str());
+				addChild(m_MessageDatabaseObject.v2FQDN, L"FQDN = %1!ws!", m_MessageDatabaseObject.v2FQDN->c_str());
 
 				addLabeledChild(L"Reserved Bytes = ", m_MessageDatabaseObject.v2Reserved);
 			}
@@ -545,26 +545,26 @@ namespace smartview
 				auto szV3Magic = flags::InterpretFlags(flagEidMagic, *m_MessageDatabaseObject.v3.ulMagic);
 				addChild(
 					m_MessageDatabaseObject.v3.ulMagic,
-					L"Magic = 0x%1!08X! = %2!ws!\r\n",
+					L"Magic = 0x%1!08X! = %2!ws!",
 					m_MessageDatabaseObject.v3.ulMagic->getData(),
 					szV3Magic.c_str());
 				addChild(
 					m_MessageDatabaseObject.v3.ulSize,
-					L"Size = 0x%1!08X! = %1!d!\r\n",
+					L"Size = 0x%1!08X! = %1!d!",
 					m_MessageDatabaseObject.v3.ulSize->getData());
 				auto szV3Version = flags::InterpretFlags(flagEidVersion, *m_MessageDatabaseObject.v3.ulVersion);
 				addChild(
 					m_MessageDatabaseObject.v3.ulVersion,
-					L"Version = 0x%1!08X! = %2!ws!\r\n",
+					L"Version = 0x%1!08X! = %2!ws!",
 					m_MessageDatabaseObject.v3.ulVersion->getData(),
 					szV3Version.c_str());
 				addChild(
 					m_MessageDatabaseObject.v3.ulOffsetSmtpAddress,
-					L"OffsetSmtpAddress = 0x%1!08X!\r\n",
+					L"OffsetSmtpAddress = 0x%1!08X!",
 					m_MessageDatabaseObject.v3.ulOffsetSmtpAddress->getData());
 				addChild(
 					m_MessageDatabaseObject.v3SmtpAddress,
-					L"SmtpAddress = %1!ws!\r\n",
+					L"SmtpAddress = %1!ws!",
 					m_MessageDatabaseObject.v3SmtpAddress->c_str());
 
 				addLabeledChild(L"Reserved Bytes = ", m_MessageDatabaseObject.v2Reserved);
@@ -578,12 +578,12 @@ namespace smartview
 			auto szType = flags::InterpretFlags(flagMessageDatabaseObjectType, *m_FolderOrMessage.Type);
 			addChild(
 				m_FolderOrMessage.Type,
-				L"Folder Type = 0x%1!04X! = %2!ws!\r\n",
+				L"Folder Type = 0x%1!04X! = %2!ws!",
 				m_FolderOrMessage.Type->getData(),
 				szType.c_str());
 			addChild(
 				m_FolderOrMessage.FolderObject.DatabaseGUID,
-				L"Database GUID = %1!ws!\r\n",
+				L"Database GUID = %1!ws!",
 				guid::GUIDToStringAndName(*m_FolderOrMessage.FolderObject.DatabaseGUID).c_str());
 			addLabeledChild(L"GlobalCounter = ", m_FolderOrMessage.FolderObject.GlobalCounter);
 			terminateBlock();
@@ -596,12 +596,12 @@ namespace smartview
 			auto szType = flags::InterpretFlags(flagMessageDatabaseObjectType, *m_FolderOrMessage.Type);
 			addChild(
 				m_FolderOrMessage.Type,
-				L"Message Type = 0x%1!04X! = %2!ws!\r\n",
+				L"Message Type = 0x%1!04X! = %2!ws!",
 				m_FolderOrMessage.Type->getData(),
 				szType.c_str());
 			addChild(
 				m_FolderOrMessage.MessageObject.FolderDatabaseGUID,
-				L"Folder Database GUID = %1!ws!\r\n",
+				L"Folder Database GUID = %1!ws!",
 				guid::GUIDToStringAndName(*m_FolderOrMessage.MessageObject.FolderDatabaseGUID).c_str());
 			addLabeledChild(L"Folder GlobalCounter = ", m_FolderOrMessage.MessageObject.FolderGlobalCounter);
 
@@ -609,7 +609,7 @@ namespace smartview
 
 			addChild(
 				m_FolderOrMessage.MessageObject.MessageDatabaseGUID,
-				L"Message Database GUID = %1!ws!\r\n",
+				L"Message Database GUID = %1!ws!",
 				guid::GUIDToStringAndName(*m_FolderOrMessage.MessageObject.MessageDatabaseGUID).c_str());
 			addLabeledChild(L"Message GlobalCounter = ", m_FolderOrMessage.MessageObject.MessageGlobalCounter);
 

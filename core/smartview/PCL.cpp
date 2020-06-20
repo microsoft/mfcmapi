@@ -49,7 +49,7 @@ namespace smartview
 
 	void PCL::parseBlocks()
 	{
-		setText(L"Predecessor Change List:\r\n");
+		setText(L"Predecessor Change List:");
 		addHeader(L"Count = %1!d!", m_lpXID.size());
 
 		if (!m_lpXID.empty())
@@ -58,14 +58,14 @@ namespace smartview
 			for (const auto& xid : m_lpXID)
 			{
 				terminateBlock();
-				auto xidBlock = create(L"XID[%1!d!]:\r\n", i);
+				auto xidBlock = create(L"XID[%1!d!]:", i);
 				addChild(xidBlock);
-				xidBlock->addChild(xid->XidSize, L"XidSize = 0x%1!08X! = %1!d!\r\n", xid->XidSize->getData());
+				xidBlock->addChild(xid->XidSize, L"XidSize = 0x%1!08X! = %1!d!", xid->XidSize->getData());
 				xidBlock->addChild(
 					xid->NamespaceGuid,
-					L"NamespaceGuid = %1!ws!\r\n",
+					L"NamespaceGuid = %1!ws!",
 					guid::GUIDToString(xid->NamespaceGuid->getData()).c_str());
-				xidBlock->addLabeledChild(L"LocalId = ", xid->LocalID);
+				xidBlock->addLabeledChild(L"LocalId =", xid->LocalID);
 
 				i++;
 			}

@@ -108,14 +108,14 @@ namespace smartview
 
 	void SearchFolderDefinition::parseBlocks()
 	{
-		setText(L"Search Folder Definition:\r\n");
-		addChild(m_Version, L"Version = 0x%1!08X!\r\n", m_Version->getData());
+		setText(L"Search Folder Definition:");
+		addChild(m_Version, L"Version = 0x%1!08X!", m_Version->getData());
 		addChild(
 			m_Flags,
-			L"Flags = 0x%1!08X! = %2!ws!\r\n",
+			L"Flags = 0x%1!08X! = %2!ws!",
 			m_Flags->getData(),
 			InterpretNumberAsStringProp(*m_Flags, PR_WB_SF_STORAGE_TYPE).c_str());
-		addChild(m_NumericSearch, L"Numeric Search = 0x%1!08X!\r\n", m_NumericSearch->getData());
+		addChild(m_NumericSearch, L"Numeric Search = 0x%1!08X!", m_NumericSearch->getData());
 		addChild(m_TextSearchLength, L"Text Search Length = 0x%1!02X!", m_TextSearchLength->getData());
 
 		if (*m_TextSearchLength)
@@ -123,7 +123,7 @@ namespace smartview
 			terminateBlock();
 			addChild(
 				m_TextSearchLengthExtended,
-				L"Text Search Length Extended = 0x%1!04X!\r\n",
+				L"Text Search Length Extended = 0x%1!04X!",
 				m_TextSearchLengthExtended->getData());
 			addLabeledChild(L"Text Search = ", m_TextSearch);
 		}
@@ -138,7 +138,7 @@ namespace smartview
 		}
 
 		terminateBlock();
-		addChild(m_DeepSearch, L"Deep Search = 0x%1!08X!\r\n", m_DeepSearch->getData());
+		addChild(m_DeepSearch, L"Deep Search = 0x%1!08X!", m_DeepSearch->getData());
 		addChild(m_FolderList1Length, L"Folder List 1 Length = 0x%1!02X!", m_FolderList1Length->getData());
 
 		if (*m_FolderList1Length)
@@ -146,7 +146,7 @@ namespace smartview
 			terminateBlock();
 			addChild(
 				m_FolderList1LengthExtended,
-				L"Folder List 1 Length Extended = 0x%1!04X!\r\n",
+				L"Folder List 1 Length Extended = 0x%1!04X!",
 				m_FolderList1LengthExtended->getData());
 			addLabeledChild(L"Folder List 1 = ", m_FolderList1);
 		}
@@ -157,7 +157,7 @@ namespace smartview
 		if (m_FolderList2)
 		{
 			terminateBlock();
-			addHeader(L"FolderList2 = \r\n");
+			addHeader(L"FolderList2 = ");
 			addChild(m_FolderList2);
 		}
 
@@ -172,12 +172,12 @@ namespace smartview
 				terminateBlock();
 				addChild(
 					address->PropertyCount,
-					L"Addresses[%1!d!].PropertyCount = 0x%2!08X!\r\n",
+					L"Addresses[%1!d!].PropertyCount = 0x%2!08X!",
 					i,
 					address->PropertyCount->getData());
-				addChild(address->Pad, L"Addresses[%1!d!].Pad = 0x%2!08X!\r\n", i, address->Pad->getData());
+				addChild(address->Pad, L"Addresses[%1!d!].Pad = 0x%2!08X!", i, address->Pad->getData());
 
-				addHeader(L"Properties[%1!d!]:\r\n", i);
+				addHeader(L"Properties[%1!d!]:", i);
 				addChild(address->Props);
 				i++;
 			}

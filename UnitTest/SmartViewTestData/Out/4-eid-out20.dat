@@ -1,5 +1,5 @@
 Entry ID:
-abFlags = 0x00000000
-Provider GUID = {517AC40F-2FC3-4A26-AA1C-D7F2BA4F1D7A} = Unknown GUID
-Unparsed data size = 0x00000004
-cb: 4 lpb: 44002000
+	abFlags = 0x00000000
+	Provider GUID = {517AC40F-2FC3-4A26-AA1C-D7F2BA4F1D7A} = Unknown GUID
+	Unparsed data size = 0x00000004
+	cb: 4 lpb: 44002000

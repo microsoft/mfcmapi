@@ -45,11 +45,11 @@ namespace smartview
 
 	void NickNameCache::parseBlocks()
 	{
-		setText(L"Nickname Cache\r\n");
+		setText(L"Nickname Cache");
 		addLabeledChild(L"Metadata1 = ", m_Metadata1);
 
-		addChild(m_ulMajorVersion, L"Major Version = %1!d!\r\n", m_ulMajorVersion->getData());
-		addChild(m_ulMinorVersion, L"Minor Version = %1!d!\r\n", m_ulMinorVersion->getData());
+		addChild(m_ulMajorVersion, L"Major Version = %1!d!", m_ulMajorVersion->getData());
+		addChild(m_ulMinorVersion, L"Minor Version = %1!d!", m_ulMinorVersion->getData());
 		addChild(m_cRowCount, L"Row Count = %1!d!", m_cRowCount->getData());
 
 		if (!m_lpRows.empty())
@@ -59,9 +59,9 @@ namespace smartview
 			{
 				terminateBlock();
 				if (i > 0) addBlankLine();
-				auto rowBlock = create(L"Row %1!d!\r\n", i);
+				auto rowBlock = create(L"Row %1!d!", i);
 				addChild(rowBlock);
-				rowBlock->addChild(row->cValues, L"cValues = 0x%1!08X! = %1!d!\r\n", row->cValues->getData());
+				rowBlock->addChild(row->cValues, L"cValues = 0x%1!08X! = %1!d!", row->cValues->getData());
 				rowBlock->addChild(row->lpProps);
 
 				i++;

@@ -39,8 +39,8 @@ namespace smartview
 
 	void FlatEntryList::parseBlocks()
 	{
-		setText(L"Flat Entry List\r\n");
-		addChild(m_cEntries, L"cEntries = %1!d!\r\n", m_cEntries->getData());
+		setText(L"Flat Entry List");
+		addChild(m_cEntries, L"cEntries = %1!d!", m_cEntries->getData());
 		addChild(m_cbEntries, L"cbEntries = 0x%1!08X!", m_cbEntries->getData());
 
 		auto i = DWORD{};
@@ -63,7 +63,7 @@ namespace smartview
 			if (!entry->padding->empty())
 			{
 				terminateBlock();
-				addHeader(L"Entry[%1!d!] Padding:\r\n", i);
+				addHeader(L"Entry[%1!d!] Padding:", i);
 				if (entry->padding) addChild(entry->padding, entry->padding->toHexString(true));
 			}
 

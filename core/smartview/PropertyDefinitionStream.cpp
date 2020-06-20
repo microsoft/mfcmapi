@@ -112,12 +112,12 @@ namespace smartview
 
 		if (*cchLength == 0xFF)
 		{
-			data->setText(L"\t%1!ws!: Length = 0x%2!04X!", szFieldName.c_str(), cchExtendedLength->getData());
+			data->setText(L"%1!ws!: Length = 0x%2!04X!", szFieldName.c_str(), cchExtendedLength->getData());
 			data->setSize(cchLength->getSize() + cchExtendedLength->getSize());
 		}
 		else
 		{
-			data->setText(L"\t%1!ws!: Length = 0x%2!04X!", szFieldName.c_str(), cchLength->getData());
+			data->setText(L"%1!ws!: Length = 0x%2!04X!", szFieldName.c_str(), cchLength->getData());
 		}
 
 		if (szCharacters->length())
@@ -136,12 +136,12 @@ namespace smartview
 
 		if (*cchLength == 0xFF)
 		{
-			data->setText(L"\t%1!ws!: Length = 0x%2!04X!", szFieldName.c_str(), cchExtendedLength->getData());
+			data->setText(L"%1!ws!: Length = 0x%2!04X!", szFieldName.c_str(), cchExtendedLength->getData());
 			data->setSize(cchLength->getSize() + cchExtendedLength->getSize());
 		}
 		else
 		{
-			data->setText(L"\t%1!ws!: Length = 0x%2!04X!", szFieldName.c_str(), cchLength->getData());
+			data->setText(L"%1!ws!: Length = 0x%2!04X!", szFieldName.c_str(), cchLength->getData());
 		}
 
 		if (szCharacters->length())
@@ -156,24 +156,24 @@ namespace smartview
 
 	void PropertyDefinitionStream::parseBlocks()
 	{
-		setText(L"Property Definition Stream\r\n");
+		setText(L"Property Definition Stream");
 		auto szVersion = flags::InterpretFlags(flagPropDefVersion, *m_wVersion);
-		addChild(m_wVersion, L"Version = 0x%1!04X! = %2!ws!\r\n", m_wVersion->getData(), szVersion.c_str());
+		addChild(m_wVersion, L"Version = 0x%1!04X! = %2!ws!", m_wVersion->getData(), szVersion.c_str());
 		addChild(m_dwFieldDefinitionCount, L"FieldDefinitionCount = 0x%1!08X!", m_dwFieldDefinitionCount->getData());
 
 		auto iDef = 0;
 		for (const auto& def : m_pfdFieldDefinitions)
 		{
 			terminateBlock();
-			auto fieldDef = create(L"Definition: %1!d!\r\n", iDef);
+			auto fieldDef = create(L"Definition: %1!d!", iDef);
 			addChild(fieldDef);
 
 			auto szFlags = flags::InterpretFlags(flagPDOFlag, *def->dwFlags);
 			fieldDef->addChild(
-				def->dwFlags, L"\tFlags = 0x%1!08X! = %2!ws!\r\n", def->dwFlags->getData(), szFlags.c_str());
+				def->dwFlags, L"Flags = 0x%1!08X! = %2!ws!", def->dwFlags->getData(), szFlags.c_str());
 			auto szVarEnum = flags::InterpretFlags(flagVarEnum, *def->wVT);
-			fieldDef->addChild(def->wVT, L"\tVT = 0x%1!04X! = %2!ws!\r\n", def->wVT->getData(), szVarEnum.c_str());
-			fieldDef->addChild(def->dwDispid, L"\tDispID = 0x%1!08X!", def->dwDispid->getData());
+			fieldDef->addChild(def->wVT, L"VT = 0x%1!04X! = %2!ws!", def->wVT->getData(), szVarEnum.c_str());
+			fieldDef->addChild(def->dwDispid, L"DispID = 0x%1!08X!", def->dwDispid->getData());
 
 			if (*def->dwDispid)
 			{
@@ -207,8 +207,8 @@ namespace smartview
 
 			fieldDef->terminateBlock();
 			fieldDef->addChild(
-				def->wNmidNameLength, L"\tNmidNameLength = 0x%1!04X!\r\n", def->wNmidNameLength->getData());
-			fieldDef->addChild(def->szNmidName, L"\tNmidName = %1!ws!\r\n", def->szNmidName->c_str());
+				def->wNmidNameLength, L"NmidNameLength = 0x%1!04X!", def->wNmidNameLength->getData());
+			fieldDef->addChild(def->szNmidName, L"NmidName = %1!ws!", def->szNmidName->c_str());
 
 			fieldDef->addChild(def->pasNameANSI.toBlock(L"NameAnsi"));
 			fieldDef->addChild(def->pasFormulaANSI.toBlock(L"FormulaANSI"));
@@ -221,28 +221,28 @@ namespace smartview
 				szFlags = flags::InterpretFlags(flagInternalType, *def->dwInternalType);
 				fieldDef->addChild(
 					def->dwInternalType,
-					L"\tInternalType = 0x%1!08X! = %2!ws!\r\n",
+					L"InternalType = 0x%1!08X! = %2!ws!",
 					def->dwInternalType->getData(),
 					szFlags.c_str());
-				fieldDef->addHeader(L"\tSkipBlockCount = %1!d!", def->psbSkipBlocks.size());
+				fieldDef->addHeader(L"SkipBlockCount = %1!d!", def->psbSkipBlocks.size());
 
 				auto iSkipBlock = 0;
 				for (const auto& sb : def->psbSkipBlocks)
 				{
 					fieldDef->terminateBlock();
-					auto skipBlock = create(L"\tSkipBlock: %1!d!\r\n", iSkipBlock);
+					auto skipBlock = create(L"SkipBlock: %1!d!", iSkipBlock);
 					fieldDef->addChild(skipBlock);
-					skipBlock->addChild(sb->dwSize, L"\t\tSize = 0x%1!08X!", sb->dwSize->getData());
+					skipBlock->addChild(sb->dwSize, L"Size = 0x%1!08X!", sb->dwSize->getData());
 
 					if (iSkipBlock == 0)
 					{
 						skipBlock->terminateBlock();
-						skipBlock->addChild(sb->lpbContentText.toBlock(L"\tFieldName"));
+						skipBlock->addChild(sb->lpbContentText.toBlock(L"FieldName"));
 					}
 					else if (!sb->lpbContent->empty())
 					{
 						skipBlock->terminateBlock();
-						skipBlock->addLabeledChild(L"\t\tContent = ", sb->lpbContent);
+						skipBlock->addLabeledChild(L"Content = ", sb->lpbContent);
 					}
 
 					iSkipBlock++;

@@ -1,6 +1,7 @@
 Predecessor Change List:
-Count = 1
-XID[0]:
-XidSize = 0x00000014 = 20
-NamespaceGuid = {9D8647F2-3674-4FE6-A4CC-56F8B4809280}
-LocalId = cb: 4 lpb: 00000006
+	Count = 1
+	XID[0]:
+		XidSize = 0x00000014 = 20
+		NamespaceGuid = {9D8647F2-3674-4FE6-A4CC-56F8B4809280}
+		LocalId =
+			cb: 4 lpb: 00000006

@@ -1,8 +1,9 @@
 Security Descriptor:
-Security Info: 0x0
-Security Version: 0x0003 = SECURITY_DESCRIPTOR_TRANSFER_VERSION
-Descriptor:
-Account: \Everyone
+	Security Info:
+		0x0
+	Security Version: 0x0003 = SECURITY_DESCRIPTOR_TRANSFER_VERSION
+	Descriptor:
+	Account: \Everyone
 SID: S-1-1-0
 Access Type: 0x00000000 = ACCESS_ALLOWED_ACE_TYPE
 Access Flags: 0x00000002 = CONTAINER_INHERIT_ACE

@@ -1,6 +1,6 @@
 Exchange Address Entry ID:
-abFlags = 0x00000000
-Provider GUID = {C840A7DC-42C0-1A10-B4B9-08002B2FE182} = muidEMSAB
-Version = 0x00000001 = EMS_VERSION
-Type = 0x00000000 = DT_MAILUSER
-X500DN = /O=microsoft/OU=fareast/cn=Recipients/cn=example
+	abFlags = 0x00000000
+	Provider GUID = {C840A7DC-42C0-1A10-B4B9-08002B2FE182} = muidEMSAB
+	Version = 0x00000001 = EMS_VERSION
+	Type = 0x00000000 = DT_MAILUSER
+	X500DN = /O=microsoft/OU=fareast/cn=Recipients/cn=example

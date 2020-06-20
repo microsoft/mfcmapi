@@ -38,49 +38,49 @@ namespace smartview
 
 	void GlobalObjectId::parseBlocks()
 	{
-		setText(L"Global Object ID:\r\n");
+		setText(L"Global Object ID:");
 		if (m_Id->isSet())
 		{
-			auto id = create(L"Byte Array ID = ");
+			auto id = create(L"Byte Array ID =");
 			addChild(id);
 			id->addChild(m_Id);
 
 			if (m_Id->equal(sizeof s_rgbSPlus, s_rgbSPlus))
 			{
-				m_Id->addHeader(L" = s_rgbSPlus\r\n");
+				m_Id->addHeader(L"= s_rgbSPlus");
 			}
 			else
 			{
-				m_Id->addHeader(L" = Unknown GUID\r\n");
+				m_Id->addHeader(L"= Unknown GUID");
 			}
 		}
 
-		addChild(m_Year, L"Year: 0x%1!04X! = %1!d!\r\n", m_Year->getData());
+		addChild(m_Year, L"Year: 0x%1!04X! = %1!d!", m_Year->getData());
 
 		addChild(
 			m_Month,
-			L"Month: 0x%1!02X! = %1!d! = %2!ws!\r\n",
+			L"Month: 0x%1!02X! = %1!d! = %2!ws!",
 			m_Month->getData(),
 			flags::InterpretFlags(flagGlobalObjectIdMonth, *m_Month).c_str());
 
-		addChild(m_Day, L"Day: 0x%1!02X! = %1!d!\r\n", m_Day->getData());
+		addChild(m_Day, L"Day: 0x%1!02X! = %1!d!", m_Day->getData());
 
 		std::wstring propString;
 		std::wstring altPropString;
 		strings::FileTimeToString(*m_CreationTime, propString, altPropString);
 		addChild(
 			m_CreationTime,
-			L"Creation Time = 0x%1!08X!:0x%2!08X! = %3!ws!\r\n",
+			L"Creation Time = 0x%1!08X!:0x%2!08X! = %3!ws!",
 			m_CreationTime->getData().dwHighDateTime,
 			m_CreationTime->getData().dwLowDateTime,
 			propString.c_str());
 
-		addChild(m_X, L"X: 0x%1!08X!:0x%2!08X!\r\n", m_X->getData().HighPart, m_X->getData().LowPart);
-		addChild(m_dwSize, L"Size: 0x%1!02X! = %1!d!\r\n", m_dwSize->getData());
+		addChild(m_X, L"X: 0x%1!08X!:0x%2!08X!", m_X->getData().HighPart, m_X->getData().LowPart);
+		addChild(m_dwSize, L"Size: 0x%1!02X! = %1!d!", m_dwSize->getData());
 
 		if (m_lpData->size())
 		{
-			addLabeledChild(L"Data = ", m_lpData);
+			addLabeledChild(L"Data =", m_lpData);
 		}
 	}
 } // namespace smartview

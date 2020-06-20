@@ -159,24 +159,24 @@ namespace smartview
 		addChild(m_RecurrencePattern);
 		terminateBlock();
 
-		auto arpBlock = create(L"Appointment Recurrence Pattern: \r\n");
+		auto arpBlock = create(L"Appointment Recurrence Pattern: ");
 		addChild(arpBlock);
 
-		arpBlock->addChild(m_ReaderVersion2, L"ReaderVersion2: 0x%1!08X!\r\n", m_ReaderVersion2->getData());
-		arpBlock->addChild(m_WriterVersion2, L"WriterVersion2: 0x%1!08X!\r\n", m_WriterVersion2->getData());
+		arpBlock->addChild(m_ReaderVersion2, L"ReaderVersion2: 0x%1!08X!", m_ReaderVersion2->getData());
+		arpBlock->addChild(m_WriterVersion2, L"WriterVersion2: 0x%1!08X!", m_WriterVersion2->getData());
 		arpBlock->addChild(
 			m_StartTimeOffset,
-			L"StartTimeOffset: 0x%1!08X! = %1!d! = %2!ws!\r\n",
+			L"StartTimeOffset: 0x%1!08X! = %1!d! = %2!ws!",
 			m_StartTimeOffset->getData(),
 			RTimeToString(*m_StartTimeOffset).c_str());
 		arpBlock->addChild(
 			m_EndTimeOffset,
-			L"EndTimeOffset: 0x%1!08X! = %1!d! = %2!ws!\r\n",
+			L"EndTimeOffset: 0x%1!08X! = %1!d! = %2!ws!",
 			m_EndTimeOffset->getData(),
 			RTimeToString(*m_EndTimeOffset).c_str());
 
 		arpBlock->addChild(m_ExceptionCount);
-		m_ExceptionCount->setText(L"ExceptionCount: 0x%1!04X!\r\n", m_ExceptionCount->getData());
+		m_ExceptionCount->setText(L"ExceptionCount: 0x%1!04X!", m_ExceptionCount->getData());
 
 		if (!m_ExceptionInfo.empty())
 		{
@@ -188,26 +188,26 @@ namespace smartview
 
 				exception->addChild(
 					info->StartDateTime,
-					L"ExceptionInfo[%1!d!].StartDateTime: 0x%2!08X! = %3!ws!\r\n",
+					L"ExceptionInfo[%1!d!].StartDateTime: 0x%2!08X! = %3!ws!",
 					i,
 					info->StartDateTime->getData(),
 					RTimeToString(*info->StartDateTime).c_str());
 				exception->addChild(
 					info->EndDateTime,
-					L"ExceptionInfo[%1!d!].EndDateTime: 0x%2!08X! = %3!ws!\r\n",
+					L"ExceptionInfo[%1!d!].EndDateTime: 0x%2!08X! = %3!ws!",
 					i,
 					info->EndDateTime->getData(),
 					RTimeToString(*info->EndDateTime).c_str());
 				exception->addChild(
 					info->OriginalStartDate,
-					L"ExceptionInfo[%1!d!].OriginalStartDate: 0x%2!08X! = %3!ws!\r\n",
+					L"ExceptionInfo[%1!d!].OriginalStartDate: 0x%2!08X! = %3!ws!",
 					i,
 					info->OriginalStartDate->getData(),
 					RTimeToString(*info->OriginalStartDate).c_str());
 				auto szOverrideFlags = flags::InterpretFlags(flagOverrideFlags, *info->OverrideFlags);
 				exception->addChild(
 					info->OverrideFlags,
-					L"ExceptionInfo[%1!d!].OverrideFlags: 0x%2!04X! = %3!ws!\r\n",
+					L"ExceptionInfo[%1!d!].OverrideFlags: 0x%2!04X! = %3!ws!",
 					i,
 					info->OverrideFlags->getData(),
 					szOverrideFlags.c_str());
@@ -216,17 +216,17 @@ namespace smartview
 				{
 					exception->addChild(
 						info->SubjectLength,
-						L"ExceptionInfo[%1!d!].SubjectLength: 0x%2!04X! = %2!d!\r\n",
+						L"ExceptionInfo[%1!d!].SubjectLength: 0x%2!04X! = %2!d!",
 						i,
 						info->SubjectLength->getData());
 					exception->addChild(
 						info->SubjectLength2,
-						L"ExceptionInfo[%1!d!].SubjectLength2: 0x%2!04X! = %2!d!\r\n",
+						L"ExceptionInfo[%1!d!].SubjectLength2: 0x%2!04X! = %2!d!",
 						i,
 						info->SubjectLength2->getData());
 
 					exception->addChild(
-						info->Subject, L"ExceptionInfo[%1!d!].Subject: \"%2!hs!\"\r\n", i, info->Subject->c_str());
+						info->Subject, L"ExceptionInfo[%1!d!].Subject: \"%2!hs!\"", i, info->Subject->c_str());
 				}
 
 				if (*info->OverrideFlags & ARO_MEETINGTYPE)
@@ -235,7 +235,7 @@ namespace smartview
 						*info->MeetingType, dispidApptStateFlags, const_cast<LPGUID>(&guid::PSETID_Appointment));
 					exception->addChild(
 						info->MeetingType,
-						L"ExceptionInfo[%1!d!].MeetingType: 0x%2!08X! = %3!ws!\r\n",
+						L"ExceptionInfo[%1!d!].MeetingType: 0x%2!08X! = %3!ws!",
 						i,
 						info->MeetingType->getData(),
 						szFlags.c_str());
@@ -245,7 +245,7 @@ namespace smartview
 				{
 					exception->addChild(
 						info->ReminderDelta,
-						L"ExceptionInfo[%1!d!].ReminderDelta: 0x%2!08X!\r\n",
+						L"ExceptionInfo[%1!d!].ReminderDelta: 0x%2!08X!",
 						i,
 						info->ReminderDelta->getData());
 				}
@@ -254,7 +254,7 @@ namespace smartview
 				{
 					exception->addChild(
 						info->ReminderSet,
-						L"ExceptionInfo[%1!d!].ReminderSet: 0x%2!08X!\r\n",
+						L"ExceptionInfo[%1!d!].ReminderSet: 0x%2!08X!",
 						i,
 						info->ReminderSet->getData());
 				}
@@ -263,16 +263,16 @@ namespace smartview
 				{
 					exception->addChild(
 						info->LocationLength,
-						L"ExceptionInfo[%1!d!].LocationLength: 0x%2!04X! = %2!d!\r\n",
+						L"ExceptionInfo[%1!d!].LocationLength: 0x%2!04X! = %2!d!",
 						i,
 						info->LocationLength->getData());
 					exception->addChild(
 						info->LocationLength2,
-						L"ExceptionInfo[%1!d!].LocationLength2: 0x%2!04X! = %2!d!\r\n",
+						L"ExceptionInfo[%1!d!].LocationLength2: 0x%2!04X! = %2!d!",
 						i,
 						info->LocationLength2->getData());
 					exception->addChild(
-						info->Location, L"ExceptionInfo[%1!d!].Location: \"%2!hs!\"\r\n", i, info->Location->c_str());
+						info->Location, L"ExceptionInfo[%1!d!].Location: \"%2!hs!\"", i, info->Location->c_str());
 				}
 
 				if (*info->OverrideFlags & ARO_BUSYSTATUS)
@@ -281,7 +281,7 @@ namespace smartview
 						*info->BusyStatus, dispidBusyStatus, const_cast<LPGUID>(&guid::PSETID_Appointment));
 					exception->addChild(
 						info->BusyStatus,
-						L"ExceptionInfo[%1!d!].BusyStatus: 0x%2!08X! = %3!ws!\r\n",
+						L"ExceptionInfo[%1!d!].BusyStatus: 0x%2!08X! = %3!ws!",
 						i,
 						info->BusyStatus->getData(),
 						szFlags.c_str());
@@ -291,7 +291,7 @@ namespace smartview
 				{
 					exception->addChild(
 						info->Attachment,
-						L"ExceptionInfo[%1!d!].Attachment: 0x%2!08X!\r\n",
+						L"ExceptionInfo[%1!d!].Attachment: 0x%2!08X!",
 						i,
 						info->Attachment->getData());
 				}
@@ -299,14 +299,14 @@ namespace smartview
 				if (*info->OverrideFlags & ARO_SUBTYPE)
 				{
 					exception->addChild(
-						info->SubType, L"ExceptionInfo[%1!d!].SubType: 0x%2!08X!\r\n", i, info->SubType->getData());
+						info->SubType, L"ExceptionInfo[%1!d!].SubType: 0x%2!08X!", i, info->SubType->getData());
 				}
 
 				if (*info->OverrideFlags & ARO_APPTCOLOR)
 				{
 					exception->addChild(
 						info->AppointmentColor,
-						L"ExceptionInfo[%1!d!].AppointmentColor: 0x%2!08X!\r\n",
+						L"ExceptionInfo[%1!d!].AppointmentColor: 0x%2!08X!",
 						i,
 						info->AppointmentColor->getData());
 				}
@@ -341,12 +341,12 @@ namespace smartview
 						const_cast<LPGUID>(&guid::PSETID_Appointment));
 					exception->addChild(
 						ee->ChangeHighlight.ChangeHighlightSize,
-						L"ExtendedException[%1!d!].ChangeHighlight.ChangeHighlightSize: 0x%2!08X!\r\n",
+						L"ExtendedException[%1!d!].ChangeHighlight.ChangeHighlightSize: 0x%2!08X!",
 						i,
 						ee->ChangeHighlight.ChangeHighlightSize->getData());
 					exception->addChild(
 						ee->ChangeHighlight.ChangeHighlightValue,
-						L"ExtendedException[%1!d!].ChangeHighlight.ChangeHighlightValue: 0x%2!08X! = %3!ws!\r\n",
+						L"ExtendedException[%1!d!].ChangeHighlight.ChangeHighlightValue: 0x%2!08X! = %3!ws!",
 						i,
 						ee->ChangeHighlight.ChangeHighlightValue->getData(),
 						szFlags.c_str());
@@ -361,7 +361,7 @@ namespace smartview
 
 				exception->addChild(
 					ee->ReservedBlockEE1Size,
-					L"ExtendedException[%1!d!].ReservedBlockEE1Size: 0x%2!08X!\r\n",
+					L"ExtendedException[%1!d!].ReservedBlockEE1Size: 0x%2!08X!",
 					i,
 					ee->ReservedBlockEE1Size->getData());
 				if (!ee->ReservedBlockEE1->empty())
@@ -377,19 +377,19 @@ namespace smartview
 					{
 						exception->addChild(
 							ee->StartDateTime,
-							L"ExtendedException[%1!d!].StartDateTime: 0x%2!08X! = %3\r\n",
+							L"ExtendedException[%1!d!].StartDateTime: 0x%2!08X! = %3",
 							i,
 							ee->StartDateTime->getData(),
 							RTimeToString(*ee->StartDateTime).c_str());
 						exception->addChild(
 							ee->EndDateTime,
-							L"ExtendedException[%1!d!].EndDateTime: 0x%2!08X! = %3!ws!\r\n",
+							L"ExtendedException[%1!d!].EndDateTime: 0x%2!08X! = %3!ws!",
 							i,
 							ee->EndDateTime->getData(),
 							RTimeToString(*ee->EndDateTime).c_str());
 						exception->addChild(
 							ee->OriginalStartDate,
-							L"ExtendedException[%1!d!].OriginalStartDate: 0x%2!08X! = %3!ws!\r\n",
+							L"ExtendedException[%1!d!].OriginalStartDate: 0x%2!08X! = %3!ws!",
 							i,
 							ee->OriginalStartDate->getData(),
 							RTimeToString(*ee->OriginalStartDate).c_str());
@@ -399,12 +399,12 @@ namespace smartview
 					{
 						exception->addChild(
 							ee->WideCharSubjectLength,
-							L"ExtendedException[%1!d!].WideCharSubjectLength: 0x%2!08X! = %2!d!\r\n",
+							L"ExtendedException[%1!d!].WideCharSubjectLength: 0x%2!08X! = %2!d!",
 							i,
 							ee->WideCharSubjectLength->getData());
 						exception->addChild(
 							ee->WideCharSubject,
-							L"ExtendedException[%1!d!].WideCharSubject: \"%2!ws!\"\r\n",
+							L"ExtendedException[%1!d!].WideCharSubject: \"%2!ws!\"",
 							i,
 							ee->WideCharSubject->c_str());
 					}
@@ -413,12 +413,12 @@ namespace smartview
 					{
 						exception->addChild(
 							ee->WideCharLocationLength,
-							L"ExtendedException[%1!d!].WideCharLocationLength: 0x%2!08X! = %2!d!\r\n",
+							L"ExtendedException[%1!d!].WideCharLocationLength: 0x%2!08X! = %2!d!",
 							i,
 							ee->WideCharLocationLength->getData());
 						exception->addChild(
 							ee->WideCharLocation,
-							L"ExtendedException[%1!d!].WideCharLocation: \"%2!ws!\"\r\n",
+							L"ExtendedException[%1!d!].WideCharLocation: \"%2!ws!\"",
 							i,
 							ee->WideCharLocation->c_str());
 					}
@@ -426,7 +426,7 @@ namespace smartview
 
 				exception->addChild(
 					ee->ReservedBlockEE2Size,
-					L"ExtendedException[%1!d!].ReservedBlockEE2Size: 0x%2!08X!\r\n",
+					L"ExtendedException[%1!d!].ReservedBlockEE2Size: 0x%2!08X!",
 					i,
 					ee->ReservedBlockEE2Size->getData());
 				if (!ee->ReservedBlockEE2->empty())

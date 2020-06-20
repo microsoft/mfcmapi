@@ -50,7 +50,7 @@ namespace smartview
 
 	void WebViewPersistStream::parseBlocks()
 	{
-		setText(L"Web View Persistence Object Stream\r\n");
+		setText(L"Web View Persistence Object Stream");
 		addHeader(L"cWebViews = %1!d!", m_lpWebViews.size());
 		auto i = 0;
 		for (const auto& view : m_lpWebViews)
@@ -58,37 +58,39 @@ namespace smartview
 			terminateBlock();
 			addBlankLine();
 
-			addHeader(L"Web View %1!d!\r\n", i);
-			addChild(
+			auto webView = create(L"Web View %1!d!", i);
+			addChild(webView);
+			webView->addChild(
 				view->dwVersion,
-				L"dwVersion = 0x%1!08X! = %2!ws!\r\n",
+				L"dwVersion = 0x%1!08X! = %2!ws!",
 				view->dwVersion->getData(),
 				flags::InterpretFlags(flagWebViewVersion, *view->dwVersion).c_str());
-			addChild(
+			webView->addChild(
 				view->dwType,
-				L"dwType = 0x%1!08X! = %2!ws!\r\n",
+				L"dwType = 0x%1!08X! = %2!ws!",
 				view->dwType->getData(),
 				flags::InterpretFlags(flagWebViewType, *view->dwType).c_str());
-			addChild(
+			webView->addChild(
 				view->dwFlags,
-				L"dwFlags = 0x%1!08X! = %2!ws!\r\n",
+				L"dwFlags = 0x%1!08X! = %2!ws!",
 				view->dwFlags->getData(),
 				flags::InterpretFlags(flagWebViewFlags, *view->dwFlags).c_str());
-			addLabeledChild(L"dwUnused = ", view->dwUnused);
+			webView->addLabeledChild(L"dwUnused =", view->dwUnused);
 
 			terminateBlock();
-			addChild(view->cbData, L"cbData = 0x%1!08X!\r\n", view->cbData->getData());
+			webView->addChild(view->cbData, L"cbData = 0x%1!08X!", view->cbData->getData());
 
 			switch (*view->dwType)
 			{
 			case WEBVIEWURL:
 			{
-				addHeader(L"wzURL = ");
-				addChild(view->lpData, view->lpData->toTextString(false));
+				auto url = create(L"wzURL =");
+				webView->addChild(url);
+				url->addChild(view->lpData, view->lpData->toTextString(false));
 				break;
 			}
 			default:
-				addLabeledChild(L"lpData = ", view->lpData);
+				webView->addLabeledChild(L"lpData =", view->lpData);
 				break;
 			}
 

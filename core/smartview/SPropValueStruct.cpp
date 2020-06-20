@@ -25,7 +25,7 @@ namespace smartview
 
 	void SPropValueStruct::parseBlocks()
 	{
-		setText(L"Property[%1!d!]\r\n", m_index);
+		setText(L"Property[%1!d!]", m_index);
 		addChild(ulPropTag, L"Property = 0x%1!08X!", ulPropTag->getData());
 
 		const auto propTagNames = proptags::PropTagToPropName(*ulPropTag, false);

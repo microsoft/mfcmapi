@@ -369,7 +369,7 @@ namespace smartview
 		{
 			if (ulRow != 0)
 			{
-				szResult += L"\r\n\r\n"; // STRING_OK
+				szResult += L""; // STRING_OK
 			}
 
 			szResult += strings::formatmessage(IDS_MVROWBIN, ulRow);
@@ -490,7 +490,7 @@ namespace smartview
 			}
 		}
 
-		return strings::join(szArray, L"\r\n");
+		return strings::join(szArray, L"");
 	}
 
 	std::wstring InterpretMVLongAsString(
@@ -518,7 +518,7 @@ namespace smartview
 			}
 		}
 
-		return strings::join(szArray, L"\r\n");
+		return strings::join(szArray, L"");
 	}
 
 	std::wstring InterpretBinaryAsString(const SBinary myBin, parserType parser, _In_opt_ LPMAPIPROP lpMAPIProp)

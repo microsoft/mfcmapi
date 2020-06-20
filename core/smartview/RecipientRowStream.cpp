@@ -40,9 +40,9 @@ namespace smartview
 
 	void RecipientRowStream::parseBlocks()
 	{
-		setText(L"Recipient Row Stream\r\n");
-		addChild(m_cVersion, L"cVersion = %1!d!\r\n", m_cVersion->getData());
-		addChild(m_cRowCount, L"cRowCount = %1!d!\r\n", m_cRowCount->getData());
+		setText(L"Recipient Row Stream");
+		addChild(m_cVersion, L"cVersion = %1!d!", m_cVersion->getData());
+		addChild(m_cRowCount, L"cRowCount = %1!d!", m_cRowCount->getData());
 		if (!m_lpAdrEntry.empty())
 		{
 			addBlankLine();
@@ -50,9 +50,9 @@ namespace smartview
 			for (const auto& entry : m_lpAdrEntry)
 			{
 				terminateBlock();
-				addHeader(L"Row %1!d!\r\n", i);
-				addChild(entry->cValues, L"cValues = 0x%1!08X! = %1!d!\r\n", entry->cValues->getData());
-				addChild(entry->ulReserved1, L"ulReserved1 = 0x%1!08X! = %1!d!\r\n", entry->ulReserved1->getData());
+				addHeader(L"Row %1!d!", i);
+				addChild(entry->cValues, L"cValues = 0x%1!08X! = %1!d!", entry->cValues->getData());
+				addChild(entry->ulReserved1, L"ulReserved1 = 0x%1!08X! = %1!d!", entry->ulReserved1->getData());
 				addChild(entry->rgPropVals);
 
 				i++;

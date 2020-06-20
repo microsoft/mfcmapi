@@ -1,10 +1,10 @@
 Exchange Message Entry ID:
-abFlags = 0x00000000
-Provider GUID = {BBCFF2FC-9823-4F13-9388-3E49A74F94B6} = Unknown GUID
-Message Type = 0x0007 = eitLTPrivateMessage
-Folder Database GUID = {C8AF837A-0A0E-425A-9FAF-06395C2813D4} = Unknown GUID
-Folder GlobalCounter = cb: 6 lpb: 00000536281B
-Pad1 = cb: 2 lpb: 0000
-Message Database GUID = {C8AF837A-0A0E-425A-9FAF-06395C2813D4} = Unknown GUID
-Message GlobalCounter = cb: 6 lpb: 0007D676A15F
-Pad2 = cb: 2 lpb: 0000
+	abFlags = 0x00000000
+	Provider GUID = {BBCFF2FC-9823-4F13-9388-3E49A74F94B6} = Unknown GUID
+	Message Type = 0x0007 = eitLTPrivateMessage
+	Folder Database GUID = {C8AF837A-0A0E-425A-9FAF-06395C2813D4} = Unknown GUID
+	Folder GlobalCounter = cb: 6 lpb: 00000536281B
+	Pad1 = cb: 2 lpb: 0000
+	Message Database GUID = {C8AF837A-0A0E-425A-9FAF-06395C2813D4} = Unknown GUID
+	Message GlobalCounter = cb: 6 lpb: 0007D676A15F
+	Pad2 = cb: 2 lpb: 0000
