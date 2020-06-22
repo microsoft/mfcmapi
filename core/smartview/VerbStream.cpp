@@ -69,7 +69,6 @@ namespace smartview
 		auto i = 0;
 		for (const auto& verbData : m_lpVerbData)
 		{
-			terminateBlock();
 			addBlankLine();
 			auto dataBlock = create(L"VerbData[%1!d!]", i);
 			addChild(dataBlock);
@@ -109,8 +108,6 @@ namespace smartview
 			i++;
 		}
 
-		terminateBlock();
-		addBlankLine();
 		addChild(m_Version2, L"Version2 = 0x%1!04X!", m_Version2->getData());
 
 		i = 0;
@@ -118,7 +115,8 @@ namespace smartview
 		{
 			auto dataBlock = create(L"VerbExtraData[%1!d!]", i);
 			addChild(dataBlock);
-			dataBlock->addChild(ved->DisplayNameCount, L"DisplayNameCount = 0x%1!02X!", ved->DisplayNameCount->getData());
+			dataBlock->addChild(
+				ved->DisplayNameCount, L"DisplayNameCount = 0x%1!02X!", ved->DisplayNameCount->getData());
 			dataBlock->addChild(ved->DisplayName, L"DisplayName = \"%1!ws!\"", ved->DisplayName->c_str());
 			dataBlock->addChild(
 				ved->DisplayNameCountRepeat,

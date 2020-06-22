@@ -52,8 +52,6 @@ namespace blocktest
 			block1->setText(L"hello %1!ws!", L"world");
 			Assert::AreEqual(block1->getText(), std::wstring(L"hello world"));
 
-			block1->terminateBlock();
-			block1->terminateBlock();
 			block1->addChild(block2);
 			Assert::AreEqual(
 				block1->toString(),

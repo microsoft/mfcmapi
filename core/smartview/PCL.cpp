@@ -57,7 +57,6 @@ namespace smartview
 			auto i = 0;
 			for (const auto& xid : m_lpXID)
 			{
-				terminateBlock();
 				auto xidBlock = create(L"XID[%1!d!]:", i);
 				addChild(xidBlock);
 				xidBlock->addChild(xid->XidSize, L"XidSize = 0x%1!08X! = %1!d!", xid->XidSize->getData());

@@ -25,7 +25,6 @@ namespace smartview
 			node->setOffset(_block->getOffset());
 			node->setSize(_block->getSize());
 			node->addChild(_block);
-			node->terminateBlock();
 			addChild(node);
 		}
 	}
@@ -42,7 +41,6 @@ namespace smartview
 		if (this->hasData() && enableJunk && parser->getSize())
 		{
 			auto junkData = blockBytes::parse(parser, parser->getSize());
-			terminateBlock();
 			addHeader(L"Unparsed data size = 0x%1!08X!", junkData->size());
 			addChild(junkData);
 		}

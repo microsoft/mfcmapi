@@ -157,7 +157,6 @@ namespace smartview
 	void AppointmentRecurrencePattern::parseBlocks()
 	{
 		addChild(m_RecurrencePattern);
-		terminateBlock();
 
 		auto arpBlock = create(L"Appointment Recurrence Pattern:");
 		addChild(arpBlock);
@@ -284,11 +283,8 @@ namespace smartview
 		m_ReservedBlock1Size->setText(L"ReservedBlock1Size: 0x%1!08X!", m_ReservedBlock1Size->getData());
 		if (!m_ReservedBlock1->empty())
 		{
-			m_ReservedBlock1Size->terminateBlock();
 			m_ReservedBlock1Size->addChild(m_ReservedBlock1);
 		}
-
-		m_ReservedBlock1Size->terminateBlock();
 
 		if (!m_ExtendedException.empty())
 		{
@@ -376,7 +372,6 @@ namespace smartview
 				if (!ee->ReservedBlockEE2->empty())
 				{
 					exception->addChild(ee->ReservedBlockEE2);
-					exception->terminateBlock();
 				}
 
 				i++;
@@ -387,10 +382,7 @@ namespace smartview
 		m_ReservedBlock2Size->setText(L"ReservedBlock2Size: 0x%1!08X!", m_ReservedBlock2Size->getData());
 		if (!m_ReservedBlock2->empty())
 		{
-			m_ReservedBlock2Size->terminateBlock();
 			m_ReservedBlock2Size->addChild(m_ReservedBlock2);
 		}
-
-		m_ReservedBlock2Size->terminateBlock();
 	}
 } // namespace smartview

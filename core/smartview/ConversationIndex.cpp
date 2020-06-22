@@ -110,7 +110,6 @@ namespace smartview
 			auto i = 0;
 			for (const auto& responseLevel : m_lpResponseLevels)
 			{
-				terminateBlock();
 				addChild(
 					responseLevel->DeltaCode,
 					L"ResponseLevel[%1!d!].DeltaCode = %2!d!",

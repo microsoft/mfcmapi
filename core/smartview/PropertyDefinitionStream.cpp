@@ -125,7 +125,6 @@ namespace smartview
 			data->addLabeledChild(L"Characters =", szCharacters);
 		}
 
-		data->terminateBlock();
 		return data;
 	}
 
@@ -150,7 +149,6 @@ namespace smartview
 			charHeader->addChild(szCharacters, szCharacters->c_str());
 		}
 
-		data->terminateBlock();
 		return data;
 	}
 
@@ -164,7 +162,6 @@ namespace smartview
 		auto iDef = 0;
 		for (const auto& def : m_pfdFieldDefinitions)
 		{
-			terminateBlock();
 			auto fieldDef = create(L"Definition: %1!d!", iDef);
 			addChild(fieldDef);
 
@@ -204,7 +201,6 @@ namespace smartview
 				}
 			}
 
-			fieldDef->terminateBlock();
 			fieldDef->addChild(def->wNmidNameLength, L"NmidNameLength = 0x%1!04X!", def->wNmidNameLength->getData());
 			fieldDef->addChild(def->szNmidName, L"NmidName = %1!ws!", def->szNmidName->c_str());
 
@@ -227,19 +223,16 @@ namespace smartview
 				auto iSkipBlock = 0;
 				for (const auto& sb : def->psbSkipBlocks)
 				{
-					fieldDef->terminateBlock();
 					auto skipBlock = create(L"SkipBlock: %1!d!", iSkipBlock);
 					fieldDef->addChild(skipBlock);
 					skipBlock->addChild(sb->dwSize, L"Size = 0x%1!08X!", sb->dwSize->getData());
 
 					if (iSkipBlock == 0)
 					{
-						skipBlock->terminateBlock();
 						skipBlock->addChild(sb->lpbContentText.toBlock(L"FieldName"));
 					}
 					else if (!sb->lpbContent->empty())
 					{
-						skipBlock->terminateBlock();
 						skipBlock->addLabeledChild(L"Content =", sb->lpbContent);
 					}
 

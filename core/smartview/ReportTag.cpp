@@ -41,7 +41,6 @@ namespace smartview
 	{
 		if (*_cb)
 		{
-			terminateBlock();
 			addLabeledChild(label, eid);
 		}
 	}
@@ -51,7 +50,6 @@ namespace smartview
 		setText(L"Report Tag:");
 		addLabeledChild(L"Cookie =", m_Cookie);
 
-		terminateBlock();
 		auto szFlags = flags::InterpretFlags(flagReportTagVersion, *m_Version);
 		addChild(m_Version, L"Version = 0x%1!08X! = %2!ws!", m_Version->getData(), szFlags.c_str());
 

@@ -56,14 +56,6 @@ namespace smartview
 		bool isHeader() const noexcept { return cb == 0 && offset == 0; }
 		bool hasData() const noexcept { return !text.empty() || !children.empty(); }
 
-		// Put CRLF on the end of the last child
-		// Essentially ensures that the next child added will be on a new line
-		void terminateBlock()
-		{
-			// TODO: Remvoe this altogether
-			return;
-		}
-
 		// Add child blocks of various types
 		void addChild(const std::shared_ptr<block>& child)
 		{

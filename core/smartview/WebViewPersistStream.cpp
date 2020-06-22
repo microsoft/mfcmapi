@@ -55,9 +55,6 @@ namespace smartview
 		auto i = 0;
 		for (const auto& view : m_lpWebViews)
 		{
-			terminateBlock();
-			addBlankLine();
-
 			auto webView = create(L"Web View %1!d!", i);
 			addChild(webView);
 			webView->addChild(
@@ -77,7 +74,6 @@ namespace smartview
 				flags::InterpretFlags(flagWebViewFlags, *view->dwFlags).c_str());
 			webView->addLabeledChild(L"dwUnused =", view->dwUnused);
 
-			terminateBlock();
 			webView->addChild(view->cbData, L"cbData = 0x%1!08X!", view->cbData->getData());
 
 			switch (*view->dwType)

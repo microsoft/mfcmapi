@@ -91,16 +91,13 @@ namespace smartview
 		{
 			for (const auto& extendedFlag : m_pefExtendedFlags)
 			{
-				terminateBlock();
 				auto szFlags = flags::InterpretFlags(flagExtendedFolderFlagType, *extendedFlag->Id);
-				addChild(
-					extendedFlag->Id, L"Id = 0x%1!02X! = %2!ws!", extendedFlag->Id->getData(), szFlags.c_str());
+				addChild(extendedFlag->Id, L"Id = 0x%1!02X! = %2!ws!", extendedFlag->Id->getData(), szFlags.c_str());
 				extendedFlag->Id->addChild(extendedFlag->Cb, L"Cb = 0x%1!02X! = %1!d!", extendedFlag->Cb->getData());
 
 				switch (*extendedFlag->Id)
 				{
 				case EFPB_FLAGS:
-					terminateBlock();
 					extendedFlag->Id->addChild(
 						extendedFlag->Data.ExtendedFlags,
 						L"Extended Flags = 0x%1!08X! = %2!ws!",
@@ -108,21 +105,18 @@ namespace smartview
 						flags::InterpretFlags(flagExtendedFolderFlag, *extendedFlag->Data.ExtendedFlags).c_str());
 					break;
 				case EFPB_CLSIDID:
-					terminateBlock();
 					extendedFlag->Id->addChild(
 						extendedFlag->Data.SearchFolderID,
 						L"SearchFolderID = %1!ws!",
 						guid::GUIDToString(*extendedFlag->Data.SearchFolderID).c_str());
 					break;
 				case EFPB_SFTAG:
-					terminateBlock();
 					extendedFlag->Id->addChild(
 						extendedFlag->Data.SearchFolderTag,
 						L"SearchFolderTag = 0x%1!08X!",
 						extendedFlag->Data.SearchFolderTag->getData());
 					break;
 				case EFPB_TODO_VERSION:
-					terminateBlock();
 					extendedFlag->Id->addChild(
 						extendedFlag->Data.ToDoFolderVersion,
 						L"ToDoFolderVersion = 0x%1!08X!",
@@ -132,7 +126,6 @@ namespace smartview
 
 				if (extendedFlag->lpUnknownData->size())
 				{
-					terminateBlock();
 					addLabeledChild(L"Unknown Data =", extendedFlag->lpUnknownData);
 				}
 			}

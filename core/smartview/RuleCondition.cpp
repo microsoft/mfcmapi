@@ -57,7 +57,6 @@ namespace smartview
 			m_NamedPropertyInformation.NoOfNamedProps->getData());
 		if (!m_NamedPropertyInformation.PropId.empty())
 		{
-			terminateBlock();
 			addChild(
 				m_NamedPropertyInformation.NamedPropertiesSize,
 				L"Named prop size = 0x%1!08X!",
@@ -65,7 +64,6 @@ namespace smartview
 
 			for (size_t i = 0; i < m_NamedPropertyInformation.PropId.size(); i++)
 			{
-				terminateBlock();
 				auto namedProp = m_NamedPropertyInformation.PropertyName[i];
 				addChild(namedProp);
 				namedProp->setText(L"Named Prop 0x%1!04X!", i);
@@ -107,7 +105,6 @@ namespace smartview
 
 		if (m_lpRes && m_lpRes->hasData())
 		{
-			terminateBlock();
 			addChild(m_lpRes);
 		}
 	}

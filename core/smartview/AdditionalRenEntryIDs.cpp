@@ -100,8 +100,6 @@ namespace smartview
 			auto iPersistElement = 0;
 			for (const auto& persistData : m_ppdPersistData)
 			{
-				terminateBlock();
-				addBlankLine();
 				auto element = create(L"Persist Element %1!d!:", iPersistElement);
 				addChild(element);
 
@@ -120,7 +118,6 @@ namespace smartview
 					auto iDataElement = 0;
 					for (const auto& dataElement : persistData->ppeDataElement)
 					{
-						element->terminateBlock();
 						auto de = create(L"DataElement: %1!d!", iDataElement);
 						element->addChild(de);
 
@@ -142,7 +139,6 @@ namespace smartview
 
 				if (!persistData->JunkData->empty())
 				{
-					element->terminateBlock();
 					element->addHeader(L"Unparsed data size = 0x%1!08X!", persistData->JunkData->size());
 					element->addChild(persistData->JunkData);
 				}
