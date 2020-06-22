@@ -253,34 +253,34 @@ namespace smartview
 		switch (m_ObjectType)
 		{
 		case EIDStructType::unknown:
-			setText(L"Entry ID:");
+			setText(L"Entry ID");
 			break;
 		case EIDStructType::ephemeral:
-			setText(L"Ephemeral Entry ID:");
+			setText(L"Ephemeral Entry ID");
 			break;
 		case EIDStructType::shortTerm:
-			setText(L"Short Term Entry ID:");
+			setText(L"Short Term Entry ID");
 			break;
 		case EIDStructType::folder:
-			setText(L"Exchange Folder Entry ID:");
+			setText(L"Exchange Folder Entry ID");
 			break;
 		case EIDStructType::message:
-			setText(L"Exchange Message Entry ID:");
+			setText(L"Exchange Message Entry ID");
 			break;
 		case EIDStructType::messageDatabase:
-			setText(L"MAPI Message Store Entry ID:");
+			setText(L"MAPI Message Store Entry ID");
 			break;
 		case EIDStructType::oneOff:
-			setText(L"MAPI One Off Recipient Entry ID:");
+			setText(L"MAPI One Off Recipient Entry ID");
 			break;
 		case EIDStructType::addressBook:
-			setText(L"Exchange Address Entry ID:");
+			setText(L"Exchange Address Entry ID");
 			break;
 		case EIDStructType::contact:
-			setText(L"Contact Address Book / PDL Entry ID:");
+			setText(L"Contact Address Book / PDL Entry ID");
 			break;
 		case EIDStructType::WAB:
-			setText(L"Wrapped Entry ID:");
+			setText(L"Wrapped Entry ID");
 			break;
 		}
 

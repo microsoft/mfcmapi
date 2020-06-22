@@ -1,8 +1,8 @@
-Wrapped Entry ID:
+Wrapped Entry ID
 	abFlags = 0x00000000
 	Provider GUID = {D3AD91C0-9D51-11CF-A4A9-00AA0047FAA4} = WAB_GUID
 	Wrapped Entry Type = 0xC3 = BFLAGS_MASK_OUTLOOK | Type: BFLAGS_INTERNAL_MAILUSER | Email1
-	Exchange Message Entry ID:
+	Exchange Message Entry ID
 		abFlags = 0x00000000
 		Provider GUID = {C64E6196-0166-11D2-A3B1-0008C728E7F1} = Unknown GUID
 		Message Type = 0x0007 = eitLTPrivateMessage

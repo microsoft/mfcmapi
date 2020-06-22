@@ -52,7 +52,7 @@ namespace blockPVtest
 		{
 			auto propblock = std::wstring(L"cb: 20 lpb: 516B013F8BAD5B4D9A74CAB5B37B588400000006");
 			auto altpropblock = std::wstring(L"Qk.?.≠[M.t µ≥{X.....");
-			auto smartview = std::wstring(L"XID:\r\n"
+			auto smartview = std::wstring(L"XID\r\n"
 										  L"\tNamespaceGuid = {3F016B51-AD8B-4D5B-9A74-CAB5B37B5884}\r\n"
 										  L"\tLocalId = cb: 4 lpb: 00000006");
 			testPV(

@@ -49,7 +49,7 @@ namespace smartview
 
 	void PCL::parseBlocks()
 	{
-		setText(L"Predecessor Change List:");
+		setText(L"Predecessor Change List");
 		addHeader(L"Count = %1!d!", m_lpXID.size());
 
 		if (!m_lpXID.empty())

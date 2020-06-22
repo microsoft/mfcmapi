@@ -1,4 +1,4 @@
-Search Folder Definition:
+Search Folder Definition
 	Version = 0x00001004
 	Flags = 0x00000052 = SFST_TEXT | SFST_FILTERSTREAM | SFST_FOLDERLIST
 	Numeric Search = 0x00000000
@@ -19,7 +19,7 @@ Search Folder Definition:
 			EntryLength = 0x0000002E
 			EntryLengthPad = 0x1230A228
 			Entry Id =
-				Exchange Folder Entry ID:
+				Exchange Folder Entry ID
 					abFlags = 0x00000000
 					Provider GUID = {C64E6196-0166-11D2-A3B1-0008C728E7F1} = Unknown GUID
 					Folder Type = 0x0001 = eitLTPrivateFolder

@@ -1,4 +1,4 @@
-Recurrence Pattern:
+Recurrence Pattern
 	ReaderVersion: 0x3004
 	WriterVersion: 0x3004
 	RecurFrequency: 0x200B = IDC_RCEV_PAT_ORB_WEEKLY
@@ -1063,7 +1063,7 @@ Recurrence Pattern:
 			0x0CE7AD40 = 12:00:00.000 AM 8/28/2012
 	StartDate: 0x0CD132E0 = 215036640 = 12:00:00.000 AM 11/9/2009
 	EndDate: 0x5AE980DF = 1525252319 = 11:59:00.000 PM 12/31/4500
-Appointment Recurrence Pattern:
+Appointment Recurrence Pattern
 	ReaderVersion2: 0x00003006
 	WriterVersion2: 0x00003009
 	StartTimeOffset: 0x0000041A = 1050 = 05:30:00.000 PM 1/1/1601

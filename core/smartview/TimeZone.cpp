@@ -30,7 +30,7 @@ namespace smartview
 
 	void TimeZone::parseBlocks()
 	{
-		setText(L"Time Zone:");
+		setText(L"Time Zone");
 		addChild(m_lBias, L"lBias = 0x%1!08X! (%1!d!)", m_lBias->getData());
 		addChild(m_lStandardBias, L"lStandardBias = 0x%1!08X! (%1!d!)", m_lStandardBias->getData());
 		addChild(m_lDaylightBias, L"lDaylightBias = 0x%1!08X! (%1!d!)", m_lDaylightBias->getData());

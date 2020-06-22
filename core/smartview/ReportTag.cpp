@@ -47,7 +47,7 @@ namespace smartview
 
 	void ReportTag::parseBlocks()
 	{
-		setText(L"Report Tag:");
+		setText(L"Report Tag");
 		addLabeledChild(L"Cookie =", m_Cookie);
 
 		auto szFlags = flags::InterpretFlags(flagReportTagVersion, *m_Version);

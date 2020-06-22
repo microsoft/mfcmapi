@@ -1,6 +1,6 @@
 Extended Rule Condition
 	Number of named props = 0x0000
-	Restriction:
+	Restriction
 		rt = 0x3 = RES_CONTENT
 		resContent
 			ulFuzzyLevel = FL_SUBSTRING = 0x00000001

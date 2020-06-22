@@ -1,4 +1,4 @@
-Time Zone:
+Time Zone
 	lBias = 0x0000012C (300)
 	lStandardBias = 0x00000000 (0)
 	lDaylightBias = 0xFFFFFFC4 (-60)

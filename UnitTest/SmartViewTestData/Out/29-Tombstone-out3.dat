@@ -1,4 +1,4 @@
-Tombstone:
+Tombstone
 	Identifier = 0x6141000C
 	HeaderSize = 0x61616161
 	Version = 0x61614120
@@ -9,7 +9,7 @@ Tombstone:
 		StartTime = 0x00380CD9 = 09:45:00.000 PM 12/26/1607
 		Endtime = 0x00040000 = 01:04:00.000 AM 7/2/1601
 		GlobalObjectIdSize = 0x00820000
-		Global Object ID:
+		Global Object ID
 			Byte Array ID =
 				cb: 16 lpb: E00074C5B7101A82E00800000000240E
 					= Unknown GUID

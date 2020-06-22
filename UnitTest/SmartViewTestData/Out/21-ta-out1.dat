@@ -1,4 +1,4 @@
-Task Assigners:
+Task Assigners
 	cAssigners = 0x00000001 = 1
 	Task Assigner[0]
 		cbEntryID = 0x0000005A = 90

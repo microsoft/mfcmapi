@@ -53,7 +53,7 @@ namespace smartview
 
 	void TombStone::parseBlocks()
 	{
-		setText(L"Tombstone:");
+		setText(L"Tombstone");
 		addChild(m_Identifier, L"Identifier = 0x%1!08X!", m_Identifier->getData());
 		addChild(m_HeaderSize, L"HeaderSize = 0x%1!08X!", m_HeaderSize->getData());
 		addChild(m_Version, L"Version = 0x%1!08X!", m_Version->getData());

@@ -38,7 +38,7 @@ namespace smartview
 
 	void GlobalObjectId::parseBlocks()
 	{
-		setText(L"Global Object ID:");
+		setText(L"Global Object ID");
 		if (m_Id->isSet())
 		{
 			auto id = create(L"Byte Array ID =");

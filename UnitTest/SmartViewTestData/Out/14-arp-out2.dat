@@ -1,4 +1,4 @@
-Recurrence Pattern:
+Recurrence Pattern
 	ReaderVersion: 0x3004
 	WriterVersion: 0x3004
 	RecurFrequency: 0x200B = IDC_RCEV_PAT_ORB_WEEKLY

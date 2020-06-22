@@ -108,7 +108,7 @@ namespace smartview
 
 	void SearchFolderDefinition::parseBlocks()
 	{
-		setText(L"Search Folder Definition:");
+		setText(L"Search Folder Definition");
 		addChild(m_Version, L"Version = 0x%1!08X!", m_Version->getData());
 		addChild(
 			m_Flags,

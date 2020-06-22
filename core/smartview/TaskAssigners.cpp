@@ -32,7 +32,7 @@ namespace smartview
 
 	void TaskAssigners::parseBlocks()
 	{
-		setText(L"Task Assigners:");
+		setText(L"Task Assigners");
 		addChild(m_cAssigners, L"cAssigners = 0x%1!08X! = %1!d!", m_cAssigners->getData());
 
 		auto i = 0;

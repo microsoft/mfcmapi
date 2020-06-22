@@ -3,14 +3,14 @@ Flat Entry List
 	cbEntries = 0x0000015C
 	Entry[0]
 		Size = 0x0000006D
-		Contact Address Book / PDL Entry ID:
+		Contact Address Book / PDL Entry ID
 			abFlags = 0x00000000
 			Provider GUID = {0AAA42FE-C718-101A-E885-0B651C240000} = muidContabDLL
 			Version = 0x00000003 = CONTAB_VERSION
 			Type = 0x00000004 = CONTAB_USER
 			Index = 0x00000000 = EEI_EMAIL_1
 			EntryIDCount = 0x00000046
-			Exchange Message Entry ID:
+			Exchange Message Entry ID
 				abFlags = 0x00000000
 				Provider GUID = {C64E6196-0166-11D2-A3B1-0008C728E7F1} = Unknown GUID
 				Message Type = 0x0007 = eitLTPrivateMessage
@@ -30,7 +30,7 @@ Flat Entry List
 			cb: 3 lpb: 000000
 	Entry[1]
 		Size = 0xFE000000
-		Entry ID:
+		Entry ID
 			abFlags[0] = 0x42= MAPI_NOTRECIP | 0x2
 			abFlags[1] = 0xAA= MAPI_COMPOUND | 0x2A
 			abFlags[2..3] = 0x0A18

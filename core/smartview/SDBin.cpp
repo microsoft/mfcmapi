@@ -41,7 +41,7 @@ namespace smartview
 		{
 			// TODO: more accurately break this parsing into blocks with proper offsets
 			const auto sd = SDToString(*m_SDbin, acetype);
-			setText(L"Security Descriptor:");
+			setText(L"Security Descriptor");
 			auto si = create(L"Security Info:");
 			addChild(si);
 			if (!sd.info.empty())
