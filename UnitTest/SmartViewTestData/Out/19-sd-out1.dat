@@ -1,8 +1,8 @@
 Security Descriptor
-	Security Info:
+	Security Info
 		0x0
 	Security Version: 0x0003 = SECURITY_DESCRIPTOR_TRANSFER_VERSION
-	Descriptor:
+	Descriptor
 	Account: (no domain)\(no name)
 SID: S-1-5-21-124525111-708259637-1543119021-103169
 Access Type: 0x00000000 = ACCESS_ALLOWED_ACE_TYPE

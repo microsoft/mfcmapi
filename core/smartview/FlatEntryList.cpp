@@ -33,7 +33,7 @@ namespace smartview
 
 		if (padding->isSet())
 		{
-			auto paddingHeader = create(L"Padding:");
+			auto paddingHeader = create(L"Padding");
 			addChild(paddingHeader);
 			paddingHeader->addChild(padding, padding->toHexString(true));
 		}

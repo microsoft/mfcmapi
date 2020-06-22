@@ -1,8 +1,8 @@
 Security Descriptor
-	Security Info:
+	Security Info
 		0x0
 	Security Version: 0x0003 = SECURITY_DESCRIPTOR_TRANSFER_VERSION
-	Descriptor:
+	Descriptor
 	Account: \Everyone
 SID: S-1-1-0
 Access Type: 0x00000000 = ACCESS_ALLOWED_ACE_TYPE

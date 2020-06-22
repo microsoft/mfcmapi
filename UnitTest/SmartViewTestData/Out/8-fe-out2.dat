@@ -26,7 +26,7 @@ Flat Entry List
 					cb: 2 lpb: 007C
 			Unparsed data size = 0x00000003
 			cb: 3 lpb: 006D00
-		Padding:
+		Padding
 			cb: 3 lpb: 000000
 	Entry[1]
 		Size = 0xFE000000
