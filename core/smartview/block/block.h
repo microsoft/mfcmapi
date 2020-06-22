@@ -161,6 +161,5 @@ namespace smartview
 		ULONG source{};
 		std::wstring text;
 		std::vector<std::shared_ptr<block>> children;
-		bool blank{false};
 	};
 } // namespace smartview
