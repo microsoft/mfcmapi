@@ -1,7 +1,7 @@
 Entry List
 	EntryCount = 0x00000001
 	Pad = 0x26106C48
-	EntryId[0]:
+	EntryId[0]
 		EntryLength = 0x0000002E
 		EntryLengthPad = 0x26106C50
 		Entry Id =

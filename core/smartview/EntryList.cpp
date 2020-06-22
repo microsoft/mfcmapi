@@ -41,7 +41,7 @@ namespace smartview
 		auto i = 0;
 		for (const auto& entry : m_Entry)
 		{
-			auto entryBlock = create(L"EntryId[%1!d!]:", i);
+			auto entryBlock = create(L"EntryId[%1!d!]", i);
 			addChild(entryBlock);
 			entryBlock->addChild(entry->EntryLength, L"EntryLength = 0x%1!08X!", entry->EntryLength->getData());
 			entryBlock->addChild(

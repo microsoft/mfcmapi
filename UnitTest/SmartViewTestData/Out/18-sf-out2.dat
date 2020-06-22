@@ -15,7 +15,7 @@ Search Folder Definition
 	Entry List
 		EntryCount = 0x00000001
 		Pad = 0x1230A220
-		EntryId[0]:
+		EntryId[0]
 			EntryLength = 0x0000002E
 			EntryLengthPad = 0x1230A228
 			Entry Id =

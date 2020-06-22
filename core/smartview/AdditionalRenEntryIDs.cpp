@@ -100,7 +100,7 @@ namespace smartview
 			auto iPersistElement = 0;
 			for (const auto& persistData : m_ppdPersistData)
 			{
-				auto element = create(L"Persist Element %1!d!:", iPersistElement);
+				auto element = create(L"Persist Element %1!d!", iPersistElement);
 				addChild(element);
 
 				element->addChild(

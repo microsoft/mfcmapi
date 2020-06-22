@@ -168,7 +168,7 @@ namespace smartview
 					address->PropertyCount->getData());
 				addChild(address->Pad, L"Addresses[%1!d!].Pad = 0x%2!08X!", i, address->Pad->getData());
 
-				addHeader(L"Properties[%1!d!]:", i);
+				addHeader(L"Properties[%1!d!]", i);
 				addChild(address->Props);
 				i++;
 			}
