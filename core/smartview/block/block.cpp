@@ -64,6 +64,10 @@ namespace smartview
 	{
 		std::vector<std::wstring> strings;
 		strings.reserve(children.size() + 1);
+		// Ideally we can remove this test, but right now we still have occasional empty blocks
+		// Once found and eliminated, we can remove this.
+		// One common pattern for empty blocks is blocks that do no call setText and are not added with text
+		// They serve as a null container for their children
 		if (!text.empty()) strings.push_back(text + L"\r\n");
 
 		for (const auto& child : children)

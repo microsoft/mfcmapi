@@ -67,9 +67,7 @@ namespace smartview
 		{
 			if (entry->isSet())
 			{
-				auto header = create(L"Entry[%1!d!]", i);
-				addChild(header);
-				header->addChild(entry);
+				addChild(entry, L"Entry[%1!d!]", i);
 			}
 
 			i++;

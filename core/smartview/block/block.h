@@ -74,12 +74,6 @@ namespace smartview
 			}
 		}
 
-		void addHeader(const std::wstring& _text);
-		template <typename... Args> void addHeader(const std::wstring& _text, Args... args)
-		{
-			addHeader(strings::formatmessage(_text.c_str(), args...));
-		}
-
 		template <typename... Args>
 		void addChild(const std::shared_ptr<block>& child, const std::wstring& _text, Args... args)
 		{
@@ -90,6 +84,14 @@ namespace smartview
 			}
 		}
 
+		// Add a text only node with no size/offset and no children
+		void addHeader(const std::wstring& _text);
+		template <typename... Args> void addHeader(const std::wstring& _text, Args... args)
+		{
+			addHeader(strings::formatmessage(_text.c_str(), args...));
+		}
+
+		// Add a text only node with size/offset matching the child node so that it "contains" the child
 		void addLabeledChild(const std::wstring& _text, const std::shared_ptr<block>& _block);
 
 		// Static create functions returns a non parsing block
