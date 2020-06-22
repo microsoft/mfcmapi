@@ -1,18 +1,18 @@
 MAPI Message Store Entry ID:
-abFlags = 0x00000000
-Provider GUID = {10BBA138-E505-1A10-A1BB-08002B2A56C2} = muidStoreWrap
-Version = 0x00 = MAPIMDB_VERSION
-Flag = 0x00 = MAPIMDB_NORMAL
-DLLFileName = EMSMDB.DLL
-Wrapped Flags = 0x00000000
-WrappedProviderUID = {20FA551B-66AA-CD11-9BC8-00AA002FC45A} = g_muidStorePrivate
-WrappedType = 0x00000008 = OPENSTORE_TAKE_OWNERSHIP
-ServerShortname = SERVER
-MailboxDN = /o=org/ou=Exchange Administrative Group (FYDIBOHF23SPDLT)/cn=Recipients/cn=some cn
-Magic = 0xF32135D8 = MDB_STORE_EID_V2_MAGIC
-Size = 0x00000095 = 149
-Version = 0x00000001 = MDB_STORE_EID_V2_VERSION
-OffsetDN = 0x00000014
-OffsetFQDN = 0x00000093
-DN = /o=org/ou=Exchange Administrative Group (FYDIBOHF23SPDLT)/cn=Configuration/cn=Servers/cn=SERVER/cn=Microsoft Private MDB
-FQDN =
+	abFlags = 0x00000000
+	Provider GUID = {10BBA138-E505-1A10-A1BB-08002B2A56C2} = muidStoreWrap
+	Version = 0x00 = MAPIMDB_VERSION
+	Flag = 0x00 = MAPIMDB_NORMAL
+	DLLFileName = EMSMDB.DLL
+	Wrapped Flags = 0x00000000
+	WrappedProviderUID = {20FA551B-66AA-CD11-9BC8-00AA002FC45A} = g_muidStorePrivate
+	WrappedType = 0x00000008 = OPENSTORE_TAKE_OWNERSHIP
+	ServerShortname = SERVER
+	MailboxDN = /o=org/ou=Exchange Administrative Group (FYDIBOHF23SPDLT)/cn=Recipients/cn=some cn
+	Magic = 0xF32135D8 = MDB_STORE_EID_V2_MAGIC
+	Size = 0x00000095 = 149
+	Version = 0x00000001 = MDB_STORE_EID_V2_VERSION
+	OffsetDN = 0x00000014
+	OffsetFQDN = 0x00000093
+	DN = /o=org/ou=Exchange Administrative Group (FYDIBOHF23SPDLT)/cn=Configuration/cn=Servers/cn=SERVER/cn=Microsoft Private MDB
+	FQDN =

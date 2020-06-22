@@ -125,7 +125,7 @@ namespace smartview
 				m_TextSearchLengthExtended,
 				L"Text Search Length Extended = 0x%1!04X!",
 				m_TextSearchLengthExtended->getData());
-			addLabeledChild(L"Text Search = ", m_TextSearch);
+			addLabeledChild(L"Text Search =", m_TextSearch);
 		}
 
 		terminateBlock();
@@ -134,7 +134,7 @@ namespace smartview
 		if (*m_SkipLen1)
 		{
 			terminateBlock();
-			addLabeledChild(L"SkipBytes1 = ", m_SkipBytes1);
+			addLabeledChild(L"SkipBytes1 =", m_SkipBytes1);
 		}
 
 		terminateBlock();
@@ -148,7 +148,7 @@ namespace smartview
 				m_FolderList1LengthExtended,
 				L"Folder List 1 Length Extended = 0x%1!04X!",
 				m_FolderList1LengthExtended->getData());
-			addLabeledChild(L"Folder List 1 = ", m_FolderList1);
+			addLabeledChild(L"Folder List 1 =", m_FolderList1);
 		}
 
 		terminateBlock();
@@ -157,7 +157,7 @@ namespace smartview
 		if (m_FolderList2)
 		{
 			terminateBlock();
-			addHeader(L"FolderList2 = ");
+			addHeader(L"Folder List2 =");
 			addChild(m_FolderList2);
 		}
 
@@ -186,7 +186,7 @@ namespace smartview
 		terminateBlock();
 		addChild(m_SkipLen2, L"SkipLen2 = 0x%1!08X!", m_SkipLen2->getData());
 
-		addLabeledChild(L"SkipBytes2 = ", m_SkipBytes2);
+		addLabeledChild(L"SkipBytes2 =", m_SkipBytes2);
 
 		if (m_Restriction && m_Restriction->hasData())
 		{
@@ -202,13 +202,13 @@ namespace smartview
 			if (!m_AdvancedSearchBytes->empty())
 			{
 				terminateBlock();
-				addLabeledChild(L"AdvancedSearchBytes = ", m_AdvancedSearchBytes);
+				addLabeledChild(L"AdvancedSearchBytes =", m_AdvancedSearchBytes);
 			}
 		}
 
 		terminateBlock();
 		addChild(m_SkipLen3, L"SkipLen3 = 0x%1!08X!", m_SkipLen3->getData());
 
-		addLabeledChild(L"SkipBytes3 = ", m_SkipBytes3);
+		addLabeledChild(L"SkipBytes3 =", m_SkipBytes3);
 	}
 } // namespace smartview

@@ -25,6 +25,7 @@ namespace smartview
 		std::shared_ptr<blockT<WORD>> PropID = emptyT<WORD>();
 		std::shared_ptr<blockT<ULONG>> ulPropTag = emptyT<ULONG>();
 		std::shared_ptr<blockPV> value;
+		int getIndex() const { return m_index; }
 
 	private:
 		void parse() override;

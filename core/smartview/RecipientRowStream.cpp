@@ -49,11 +49,11 @@ namespace smartview
 			auto i = DWORD{};
 			for (const auto& entry : m_lpAdrEntry)
 			{
-				terminateBlock();
-				addHeader(L"Row %1!d!", i);
-				addChild(entry->cValues, L"cValues = 0x%1!08X! = %1!d!", entry->cValues->getData());
-				addChild(entry->ulReserved1, L"ulReserved1 = 0x%1!08X! = %1!d!", entry->ulReserved1->getData());
-				addChild(entry->rgPropVals);
+				auto row = create(L"Row %1!d!", i);
+				addChild(row);
+				row->addChild(entry->cValues, L"cValues = 0x%1!08X! = %1!d!", entry->cValues->getData());
+				row->addChild(entry->ulReserved1, L"ulReserved1 = 0x%1!08X! = %1!d!", entry->ulReserved1->getData());
+				row->addChild(entry->rgPropVals);
 
 				i++;
 			}

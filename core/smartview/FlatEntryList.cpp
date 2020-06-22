@@ -4,7 +4,7 @@
 
 namespace smartview
 {
-	FlatEntryID::FlatEntryID(const std::shared_ptr<binaryParser>& parser)
+	void FlatEntryID::parse()
 	{
 		// Size here will be the length of the serialized entry ID
 		// We'll have to round it up to a multiple of 4 to read off padding
@@ -17,6 +17,25 @@ namespace smartview
 		if (dwPAD > 0)
 		{
 			padding = blockBytes::parse(parser, dwPAD);
+		}
+	}
+	void FlatEntryID::parseBlocks()
+	{
+		if (dwSize->isSet())
+		{
+			addChild(dwSize, L"Size = 0x%1!08X!", dwSize->getData());
+		}
+
+		if (lpEntryID)
+		{
+			addChild(lpEntryID);
+		}
+
+		if (padding->isSet())
+		{
+			auto paddingHeader = create(L"Padding:");
+			addChild(paddingHeader);
+			paddingHeader->addChild(padding, padding->toHexString(true));
 		}
 	}
 
@@ -32,7 +51,7 @@ namespace smartview
 			m_pEntryIDs.reserve(*m_cEntries);
 			for (DWORD i = 0; i < *m_cEntries; i++)
 			{
-				m_pEntryIDs.emplace_back(std::make_shared<FlatEntryID>(parser));
+				m_pEntryIDs.emplace_back(block::parse<FlatEntryID>(parser, 0, false));
 			}
 		}
 	}
@@ -46,25 +65,11 @@ namespace smartview
 		auto i = DWORD{};
 		for (const auto& entry : m_pEntryIDs)
 		{
-			terminateBlock();
-			addBlankLine();
-			if (entry->dwSize->isSet())
+			if (entry->isSet())
 			{
-				addHeader(L"Entry[%1!d!] ", i);
-				addChild(entry->dwSize, L"Size = 0x%1!08X!", entry->dwSize->getData());
-			}
-
-			if (entry->lpEntryID)
-			{
-				terminateBlock();
-				addChild(entry->lpEntryID);
-			}
-
-			if (!entry->padding->empty())
-			{
-				terminateBlock();
-				addHeader(L"Entry[%1!d!] Padding:", i);
-				if (entry->padding) addChild(entry->padding, entry->padding->toHexString(true));
+				auto header = create(L"Entry[%1!d!]", i);
+				addChild(header);
+				header->addChild(entry);
 			}
 
 			i++;

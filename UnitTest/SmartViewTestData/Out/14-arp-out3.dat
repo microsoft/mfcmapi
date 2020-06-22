@@ -12,21 +12,36 @@ Recurrence Pattern:
 	OccurrenceCount: 0x0000000A = 10
 	FirstDOW: 0x00000000 = Sunday
 	DeletedInstanceCount: 0x0000000A = 10
-		DeletedInstanceDates[0]: 0x0CD45740 = 12:00:00.000 AM 4/1/2010
-		DeletedInstanceDates[1]: 0x0CD4A600 = 12:00:00.000 AM 4/15/2010
-		DeletedInstanceDates[2]: 0x0CD4F4C0 = 12:00:00.000 AM 4/29/2010
-		DeletedInstanceDates[3]: 0x0CD54380 = 12:00:00.000 AM 5/13/2010
-		DeletedInstanceDates[4]: 0x0CD59240 = 12:00:00.000 AM 5/27/2010
-		DeletedInstanceDates[5]: 0x0CD5E100 = 12:00:00.000 AM 6/10/2010
-		DeletedInstanceDates[6]: 0x0CD62FC0 = 12:00:00.000 AM 6/24/2010
-		DeletedInstanceDates[7]: 0x0CD67E80 = 12:00:00.000 AM 7/8/2010
-		DeletedInstanceDates[8]: 0x0CD6CD40 = 12:00:00.000 AM 7/22/2010
-		DeletedInstanceDates[9]: 0x0CD71C00 = 12:00:00.000 AM 8/5/2010
+		DeletedInstanceDates[0]
+			0x0CD45740 = 12:00:00.000 AM 4/1/2010
+		DeletedInstanceDates[1]
+			0x0CD4A600 = 12:00:00.000 AM 4/15/2010
+		DeletedInstanceDates[2]
+			0x0CD4F4C0 = 12:00:00.000 AM 4/29/2010
+		DeletedInstanceDates[3]
+			0x0CD54380 = 12:00:00.000 AM 5/13/2010
+		DeletedInstanceDates[4]
+			0x0CD59240 = 12:00:00.000 AM 5/27/2010
+		DeletedInstanceDates[5]
+			0x0CD5E100 = 12:00:00.000 AM 6/10/2010
+		DeletedInstanceDates[6]
+			0x0CD62FC0 = 12:00:00.000 AM 6/24/2010
+		DeletedInstanceDates[7]
+			0x0CD67E80 = 12:00:00.000 AM 7/8/2010
+		DeletedInstanceDates[8]
+			0x0CD6CD40 = 12:00:00.000 AM 7/22/2010
+		DeletedInstanceDates[9]
+			0x0CD71C00 = 12:00:00.000 AM 8/5/2010
 	ModifiedInstanceCount: 0x00000005 = 5
-		ModifiedInstanceDates[0]: 0x0CD45740 = 12:00:00.000 AM 4/1/2010
-		ModifiedInstanceDates[1]: 0x0CD4A600 = 12:00:00.000 AM 4/15/2010
-		ModifiedInstanceDates[2]: 0x0CD58CA0 = 12:00:00.000 AM 5/26/2010
-		ModifiedInstanceDates[3]: 0x0CD5E100 = 12:00:00.000 AM 6/10/2010
-		ModifiedInstanceDates[4]: 0x0CD71C00 = 12:00:00.000 AM 8/5/2010
+		ModifiedInstanceDates[0]
+			0x0CD45740 = 12:00:00.000 AM 4/1/2010
+		ModifiedInstanceDates[1]
+			0x0CD4A600 = 12:00:00.000 AM 4/15/2010
+		ModifiedInstanceDates[2]
+			0x0CD58CA0 = 12:00:00.000 AM 5/26/2010
+		ModifiedInstanceDates[3]
+			0x0CD5E100 = 12:00:00.000 AM 6/10/2010
+		ModifiedInstanceDates[4]
+			0x0CD71C00 = 12:00:00.000 AM 8/5/2010
 	StartDate: 0x0CD45740 = 215242560 = 12:00:00.000 AM 4/1/2010
 	EndDate: 0x0CD71C00 = 215424000 = 12:00:00.000 AM 8/5/2010

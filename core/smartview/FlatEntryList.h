@@ -6,14 +6,15 @@
 
 namespace smartview
 {
-	struct FlatEntryID
+	class FlatEntryID : public block
 	{
+	private:
+		void parse() override;
+		void parseBlocks() override;
+
 		std::shared_ptr<blockT<DWORD>> dwSize = emptyT<DWORD>();
 		std::shared_ptr<EntryIdStruct> lpEntryID;
-
 		std::shared_ptr<blockBytes> padding = emptyBB();
-
-		FlatEntryID(const std::shared_ptr<binaryParser>& parser);
 	};
 
 	class FlatEntryList : public block

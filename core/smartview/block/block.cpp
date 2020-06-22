@@ -73,11 +73,12 @@ namespace smartview
 	{
 		std::vector<std::wstring> strings;
 		strings.reserve(children.size() + 1);
-		if (!blank) strings.push_back(text + L"\r\n");
+		if (!text.empty()) strings.push_back(text + L"\r\n");
 
 		for (const auto& child : children)
 		{
-			auto childStrings = tabStrings(child->toStringsInternal());
+			auto childStrings = child->toStringsInternal();
+			if (!text.empty()) childStrings = tabStrings(childStrings);
 			strings.insert(std::end(strings), std::begin(childStrings), std::end(childStrings));
 		}
 

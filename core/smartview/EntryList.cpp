@@ -34,17 +34,19 @@ namespace smartview
 
 	void EntryList::parseBlocks()
 	{
+		setText(L"Entry List");
 		addChild(m_EntryCount, L"EntryCount = 0x%1!08X!", m_EntryCount->getData());
 		addChild(m_Pad, L"Pad = 0x%1!08X!", m_Pad->getData());
 
 		auto i = 0;
 		for (const auto& entry : m_Entry)
 		{
-			terminateBlock();
-			addHeader(L"EntryId[%1!d!]:", i);
-			addChild(entry->EntryLength, L"EntryLength = 0x%1!08X!", entry->EntryLength->getData());
-			addChild(entry->EntryLengthPad, L"EntryLengthPad = 0x%1!08X!", entry->EntryLengthPad->getData());
-			addLabeledChild(L"Entry Id = ", entry->EntryId);
+			auto entryBlock = create(L"EntryId[%1!d!]:", i);
+			addChild(entryBlock);
+			entryBlock->addChild(entry->EntryLength, L"EntryLength = 0x%1!08X!", entry->EntryLength->getData());
+			entryBlock->addChild(
+				entry->EntryLengthPad, L"EntryLengthPad = 0x%1!08X!", entry->EntryLengthPad->getData());
+			entryBlock->addLabeledChild(L"Entry Id =", entry->EntryId);
 
 			i++;
 		}

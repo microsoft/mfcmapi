@@ -122,8 +122,7 @@ namespace smartview
 
 		if (szCharacters->length())
 		{
-			data->addHeader(L" Characters = ");
-			data->addChild(szCharacters);
+			data->addLabeledChild(L"Characters =", szCharacters);
 		}
 
 		data->terminateBlock();
@@ -146,8 +145,9 @@ namespace smartview
 
 		if (szCharacters->length())
 		{
-			data->addHeader(L" Characters = ");
-			data->addChild(szCharacters, szCharacters->c_str());
+			auto charHeader = block::create(L"Characters =");
+			data->addChild(charHeader);
+			charHeader->addChild(szCharacters, szCharacters->c_str());
 		}
 
 		data->terminateBlock();
@@ -169,8 +169,7 @@ namespace smartview
 			addChild(fieldDef);
 
 			auto szFlags = flags::InterpretFlags(flagPDOFlag, *def->dwFlags);
-			fieldDef->addChild(
-				def->dwFlags, L"Flags = 0x%1!08X! = %2!ws!", def->dwFlags->getData(), szFlags.c_str());
+			fieldDef->addChild(def->dwFlags, L"Flags = 0x%1!08X! = %2!ws!", def->dwFlags->getData(), szFlags.c_str());
 			auto szVarEnum = flags::InterpretFlags(flagVarEnum, *def->wVT);
 			fieldDef->addChild(def->wVT, L"VT = 0x%1!04X! = %2!ws!", def->wVT->getData(), szVarEnum.c_str());
 			fieldDef->addChild(def->dwDispid, L"DispID = 0x%1!08X!", def->dwDispid->getData());
@@ -206,8 +205,7 @@ namespace smartview
 			}
 
 			fieldDef->terminateBlock();
-			fieldDef->addChild(
-				def->wNmidNameLength, L"NmidNameLength = 0x%1!04X!", def->wNmidNameLength->getData());
+			fieldDef->addChild(def->wNmidNameLength, L"NmidNameLength = 0x%1!04X!", def->wNmidNameLength->getData());
 			fieldDef->addChild(def->szNmidName, L"NmidName = %1!ws!", def->szNmidName->c_str());
 
 			fieldDef->addChild(def->pasNameANSI.toBlock(L"NameAnsi"));
@@ -242,7 +240,7 @@ namespace smartview
 					else if (!sb->lpbContent->empty())
 					{
 						skipBlock->terminateBlock();
-						skipBlock->addLabeledChild(L"Content = ", sb->lpbContent);
+						skipBlock->addLabeledChild(L"Content =", sb->lpbContent);
 					}
 
 					iSkipBlock++;

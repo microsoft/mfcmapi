@@ -79,8 +79,7 @@ namespace smartview
 			m_RecurFrequency->getData(),
 			szRecurFrequency.c_str());
 		auto szPatternType = flags::InterpretFlags(flagPatternType, *m_PatternType);
-		addChild(
-			m_PatternType, L"PatternType: 0x%1!04X! = %2!ws!", m_PatternType->getData(), szPatternType.c_str());
+		addChild(m_PatternType, L"PatternType: 0x%1!04X! = %2!ws!", m_PatternType->getData(), szPatternType.c_str());
 		auto szCalendarType = flags::InterpretFlags(flagCalendarType, *m_CalendarType);
 		addChild(
 			m_CalendarType, L"CalendarType: 0x%1!04X! = %2!ws!", m_CalendarType->getData(), szCalendarType.c_str());
@@ -135,8 +134,7 @@ namespace smartview
 			m_FirstDOW->getData(),
 			flags::InterpretFlags(flagFirstDOW, *m_FirstDOW).c_str());
 
-		m_DeletedInstanceCount->setText(
-			L"DeletedInstanceCount: 0x%1!08X! = %1!d!", m_DeletedInstanceCount->getData());
+		m_DeletedInstanceCount->setText(L"DeletedInstanceCount: 0x%1!08X! = %1!d!", m_DeletedInstanceCount->getData());
 		addChild(m_DeletedInstanceCount);
 
 		if (m_DeletedInstanceDates.size())
@@ -144,30 +142,26 @@ namespace smartview
 			auto i = 0;
 			for (const auto& date : m_DeletedInstanceDates)
 			{
-				m_DeletedInstanceCount->addChild(
-					date,
-					L"DeletedInstanceDates[%1!d!]: 0x%2!08X! = %3!ws!",
-					i,
-					date->getData(),
-					RTimeToString(*date).c_str());
+				auto exception = create(L"DeletedInstanceDates[%1!d!]", i);
+				m_DeletedInstanceCount->addChild(exception);
+				exception->addChild(date, L"0x%1!08X! = %2!ws!", date->getData(), RTimeToString(*date).c_str());
 				i++;
 			}
 		}
 
 		addChild(
-			m_ModifiedInstanceCount,
-			L"ModifiedInstanceCount: 0x%1!08X! = %1!d!",
-			m_ModifiedInstanceCount->getData());
+			m_ModifiedInstanceCount, L"ModifiedInstanceCount: 0x%1!08X! = %1!d!", m_ModifiedInstanceCount->getData());
 
 		if (m_ModifiedInstanceDates.size())
 		{
 			auto i = 0;
 			for (const auto& date : m_ModifiedInstanceDates)
 			{
-				m_ModifiedInstanceCount->addChild(
+				auto modified = create(L"ModifiedInstanceDates[%1!d!]", i);
+				m_ModifiedInstanceCount->addChild(modified);
+				modified->addChild(
 					date,
-					L"ModifiedInstanceDates[%1!d!]: 0x%2!08X! = %3!ws!",
-					i,
+					L"0x%1!08X! = %2!ws!",
 					date->getData(),
 					RTimeToString(*date).c_str());
 				i++;

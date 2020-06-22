@@ -490,7 +490,7 @@ namespace smartview
 			}
 		}
 
-		return strings::join(szArray, L"");
+		return strings::join(szArray, L"\r\n");
 	}
 
 	std::wstring InterpretMVLongAsString(
@@ -518,7 +518,7 @@ namespace smartview
 			}
 		}
 
-		return strings::join(szArray, L"");
+		return strings::join(szArray, L"\r\n");
 	}
 
 	std::wstring InterpretBinaryAsString(const SBinary myBin, parserType parser, _In_opt_ LPMAPIPROP lpMAPIProp)
