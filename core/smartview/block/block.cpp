@@ -9,13 +9,6 @@ namespace smartview
 
 	void block::addHeader(const std::wstring& _text) { addChild(create(_text)); }
 
-	void block::addBlankLine()
-	{
-		auto ret = create();
-		ret->blank = true;
-		children.push_back(ret);
-	}
-
 	void block::addLabeledChild(const std::wstring& _text, const std::shared_ptr<block>& _block)
 	{
 		if (_block->isSet())

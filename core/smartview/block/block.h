@@ -92,8 +92,6 @@ namespace smartview
 
 		void addLabeledChild(const std::wstring& _text, const std::shared_ptr<block>& _block);
 
-		void addBlankLine();
-
 		// Static create functions returns a non parsing block
 		static std::shared_ptr<block> create();
 

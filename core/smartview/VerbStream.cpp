@@ -69,7 +69,6 @@ namespace smartview
 		auto i = 0;
 		for (const auto& verbData : m_lpVerbData)
 		{
-			addBlankLine();
 			auto dataBlock = create(L"VerbData[%1!d!]", i);
 			addChild(dataBlock);
 			dataBlock->addChild(verbData->VerbType, L"VerbType = 0x%1!08X!", verbData->VerbType->getData());

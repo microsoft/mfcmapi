@@ -59,7 +59,6 @@ namespace blocktest
 							 "\tthis that\r\n"
 							 "\tblock2"));
 
-			block1->addBlankLine();
 			block1->addLabeledChild(L"Label:", block2);
 			Assert::AreEqual(
 				block1->toString(),
