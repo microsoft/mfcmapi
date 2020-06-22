@@ -5,17 +5,21 @@
 
 namespace smartview
 {
-	struct PersistElement
+	class PersistElement : public block
 	{
+	public:
 		static const WORD ELEMENT_SENTINEL = 0;
+
+	private:
+		void parse() override;
+		void parseBlocks() override;
+
 		std::shared_ptr<blockT<WORD>> wElementID = emptyT<WORD>();
 		std::shared_ptr<blockT<WORD>> wElementDataSize = emptyT<WORD>();
 		std::shared_ptr<blockBytes> lpbElementData = emptyBB();
-
-		PersistElement(const std::shared_ptr<binaryParser>& parser);
 	};
 
-	struct PersistData : public block
+	class PersistData : public block
 	{
 	public:
 		static const WORD PERISIST_SENTINEL = 0;

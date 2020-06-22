@@ -5,7 +5,7 @@
 
 namespace smartview
 {
-	PersistElement::PersistElement(const std::shared_ptr<binaryParser>& parser)
+	void PersistElement::parse()
 	{
 		wElementID = blockT<WORD>::parse(parser);
 		wElementDataSize = blockT<WORD>::parse(parser);
@@ -14,6 +14,19 @@ namespace smartview
 			// Since this is a word, the size will never be too large
 			lpbElementData = blockBytes::parse(parser, wElementDataSize->getData());
 		}
+	}
+
+	void PersistElement::parseBlocks()
+	{
+		addChild(
+			wElementID,
+			L"ElementID = 0x%1!04X! = %2!ws!",
+			wElementID->getData(),
+			flags::InterpretFlags(flagElementID, wElementID->getData()).c_str());
+
+		addChild(wElementDataSize, L"ElementDataSize = 0x%1!04X!", wElementDataSize->getData());
+
+		addLabeledChild(L"ElementData =", lpbElementData);
 	}
 
 	void PersistData::parse()
@@ -46,7 +59,7 @@ namespace smartview
 			ppeDataElement.reserve(wDataElementCount);
 			for (WORD iDataElement = 0; iDataElement < wDataElementCount; iDataElement++)
 			{
-				ppeDataElement.emplace_back(std::make_shared<PersistElement>(parser));
+				ppeDataElement.emplace_back(block::parse<PersistElement>(parser, 0, false));
 			}
 		}
 
@@ -75,21 +88,7 @@ namespace smartview
 			auto iDataElement = 0;
 			for (const auto& dataElement : ppeDataElement)
 			{
-				auto de = create(L"DataElement: %1!d!", iDataElement);
-				addChild(de);
-
-				de->addChild(
-					dataElement->wElementID,
-					L"ElementID = 0x%1!04X! = %2!ws!",
-					dataElement->wElementID->getData(),
-					flags::InterpretFlags(flagElementID, dataElement->wElementID->getData()).c_str());
-
-				de->addChild(
-					dataElement->wElementDataSize,
-					L"ElementDataSize = 0x%1!04X!",
-					dataElement->wElementDataSize->getData());
-
-				de->addLabeledChild(L"ElementData =", dataElement->lpbElementData);
+				addChild(dataElement, L"DataElement: %1!d!", iDataElement);
 				iDataElement++;
 			}
 		}
