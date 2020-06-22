@@ -66,6 +66,7 @@ namespace SmartViewTest
 			std::vector<SmartViewTestData> testData;
 			for (const auto& resource : resources)
 			{
+				// See comments on loadfile for best file encoding strategies for test data
 				testData.push_back(SmartViewTestData{resource.structType,
 													 resource.parseAll,
 													 strings::format(L"%d/%d", resource.hex, resource.expected),
