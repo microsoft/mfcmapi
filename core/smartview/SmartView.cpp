@@ -369,7 +369,7 @@ namespace smartview
 		{
 			if (ulRow != 0)
 			{
-				szResult += L""; // STRING_OK
+				szResult += L"\r\n"; // STRING_OK
 			}
 
 			szResult += strings::formatmessage(IDS_MVROWBIN, ulRow);
