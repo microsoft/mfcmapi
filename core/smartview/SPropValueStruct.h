@@ -5,7 +5,7 @@
 
 namespace smartview
 {
-	struct SPropValueStruct : public block
+	class SPropValueStruct : public block
 	{
 	public:
 		void parse(

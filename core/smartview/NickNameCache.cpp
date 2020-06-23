@@ -1,5 +1,6 @@
 #include <core/stdafx.h>
 #include <core/smartview/NickNameCache.h>
+#include <core/smartview/SPropValueStruct.h>
 
 namespace smartview
 {
@@ -22,7 +23,13 @@ namespace smartview
 	void SRowStruct::parseBlocks()
 	{
 		addChild(cValues, L"cValues = 0x%1!08X! = %1!d!", cValues->getData());
-		addChild(lpProps);
+		if (lpProps)
+		{
+			for (const auto& prop : lpProps->Props())
+			{
+				addChild(prop);
+			}
+		}
 	}
 
 	void NickNameCache::parse()
