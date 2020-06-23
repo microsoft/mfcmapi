@@ -3,7 +3,7 @@
 
 namespace smartview
 {
-	SRowStruct::SRowStruct(const std::shared_ptr<binaryParser>& parser)
+	void SRowStruct::parse()
 	{
 		cValues = blockT<DWORD>::parse(parser);
 
@@ -17,7 +17,13 @@ namespace smartview
 				lpProps->block::parse(parser, false);
 			}
 		}
-	} // namespace smartview
+	}
+
+	void SRowStruct::parseBlocks()
+	{
+		addChild(cValues, L"cValues = 0x%1!08X! = %1!d!", cValues->getData());
+		addChild(lpProps);
+	}
 
 	void NickNameCache::parse()
 	{
@@ -33,7 +39,7 @@ namespace smartview
 				m_lpRows.reserve(*m_cRowCount);
 				for (DWORD i = 0; i < *m_cRowCount; i++)
 				{
-					m_lpRows.emplace_back(std::make_shared<SRowStruct>(parser));
+					m_lpRows.emplace_back(block::parse<SRowStruct>(parser, 0, false));
 				}
 			}
 		}
@@ -57,11 +63,7 @@ namespace smartview
 			auto i = DWORD{};
 			for (const auto& row : m_lpRows)
 			{
-				auto rowBlock = create(L"Row %1!d!", i);
-				addChild(rowBlock);
-				rowBlock->addChild(row->cValues, L"cValues = 0x%1!08X! = %1!d!", row->cValues->getData());
-				rowBlock->addChild(row->lpProps);
-
+				addChild(row, L"Row %1!d!", i);
 				i++;
 			}
 		}
