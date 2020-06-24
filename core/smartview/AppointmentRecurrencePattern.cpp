@@ -312,8 +312,7 @@ namespace smartview
 
 					if (*ee->ChangeHighlight.ChangeHighlightSize > sizeof(DWORD))
 					{
-						exception->addHeader(L"ChangeHighlight.Reserved:");
-						exception->addChild(ee->ChangeHighlight.Reserved);
+						exception->addLabeledChild(L"ChangeHighlight.Reserved:" ,ee->ChangeHighlight.Reserved);
 					}
 				}
 

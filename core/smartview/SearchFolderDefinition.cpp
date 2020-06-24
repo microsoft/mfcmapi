@@ -157,8 +157,7 @@ namespace smartview
 
 		if (m_FolderList2)
 		{
-			addHeader(L"Folder List2 =");
-			addChild(m_FolderList2);
+			addLabeledChild(L"Folder List2 =", m_FolderList2);
 		}
 
 		if (*m_Flags & SFST_BINARY)

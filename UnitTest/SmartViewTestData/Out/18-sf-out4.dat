@@ -8,22 +8,22 @@ Search Folder Definition
 	Folder List 1 Length = 0x00
 	Folder List 2 Length = 0x0000003E
 	Folder List2 =
-	Entry List
-		EntryCount = 0x00000001
-		Pad = 0x021DE920
-		EntryId[0]
-			EntryLength = 0x0000002E
-			EntryLengthPad = 0x021DE928
-			Entry Id =
-				Exchange Folder Entry ID
-					abFlags = 0x00000000
-					Provider GUID = {C64E6196-0166-11D2-A3B1-0008C728E7F1} = Unknown GUID
-					Folder Type = 0x0001 = eitLTPrivateFolder
-					Database GUID = {865CFA85-E6FC-11D1-A3A6-0008C728E7F1} = Unknown GUID
-					GlobalCounter =
-						cb: 6 lpb: 000000019EBB
-					Pad =
-						cb: 2 lpb: 0000
+		Entry List
+			EntryCount = 0x00000001
+			Pad = 0x021DE920
+			EntryId[0]
+				EntryLength = 0x0000002E
+				EntryLengthPad = 0x021DE928
+				Entry Id =
+					Exchange Folder Entry ID
+						abFlags = 0x00000000
+						Provider GUID = {C64E6196-0166-11D2-A3B1-0008C728E7F1} = Unknown GUID
+						Folder Type = 0x0001 = eitLTPrivateFolder
+						Database GUID = {865CFA85-E6FC-11D1-A3A6-0008C728E7F1} = Unknown GUID
+						GlobalCounter =
+							cb: 6 lpb: 000000019EBB
+						Pad =
+							cb: 2 lpb: 0000
 	SkipLen2 = 0x00000000
 	Restriction
 	|	rt = 0x8 = RES_EXIST
