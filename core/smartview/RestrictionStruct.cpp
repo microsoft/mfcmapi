@@ -121,10 +121,8 @@ namespace smartview
 
 			if (lpRes)
 			{
-				auto resBlock = create(L"lpRes");
-				addChild(resBlock);
 				lpRes->parseBlocks(ulTabLevel + 1);
-				resBlock->addChild(lpRes);
+				addChild(lpRes, L"lpRes");
 			}
 		}
 
@@ -436,10 +434,8 @@ namespace smartview
 
 			if (lpRes)
 			{
-				auto propBlock = create(L"lpRes");
-				addChild(propBlock);
 				lpRes->parseBlocks(ulTabLevel + 1);
-				propBlock->addChild(lpRes);
+				addChild(lpRes, L"lpRes");
 			}
 		}
 
@@ -504,10 +500,8 @@ namespace smartview
 
 			if (lpRes)
 			{
-				auto resBlock = create(L"lpRes");
-				addChild(resBlock);
 				lpRes->parseBlocks(ulTabLevel + 1);
-				resBlock->addChild(lpRes);
+				addChild(lpRes, L"lpRes");
 			}
 		}
 
