@@ -34,9 +34,6 @@ namespace smartview
 					lpRes.emplace_back(
 						std::make_shared<RestrictionStruct>(parser, m_ulDepth + 1, m_bRuleCondition, m_bExtendedCount));
 				}
-
-				// TODO: Should we do this?
-				//srRestriction.resAnd.lpRes.shrink_to_fit();
 			}
 		}
 
@@ -145,7 +142,7 @@ namespace smartview
 			ulPropTag2 = blockT<DWORD>::parse(parser);
 		}
 
-		void parseBlocks(ULONG ulTabLevel)
+		void parseBlocks(ULONG /*ulTabLevel*/)
 		{
 			setText(L"resCompareProps");
 			addChild(
@@ -176,7 +173,7 @@ namespace smartview
 			lpProp.parse(parser, 1, m_bRuleCondition);
 		}
 
-		void parseBlocks(ULONG ulTabLevel)
+		void parseBlocks(ULONG /*ulTabLevel*/)
 		{
 			setText(L"resContent");
 			addChild(
@@ -269,7 +266,7 @@ namespace smartview
 			lpProp.parse(parser, 1, m_bRuleCondition);
 		}
 
-		void parseBlocks(ULONG ulTabLevel)
+		void parseBlocks(ULONG /*ulTabLevel*/)
 		{
 			setText(L"resProperty");
 			addChild(
@@ -336,7 +333,7 @@ namespace smartview
 			ulMask = blockT<DWORD>::parse(parser);
 		}
 
-		void parseBlocks(ULONG ulTabLevel)
+		void parseBlocks(ULONG /*ulTabLevel*/)
 		{
 			setText(L"resBitMask");
 			addChild(
@@ -377,7 +374,7 @@ namespace smartview
 			cb = blockT<DWORD>::parse(parser);
 		}
 
-		void parseBlocks(ULONG ulTabLevel)
+		void parseBlocks(ULONG /*ulTabLevel*/)
 		{
 			setText(L"resSize");
 			addChild(
@@ -401,7 +398,7 @@ namespace smartview
 	public:
 		void parse() override { ulPropTag = blockT<DWORD>::parse(parser); }
 
-		void parseBlocks(ULONG ulTabLevel)
+		void parseBlocks(ULONG /*ulTabLevel*/)
 		{
 			setText(L"resExist");
 			addChild(ulPropTag, L"ulPropTag = %1!ws!", proptags::TagToString(*ulPropTag, nullptr, false, true).c_str());
