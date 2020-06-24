@@ -290,7 +290,7 @@ namespace strings
 		const auto whole = left + right;
 
 		return _wtoi64(whole.c_str());
-	} // namespace strings
+	}
 
 	std::wstring strip(const std::wstring& str, const std::function<bool(const WCHAR&)>& func)
 	{
