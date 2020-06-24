@@ -239,10 +239,8 @@ namespace smartview
 
 			if (lpRes)
 			{
-				auto lpResRoot = create(L"lpRes");
-				addChild(lpResRoot);
 				lpRes->parseBlocks(ulTabLevel + 1);
-				addChild(lpRes);
+				addChild(lpRes, L"lpRes");
 			}
 		}
 
@@ -561,10 +559,8 @@ namespace smartview
 
 			if (lpRes)
 			{
-				auto resBlock = create(L"lpRes");
-				addChild(resBlock);
 				lpRes->parseBlocks(ulTabLevel + 1);
-				resBlock->addChild(lpRes);
+				addChild(lpRes, L"lpRes");
 			}
 		}
 
