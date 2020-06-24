@@ -1,10 +1,11 @@
 #include <core/stdafx.h>
 #include <core/smartview/RecipientRowStream.h>
 #include <core/smartview/PropertiesStruct.h>
+#include <core/smartview/SPropValueStruct.h>
 
 namespace smartview
 {
-	ADRENTRYStruct::ADRENTRYStruct(const std::shared_ptr<binaryParser>& parser)
+	void ADRENTRYStruct::parse()
 	{
 		cValues = blockT<DWORD>::parse(parser);
 		ulReserved1 = blockT<DWORD>::parse(parser);
@@ -16,6 +17,19 @@ namespace smartview
 				rgPropVals = std::make_shared<PropertiesStruct>();
 				rgPropVals->SetMaxEntries(*cValues);
 				rgPropVals->block::parse(parser, false);
+			}
+		}
+	}
+
+	void ADRENTRYStruct::parseBlocks()
+	{
+		addChild(cValues, L"cValues = 0x%1!08X! = %1!d!", cValues->getData());
+		addChild(ulReserved1, L"ulReserved1 = 0x%1!08X! = %1!d!", ulReserved1->getData());
+		if (rgPropVals)
+		{
+			for (const auto& prop : rgPropVals->Props())
+			{
+				addChild(prop);
 			}
 		}
 	}
@@ -32,7 +46,7 @@ namespace smartview
 				m_lpAdrEntry.reserve(*m_cRowCount);
 				for (DWORD i = 0; i < *m_cRowCount; i++)
 				{
-					m_lpAdrEntry.emplace_back(std::make_shared<ADRENTRYStruct>(parser));
+					m_lpAdrEntry.emplace_back(block::parse<ADRENTRYStruct>(parser, 0, false));
 				}
 			}
 		}
@@ -48,12 +62,7 @@ namespace smartview
 			auto i = DWORD{};
 			for (const auto& entry : m_lpAdrEntry)
 			{
-				auto row = create(L"Row %1!d!", i);
-				addChild(row);
-				row->addChild(entry->cValues, L"cValues = 0x%1!08X! = %1!d!", entry->cValues->getData());
-				row->addChild(entry->ulReserved1, L"ulReserved1 = 0x%1!08X! = %1!d!", entry->ulReserved1->getData());
-				row->addChild(entry->rgPropVals);
-
+				addChild(entry, L"Row %1!d!", i);
 				i++;
 			}
 		}
