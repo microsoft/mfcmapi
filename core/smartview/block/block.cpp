@@ -45,7 +45,7 @@ namespace smartview
 		setSize(endOffset - startOffset);
 	}
 
-	std::vector<std::wstring> tabStrings(const std::vector<std::wstring>& elems)
+	std::vector<std::wstring> tabStrings(const std::vector<std::wstring>& elems, bool usePipes)
 	{
 		if (elems.empty()) return {};
 
@@ -54,7 +54,14 @@ namespace smartview
 		auto iter = elems.begin();
 		for (const auto& elem : elems)
 		{
-			strings.emplace_back(L"\t" + elem);
+			if (usePipes)
+			{
+				strings.emplace_back(L"|\t" + elem);
+			}
+			else
+			{
+				strings.emplace_back(L"\t" + elem);
+			}
 		}
 
 		return strings;
@@ -69,7 +76,7 @@ namespace smartview
 		for (const auto& child : children)
 		{
 			auto childStrings = child->toStringsInternal();
-			if (!text.empty()) childStrings = tabStrings(childStrings);
+			if (!text.empty()) childStrings = tabStrings(childStrings, usePipes());
 			strings.insert(std::end(strings), std::begin(childStrings), std::end(childStrings));
 		}
 

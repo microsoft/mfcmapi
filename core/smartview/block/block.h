@@ -157,6 +157,7 @@ namespace smartview
 		virtual void parse() = 0;
 		// (optional) Stitches block submembers into a tree vis children member
 		virtual void parseBlocks(){};
+		virtual bool usePipes() const { return false; }
 
 		size_t offset{};
 		size_t cb{};

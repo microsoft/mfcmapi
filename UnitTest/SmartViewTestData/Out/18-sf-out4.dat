@@ -26,7 +26,7 @@ Search Folder Definition
 						cb: 2 lpb: 0000
 	SkipLen2 = 0x00000000
 	Restriction
-		rt = 0x8 = RES_EXIST
-		resExist
-			ulPropTag = 0x8010101F (PT_MV_UNICODE)
+	|	rt = 0x8 = RES_EXIST
+	|	resExist
+	|	|	ulPropTag = 0x8010101F (PT_MV_UNICODE)
 	SkipLen3 = 0x00000000

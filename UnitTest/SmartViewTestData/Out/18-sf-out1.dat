@@ -26,14 +26,14 @@ Search Folder Definition
 						cb: 2 lpb: 0000
 	SkipLen2 = 0x00000000
 	Restriction
-		rt = 0x3 = RES_CONTENT
-		resContent
-			ulFuzzyLevel = FL_PHRASE_MATCH | FL_IGNORECASE | FL_SUBSTRING = 0x00010021
-			ulPropTag = 0x0037001F (PT_UNICODE): PR_SUBJECT_W: (PidTagSubject, PR_SUBJECT, PR_SUBJECT_A, ptagSubject)
-			lpProp
-				ulPropTag = 0x0037001F (PT_UNICODE): PR_SUBJECT_W: (PidTagSubject, PR_SUBJECT, PR_SUBJECT_A, ptagSubject)
-					Name: PR_SUBJECT_W
-					Other Matches: PidTagSubject, PR_SUBJECT, PR_SUBJECT_A, ptagSubject
-				Value = Test
-				Alt: cb: 8 lpb: 5400650073007400
+	|	rt = 0x3 = RES_CONTENT
+	|	resContent
+	|	|	ulFuzzyLevel = FL_PHRASE_MATCH | FL_IGNORECASE | FL_SUBSTRING = 0x00010021
+	|	|	ulPropTag = 0x0037001F (PT_UNICODE): PR_SUBJECT_W: (PidTagSubject, PR_SUBJECT, PR_SUBJECT_A, ptagSubject)
+	|	|	lpProp
+	|	|		ulPropTag = 0x0037001F (PT_UNICODE): PR_SUBJECT_W: (PidTagSubject, PR_SUBJECT, PR_SUBJECT_A, ptagSubject)
+	|	|			Name: PR_SUBJECT_W
+	|	|			Other Matches: PidTagSubject, PR_SUBJECT, PR_SUBJECT_A, ptagSubject
+	|	|		Value = Test
+	|	|		Alt: cb: 8 lpb: 5400650073007400
 	SkipLen3 = 0x00000000

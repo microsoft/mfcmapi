@@ -30,6 +30,7 @@ namespace smartview
 	private:
 		void parse() override = 0;
 		void parseBlocks() override{};
+		bool usePipes() const override { return true; }
 	};
 
 	class RestrictionStruct : public block
@@ -60,6 +61,7 @@ namespace smartview
 			setText(L"Restriction");
 			parseBlocks(0);
 		};
+		bool usePipes() const override { return true; }
 
 		std::shared_ptr<blockT<DWORD>> rt = emptyT<DWORD>(); /* Restriction type */
 		std::shared_ptr<blockRes> res;

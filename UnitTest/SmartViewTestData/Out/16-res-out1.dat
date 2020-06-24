@@ -1,11 +1,11 @@
 Restriction
-	rt = 0x3 = RES_CONTENT
-	resContent
-		ulFuzzyLevel = FL_SUBSTRING = 0x00000001
-		ulPropTag = 0x0C1D0102 (PT_BINARY): PR_SENDER_SEARCH_KEY: (PidTagSenderSearchKey, ptagSenderSearchKey)
-		lpProp
-			ulPropTag = 0x0C1D0102 (PT_BINARY): PR_SENDER_SEARCH_KEY: (PidTagSenderSearchKey, ptagSenderSearchKey)
-				Name: PR_SENDER_SEARCH_KEY
-				Other Matches: PidTagSenderSearchKey, ptagSenderSearchKey
-			Value = cb: 16 lpb: 7465737430314074657374312E434F4D
-			Alt: test01@test1.COM
+|	rt = 0x3 = RES_CONTENT
+|	resContent
+|	|	ulFuzzyLevel = FL_SUBSTRING = 0x00000001
+|	|	ulPropTag = 0x0C1D0102 (PT_BINARY): PR_SENDER_SEARCH_KEY: (PidTagSenderSearchKey, ptagSenderSearchKey)
+|	|	lpProp
+|	|		ulPropTag = 0x0C1D0102 (PT_BINARY): PR_SENDER_SEARCH_KEY: (PidTagSenderSearchKey, ptagSenderSearchKey)
+|	|			Name: PR_SENDER_SEARCH_KEY
+|	|			Other Matches: PidTagSenderSearchKey, ptagSenderSearchKey
+|	|		Value = cb: 16 lpb: 7465737430314074657374312E434F4D
+|	|		Alt: test01@test1.COM
