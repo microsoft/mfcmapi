@@ -10,73 +10,40 @@ namespace SmartViewTest
 	TEST_CLASS(SmartViewTest)
 	{
 	private:
-		struct SmartViewTestResource
-		{
-			parserType structType{};
-			DWORD hex{};
-			DWORD expected{};
-		};
+		// Without this, clang gets weird
+		static const bool dummy_var = true;
 
-		struct SmartViewTestData
+		void test(parserType structType, DWORD hexNum, DWORD expectedNum) const
 		{
-			parserType structType{};
-			bool parseAll{};
-			std::wstring testName;
-			std::vector<BYTE> hex;
-			std::wstring expected;
-		};
+			static auto handle = GetModuleHandleW(L"UnitTest.dll");
+			// See comments on loadfile for best file encoding strategies for test data
+			const auto testName = strings::format(L"%d/%d", hexNum, expectedNum);
+			auto hex = strings::HexStringToBin(unittest::loadfile(handle, hexNum));
+			const auto expected = unittest::loadfile(handle, expectedNum);
+			auto actual =
+				smartview::InterpretBinaryAsString({static_cast<ULONG>(hex.size()), hex.data()}, structType, nullptr);
+			unittest::AreEqualEx(expected, actual, testName.c_str());
 
-		void test(parserType structType, DWORD hex, DWORD expected) const { test({structType, hex, expected}); }
-		void test(const SmartViewTestResource& resource) const { test({resource}); }
-		void test(const std::initializer_list<SmartViewTestResource>& resources) const
-		{
-			auto testData = loadTestData(resources);
-			for (auto& data : testData)
+			if (unittest::parse_all)
 			{
-				auto actual = smartview::InterpretBinaryAsString(
-					{static_cast<ULONG>(data.hex.size()), data.hex.data()}, data.structType, nullptr);
-				unittest::AreEqualEx(data.expected, actual, data.testName.c_str());
-
-				if (unittest::parse_all)
+				for (auto parser : SmartViewParserTypeArray)
 				{
-					for (auto parser : SmartViewParserTypeArray)
+					try
 					{
-						const auto structType = parser.type;
-						try
-						{
-							actual = smartview::InterpretBinaryAsString(
-								{static_cast<ULONG>(data.hex.size()), data.hex.data()}, structType, nullptr);
-						} catch (const int exception)
-						{
-							Logger::WriteMessage(strings::format(
-													 L"Testing %ws failed at %ws with error 0x%08X\n",
-													 data.testName.c_str(),
-													 addin::AddInStructTypeToString(structType).c_str(),
-													 exception)
-													 .c_str());
-							Assert::Fail();
-						}
+						actual = smartview::InterpretBinaryAsString(
+							{static_cast<ULONG>(hex.size()), hex.data()}, parser.type, nullptr);
+					} catch (const int exception)
+					{
+						Logger::WriteMessage(strings::format(
+												 L"Testing %ws failed at %ws with error 0x%08X\n",
+												 testName.c_str(),
+												 addin::AddInStructTypeToString(parser.type).c_str(),
+												 exception)
+												 .c_str());
+						Assert::Fail();
 					}
 				}
 			}
-		}
-
-		static std::vector<SmartViewTestData> loadTestData(
-			const std::initializer_list<SmartViewTestResource>& resources)
-		{
-			static auto handle = GetModuleHandleW(L"UnitTest.dll");
-			std::vector<SmartViewTestData> testData;
-			for (const auto& resource : resources)
-			{
-				// See comments on loadfile for best file encoding strategies for test data
-				testData.push_back(SmartViewTestData{resource.structType,
-													 unittest::parse_all,
-													 strings::format(L"%d/%d", resource.hex, resource.expected),
-													 strings::HexStringToBin(unittest::loadfile(handle, resource.hex)),
-													 unittest::loadfile(handle, resource.expected)});
-			}
-
-			return testData;
 		}
 
 	public:
