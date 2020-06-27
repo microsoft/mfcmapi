@@ -4,7 +4,7 @@
 
 namespace smartview
 {
-	SizedXID::SizedXID(const std::shared_ptr<binaryParser>& parser)
+	void SizedXID::parse()
 	{
 		XidSize = blockT<BYTE>::parse(parser);
 		NamespaceGuid = blockT<GUID>::parse(parser);
@@ -13,6 +13,12 @@ namespace smartview
 		{
 			LocalID = blockBytes::parse(parser, cbLocalId);
 		}
+	}
+	void SizedXID::parseBlocks()
+	{
+		addChild(XidSize, L"XidSize = 0x%1!08X! = %1!d!", XidSize->getData());
+		addChild(NamespaceGuid, L"NamespaceGuid = %1!ws!", guid::GUIDToString(NamespaceGuid->getData()).c_str());
+		addLabeledChild(L"LocalId =", LocalID);
 	}
 
 	void PCL::parse()
@@ -40,7 +46,7 @@ namespace smartview
 			for (auto i = 0; i < cXID; i++)
 			{
 				const auto oldSize = parser->getSize();
-				m_lpXID.emplace_back(std::make_shared<SizedXID>(parser));
+				m_lpXID.emplace_back(block::parse<SizedXID>(parser, 0, false));
 				const auto newSize = parser->getSize();
 				if (newSize == 0 || newSize == oldSize) break;
 			}
@@ -57,14 +63,7 @@ namespace smartview
 			auto i = 0;
 			for (const auto& xid : m_lpXID)
 			{
-				auto xidBlock = create(L"XID[%1!d!]", i);
-				addChild(xidBlock);
-				xidBlock->addChild(xid->XidSize, L"XidSize = 0x%1!08X! = %1!d!", xid->XidSize->getData());
-				xidBlock->addChild(
-					xid->NamespaceGuid,
-					L"NamespaceGuid = %1!ws!",
-					guid::GUIDToString(xid->NamespaceGuid->getData()).c_str());
-				xidBlock->addLabeledChild(L"LocalId =", xid->LocalID);
+				addChild(xid, L"XID[%1!d!]", i);
 
 				i++;
 			}

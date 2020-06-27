@@ -6,7 +6,7 @@
 
 namespace smartview
 {
-	struct SRowStruct : public block
+	class SRowStruct : public block
 	{
 	private:
 		void parse() override;
