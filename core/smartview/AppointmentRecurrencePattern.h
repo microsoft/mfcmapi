@@ -52,8 +52,15 @@ namespace smartview
 	// ExtendedException
 	// =====================
 	//   This structure specifies additional information about an exception
-	struct ExtendedException
+	class ExtendedException : public block
 	{
+	public:
+		ExtendedException(DWORD _writerVersion2, WORD _flags) : writerVersion2(_writerVersion2), flags(_flags) {}
+
+	private:
+		void parse() override;
+		void parseBlocks() override;
+
 		std::shared_ptr<ChangeHighlight> ChangeHighlight;
 		std::shared_ptr<blockT<DWORD>> ReservedBlockEE1Size = emptyT<DWORD>();
 		std::shared_ptr<blockBytes> ReservedBlockEE1 = emptyBB();
@@ -67,7 +74,8 @@ namespace smartview
 		std::shared_ptr<blockT<DWORD>> ReservedBlockEE2Size = emptyT<DWORD>();
 		std::shared_ptr<blockBytes> ReservedBlockEE2 = emptyBB();
 
-		ExtendedException(const std::shared_ptr<binaryParser>& parser, DWORD writerVersion2, WORD flags);
+		DWORD writerVersion2;
+		WORD flags;
 	};
 
 	// AppointmentRecurrencePattern

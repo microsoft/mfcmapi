@@ -155,13 +155,13 @@ namespace smartview
 			Reserved = blockBytes::parse(parser, *ChangeHighlightSize - sizeof(DWORD), _MaxBytes);
 		}
 	}
+
 	void ChangeHighlight::parseBlocks()
 	{
 		setText(L"ChangeHighlight");
 		auto szFlags = InterpretNumberAsStringNamedProp(
 			*ChangeHighlightValue, dispidChangeHighlight, const_cast<LPGUID>(&guid::PSETID_Appointment));
-		addChild(
-			ChangeHighlightSize, L"ChangeHighlightSize: 0x%1!08X!", ChangeHighlightSize->getData());
+		addChild(ChangeHighlightSize, L"ChangeHighlightSize: 0x%1!08X!", ChangeHighlightSize->getData());
 		addChild(
 			ChangeHighlightValue,
 			L"ChangeHighlightValue: 0x%1!08X! = %2!ws!",
@@ -174,7 +174,7 @@ namespace smartview
 		}
 	}
 
-	ExtendedException::ExtendedException(const std::shared_ptr<binaryParser>& parser, DWORD writerVersion2, WORD flags)
+	void ExtendedException::parse()
 	{
 		if (writerVersion2 >= 0x0003009)
 		{
@@ -216,6 +216,61 @@ namespace smartview
 		}
 	}
 
+	void ExtendedException::parseBlocks()
+	{
+		if (writerVersion2 >= 0x00003009)
+		{
+			addChild(ChangeHighlight);
+		}
+
+		addChild(ReservedBlockEE1Size, L"ReservedBlockEE1Size: 0x%1!08X!", ReservedBlockEE1Size->getData());
+		if (!ReservedBlockEE1->empty())
+		{
+			addChild(ReservedBlockEE1);
+		}
+
+		if (flags & ARO_SUBJECT || flags & ARO_LOCATION)
+		{
+			addChild(
+				StartDateTime,
+				L"StartDateTime: 0x%1!08X! = %2",
+				StartDateTime->getData(),
+				RTimeToString(*StartDateTime).c_str());
+			addChild(
+				EndDateTime,
+				L"EndDateTime: 0x%1!08X! = %2!ws!",
+				EndDateTime->getData(),
+				RTimeToString(*EndDateTime).c_str());
+			addChild(
+				OriginalStartDate,
+				L"OriginalStartDate: 0x%1!08X! = %2!ws!",
+				OriginalStartDate->getData(),
+				RTimeToString(*OriginalStartDate).c_str());
+		}
+
+		if (flags & ARO_SUBJECT)
+		{
+			addChild(
+				WideCharSubjectLength, L"WideCharSubjectLength: 0x%1!08X! = %1!d!", WideCharSubjectLength->getData());
+			addChild(WideCharSubject, L"WideCharSubject: \"%1!ws!\"", WideCharSubject->c_str());
+		}
+
+		if (flags & ARO_LOCATION)
+		{
+			addChild(
+				WideCharLocationLength,
+				L"WideCharLocationLength: 0x%1!08X! = %1!d!",
+				WideCharLocationLength->getData());
+			addChild(WideCharLocation, L"WideCharLocation: \"%1!ws!\"", WideCharLocation->c_str());
+		}
+
+		addChild(ReservedBlockEE2Size, L"ReservedBlockEE2Size: 0x%1!08X!", ReservedBlockEE2Size->getData());
+		if (!ReservedBlockEE2->empty())
+		{
+			addChild(ReservedBlockEE2);
+		}
+	}
+
 	void AppointmentRecurrencePattern::parse()
 	{
 		m_RecurrencePattern = block::parse<RecurrencePattern>(parser, false);
@@ -244,8 +299,9 @@ namespace smartview
 		{
 			for (WORD i = 0; i < *m_ExceptionCount; i++)
 			{
-				m_ExtendedException.emplace_back(
-					std::make_shared<ExtendedException>(parser, *m_WriterVersion2, *m_ExceptionInfo[i]->OverrideFlags));
+				auto ee = std::make_shared<ExtendedException>(*m_WriterVersion2, *m_ExceptionInfo[i]->OverrideFlags);
+				ee->block::parse(parser, 0, false);
+				m_ExtendedException.emplace_back(ee);
 			}
 		}
 
@@ -298,71 +354,7 @@ namespace smartview
 			auto i = UINT{};
 			for (const auto& ee : m_ExtendedException)
 			{
-				auto exception = create(L"ExtendedException[%1!d!]", i);
-				arpBlock->addChild(exception);
-
-				if (*m_WriterVersion2 >= 0x00003009)
-				{
-					exception->addChild(ee->ChangeHighlight);
-				}
-
-				exception->addChild(
-					ee->ReservedBlockEE1Size, L"ReservedBlockEE1Size: 0x%1!08X!", ee->ReservedBlockEE1Size->getData());
-				if (!ee->ReservedBlockEE1->empty())
-				{
-					exception->addChild(ee->ReservedBlockEE1);
-				}
-
-				if (i < m_ExceptionInfo.size())
-				{
-					if (*m_ExceptionInfo[i]->OverrideFlags & ARO_SUBJECT ||
-						*m_ExceptionInfo[i]->OverrideFlags & ARO_LOCATION)
-					{
-						exception->addChild(
-							ee->StartDateTime,
-							L"StartDateTime: 0x%1!08X! = %2",
-							ee->StartDateTime->getData(),
-							RTimeToString(*ee->StartDateTime).c_str());
-						exception->addChild(
-							ee->EndDateTime,
-							L"EndDateTime: 0x%1!08X! = %2!ws!",
-							ee->EndDateTime->getData(),
-							RTimeToString(*ee->EndDateTime).c_str());
-						exception->addChild(
-							ee->OriginalStartDate,
-							L"OriginalStartDate: 0x%1!08X! = %2!ws!",
-							ee->OriginalStartDate->getData(),
-							RTimeToString(*ee->OriginalStartDate).c_str());
-					}
-
-					if (*m_ExceptionInfo[i]->OverrideFlags & ARO_SUBJECT)
-					{
-						exception->addChild(
-							ee->WideCharSubjectLength,
-							L"WideCharSubjectLength: 0x%1!08X! = %1!d!",
-							ee->WideCharSubjectLength->getData());
-						exception->addChild(
-							ee->WideCharSubject, L"WideCharSubject: \"%1!ws!\"", ee->WideCharSubject->c_str());
-					}
-
-					if (*m_ExceptionInfo[i]->OverrideFlags & ARO_LOCATION)
-					{
-						exception->addChild(
-							ee->WideCharLocationLength,
-							L"WideCharLocationLength: 0x%1!08X! = %1!d!",
-							ee->WideCharLocationLength->getData());
-						exception->addChild(
-							ee->WideCharLocation, L"WideCharLocation: \"%1!ws!\"", ee->WideCharLocation->c_str());
-					}
-				}
-
-				exception->addChild(
-					ee->ReservedBlockEE2Size, L"ReservedBlockEE2Size: 0x%1!08X!", ee->ReservedBlockEE2Size->getData());
-				if (!ee->ReservedBlockEE2->empty())
-				{
-					exception->addChild(ee->ReservedBlockEE2);
-				}
-
+				arpBlock->addChild(ee, L"ExtendedException[%1!d!]", i);
 				i++;
 			}
 		}
