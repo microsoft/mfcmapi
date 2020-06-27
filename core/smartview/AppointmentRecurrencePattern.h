@@ -74,8 +74,8 @@ namespace smartview
 		std::shared_ptr<blockT<DWORD>> ReservedBlockEE2Size = emptyT<DWORD>();
 		std::shared_ptr<blockBytes> ReservedBlockEE2 = emptyBB();
 
-		DWORD writerVersion2;
-		WORD flags;
+		DWORD writerVersion2{};
+		WORD flags{};
 	};
 
 	// AppointmentRecurrencePattern

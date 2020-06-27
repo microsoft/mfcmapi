@@ -5,7 +5,7 @@
 
 namespace smartview
 {
-	ResponseLevel::ResponseLevel(const std::shared_ptr<binaryParser>& parser)
+	void ResponseLevel::parse()
 	{
 		const auto r1 = blockT<BYTE>::parse(parser);
 		const auto r2 = blockT<BYTE>::parse(parser);
@@ -27,6 +27,14 @@ namespace smartview
 		const auto r5 = blockT<BYTE>::parse(parser);
 		Random = blockT<BYTE>::create(static_cast<BYTE>(*r5 >> 4), r5->getSize(), r5->getOffset());
 		Level = blockT<BYTE>::create(static_cast<BYTE>(*r5 & 0xf), r5->getSize(), r5->getOffset());
+	}
+
+	void ResponseLevel::parseBlocks()
+	{
+		addChild(DeltaCode, L"DeltaCode = %1!d!", DeltaCode->getData());
+		addChild(TimeDelta, L"TimeDelta = 0x%1!08X! = %1!d!", TimeDelta->getData());
+		addChild(Random, L"Random = 0x%1!02X! = %1!d!", Random->getData());
+		addChild(Level, L"ResponseLevel = 0x%1!02X! = %1!d!", Level->getData());
 	}
 
 	void ConversationIndex::parse()
@@ -84,7 +92,7 @@ namespace smartview
 			m_lpResponseLevels.reserve(ulResponseLevels);
 			for (ULONG i = 0; i < ulResponseLevels; i++)
 			{
-				m_lpResponseLevels.emplace_back(std::make_shared<ResponseLevel>(parser));
+				m_lpResponseLevels.emplace_back(block::parse<ResponseLevel>(parser, 0, false));
 			}
 		}
 	}
@@ -110,26 +118,7 @@ namespace smartview
 			auto i = 0;
 			for (const auto& responseLevel : m_lpResponseLevels)
 			{
-				addChild(
-					responseLevel->DeltaCode,
-					L"ResponseLevel[%1!d!].DeltaCode = %2!d!",
-					i,
-					responseLevel->DeltaCode->getData());
-				addChild(
-					responseLevel->TimeDelta,
-					L"ResponseLevel[%1!d!].TimeDelta = 0x%2!08X! = %2!d!",
-					i,
-					responseLevel->TimeDelta->getData());
-				addChild(
-					responseLevel->Random,
-					L"ResponseLevel[%1!d!].Random = 0x%2!02X! = %2!d!",
-					i,
-					responseLevel->Random->getData());
-				addChild(
-					responseLevel->Level,
-					L"ResponseLevel[%1!d!].ResponseLevel = 0x%2!02X! = %2!d!",
-					i,
-					responseLevel->Level->getData());
+				addChild(responseLevel, L"ResponseLevel[%1!d!]", i);
 
 				i++;
 			}
