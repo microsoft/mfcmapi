@@ -5,21 +5,22 @@
 
 namespace smartview
 {
-	struct ExtendedFlag
+	class ExtendedFlag : public block
 	{
-		std::shared_ptr<blockT<BYTE>> Id = emptyT<BYTE>();
-		std::shared_ptr<blockT<BYTE>> Cb = emptyT<BYTE>();
-		struct
-		{
-			std::shared_ptr<blockT<DWORD>> ExtendedFlags = emptyT<DWORD>();
-			std::shared_ptr<blockT<GUID>> SearchFolderID = emptyT<GUID>();
-			std::shared_ptr<blockT<DWORD>> SearchFolderTag = emptyT<DWORD>();
-			std::shared_ptr<blockT<DWORD>> ToDoFolderVersion = emptyT<DWORD>();
-		} Data;
-		std::shared_ptr<blockBytes> lpUnknownData = emptyBB();
+	public:
 		bool bBadData{};
 
-		ExtendedFlag(const std::shared_ptr<binaryParser>& parser);
+	private:
+		void parse() override;
+		void parseBlocks() override;
+
+		std::shared_ptr<blockT<BYTE>> Id = emptyT<BYTE>();
+		std::shared_ptr<blockT<BYTE>> Cb = emptyT<BYTE>();
+		std::shared_ptr<blockT<DWORD>> ExtendedFlags = emptyT<DWORD>();
+		std::shared_ptr<blockT<GUID>> SearchFolderID = emptyT<GUID>();
+		std::shared_ptr<blockT<DWORD>> SearchFolderTag = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> ToDoFolderVersion = emptyT<DWORD>();
+		std::shared_ptr<blockBytes> lpUnknownData = emptyBB();
 	};
 
 	class ExtendedFlags : public block

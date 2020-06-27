@@ -1,5 +1,6 @@
 Extended Flags
 	Number of flags = 1
-	Id = 0x01 = EFPB_FLAGS
-		Cb = 0x04 = 4
-		Extended Flags = 0x001A8000 = 0x1A8000
+	Flag[0]
+		Id = 0x01 = EFPB_FLAGS
+			Cb = 0x04 = 4
+			Extended Flags = 0x001A8000 = 0x1A8000
