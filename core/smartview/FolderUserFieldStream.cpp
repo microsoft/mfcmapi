@@ -6,30 +6,69 @@
 
 namespace smartview
 {
-	FolderFieldDefinitionA ::FolderFieldDefinitionA(const std::shared_ptr<binaryParser>& parser)
+	void FolderFieldDefinition ::parse()
 	{
 		FieldType = blockT<DWORD>::parse(parser);
 		FieldNameLength = blockT<WORD>::parse(parser);
 
 		if (*FieldNameLength && *FieldNameLength < _MaxEntriesSmall)
 		{
-			FieldName = blockStringA::parse(parser, *FieldNameLength);
+			if (unicode)
+			{
+				FieldNameW = blockStringW::parse(parser, *FieldNameLength);
+			}
+			else
+			{
+				FieldNameA = blockStringA::parse(parser, *FieldNameLength);
+			}
 		}
 
-		Common.parse(parser);
+		PropSetGuid = blockT<GUID>::parse(parser);
+		fcapm = blockT<DWORD>::parse(parser);
+		dwString = blockT<DWORD>::parse(parser);
+		dwBitmap = blockT<DWORD>::parse(parser);
+		dwDisplay = blockT<DWORD>::parse(parser);
+		iFmt = blockT<DWORD>::parse(parser);
+		wszFormulaLength = blockT<WORD>::parse(parser);
+		if (*wszFormulaLength && *wszFormulaLength < _MaxEntriesLarge)
+		{
+			wszFormula = blockStringW::parse(parser, *wszFormulaLength);
+		}
 	}
 
-	FolderFieldDefinitionW ::FolderFieldDefinitionW(const std::shared_ptr<binaryParser>& parser)
+	void FolderFieldDefinition ::parseBlocks()
 	{
-		FieldType = blockT<DWORD>::parse(parser);
-		FieldNameLength = blockT<WORD>::parse(parser);
-
-		if (*FieldNameLength && *FieldNameLength < _MaxEntriesSmall)
+		if (unicode)
 		{
-			FieldName = blockStringW::parse(parser, *FieldNameLength);
+			setText(L"FolderFieldDefinitionW");
+		}
+		else
+		{
+			setText(L"FolderFieldDefinitionA");
 		}
 
-		Common.parse(parser);
+		auto szFieldType = flags::InterpretFlags(flagFolderType, *FieldType);
+		addChild(FieldType, L"FieldType = 0x%1!08X! = %2!ws!", FieldType->getData(), szFieldType.c_str());
+		addChild(FieldNameLength, L"FieldNameLength = 0x%1!08X! = %1!d!", FieldNameLength->getData());
+		if (unicode)
+		{
+			addChild(FieldNameW, L"FieldName = %1!ws!", FieldNameW->c_str());
+		}
+		else
+		{
+			addChild(FieldNameA, L"FieldName = %1!hs!", FieldNameA->c_str());
+		}
+
+		auto szGUID = guid::GUIDToString(*PropSetGuid);
+		addChild(PropSetGuid, L"PropSetGuid = %1!ws!", szGUID.c_str());
+		auto szFieldcap = flags::InterpretFlags(flagFieldCap, *fcapm);
+		addChild(fcapm, L"fcapm = 0x%1!08X! = %2!ws!", fcapm->getData(), szFieldcap.c_str());
+		addChild(dwString, L"dwString = 0x%1!08X!", dwString->getData());
+		addChild(dwBitmap, L"dwBitmap = 0x%1!08X!", dwBitmap->getData());
+		addChild(dwDisplay, L"dwDisplay = 0x%1!08X!", dwDisplay->getData());
+		addChild(iFmt, L"iFmt = 0x%1!08X!", iFmt->getData());
+		addChild(wszFormulaLength, L"wszFormulaLength = 0x%1!04X! = %1!d!", wszFormulaLength->getData());
+		addChild(wszFormula, L"wszFormula = %1!ws!", wszFormula->c_str());
 	}
 
 	void FolderUserFieldStream::parse()
@@ -41,7 +80,9 @@ namespace smartview
 			for (DWORD i = 0; i < *m_FolderUserFieldsAnsiCount; i++)
 			{
 				if (parser->empty()) continue;
-				m_FieldDefinitionsA.emplace_back(std::make_shared<FolderFieldDefinitionA>(parser));
+				auto fd = std::make_shared<FolderFieldDefinition>(false);
+				fd->block::parse(parser, 0, false);
+				m_FieldDefinitionsA.emplace_back(fd);
 			}
 		}
 
@@ -52,23 +93,10 @@ namespace smartview
 			for (DWORD i = 0; i < *m_FolderUserFieldsUnicodeCount; i++)
 			{
 				if (parser->empty()) continue;
-				m_FieldDefinitionsW.emplace_back(std::make_shared<FolderFieldDefinitionW>(parser));
+				auto fd = std::make_shared<FolderFieldDefinition>(true);
+				fd->block::parse(parser, 0, false);
+				m_FieldDefinitionsW.emplace_back(fd);
 			}
-		}
-	}
-
-	void FolderFieldDefinitionCommon::parse(const std::shared_ptr<binaryParser>& parser)
-	{
-		PropSetGuid = blockT<GUID>::parse(parser);
-		fcapm = blockT<DWORD>::parse(parser);
-		dwString = blockT<DWORD>::parse(parser);
-		dwBitmap = blockT<DWORD>::parse(parser);
-		dwDisplay = blockT<DWORD>::parse(parser);
-		iFmt = blockT<DWORD>::parse(parser);
-		wszFormulaLength = blockT<WORD>::parse(parser);
-		if (*wszFormulaLength && *wszFormulaLength < _MaxEntriesLarge)
-		{
-			wszFormula = blockStringW::parse(parser, *wszFormulaLength);
 		}
 	}
 
@@ -86,52 +114,7 @@ namespace smartview
 			auto i = 0;
 			for (auto& fieldDefinition : m_FieldDefinitionsA)
 			{
-				auto fieldBlock = create(L"Field %1!d!", i++);
-				m_FolderUserFieldsAnsiCount->addChild(fieldBlock);
-
-				auto szFieldType = flags::InterpretFlags(flagFolderType, *fieldDefinition->FieldType);
-				fieldBlock->addChild(
-					fieldDefinition->FieldType,
-					L"FieldType = 0x%1!08X! = %2!ws!",
-					fieldDefinition->FieldType->getData(),
-					szFieldType.c_str());
-				fieldBlock->addChild(
-					fieldDefinition->FieldNameLength,
-					L"FieldNameLength = 0x%1!08X! = %1!d!",
-					fieldDefinition->FieldNameLength->getData());
-				fieldBlock->addChild(
-					fieldDefinition->FieldName, L"FieldName = %1!hs!", fieldDefinition->FieldName->c_str());
-
-				auto szGUID = guid::GUIDToString(*fieldDefinition->Common.PropSetGuid);
-				fieldBlock->addChild(fieldDefinition->Common.PropSetGuid, L"PropSetGuid = %1!ws!", szGUID.c_str());
-				auto szFieldcap = flags::InterpretFlags(flagFieldCap, *fieldDefinition->Common.fcapm);
-				fieldBlock->addChild(
-					fieldDefinition->Common.fcapm,
-					L"fcapm = 0x%1!08X! = %2!ws!",
-					fieldDefinition->Common.fcapm->getData(),
-					szFieldcap.c_str());
-				fieldBlock->addChild(
-					fieldDefinition->Common.dwString,
-					L"dwString = 0x%1!08X!",
-					fieldDefinition->Common.dwString->getData());
-				fieldBlock->addChild(
-					fieldDefinition->Common.dwBitmap,
-					L"dwBitmap = 0x%1!08X!",
-					fieldDefinition->Common.dwBitmap->getData());
-				fieldBlock->addChild(
-					fieldDefinition->Common.dwDisplay,
-					L"dwDisplay = 0x%1!08X!",
-					fieldDefinition->Common.dwDisplay->getData());
-				fieldBlock->addChild(
-					fieldDefinition->Common.iFmt, L"iFmt = 0x%1!08X!", fieldDefinition->Common.iFmt->getData());
-				fieldBlock->addChild(
-					fieldDefinition->Common.wszFormulaLength,
-					L"wszFormulaLength = 0x%1!04X! = %1!d!",
-					fieldDefinition->Common.wszFormulaLength->getData());
-				fieldBlock->addChild(
-					fieldDefinition->Common.wszFormula,
-					L"wszFormula = %1!ws!",
-					fieldDefinition->Common.wszFormula->c_str());
+				m_FolderUserFieldsAnsiCount->addChild(fieldDefinition, L"Field %1!d!", i++);
 			}
 		}
 
@@ -146,52 +129,7 @@ namespace smartview
 			auto i = 0;
 			for (const auto& fieldDefinition : m_FieldDefinitionsW)
 			{
-				auto fieldBlock = create(L"Field %1!d!", i++);
-				m_FolderUserFieldsUnicodeCount->addChild(fieldBlock);
-
-				auto szFieldType = flags::InterpretFlags(flagFolderType, *fieldDefinition->FieldType);
-				fieldBlock->addChild(
-					fieldDefinition->FieldType,
-					L"FieldType = 0x%1!08X! = %2!ws!",
-					fieldDefinition->FieldType->getData(),
-					szFieldType.c_str());
-				fieldBlock->addChild(
-					fieldDefinition->FieldNameLength,
-					L"FieldNameLength = 0x%1!08X! = %1!d!",
-					fieldDefinition->FieldNameLength->getData());
-				fieldBlock->addChild(
-					fieldDefinition->FieldName, L"FieldName = %1!ws!", fieldDefinition->FieldName->c_str());
-
-				auto szGUID = guid::GUIDToString(*fieldDefinition->Common.PropSetGuid);
-				fieldBlock->addChild(fieldDefinition->Common.PropSetGuid, L"PropSetGuid = %1!ws!", szGUID.c_str());
-				auto szFieldcap = flags::InterpretFlags(flagFieldCap, *fieldDefinition->Common.fcapm);
-				fieldBlock->addChild(
-					fieldDefinition->Common.fcapm,
-					L"fcapm = 0x%1!08X! = %2!ws!",
-					fieldDefinition->Common.fcapm->getData(),
-					szFieldcap.c_str());
-				fieldBlock->addChild(
-					fieldDefinition->Common.dwString,
-					L"dwString = 0x%1!08X!",
-					fieldDefinition->Common.dwString->getData());
-				fieldBlock->addChild(
-					fieldDefinition->Common.dwBitmap,
-					L"dwBitmap = 0x%1!08X!",
-					fieldDefinition->Common.dwBitmap->getData());
-				fieldBlock->addChild(
-					fieldDefinition->Common.dwDisplay,
-					L"dwDisplay = 0x%1!08X!",
-					fieldDefinition->Common.dwDisplay->getData());
-				fieldBlock->addChild(
-					fieldDefinition->Common.iFmt, L"iFmt = 0x%1!08X!", fieldDefinition->Common.iFmt->getData());
-				fieldBlock->addChild(
-					fieldDefinition->Common.wszFormulaLength,
-					L"wszFormulaLength = 0x%1!04X! = %1!d!",
-					fieldDefinition->Common.wszFormulaLength->getData());
-				fieldBlock->addChild(
-					fieldDefinition->Common.wszFormula,
-					L"wszFormula = %1!ws!",
-					fieldDefinition->Common.wszFormula->c_str());
+				m_FolderUserFieldsUnicodeCount->addChild(fieldDefinition, L"Field %1!d!", i++);
 			}
 		}
 	}
