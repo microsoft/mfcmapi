@@ -8,18 +8,24 @@ Property Definition Stream
 			 = PR_HASATTACH
 			: (PidTagHasAttachments, ptagHasAttach)
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x000A
+		NameAnsi
+			Length = 0x000A
 			Characters =
 				Attachment
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0xFFFFFFFF = iTypeUnknown | iTypeString
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000015
-			FieldName: Length = 0x000A
+			FieldName
+				Length = 0x000A
 				Characters =
 					Attachment
 		SkipBlock: 1
@@ -29,18 +35,24 @@ Property Definition Stream
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0009
+		NameAnsi
+			Length = 0x0009
 			Characters =
 				AudioConf
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000004 = iTypeBool
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000013
-			FieldName: Length = 0x0009
+			FieldName
+				Length = 0x0009
 				Characters =
 					AudioConf
 		SkipBlock: 1
@@ -52,18 +64,24 @@ Property Definition Stream
 			 = PR_DISPLAY_CC
 			: (PR_DISPLAY_CC_A, PR_DISPLAY_CC_W, PidTagDisplayCc, ptagDisplayCc)
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0002
+		NameAnsi
+			Length = 0x0002
 			Characters =
 				Cc
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0xFFFFFFFF = iTypeUnknown | iTypeString
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000005
-			FieldName: Length = 0x0002
+			FieldName
+				Length = 0x0002
 				Characters =
 					Cc
 		SkipBlock: 1
@@ -74,18 +92,24 @@ Property Definition Stream
 		DispID = 0x00000000
 		NmidNameLength = 0x000E
 		NmidName = ConferenceInfo
-		NameAnsi: Length = 0x000E
+		NameAnsi
+			Length = 0x000E
 			Characters =
 				ConferenceInfo
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x0000001D
-			FieldName: Length = 0x000E
+			FieldName
+				Length = 0x000E
 				Characters =
 					ConferenceInfo
 		SkipBlock: 1
@@ -95,18 +119,24 @@ Property Definition Stream
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x000D
+		NameAnsi
+			Length = 0x000D
 			Characters =
 				ExistsOnStore
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000004 = iTypeBool
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x0000001B
-			FieldName: Length = 0x000D
+			FieldName
+				Length = 0x000D
 				Characters =
 					ExistsOnStore
 		SkipBlock: 1
@@ -116,18 +146,24 @@ Property Definition Stream
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0008
+		NameAnsi
+			Length = 0x0008
 			Characters =
 				JoinInfo
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000011
-			FieldName: Length = 0x0008
+			FieldName
+				Length = 0x0008
 				Characters =
 					JoinInfo
 		SkipBlock: 1
@@ -137,18 +173,24 @@ Property Definition Stream
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0016
+		NameAnsi
+			Length = 0x0016
 			Characters =
 				LiveMeetingAttendeeKey
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x0000002D
-			FieldName: Length = 0x0016
+			FieldName
+				Length = 0x0016
 				Characters =
 					LiveMeetingAttendeeKey
 		SkipBlock: 1
@@ -158,18 +200,24 @@ Property Definition Stream
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0015
+		NameAnsi
+			Length = 0x0015
 			Characters =
 				LiveMeetingInviteGuid
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x0000002B
-			FieldName: Length = 0x0015
+			FieldName
+				Length = 0x0015
 				Characters =
 					LiveMeetingInviteGuid
 		SkipBlock: 1
@@ -179,18 +227,24 @@ Property Definition Stream
 		VT = 0x0005 = VT_R8
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0013
+		NameAnsi
+			Length = 0x0013
 			Characters =
 				LiveMeetingLanguage
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000001 = iTypeNumber
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000027
-			FieldName: Length = 0x0013
+			FieldName
+				Length = 0x0013
 				Characters =
 					LiveMeetingLanguage
 		SkipBlock: 1
@@ -200,18 +254,24 @@ Property Definition Stream
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x000F
+		NameAnsi
+			Length = 0x000F
 			Characters =
 				LiveMeetingName
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x0000001F
-			FieldName: Length = 0x000F
+			FieldName
+				Length = 0x000F
 				Characters =
 					LiveMeetingName
 		SkipBlock: 1
@@ -221,18 +281,24 @@ Property Definition Stream
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x001C
+		NameAnsi
+			Length = 0x001C
 			Characters =
 				LiveMeetingServerAssignedMID
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000039
-			FieldName: Length = 0x001C
+			FieldName
+				Length = 0x001C
 				Characters =
 					LiveMeetingServerAssignedMID
 		SkipBlock: 1
@@ -242,18 +308,24 @@ Property Definition Stream
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x000D
+		NameAnsi
+			Length = 0x000D
 			Characters =
 				LMAllowCallMe
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000004 = iTypeBool
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x0000001B
-			FieldName: Length = 0x000D
+			FieldName
+				Length = 0x000D
 				Characters =
 					LMAllowCallMe
 		SkipBlock: 1
@@ -263,18 +335,24 @@ Property Definition Stream
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x000B
+		NameAnsi
+			Length = 0x000B
 			Characters =
 				LMAllowChat
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000004 = iTypeBool
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000017
-			FieldName: Length = 0x000B
+			FieldName
+				Length = 0x000B
 				Characters =
 					LMAllowChat
 		SkipBlock: 1
@@ -284,18 +362,24 @@ Property Definition Stream
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0010
+		NameAnsi
+			Length = 0x0010
 			Characters =
 				LMAllowSendEmail
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000004 = iTypeBool
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000021
-			FieldName: Length = 0x0010
+			FieldName
+				Length = 0x0010
 				Characters =
 					LMAllowSendEmail
 		SkipBlock: 1
@@ -305,18 +389,24 @@ Property Definition Stream
 		VT = 0x0005 = VT_R8
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x000F
+		NameAnsi
+			Length = 0x000F
 			Characters =
 				LMAppShareLevel
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000001 = iTypeNumber
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x0000001F
-			FieldName: Length = 0x000F
+			FieldName
+				Length = 0x000F
 				Characters =
 					LMAppShareLevel
 		SkipBlock: 1
@@ -326,18 +416,24 @@ Property Definition Stream
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0011
+		NameAnsi
+			Length = 0x0011
 			Characters =
 				LMAppShareRequest
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000004 = iTypeBool
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000023
-			FieldName: Length = 0x0011
+			FieldName
+				Length = 0x0011
 				Characters =
 					LMAppShareRequest
 		SkipBlock: 1
@@ -347,18 +443,24 @@ Property Definition Stream
 		VT = 0x0005 = VT_R8
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0012
+		NameAnsi
+			Length = 0x0012
 			Characters =
 				LMAppSharingColors
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000001 = iTypeNumber
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000025
-			FieldName: Length = 0x0012
+			FieldName
+				Length = 0x0012
 				Characters =
 					LMAppSharingColors
 		SkipBlock: 1
@@ -368,18 +470,24 @@ Property Definition Stream
 		VT = 0x0005 = VT_R8
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x001C
+		NameAnsi
+			Length = 0x001C
 			Characters =
 				LMAttendeeAuthenticationType
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000001 = iTypeNumber
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000039
-			FieldName: Length = 0x001C
+			FieldName
+				Length = 0x001C
 				Characters =
 					LMAttendeeAuthenticationType
 		SkipBlock: 1
@@ -389,18 +497,24 @@ Property Definition Stream
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x000E
+		NameAnsi
+			Length = 0x000E
 			Characters =
 				LMAttendeeGUID
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x0000001D
-			FieldName: Length = 0x000E
+			FieldName
+				Length = 0x000E
 				Characters =
 					LMAttendeeGUID
 		SkipBlock: 1
@@ -410,18 +524,24 @@ Property Definition Stream
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0014
+		NameAnsi
+			Length = 0x0014
 			Characters =
 				LMAttendeeListBackup
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000029
-			FieldName: Length = 0x0014
+			FieldName
+				Length = 0x0014
 				Characters =
 					LMAttendeeListBackup
 		SkipBlock: 1
@@ -431,18 +551,24 @@ Property Definition Stream
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0010
+		NameAnsi
+			Length = 0x0010
 			Characters =
 				LMAudioBroadcast
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000004 = iTypeBool
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000021
-			FieldName: Length = 0x0010
+			FieldName
+				Length = 0x0010
 				Characters =
 					LMAudioBroadcast
 		SkipBlock: 1
@@ -452,18 +578,24 @@ Property Definition Stream
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x001D
+		NameAnsi
+			Length = 0x001D
 			Characters =
 				LMAudioConferencingLeaderCode
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x0000003B
-			FieldName: Length = 0x001D
+			FieldName
+				Length = 0x001D
 				Characters =
 					LMAudioConferencingLeaderCode
 		SkipBlock: 1
@@ -473,18 +605,24 @@ Property Definition Stream
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0022
+		NameAnsi
+			Length = 0x0022
 			Characters =
 				LMAudioConferencingParticipantCode
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000045
-			FieldName: Length = 0x0022
+			FieldName
+				Length = 0x0022
 				Characters =
 					LMAudioConferencingParticipantCode
 		SkipBlock: 1
@@ -494,18 +632,24 @@ Property Definition Stream
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x001B
+		NameAnsi
+			Length = 0x001B
 			Characters =
 				LMAudioConferencingProvider
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000037
-			FieldName: Length = 0x001B
+			FieldName
+				Length = 0x001B
 				Characters =
 					LMAudioConferencingProvider
 		SkipBlock: 1
@@ -515,18 +659,24 @@ Property Definition Stream
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x000F
+		NameAnsi
+			Length = 0x000F
 			Characters =
 				LMAudioEmbedded
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000004 = iTypeBool
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x0000001F
-			FieldName: Length = 0x000F
+			FieldName
+				Length = 0x000F
 				Characters =
 					LMAudioEmbedded
 		SkipBlock: 1
@@ -536,18 +686,24 @@ Property Definition Stream
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x000D
+		NameAnsi
+			Length = 0x000D
 			Characters =
 				LMBillingCode
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x0000001B
-			FieldName: Length = 0x000D
+			FieldName
+				Length = 0x000D
 				Characters =
 					LMBillingCode
 		SkipBlock: 1
@@ -557,18 +713,24 @@ Property Definition Stream
 		VT = 0x0005 = VT_R8
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0017
+		NameAnsi
+			Length = 0x0017
 			Characters =
 				LMContentExpirationTime
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000001 = iTypeNumber
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x0000002F
-			FieldName: Length = 0x0017
+			FieldName
+				Length = 0x0017
 				Characters =
 					LMContentExpirationTime
 		SkipBlock: 1
@@ -578,18 +740,24 @@ Property Definition Stream
 		VT = 0x0005 = VT_R8
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x001B
+		NameAnsi
+			Length = 0x001B
 			Characters =
 				LMContentExpirationTimeType
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000001 = iTypeNumber
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000037
-			FieldName: Length = 0x001B
+			FieldName
+				Length = 0x001B
 				Characters =
 					LMContentExpirationTimeType
 		SkipBlock: 1
@@ -599,18 +767,24 @@ Property Definition Stream
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0010
+		NameAnsi
+			Length = 0x0010
 			Characters =
 				LMContentExpires
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000004 = iTypeBool
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000021
-			FieldName: Length = 0x0010
+			FieldName
+				Length = 0x0010
 				Characters =
 					LMContentExpires
 		SkipBlock: 1
@@ -620,18 +794,24 @@ Property Definition Stream
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0012
+		NameAnsi
+			Length = 0x0012
 			Characters =
 				LMDialingKeysPart1
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000025
-			FieldName: Length = 0x0012
+			FieldName
+				Length = 0x0012
 				Characters =
 					LMDialingKeysPart1
 		SkipBlock: 1
@@ -641,18 +821,24 @@ Property Definition Stream
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0012
+		NameAnsi
+			Length = 0x0012
 			Characters =
 				LMDialingKeysPart2
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000025
-			FieldName: Length = 0x0012
+			FieldName
+				Length = 0x0012
 				Characters =
 					LMDialingKeysPart2
 		SkipBlock: 1
@@ -662,18 +848,24 @@ Property Definition Stream
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x001B
+		NameAnsi
+			Length = 0x001B
 			Characters =
 				LMEarlyAttendeeEntryAllowed
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000004 = iTypeBool
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000037
-			FieldName: Length = 0x001B
+			FieldName
+				Length = 0x001B
 				Characters =
 					LMEarlyAttendeeEntryAllowed
 		SkipBlock: 1
@@ -683,18 +875,24 @@ Property Definition Stream
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0011
+		NameAnsi
+			Length = 0x0011
 			Characters =
 				LMEnableAudioVOIP
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000004 = iTypeBool
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000023
-			FieldName: Length = 0x0011
+			FieldName
+				Length = 0x0011
 				Characters =
 					LMEnableAudioVOIP
 		SkipBlock: 1
@@ -704,18 +902,24 @@ Property Definition Stream
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x000D
+		NameAnsi
+			Length = 0x000D
 			Characters =
 				LMEnableLobby
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000004 = iTypeBool
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x0000001B
-			FieldName: Length = 0x000D
+			FieldName
+				Length = 0x000D
 				Characters =
 					LMEnableLobby
 		SkipBlock: 1
@@ -725,18 +929,24 @@ Property Definition Stream
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0012
+		NameAnsi
+			Length = 0x0012
 			Characters =
 				LMEnableLobbyEmail
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000004 = iTypeBool
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000025
-			FieldName: Length = 0x0012
+			FieldName
+				Length = 0x0012
 				Characters =
 					LMEnableLobbyEmail
 		SkipBlock: 1
@@ -746,18 +956,24 @@ Property Definition Stream
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0021
+		NameAnsi
+			Length = 0x0021
 			Characters =
 				LMEnablePersonalRecordingAttendee
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000004 = iTypeBool
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000043
-			FieldName: Length = 0x0021
+			FieldName
+				Length = 0x0021
 				Characters =
 					LMEnablePersonalRecordingAttendee
 		SkipBlock: 1
@@ -767,18 +983,24 @@ Property Definition Stream
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0022
+		NameAnsi
+			Length = 0x0022
 			Characters =
 				LMEnablePersonalRecordingPresenter
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000004 = iTypeBool
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000045
-			FieldName: Length = 0x0022
+			FieldName
+				Length = 0x0022
 				Characters =
 					LMEnablePersonalRecordingPresenter
 		SkipBlock: 1
@@ -788,18 +1010,24 @@ Property Definition Stream
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x001B
+		NameAnsi
+			Length = 0x001B
 			Characters =
 				LMEnableRecordingExpiration
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000004 = iTypeBool
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000037
-			FieldName: Length = 0x001B
+			FieldName
+				Length = 0x001B
 				Characters =
 					LMEnableRecordingExpiration
 		SkipBlock: 1
@@ -809,18 +1037,24 @@ Property Definition Stream
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0016
+		NameAnsi
+			Length = 0x0016
 			Characters =
 				LMExtendedRegistration
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000004 = iTypeBool
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x0000002D
-			FieldName: Length = 0x0016
+			FieldName
+				Length = 0x0016
 				Characters =
 					LMExtendedRegistration
 		SkipBlock: 1
@@ -830,18 +1064,24 @@ Property Definition Stream
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x001E
+		NameAnsi
+			Length = 0x001E
 			Characters =
 				LMIsServerGeneratedAudienceKey
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000004 = iTypeBool
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x0000003D
-			FieldName: Length = 0x001E
+			FieldName
+				Length = 0x001E
 				Characters =
 					LMIsServerGeneratedAudienceKey
 		SkipBlock: 1
@@ -851,18 +1091,24 @@ Property Definition Stream
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x001F
+		NameAnsi
+			Length = 0x001F
 			Characters =
 				LMIsServerGeneratedPresenterKey
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000004 = iTypeBool
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x0000003F
-			FieldName: Length = 0x001F
+			FieldName
+				Length = 0x001F
 				Characters =
 					LMIsServerGeneratedPresenterKey
 		SkipBlock: 1
@@ -872,18 +1118,24 @@ Property Definition Stream
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x000E
+		NameAnsi
+			Length = 0x000E
 			Characters =
 				LMLobbyMessage
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x0000001D
-			FieldName: Length = 0x000E
+			FieldName
+				Length = 0x000E
 				Characters =
 					LMLobbyMessage
 		SkipBlock: 1
@@ -893,18 +1145,24 @@ Property Definition Stream
 		VT = 0x0005 = VT_R8
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x000D
+		NameAnsi
+			Length = 0x000D
 			Characters =
 				LMMeetingSize
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000001 = iTypeNumber
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x0000001B
-			FieldName: Length = 0x000D
+			FieldName
+				Length = 0x000D
 				Characters =
 					LMMeetingSize
 		SkipBlock: 1
@@ -914,18 +1172,24 @@ Property Definition Stream
 		VT = 0x0005 = VT_R8
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0010
+		NameAnsi
+			Length = 0x0010
 			Characters =
 				LMMeetingVersion
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000001 = iTypeNumber
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000021
-			FieldName: Length = 0x0010
+			FieldName
+				Length = 0x0010
 				Characters =
 					LMMeetingVersion
 		SkipBlock: 1
@@ -936,18 +1200,24 @@ Property Definition Stream
 		DispID = 0x00000000
 		NmidNameLength = 0x000F
 		NmidName = LMOLAddinSchema
-		NameAnsi: Length = 0x000F
+		NameAnsi
+			Length = 0x000F
 			Characters =
 				LMOLAddinSchema
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000001 = iTypeNumber
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x0000001F
-			FieldName: Length = 0x000F
+			FieldName
+				Length = 0x000F
 				Characters =
 					LMOLAddinSchema
 		SkipBlock: 1
@@ -957,18 +1227,24 @@ Property Definition Stream
 		VT = 0x0005 = VT_R8
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x001D
+		NameAnsi
+			Length = 0x001D
 			Characters =
 				LMPresenterAuthenticationType
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000001 = iTypeNumber
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x0000003B
-			FieldName: Length = 0x001D
+			FieldName
+				Length = 0x001D
 				Characters =
 					LMPresenterAuthenticationType
 		SkipBlock: 1
@@ -978,18 +1254,24 @@ Property Definition Stream
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x000F
+		NameAnsi
+			Length = 0x000F
 			Characters =
 				LMPresenterGUID
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x0000001F
-			FieldName: Length = 0x000F
+			FieldName
+				Length = 0x000F
 				Characters =
 					LMPresenterGUID
 		SkipBlock: 1
@@ -999,18 +1281,24 @@ Property Definition Stream
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x000E
+		NameAnsi
+			Length = 0x000E
 			Characters =
 				LMPresenterKey
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x0000001D
-			FieldName: Length = 0x000E
+			FieldName
+				Length = 0x000E
 				Characters =
 					LMPresenterKey
 		SkipBlock: 1
@@ -1020,18 +1308,24 @@ Property Definition Stream
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x000F
+		NameAnsi
+			Length = 0x000F
 			Characters =
 				LMPresenterList
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x0000001F
-			FieldName: Length = 0x000F
+			FieldName
+				Length = 0x000F
 				Characters =
 					LMPresenterList
 		SkipBlock: 1
@@ -1041,18 +1335,24 @@ Property Definition Stream
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0015
+		NameAnsi
+			Length = 0x0015
 			Characters =
 				LMPresenterListBackup
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x0000002B
-			FieldName: Length = 0x0015
+			FieldName
+				Length = 0x0015
 				Characters =
 					LMPresenterListBackup
 		SkipBlock: 1
@@ -1062,18 +1362,24 @@ Property Definition Stream
 		VT = 0x0005 = VT_R8
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0011
+		NameAnsi
+			Length = 0x0011
 			Characters =
 				LMPrintToPDFLevel
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000001 = iTypeNumber
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000023
-			FieldName: Length = 0x0011
+			FieldName
+				Length = 0x0011
 				Characters =
 					LMPrintToPDFLevel
 		SkipBlock: 1
@@ -1083,18 +1389,24 @@ Property Definition Stream
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x000B
+		NameAnsi
+			Length = 0x000B
 			Characters =
 				LMQAFeature
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000004 = iTypeBool
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000017
-			FieldName: Length = 0x000B
+			FieldName
+				Length = 0x000B
 				Characters =
 					LMQAFeature
 		SkipBlock: 1
@@ -1104,18 +1416,24 @@ Property Definition Stream
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0019
+		NameAnsi
+			Length = 0x0019
 			Characters =
 				LMRecordingCreationAccess
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000004 = iTypeBool
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000033
-			FieldName: Length = 0x0019
+			FieldName
+				Length = 0x0019
 				Characters =
 					LMRecordingCreationAccess
 		SkipBlock: 1
@@ -1125,18 +1443,24 @@ Property Definition Stream
 		VT = 0x0005 = VT_R8
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0017
+		NameAnsi
+			Length = 0x0017
 			Characters =
 				LMRecordingEntryControl
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000001 = iTypeNumber
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x0000002F
-			FieldName: Length = 0x0017
+			FieldName
+				Length = 0x0017
 				Characters =
 					LMRecordingEntryControl
 		SkipBlock: 1
@@ -1146,18 +1470,24 @@ Property Definition Stream
 		VT = 0x0005 = VT_R8
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x001F
+		NameAnsi
+			Length = 0x001F
 			Characters =
 				LMRecordingExpirationTimeAmount
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000001 = iTypeNumber
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x0000003F
-			FieldName: Length = 0x001F
+			FieldName
+				Length = 0x001F
 				Characters =
 					LMRecordingExpirationTimeAmount
 		SkipBlock: 1
@@ -1167,18 +1497,24 @@ Property Definition Stream
 		VT = 0x0005 = VT_R8
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x001D
+		NameAnsi
+			Length = 0x001D
 			Characters =
 				LMRecordingExpirationTimeType
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000001 = iTypeNumber
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x0000003B
-			FieldName: Length = 0x001D
+			FieldName
+				Length = 0x001D
 				Characters =
 					LMRecordingExpirationTimeType
 		SkipBlock: 1
@@ -1188,18 +1524,24 @@ Property Definition Stream
 		VT = 0x0005 = VT_R8
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x001B
+		NameAnsi
+			Length = 0x001B
 			Characters =
 				LMSeatingChartDefaultOption
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000001 = iTypeNumber
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000037
-			FieldName: Length = 0x001B
+			FieldName
+				Length = 0x001B
 				Characters =
 					LMSeatingChartDefaultOption
 		SkipBlock: 1
@@ -1209,18 +1551,24 @@ Property Definition Stream
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0015
+		NameAnsi
+			Length = 0x0015
 			Characters =
 				LMSeatingChartFeature
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000004 = iTypeBool
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x0000002B
-			FieldName: Length = 0x0015
+			FieldName
+				Length = 0x0015
 				Characters =
 					LMSeatingChartFeature
 		SkipBlock: 1
@@ -1230,18 +1578,24 @@ Property Definition Stream
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0014
+		NameAnsi
+			Length = 0x0014
 			Characters =
 				LMSeatingChartLabel1
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000029
-			FieldName: Length = 0x0014
+			FieldName
+				Length = 0x0014
 				Characters =
 					LMSeatingChartLabel1
 		SkipBlock: 1
@@ -1251,18 +1605,24 @@ Property Definition Stream
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0014
+		NameAnsi
+			Length = 0x0014
 			Characters =
 				LMSeatingChartLabel2
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000029
-			FieldName: Length = 0x0014
+			FieldName
+				Length = 0x0014
 				Characters =
 					LMSeatingChartLabel2
 		SkipBlock: 1
@@ -1272,18 +1632,24 @@ Property Definition Stream
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0014
+		NameAnsi
+			Length = 0x0014
 			Characters =
 				LMSeatingChartLabel3
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000029
-			FieldName: Length = 0x0014
+			FieldName
+				Length = 0x0014
 				Characters =
 					LMSeatingChartLabel3
 		SkipBlock: 1
@@ -1293,18 +1659,24 @@ Property Definition Stream
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0014
+		NameAnsi
+			Length = 0x0014
 			Characters =
 				LMSeatingChartLabel4
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000029
-			FieldName: Length = 0x0014
+			FieldName
+				Length = 0x0014
 				Characters =
 					LMSeatingChartLabel4
 		SkipBlock: 1
@@ -1314,18 +1686,24 @@ Property Definition Stream
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0014
+		NameAnsi
+			Length = 0x0014
 			Characters =
 				LMSeatingChartLabel5
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000029
-			FieldName: Length = 0x0014
+			FieldName
+				Length = 0x0014
 				Characters =
 					LMSeatingChartLabel5
 		SkipBlock: 1
@@ -1335,18 +1713,24 @@ Property Definition Stream
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x000A
+		NameAnsi
+			Length = 0x000A
 			Characters =
 				LMSentinel
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000015
-			FieldName: Length = 0x000A
+			FieldName
+				Length = 0x000A
 				Characters =
 					LMSentinel
 		SkipBlock: 1
@@ -1356,18 +1740,24 @@ Property Definition Stream
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0019
+		NameAnsi
+			Length = 0x0019
 			Characters =
 				LMShowAudioTollFreeNumber
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000004 = iTypeBool
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000033
-			FieldName: Length = 0x0019
+			FieldName
+				Length = 0x0019
 				Characters =
 					LMShowAudioTollFreeNumber
 		SkipBlock: 1
@@ -1377,18 +1767,24 @@ Property Definition Stream
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0015
+		NameAnsi
+			Length = 0x0015
 			Characters =
 				LMShowAudioTollNumber
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000004 = iTypeBool
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x0000002B
-			FieldName: Length = 0x0015
+			FieldName
+				Length = 0x0015
 				Characters =
 					LMShowAudioTollNumber
 		SkipBlock: 1
@@ -1398,18 +1794,24 @@ Property Definition Stream
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0016
+		NameAnsi
+			Length = 0x0016
 			Characters =
 				LMShowEndSessionButton
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000004 = iTypeBool
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x0000002D
-			FieldName: Length = 0x0016
+			FieldName
+				Length = 0x0016
 				Characters =
 					LMShowEndSessionButton
 		SkipBlock: 1
@@ -1419,18 +1821,24 @@ Property Definition Stream
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x000B
+		NameAnsi
+			Length = 0x000B
 			Characters =
 				LMSignature
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000017
-			FieldName: Length = 0x000B
+			FieldName
+				Length = 0x000B
 				Characters =
 					LMSignature
 		SkipBlock: 1
@@ -1440,18 +1848,24 @@ Property Definition Stream
 		VT = 0x0005 = VT_R8
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0022
+		NameAnsi
+			Length = 0x0022
 			Characters =
 				LMStreamingMediaAttendeePaneHeight
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000001 = iTypeNumber
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000045
-			FieldName: Length = 0x0022
+			FieldName
+				Length = 0x0022
 				Characters =
 					LMStreamingMediaAttendeePaneHeight
 		SkipBlock: 1
@@ -1461,18 +1875,24 @@ Property Definition Stream
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x001F
+		NameAnsi
+			Length = 0x001F
 			Characters =
 				LMStreamingMediaAttendeePaneURL
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x0000003F
-			FieldName: Length = 0x001F
+			FieldName
+				Length = 0x001F
 				Characters =
 					LMStreamingMediaAttendeePaneURL
 		SkipBlock: 1
@@ -1482,18 +1902,24 @@ Property Definition Stream
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0021
+		NameAnsi
+			Length = 0x0021
 			Characters =
 				LMStreamingMediaCustomPaneFeature
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000004 = iTypeBool
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000043
-			FieldName: Length = 0x0021
+			FieldName
+				Length = 0x0021
 				Characters =
 					LMStreamingMediaCustomPaneFeature
 		SkipBlock: 1
@@ -1503,18 +1929,24 @@ Property Definition Stream
 		VT = 0x0005 = VT_R8
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0023
+		NameAnsi
+			Length = 0x0023
 			Characters =
 				LMStreamingMediaPresenterPaneHeight
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000001 = iTypeNumber
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000047
-			FieldName: Length = 0x0023
+			FieldName
+				Length = 0x0023
 				Characters =
 					LMStreamingMediaPresenterPaneHeight
 		SkipBlock: 1
@@ -1524,18 +1956,24 @@ Property Definition Stream
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x001C
+		NameAnsi
+			Length = 0x001C
 			Characters =
 				LMStreamingMediaPresenterURL
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000039
-			FieldName: Length = 0x001C
+			FieldName
+				Length = 0x001C
 				Characters =
 					LMStreamingMediaPresenterURL
 		SkipBlock: 1
@@ -1545,18 +1983,24 @@ Property Definition Stream
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x000E
+		NameAnsi
+			Length = 0x000E
 			Characters =
 				LMTollAreaCode
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x0000001D
-			FieldName: Length = 0x000E
+			FieldName
+				Length = 0x000E
 				Characters =
 					LMTollAreaCode
 		SkipBlock: 1
@@ -1566,18 +2010,24 @@ Property Definition Stream
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0012
+		NameAnsi
+			Length = 0x0012
 			Characters =
 				LMTollFreeAreaCode
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000025
-			FieldName: Length = 0x0012
+			FieldName
+				Length = 0x0012
 				Characters =
 					LMTollFreeAreaCode
 		SkipBlock: 1
@@ -1587,18 +2037,24 @@ Property Definition Stream
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0015
+		NameAnsi
+			Length = 0x0015
 			Characters =
 				LMTollFreeLocalNumber
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x0000002B
-			FieldName: Length = 0x0015
+			FieldName
+				Length = 0x0015
 				Characters =
 					LMTollFreeLocalNumber
 		SkipBlock: 1
@@ -1608,18 +2064,24 @@ Property Definition Stream
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0010
+		NameAnsi
+			Length = 0x0010
 			Characters =
 				LMTollFreeRegion
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000021
-			FieldName: Length = 0x0010
+			FieldName
+				Length = 0x0010
 				Characters =
 					LMTollFreeRegion
 		SkipBlock: 1
@@ -1629,18 +2091,24 @@ Property Definition Stream
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0011
+		NameAnsi
+			Length = 0x0011
 			Characters =
 				LMTollLocalNumber
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000023
-			FieldName: Length = 0x0011
+			FieldName
+				Length = 0x0011
 				Characters =
 					LMTollLocalNumber
 		SkipBlock: 1
@@ -1650,18 +2118,24 @@ Property Definition Stream
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x000C
+		NameAnsi
+			Length = 0x000C
 			Characters =
 				LMTollRegion
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000019
-			FieldName: Length = 0x000C
+			FieldName
+				Length = 0x000C
 				Characters =
 					LMTollRegion
 		SkipBlock: 1
@@ -1671,18 +2145,24 @@ Property Definition Stream
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x000B
+		NameAnsi
+			Length = 0x000B
 			Characters =
 				LMXPIsChild
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000004 = iTypeBool
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000017
-			FieldName: Length = 0x000B
+			FieldName
+				Length = 0x000B
 				Characters =
 					LMXPIsChild
 		SkipBlock: 1
@@ -1692,18 +2172,24 @@ Property Definition Stream
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0013
+		NameAnsi
+			Length = 0x0013
 			Characters =
 				LMXPSendAccountName
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000027
-			FieldName: Length = 0x0013
+			FieldName
+				Length = 0x0013
 				Characters =
 					LMXPSendAccountName
 		SkipBlock: 1
@@ -1713,18 +2199,24 @@ Property Definition Stream
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0014
+		NameAnsi
+			Length = 0x0014
 			Characters =
 				LMXPSendAccountStamp
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000029
-			FieldName: Length = 0x0014
+			FieldName
+				Length = 0x0014
 				Characters =
 					LMXPSendAccountStamp
 		SkipBlock: 1
@@ -1736,18 +2228,24 @@ Property Definition Stream
 			 = PR_DISPLAY_TO
 			: (PR_DISPLAY_TO_A, PR_DISPLAY_TO_W, PidTagDisplayTo, ptagDisplayTo)
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0012
+		NameAnsi
+			Length = 0x0012
 			Characters =
 				Required Attendees
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0xFFFFFFFF = iTypeUnknown | iTypeString
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000025
-			FieldName: Length = 0x0012
+			FieldName
+				Length = 0x0012
 				Characters =
 					Required Attendees
 		SkipBlock: 1
@@ -1759,18 +2257,24 @@ Property Definition Stream
 			 = PR_DISPLAY_TO
 			: (PR_DISPLAY_TO_A, PR_DISPLAY_TO_W, PidTagDisplayTo, ptagDisplayTo)
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0002
+		NameAnsi
+			Length = 0x0002
 			Characters =
 				To
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0xFFFFFFFF = iTypeUnknown | iTypeString
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000005
-			FieldName: Length = 0x0002
+			FieldName
+				Length = 0x0002
 				Characters =
 					To
 		SkipBlock: 1

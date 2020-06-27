@@ -7,20 +7,26 @@ Property Definition Stream
 		DispID = 0x00000000
 		NmidNameLength = 0x000B
 		NmidName = combonumber
-		NameAnsi: Length = 0x000B
+		NameAnsi
+			Length = 0x000B
 			Characters =
 				combonumber
-		FormulaANSI: Length = 0x0015
+		FormulaANSI
+			Length = 0x0015
 			Characters =
 				[Numero] /[percento] 
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000001 = iTypeNumber
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000017
-			FieldName: Length = 0x000B
+			FieldName
+				Length = 0x000B
 				Characters =
 					combonumber
 		SkipBlock: 1
@@ -31,22 +37,28 @@ Property Definition Stream
 		DispID = 0x00000000
 		NmidNameLength = 0x0005
 		NmidName = flark
-		NameAnsi: Length = 0x0005
+		NameAnsi
+			Length = 0x0005
 			Characters =
 				flark
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0002
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0002
 			Characters =
 				>2
-		ValidationTextANSI: Length = 0x0009
+		ValidationTextANSI
+			Length = 0x0009
 			Characters =
 				Not "big"
-		ErrorANSI: Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000001 = iTypeNumber
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x0000000B
-			FieldName: Length = 0x0005
+			FieldName
+				Length = 0x0005
 				Characters =
 					flark
 		SkipBlock: 1
@@ -57,18 +69,24 @@ Property Definition Stream
 		DispID = 0x00000000
 		NmidNameLength = 0x0004
 		NmidName = fook
-		NameAnsi: Length = 0x0004
+		NameAnsi
+			Length = 0x0004
 			Characters =
 				fook
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000009
-			FieldName: Length = 0x0004
+			FieldName
+				Length = 0x0004
 				Characters =
 					fook
 		SkipBlock: 1
@@ -79,20 +97,26 @@ Property Definition Stream
 		DispID = 0x00008534
 			 = PidLidMileage, dispidMileage
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0007
+		NameAnsi
+			Length = 0x0007
 			Characters =
 				Mileage
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x000C
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x000C
 			Characters =
 				"milsdgdssr"
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x0000000F
-			FieldName: Length = 0x0007
+			FieldName
+				Length = 0x0007
 				Characters =
 					Mileage
 		SkipBlock: 1
@@ -103,20 +127,26 @@ Property Definition Stream
 		DispID = 0x00000000
 		NmidNameLength = 0x0006
 		NmidName = Numero
-		NameAnsi: Length = 0x0006
+		NameAnsi
+			Length = 0x0006
 			Characters =
 				Numero
-		FormulaANSI: Length = 0x0002
+		FormulaANSI
+			Length = 0x0002
 			Characters =
 				32
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000001 = iTypeNumber
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x0000000D
-			FieldName: Length = 0x0006
+			FieldName
+				Length = 0x0006
 				Characters =
 					Numero
 		SkipBlock: 1
@@ -127,18 +157,24 @@ Property Definition Stream
 		DispID = 0x00000000
 		NmidNameLength = 0x0008
 		NmidName = percento
-		NameAnsi: Length = 0x0008
+		NameAnsi
+			Length = 0x0008
 			Characters =
 				percento
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000001 = iTypeNumber
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000011
-			FieldName: Length = 0x0008
+			FieldName
+				Length = 0x0008
 				Characters =
 					percento
 		SkipBlock: 1
@@ -150,20 +186,26 @@ Property Definition Stream
 			 = PR_SUBJECT
 			: (PR_SUBJECT_A, PR_SUBJECT_W, PidTagSubject, ptagSubject)
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0007
+		NameAnsi
+			Length = 0x0007
 			Characters =
 				Subject
-		FormulaANSI: Length = 0x000D
+		FormulaANSI
+			Length = 0x000D
 			Characters =
 				"SGzdxhfgkuy"
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x0000000F
-			FieldName: Length = 0x0007
+			FieldName
+				Length = 0x0007
 				Characters =
 					Subject
 		SkipBlock: 1
@@ -175,24 +217,30 @@ Property Definition Stream
 			 = PR_DISPLAY_TO
 			: (PR_DISPLAY_TO_A, PR_DISPLAY_TO_W, PidTagDisplayTo, ptagDisplayTo)
 		NmidNameLength = 0x0000
-		NameAnsi: Length = 0x0002
+		NameAnsi
+			Length = 0x0002
 			Characters =
 				To
-		FormulaANSI: Length = 0x0008
+		FormulaANSI
+			Length = 0x0008
 			Characters =
 				"sdgsdg"
-		ValidationRuleANSI: Length = 0x0007
+		ValidationRuleANSI
+			Length = 0x0007
 			Characters =
 				"dsafg"
-		ValidationTextANSI: Length = 0x0006
+		ValidationTextANSI
+			Length = 0x0006
 			Characters =
 				"sadg"
-		ErrorANSI: Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0xFFFFFFFF = iTypeUnknown | iTypeString
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x00000005
-			FieldName: Length = 0x0002
+			FieldName
+				Length = 0x0002
 				Characters =
 					To
 		SkipBlock: 1

@@ -7,18 +7,24 @@ Property Definition Stream
 		DispID = 0x00000000
 		NmidNameLength = 0x000F
 		NmidName = crmTestProperty
-		NameAnsi: Length = 0x000F
+		NameAnsi
+			Length = 0x000F
 			Characters =
 				crmTestProperty
-		FormulaANSI: Length = 0x0000
-		ValidationRuleANSI: Length = 0x0000
-		ValidationTextANSI: Length = 0x0000
-		ErrorANSI: Length = 0x0000
+		FormulaANSI
+			Length = 0x0000
+		ValidationRuleANSI
+			Length = 0x0000
+		ValidationTextANSI
+			Length = 0x0000
+		ErrorANSI
+			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
 		SkipBlock: 0
 			Size = 0x0000001F
-			FieldName: Length = 0x000F
+			FieldName
+				Length = 0x000F
 				Characters =
 					crmTestProperty
 		SkipBlock: 1
