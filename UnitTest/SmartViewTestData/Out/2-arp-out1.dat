@@ -40,7 +40,8 @@ Appointment Recurrence Pattern
 			SubType: 0x00000000
 	ReservedBlock1Size: 0x00000000
 	ExtendedException[0]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000180 = BIT_CH_BODY | BIT_CH_CUSTOM
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000180 = BIT_CH_BODY | BIT_CH_CUSTOM
 		ReservedBlockEE1Size: 0x00000000
 	ReservedBlock2Size: 0x00000000

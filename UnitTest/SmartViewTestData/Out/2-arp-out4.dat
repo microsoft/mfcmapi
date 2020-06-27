@@ -1542,327 +1542,408 @@ Appointment Recurrence Pattern
 			OverrideFlags: 0x0000 = 0x0
 	ReservedBlock1Size: 0x00000000
 	ExtendedException[0]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[1]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[2]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[3]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[4]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[5]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[6]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[7]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[8]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[9]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[10]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[11]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[12]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[13]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[14]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[15]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[16]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[17]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[18]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[19]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[20]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[21]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[22]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[23]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[24]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[25]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[26]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[27]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[28]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[29]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[30]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[31]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[32]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[33]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[34]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[35]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[36]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[37]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[38]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[39]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[40]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[41]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[42]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[43]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[44]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[45]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[46]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[47]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[48]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[49]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[50]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[51]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[52]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[53]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[54]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[55]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[56]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[57]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[58]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[59]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[60]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[61]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[62]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[63]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[64]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[65]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[66]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[67]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[68]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[69]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[70]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[71]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[72]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[73]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[74]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[75]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[76]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[77]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[78]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[79]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[80]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ReservedBlock2Size: 0x00000000

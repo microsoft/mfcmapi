@@ -97,8 +97,9 @@ Appointment Recurrence Pattern
 			MeetingType: 0x00000001 = asfMeeting
 	ReservedBlock1Size: 0x00000000
 	ExtendedException[0]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 		StartDateTime: 0x0CD45AC4 = 03:00:00.000 PM 4/1/2010
 		EndDateTime: 0x0CD45B00 = 04:00:00.000 PM 4/1/2010
@@ -109,8 +110,9 @@ Appointment Recurrence Pattern
 		WideCharLocation: "Yadkin"
 		ReservedBlockEE2Size: 0x00000000
 	ExtendedException[1]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 		StartDateTime: 0x0CD4A984 = 03:00:00.000 PM 4/15/2010
 		EndDateTime: 0x0CD4A9C0 = 04:00:00.000 PM 4/15/2010
@@ -121,8 +123,9 @@ Appointment Recurrence Pattern
 		WideCharLocation: "Conf Room CLT 1/2381 (24) AV Cape Fear"
 		ReservedBlockEE2Size: 0x00000000
 	ExtendedException[2]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 		StartDateTime: 0x0CD59024 = 03:00:00.000 PM 5/26/2010
 		EndDateTime: 0x0CD59060 = 04:00:00.000 PM 5/26/2010
@@ -130,11 +133,13 @@ Appointment Recurrence Pattern
 		WideCharLocationLength: 0x00000000 = 0
 		ReservedBlockEE2Size: 0x00000000
 	ExtendedException[3]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000080 = BIT_CH_BODY
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000080 = BIT_CH_BODY
 		ReservedBlockEE1Size: 0x00000000
 	ExtendedException[4]
-		ChangeHighlight.ChangeHighlightSize: 0x00000004
-		ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000000 = 0x0
 		ReservedBlockEE1Size: 0x00000000
 	ReservedBlock2Size: 0x00000000

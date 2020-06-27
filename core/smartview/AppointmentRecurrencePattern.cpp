@@ -7,7 +7,7 @@
 
 namespace smartview
 {
-	ExceptionInfo::ExceptionInfo(const std::shared_ptr<binaryParser>& parser)
+	void ExceptionInfo::parse()
 	{
 		StartDateTime = blockT<DWORD>::parse(parser);
 		EndDateTime = blockT<DWORD>::parse(parser);
@@ -69,17 +69,116 @@ namespace smartview
 		}
 	}
 
+	void ExceptionInfo::parseBlocks()
+	{
+		setText(L"ExceptionInfo");
+		addChild(
+			StartDateTime,
+			L"StartDateTime: 0x%1!08X! = %2!ws!",
+			StartDateTime->getData(),
+			RTimeToString(*StartDateTime).c_str());
+		addChild(
+			EndDateTime,
+			L"EndDateTime: 0x%1!08X! = %2!ws!",
+			EndDateTime->getData(),
+			RTimeToString(*EndDateTime).c_str());
+		addChild(
+			OriginalStartDate,
+			L"OriginalStartDate: 0x%1!08X! = %2!ws!",
+			OriginalStartDate->getData(),
+			RTimeToString(*OriginalStartDate).c_str());
+		auto szOverrideFlags = flags::InterpretFlags(flagOverrideFlags, *OverrideFlags);
+		addChild(
+			OverrideFlags, L"OverrideFlags: 0x%1!04X! = %2!ws!", OverrideFlags->getData(), szOverrideFlags.c_str());
+
+		if (*OverrideFlags & ARO_SUBJECT)
+		{
+			addChild(SubjectLength, L"SubjectLength: 0x%1!04X! = %1!d!", SubjectLength->getData());
+			addChild(SubjectLength2, L"SubjectLength2: 0x%1!04X! = %1!d!", SubjectLength2->getData());
+
+			addChild(Subject, L"Subject: \"%1!hs!\"", Subject->c_str());
+		}
+
+		if (*OverrideFlags & ARO_MEETINGTYPE)
+		{
+			auto szFlags = InterpretNumberAsStringNamedProp(
+				*MeetingType, dispidApptStateFlags, const_cast<LPGUID>(&guid::PSETID_Appointment));
+			addChild(MeetingType, L"MeetingType: 0x%1!08X! = %2!ws!", MeetingType->getData(), szFlags.c_str());
+		}
+
+		if (*OverrideFlags & ARO_REMINDERDELTA)
+		{
+			addChild(ReminderDelta, L"ReminderDelta: 0x%1!08X!", ReminderDelta->getData());
+		}
+
+		if (*OverrideFlags & ARO_REMINDER)
+		{
+			addChild(ReminderSet, L"ReminderSet: 0x%1!08X!", ReminderSet->getData());
+		}
+
+		if (*OverrideFlags & ARO_LOCATION)
+		{
+			addChild(LocationLength, L"LocationLength: 0x%1!04X! = %1!d!", LocationLength->getData());
+			addChild(LocationLength2, L"LocationLength2: 0x%1!04X! = %1!d!", LocationLength2->getData());
+			addChild(Location, L"Location: \"%1!hs!\"", Location->c_str());
+		}
+
+		if (*OverrideFlags & ARO_BUSYSTATUS)
+		{
+			auto szFlags = InterpretNumberAsStringNamedProp(
+				*BusyStatus, dispidBusyStatus, const_cast<LPGUID>(&guid::PSETID_Appointment));
+			addChild(BusyStatus, L"BusyStatus: 0x%1!08X! = %2!ws!", BusyStatus->getData(), szFlags.c_str());
+		}
+
+		if (*OverrideFlags & ARO_ATTACHMENT)
+		{
+			addChild(Attachment, L"Attachment: 0x%1!08X!", Attachment->getData());
+		}
+
+		if (*OverrideFlags & ARO_SUBTYPE)
+		{
+			addChild(SubType, L"SubType: 0x%1!08X!", SubType->getData());
+		}
+
+		if (*OverrideFlags & ARO_APPTCOLOR)
+		{
+			addChild(AppointmentColor, L"AppointmentColor: 0x%1!08X!", AppointmentColor->getData());
+		}
+	}
+
+	void ChangeHighlight::parse()
+	{
+		ChangeHighlightSize = blockT<DWORD>::parse(parser);
+		ChangeHighlightValue = blockT<DWORD>::parse(parser);
+		if (*ChangeHighlightSize > sizeof(DWORD))
+		{
+			Reserved = blockBytes::parse(parser, *ChangeHighlightSize - sizeof(DWORD), _MaxBytes);
+		}
+	}
+	void ChangeHighlight::parseBlocks()
+	{
+		setText(L"ChangeHighlight");
+		auto szFlags = InterpretNumberAsStringNamedProp(
+			*ChangeHighlightValue, dispidChangeHighlight, const_cast<LPGUID>(&guid::PSETID_Appointment));
+		addChild(
+			ChangeHighlightSize, L"ChangeHighlightSize: 0x%1!08X!", ChangeHighlightSize->getData());
+		addChild(
+			ChangeHighlightValue,
+			L"ChangeHighlightValue: 0x%1!08X! = %2!ws!",
+			ChangeHighlightValue->getData(),
+			szFlags.c_str());
+
+		if (*ChangeHighlightSize > sizeof(DWORD))
+		{
+			addLabeledChild(L"Reserved:", Reserved);
+		}
+	}
+
 	ExtendedException::ExtendedException(const std::shared_ptr<binaryParser>& parser, DWORD writerVersion2, WORD flags)
 	{
 		if (writerVersion2 >= 0x0003009)
 		{
-			ChangeHighlight.ChangeHighlightSize = blockT<DWORD>::parse(parser);
-			ChangeHighlight.ChangeHighlightValue = blockT<DWORD>::parse(parser);
-			if (*ChangeHighlight.ChangeHighlightSize > sizeof(DWORD))
-			{
-				ChangeHighlight.Reserved =
-					blockBytes::parse(parser, *ChangeHighlight.ChangeHighlightSize - sizeof(DWORD), _MaxBytes);
-			}
+			ChangeHighlight = block::parse<smartview::ChangeHighlight>(parser, 0, false);
 		}
 
 		ReservedBlockEE1Size = blockT<DWORD>::parse(parser);
@@ -133,7 +232,7 @@ namespace smartview
 			m_ExceptionInfo.reserve(*m_ExceptionCount);
 			for (WORD i = 0; i < *m_ExceptionCount; i++)
 			{
-				m_ExceptionInfo.emplace_back(std::make_shared<ExceptionInfo>(parser));
+				m_ExceptionInfo.emplace_back(block::parse<ExceptionInfo>(parser, 0, false));
 			}
 		}
 
@@ -174,106 +273,14 @@ namespace smartview
 			m_EndTimeOffset->getData(),
 			RTimeToString(*m_EndTimeOffset).c_str());
 
-		arpBlock->addChild(m_ExceptionCount);
-		m_ExceptionCount->setText(L"ExceptionCount: 0x%1!04X!", m_ExceptionCount->getData());
+		arpBlock->addChild(m_ExceptionCount, L"ExceptionCount: 0x%1!04X!", m_ExceptionCount->getData());
 
 		if (!m_ExceptionInfo.empty())
 		{
 			auto i = 0;
 			for (const auto& info : m_ExceptionInfo)
 			{
-				auto exception = create(L"ExceptionInfo[%1!d!]", i);
-				m_ExceptionCount->addChild(exception);
-
-				exception->addChild(
-					info->StartDateTime,
-					L"StartDateTime: 0x%1!08X! = %2!ws!",
-					info->StartDateTime->getData(),
-					RTimeToString(*info->StartDateTime).c_str());
-				exception->addChild(
-					info->EndDateTime,
-					L"EndDateTime: 0x%1!08X! = %2!ws!",
-					info->EndDateTime->getData(),
-					RTimeToString(*info->EndDateTime).c_str());
-				exception->addChild(
-					info->OriginalStartDate,
-					L"OriginalStartDate: 0x%1!08X! = %2!ws!",
-					info->OriginalStartDate->getData(),
-					RTimeToString(*info->OriginalStartDate).c_str());
-				auto szOverrideFlags = flags::InterpretFlags(flagOverrideFlags, *info->OverrideFlags);
-				exception->addChild(
-					info->OverrideFlags,
-					L"OverrideFlags: 0x%1!04X! = %2!ws!",
-					info->OverrideFlags->getData(),
-					szOverrideFlags.c_str());
-
-				if (*info->OverrideFlags & ARO_SUBJECT)
-				{
-					exception->addChild(
-						info->SubjectLength, L"SubjectLength: 0x%1!04X! = %1!d!", info->SubjectLength->getData());
-					exception->addChild(
-						info->SubjectLength2, L"SubjectLength2: 0x%1!04X! = %1!d!", info->SubjectLength2->getData());
-
-					exception->addChild(info->Subject, L"Subject: \"%1!hs!\"", info->Subject->c_str());
-				}
-
-				if (*info->OverrideFlags & ARO_MEETINGTYPE)
-				{
-					auto szFlags = InterpretNumberAsStringNamedProp(
-						*info->MeetingType, dispidApptStateFlags, const_cast<LPGUID>(&guid::PSETID_Appointment));
-					exception->addChild(
-						info->MeetingType,
-						L"MeetingType: 0x%1!08X! = %2!ws!",
-						info->MeetingType->getData(),
-						szFlags.c_str());
-				}
-
-				if (*info->OverrideFlags & ARO_REMINDERDELTA)
-				{
-					exception->addChild(
-						info->ReminderDelta, L"ReminderDelta: 0x%1!08X!", info->ReminderDelta->getData());
-				}
-
-				if (*info->OverrideFlags & ARO_REMINDER)
-				{
-					exception->addChild(info->ReminderSet, L"ReminderSet: 0x%1!08X!", info->ReminderSet->getData());
-				}
-
-				if (*info->OverrideFlags & ARO_LOCATION)
-				{
-					exception->addChild(
-						info->LocationLength, L"LocationLength: 0x%1!04X! = %1!d!", info->LocationLength->getData());
-					exception->addChild(
-						info->LocationLength2, L"LocationLength2: 0x%1!04X! = %1!d!", info->LocationLength2->getData());
-					exception->addChild(info->Location, L"Location: \"%1!hs!\"", info->Location->c_str());
-				}
-
-				if (*info->OverrideFlags & ARO_BUSYSTATUS)
-				{
-					auto szFlags = InterpretNumberAsStringNamedProp(
-						*info->BusyStatus, dispidBusyStatus, const_cast<LPGUID>(&guid::PSETID_Appointment));
-					exception->addChild(
-						info->BusyStatus,
-						L"BusyStatus: 0x%1!08X! = %2!ws!",
-						info->BusyStatus->getData(),
-						szFlags.c_str());
-				}
-
-				if (*info->OverrideFlags & ARO_ATTACHMENT)
-				{
-					exception->addChild(info->Attachment, L"Attachment: 0x%1!08X!", info->Attachment->getData());
-				}
-
-				if (*info->OverrideFlags & ARO_SUBTYPE)
-				{
-					exception->addChild(info->SubType, L"SubType: 0x%1!08X!", info->SubType->getData());
-				}
-
-				if (*info->OverrideFlags & ARO_APPTCOLOR)
-				{
-					exception->addChild(
-						info->AppointmentColor, L"AppointmentColor: 0x%1!08X!", info->AppointmentColor->getData());
-				}
+				m_ExceptionCount->addChild(info, L"ExceptionInfo[%1!d!]", i);
 
 				i++;
 			}
@@ -296,24 +303,7 @@ namespace smartview
 
 				if (*m_WriterVersion2 >= 0x00003009)
 				{
-					auto szFlags = InterpretNumberAsStringNamedProp(
-						*ee->ChangeHighlight.ChangeHighlightValue,
-						dispidChangeHighlight,
-						const_cast<LPGUID>(&guid::PSETID_Appointment));
-					exception->addChild(
-						ee->ChangeHighlight.ChangeHighlightSize,
-						L"ChangeHighlight.ChangeHighlightSize: 0x%1!08X!",
-						ee->ChangeHighlight.ChangeHighlightSize->getData());
-					exception->addChild(
-						ee->ChangeHighlight.ChangeHighlightValue,
-						L"ChangeHighlight.ChangeHighlightValue: 0x%1!08X! = %2!ws!",
-						ee->ChangeHighlight.ChangeHighlightValue->getData(),
-						szFlags.c_str());
-
-					if (*ee->ChangeHighlight.ChangeHighlightSize > sizeof(DWORD))
-					{
-						exception->addLabeledChild(L"ChangeHighlight.Reserved:" ,ee->ChangeHighlight.Reserved);
-					}
+					exception->addChild(ee->ChangeHighlight);
 				}
 
 				exception->addChild(

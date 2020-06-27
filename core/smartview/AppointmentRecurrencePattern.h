@@ -11,12 +11,18 @@ namespace smartview
 	// ExceptionInfo
 	// =====================
 	//   This structure specifies an exception
-	struct ExceptionInfo
+	class ExceptionInfo : public block
 	{
+	public:
+		std::shared_ptr<blockT<WORD>> OverrideFlags = emptyT<WORD>();
+
+	private:
+		void parse() override;
+		void parseBlocks() override;
+
 		std::shared_ptr<blockT<DWORD>> StartDateTime = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> EndDateTime = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> OriginalStartDate = emptyT<DWORD>();
-		std::shared_ptr<blockT<WORD>> OverrideFlags = emptyT<WORD>();
 		std::shared_ptr<blockT<WORD>> SubjectLength = emptyT<WORD>();
 		std::shared_ptr<blockT<WORD>> SubjectLength2 = emptyT<WORD>();
 		std::shared_ptr<blockStringA> Subject = emptySA();
@@ -30,12 +36,14 @@ namespace smartview
 		std::shared_ptr<blockT<DWORD>> Attachment = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> SubType = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> AppointmentColor = emptyT<DWORD>();
-
-		ExceptionInfo(const std::shared_ptr<binaryParser>& parser);
 	};
 
-	struct ChangeHighlight
+	class ChangeHighlight : public block
 	{
+	private:
+		void parse() override;
+		void parseBlocks() override;
+
 		std::shared_ptr<blockT<DWORD>> ChangeHighlightSize = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> ChangeHighlightValue = emptyT<DWORD>();
 		std::shared_ptr<blockBytes> Reserved = emptyBB();
@@ -46,7 +54,7 @@ namespace smartview
 	//   This structure specifies additional information about an exception
 	struct ExtendedException
 	{
-		ChangeHighlight ChangeHighlight;
+		std::shared_ptr<ChangeHighlight> ChangeHighlight;
 		std::shared_ptr<blockT<DWORD>> ReservedBlockEE1Size = emptyT<DWORD>();
 		std::shared_ptr<blockBytes> ReservedBlockEE1 = emptyBB();
 		std::shared_ptr<blockT<DWORD>> StartDateTime = emptyT<DWORD>();
