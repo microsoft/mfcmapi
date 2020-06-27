@@ -162,7 +162,7 @@ namespace smartview
 		std::vector<std::wstring> toStringsInternal() const;
 		// Consume binaryParser and populate members(which may also inherit from block)
 		virtual void parse() = 0;
-		// (optional) Stitches block submembers into a tree vis children member
+		// (optional) Stitches block submembers into a tree via children member
 		virtual void parseBlocks(){};
 		virtual bool usePipes() const { return false; }
 
