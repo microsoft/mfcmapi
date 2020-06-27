@@ -250,15 +250,15 @@ namespace smartview
 		Bitmask = blockT<DWORD>::parse(parser);
 		if (*Bitmask & MAPI_UNICODE)
 		{
-			Unicode.DisplayName = blockStringW::parse(parser);
-			Unicode.AddressType = blockStringW::parse(parser);
-			Unicode.EmailAddress = blockStringW::parse(parser);
+			DisplayNameW = blockStringW::parse(parser);
+			AddressTypeW = blockStringW::parse(parser);
+			EmailAddressW = blockStringW::parse(parser);
 		}
 		else
 		{
-			ANSI.DisplayName = blockStringA::parse(parser);
-			ANSI.AddressType = blockStringA::parse(parser);
-			ANSI.EmailAddress = blockStringA::parse(parser);
+			DisplayNameA = blockStringA::parse(parser);
+			AddressTypeA = blockStringA::parse(parser);
+			EmailAddressA = blockStringA::parse(parser);
 		}
 	}
 
@@ -269,16 +269,16 @@ namespace smartview
 		if (*Bitmask & MAPI_UNICODE)
 		{
 			addChild(Bitmask, L"dwBitmask: 0x%1!08X! = %2!ws!", Bitmask->getData(), szFlags.c_str());
-			addChild(Unicode.DisplayName, L"szDisplayName = %1!ws!", Unicode.DisplayName->c_str());
-			addChild(Unicode.AddressType, L"szAddressType = %1!ws!", Unicode.AddressType->c_str());
-			addChild(Unicode.EmailAddress, L"szEmailAddress = %1!ws!", Unicode.EmailAddress->c_str());
+			addChild(DisplayNameW, L"szDisplayName = %1!ws!", DisplayNameW->c_str());
+			addChild(AddressTypeW, L"szAddressType = %1!ws!", AddressTypeW->c_str());
+			addChild(EmailAddressW, L"szEmailAddress = %1!ws!", EmailAddressW->c_str());
 		}
 		else
 		{
 			addChild(Bitmask, L"dwBitmask: 0x%1!08X! = %2!ws!", Bitmask->getData(), szFlags.c_str());
-			addChild(ANSI.DisplayName, L"szDisplayName = %1!hs!", ANSI.DisplayName->c_str());
-			addChild(ANSI.AddressType, L"szAddressType = %1!hs!", ANSI.AddressType->c_str());
-			addChild(ANSI.EmailAddress, L"szEmailAddress = %1!hs!", ANSI.EmailAddress->c_str());
+			addChild(DisplayNameA, L"szDisplayName = %1!hs!", DisplayNameA->c_str());
+			addChild(AddressTypeA, L"szAddressType = %1!hs!", AddressTypeA->c_str());
+			addChild(EmailAddressA, L"szEmailAddress = %1!hs!", EmailAddressA->c_str());
 		}
 	}
 

@@ -81,10 +81,10 @@ namespace smartview
 		void parse() override;
 		void parseBlocks() override;
 
+		bool bIsExchange{};
 		std::shared_ptr<blockT<BYTE>> Version = emptyT<BYTE>();
 		std::shared_ptr<blockT<BYTE>> Flag = emptyT<BYTE>();
 		std::shared_ptr<blockStringA> DLLFileName = emptySA();
-		bool bIsExchange{};
 		std::shared_ptr<blockT<ULONG>> WrappedFlags = emptyT<ULONG>();
 		std::shared_ptr<blockT<GUID>> WrappedProviderUID = emptyT<GUID>();
 		std::shared_ptr<blockT<ULONG>> WrappedType = emptyT<ULONG>();
@@ -112,18 +112,12 @@ namespace smartview
 		void parseBlocks() override;
 
 		std::shared_ptr<blockT<DWORD>> Bitmask = emptyT<DWORD>();
-		struct Unicode
-		{
-			std::shared_ptr<blockStringW> DisplayName = emptySW();
-			std::shared_ptr<blockStringW> AddressType = emptySW();
-			std::shared_ptr<blockStringW> EmailAddress = emptySW();
-		} Unicode;
-		struct ANSI
-		{
-			std::shared_ptr<blockStringA> DisplayName = emptySA();
-			std::shared_ptr<blockStringA> AddressType = emptySA();
-			std::shared_ptr<blockStringA> EmailAddress = emptySA();
-		} ANSI;
+		std::shared_ptr<blockStringW> DisplayNameW = emptySW();
+		std::shared_ptr<blockStringW> AddressTypeW = emptySW();
+		std::shared_ptr<blockStringW> EmailAddressW = emptySW();
+		std::shared_ptr<blockStringA> DisplayNameA = emptySA();
+		std::shared_ptr<blockStringA> AddressTypeA = emptySA();
+		std::shared_ptr<blockStringA> EmailAddressA = emptySA();
 	};
 
 	class AddressBookObject : public block
@@ -184,11 +178,11 @@ namespace smartview
 			WAB,
 		};
 
+		EIDStructType m_ObjectType = EIDStructType::unknown; // My own addition to simplify parsing
 		std::shared_ptr<blockT<byte>> m_abFlags0 = emptyT<byte>();
 		std::shared_ptr<blockT<byte>> m_abFlags1 = emptyT<byte>();
 		std::shared_ptr<blockBytes> m_abFlags23 = emptyBB(); // 2 bytes
 		std::shared_ptr<blockT<GUID>> m_ProviderUID = emptyT<GUID>();
-		EIDStructType m_ObjectType = EIDStructType::unknown; // My own addition to simplify parsing
 		std::shared_ptr<FolderObject> m_FolderObject;
 		std::shared_ptr<MessageObject> m_MessageObject;
 		std::shared_ptr<MessageDatabaseObject> m_MessageDatabaseObject;
