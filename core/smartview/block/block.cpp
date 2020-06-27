@@ -22,6 +22,14 @@ namespace smartview
 		}
 	}
 
+	void block::addSubHeader(const std::wstring& _text) {
+		auto node = create();
+		node->setText(_text);
+		node->setOffset(getOffset());
+		node->setSize(getSize());
+		addChild(node);
+	}
+
 	void block::ensureParsed()
 	{
 		if (parsed || !parser || parser->empty()) return;

@@ -31,12 +31,12 @@ namespace smartview
 		const auto propTagNames = proptags::PropTagToPropName(*ulPropTag, false);
 		if (!propTagNames.bestGuess.empty())
 		{
-			ulPropTag->addHeader(L"Name: %1!ws!", propTagNames.bestGuess.c_str());
+			ulPropTag->addSubHeader(L"Name: %1!ws!", propTagNames.bestGuess.c_str());
 		}
 
 		if (!propTagNames.otherMatches.empty())
 		{
-			ulPropTag->addHeader(L"Other Matches: %1!ws!", propTagNames.otherMatches.c_str());
+			ulPropTag->addSubHeader(L"Other Matches: %1!ws!", propTagNames.otherMatches.c_str());
 		}
 
 		if (value)
