@@ -3,11 +3,23 @@
 
 namespace smartview
 {
-	EntryListEntryStruct::EntryListEntryStruct(const std::shared_ptr<binaryParser>& parser)
+	void EntryListEntryStruct::parse()
 	{
 		EntryLength = blockT<DWORD>::parse(parser);
 		EntryLengthPad = blockT<DWORD>::parse(parser);
 	}
+
+	void EntryListEntryStruct::parseEntryID()
+	{
+		EntryId = block::parse<EntryIdStruct>(parser, *EntryLength, true);
+
+		addChild(EntryLength, L"EntryLength = 0x%1!08X!", EntryLength->getData());
+		addChild(EntryLengthPad, L"EntryLengthPad = 0x%1!08X!", EntryLengthPad->getData());
+		addChild(EntryId);
+	}
+
+	// We delay building our tree until we've finished parsing in parseEntryID
+	void EntryListEntryStruct::parseBlocks() {}
 
 	void EntryList::parse()
 	{
@@ -21,12 +33,12 @@ namespace smartview
 				m_Entry.reserve(*m_EntryCount);
 				for (DWORD i = 0; i < *m_EntryCount; i++)
 				{
-					m_Entry.emplace_back(std::make_shared<EntryListEntryStruct>(parser));
+					m_Entry.emplace_back(block::parse<EntryListEntryStruct>(parser, 0, false));
 				}
 
 				for (DWORD i = 0; i < *m_EntryCount; i++)
 				{
-					m_Entry[i]->EntryId = block::parse<EntryIdStruct>(parser, *m_Entry[i]->EntryLength, true);
+					m_Entry[i]->parseEntryID();
 				}
 			}
 		}
@@ -41,13 +53,7 @@ namespace smartview
 		auto i = 0;
 		for (const auto& entry : m_Entry)
 		{
-			auto entryBlock = create(L"EntryId[%1!d!]", i);
-			addChild(entryBlock);
-			entryBlock->addChild(entry->EntryLength, L"EntryLength = 0x%1!08X!", entry->EntryLength->getData());
-			entryBlock->addChild(
-				entry->EntryLengthPad, L"EntryLengthPad = 0x%1!08X!", entry->EntryLengthPad->getData());
-			entryBlock->addChild(entry->EntryId);
-
+			addChild(entry, L"EntryId[%1!d!]", i);
 			i++;
 		}
 	}
