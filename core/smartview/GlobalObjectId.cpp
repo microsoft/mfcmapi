@@ -41,9 +41,7 @@ namespace smartview
 		setText(L"Global Object ID");
 		if (m_Id->isSet())
 		{
-			auto id = create(L"Byte Array ID =");
-			addChild(id);
-			id->addChild(m_Id);
+			addLabeledChild(L"Byte Array ID =", m_Id);
 
 			if (m_Id->equal(sizeof s_rgbSPlus, s_rgbSPlus))
 			{
