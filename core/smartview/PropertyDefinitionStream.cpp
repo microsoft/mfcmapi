@@ -178,12 +178,12 @@ namespace smartview
 					auto propTagNames = proptags::PropTagToPropName(*def->dwDispid, false);
 					if (!propTagNames.bestGuess.empty())
 					{
-						def->dwDispid->addHeader(L" = %1!ws!", propTagNames.bestGuess.c_str());
+						def->dwDispid->addSubHeader(L" = %1!ws!", propTagNames.bestGuess.c_str());
 					}
 
 					if (!propTagNames.otherMatches.empty())
 					{
-						def->dwDispid->addHeader(L": (%1!ws!)", propTagNames.otherMatches.c_str());
+						def->dwDispid->addSubHeader(L": (%1!ws!)", propTagNames.otherMatches.c_str());
 					}
 				}
 				else
@@ -196,7 +196,7 @@ namespace smartview
 					szDispidName = strings::join(cache::NameIDToPropNames(&mnid), L", ");
 					if (!szDispidName.empty())
 					{
-						def->dwDispid->addHeader(L" = %1!ws!", szDispidName.c_str());
+						def->dwDispid->addSubHeader(L" = %1!ws!", szDispidName.c_str());
 					}
 				}
 			}

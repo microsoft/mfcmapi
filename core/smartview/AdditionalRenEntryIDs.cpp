@@ -131,7 +131,7 @@ namespace smartview
 	void AdditionalRenEntryIDs::parseBlocks()
 	{
 		setText(L"Additional Ren Entry IDs");
-		addHeader(L"PersistDataCount = %1!d!", m_ppdPersistData.size());
+		addSubHeader(L"PersistDataCount = %1!d!", m_ppdPersistData.size());
 
 		if (!m_ppdPersistData.empty())
 		{

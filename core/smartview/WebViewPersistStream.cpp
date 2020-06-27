@@ -51,7 +51,7 @@ namespace smartview
 	void WebViewPersistStream::parseBlocks()
 	{
 		setText(L"Web View Persistence Object Stream");
-		addHeader(L"cWebViews = %1!d!", m_lpWebViews.size());
+		addSubHeader(L"cWebViews = %1!d!", m_lpWebViews.size());
 		auto i = 0;
 		for (const auto& view : m_lpWebViews)
 		{
