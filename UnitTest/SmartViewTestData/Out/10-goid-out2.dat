@@ -1,7 +1,6 @@
 Global Object ID
-	Byte Array ID =
+	Byte Array ID = s_rgbSPlus
 		cb: 16 lpb: 040000008200E00074C5B7101A82E008
-			= s_rgbSPlus
 	Year: 0x07DB = 2011
 	Month: 0x01 = 1 = January
 	Day: 0x12 = 18

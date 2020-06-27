@@ -41,15 +41,13 @@ namespace smartview
 		setText(L"Global Object ID");
 		if (m_Id->isSet())
 		{
-			addLabeledChild(L"Byte Array ID =", m_Id);
-
 			if (m_Id->equal(sizeof s_rgbSPlus, s_rgbSPlus))
 			{
-				m_Id->addHeader(L"= s_rgbSPlus");
+				addLabeledChild(L"Byte Array ID = s_rgbSPlus", m_Id);
 			}
 			else
 			{
-				m_Id->addHeader(L"= Unknown GUID");
+				addLabeledChild(L"Byte Array ID = Unknown GUID", m_Id);
 			}
 		}
 

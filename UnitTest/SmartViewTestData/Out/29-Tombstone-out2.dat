@@ -10,9 +10,8 @@ Tombstone
 		Endtime = 0x0CE59C80 = 12:00:00.000 AM 5/26/2012
 		GlobalObjectIdSize = 0x00000038
 		Global Object ID
-			Byte Array ID =
+			Byte Array ID = s_rgbSPlus
 				cb: 16 lpb: 040000008200E00074C5B7101A82E008
-					= s_rgbSPlus
 			Year: 0x0000 = 0
 			Month: 0x00 = 0 = 0x0
 			Day: 0x00 = 0
@@ -28,9 +27,8 @@ Tombstone
 		Endtime = 0x0CE29D28 = 02:00:00.000 PM 1/10/2012
 		GlobalObjectIdSize = 0x00000038
 		Global Object ID
-			Byte Array ID =
+			Byte Array ID = s_rgbSPlus
 				cb: 16 lpb: 040000008200E00074C5B7101A82E008
-					= s_rgbSPlus
 			Year: 0x0000 = 0
 			Month: 0x00 = 0 = 0x0
 			Day: 0x00 = 0
@@ -46,9 +44,8 @@ Tombstone
 		Endtime = 0x0CE0F25C = 05:00:00.000 PM 10/26/2011
 		GlobalObjectIdSize = 0x00000038
 		Global Object ID
-			Byte Array ID =
+			Byte Array ID = s_rgbSPlus
 				cb: 16 lpb: 040000008200E00074C5B7101A82E008
-					= s_rgbSPlus
 			Year: 0x0000 = 0
 			Month: 0x00 = 0 = 0x0
 			Day: 0x00 = 0
@@ -64,9 +61,8 @@ Tombstone
 		Endtime = 0x0CE0FF40 = 12:00:00.000 AM 10/29/2011
 		GlobalObjectIdSize = 0x00000038
 		Global Object ID
-			Byte Array ID =
+			Byte Array ID = s_rgbSPlus
 				cb: 16 lpb: 040000008200E00074C5B7101A82E008
-					= s_rgbSPlus
 			Year: 0x0000 = 0
 			Month: 0x00 = 0 = 0x0
 			Day: 0x00 = 0
@@ -82,9 +78,8 @@ Tombstone
 		Endtime = 0x0CE0F748 = 02:00:00.000 PM 10/27/2011
 		GlobalObjectIdSize = 0x00000038
 		Global Object ID
-			Byte Array ID =
+			Byte Array ID = s_rgbSPlus
 				cb: 16 lpb: 040000008200E00074C5B7101A82E008
-					= s_rgbSPlus
 			Year: 0x0000 = 0
 			Month: 0x00 = 0 = 0x0
 			Day: 0x00 = 0
@@ -100,9 +95,8 @@ Tombstone
 		Endtime = 0x0CDFEAB0 = 08:00:00.000 PM 9/9/2011
 		GlobalObjectIdSize = 0x00000038
 		Global Object ID
-			Byte Array ID =
+			Byte Array ID = s_rgbSPlus
 				cb: 16 lpb: 040000008200E00074C5B7101A82E008
-					= s_rgbSPlus
 			Year: 0x0000 = 0
 			Month: 0x00 = 0 = 0x0
 			Day: 0x00 = 0
@@ -118,9 +112,8 @@ Tombstone
 		Endtime = 0x0CDFF569 = 05:45:00.000 PM 9/11/2011
 		GlobalObjectIdSize = 0x00000038
 		Global Object ID
-			Byte Array ID =
+			Byte Array ID = s_rgbSPlus
 				cb: 16 lpb: 040000008200E00074C5B7101A82E008
-					= s_rgbSPlus
 			Year: 0x0000 = 0
 			Month: 0x00 = 0 = 0x0
 			Day: 0x00 = 0
@@ -136,9 +129,8 @@ Tombstone
 		Endtime = 0x0CE054DC = 05:00:00.000 PM 9/28/2011
 		GlobalObjectIdSize = 0x00000038
 		Global Object ID
-			Byte Array ID =
+			Byte Array ID = s_rgbSPlus
 				cb: 16 lpb: 040000008200E00074C5B7101A82E008
-					= s_rgbSPlus
 			Year: 0x07DB = 2011
 			Month: 0x09 = 9 = September
 			Day: 0x15 = 21
@@ -154,9 +146,8 @@ Tombstone
 		Endtime = 0x0CE04E88 = 02:00:00.000 PM 9/27/2011
 		GlobalObjectIdSize = 0x00000038
 		Global Object ID
-			Byte Array ID =
+			Byte Array ID = s_rgbSPlus
 				cb: 16 lpb: 040000008200E00074C5B7101A82E008
-					= s_rgbSPlus
 			Year: 0x0000 = 0
 			Month: 0x00 = 0 = 0x0
 			Day: 0x00 = 0

@@ -10,9 +10,8 @@ Tombstone
 		Endtime = 0x00040000 = 01:04:00.000 AM 7/2/1601
 		GlobalObjectIdSize = 0x00820000
 		Global Object ID
-			Byte Array ID =
+			Byte Array ID = Unknown GUID
 				cb: 16 lpb: E00074C5B7101A82E00800000000240E
-					= Unknown GUID
 			Year: 0xAE7C = 44668
 			Month: 0x21 = 33 = 0x21
 			Day: 0x7C = 124
