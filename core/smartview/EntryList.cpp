@@ -46,7 +46,7 @@ namespace smartview
 			entryBlock->addChild(entry->EntryLength, L"EntryLength = 0x%1!08X!", entry->EntryLength->getData());
 			entryBlock->addChild(
 				entry->EntryLengthPad, L"EntryLengthPad = 0x%1!08X!", entry->EntryLengthPad->getData());
-			entryBlock->addLabeledChild(L"Entry Id =", entry->EntryId);
+			entryBlock->addChild(entry->EntryId);
 
 			i++;
 		}

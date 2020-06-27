@@ -7,9 +7,15 @@
 
 namespace smartview
 {
-	struct MDB_STORE_EID_V2
+	class MDB_STORE_EID_V2 : public block
 	{
+	public:
 		static const size_t size = sizeof(ULONG) * 5;
+
+	private:
+		void parse() override;
+		void parseBlocks() override;
+
 		std::shared_ptr<blockT<ULONG>> ulMagic = emptyT<ULONG>(); // MDB_STORE_EID_V2_MAGIC
 		std::shared_ptr<blockT<ULONG>> ulSize =
 			emptyT<ULONG>(); // size of this struct plus the size of szServerDN and wszServerFQDN
@@ -18,28 +24,49 @@ namespace smartview
 			emptyT<ULONG>(); // offset past the beginning of the MDB_STORE_EID_V2 struct where szServerDN starts
 		std::shared_ptr<blockT<ULONG>> ulOffsetFQDN =
 			emptyT<ULONG>(); // offset past the beginning of the MDB_STORE_EID_V2 struct where wszServerFQDN starts
+		std::shared_ptr<blockStringA> v2DN = emptySA();
+		std::shared_ptr<blockStringW> v2FQDN = emptySW();
+		std::shared_ptr<blockBytes> v2Reserved = emptyBB(); // 2 bytes
 	};
 
-	struct MDB_STORE_EID_V3
+	class MDB_STORE_EID_V3 : public block
 	{
+	public:
 		static const size_t size = sizeof(ULONG) * 4;
+
+	private:
+		void parse() override;
+		void parseBlocks() override;
+
 		std::shared_ptr<blockT<ULONG>> ulMagic = emptyT<ULONG>(); // MDB_STORE_EID_V3_MAGIC
 		std::shared_ptr<blockT<ULONG>> ulSize =
 			emptyT<ULONG>(); // size of this struct plus the size of szServerSmtpAddress
 		std::shared_ptr<blockT<ULONG>> ulVersion = emptyT<ULONG>(); // MDB_STORE_EID_V3_VERSION
 		std::shared_ptr<blockT<ULONG>> ulOffsetSmtpAddress =
 			emptyT<ULONG>(); // offset past the beginning of the MDB_STORE_EID_V3 struct where szSmtpAddress starts
+		std::shared_ptr<blockStringW> v3SmtpAddress = emptySW();
+		std::shared_ptr<blockBytes> v2Reserved = emptyBB(); // 2 bytes
 	};
 
-	struct FolderObject
+	class FolderObject : public block
 	{
+	private:
+		void parse() override;
+		void parseBlocks() override;
+
+		std::shared_ptr<blockT<WORD>> Type = emptyT<WORD>();
 		std::shared_ptr<blockT<GUID>> DatabaseGUID = emptyT<GUID>();
 		std::shared_ptr<blockBytes> GlobalCounter = emptyBB(); // 6 bytes
 		std::shared_ptr<blockBytes> Pad = emptyBB(); // 2 bytes
 	};
 
-	struct MessageObject
+	class MessageObject : public block
 	{
+	private:
+		void parse() override;
+		void parseBlocks() override;
+
+		std::shared_ptr<blockT<WORD>> Type = emptyT<WORD>();
 		std::shared_ptr<blockT<GUID>> FolderDatabaseGUID = emptyT<GUID>();
 		std::shared_ptr<blockBytes> FolderGlobalCounter = emptyBB(); // 6 bytes
 		std::shared_ptr<blockBytes> Pad1 = emptyBB(); // 2 bytes
@@ -48,15 +75,12 @@ namespace smartview
 		std::shared_ptr<blockBytes> Pad2 = emptyBB(); // 2 bytes
 	};
 
-	struct FolderOrMessage
+	class MessageDatabaseObject : public block
 	{
-		std::shared_ptr<blockT<WORD>> Type = emptyT<WORD>();
-		FolderObject FolderObject;
-		MessageObject MessageObject;
-	};
+	private:
+		void parse() override;
+		void parseBlocks() override;
 
-	struct MessageDatabaseObject
-	{
 		std::shared_ptr<blockT<BYTE>> Version = emptyT<BYTE>();
 		std::shared_ptr<blockT<BYTE>> Flag = emptyT<BYTE>();
 		std::shared_ptr<blockStringA> DLLFileName = emptySA();
@@ -67,22 +91,26 @@ namespace smartview
 		std::shared_ptr<blockStringA> ServerShortname = emptySA();
 		std::shared_ptr<blockStringA> MailboxDN = emptySA();
 		std::shared_ptr<blockT<ULONG>> MagicVersion = emptyT<ULONG>();
-		MDB_STORE_EID_V2 v2;
-		MDB_STORE_EID_V3 v3;
-		std::shared_ptr<blockStringA> v2DN = emptySA();
-		std::shared_ptr<blockStringW> v2FQDN = emptySW();
-		std::shared_ptr<blockStringW> v3SmtpAddress = emptySW();
-		std::shared_ptr<blockBytes> v2Reserved = emptyBB(); // 2 bytes
+		std::shared_ptr<MDB_STORE_EID_V2> v2;
+		std::shared_ptr<MDB_STORE_EID_V3> v3;
 	};
 
-	struct EphemeralObject
+	class EphemeralObject : public block
 	{
+	private:
+		void parse() override;
+		void parseBlocks() override;
+
 		std::shared_ptr<blockT<ULONG>> Version = emptyT<ULONG>();
 		std::shared_ptr<blockT<ULONG>> Type = emptyT<ULONG>();
 	};
 
-	struct OneOffRecipientObject
+	class OneOffRecipientObject : public block
 	{
+	private:
+		void parse() override;
+		void parseBlocks() override;
+
 		std::shared_ptr<blockT<DWORD>> Bitmask = emptyT<DWORD>();
 		struct Unicode
 		{
@@ -98,8 +126,12 @@ namespace smartview
 		} ANSI;
 	};
 
-	struct AddressBookObject
+	class AddressBookObject : public block
 	{
+	private:
+		void parse() override;
+		void parseBlocks() override;
+
 		std::shared_ptr<blockT<DWORD>> Version = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> Type = emptyT<DWORD>();
 		std::shared_ptr<blockStringA> X500DN = emptySA();
@@ -107,8 +139,12 @@ namespace smartview
 
 	class EntryIdStruct;
 
-	struct ContactAddressBookObject
+	class ContactAddressBookObject : public block
 	{
+	private:
+		void parse() override;
+		void parseBlocks() override;
+
 		std::shared_ptr<blockT<DWORD>> Version = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> Type = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> Index = emptyT<DWORD>(); // CONTAB_USER, CONTAB_DISTLIST only
@@ -117,17 +153,18 @@ namespace smartview
 		std::shared_ptr<EntryIdStruct> lpEntryID;
 	};
 
-	struct WAB
+	class WAB : public block
 	{
+	private:
+		void parse() override;
+		void parseBlocks() override;
+
 		std::shared_ptr<blockT<BYTE>> Type = emptyT<BYTE>();
 		std::shared_ptr<EntryIdStruct> lpEntryID;
 	};
 
 	class EntryIdStruct : public block
 	{
-	public:
-		EntryIdStruct() = default;
-
 	private:
 		void parse() override;
 		void parseBlocks() override;
@@ -152,12 +189,13 @@ namespace smartview
 		std::shared_ptr<blockBytes> m_abFlags23 = emptyBB(); // 2 bytes
 		std::shared_ptr<blockT<GUID>> m_ProviderUID = emptyT<GUID>();
 		EIDStructType m_ObjectType = EIDStructType::unknown; // My own addition to simplify parsing
-		FolderOrMessage m_FolderOrMessage;
-		MessageDatabaseObject m_MessageDatabaseObject;
-		EphemeralObject m_EphemeralObject{};
-		OneOffRecipientObject m_OneOffRecipientObject{};
-		AddressBookObject m_AddressBookObject;
-		ContactAddressBookObject m_ContactAddressBookObject;
-		WAB m_WAB;
+		std::shared_ptr<FolderObject> m_FolderObject;
+		std::shared_ptr<MessageObject> m_MessageObject;
+		std::shared_ptr<MessageDatabaseObject> m_MessageDatabaseObject;
+		std::shared_ptr<EphemeralObject> m_EphemeralObject{};
+		std::shared_ptr<OneOffRecipientObject> m_OneOffRecipientObject{};
+		std::shared_ptr<AddressBookObject> m_AddressBookObject;
+		std::shared_ptr<ContactAddressBookObject> m_ContactAddressBookObject;
+		std::shared_ptr<WAB> m_WAB;
 	};
 } // namespace smartview

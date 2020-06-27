@@ -18,10 +18,10 @@ Search Folder Definition
 			EntryId[0]
 				EntryLength = 0x0000002E
 				EntryLengthPad = 0x0BBAE228
-				Entry Id =
+				Entry ID
+					abFlags = 0x00000000
+					Provider GUID = {C64E6196-0166-11D2-A3B1-0008C728E7F1} = Unknown GUID
 					Exchange Folder Entry ID
-						abFlags = 0x00000000
-						Provider GUID = {C64E6196-0166-11D2-A3B1-0008C728E7F1} = Unknown GUID
 						Folder Type = 0x0001 = eitLTPrivateFolder
 						Database GUID = {7BE57F4D-924C-4994-87F5-B588C78CF72D} = Unknown GUID
 						GlobalCounter =

@@ -1,8 +1,9 @@
-Ephemeral Entry ID
+Entry ID
 	abFlags[0] = 0x87= EPHEMERAL
 	abFlags[1..3] = 0x000000
 	Provider GUID = {002B3BA1-5ECE-4DCA-976D-076EC81BA4A4} = Unknown GUID
-	Version = 0x00000001 = EMS_VERSION
-	Type = 0x00000001 = DT_DISTLIST
+	Ephemeral Entry ID
+		Version = 0x00000001 = EMS_VERSION
+		Type = 0x00000001 = DT_DISTLIST
 	Unparsed data size = 0x00000004
 		cb: 4 lpb: BEF12D00

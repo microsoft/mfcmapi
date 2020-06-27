@@ -1,6 +1,7 @@
-Exchange Address Entry ID
+Entry ID
 	abFlags = 0x00000000
 	Provider GUID = {C840A7DC-42C0-1A10-B4B9-08002B2FE182} = muidEMSAB
-	Version = 0x00000001 = EMS_VERSION
-	Type = 0x00000001 = DT_DISTLIST
-	X500DN = /O=MICROSOFT/OU=Something/cn=exchange_dls/cn={992F76E6-71BE-4215-BAB4-F37A8AB158A7}
+	Exchange Address Entry ID
+		Version = 0x00000001 = EMS_VERSION
+		Type = 0x00000001 = DT_DISTLIST
+		X500DN = /O=MICROSOFT/OU=Something/cn=exchange_dls/cn={992F76E6-71BE-4215-BAB4-F37A8AB158A7}

@@ -1,19 +1,21 @@
-MAPI Message Store Entry ID
+Entry ID
 	abFlags = 0x00000000
 	Provider GUID = {10BBA138-E505-1A10-A1BB-08002B2A56C2} = muidStoreWrap
-	Version = 0x00 = MAPIMDB_VERSION
-	Flag = 0x00 = MAPIMDB_NORMAL
-	DLLFileName = EMSMDB.DLL
-	Wrapped Flags = 0x00000000
-	WrappedProviderUID = {1002831C-66AA-CD11-9BC8-00AA002FC45A} = g_muidStorePublic
-	WrappedType = 0x00000006 = OPENSTORE_PUBLIC | OPENSTORE_HOME_LOGON
-	ServerShortname = SE-RV-ER
-	Magic = 0xF32135D8 = MDB_STORE_EID_V2_MAGIC
-	Size = 0x000000D8 = 216
-	Version = 0x00000001 = MDB_STORE_EID_V2_VERSION
-	OffsetDN = 0x00000014
-	OffsetFQDN = 0x00000082
-	DN = /o=microsoft/ou=Exchange Administrative Group (FYDIBOHF23SPDLT)/cn=Configuration/cn=Servers/cn=SERVER
-	FQDN = se-rv-er.something.corp.example.com
-	Reserved Bytes =
-		cb: 2 lpb: 0000
+	MAPI Message Store Entry ID
+		Version = 0x00 = MAPIMDB_VERSION
+		Flag = 0x00 = MAPIMDB_NORMAL
+		DLLFileName = EMSMDB.DLL
+		Wrapped Flags = 0x00000000
+		WrappedProviderUID = {1002831C-66AA-CD11-9BC8-00AA002FC45A} = g_muidStorePublic
+		WrappedType = 0x00000006 = OPENSTORE_PUBLIC | OPENSTORE_HOME_LOGON
+		ServerShortname = SE-RV-ER
+		MAPI Message Store Entry ID V2
+			Magic = 0xF32135D8 = MDB_STORE_EID_V2_MAGIC
+			Size = 0x000000D8 = 216
+			Version = 0x00000001 = MDB_STORE_EID_V2_VERSION
+			OffsetDN = 0x00000014
+			OffsetFQDN = 0x00000082
+			DN = /o=microsoft/ou=Exchange Administrative Group (FYDIBOHF23SPDLT)/cn=Configuration/cn=Servers/cn=SERVER
+			FQDN = se-rv-er.something.corp.example.com
+			Reserved Bytes =
+				cb: 2 lpb: 0000
