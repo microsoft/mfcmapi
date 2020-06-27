@@ -5,4 +5,4 @@ Ephemeral Entry ID
 	Version = 0x00000001 = EMS_VERSION
 	Type = 0x00000001 = DT_DISTLIST
 	Unparsed data size = 0x00000004
-	cb: 4 lpb: BEF12D00
+		cb: 4 lpb: BEF12D00

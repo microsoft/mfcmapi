@@ -34,8 +34,7 @@ namespace smartview
 		if (this->hasData() && enableJunk && parser->getSize())
 		{
 			auto junkData = blockBytes::parse(parser, parser->getSize());
-			addHeader(L"Unparsed data size = 0x%1!08X!", junkData->size());
-			addChild(junkData);
+			addLabeledChild(strings::formatmessage(L"Unparsed data size = 0x%1!08X!", junkData->size()), junkData);
 		}
 
 		const auto endOffset = parser->getOffset();

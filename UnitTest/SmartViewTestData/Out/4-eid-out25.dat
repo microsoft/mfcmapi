@@ -5,4 +5,4 @@ Ephemeral Entry ID
 	Version = 0x00000001 = EMS_VERSION
 	Type = 0x00000000 = DT_MAILUSER
 	Unparsed data size = 0x00000004
-	cb: 4 lpb: 22BB0000
+		cb: 4 lpb: 22BB0000

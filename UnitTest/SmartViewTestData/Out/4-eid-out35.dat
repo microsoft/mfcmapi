@@ -8,4 +8,4 @@ Contact Address Book / PDL Entry ID
 		abFlags = 0x00000000
 		Provider GUID = {3CFCFD9E-3A2E-4C25-9C08-6F5D93F6E963} = Unknown GUID
 	Unparsed data size = 0x00000004
-	cb: 4 lpb: 42810000
+		cb: 4 lpb: 42810000

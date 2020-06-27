@@ -20,4 +20,4 @@ Contact Address Book / PDL Entry ID
 		Pad2 =
 			cb: 2 lpb: 0000
 	Unparsed data size = 0x00000003
-	cb: 3 lpb: 1B0300
+		cb: 3 lpb: 1B0300

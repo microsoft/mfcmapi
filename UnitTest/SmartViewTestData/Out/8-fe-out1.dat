@@ -25,7 +25,7 @@ Flat Entry List
 				Pad2 =
 					cb: 2 lpb: 0000
 			Unparsed data size = 0x00000003
-			cb: 3 lpb: 000000
+				cb: 3 lpb: 000000
 		Padding
 			cb: 3 lpb: 007C00
 	Entry[1]
@@ -52,7 +52,7 @@ Flat Entry List
 				Pad2 =
 					cb: 2 lpb: 0000
 			Unparsed data size = 0x00000003
-			cb: 3 lpb: 000000
+				cb: 3 lpb: 000000
 		Padding
 			cb: 3 lpb: 000000
 	Entry[2]
@@ -79,6 +79,6 @@ Flat Entry List
 				Pad2 =
 					cb: 2 lpb: 0000
 			Unparsed data size = 0x00000003
-			cb: 3 lpb: 000000
+				cb: 3 lpb: 000000
 		Padding
 			cb: 3 lpb: 1F3521
