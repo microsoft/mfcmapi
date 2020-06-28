@@ -24,8 +24,8 @@ namespace smartview
 		std::shared_ptr<blockT<DWORD>> lBias = emptyT<DWORD>(); // offset from GMT
 		std::shared_ptr<blockT<DWORD>> lStandardBias = emptyT<DWORD>(); // offset from bias during standard time
 		std::shared_ptr<blockT<DWORD>> lDaylightBias = emptyT<DWORD>(); // offset from bias during daylight time
-		SYSTEMTIMEBlock stStandardDate; // time to switch to standard time
-		SYSTEMTIMEBlock stDaylightDate; // time to switch to daylight time
+		std::shared_ptr<SYSTEMTIMEBlock> stStandardDate; // time to switch to standard time
+		std::shared_ptr<SYSTEMTIMEBlock> stDaylightDate; // time to switch to daylight time
 
 		TZRule(const std::shared_ptr<binaryParser>& parser);
 	};

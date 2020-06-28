@@ -16,22 +16,8 @@ namespace smartview
 		lBias = blockT<DWORD>::parse(parser);
 		lStandardBias = blockT<DWORD>::parse(parser);
 		lDaylightBias = blockT<DWORD>::parse(parser);
-		stStandardDate.wYear = blockT<WORD>::parse(parser);
-		stStandardDate.wMonth = blockT<WORD>::parse(parser);
-		stStandardDate.wDayOfWeek = blockT<WORD>::parse(parser);
-		stStandardDate.wDay = blockT<WORD>::parse(parser);
-		stStandardDate.wHour = blockT<WORD>::parse(parser);
-		stStandardDate.wMinute = blockT<WORD>::parse(parser);
-		stStandardDate.wSecond = blockT<WORD>::parse(parser);
-		stStandardDate.wMilliseconds = blockT<WORD>::parse(parser);
-		stDaylightDate.wYear = blockT<WORD>::parse(parser);
-		stDaylightDate.wMonth = blockT<WORD>::parse(parser);
-		stDaylightDate.wDayOfWeek = blockT<WORD>::parse(parser);
-		stDaylightDate.wDay = blockT<WORD>::parse(parser);
-		stDaylightDate.wHour = blockT<WORD>::parse(parser);
-		stDaylightDate.wMinute = blockT<WORD>::parse(parser);
-		stDaylightDate.wSecond = blockT<WORD>::parse(parser);
-		stDaylightDate.wMilliseconds = blockT<WORD>::parse(parser);
+		stStandardDate = block::parse<SYSTEMTIMEBlock>(parser, false);
+		stDaylightDate = block::parse<SYSTEMTIMEBlock>(parser, false);
 	}
 
 	void TimeZoneDefinition::parse()
@@ -88,70 +74,8 @@ namespace smartview
 				rule->lStandardBias, L"lStandardBias = 0x%1!08X! (%1!d!)", rule->lStandardBias->getData());
 			ruleBlock->addChild(
 				rule->lDaylightBias, L"lDaylightBias = 0x%1!08X! (%1!d!)", rule->lDaylightBias->getData());
-			ruleBlock->addChild(
-				rule->stStandardDate.wYear,
-				L"stStandardDate.wYear = 0x%1!X! (%1!d!)",
-				rule->stStandardDate.wYear->getData());
-			ruleBlock->addChild(
-				rule->stStandardDate.wMonth,
-				L"stStandardDate.wMonth = 0x%1!X! (%1!d!)",
-				rule->stStandardDate.wMonth->getData());
-			ruleBlock->addChild(
-				rule->stStandardDate.wDayOfWeek,
-				L"stStandardDate.wDayOfWeek = 0x%1!X! (%1!d!)",
-				rule->stStandardDate.wDayOfWeek->getData());
-			ruleBlock->addChild(
-				rule->stStandardDate.wDay,
-				L"stStandardDate.wDay = 0x%1!X! (%1!d!)",
-				rule->stStandardDate.wDay->getData());
-			ruleBlock->addChild(
-				rule->stStandardDate.wHour,
-				L"stStandardDate.wHour = 0x%1!X! (%1!d!)",
-				rule->stStandardDate.wHour->getData());
-			ruleBlock->addChild(
-				rule->stStandardDate.wMinute,
-				L"stStandardDate.wMinute = 0x%1!X! (%1!d!)",
-				rule->stStandardDate.wMinute->getData());
-			ruleBlock->addChild(
-				rule->stStandardDate.wSecond,
-				L"stStandardDate.wSecond = 0x%1!X! (%1!d!)",
-				rule->stStandardDate.wSecond->getData());
-			ruleBlock->addChild(
-				rule->stStandardDate.wMilliseconds,
-				L"stStandardDate.wMilliseconds = 0x%1!X! (%1!d!)",
-				rule->stStandardDate.wMilliseconds->getData());
-			ruleBlock->addChild(
-				rule->stDaylightDate.wYear,
-				L"stDaylightDate.wYear = 0x%1!X! (%1!d!)",
-				rule->stDaylightDate.wYear->getData());
-			ruleBlock->addChild(
-				rule->stDaylightDate.wMonth,
-				L"stDaylightDate.wMonth = 0x%1!X! (%1!d!)",
-				rule->stDaylightDate.wMonth->getData());
-			ruleBlock->addChild(
-				rule->stDaylightDate.wDayOfWeek,
-				L"stDaylightDate.wDayOfWeek = 0x%1!X! (%1!d!)",
-				rule->stDaylightDate.wDayOfWeek->getData());
-			ruleBlock->addChild(
-				rule->stDaylightDate.wDay,
-				L"stDaylightDate.wDay = 0x%1!X! (%1!d!)",
-				rule->stDaylightDate.wDay->getData());
-			ruleBlock->addChild(
-				rule->stDaylightDate.wHour,
-				L"stDaylightDate.wHour = 0x%1!X! (%1!d!)",
-				rule->stDaylightDate.wHour->getData());
-			ruleBlock->addChild(
-				rule->stDaylightDate.wMinute,
-				L"stDaylightDate.wMinute = 0x%1!X! (%1!d!)",
-				rule->stDaylightDate.wMinute->getData());
-			ruleBlock->addChild(
-				rule->stDaylightDate.wSecond,
-				L"stDaylightDate.wSecond = 0x%1!X! (%1!d!)",
-				rule->stDaylightDate.wSecond->getData());
-			ruleBlock->addChild(
-				rule->stDaylightDate.wMilliseconds,
-				L"stDaylightDate.wMilliseconds = 0x%1!X! (%1!d!)",
-				rule->stDaylightDate.wMilliseconds->getData());
+			ruleBlock->addChild(rule->stStandardDate, L"stStandardDate");
+			ruleBlock->addChild(rule->stDaylightDate, L"stDaylightDate");
 
 			i++;
 		}
