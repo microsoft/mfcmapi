@@ -1,7 +1,7 @@
 Property Definition Stream
 	Version = 0x0103 = PropDefV2
 	FieldDefinitionCount = 0x00000008
-	Definition: 0
+	Definition[0]
 		Flags = 0x0000004D = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS | PDO_CALC_AUTO | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0005 = VT_R8
 		DispID = 0x00000000
@@ -31,7 +31,7 @@ Property Definition Stream
 					combonumber
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 1
+	Definition[1]
 		Flags = 0x00000045 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0005 = VT_R8
 		DispID = 0x00000000
@@ -63,7 +63,7 @@ Property Definition Stream
 					flark
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 2
+	Definition[2]
 		Flags = 0x00000045 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
@@ -91,7 +91,7 @@ Property Definition Stream
 					fook
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 3
+	Definition[3]
 		Flags = 0x00000000 = 0x0
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00008534
@@ -121,7 +121,7 @@ Property Definition Stream
 					Mileage
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 4
+	Definition[4]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0005 = VT_R8
 		DispID = 0x00000000
@@ -151,7 +151,7 @@ Property Definition Stream
 					Numero
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 5
+	Definition[5]
 		Flags = 0x0000004D = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS | PDO_CALC_AUTO | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0005 = VT_R8
 		DispID = 0x00000000
@@ -179,7 +179,7 @@ Property Definition Stream
 					percento
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 6
+	Definition[6]
 		Flags = 0x00000044 = PDO_PRINT_SAVEAS | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000037
@@ -210,7 +210,7 @@ Property Definition Stream
 					Subject
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 7
+	Definition[7]
 		Flags = 0x0000004C = PDO_PRINT_SAVEAS | PDO_CALC_AUTO | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000E04

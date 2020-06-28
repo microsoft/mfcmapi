@@ -1,7 +1,7 @@
 Property Definition Stream
 	Version = 0x0103 = PropDefV2
 	FieldDefinitionCount = 0x00000054
-	Definition: 0
+	Definition[0]
 		Flags = 0x00000000 = 0x0
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000E1B
@@ -30,7 +30,7 @@ Property Definition Stream
 					Attachment
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 1
+	Definition[1]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
@@ -57,7 +57,7 @@ Property Definition Stream
 					AudioConf
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 2
+	Definition[2]
 		Flags = 0x00000000 = 0x0
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000E03
@@ -86,7 +86,7 @@ Property Definition Stream
 					Cc
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 3
+	Definition[3]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
@@ -114,7 +114,7 @@ Property Definition Stream
 					ConferenceInfo
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 4
+	Definition[4]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
@@ -141,7 +141,7 @@ Property Definition Stream
 					ExistsOnStore
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 5
+	Definition[5]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
@@ -168,7 +168,7 @@ Property Definition Stream
 					JoinInfo
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 6
+	Definition[6]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
@@ -195,7 +195,7 @@ Property Definition Stream
 					LiveMeetingAttendeeKey
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 7
+	Definition[7]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
@@ -222,7 +222,7 @@ Property Definition Stream
 					LiveMeetingInviteGuid
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 8
+	Definition[8]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0005 = VT_R8
 		DispID = 0x00000000
@@ -249,7 +249,7 @@ Property Definition Stream
 					LiveMeetingLanguage
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 9
+	Definition[9]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
@@ -276,7 +276,7 @@ Property Definition Stream
 					LiveMeetingName
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 10
+	Definition[10]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
@@ -303,7 +303,7 @@ Property Definition Stream
 					LiveMeetingServerAssignedMID
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 11
+	Definition[11]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
@@ -330,7 +330,7 @@ Property Definition Stream
 					LMAllowCallMe
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 12
+	Definition[12]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
@@ -357,7 +357,7 @@ Property Definition Stream
 					LMAllowChat
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 13
+	Definition[13]
 		Flags = 0x00000045 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS | PDO_PRINT_SAVEAS_DEF
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
@@ -384,7 +384,7 @@ Property Definition Stream
 					LMAllowSendEmail
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 14
+	Definition[14]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0005 = VT_R8
 		DispID = 0x00000000
@@ -411,7 +411,7 @@ Property Definition Stream
 					LMAppShareLevel
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 15
+	Definition[15]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
@@ -438,7 +438,7 @@ Property Definition Stream
 					LMAppShareRequest
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 16
+	Definition[16]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0005 = VT_R8
 		DispID = 0x00000000
@@ -465,7 +465,7 @@ Property Definition Stream
 					LMAppSharingColors
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 17
+	Definition[17]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0005 = VT_R8
 		DispID = 0x00000000
@@ -492,7 +492,7 @@ Property Definition Stream
 					LMAttendeeAuthenticationType
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 18
+	Definition[18]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
@@ -519,7 +519,7 @@ Property Definition Stream
 					LMAttendeeGUID
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 19
+	Definition[19]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
@@ -546,7 +546,7 @@ Property Definition Stream
 					LMAttendeeListBackup
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 20
+	Definition[20]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
@@ -573,7 +573,7 @@ Property Definition Stream
 					LMAudioBroadcast
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 21
+	Definition[21]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
@@ -600,7 +600,7 @@ Property Definition Stream
 					LMAudioConferencingLeaderCode
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 22
+	Definition[22]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
@@ -627,7 +627,7 @@ Property Definition Stream
 					LMAudioConferencingParticipantCode
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 23
+	Definition[23]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
@@ -654,7 +654,7 @@ Property Definition Stream
 					LMAudioConferencingProvider
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 24
+	Definition[24]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
@@ -681,7 +681,7 @@ Property Definition Stream
 					LMAudioEmbedded
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 25
+	Definition[25]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
@@ -708,7 +708,7 @@ Property Definition Stream
 					LMBillingCode
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 26
+	Definition[26]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0005 = VT_R8
 		DispID = 0x00000000
@@ -735,7 +735,7 @@ Property Definition Stream
 					LMContentExpirationTime
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 27
+	Definition[27]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0005 = VT_R8
 		DispID = 0x00000000
@@ -762,7 +762,7 @@ Property Definition Stream
 					LMContentExpirationTimeType
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 28
+	Definition[28]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
@@ -789,7 +789,7 @@ Property Definition Stream
 					LMContentExpires
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 29
+	Definition[29]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
@@ -816,7 +816,7 @@ Property Definition Stream
 					LMDialingKeysPart1
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 30
+	Definition[30]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
@@ -843,7 +843,7 @@ Property Definition Stream
 					LMDialingKeysPart2
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 31
+	Definition[31]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
@@ -870,7 +870,7 @@ Property Definition Stream
 					LMEarlyAttendeeEntryAllowed
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 32
+	Definition[32]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
@@ -897,7 +897,7 @@ Property Definition Stream
 					LMEnableAudioVOIP
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 33
+	Definition[33]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
@@ -924,7 +924,7 @@ Property Definition Stream
 					LMEnableLobby
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 34
+	Definition[34]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
@@ -951,7 +951,7 @@ Property Definition Stream
 					LMEnableLobbyEmail
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 35
+	Definition[35]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
@@ -978,7 +978,7 @@ Property Definition Stream
 					LMEnablePersonalRecordingAttendee
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 36
+	Definition[36]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
@@ -1005,7 +1005,7 @@ Property Definition Stream
 					LMEnablePersonalRecordingPresenter
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 37
+	Definition[37]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
@@ -1032,7 +1032,7 @@ Property Definition Stream
 					LMEnableRecordingExpiration
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 38
+	Definition[38]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
@@ -1059,7 +1059,7 @@ Property Definition Stream
 					LMExtendedRegistration
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 39
+	Definition[39]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
@@ -1086,7 +1086,7 @@ Property Definition Stream
 					LMIsServerGeneratedAudienceKey
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 40
+	Definition[40]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
@@ -1113,7 +1113,7 @@ Property Definition Stream
 					LMIsServerGeneratedPresenterKey
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 41
+	Definition[41]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
@@ -1140,7 +1140,7 @@ Property Definition Stream
 					LMLobbyMessage
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 42
+	Definition[42]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0005 = VT_R8
 		DispID = 0x00000000
@@ -1167,7 +1167,7 @@ Property Definition Stream
 					LMMeetingSize
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 43
+	Definition[43]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0005 = VT_R8
 		DispID = 0x00000000
@@ -1194,7 +1194,7 @@ Property Definition Stream
 					LMMeetingVersion
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 44
+	Definition[44]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0005 = VT_R8
 		DispID = 0x00000000
@@ -1222,7 +1222,7 @@ Property Definition Stream
 					LMOLAddinSchema
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 45
+	Definition[45]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0005 = VT_R8
 		DispID = 0x00000000
@@ -1249,7 +1249,7 @@ Property Definition Stream
 					LMPresenterAuthenticationType
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 46
+	Definition[46]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
@@ -1276,7 +1276,7 @@ Property Definition Stream
 					LMPresenterGUID
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 47
+	Definition[47]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
@@ -1303,7 +1303,7 @@ Property Definition Stream
 					LMPresenterKey
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 48
+	Definition[48]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
@@ -1330,7 +1330,7 @@ Property Definition Stream
 					LMPresenterList
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 49
+	Definition[49]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
@@ -1357,7 +1357,7 @@ Property Definition Stream
 					LMPresenterListBackup
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 50
+	Definition[50]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0005 = VT_R8
 		DispID = 0x00000000
@@ -1384,7 +1384,7 @@ Property Definition Stream
 					LMPrintToPDFLevel
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 51
+	Definition[51]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
@@ -1411,7 +1411,7 @@ Property Definition Stream
 					LMQAFeature
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 52
+	Definition[52]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
@@ -1438,7 +1438,7 @@ Property Definition Stream
 					LMRecordingCreationAccess
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 53
+	Definition[53]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0005 = VT_R8
 		DispID = 0x00000000
@@ -1465,7 +1465,7 @@ Property Definition Stream
 					LMRecordingEntryControl
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 54
+	Definition[54]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0005 = VT_R8
 		DispID = 0x00000000
@@ -1492,7 +1492,7 @@ Property Definition Stream
 					LMRecordingExpirationTimeAmount
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 55
+	Definition[55]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0005 = VT_R8
 		DispID = 0x00000000
@@ -1519,7 +1519,7 @@ Property Definition Stream
 					LMRecordingExpirationTimeType
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 56
+	Definition[56]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0005 = VT_R8
 		DispID = 0x00000000
@@ -1546,7 +1546,7 @@ Property Definition Stream
 					LMSeatingChartDefaultOption
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 57
+	Definition[57]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
@@ -1573,7 +1573,7 @@ Property Definition Stream
 					LMSeatingChartFeature
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 58
+	Definition[58]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
@@ -1600,7 +1600,7 @@ Property Definition Stream
 					LMSeatingChartLabel1
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 59
+	Definition[59]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
@@ -1627,7 +1627,7 @@ Property Definition Stream
 					LMSeatingChartLabel2
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 60
+	Definition[60]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
@@ -1654,7 +1654,7 @@ Property Definition Stream
 					LMSeatingChartLabel3
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 61
+	Definition[61]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
@@ -1681,7 +1681,7 @@ Property Definition Stream
 					LMSeatingChartLabel4
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 62
+	Definition[62]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
@@ -1708,7 +1708,7 @@ Property Definition Stream
 					LMSeatingChartLabel5
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 63
+	Definition[63]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
@@ -1735,7 +1735,7 @@ Property Definition Stream
 					LMSentinel
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 64
+	Definition[64]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
@@ -1762,7 +1762,7 @@ Property Definition Stream
 					LMShowAudioTollFreeNumber
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 65
+	Definition[65]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
@@ -1789,7 +1789,7 @@ Property Definition Stream
 					LMShowAudioTollNumber
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 66
+	Definition[66]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
@@ -1816,7 +1816,7 @@ Property Definition Stream
 					LMShowEndSessionButton
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 67
+	Definition[67]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
@@ -1843,7 +1843,7 @@ Property Definition Stream
 					LMSignature
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 68
+	Definition[68]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0005 = VT_R8
 		DispID = 0x00000000
@@ -1870,7 +1870,7 @@ Property Definition Stream
 					LMStreamingMediaAttendeePaneHeight
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 69
+	Definition[69]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
@@ -1897,7 +1897,7 @@ Property Definition Stream
 					LMStreamingMediaAttendeePaneURL
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 70
+	Definition[70]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
@@ -1924,7 +1924,7 @@ Property Definition Stream
 					LMStreamingMediaCustomPaneFeature
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 71
+	Definition[71]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0005 = VT_R8
 		DispID = 0x00000000
@@ -1951,7 +1951,7 @@ Property Definition Stream
 					LMStreamingMediaPresenterPaneHeight
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 72
+	Definition[72]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
@@ -1978,7 +1978,7 @@ Property Definition Stream
 					LMStreamingMediaPresenterURL
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 73
+	Definition[73]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
@@ -2005,7 +2005,7 @@ Property Definition Stream
 					LMTollAreaCode
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 74
+	Definition[74]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
@@ -2032,7 +2032,7 @@ Property Definition Stream
 					LMTollFreeAreaCode
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 75
+	Definition[75]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
@@ -2059,7 +2059,7 @@ Property Definition Stream
 					LMTollFreeLocalNumber
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 76
+	Definition[76]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
@@ -2086,7 +2086,7 @@ Property Definition Stream
 					LMTollFreeRegion
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 77
+	Definition[77]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
@@ -2113,7 +2113,7 @@ Property Definition Stream
 					LMTollLocalNumber
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 78
+	Definition[78]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
@@ -2140,7 +2140,7 @@ Property Definition Stream
 					LMTollRegion
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 79
+	Definition[79]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x000B = VT_BOOL
 		DispID = 0x00000000
@@ -2167,7 +2167,7 @@ Property Definition Stream
 					LMXPIsChild
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 80
+	Definition[80]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
@@ -2194,7 +2194,7 @@ Property Definition Stream
 					LMXPSendAccountName
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 81
+	Definition[81]
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000000
@@ -2221,7 +2221,7 @@ Property Definition Stream
 					LMXPSendAccountStamp
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 82
+	Definition[82]
 		Flags = 0x00000044 = PDO_PRINT_SAVEAS | PDO_PRINT_SAVEAS_DEF
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000E04
@@ -2250,7 +2250,7 @@ Property Definition Stream
 					Required Attendees
 		SkipBlock[1]
 			Size = 0x00000000
-	Definition: 83
+	Definition[83]
 		Flags = 0x00000000 = 0x0
 		VT = 0x0008 = VT_BSTR
 		DispID = 0x00000E04

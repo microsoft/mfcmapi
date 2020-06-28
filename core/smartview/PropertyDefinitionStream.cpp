@@ -237,7 +237,7 @@ namespace smartview
 		auto i = 0;
 		for (const auto& def : m_pfdFieldDefinitions)
 		{
-			addChild(def, L"Definition: %1!d!", i++);
+			addChild(def, L"Definition[%1!d!]", i++);
 		}
 	}
 } // namespace smartview
