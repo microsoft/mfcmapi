@@ -59,7 +59,7 @@ namespace smartview
 			ppeDataElement.reserve(wDataElementCount);
 			for (WORD iDataElement = 0; iDataElement < wDataElementCount; iDataElement++)
 			{
-				ppeDataElement.emplace_back(block::parse<PersistElement>(parser, 0, false));
+				ppeDataElement.emplace_back(block::parse<PersistElement>(parser, false));
 			}
 		}
 
@@ -123,7 +123,7 @@ namespace smartview
 			m_ppdPersistData.reserve(wPersistDataCount);
 			for (WORD iPersistElement = 0; iPersistElement < wPersistDataCount; iPersistElement++)
 			{
-				m_ppdPersistData.emplace_back(block::parse<PersistData>(parser, 0, false));
+				m_ppdPersistData.emplace_back(block::parse<PersistData>(parser, false));
 			}
 		}
 	}

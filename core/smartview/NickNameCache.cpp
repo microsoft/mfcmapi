@@ -46,7 +46,7 @@ namespace smartview
 				m_lpRows.reserve(*m_cRowCount);
 				for (DWORD i = 0; i < *m_cRowCount; i++)
 				{
-					m_lpRows.emplace_back(block::parse<SRowStruct>(parser, 0, false));
+					m_lpRows.emplace_back(block::parse<SRowStruct>(parser, false));
 				}
 			}
 		}

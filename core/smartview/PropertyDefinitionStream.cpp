@@ -77,7 +77,7 @@ namespace smartview
 		dwSize = blockT<DWORD>::parse(parser);
 		if (iSkip == 0)
 		{
-			lpbContentText = block::parse<PackedUnicodeString>(parser, 0, false);
+			lpbContentText = block::parse<PackedUnicodeString>(parser, false);
 		}
 		else
 		{
@@ -107,11 +107,11 @@ namespace smartview
 		wNmidNameLength = blockT<WORD>::parse(parser);
 		szNmidName = blockStringW::parse(parser, *wNmidNameLength);
 
-		pasNameANSI = block::parse<PackedAnsiString>(parser, 0, false);
-		pasFormulaANSI = block::parse<PackedAnsiString>(parser, 0, false);
-		pasValidationRuleANSI = block::parse<PackedAnsiString>(parser, 0, false);
-		pasValidationTextANSI = block::parse<PackedAnsiString>(parser, 0, false);
-		pasErrorANSI = block::parse<PackedAnsiString>(parser, 0, false);
+		pasNameANSI = block::parse<PackedAnsiString>(parser, false);
+		pasFormulaANSI = block::parse<PackedAnsiString>(parser, false);
+		pasValidationRuleANSI = block::parse<PackedAnsiString>(parser, false);
+		pasValidationTextANSI = block::parse<PackedAnsiString>(parser, false);
+		pasErrorANSI = block::parse<PackedAnsiString>(parser, false);
 
 		if (version == PropDefV2)
 		{
@@ -139,7 +139,7 @@ namespace smartview
 				for (DWORD i = 0; i < skipBlockCount; i++)
 				{
 					auto skipBlock = std::make_shared<SkipBlock>(i);
-					skipBlock->block::parse(parser, 0, false);
+					skipBlock->block::parse(parser, false);
 					psbSkipBlocks.emplace_back(skipBlock);
 				}
 			}
@@ -220,7 +220,7 @@ namespace smartview
 				for (DWORD i = 0; i < *m_dwFieldDefinitionCount; i++)
 				{
 					auto def = std::make_shared<FieldDefinition>(*m_wVersion);
-					def->block::parse(parser, 0, false);
+					def->block::parse(parser, false);
 					m_pfdFieldDefinitions.emplace_back(def);
 				}
 			}

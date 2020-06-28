@@ -81,7 +81,7 @@ namespace smartview
 			{
 				if (parser->empty()) continue;
 				auto fd = std::make_shared<FolderFieldDefinition>(false);
-				fd->block::parse(parser, 0, false);
+				fd->block::parse(parser, false);
 				m_FieldDefinitionsA.emplace_back(fd);
 			}
 		}
@@ -94,7 +94,7 @@ namespace smartview
 			{
 				if (parser->empty()) continue;
 				auto fd = std::make_shared<FolderFieldDefinition>(true);
-				fd->block::parse(parser, 0, false);
+				fd->block::parse(parser, false);
 				m_FieldDefinitionsW.emplace_back(fd);
 			}
 		}

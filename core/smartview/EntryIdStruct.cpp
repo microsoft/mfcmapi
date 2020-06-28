@@ -180,13 +180,13 @@ namespace smartview
 			case MDB_STORE_EID_V2_MAGIC:
 				if (parser->getSize() >= MDB_STORE_EID_V2::size + sizeof(WCHAR))
 				{
-					v2 = block::parse<MDB_STORE_EID_V2>(parser, 0, false);
+					v2 = block::parse<MDB_STORE_EID_V2>(parser, false);
 				}
 				break;
 			case MDB_STORE_EID_V3_MAGIC:
 				if (parser->getSize() >= MDB_STORE_EID_V3::size + sizeof(WCHAR))
 				{
-					v3 = block::parse<MDB_STORE_EID_V3>(parser, 0, false);
+					v3 = block::parse<MDB_STORE_EID_V3>(parser, false);
 				}
 				break;
 			}
@@ -435,34 +435,34 @@ namespace smartview
 			{
 			// Ephemeral Recipient
 			case EIDStructType::ephemeral:
-				m_EphemeralObject = block::parse<EphemeralObject>(parser, 0, false);
+				m_EphemeralObject = block::parse<EphemeralObject>(parser, false);
 				break;
 			// One Off Recipient
 			case EIDStructType::oneOff:
-				m_OneOffRecipientObject = block::parse<OneOffRecipientObject>(parser, 0, false);
+				m_OneOffRecipientObject = block::parse<OneOffRecipientObject>(parser, false);
 				break;
 			// Address Book Recipient
 			case EIDStructType::addressBook:
-				m_AddressBookObject = block::parse<AddressBookObject>(parser, 0, false);
+				m_AddressBookObject = block::parse<AddressBookObject>(parser, false);
 				break;
 			// Contact Address Book / Personal Distribution List (PDL)
 			case EIDStructType::contact:
-				m_ContactAddressBookObject = block::parse<ContactAddressBookObject>(parser, 0, false);
+				m_ContactAddressBookObject = block::parse<ContactAddressBookObject>(parser, false);
 				break;
 			case EIDStructType::WAB:
-				m_WAB = block::parse<WAB>(parser, 0, false);
+				m_WAB = block::parse<WAB>(parser, false);
 				break;
 			// message store objects
 			case EIDStructType::messageDatabase:
-				m_MessageDatabaseObject = block::parse<MessageDatabaseObject>(parser, 0, false);
+				m_MessageDatabaseObject = block::parse<MessageDatabaseObject>(parser, false);
 				break;
 			// Exchange message store folder
 			case EIDStructType::folder:
-				m_FolderObject = block::parse<FolderObject>(parser, 0, false);
+				m_FolderObject = block::parse<FolderObject>(parser, false);
 				break;
 			// Exchange message store message
 			case EIDStructType::message:
-				m_MessageObject = block::parse<MessageObject>(parser, 0, false);
+				m_MessageObject = block::parse<MessageObject>(parser, false);
 				break;
 			}
 		}

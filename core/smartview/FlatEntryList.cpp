@@ -51,7 +51,7 @@ namespace smartview
 			m_pEntryIDs.reserve(*m_cEntries);
 			for (DWORD i = 0; i < *m_cEntries; i++)
 			{
-				m_pEntryIDs.emplace_back(block::parse<FlatEntryID>(parser, 0, false));
+				m_pEntryIDs.emplace_back(block::parse<FlatEntryID>(parser, false));
 			}
 		}
 	}

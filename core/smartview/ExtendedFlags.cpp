@@ -107,7 +107,7 @@ namespace smartview
 			m_pefExtendedFlags.reserve(ulNumFlags);
 			for (ULONG i = 0; i < ulNumFlags; i++)
 			{
-				const auto flag = block::parse<ExtendedFlag>(parser, 0, false);
+				const auto flag = block::parse<ExtendedFlag>(parser, false);
 				m_pefExtendedFlags.push_back(flag);
 				if (flag->bBadData) break;
 			}

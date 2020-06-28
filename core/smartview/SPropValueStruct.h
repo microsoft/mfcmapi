@@ -18,7 +18,7 @@ namespace smartview
 			m_doNickname = doNickname;
 			m_doRuleProcessing = doRuleProcessing;
 
-			block::parse(binaryParser, 0, false);
+			block::parse(binaryParser, false);
 		}
 
 		std::shared_ptr<blockT<WORD>> PropType = emptyT<WORD>();

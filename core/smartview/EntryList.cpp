@@ -33,7 +33,7 @@ namespace smartview
 				m_Entry.reserve(*m_EntryCount);
 				for (DWORD i = 0; i < *m_EntryCount; i++)
 				{
-					m_Entry.emplace_back(block::parse<EntryListEntryStruct>(parser, 0, false));
+					m_Entry.emplace_back(block::parse<EntryListEntryStruct>(parser, false));
 				}
 
 				for (DWORD i = 0; i < *m_EntryCount; i++)

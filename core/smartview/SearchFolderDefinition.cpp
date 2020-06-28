@@ -80,7 +80,7 @@ namespace smartview
 					m_Addresses.reserve(*m_AddressCount);
 					for (DWORD i = 0; i < *m_AddressCount; i++)
 					{
-						m_Addresses.emplace_back(block::parse<AddressListEntryStruct>(parser, 0, false));
+						m_Addresses.emplace_back(block::parse<AddressListEntryStruct>(parser, false));
 					}
 				}
 			}

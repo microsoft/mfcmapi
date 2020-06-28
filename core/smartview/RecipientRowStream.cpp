@@ -46,7 +46,7 @@ namespace smartview
 				m_lpAdrEntry.reserve(*m_cRowCount);
 				for (DWORD i = 0; i < *m_cRowCount; i++)
 				{
-					m_lpAdrEntry.emplace_back(block::parse<ADRENTRYStruct>(parser, 0, false));
+					m_lpAdrEntry.emplace_back(block::parse<ADRENTRYStruct>(parser, false));
 				}
 			}
 		}

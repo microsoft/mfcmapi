@@ -178,7 +178,7 @@ namespace smartview
 	{
 		if (writerVersion2 >= 0x0003009)
 		{
-			ChangeHighlight = block::parse<smartview::ChangeHighlight>(parser, 0, false);
+			ChangeHighlight = block::parse<smartview::ChangeHighlight>(parser, false);
 		}
 
 		ReservedBlockEE1Size = blockT<DWORD>::parse(parser);
@@ -287,7 +287,7 @@ namespace smartview
 			m_ExceptionInfo.reserve(*m_ExceptionCount);
 			for (WORD i = 0; i < *m_ExceptionCount; i++)
 			{
-				m_ExceptionInfo.emplace_back(block::parse<ExceptionInfo>(parser, 0, false));
+				m_ExceptionInfo.emplace_back(block::parse<ExceptionInfo>(parser, false));
 			}
 		}
 
@@ -300,7 +300,7 @@ namespace smartview
 			for (WORD i = 0; i < *m_ExceptionCount; i++)
 			{
 				auto ee = std::make_shared<ExtendedException>(*m_WriterVersion2, *m_ExceptionInfo[i]->OverrideFlags);
-				ee->block::parse(parser, 0, false);
+				ee->block::parse(parser, false);
 				m_ExtendedException.emplace_back(ee);
 			}
 		}

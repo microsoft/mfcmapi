@@ -92,7 +92,7 @@ namespace smartview
 			m_lpResponseLevels.reserve(ulResponseLevels);
 			for (ULONG i = 0; i < ulResponseLevels; i++)
 			{
-				m_lpResponseLevels.emplace_back(block::parse<ResponseLevel>(parser, 0, false));
+				m_lpResponseLevels.emplace_back(block::parse<ResponseLevel>(parser, false));
 			}
 		}
 	}

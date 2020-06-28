@@ -46,7 +46,7 @@ namespace smartview
 			for (auto i = 0; i < cXID; i++)
 			{
 				const auto oldSize = parser->getSize();
-				m_lpXID.emplace_back(block::parse<SizedXID>(parser, 0, false));
+				m_lpXID.emplace_back(block::parse<SizedXID>(parser, false));
 				const auto newSize = parser->getSize();
 				if (newSize == 0 || newSize == oldSize) break;
 			}
