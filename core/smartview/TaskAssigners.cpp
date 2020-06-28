@@ -3,7 +3,7 @@
 
 namespace smartview
 {
-	TaskAssigner::TaskAssigner(const std::shared_ptr<binaryParser>& parser)
+	void TaskAssigner::parse()
 	{
 		cbAssigner = blockT<DWORD>::parse(parser);
 		const auto ulSize = min(*cbAssigner, (ULONG) parser->getSize());
@@ -16,6 +16,20 @@ namespace smartview
 		parser->clearCap();
 	}
 
+	void TaskAssigner::parseBlocks()
+	{
+		addChild(cbEntryID, L"cbEntryID = 0x%1!08X! = %1!d!", cbEntryID->getData());
+		addLabeledChild(L"lpEntryID =", lpEntryID);
+		addChild(szDisplayName, L"szDisplayName (ANSI) = %1!hs!", szDisplayName->c_str());
+		addChild(wzDisplayName, L"szDisplayName (Unicode) = %1!ws!", wzDisplayName->c_str());
+
+		if (!JunkData->empty())
+		{
+			addChild(JunkData, L"Unparsed Data Size = 0x%1!08X!", JunkData->size());
+			addChild(JunkData);
+		}
+	}
+
 	void TaskAssigners::parse()
 	{
 		m_cAssigners = blockT<DWORD>::parse(parser);
@@ -25,7 +39,7 @@ namespace smartview
 			m_lpTaskAssigners.reserve(*m_cAssigners);
 			for (DWORD i = 0; i < *m_cAssigners; i++)
 			{
-				m_lpTaskAssigners.emplace_back(std::make_shared<TaskAssigner>(parser));
+				m_lpTaskAssigners.emplace_back(block::parse<TaskAssigner>(parser, false));
 			}
 		}
 	}
@@ -38,19 +52,7 @@ namespace smartview
 		auto i = 0;
 		for (const auto& ta : m_lpTaskAssigners)
 		{
-			auto taBlock = create(L"Task Assigner[%1!d!]", i);
-			addChild(taBlock);
-			taBlock->addChild(ta->cbEntryID, L"cbEntryID = 0x%1!08X! = %1!d!", ta->cbEntryID->getData());
-			taBlock->addLabeledChild(L"lpEntryID =", ta->lpEntryID);
-			taBlock->addChild(ta->szDisplayName, L"szDisplayName (ANSI) = %1!hs!", ta->szDisplayName->c_str());
-			taBlock->addChild(ta->wzDisplayName, L"szDisplayName (Unicode) = %1!ws!", ta->wzDisplayName->c_str());
-
-			if (!ta->JunkData->empty())
-			{
-				taBlock->addChild(ta->JunkData, L"Unparsed Data Size = 0x%1!08X!", ta->JunkData->size());
-				taBlock->addChild(ta->JunkData);
-			}
-
+			addChild(ta, L"Task Assigner[%1!d!]", i);
 			i++;
 		}
 	}
