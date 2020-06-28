@@ -27,19 +27,16 @@ namespace smartview
 		};
 		void parseBlocks() override
 		{
-			setText(L"ServerEID:\r\n");
-			addChild(Ours, L"Ours: %1!ws!\r\n", *Ours ? L"true" : L"false");
+			setText(L"ServerEID");
+			addChild(Ours, L"Ours: %1!ws!", *Ours ? L"true" : L"false");
 			addChild(
-				FolderId,
-				L"FolderId: 0x%1!08X!:0x%2!08X!\r\n",
-				FolderId->getData().HighPart,
-				FolderId->getData().LowPart);
+				FolderId, L"FolderId: 0x%1!08X!:0x%2!08X!", FolderId->getData().HighPart, FolderId->getData().LowPart);
 			addChild(
 				MessageId,
-				L"MessageId: 0x%1!08X!:0x%2!08X!\r\n",
+				L"MessageId: 0x%1!08X!:0x%2!08X!",
 				MessageId->getData().HighPart,
 				MessageId->getData().LowPart);
-			addChild(Instance, L"Instance: 0x%1!04X!\r\n", Instance->getData());
+			addChild(Instance, L"Instance: 0x%1!04X!", Instance->getData());
 		};
 	};
 
@@ -92,36 +89,36 @@ namespace smartview
 		}
 		void parseBlocks()
 		{
-			setText(L"ActionDataMoveCopy:\r\n");
+			setText(L"ActionDataMoveCopy");
 			if (m_bExtended)
 			{
-				addChild(FolderInThisStore, L"FolderInThisStore: %1!ws!\r\n", *FolderInThisStore ? L"true" : L"false");
-				addChild(StoreEIDSize, L"StoreEIDSize: 0x%1!08X!\r\n", StoreEIDSize->getData());
-				addLabeledChild(L"StoreEIDBytes = ", StoreEIDBytes);
-				addChild(FolderEIDSize, L"FolderEIDSize: 0x%1!08X!\r\n", FolderEIDSize->getData());
-				addLabeledChild(L"FolderEID = ", FolderEID);
+				addChild(FolderInThisStore, L"FolderInThisStore: %1!ws!", *FolderInThisStore ? L"true" : L"false");
+				addChild(StoreEIDSize, L"StoreEIDSize: 0x%1!08X!", StoreEIDSize->getData());
+				addLabeledChild(L"StoreEIDBytes", StoreEIDBytes);
+				addChild(FolderEIDSize, L"FolderEIDSize: 0x%1!08X!", FolderEIDSize->getData());
+				addLabeledChild(L"FolderEID", FolderEID);
 			}
 			else
 			{
-				addChild(FolderInThisStore, L"FolderInThisStore: %1!ws!\r\n", *FolderInThisStore ? L"true" : L"false");
-				addChild(StoreEIDSize, L"StoreEIDSize: 0x%1!04X!\r\n", StoreEIDSize->getData());
+				addChild(FolderInThisStore, L"FolderInThisStore: %1!ws!", *FolderInThisStore ? L"true" : L"false");
+				addChild(StoreEIDSize, L"StoreEIDSize: 0x%1!04X!", StoreEIDSize->getData());
 				if (*FolderInThisStore)
 				{
-					addChild(StoreEID, L"StoreEID\r\n");
+					addChild(StoreEID, L"StoreEID");
 				}
 				else
 				{
-					addLabeledChild(L"StoreEIDBytes = ", StoreEIDBytes);
+					addLabeledChild(L"StoreEIDBytes", StoreEIDBytes);
 				}
 
-				addChild(FolderEIDSize, L"FolderEIDSize: 0x%1!04X!\r\n", FolderEIDSize->getData());
+				addChild(FolderEIDSize, L"FolderEIDSize: 0x%1!04X!", FolderEIDSize->getData());
 				if (*FolderInThisStore)
 				{
-					addLabeledChild(L"FolderEIDserverEID = ", FolderEIDserverEID);
+					addLabeledChild(L"FolderEIDserverEID", FolderEIDserverEID);
 				}
 				else
 				{
-					addLabeledChild(L"FolderEIDBytes = ", FolderEIDBytes);
+					addLabeledChild(L"FolderEIDBytes", FolderEIDBytes);
 				}
 			}
 		};
@@ -154,22 +151,22 @@ namespace smartview
 		}
 		void parseBlocks()
 		{
-			setText(L"ActionDataReply:\r\n");
+			setText(L"ActionDataReply");
 			if (m_bExtended)
 			{
-				addChild(MessageEIDSize, L"MessageEIDSize: 0x%1!08X!\r\n", MessageEIDSize->getData());
+				addChild(MessageEIDSize, L"MessageEIDSize: 0x%1!08X!", MessageEIDSize->getData());
 				addChild(ReplyTemplateMessageEID, L"ReplyTemplateMessageEID");
 			}
 			else
 			{
 				addChild(
 					ReplyTemplateFID,
-					L"ReplyTemplateFID: 0x%1!08X!:0x%2!08X!\r\n",
+					L"ReplyTemplateFID: 0x%1!08X!:0x%2!08X!",
 					ReplyTemplateFID->getData().HighPart,
 					ReplyTemplateFID->getData().LowPart);
 				addChild(
 					ReplyTemplateMID,
-					L"ReplyTemplateMID: 0x%1!08X!:0x%2!08X!\r\n",
+					L"ReplyTemplateMID: 0x%1!08X!:0x%2!08X!",
 					ReplyTemplateMID->getData().HighPart,
 					ReplyTemplateMID->getData().LowPart);
 			}
@@ -190,8 +187,8 @@ namespace smartview
 		void parse() override { deferBytes = blockBytes::parse(parser, parser->getSize()); }
 		void parseBlocks()
 		{
-			setText(L"ActionDataDefer:\r\n");
-			addLabeledChild(L"deferBytes = ", deferBytes);
+			setText(L"ActionDataDefer");
+			addLabeledChild(L"deferBytes", deferBytes);
 		};
 	};
 
@@ -219,13 +216,13 @@ namespace smartview
 		};
 		void parseBlocks() override
 		{
-			setText(L"RecipientBlockData:\r\n");
-			addChild(Reserved, L"Reserved: 0x%1!01X!\r\n", Reserved->getData());
-			addChild(NoOfProperties, L"NoOfProperties: 0x%1!08X!\r\n", NoOfProperties->getData());
+			setText(L"RecipientBlockData");
+			addChild(Reserved, L"Reserved: 0x%1!01X!", Reserved->getData());
+			addChild(NoOfProperties, L"NoOfProperties: 0x%1!08X!", NoOfProperties->getData());
 			auto i = 0;
 			for (const auto& propertyValue : PropertyValues)
 			{
-				addChild(propertyValue, L"PropertyValues[%1!d!]\r\n", i++);
+				addChild(propertyValue, L"PropertyValues[%1!d!]", i++);
 			}
 		};
 	};
@@ -251,12 +248,12 @@ namespace smartview
 		}
 		void parseBlocks()
 		{
-			setText(L"ActionDataForwardDelegate:\r\n");
-			addChild(RecipientCount, L"RecipientCount: 0x%1!08X!\r\n", RecipientCount->getData());
+			setText(L"ActionDataForwardDelegate");
+			addChild(RecipientCount, L"RecipientCount: 0x%1!08X!", RecipientCount->getData());
 			auto i = 0;
 			for (const auto& recipient : RecipientBlocks)
 			{
-				addChild(recipient, L"RecipientBlocks[%1!d!]\r\n", i++);
+				addChild(recipient, L"RecipientBlocks[%1!d!]", i++);
 			}
 		};
 	};
@@ -271,8 +268,8 @@ namespace smartview
 
 		void parseBlocks()
 		{
-			setText(L"ActionDataBounce:\r\n");
-			addChild(BounceCode, L"BounceCode: 0x%1!08X!\r\n", BounceCode->getData());
+			setText(L"ActionDataBounce");
+			addChild(BounceCode, L"BounceCode: 0x%1!08X!", BounceCode->getData());
 		}
 	};
 
@@ -291,9 +288,9 @@ namespace smartview
 
 		void parseBlocks()
 		{
-			setText(L"ActionDataTag:\r\n");
-			addChild(Unknown, L"Unknown: 0x%1!02X!\r\n", Unknown->getData());
-			addChild(TaggedPropertyValue, L"TaggedPropertyValue");
+			setText(L"ActionDataTag");
+			addChild(Unknown, L"Unknown: 0x%1!02X!", Unknown->getData());
+			addLabeledChild(L"TaggedPropertyValue", TaggedPropertyValue);
 		}
 	};
 
@@ -303,7 +300,7 @@ namespace smartview
 	{
 	private:
 		void parse() override {}
-		void parseBlocks() { setText(L"ActionDataDeleteMarkRead:\r\n"); }
+		void parseBlocks() { setText(L"ActionDataDeleteMarkRead"); }
 	};
 
 	std::shared_ptr<ActionData> getActionDataParser(DWORD at)
@@ -370,14 +367,14 @@ namespace smartview
 
 	void ActionBlock ::parseBlocks()
 	{
-		setText(L"ActionBlock:\r\n");
-		addChild(ActionLength, L"ActionLength: 0x%1!08X!\r\n", ActionLength->getData());
+		setText(L"ActionBlock");
+		addChild(ActionLength, L"ActionLength: 0x%1!08X!", ActionLength->getData());
 		addChild(
 			ActionType,
-			L"ActionType: %1!ws! = %2!d!\r\n",
+			L"ActionType: %1!ws! = %2!d!",
 			flags::InterpretFlags(flagActionType, ActionType->getData()).c_str(),
 			ActionType->getData());
-		addChild(ActionFlavor, L"ActionFlavor: 0x%1!08X!\r\n", ActionFlavor->getData());
+		addChild(ActionFlavor, L"ActionFlavor: 0x%1!08X!", ActionFlavor->getData());
 		addChild(ActionData);
 	}
 
@@ -404,18 +401,18 @@ namespace smartview
 
 	void RuleAction ::parseBlocks()
 	{
-		setText(m_bExtended ? L"Extended Rule Action\r\n" : L"Rule Action\r\n");
+		setText(m_bExtended ? L"Extended Rule Action" : L"Rule Action");
 		if (m_bExtended)
 		{
 			addChild(namedPropertyInformation);
-			addChild(RuleVersion, L"RuleVersion: 0x%1!08X!\r\n", RuleVersion->getData());
+			addChild(RuleVersion, L"RuleVersion: 0x%1!08X!", RuleVersion->getData());
 		}
 
-		addChild(NoOfActions, L"NoOfActions: 0x%1!08X!\r\n", NoOfActions->getData());
+		addChild(NoOfActions, L"NoOfActions: 0x%1!08X!", NoOfActions->getData());
 		auto i = 0;
 		for (const auto actionBlock : ActionBlocks)
 		{
-			addChild(actionBlock, L"ActionBlocks[%1!d!]\r\n", i++);
+			addChild(actionBlock, L"ActionBlocks[%1!d!]", i++);
 		}
 	}
 } // namespace smartview
