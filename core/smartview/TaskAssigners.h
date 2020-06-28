@@ -8,16 +8,18 @@
 namespace smartview
 {
 	// [MS-OXOTASK].pdf
-	struct TaskAssigner
+	class TaskAssigner : public block
 	{
+	private:
+		void parse() override;
+		void parseBlocks() override;
+
 		std::shared_ptr<blockT<DWORD>> cbAssigner = emptyT<DWORD>();
 		std::shared_ptr<blockT<ULONG>> cbEntryID = emptyT<ULONG>();
 		std::shared_ptr<blockBytes> lpEntryID = emptyBB();
 		std::shared_ptr<blockStringA> szDisplayName = emptySA();
 		std::shared_ptr<blockStringW> wzDisplayName = emptySW();
 		std::shared_ptr<blockBytes> JunkData = emptyBB();
-
-		TaskAssigner(const std::shared_ptr<binaryParser>& parser);
 	};
 
 	class TaskAssigners : public block

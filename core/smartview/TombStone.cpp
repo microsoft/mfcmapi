@@ -4,7 +4,7 @@
 
 namespace smartview
 {
-	TombstoneRecord::TombstoneRecord(const std::shared_ptr<binaryParser>& parser)
+	void TombstoneRecord::parse()
 	{
 		StartTime = blockT<DWORD>::parse(parser);
 		EndTime = blockT<DWORD>::parse(parser);
@@ -12,6 +12,16 @@ namespace smartview
 		GlobalObjectId = block::parse<smartview::GlobalObjectId>(parser, *GlobalObjectIdSize, false);
 		UsernameSize = blockT<WORD>::parse(parser);
 		szUsername = blockStringA::parse(parser, *UsernameSize);
+	}
+
+	void TombstoneRecord::parseBlocks()
+	{
+		addChild(StartTime, L"StartTime = 0x%1!08X! = %2!ws!", StartTime->getData(), RTimeToString(*StartTime).c_str());
+		addChild(EndTime, L"Endtime = 0x%1!08X! = %2!ws!", EndTime->getData(), RTimeToString(*EndTime).c_str());
+		addChild(GlobalObjectIdSize, L"GlobalObjectIdSize = 0x%1!08X!", GlobalObjectIdSize->getData());
+		addChild(GlobalObjectId);
+		addChild(UsernameSize, L"UsernameSize= 0x%1!04X!", UsernameSize->getData());
+		addChild(szUsername, L"szUsername = %1!hs!", szUsername->c_str());
 	}
 
 	void TombStone::parse()
@@ -46,45 +56,25 @@ namespace smartview
 			m_lpRecords.reserve(actualRecordsCount);
 			for (auto i = 0; i < actualRecordsCount; i++)
 			{
-				m_lpRecords.emplace_back(std::make_shared<TombstoneRecord>(parser));
+				m_lpRecords.emplace_back(block::parse<TombstoneRecord>(parser, false));
 			}
 		}
 	}
 
 	void TombStone::parseBlocks()
 	{
-		setText(L"Tombstone:\r\n");
-		addChild(m_Identifier, L"Identifier = 0x%1!08X!\r\n", m_Identifier->getData());
-		addChild(m_HeaderSize, L"HeaderSize = 0x%1!08X!\r\n", m_HeaderSize->getData());
-		addChild(m_Version, L"Version = 0x%1!08X!\r\n", m_Version->getData());
-		addChild(m_RecordsCount, L"RecordsCount = 0x%1!08X!\r\n", m_RecordsCount->getData());
-		addHeader(L"ActualRecordsCount (computed) = 0x%1!08X!\r\n", m_lpRecords.size());
+		setText(L"Tombstone");
+		addChild(m_Identifier, L"Identifier = 0x%1!08X!", m_Identifier->getData());
+		addChild(m_HeaderSize, L"HeaderSize = 0x%1!08X!", m_HeaderSize->getData());
+		addChild(m_Version, L"Version = 0x%1!08X!", m_Version->getData());
+		addChild(m_RecordsCount, L"RecordsCount = 0x%1!08X!", m_RecordsCount->getData());
+		addHeader(L"ActualRecordsCount (computed) = 0x%1!08X!", m_lpRecords.size());
 		addChild(m_RecordsSize, L"RecordsSize = 0x%1!08X!", m_RecordsSize->getData());
 
 		auto i = 0;
 		for (const auto& record : m_lpRecords)
 		{
-			terminateBlock();
-			addHeader(L"Record[%1!d!]\r\n", i++);
-			addChild(
-				record->StartTime,
-				L"StartTime = 0x%1!08X! = %2!ws!\r\n",
-				record->StartTime->getData(),
-				RTimeToString(*record->StartTime).c_str());
-			addChild(
-				record->EndTime,
-				L"Endtime = 0x%1!08X! = %2!ws!\r\n",
-				record->EndTime->getData(),
-				RTimeToString(*record->EndTime).c_str());
-			addChild(
-				record->GlobalObjectIdSize,
-				L"GlobalObjectIdSize = 0x%1!08X!\r\n",
-				record->GlobalObjectIdSize->getData());
-			addChild(record->GlobalObjectId);
-			terminateBlock();
-
-			addChild(record->UsernameSize, L"UsernameSize= 0x%1!04X!\r\n", record->UsernameSize->getData());
-			addChild(record->szUsername, L"szUsername = %1!hs!", record->szUsername->c_str());
+			addChild(record, L"Record[%1!d!]", i++);
 		}
 	}
 } // namespace smartview

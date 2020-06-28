@@ -3,90 +3,50 @@
 
 namespace smartview
 {
+	void SYSTEMTIMEBlock::parse()
+	{
+		wYear = blockT<WORD>::parse(parser);
+		wMonth = blockT<WORD>::parse(parser);
+		wDayOfWeek = blockT<WORD>::parse(parser);
+		wDay = blockT<WORD>::parse(parser);
+		wHour = blockT<WORD>::parse(parser);
+		wMinute = blockT<WORD>::parse(parser);
+		wSecond = blockT<WORD>::parse(parser);
+		wMilliseconds = blockT<WORD>::parse(parser);
+	}
+
+	void SYSTEMTIMEBlock::parseBlocks()
+	{
+		addChild(wYear, L"wYear = 0x%1!X! (%1!d!)", wYear->getData());
+		addChild(wMonth, L"wMonth = 0x%1!X! (%1!d!)", wMonth->getData());
+		addChild(wDayOfWeek, L"wDayOfWeek = 0x%1!X! (%1!d!)", wDayOfWeek->getData());
+		addChild(wDay, L"wDay = 0x%1!X! (%1!d!)", wDay->getData());
+		addChild(wHour, L"wHour = 0x%1!X! (%1!d!)", wHour->getData());
+		addChild(wMinute, L"wMinute = 0x%1!X! (%1!d!)", wMinute->getData());
+		addChild(wSecond, L"wSecond = 0x%1!X! (%1!d!)", wSecond->getData());
+		addChild(wMilliseconds, L"wMilliseconds = 0x%1!X! (%1!d!)", wMilliseconds->getData());
+	}
+
 	void TimeZone::parse()
 	{
 		m_lBias = blockT<DWORD>::parse(parser);
 		m_lStandardBias = blockT<DWORD>::parse(parser);
 		m_lDaylightBias = blockT<DWORD>::parse(parser);
 		m_wStandardYear = blockT<WORD>::parse(parser);
-		m_stStandardDate.wYear = blockT<WORD>::parse(parser);
-		m_stStandardDate.wMonth = blockT<WORD>::parse(parser);
-		m_stStandardDate.wDayOfWeek = blockT<WORD>::parse(parser);
-		m_stStandardDate.wDay = blockT<WORD>::parse(parser);
-		m_stStandardDate.wHour = blockT<WORD>::parse(parser);
-		m_stStandardDate.wMinute = blockT<WORD>::parse(parser);
-		m_stStandardDate.wSecond = blockT<WORD>::parse(parser);
-		m_stStandardDate.wMilliseconds = blockT<WORD>::parse(parser);
+		m_stStandardDate = block::parse<SYSTEMTIMEBlock>(parser, false);
 		m_wDaylightDate = blockT<WORD>::parse(parser);
-		m_stDaylightDate.wYear = blockT<WORD>::parse(parser);
-		m_stDaylightDate.wMonth = blockT<WORD>::parse(parser);
-		m_stDaylightDate.wDayOfWeek = blockT<WORD>::parse(parser);
-		m_stDaylightDate.wDay = blockT<WORD>::parse(parser);
-		m_stDaylightDate.wHour = blockT<WORD>::parse(parser);
-		m_stDaylightDate.wMinute = blockT<WORD>::parse(parser);
-		m_stDaylightDate.wSecond = blockT<WORD>::parse(parser);
-		m_stDaylightDate.wMilliseconds = blockT<WORD>::parse(parser);
+		m_stDaylightDate = block::parse<SYSTEMTIMEBlock>(parser, false);
 	}
 
 	void TimeZone::parseBlocks()
 	{
-		setText(L"Time Zone: \r\n");
-		addChild(m_lBias, L"lBias = 0x%1!08X! (%1!d!)\r\n", m_lBias->getData());
-		addChild(m_lStandardBias, L"lStandardBias = 0x%1!08X! (%1!d!)\r\n", m_lStandardBias->getData());
-		addChild(m_lDaylightBias, L"lDaylightBias = 0x%1!08X! (%1!d!)\r\n", m_lDaylightBias->getData());
-		addBlankLine();
-		addChild(m_wStandardYear, L"wStandardYear = 0x%1!04X! (%1!d!)\r\n", m_wStandardYear->getData());
-		addChild(
-			m_stStandardDate.wYear, L"stStandardDate.wYear = 0x%1!X! (%1!d!)\r\n", m_stStandardDate.wYear->getData());
-		addChild(
-			m_stStandardDate.wMonth,
-			L"stStandardDate.wMonth = 0x%1!X! (%1!d!)\r\n",
-			m_stStandardDate.wMonth->getData());
-		addChild(
-			m_stStandardDate.wDayOfWeek,
-			L"stStandardDate.wDayOfWeek = 0x%1!X! (%1!d!)\r\n",
-			m_stStandardDate.wDayOfWeek->getData());
-		addChild(m_stStandardDate.wDay, L"stStandardDate.wDay = 0x%1!X! (%1!d!)\r\n", m_stStandardDate.wDay->getData());
-		addChild(
-			m_stStandardDate.wHour, L"stStandardDate.wHour = 0x%1!X! (%1!d!)\r\n", m_stStandardDate.wHour->getData());
-		addChild(
-			m_stStandardDate.wMinute,
-			L"stStandardDate.wMinute = 0x%1!X! (%1!d!)\r\n",
-			m_stStandardDate.wMinute->getData());
-		addChild(
-			m_stStandardDate.wSecond,
-			L"stStandardDate.wSecond = 0x%1!X! (%1!d!)\r\n",
-			m_stStandardDate.wSecond->getData());
-		addChild(
-			m_stStandardDate.wMilliseconds,
-			L"stStandardDate.wMilliseconds = 0x%1!X! (%1!d!)\r\n",
-			m_stStandardDate.wMilliseconds->getData());
-		addBlankLine();
-		addChild(m_wDaylightDate, L"wDaylightDate = 0x%1!04X! (%1!d!)\r\n", m_wDaylightDate->getData());
-		addChild(
-			m_stDaylightDate.wYear, L"stDaylightDate.wYear = 0x%1!X! (%1!d!)\r\n", m_stDaylightDate.wYear->getData());
-		addChild(
-			m_stDaylightDate.wMonth,
-			L"stDaylightDate.wMonth = 0x%1!X! (%1!d!)\r\n",
-			m_stDaylightDate.wMonth->getData());
-		addChild(
-			m_stDaylightDate.wDayOfWeek,
-			L"stDaylightDate.wDayOfWeek = 0x%1!X! (%1!d!)\r\n",
-			m_stDaylightDate.wDayOfWeek->getData());
-		addChild(m_stDaylightDate.wDay, L"stDaylightDate.wDay = 0x%1!X! (%1!d!)\r\n", m_stDaylightDate.wDay->getData());
-		addChild(
-			m_stDaylightDate.wHour, L"stDaylightDate.wHour = 0x%1!X! (%1!d!)\r\n", m_stDaylightDate.wHour->getData());
-		addChild(
-			m_stDaylightDate.wMinute,
-			L"stDaylightDate.wMinute = 0x%1!X! (%1!d!)\r\n",
-			m_stDaylightDate.wMinute->getData());
-		addChild(
-			m_stDaylightDate.wSecond,
-			L"stDaylightDate.wSecond = 0x%1!X! (%1!d!)\r\n",
-			m_stDaylightDate.wSecond->getData());
-		addChild(
-			m_stDaylightDate.wMilliseconds,
-			L"stDaylightDate.wMilliseconds = 0x%1!X! (%1!d!)",
-			m_stDaylightDate.wMilliseconds->getData());
+		setText(L"Time Zone");
+		addChild(m_lBias, L"lBias = 0x%1!08X! (%1!d!)", m_lBias->getData());
+		addChild(m_lStandardBias, L"lStandardBias = 0x%1!08X! (%1!d!)", m_lStandardBias->getData());
+		addChild(m_lDaylightBias, L"lDaylightBias = 0x%1!08X! (%1!d!)", m_lDaylightBias->getData());
+		addChild(m_wStandardYear, L"wStandardYear = 0x%1!04X! (%1!d!)", m_wStandardYear->getData());
+		addChild(m_stStandardDate, L"stStandardDate");
+		addChild(m_wDaylightDate, L"wDaylightDate = 0x%1!04X! (%1!d!)", m_wDaylightDate->getData());
+		addChild(m_stDaylightDate, L"stDaylightDate");
 	}
 } // namespace smartview

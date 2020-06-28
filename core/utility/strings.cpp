@@ -290,7 +290,7 @@ namespace strings
 		const auto whole = left + right;
 
 		return _wtoi64(whole.c_str());
-	} // namespace strings
+	}
 
 	std::wstring strip(const std::wstring& str, const std::function<bool(const WCHAR&)>& func)
 	{
@@ -586,25 +586,33 @@ namespace strings
 		return elems;
 	}
 
-	std::wstring join(const std::vector<std::wstring>& elems, const std::wstring& delim)
+	std::wstring join(const std::vector<std::wstring>& elems, const std::wstring& delim, bool bSkipEmpty)
 	{
 		if (elems.empty()) return emptystring;
 
 		std::wstringstream ss;
 		auto iter = elems.begin();
+		bool needDelim = false;
 		while (true)
 		{
+			if (bSkipEmpty && iter->empty())
+			{
+				if (++iter == elems.end()) break;
+				continue;
+			}
+
+			if (needDelim) ss << delim;
 			ss << *iter;
 			if (++iter == elems.end()) break;
-			ss << delim;
+			needDelim = true;
 		}
 
 		return ss.str();
 	}
 
-	std::wstring join(const std::vector<std::wstring>& elems, const wchar_t delim)
+	std::wstring join(const std::vector<std::wstring>& elems, const wchar_t delim, bool bSkipEmpty)
 	{
-		return join(elems, std::wstring(1, delim));
+		return join(elems, std::wstring(1, delim), bSkipEmpty);
 	}
 
 	// clang-format off
@@ -927,5 +935,17 @@ namespace strings
 		}
 
 		return {};
+	}
+
+	std::wstring collapseTree(const std::wstring& src)
+	{
+		// Strategy: Split to lines, trim whitepace around lines, join with spaces
+		auto lines = strings::split(src, L'\n');
+		for (auto& line : lines)
+		{
+			line = strings::trimWhitespace(line);
+		}
+
+		return join(lines, L' ', true);
 	}
 } // namespace strings

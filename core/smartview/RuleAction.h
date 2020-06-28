@@ -57,7 +57,7 @@ namespace smartview
 	class RuleAction : public block
 	{
 	public:
-		void Init(bool bExtended) noexcept { m_bExtended = bExtended; }
+		RuleAction(bool bExtended) : m_bExtended(bExtended) {}
 
 	private:
 		bool m_bExtended{};
@@ -92,7 +92,6 @@ namespace smartview
 			if (m_bExtended)
 			{
 				addChild(namedPropertyInformation);
-				terminateBlock();
 				addChild(RuleVersion, L"RuleVersion: 0x%1!08X!\r\n", RuleVersion->getData());
 			}
 
@@ -101,7 +100,6 @@ namespace smartview
 			for (const auto actionBlock : ActionBlocks)
 			{
 				addChild(actionBlock, L"ActionBlocks[%1!d!]\r\n", i++);
-				terminateBlock();
 			}
 		}
 	};

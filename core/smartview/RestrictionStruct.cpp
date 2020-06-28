@@ -34,24 +34,19 @@ namespace smartview
 					lpRes.emplace_back(
 						std::make_shared<RestrictionStruct>(parser, m_ulDepth + 1, m_bRuleCondition, m_bExtendedCount));
 				}
-
-				// TODO: Should we do this?
-				//srRestriction.resAnd.lpRes.shrink_to_fit();
 			}
 		}
 
 		void parseBlocks(ULONG ulTabLevel)
 		{
-			const auto t = makeTabs(ulTabLevel);
-			const auto tabs = t.c_str();
+			setText(L"resAnd");
+			addChild(cRes, L"cRes = 0x%1!08X!", cRes->getData());
 
 			auto i = 0;
-			addChild(cRes, L"%1!ws!lpRes->res.resAnd.cRes = 0x%2!08X!\r\n", tabs, cRes->getData());
-
 			for (const auto& res : lpRes)
 			{
 				res->parseBlocks(ulTabLevel + 1);
-				cRes->addChild(res, L"%1!ws!lpRes->res.resAnd.lpRes[0x%2!08X!]\r\n", tabs, i++);
+				addChild(res, L"lpRes[0x%1!08X!]", i++);
 			}
 		}
 
@@ -89,16 +84,14 @@ namespace smartview
 
 		void parseBlocks(ULONG ulTabLevel)
 		{
-			const auto t = makeTabs(ulTabLevel);
-			const auto tabs = t.c_str();
+			setText(L"resOr");
+			addChild(cRes, L"cRes = 0x%1!08X!", cRes->getData());
 
 			auto i = 0;
-			addChild(cRes, L"%1!ws!lpRes->res.resOr.cRes = 0x%2!08X!\r\n", tabs, cRes->getData());
-
 			for (const auto& res : lpRes)
 			{
 				res->parseBlocks(ulTabLevel + 1);
-				cRes->addChild(res, L"%1!ws!lpRes->res.resOr.lpRes[0x%2!08X!]\r\n", tabs, i++);
+				addChild(res, L"lpRes[0x%1!08X!]", i++);
 			}
 		}
 
@@ -121,16 +114,12 @@ namespace smartview
 
 		void parseBlocks(ULONG ulTabLevel)
 		{
-			const auto t = makeTabs(ulTabLevel);
-			const auto tabs = t.c_str();
-
-			auto notRoot = create(L"%1!ws!lpRes->res.resNot.lpRes\r\n", tabs);
-			addChild(notRoot);
+			setText(L"resNot");
 
 			if (lpRes)
 			{
 				lpRes->parseBlocks(ulTabLevel + 1);
-				notRoot->addChild(lpRes);
+				addChild(lpRes, L"lpRes");
 			}
 		}
 
@@ -153,27 +142,18 @@ namespace smartview
 			ulPropTag2 = blockT<DWORD>::parse(parser);
 		}
 
-		void parseBlocks(ULONG ulTabLevel)
+		void parseBlocks(ULONG /*ulTabLevel*/)
 		{
-			const auto t = makeTabs(ulTabLevel);
-			const auto tabs = t.c_str();
-
+			setText(L"resCompareProps");
 			addChild(
 				relop,
-				L"%1!ws!lpRes->res.resCompareProps.relop = %2!ws! = 0x%3!08X!\r\n",
-				tabs,
+				L"relop = %1!ws! = 0x%2!08X!",
 				flags::InterpretFlags(flagRelop, *relop).c_str(),
 				relop->getData());
 			addChild(
-				ulPropTag1,
-				L"%1!ws!lpRes->res.resCompareProps.ulPropTag1 = %2!ws!\r\n",
-				tabs,
-				proptags::TagToString(*ulPropTag1, nullptr, false, true).c_str());
+				ulPropTag1, L"ulPropTag1 = %1!ws!", proptags::TagToString(*ulPropTag1, nullptr, false, true).c_str());
 			addChild(
-				ulPropTag2,
-				L"%1!ws!lpRes->res.resCompareProps.ulPropTag2 = %2!ws!\r\n",
-				tabs,
-				proptags::TagToString(*ulPropTag2, nullptr, false, true).c_str());
+				ulPropTag2, L"ulPropTag2 = %1!ws!", proptags::TagToString(*ulPropTag2, nullptr, false, true).c_str());
 		}
 
 		std::shared_ptr<blockT<DWORD>> relop = emptyT<DWORD>();
@@ -193,33 +173,25 @@ namespace smartview
 			lpProp.parse(parser, 1, m_bRuleCondition);
 		}
 
-		void parseBlocks(ULONG ulTabLevel)
+		void parseBlocks(ULONG /*ulTabLevel*/)
 		{
-			const auto t = makeTabs(ulTabLevel);
-			const auto tabs = t.c_str();
-
+			setText(L"resContent");
 			addChild(
 				ulFuzzyLevel,
-				L"%1!ws!lpRes->res.resContent.ulFuzzyLevel = %2!ws! = 0x%3!08X!\r\n",
-				tabs,
+				L"ulFuzzyLevel = %1!ws! = 0x%2!08X!",
 				flags::InterpretFlags(flagFuzzyLevel, *ulFuzzyLevel).c_str(),
 				ulFuzzyLevel->getData());
 
-			addChild(
-				ulPropTag,
-				L"%1!ws!lpRes->res.resContent.ulPropTag = %2!ws!\r\n",
-				tabs,
-				proptags::TagToString(*ulPropTag, nullptr, false, true).c_str());
+			addChild(ulPropTag, L"ulPropTag = %1!ws!", proptags::TagToString(*ulPropTag, nullptr, false, true).c_str());
 
 			if (!lpProp.Props().empty())
 			{
-				auto propBlock = create();
+				auto propBlock = create(L"lpProp");
 				addChild(propBlock);
 
 				propBlock->addChild(
 					lpProp.Props()[0]->ulPropTag,
-					L"%1!ws!lpRes->res.resContent.lpProp->ulPropTag = %2!ws!\r\n",
-					tabs,
+					L"ulPropTag = %1!ws!",
 					proptags::TagToString(*lpProp.Props()[0]->ulPropTag, nullptr, false, true).c_str());
 				if (lpProp.Props()[0]->value)
 				{
@@ -227,8 +199,7 @@ namespace smartview
 					{
 						propBlock->addChild(
 							lpProp.Props()[0]->value->PropBlock(),
-							L"%1!ws!lpRes->res.resContent.lpProp->Value = %2!ws!\r\n",
-							tabs,
+							L"Value = %1!ws!",
 							lpProp.Props()[0]->value->PropBlock()->c_str());
 					}
 
@@ -236,8 +207,7 @@ namespace smartview
 					{
 						propBlock->addChild(
 							lpProp.Props()[0]->value->AltPropBlock(),
-							L"%1!ws!\tAlt: %2!ws!\r\n",
-							tabs,
+							L"Alt: %1!ws!",
 							lpProp.Props()[0]->value->AltPropBlock()->c_str());
 					}
 				}
@@ -264,18 +234,13 @@ namespace smartview
 
 		void parseBlocks(ULONG ulTabLevel)
 		{
-			const auto t = makeTabs(ulTabLevel);
-			const auto tabs = t.c_str();
-
-			addChild(ulCount, L"%1!ws!lpRes->res.resCount.ulCount = 0x%2!08X!\r\n", tabs, ulCount->getData());
-
-			auto countRoot = create(L"%1!ws!lpRes->res.resCount.lpRes\r\n", tabs);
-			addChild(countRoot);
+			setText(L"resCount");
+			addChild(ulCount, L"resCount.ulCount = 0x%1!08X!", ulCount->getData());
 
 			if (lpRes)
 			{
 				lpRes->parseBlocks(ulTabLevel + 1);
-				countRoot->addChild(lpRes);
+				addChild(lpRes, L"lpRes");
 			}
 		}
 
@@ -299,47 +264,39 @@ namespace smartview
 			lpProp.parse(parser, 1, m_bRuleCondition);
 		}
 
-		void parseBlocks(ULONG ulTabLevel)
+		void parseBlocks(ULONG /*ulTabLevel*/)
 		{
-			const auto t = makeTabs(ulTabLevel);
-			const auto tabs = t.c_str();
-
+			setText(L"resProperty");
 			addChild(
 				relop,
-				L"%1!ws!lpRes->res.resProperty.relop = %2!ws! = 0x%3!08X!\r\n",
-				tabs,
+				L"relop = %1!ws! = 0x%2!08X!",
 				flags::InterpretFlags(flagRelop, *relop).c_str(),
 				relop->getData());
-			addChild(
-				ulPropTag,
-				L"%1!ws!lpRes->res.resProperty.ulPropTag = %2!ws!\r\n",
-				tabs,
-				proptags::TagToString(*ulPropTag, nullptr, false, true).c_str());
+			addChild(ulPropTag, L"ulPropTag = %1!ws!", proptags::TagToString(*ulPropTag, nullptr, false, true).c_str());
 
 			if (!lpProp.Props().empty())
 			{
-				ulPropTag->addChild(
+				auto propBlock = create(L"lpProp");
+				addChild(propBlock);
+				propBlock->addChild(
 					lpProp.Props()[0]->ulPropTag,
-					L"%1!ws!lpRes->res.resProperty.lpProp->ulPropTag = %2!ws!\r\n",
-					tabs,
+					L"ulPropTag = %1!ws!",
 					proptags::TagToString(*lpProp.Props()[0]->ulPropTag, nullptr, false, true).c_str());
 				if (lpProp.Props()[0]->value)
 				{
 					if (!lpProp.Props()[0]->value->PropBlock()->empty())
 					{
-						ulPropTag->addChild(
+						propBlock->addChild(
 							lpProp.Props()[0]->value->PropBlock(),
-							L"%1!ws!lpRes->res.resProperty.lpProp->Value = %2!ws!\r\n",
-							tabs,
+							L"Value = %1!ws!",
 							lpProp.Props()[0]->value->PropBlock()->c_str());
 					}
 
 					if (!lpProp.Props()[0]->value->AltPropBlock()->empty())
 					{
-						ulPropTag->addChild(
+						propBlock->addChild(
 							lpProp.Props()[0]->value->AltPropBlock(),
-							L"%1!ws!\tAlt: %2!ws!\r\n",
-							tabs,
+							L"Alt: %1!ws!",
 							lpProp.Props()[0]->value->AltPropBlock()->c_str());
 					}
 
@@ -347,7 +304,7 @@ namespace smartview
 					if (!szPropNum.empty())
 					{
 						// TODO: use block
-						ulPropTag->addHeader(L"%1!ws!\tFlags: %2!ws!", tabs, szPropNum.c_str());
+						propBlock->addHeader(L"Flags: %1!ws!", szPropNum.c_str());
 					}
 				}
 			}
@@ -374,35 +331,23 @@ namespace smartview
 			ulMask = blockT<DWORD>::parse(parser);
 		}
 
-		void parseBlocks(ULONG ulTabLevel)
+		void parseBlocks(ULONG /*ulTabLevel*/)
 		{
-			const auto t = makeTabs(ulTabLevel);
-			const auto tabs = t.c_str();
-
+			setText(L"resBitMask");
 			addChild(
 				relBMR,
-				L"%1!ws!lpRes->res.resBitMask.relBMR = %2!ws! = 0x%3!08X!\r\n",
-				tabs,
+				L"relBMR = %1!ws! = 0x%2!08X!",
 				flags::InterpretFlags(flagBitmask, *relBMR).c_str(),
 				relBMR->getData());
-			addChild(
-				ulPropTag,
-				L"%1!ws!lpRes->res.resBitMask.ulPropTag = %2!ws!\r\n",
-				tabs,
-				proptags::TagToString(*ulPropTag, nullptr, false, true).c_str());
+			addChild(ulPropTag, L"ulPropTag = %1!ws!", proptags::TagToString(*ulPropTag, nullptr, false, true).c_str());
 			const auto szPropNum = InterpretNumberAsStringProp(*ulMask, *ulPropTag);
 			if (szPropNum.empty())
 			{
-				addChild(ulMask, L"%1!ws!lpRes->res.resBitMask.ulMask = 0x%2!08X!\r\n", tabs, ulMask->getData());
+				addChild(ulMask, L"ulMask = 0x%1!08X!", ulMask->getData());
 			}
 			else
 			{
-				addChild(
-					ulMask,
-					L"%1!ws!lpRes->res.resBitMask.ulMask = %2!ws! = 0x%3!08X!\r\n",
-					tabs,
-					szPropNum.c_str(),
-					ulMask->getData());
+				addChild(ulMask, L"ulMask = %1!ws! = 0x%2!08X!", szPropNum.c_str(), ulMask->getData());
 			}
 		}
 
@@ -427,23 +372,16 @@ namespace smartview
 			cb = blockT<DWORD>::parse(parser);
 		}
 
-		void parseBlocks(ULONG ulTabLevel)
+		void parseBlocks(ULONG /*ulTabLevel*/)
 		{
-			const auto t = makeTabs(ulTabLevel);
-			const auto tabs = t.c_str();
-
+			setText(L"resSize");
 			addChild(
 				relop,
-				L"%1!ws!lpRes->res.resSize.relop = %2!ws! = 0x%3!08X!\r\n",
-				tabs,
+				L"relop = %1!ws! = 0x%2!08X!",
 				flags::InterpretFlags(flagRelop, *relop).c_str(),
 				relop->getData());
-			addChild(cb, L"%1!ws!lpRes->res.resSize.cb = 0x%2!08X!\r\n", tabs, cb->getData());
-			addChild(
-				ulPropTag,
-				L"%1!ws!lpRes->res.resSize.ulPropTag = %2!ws!\r\n",
-				tabs,
-				proptags::TagToString(*ulPropTag, nullptr, false, true).c_str());
+			addChild(cb, L"cb = 0x%1!08X!", cb->getData());
+			addChild(ulPropTag, L"ulPropTag = %1!ws!", proptags::TagToString(*ulPropTag, nullptr, false, true).c_str());
 		}
 
 		std::shared_ptr<blockT<DWORD>> relop = emptyT<DWORD>();
@@ -458,16 +396,10 @@ namespace smartview
 	public:
 		void parse() override { ulPropTag = blockT<DWORD>::parse(parser); }
 
-		void parseBlocks(ULONG ulTabLevel)
+		void parseBlocks(ULONG /*ulTabLevel*/)
 		{
-			const auto t = makeTabs(ulTabLevel);
-			const auto tabs = t.c_str();
-
-			addChild(
-				ulPropTag,
-				L"%1!ws!lpRes->res.resExist.ulPropTag = %2!ws!\r\n",
-				tabs,
-				proptags::TagToString(*ulPropTag, nullptr, false, true).c_str());
+			setText(L"resExist");
+			addChild(ulPropTag, L"ulPropTag = %1!ws!", proptags::TagToString(*ulPropTag, nullptr, false, true).c_str());
 		}
 
 		std::shared_ptr<blockT<DWORD>> ulPropTag = emptyT<DWORD>();
@@ -489,20 +421,16 @@ namespace smartview
 
 		void parseBlocks(ULONG ulTabLevel)
 		{
-			const auto t = makeTabs(ulTabLevel);
-			const auto tabs = t.c_str();
-
+			setText(L"resSub");
 			addChild(
 				ulSubObject,
-				L"%1!ws!lpRes->res.resSub.ulSubObject = %2!ws!\r\n",
-				tabs,
+				L"ulSubObject = %1!ws!",
 				proptags::TagToString(*ulSubObject, nullptr, false, true).c_str());
-			ulSubObject->addHeader(L"%1!ws!lpRes->res.resSub.lpRes\r\n", tabs);
 
 			if (lpRes)
 			{
 				lpRes->parseBlocks(ulTabLevel + 1);
-				ulSubObject->addChild(lpRes);
+				addChild(lpRes, L"lpRes");
 			}
 		}
 
@@ -534,51 +462,41 @@ namespace smartview
 
 		void parseBlocks(ULONG ulTabLevel)
 		{
-			const auto t = makeTabs(ulTabLevel);
-			const auto tabs = t.c_str();
-
-			addChild(cValues, L"%1!ws!lpRes->res.resComment.cValues = 0x%2!08X!\r\n", tabs, cValues->getData());
+			setText(L"resComment");
+			addChild(cValues, L"cValues = 0x%1!08X!", cValues->getData());
 
 			auto i = 0;
 			for (const auto& prop : lpProp.Props())
 			{
-				prop->ulPropTag->setText(
-					L"%1!ws!lpRes->res.resComment.lpProp[0x%2!08X!].ulPropTag = %3!ws!\r\n",
-					tabs,
-					i,
+				auto propBlock = create(L"lpProp[0x%1!08X!]", i);
+				addChild(propBlock);
+				propBlock->addChild(
+					prop->ulPropTag,
+					L"ulPropTag = %1!ws!",
 					proptags::TagToString(*prop->ulPropTag, nullptr, false, true).c_str());
-				cValues->addChild(prop->ulPropTag);
 
 				if (prop->value)
 				{
 					if (!prop->value->PropBlock()->empty())
 					{
-						prop->ulPropTag->addChild(
-							prop->value->PropBlock(),
-							L"%1!ws!lpRes->res.resComment.lpProp[0x%2!08X!].Value = %3!ws!\r\n",
-							tabs,
-							i,
-							prop->value->PropBlock()->c_str());
+						propBlock->addChild(
+							prop->value->PropBlock(), L"Value = %1!ws!", prop->value->PropBlock()->c_str());
 					}
 
 					if (!prop->value->AltPropBlock()->empty())
 					{
-						prop->ulPropTag->addChild(
-							prop->value->AltPropBlock(),
-							L"%1!ws!\tAlt: %2!ws!\r\n",
-							tabs,
-							prop->value->AltPropBlock()->c_str());
+						propBlock->addChild(
+							prop->value->AltPropBlock(), L"Alt: %1!ws!", prop->value->AltPropBlock()->c_str());
 					}
 				}
 
 				i++;
 			}
 
-			addHeader(L"%1!ws!lpRes->res.resComment.lpRes\r\n", tabs);
 			if (lpRes)
 			{
 				lpRes->parseBlocks(ulTabLevel + 1);
-				addChild(lpRes);
+				addChild(lpRes, L"lpRes");
 			}
 		}
 
@@ -609,51 +527,40 @@ namespace smartview
 
 		void parseBlocks(ULONG ulTabLevel)
 		{
-			const auto t = makeTabs(ulTabLevel);
-			const auto tabs = t.c_str();
-
-			addChild(cValues, L"%1!ws!lpRes->res.resAnnotation.cValues = 0x%2!08X!\r\n", tabs, cValues->getData());
+			setText(L"resAnnotation");
+			addChild(cValues, L"cValues = 0x%1!08X!", cValues->getData());
 
 			auto i = 0;
 			for (const auto& prop : lpProp.Props())
 			{
-				cValues->addChild(prop->ulPropTag);
+				auto propBlock = create(L"lpProp[0x%1!08X!]", i);
+				addChild(propBlock);
+				propBlock->addChild(prop->ulPropTag);
 
-				prop->ulPropTag->setText(
-					L"%1!ws!lpRes->res.resAnnotation.lpProp[0x%2!08X!].ulPropTag = %3!ws!\r\n",
-					tabs,
-					i,
-					proptags::TagToString(*prop->ulPropTag, nullptr, false, true).c_str());
+				propBlock->setText(
+					L"ulPropTag = %1!ws!", proptags::TagToString(*prop->ulPropTag, nullptr, false, true).c_str());
 				if (prop->value)
 				{
 					if (!prop->value->PropBlock()->empty())
 					{
-						prop->ulPropTag->addChild(
-							prop->value->PropBlock(),
-							L"%1!ws!lpRes->res.resAnnotation.lpProp[0x%2!08X!].Value = %3!ws!\r\n",
-							tabs,
-							i,
-							prop->value->PropBlock()->c_str());
+						propBlock->addChild(
+							prop->value->PropBlock(), L"Value = %1!ws!", prop->value->PropBlock()->c_str());
 					}
 
 					if (!prop->value->AltPropBlock()->empty())
 					{
-						prop->ulPropTag->addChild(
-							prop->value->AltPropBlock(),
-							L"%1!ws!\tAlt: %2!ws!\r\n",
-							tabs,
-							prop->value->AltPropBlock()->c_str());
+						propBlock->addChild(
+							prop->value->AltPropBlock(), L"Alt: %1!ws!", prop->value->AltPropBlock()->c_str());
 					}
 				}
 
 				i++;
 			}
 
-			addHeader(L"%1!ws!lpRes->res.resAnnotation.lpRes\r\n", tabs);
 			if (lpRes)
 			{
 				lpRes->parseBlocks(ulTabLevel + 1);
-				addChild(lpRes);
+				addChild(lpRes, L"lpRes");
 			}
 		}
 
@@ -741,17 +648,12 @@ namespace smartview
 			return;
 		}
 
-		addChild(
-			rt,
-			L"%1!ws!lpRes->rt = 0x%2!X! = %3!ws!\r\n",
-			std::wstring(ulTabLevel, L'\t').c_str(),
-			rt->getData(),
-			flags::InterpretFlags(flagRestrictionType, *rt).c_str());
+		addChild(rt, L"rt = 0x%1!X! = %2!ws!", rt->getData(), flags::InterpretFlags(flagRestrictionType, *rt).c_str());
 
 		if (res)
 		{
 			res->parseBlocks(ulTabLevel);
 			addChild(res);
 		}
-	} // namespace smartview
+	}
 } // namespace smartview

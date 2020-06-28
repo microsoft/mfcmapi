@@ -9,13 +9,6 @@ namespace smartview
 
 	void block::addHeader(const std::wstring& _text) { addChild(create(_text)); }
 
-	void block::addBlankLine()
-	{
-		auto ret = create();
-		ret->blank = true;
-		children.push_back(ret);
-	}
-
 	void block::addLabeledChild(const std::wstring& _text, const std::shared_ptr<block>& _block)
 	{
 		if (_block->isSet())
@@ -25,9 +18,16 @@ namespace smartview
 			node->setOffset(_block->getOffset());
 			node->setSize(_block->getSize());
 			node->addChild(_block);
-			node->terminateBlock();
 			addChild(node);
 		}
+	}
+
+	void block::addSubHeader(const std::wstring& _text) {
+		auto node = create();
+		node->setText(_text);
+		node->setOffset(getOffset());
+		node->setSize(getSize());
+		addChild(node);
 	}
 
 	void block::ensureParsed()
@@ -42,9 +42,7 @@ namespace smartview
 		if (this->hasData() && enableJunk && parser->getSize())
 		{
 			auto junkData = blockBytes::parse(parser, parser->getSize());
-			terminateBlock();
-			addHeader(L"Unparsed data size = 0x%1!08X!\r\n", junkData->size());
-			addChild(junkData);
+			addLabeledChild(strings::formatmessage(L"Unparsed data size = 0x%1!08X!", junkData->size()), junkData);
 		}
 
 		const auto endOffset = parser->getOffset();
@@ -54,25 +52,50 @@ namespace smartview
 		setSize(endOffset - startOffset);
 	}
 
-	std::wstring block::toStringInternal() const
+	std::vector<std::wstring> tabStrings(const std::vector<std::wstring>& elems, bool usePipes)
 	{
-		std::vector<std::wstring> items;
-		items.reserve(children.size() + 1);
-		items.push_back(blank ? L"\r\n" : text);
+		if (elems.empty()) return {};
 
-		for (const auto& item : children)
+		std::vector<std::wstring> strings;
+		strings.reserve(elems.size());
+		auto iter = elems.begin();
+		for (const auto& elem : elems)
 		{
-			items.emplace_back(item->toStringInternal());
+			if (usePipes)
+			{
+				strings.emplace_back(L"|\t" + elem);
+			}
+			else
+			{
+				strings.emplace_back(L"\t" + elem);
+			}
 		}
 
-		return strings::join(items, strings::emptystring);
+		return strings;
+	}
+
+	std::vector<std::wstring> block::toStringsInternal() const
+	{
+		std::vector<std::wstring> strings;
+		strings.reserve(children.size() + 1);
+		strings.push_back(text + L"\r\n");
+
+		for (const auto& child : children)
+		{
+			auto childStrings = child->toStringsInternal();
+			if (!text.empty()) childStrings = tabStrings(childStrings, usePipes());
+			strings.insert(std::end(strings), std::begin(childStrings), std::end(childStrings));
+		}
+
+		return strings;
 	}
 
 	std::wstring block::toString()
 	{
 		ensureParsed();
 
-		auto parsedString = strings::trimWhitespace(toStringInternal());
+		auto strings = toStringsInternal();
+		auto parsedString = strings::trimWhitespace(strings::join(strings, strings::emptystring));
 
 		// If we built a string with embedded nulls in it, replace them with dots.
 		std::replace_if(

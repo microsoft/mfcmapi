@@ -6,16 +6,18 @@
 
 namespace smartview
 {
-	struct TombstoneRecord
+	class TombstoneRecord : public block
 	{
+	private:
+		void parse() override;
+		void parseBlocks() override;
+
 		std::shared_ptr<blockT<DWORD>> StartTime = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> EndTime = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> GlobalObjectIdSize = emptyT<DWORD>();
 		std::shared_ptr<GlobalObjectId> GlobalObjectId;
 		std::shared_ptr<blockT<WORD>> UsernameSize = emptyT<WORD>();
 		std::shared_ptr<blockStringA> szUsername = emptySA();
-
-		TombstoneRecord(const std::shared_ptr<binaryParser>& parser);
 	};
 
 	class TombStone : public block

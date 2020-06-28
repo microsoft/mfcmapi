@@ -226,7 +226,6 @@ namespace smartview
 			for (const auto& propertyValue : PropertyValues)
 			{
 				addChild(propertyValue, L"PropertyValues[%1!d!]\r\n", i++);
-				terminateBlock();
 			}
 		};
 	};
@@ -258,7 +257,6 @@ namespace smartview
 			for (const auto& recipient : RecipientBlocks)
 			{
 				addChild(recipient, L"RecipientBlocks[%1!d!]\r\n", i++);
-				terminateBlock();
 			}
 		};
 	};

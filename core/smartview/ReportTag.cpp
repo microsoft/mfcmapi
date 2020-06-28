@@ -41,30 +41,27 @@ namespace smartview
 	{
 		if (*_cb)
 		{
-			terminateBlock();
 			addLabeledChild(label, eid);
 		}
 	}
 
 	void ReportTag::parseBlocks()
 	{
-		setText(L"Report Tag: \r\n");
-		addLabeledChild(L"Cookie = ", m_Cookie);
+		setText(L"Report Tag");
+		addLabeledChild(L"Cookie", m_Cookie);
 
-		terminateBlock();
 		auto szFlags = flags::InterpretFlags(flagReportTagVersion, *m_Version);
 		addChild(m_Version, L"Version = 0x%1!08X! = %2!ws!", m_Version->getData(), szFlags.c_str());
 
-		addEID(L"StoreEntryID = ", m_cbStoreEntryID, m_lpStoreEntryID);
-		addEID(L"FolderEntryID = ", m_cbFolderEntryID, m_lpFolderEntryID);
-		addEID(L"MessageEntryID = ", m_cbMessageEntryID, m_lpMessageEntryID);
-		addEID(L"SearchFolderEntryID = ", m_cbSearchFolderEntryID, m_lpSearchFolderEntryID);
-		addEID(L"MessageSearchKey = ", m_cbMessageSearchKey, m_lpMessageSearchKey);
+		addEID(L"StoreEntryID", m_cbStoreEntryID, m_lpStoreEntryID);
+		addEID(L"FolderEntryID", m_cbFolderEntryID, m_lpFolderEntryID);
+		addEID(L"MessageEntryID", m_cbMessageEntryID, m_lpMessageEntryID);
+		addEID(L"SearchFolderEntryID", m_cbSearchFolderEntryID, m_lpSearchFolderEntryID);
+		addEID(L"MessageSearchKey", m_cbMessageSearchKey, m_lpMessageSearchKey);
 
 		if (m_cchAnsiText)
 		{
-			terminateBlock();
-			addChild(m_cchAnsiText, L"cchAnsiText = 0x%1!08X!\r\n", m_cchAnsiText->getData());
+			addChild(m_cchAnsiText, L"cchAnsiText = 0x%1!08X!", m_cchAnsiText->getData());
 			addChild(m_lpszAnsiText, L"AnsiText = %1!hs!", m_lpszAnsiText->c_str());
 		}
 	}

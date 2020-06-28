@@ -43,7 +43,6 @@ namespace smartview
 		for (const auto& prop : m_Props)
 		{
 			addChild(prop);
-			terminateBlock();
 		}
 	}
 } // namespace smartview

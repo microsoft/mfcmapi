@@ -1,17 +1,18 @@
-Recurrence Pattern: 
-ReaderVersion: 0x3004
-WriterVersion: 0x3004
-RecurFrequency: 0x200B = IDC_RCEV_PAT_ORB_WEEKLY
-PatternType: 0x0001 = rptWeek
-CalendarType: 0x0000 = CAL_DEFAULT
-FirstDateTime: 0x00004920 = 18720
-Period: 0x00000002 = 2
-SlidingFlag: 0x00000000
-PatternTypeSpecific.WeekRecurrencePattern: 0x00000002 = rdfMon
-EndType: 0x00002021 = IDC_RCEV_PAT_ERB_END
-OccurrenceCount: 0x00000006 = 6
-FirstDOW: 0x00000000 = Sunday
-DeletedInstanceCount: 0x00000000 = 0
-ModifiedInstanceCount: 0x00000000 = 0
-StartDate: 0x0CD78140 = 215449920 = 12:00:00.000 AM 8/23/2010
-EndDate: 0x0CD90B00 = 215550720 = 12:00:00.000 AM 11/1/2010
+Recurrence Pattern
+	ReaderVersion: 0x3004
+	WriterVersion: 0x3004
+	RecurFrequency: 0x200B = IDC_RCEV_PAT_ORB_WEEKLY
+	PatternType: 0x0001 = rptWeek
+	CalendarType: 0x0000 = CAL_DEFAULT
+	FirstDateTime: 0x00004920 = 18720
+	Period: 0x00000002 = 2
+	SlidingFlag: 0x00000000
+	PatternTypeSpecific
+		WeekRecurrencePattern: 0x00000002 = rdfMon
+	EndType: 0x00002021 = IDC_RCEV_PAT_ERB_END
+	OccurrenceCount: 0x00000006 = 6
+	FirstDOW: 0x00000000 = Sunday
+	DeletedInstanceCount: 0x00000000 = 0
+	ModifiedInstanceCount: 0x00000000 = 0
+	StartDate: 0x0CD78140 = 215449920 = 12:00:00.000 AM 8/23/2010
+	EndDate: 0x0CD90B00 = 215550720 = 12:00:00.000 AM 11/1/2010
