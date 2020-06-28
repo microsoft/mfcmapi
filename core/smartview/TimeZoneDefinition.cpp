@@ -5,7 +5,7 @@
 
 namespace smartview
 {
-	TZRule::TZRule(const std::shared_ptr<binaryParser>& parser)
+	void TZRule::parse()
 	{
 		bMajorVersion = blockT<BYTE>::parse(parser);
 		bMinorVersion = blockT<BYTE>::parse(parser);
@@ -18,6 +18,26 @@ namespace smartview
 		lDaylightBias = blockT<DWORD>::parse(parser);
 		stStandardDate = block::parse<SYSTEMTIMEBlock>(parser, false);
 		stDaylightDate = block::parse<SYSTEMTIMEBlock>(parser, false);
+	}
+
+	void TZRule::parseBlocks()
+	{
+		addChild(bMajorVersion, L"bMajorVersion = 0x%1!02X! (%1!d!)", bMajorVersion->getData());
+		addChild(bMinorVersion, L"bMinorVersion = 0x%1!02X! (%1!d!)", bMinorVersion->getData());
+		addChild(wReserved, L"wReserved = 0x%1!04X! (%1!d!)", wReserved->getData());
+		addChild(
+			wTZRuleFlags,
+			L"wTZRuleFlags = 0x%1!04X! = %2!ws!",
+			wTZRuleFlags->getData(),
+			flags::InterpretFlags(flagTZRule, *wTZRuleFlags).c_str());
+		addChild(wYear, L"wYear = 0x%1!04X! (%1!d!)", wYear->getData());
+		addLabeledChild(L"X =", X);
+
+		addChild(lBias, L"lBias = 0x%1!08X! (%1!d!)", lBias->getData());
+		addChild(lStandardBias, L"lStandardBias = 0x%1!08X! (%1!d!)", lStandardBias->getData());
+		addChild(lDaylightBias, L"lDaylightBias = 0x%1!08X! (%1!d!)", lDaylightBias->getData());
+		addChild(stStandardDate, L"stStandardDate");
+		addChild(stDaylightDate, L"stDaylightDate");
 	}
 
 	void TimeZoneDefinition::parse()
@@ -35,7 +55,7 @@ namespace smartview
 			m_lpTZRule.reserve(*m_cRules);
 			for (WORD i = 0; i < *m_cRules; i++)
 			{
-				m_lpTZRule.emplace_back(std::make_shared<TZRule>(parser));
+				m_lpTZRule.emplace_back(block::parse<TZRule>(parser, false));
 			}
 		}
 	}
@@ -54,30 +74,7 @@ namespace smartview
 		auto i = 0;
 		for (const auto& rule : m_lpTZRule)
 		{
-			auto ruleBlock = create(L"TZRule[0x%1!X!]", i);
-			addChild(ruleBlock);
-			ruleBlock->addChild(
-				rule->bMajorVersion, L"bMajorVersion = 0x%1!02X! (%1!d!)", rule->bMajorVersion->getData());
-			ruleBlock->addChild(
-				rule->bMinorVersion, L"bMinorVersion = 0x%1!02X! (%1!d!)", rule->bMinorVersion->getData());
-			ruleBlock->addChild(rule->wReserved, L"wReserved = 0x%1!04X! (%1!d!)", rule->wReserved->getData());
-			ruleBlock->addChild(
-				rule->wTZRuleFlags,
-				L"wTZRuleFlags = 0x%1!04X! = %2!ws!",
-				rule->wTZRuleFlags->getData(),
-				flags::InterpretFlags(flagTZRule, *rule->wTZRuleFlags).c_str());
-			ruleBlock->addChild(rule->wYear, L"wYear = 0x%1!04X! (%1!d!)", rule->wYear->getData());
-			ruleBlock->addLabeledChild(L"X =", rule->X);
-
-			ruleBlock->addChild(rule->lBias, L"lBias = 0x%1!08X! (%1!d!)", rule->lBias->getData());
-			ruleBlock->addChild(
-				rule->lStandardBias, L"lStandardBias = 0x%1!08X! (%1!d!)", rule->lStandardBias->getData());
-			ruleBlock->addChild(
-				rule->lDaylightBias, L"lDaylightBias = 0x%1!08X! (%1!d!)", rule->lDaylightBias->getData());
-			ruleBlock->addChild(rule->stStandardDate, L"stStandardDate");
-			ruleBlock->addChild(rule->stDaylightDate, L"stDaylightDate");
-
-			i++;
+			addChild(rule, L"TZRule[0x%1!X!]", i++);
 		}
 	}
 } // namespace smartview
