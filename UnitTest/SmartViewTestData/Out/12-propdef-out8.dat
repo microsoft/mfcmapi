@@ -9,7 +9,7 @@ Property Definition Stream
 		NmidName = crmTestProperty
 		NameAnsi
 			Length = 0x000F
-			Characters =
+			Characters
 				crmTestProperty
 		FormulaANSI
 			Length = 0x0000
@@ -25,7 +25,7 @@ Property Definition Stream
 			Size = 0x00000021
 			FieldName
 				Length = 0x000F
-				Characters =
+				Characters
 					crmTestProperty
 		SkipBlock: 1
 			Size = 0x00000000
@@ -37,7 +37,7 @@ Property Definition Stream
 		NmidName = crmTestProperty
 		NameAnsi
 			Length = 0x000F
-			Characters =
+			Characters
 				crmTestProperty
 		FormulaANSI
 			Length = 0x0000
@@ -53,11 +53,11 @@ Property Definition Stream
 			Size = 0x0000001F
 			FieldName
 				Length = 0x000F
-				Characters =
+				Characters
 					crmTestProperty
 		SkipBlock: 1
 			Size = 0x0000001F
-			Content =
+			Content
 				cb: 31 lpb: 0F630072006D005400650073007400500072006F0070006500720074007900
 		SkipBlock: 2
 			Size = 0x00000000

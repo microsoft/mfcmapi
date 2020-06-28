@@ -4,7 +4,7 @@ Entry ID
 	Exchange Folder Entry ID
 		Folder Type = 0x0001 = eitLTPrivateFolder
 		Database GUID = {108EB6C3-75F7-CE11-B4CD-00AA00BBB6E6} = Unknown GUID
-		GlobalCounter =
+		GlobalCounter
 			cb: 6 lpb: 000000000005
-		Pad =
+		Pad
 			cb: 2 lpb: 0000

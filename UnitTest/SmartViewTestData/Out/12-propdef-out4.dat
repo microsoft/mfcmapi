@@ -9,7 +9,7 @@ Property Definition Stream
 		NmidName = foo
 		NameAnsi
 			Length = 0x0003
-			Characters =
+			Characters
 				foo
 		FormulaANSI
 			Length = 0x0000
@@ -27,7 +27,7 @@ Property Definition Stream
 		NmidName = MyMFCMAPIProp
 		NameAnsi
 			Length = 0x000D
-			Characters =
+			Characters
 				MyMFCMAPIProp
 		FormulaANSI
 			Length = 0x0000
@@ -45,7 +45,7 @@ Property Definition Stream
 		NmidName = MyUserProp1
 		NameAnsi
 			Length = 0x000B
-			Characters =
+			Characters
 				MyUserProp1
 		FormulaANSI
 			Length = 0x0000
@@ -63,7 +63,7 @@ Property Definition Stream
 		NmidName = Texty
 		NameAnsi
 			Length = 0x0005
-			Characters =
+			Characters
 				Texty
 		FormulaANSI
 			Length = 0x0000

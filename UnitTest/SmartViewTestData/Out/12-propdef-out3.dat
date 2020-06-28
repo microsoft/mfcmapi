@@ -9,11 +9,11 @@ Property Definition Stream
 		NmidName = combonumber
 		NameAnsi
 			Length = 0x000B
-			Characters =
+			Characters
 				combonumber
 		FormulaANSI
 			Length = 0x0015
-			Characters =
+			Characters
 				[Numero] /[percento] 
 		ValidationRuleANSI
 			Length = 0x0000
@@ -27,7 +27,7 @@ Property Definition Stream
 			Size = 0x00000017
 			FieldName
 				Length = 0x000B
-				Characters =
+				Characters
 					combonumber
 		SkipBlock: 1
 			Size = 0x00000000
@@ -39,17 +39,17 @@ Property Definition Stream
 		NmidName = flark
 		NameAnsi
 			Length = 0x0005
-			Characters =
+			Characters
 				flark
 		FormulaANSI
 			Length = 0x0000
 		ValidationRuleANSI
 			Length = 0x0002
-			Characters =
+			Characters
 				>2
 		ValidationTextANSI
 			Length = 0x0009
-			Characters =
+			Characters
 				Not "big"
 		ErrorANSI
 			Length = 0x0000
@@ -59,7 +59,7 @@ Property Definition Stream
 			Size = 0x0000000B
 			FieldName
 				Length = 0x0005
-				Characters =
+				Characters
 					flark
 		SkipBlock: 1
 			Size = 0x00000000
@@ -71,7 +71,7 @@ Property Definition Stream
 		NmidName = fook
 		NameAnsi
 			Length = 0x0004
-			Characters =
+			Characters
 				fook
 		FormulaANSI
 			Length = 0x0000
@@ -87,7 +87,7 @@ Property Definition Stream
 			Size = 0x00000009
 			FieldName
 				Length = 0x0004
-				Characters =
+				Characters
 					fook
 		SkipBlock: 1
 			Size = 0x00000000
@@ -99,13 +99,13 @@ Property Definition Stream
 		NmidNameLength = 0x0000
 		NameAnsi
 			Length = 0x0007
-			Characters =
+			Characters
 				Mileage
 		FormulaANSI
 			Length = 0x0000
 		ValidationRuleANSI
 			Length = 0x000C
-			Characters =
+			Characters
 				"milsdgdssr"
 		ValidationTextANSI
 			Length = 0x0000
@@ -117,7 +117,7 @@ Property Definition Stream
 			Size = 0x0000000F
 			FieldName
 				Length = 0x0007
-				Characters =
+				Characters
 					Mileage
 		SkipBlock: 1
 			Size = 0x00000000
@@ -129,11 +129,11 @@ Property Definition Stream
 		NmidName = Numero
 		NameAnsi
 			Length = 0x0006
-			Characters =
+			Characters
 				Numero
 		FormulaANSI
 			Length = 0x0002
-			Characters =
+			Characters
 				32
 		ValidationRuleANSI
 			Length = 0x0000
@@ -147,7 +147,7 @@ Property Definition Stream
 			Size = 0x0000000D
 			FieldName
 				Length = 0x0006
-				Characters =
+				Characters
 					Numero
 		SkipBlock: 1
 			Size = 0x00000000
@@ -159,7 +159,7 @@ Property Definition Stream
 		NmidName = percento
 		NameAnsi
 			Length = 0x0008
-			Characters =
+			Characters
 				percento
 		FormulaANSI
 			Length = 0x0000
@@ -175,7 +175,7 @@ Property Definition Stream
 			Size = 0x00000011
 			FieldName
 				Length = 0x0008
-				Characters =
+				Characters
 					percento
 		SkipBlock: 1
 			Size = 0x00000000
@@ -188,11 +188,11 @@ Property Definition Stream
 		NmidNameLength = 0x0000
 		NameAnsi
 			Length = 0x0007
-			Characters =
+			Characters
 				Subject
 		FormulaANSI
 			Length = 0x000D
-			Characters =
+			Characters
 				"SGzdxhfgkuy"
 		ValidationRuleANSI
 			Length = 0x0000
@@ -206,7 +206,7 @@ Property Definition Stream
 			Size = 0x0000000F
 			FieldName
 				Length = 0x0007
-				Characters =
+				Characters
 					Subject
 		SkipBlock: 1
 			Size = 0x00000000
@@ -219,19 +219,19 @@ Property Definition Stream
 		NmidNameLength = 0x0000
 		NameAnsi
 			Length = 0x0002
-			Characters =
+			Characters
 				To
 		FormulaANSI
 			Length = 0x0008
-			Characters =
+			Characters
 				"sdgsdg"
 		ValidationRuleANSI
 			Length = 0x0007
-			Characters =
+			Characters
 				"dsafg"
 		ValidationTextANSI
 			Length = 0x0006
-			Characters =
+			Characters
 				"sadg"
 		ErrorANSI
 			Length = 0x0000
@@ -241,7 +241,7 @@ Property Definition Stream
 			Size = 0x00000005
 			FieldName
 				Length = 0x0002
-				Characters =
+				Characters
 					To
 		SkipBlock: 1
 			Size = 0x00000000

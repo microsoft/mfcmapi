@@ -18,7 +18,7 @@ namespace smartview
 	{
 		addChild(XidSize, L"XidSize = 0x%1!08X! = %1!d!", XidSize->getData());
 		addChild(NamespaceGuid, L"NamespaceGuid = %1!ws!", guid::GUIDToString(NamespaceGuid->getData()).c_str());
-		addLabeledChild(L"LocalId =", LocalID);
+		addLabeledChild(L"LocalId", LocalID);
 	}
 
 	void PCL::parse()

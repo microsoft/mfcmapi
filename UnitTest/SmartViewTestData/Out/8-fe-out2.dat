@@ -17,14 +17,14 @@ Flat Entry List
 					Exchange Message Entry ID
 						Message Type = 0x0007 = eitLTPrivateMessage
 						Folder Database GUID = {2B4C1B83-E703-11D1-8FB2-0C000000481F} = Unknown GUID
-						Folder GlobalCounter =
+						Folder GlobalCounter
 							cb: 6 lpb: 4F0000109588
-						Pad1 =
+						Pad1
 							cb: 2 lpb: ED42
 						Message Database GUID = {824285DE-9387-055E-8A90-4C0016DE1CB8} = Unknown GUID
-						Message GlobalCounter =
+						Message GlobalCounter
 							cb: 6 lpb: 0E0000000000
-						Pad2 =
+						Pad2
 							cb: 2 lpb: 007C
 			Unparsed data size = 0x00000003
 				cb: 3 lpb: 006D00

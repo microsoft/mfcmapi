@@ -40,7 +40,7 @@ namespace smartview
 		addChild(v2DN, L"DN = %1!hs!", v2DN->c_str());
 		addChild(v2FQDN, L"FQDN = %1!ws!", v2FQDN->c_str());
 
-		addLabeledChild(L"Reserved Bytes =", v2Reserved);
+		addLabeledChild(L"Reserved Bytes", v2Reserved);
 	}
 
 	void MDB_STORE_EID_V3::parse()
@@ -68,7 +68,7 @@ namespace smartview
 		addChild(ulOffsetSmtpAddress, L"OffsetSmtpAddress = 0x%1!08X!", ulOffsetSmtpAddress->getData());
 		addChild(v3SmtpAddress, L"SmtpAddress = %1!ws!", v3SmtpAddress->c_str());
 
-		addLabeledChild(L"Reserved Bytes =", v2Reserved);
+		addLabeledChild(L"Reserved Bytes", v2Reserved);
 	}
 
 	void FolderObject::parse()
@@ -85,9 +85,9 @@ namespace smartview
 		auto szType = flags::InterpretFlags(flagMessageDatabaseObjectType, *Type);
 		addChild(Type, L"Folder Type = 0x%1!04X! = %2!ws!", Type->getData(), szType.c_str());
 		addChild(DatabaseGUID, L"Database GUID = %1!ws!", guid::GUIDToStringAndName(*DatabaseGUID).c_str());
-		addLabeledChild(L"GlobalCounter =", GlobalCounter);
+		addLabeledChild(L"GlobalCounter", GlobalCounter);
 
-		addLabeledChild(L"Pad =", Pad);
+		addLabeledChild(L"Pad", Pad);
 	}
 
 	void MessageObject ::parse()
@@ -111,17 +111,17 @@ namespace smartview
 			FolderDatabaseGUID,
 			L"Folder Database GUID = %1!ws!",
 			guid::GUIDToStringAndName(*FolderDatabaseGUID).c_str());
-		addLabeledChild(L"Folder GlobalCounter =", FolderGlobalCounter);
+		addLabeledChild(L"Folder GlobalCounter", FolderGlobalCounter);
 
-		addLabeledChild(L"Pad1 =", Pad1);
+		addLabeledChild(L"Pad1", Pad1);
 
 		addChild(
 			MessageDatabaseGUID,
 			L"Message Database GUID = %1!ws!",
 			guid::GUIDToStringAndName(*MessageDatabaseGUID).c_str());
-		addLabeledChild(L"Message GlobalCounter =", MessageGlobalCounter);
+		addLabeledChild(L"Message GlobalCounter", MessageGlobalCounter);
 
-		addLabeledChild(L"Pad2 =", Pad2);
+		addLabeledChild(L"Pad2", Pad2);
 	}
 
 	void MessageDatabaseObject ::parse()

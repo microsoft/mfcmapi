@@ -31,7 +31,7 @@ namespace smartview
 			wTZRuleFlags->getData(),
 			flags::InterpretFlags(flagTZRule, *wTZRuleFlags).c_str());
 		addChild(wYear, L"wYear = 0x%1!04X! (%1!d!)", wYear->getData());
-		addLabeledChild(L"X =", X);
+		addLabeledChild(L"X", X);
 
 		addChild(lBias, L"lBias = 0x%1!08X! (%1!d!)", lBias->getData());
 		addChild(lStandardBias, L"lStandardBias = 0x%1!08X! (%1!d!)", lStandardBias->getData());

@@ -7,5 +7,5 @@ Extended Flags
 	Flag[1]
 		Id = 0x06 = 0x6
 			Cb = 0x04 = 4
-		Unknown Data =
+		Unknown Data
 			cb: 4 lpb: 03000000

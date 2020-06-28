@@ -18,7 +18,7 @@ Tombstone
 			Creation Time = 0x01CD1CBD:0x0B83B4F0 = 05:10:53.119 PM 4/17/2012
 			X: 0x00000000:0x00000000
 			Size: 0x10 = 16
-			Data =
+			Data
 				cb: 16 lpb: 7BACC3A0BFEED8428646C15C94AE08F1
 		UsernameSize= 0x000F
 		szUsername = Aaaaaaa Aaaaaaa
@@ -35,7 +35,7 @@ Tombstone
 			Creation Time = 0x01CCCEB9:0xA2536DF0 = 10:29:57.455 AM 1/9/2012
 			X: 0x00000000:0x00000000
 			Size: 0x10 = 16
-			Data =
+			Data
 				cb: 16 lpb: AAFE001FB806904D9E0882DBA6C0B07A
 		UsernameSize= 0x000F
 		szUsername = Aaaaaaa Aaaaaaa
@@ -52,7 +52,7 @@ Tombstone
 			Creation Time = 0x01CC08CF:0x7A6566A0 = 01:47:29.162 PM 5/2/2011
 			X: 0x00000000:0x00000000
 			Size: 0x10 = 16
-			Data =
+			Data
 				cb: 16 lpb: 651A164824448C4DADD9877ADA3CF4B0
 		UsernameSize= 0x000F
 		szUsername = Aaaaaaa Aaaaaaa
@@ -69,7 +69,7 @@ Tombstone
 			Creation Time = 0x01CC91A8:0xFB39E370 = 05:27:04.231 PM 10/23/2011
 			X: 0x00000000:0x00000000
 			Size: 0x10 = 16
-			Data =
+			Data
 				cb: 16 lpb: FC929ECEBA3B1F4AB40DF3F487067F84
 		UsernameSize= 0x000F
 		szUsername = Aaaaaaa Aaaaaaa
@@ -86,7 +86,7 @@ Tombstone
 			Creation Time = 0x01CC77DA:0x42C19320 = 09:14:19.346 PM 9/20/2011
 			X: 0x00000000:0x00000000
 			Size: 0x10 = 16
-			Data =
+			Data
 				cb: 16 lpb: 0B26EEC95274FA40AD816AA65F57E62A
 		UsernameSize= 0x000F
 		szUsername = Aaaaaaa Aaaaaaa
@@ -103,7 +103,7 @@ Tombstone
 			Creation Time = 0x01CC5238:0xCAB1ADF0 = 11:55:15.919 PM 8/3/2011
 			X: 0x00000000:0x00000000
 			Size: 0x10 = 16
-			Data =
+			Data
 				cb: 16 lpb: 2F3AB5ECBCBC9D4C9E3454ACCDBE929B
 		UsernameSize= 0x000F
 		szUsername = Aaaaaaa Aaaaaaa
@@ -120,7 +120,7 @@ Tombstone
 			Creation Time = 0x01CC5238:0xEB383F80 = 11:56:10.488 PM 8/3/2011
 			X: 0x00000000:0x00000000
 			Size: 0x10 = 16
-			Data =
+			Data
 				cb: 16 lpb: 748C9E7AAE3FF44EBE3C0E0B86DEBA83
 		UsernameSize= 0x000F
 		szUsername = Aaaaaaa Aaaaaaa
@@ -137,7 +137,7 @@ Tombstone
 			Creation Time = 0x01CC08CF:0x7A6566A0 = 01:47:29.162 PM 5/2/2011
 			X: 0x00000000:0x00000000
 			Size: 0x10 = 16
-			Data =
+			Data
 				cb: 16 lpb: 651A164824448C4DADD9877ADA3CF4B0
 		UsernameSize= 0x000F
 		szUsername = Aaaaaaa Aaaaaaa
@@ -154,7 +154,7 @@ Tombstone
 			Creation Time = 0x01CC747B:0x42F47C20 = 02:16:44.002 PM 9/16/2011
 			X: 0x00000000:0x00000000
 			Size: 0x10 = 16
-			Data =
+			Data
 				cb: 16 lpb: 66F68C0BB9A10745817C8975B9B52D61
 		UsernameSize= 0x000F
 		szUsername = Aaaaaaa Aaaaaaa

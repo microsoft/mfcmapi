@@ -17,14 +17,14 @@ Flat Entry List
 					Exchange Message Entry ID
 						Message Type = 0x0007 = eitLTPrivateMessage
 						Folder Database GUID = {2B4C1B83-E703-11D1-8FB2-00805F9F2EAC} = Unknown GUID
-						Folder GlobalCounter =
+						Folder GlobalCounter
 							cb: 6 lpb: 000000481F4F
-						Pad1 =
+						Pad1
 							cb: 2 lpb: 0000
 						Message Database GUID = {ED889510-DE42-4285-8287-935E058A904C} = Unknown GUID
-						Message GlobalCounter =
+						Message GlobalCounter
 							cb: 6 lpb: 0016DE1CB80E
-						Pad2 =
+						Pad2
 							cb: 2 lpb: 0000
 			Unparsed data size = 0x00000003
 				cb: 3 lpb: 000000
@@ -46,14 +46,14 @@ Flat Entry List
 					Exchange Message Entry ID
 						Message Type = 0x0007 = eitLTPrivateMessage
 						Folder Database GUID = {2B4C1B83-E703-11D1-8FB2-00805F9F2EAC} = Unknown GUID
-						Folder GlobalCounter =
+						Folder GlobalCounter
 							cb: 6 lpb: 000000481F4F
-						Pad1 =
+						Pad1
 							cb: 2 lpb: 0000
 						Message Database GUID = {CA7E60FB-49C5-4AC4-9151-DA03A7BC66B9} = Unknown GUID
-						Message GlobalCounter =
+						Message GlobalCounter
 							cb: 6 lpb: 001B181E8A15
-						Pad2 =
+						Pad2
 							cb: 2 lpb: 0000
 			Unparsed data size = 0x00000003
 				cb: 3 lpb: 000000
@@ -75,14 +75,14 @@ Flat Entry List
 					Exchange Message Entry ID
 						Message Type = 0x0007 = eitLTPrivateMessage
 						Folder Database GUID = {2B4C1B83-E703-11D1-8FB2-00805F9F2EAC} = Unknown GUID
-						Folder GlobalCounter =
+						Folder GlobalCounter
 							cb: 6 lpb: 000000481F4F
-						Pad1 =
+						Pad1
 							cb: 2 lpb: 0000
 						Message Database GUID = {51A7A720-53D5-4A39-B9D4-1BB443250C47} = Unknown GUID
-						Message GlobalCounter =
+						Message GlobalCounter
 							cb: 6 lpb: 0000004876C6
-						Pad2 =
+						Pad2
 							cb: 2 lpb: 0000
 			Unparsed data size = 0x00000003
 				cb: 3 lpb: 000000

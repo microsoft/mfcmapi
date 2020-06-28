@@ -26,7 +26,7 @@ namespace smartview
 
 		addChild(wElementDataSize, L"ElementDataSize = 0x%1!04X!", wElementDataSize->getData());
 
-		addLabeledChild(L"ElementData =", lpbElementData);
+		addLabeledChild(L"ElementData", lpbElementData);
 	}
 
 	void PersistData::parse()

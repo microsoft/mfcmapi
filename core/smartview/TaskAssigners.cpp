@@ -19,7 +19,7 @@ namespace smartview
 	void TaskAssigner::parseBlocks()
 	{
 		addChild(cbEntryID, L"cbEntryID = 0x%1!08X! = %1!d!", cbEntryID->getData());
-		addLabeledChild(L"lpEntryID =", lpEntryID);
+		addLabeledChild(L"lpEntryID", lpEntryID);
 		addChild(szDisplayName, L"szDisplayName (ANSI) = %1!hs!", szDisplayName->c_str());
 		addChild(wzDisplayName, L"szDisplayName (Unicode) = %1!ws!", wzDisplayName->c_str());
 

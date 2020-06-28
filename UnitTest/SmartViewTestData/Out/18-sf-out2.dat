@@ -3,15 +3,15 @@ Search Folder Definition
 	Flags = 0x00000052 = SFST_TEXT | SFST_FILTERSTREAM | SFST_FOLDERLIST
 	Numeric Search = 0x00000000
 	Text Search Length = 0x09
-	Text Search =
+	Text Search
 		All Items
 	SkipLen1 = 0x00000000
 	Deep Search = 0x00000001
 	Folder List 1 Length = 0x0F
-	Folder List 1 =
+	Folder List 1
 		Mr That Guyzzzz
 	Folder List 2 Length = 0x0000003E
-	Folder List2 =
+	Folder List2
 		Entry List
 			EntryCount = 0x00000001
 			Pad = 0x1230A220
@@ -24,12 +24,12 @@ Search Folder Definition
 					Exchange Folder Entry ID
 						Folder Type = 0x0001 = eitLTPrivateFolder
 						Database GUID = {865CFA85-E6FC-11D1-A3A6-0008C728E7F1} = Unknown GUID
-						GlobalCounter =
+						GlobalCounter
 							cb: 6 lpb: 000000019EBB
-						Pad =
+						Pad
 							cb: 2 lpb: 0000
 	SkipLen2 = 0x00000000
 	AdvancedSearchLen = 0x000000A0
-	AdvancedSearchBytes =
+	AdvancedSearchBytes
 		cb: 160 lpb: 98000000000000000100CEFA01000000340000800000000000000000000000000200000000000000000000000000000000000000020000000000000000000000000000003C00008010000000000000000000000000000000000000000000000000000000000000000000000002000000000000000200000000000000080000001800008000000000EFBEADDEEFBEAD1100000000E40400000400008000000000
 	SkipLen3 = 0x00000000

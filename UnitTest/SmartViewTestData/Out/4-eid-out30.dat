@@ -17,5 +17,5 @@ Entry ID
 			OffsetDN = 0x00000014
 			OffsetFQDN = 0x00000000
 			DN = /o=microsoft/ou=Exchange Administrative Group (FYDIBOHF23SPDLT)/cn=Configuration/cn=Servers/cn=SERVER
-			Reserved Bytes =
+			Reserved Bytes
 				cb: 2 lpb: 0000

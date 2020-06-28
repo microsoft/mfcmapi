@@ -17,5 +17,5 @@ Entry ID
 			OffsetFQDN = 0x00000082
 			DN = /o=microsoft/ou=Exchange Administrative Group (FYDIBOHF23SPDLT)/cn=Configuration/cn=Servers/cn=SERVER
 			FQDN = se-rv-er.something.corp.example.com
-			Reserved Bytes =
+			Reserved Bytes
 				cb: 2 lpb: 0000

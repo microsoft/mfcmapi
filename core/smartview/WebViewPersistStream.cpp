@@ -33,7 +33,7 @@ namespace smartview
 			L"dwFlags = 0x%1!08X! = %2!ws!",
 			dwFlags->getData(),
 			flags::InterpretFlags(flagWebViewFlags, *dwFlags).c_str());
-		addLabeledChild(L"dwUnused =", dwUnused);
+		addLabeledChild(L"dwUnused", dwUnused);
 
 		addChild(cbData, L"cbData = 0x%1!08X!", cbData->getData());
 
@@ -41,13 +41,13 @@ namespace smartview
 		{
 		case WEBVIEWURL:
 		{
-			auto url = create(L"wzURL =");
+			auto url = create(L"wzURL");
 			addChild(url);
 			url->addChild(lpData, lpData->toTextString(false));
 			break;
 		}
 		default:
-			addLabeledChild(L"lpData =", lpData);
+			addLabeledChild(L"lpData", lpData);
 			break;
 		}
 	}

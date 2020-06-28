@@ -36,7 +36,7 @@ namespace smartview
 
 		if (szCharacters->length())
 		{
-			addLabeledChild(L"Characters =", szCharacters);
+			addLabeledChild(L"Characters", szCharacters);
 		}
 	}
 
@@ -68,7 +68,7 @@ namespace smartview
 
 		if (szCharacters->length())
 		{
-			addLabeledChild(L"Characters =", szCharacters);
+			addLabeledChild(L"Characters", szCharacters);
 		}
 	}
 
@@ -95,7 +95,7 @@ namespace smartview
 		}
 		else if (!lpbContent->empty())
 		{
-			addLabeledChild(L"Content =", lpbContent);
+			addLabeledChild(L"Content", lpbContent);
 		}
 	}
 

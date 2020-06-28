@@ -16,5 +16,5 @@ Entry ID
 			Version = 0x00000002 = MDB_STORE_EID_V3_VERSION
 			OffsetSmtpAddress = 0x00000010
 			SmtpAddress = USER.NAME@example.com
-			Reserved Bytes =
+			Reserved Bytes
 				cb: 2 lpb: 0000

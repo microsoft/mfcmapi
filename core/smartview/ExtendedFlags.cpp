@@ -78,7 +78,7 @@ namespace smartview
 
 		if (lpUnknownData->size())
 		{
-			addLabeledChild(L"Unknown Data =", lpUnknownData);
+			addLabeledChild(L"Unknown Data", lpUnknownData);
 		}
 	}
 
