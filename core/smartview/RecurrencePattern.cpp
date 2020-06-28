@@ -6,6 +6,68 @@
 
 namespace smartview
 {
+	void PatternTypeSpecific::parse()
+	{
+		switch (patternType)
+		{
+		case rptMinute:
+			break;
+		case rptWeek:
+			WeekRecurrencePattern = blockT<DWORD>::parse(parser);
+			break;
+		case rptMonth:
+		case rptMonthEnd:
+		case rptHjMonth:
+		case rptHjMonthEnd:
+			MonthRecurrencePattern = blockT<DWORD>::parse(parser);
+			break;
+		case rptMonthNth:
+		case rptHjMonthNth:
+			MonthNthRecurrencePattern.DayOfWeek = blockT<DWORD>::parse(parser);
+			MonthNthRecurrencePattern.N = blockT<DWORD>::parse(parser);
+			break;
+		}
+	}
+	void PatternTypeSpecific::parseBlocks()
+	{
+		setText(L"PatternTypeSpecific");
+
+		switch (patternType)
+		{
+		case rptMinute:
+			break;
+		case rptWeek:
+			addChild(
+				WeekRecurrencePattern,
+				L"WeekRecurrencePattern: 0x%1!08X! = %2!ws!",
+				WeekRecurrencePattern->getData(),
+				flags::InterpretFlags(flagDOW, *WeekRecurrencePattern).c_str());
+			break;
+		case rptMonth:
+		case rptMonthEnd:
+		case rptHjMonth:
+		case rptHjMonthEnd:
+			addChild(
+				MonthRecurrencePattern,
+				L"MonthRecurrencePattern: 0x%1!08X! = %1!d!",
+				MonthRecurrencePattern->getData());
+			break;
+		case rptMonthNth:
+		case rptHjMonthNth:
+			addChild(
+				MonthNthRecurrencePattern.DayOfWeek,
+				L"MonthNthRecurrencePattern.DayOfWeek: 0x%1!08X! = %2!ws!",
+				MonthNthRecurrencePattern.DayOfWeek->getData(),
+				flags::InterpretFlags(flagDOW, *MonthNthRecurrencePattern.DayOfWeek).c_str());
+			addChild(
+				MonthNthRecurrencePattern.N,
+				L"MonthNthRecurrencePattern.N: 0x%1!08X! = %2!ws!",
+				MonthNthRecurrencePattern.N->getData(),
+				flags::InterpretFlags(flagN, *MonthNthRecurrencePattern.N).c_str());
+			break;
+		}
+	}
+
 	void RecurrencePattern::parse()
 	{
 		m_ReaderVersion = blockT<WORD>::parse(parser);
@@ -17,25 +79,8 @@ namespace smartview
 		m_Period = blockT<DWORD>::parse(parser);
 		m_SlidingFlag = blockT<DWORD>::parse(parser);
 
-		switch (*m_PatternType)
-		{
-		case rptMinute:
-			break;
-		case rptWeek:
-			m_PatternTypeSpecific.WeekRecurrencePattern = blockT<DWORD>::parse(parser);
-			break;
-		case rptMonth:
-		case rptMonthEnd:
-		case rptHjMonth:
-		case rptHjMonthEnd:
-			m_PatternTypeSpecific.MonthRecurrencePattern = blockT<DWORD>::parse(parser);
-			break;
-		case rptMonthNth:
-		case rptHjMonthNth:
-			m_PatternTypeSpecific.MonthNthRecurrencePattern.DayOfWeek = blockT<DWORD>::parse(parser);
-			m_PatternTypeSpecific.MonthNthRecurrencePattern.N = blockT<DWORD>::parse(parser);
-			break;
-		}
+		m_PatternTypeSpecific = std::make_shared<PatternTypeSpecific>(*m_PatternType);
+		m_PatternTypeSpecific->block::parse(parser, false);
 
 		m_EndType = blockT<DWORD>::parse(parser);
 		m_OccurrenceCount = blockT<DWORD>::parse(parser);
@@ -86,42 +131,7 @@ namespace smartview
 		addChild(m_FirstDateTime, L"FirstDateTime: 0x%1!08X! = %1!d!", m_FirstDateTime->getData());
 		addChild(m_Period, L"Period: 0x%1!08X! = %1!d!", m_Period->getData());
 		addChild(m_SlidingFlag, L"SlidingFlag: 0x%1!08X!", m_SlidingFlag->getData());
-
-		switch (*m_PatternType)
-		{
-		case rptMinute:
-			break;
-		case rptWeek:
-			addChild(
-				m_PatternTypeSpecific.WeekRecurrencePattern,
-				L"PatternTypeSpecific.WeekRecurrencePattern: 0x%1!08X! = %2!ws!",
-				m_PatternTypeSpecific.WeekRecurrencePattern->getData(),
-				flags::InterpretFlags(flagDOW, *m_PatternTypeSpecific.WeekRecurrencePattern).c_str());
-			break;
-		case rptMonth:
-		case rptMonthEnd:
-		case rptHjMonth:
-		case rptHjMonthEnd:
-			addChild(
-				m_PatternTypeSpecific.MonthRecurrencePattern,
-				L"PatternTypeSpecific.MonthRecurrencePattern: 0x%1!08X! = %1!d!",
-				m_PatternTypeSpecific.MonthRecurrencePattern->getData());
-			break;
-		case rptMonthNth:
-		case rptHjMonthNth:
-			addChild(
-				m_PatternTypeSpecific.MonthNthRecurrencePattern.DayOfWeek,
-				L"PatternTypeSpecific.MonthNthRecurrencePattern.DayOfWeek: 0x%1!08X! = %2!ws!",
-				m_PatternTypeSpecific.MonthNthRecurrencePattern.DayOfWeek->getData(),
-				flags::InterpretFlags(flagDOW, *m_PatternTypeSpecific.MonthNthRecurrencePattern.DayOfWeek).c_str());
-			addChild(
-				m_PatternTypeSpecific.MonthNthRecurrencePattern.N,
-				L"PatternTypeSpecific.MonthNthRecurrencePattern.N: 0x%1!08X! = %2!ws!",
-				m_PatternTypeSpecific.MonthNthRecurrencePattern.N->getData(),
-				flags::InterpretFlags(flagN, *m_PatternTypeSpecific.MonthNthRecurrencePattern.N).c_str());
-			break;
-		}
-
+		addChild(m_PatternTypeSpecific);
 		addChild(
 			m_EndType,
 			L"EndType: 0x%1!08X! = %2!ws!",
@@ -159,11 +169,7 @@ namespace smartview
 			{
 				auto modified = create(L"ModifiedInstanceDates[%1!d!]", i);
 				m_ModifiedInstanceCount->addChild(modified);
-				modified->addChild(
-					date,
-					L"0x%1!08X! = %2!ws!",
-					date->getData(),
-					RTimeToString(*date).c_str());
+				modified->addChild(date, L"0x%1!08X! = %2!ws!", date->getData(), RTimeToString(*date).c_str());
 				i++;
 			}
 		}

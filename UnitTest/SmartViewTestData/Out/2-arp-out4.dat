@@ -7,7 +7,8 @@ Recurrence Pattern
 	FirstDateTime: 0x000021C0 = 8640
 	Period: 0x00000001 = 1
 	SlidingFlag: 0x00000000
-	PatternTypeSpecific.WeekRecurrencePattern: 0x0000001E = rdfMon | rdfTue | rdfWed | rdfThu
+	PatternTypeSpecific
+		WeekRecurrencePattern: 0x0000001E = rdfMon | rdfTue | rdfWed | rdfThu
 	EndType: 0x00002023 = IDC_RCEV_PAT_ERB_NOEND
 	OccurrenceCount: 0x0000000A = 10
 	FirstDOW: 0x00000000 = Sunday
