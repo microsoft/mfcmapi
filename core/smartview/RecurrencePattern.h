@@ -9,8 +9,16 @@ namespace smartview
 	// =====================
 	//   This structure specifies the details of the recurrence type
 	//
-	struct PatternTypeSpecific
+	class PatternTypeSpecific : public block
 	{
+	public:
+		PatternTypeSpecific(WORD _patternType) : patternType(_patternType) {}
+
+	private:
+		void parse() override;
+		void parseBlocks() override;
+
+		WORD patternType{};
 		std::shared_ptr<blockT<DWORD>> WeekRecurrencePattern = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> MonthRecurrencePattern = emptyT<DWORD>();
 		struct
@@ -37,7 +45,7 @@ namespace smartview
 		std::shared_ptr<blockT<DWORD>> m_FirstDateTime = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> m_Period = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> m_SlidingFlag = emptyT<DWORD>();
-		PatternTypeSpecific m_PatternTypeSpecific;
+		std::shared_ptr<PatternTypeSpecific> m_PatternTypeSpecific;
 		std::shared_ptr<blockT<DWORD>> m_EndType = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> m_OccurrenceCount = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> m_FirstDOW = emptyT<DWORD>();

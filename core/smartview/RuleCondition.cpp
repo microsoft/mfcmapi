@@ -20,94 +20,76 @@ namespace smartview
 		}
 	}
 
-	void RuleCondition::Init(bool bExtended) noexcept { m_bExtended = bExtended; }
+	void PropertyName::parseBlocks()
+	{
+		addChild(PropId, L"PropID = 0x%1!04X!", PropId->getData());
+
+		addChild(Kind, L"Kind = 0x%1!02X!", Kind->getData());
+		addChild(Guid, L"Guid = %1!ws!", guid::GUIDToString(*Guid).c_str());
+
+		if (*Kind == MNID_ID)
+		{
+			addChild(LID, L"LID = 0x%1!08X!", LID->getData());
+		}
+		else if (*Kind == MNID_STRING)
+		{
+			addChild(NameSize, L"NameSize = 0x%1!02X!", NameSize->getData());
+			addChild(Name, L"Name = %1!ws!", Name->c_str());
+		}
+	}
+
+	void NamedPropertyInformation ::parse()
+	{
+		NoOfNamedProps = blockT<WORD>::parse(parser);
+		if (*NoOfNamedProps && *NoOfNamedProps < _MaxEntriesLarge)
+		{
+			PropId.reserve(*NoOfNamedProps);
+			for (auto i = 0; i < *NoOfNamedProps; i++)
+			{
+				PropId.push_back(blockT<WORD>::parse(parser));
+			}
+
+			NamedPropertiesSize = blockT<DWORD>::parse(parser);
+
+			PropertyName.reserve(*NoOfNamedProps);
+			for (auto i = 0; i < *NoOfNamedProps; i++)
+			{
+				auto namedProp = std::make_shared<smartview::PropertyName>(PropId[i]);
+				namedProp->block::parse(parser, false);
+				PropertyName.emplace_back(namedProp);
+			}
+		}
+	}
+
+	void NamedPropertyInformation ::parseBlocks()
+	{
+		setText(L"NamedPropertyInformation");
+		addChild(NoOfNamedProps, L"Number of named props = 0x%1!04X!", NoOfNamedProps->getData());
+		if (!PropertyName.empty())
+		{
+			addChild(NamedPropertiesSize, L"Named prop size = 0x%1!08X!", NamedPropertiesSize->getData());
+
+			for (size_t i = 0; i < PropertyName.size(); i++)
+			{
+				addChild(PropertyName[i], L"Named Prop 0x%1!04X!", i);
+			}
+		}
+	}
 
 	void RuleCondition::parse()
 	{
-		m_NamedPropertyInformation.NoOfNamedProps = blockT<WORD>::parse(parser);
-		if (*m_NamedPropertyInformation.NoOfNamedProps && *m_NamedPropertyInformation.NoOfNamedProps < _MaxEntriesLarge)
-		{
-			m_NamedPropertyInformation.PropId.reserve(*m_NamedPropertyInformation.NoOfNamedProps);
-			for (auto i = 0; i < *m_NamedPropertyInformation.NoOfNamedProps; i++)
-			{
-				m_NamedPropertyInformation.PropId.push_back(blockT<WORD>::parse(parser));
-			}
-
-			m_NamedPropertyInformation.NamedPropertiesSize = blockT<DWORD>::parse(parser);
-
-			m_NamedPropertyInformation.PropertyName.reserve(*m_NamedPropertyInformation.NoOfNamedProps);
-			for (auto i = 0; i < *m_NamedPropertyInformation.NoOfNamedProps; i++)
-			{
-				auto namedProp = block::parse<PropertyName>(parser, false);
-				m_NamedPropertyInformation.PropertyName.emplace_back(namedProp);
-			}
-		}
-
+		m_NamedPropertyInformation = block::parse<NamedPropertyInformation>(parser, false);
 		m_lpRes = std::make_shared<RestrictionStruct>(true, m_bExtended);
 		m_lpRes->block::parse(parser, false);
 	}
 
 	void RuleCondition::parseBlocks()
 	{
-		setText(m_bExtended ? L"Extended Rule Condition\r\n" : L"Rule Condition\r\n");
+		setText(m_bExtended ? L"Extended Rule Condition" : L"Rule Condition");
 
-		addChild(
-			m_NamedPropertyInformation.NoOfNamedProps,
-			L"Number of named props = 0x%1!04X!\r\n",
-			m_NamedPropertyInformation.NoOfNamedProps->getData());
-		if (!m_NamedPropertyInformation.PropId.empty())
-		{
-			terminateBlock();
-			addChild(
-				m_NamedPropertyInformation.NamedPropertiesSize,
-				L"Named prop size = 0x%1!08X!",
-				m_NamedPropertyInformation.NamedPropertiesSize->getData());
-
-			for (size_t i = 0; i < m_NamedPropertyInformation.PropId.size(); i++)
-			{
-				terminateBlock();
-				auto namedProp = m_NamedPropertyInformation.PropertyName[i];
-				addChild(namedProp);
-				namedProp->setText(L"Named Prop 0x%1!04X!\r\n", i);
-
-				namedProp->addChild(
-					m_NamedPropertyInformation.PropId[i],
-					L"\tPropID = 0x%1!04X!\r\n",
-					m_NamedPropertyInformation.PropId[i]->getData());
-
-				namedProp->addChild(
-					m_NamedPropertyInformation.PropertyName[i]->Kind,
-					L"\tKind = 0x%1!02X!\r\n",
-					m_NamedPropertyInformation.PropertyName[i]->Kind->getData());
-				namedProp->addChild(
-					m_NamedPropertyInformation.PropertyName[i]->Guid,
-					L"\tGuid = %1!ws!\r\n",
-					guid::GUIDToString(*m_NamedPropertyInformation.PropertyName[i]->Guid).c_str());
-
-				if (*m_NamedPropertyInformation.PropertyName[i]->Kind == MNID_ID)
-				{
-					namedProp->addChild(
-						m_NamedPropertyInformation.PropertyName[i]->LID,
-						L"\tLID = 0x%1!08X!",
-						m_NamedPropertyInformation.PropertyName[i]->LID->getData());
-				}
-				else if (*m_NamedPropertyInformation.PropertyName[i]->Kind == MNID_STRING)
-				{
-					namedProp->addChild(
-						m_NamedPropertyInformation.PropertyName[i]->NameSize,
-						L"\tNameSize = 0x%1!02X!\r\n",
-						m_NamedPropertyInformation.PropertyName[i]->NameSize->getData());
-					namedProp->addChild(
-						m_NamedPropertyInformation.PropertyName[i]->Name,
-						L"\tName = %1!ws!",
-						m_NamedPropertyInformation.PropertyName[i]->Name->c_str());
-				}
-			}
-		}
-
+		addChild(m_NamedPropertyInformation);
 		if (m_lpRes && m_lpRes->hasData())
 		{
-			terminateBlock();
 			addChild(m_lpRes);
 		}
 	}

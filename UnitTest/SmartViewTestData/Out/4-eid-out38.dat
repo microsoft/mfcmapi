@@ -1,17 +1,20 @@
-MAPI Message Store Entry ID:
-abFlags = 0x00000000
-Provider GUID = {10BBA138-E505-1A10-A1BB-08002B2A56C2} = muidStoreWrap
-Version = 0x00 = MAPIMDB_VERSION
-Flag = 0x00 = MAPIMDB_NORMAL
-DLLFileName = EMSMDB.DLL
-Wrapped Flags = 0x00000000
-WrappedProviderUID = {20FA551B-66AA-CD11-9BC8-00AA002FC45A} = g_muidStorePrivate
-WrappedType = 0x0000000C = OPENSTORE_HOME_LOGON | OPENSTORE_TAKE_OWNERSHIP
-ServerShortname = USER.NAME@example.com
-MailboxDN = /o=ORG/ou=Exchange Administrative Group (FYDIBOHF23SPDLT)/cn=Recipients/cn=User.Namebdec0052-d130-4fb2-ba4b-a3ecd2b5da27
-Magic = 0xF43246E9 = MDB_STORE_EID_V3_MAGIC
-Size = 0x00000040 = 64
-Version = 0x00000002 = MDB_STORE_EID_V3_VERSION
-OffsetSmtpAddress = 0x00000010
-SmtpAddress = USER.NAME@example.com
-Reserved Bytes = cb: 2 lpb: 0000
+Entry ID
+	abFlags = 0x00000000
+	Provider GUID = {10BBA138-E505-1A10-A1BB-08002B2A56C2} = muidStoreWrap
+	MAPI Message Store Entry ID
+		Version = 0x00 = MAPIMDB_VERSION
+		Flag = 0x00 = MAPIMDB_NORMAL
+		DLLFileName = EMSMDB.DLL
+		Wrapped Flags = 0x00000000
+		WrappedProviderUID = {20FA551B-66AA-CD11-9BC8-00AA002FC45A} = g_muidStorePrivate
+		WrappedType = 0x0000000C = OPENSTORE_HOME_LOGON | OPENSTORE_TAKE_OWNERSHIP
+		ServerShortname = USER.NAME@example.com
+		MailboxDN = /o=ORG/ou=Exchange Administrative Group (FYDIBOHF23SPDLT)/cn=Recipients/cn=User.Namebdec0052-d130-4fb2-ba4b-a3ecd2b5da27
+		MAPI Message Store Entry ID V3
+			Magic = 0xF43246E9 = MDB_STORE_EID_V3_MAGIC
+			Size = 0x00000040 = 64
+			Version = 0x00000002 = MDB_STORE_EID_V3_VERSION
+			OffsetSmtpAddress = 0x00000010
+			SmtpAddress = USER.NAME@example.com
+			Reserved Bytes
+				cb: 2 lpb: 0000

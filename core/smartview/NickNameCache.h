@@ -6,12 +6,14 @@
 
 namespace smartview
 {
-	struct SRowStruct
+	class SRowStruct : public block
 	{
+	private:
+		void parse() override;
+		void parseBlocks() override;
+
 		std::shared_ptr<blockT<DWORD>> cValues = emptyT<DWORD>();
 		std::shared_ptr<PropertiesStruct> lpProps;
-
-		SRowStruct(const std::shared_ptr<binaryParser>& parser);
 	};
 
 	class NickNameCache : public block

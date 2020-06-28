@@ -56,20 +56,6 @@ namespace smartview
 		bool isHeader() const noexcept { return cb == 0 && offset == 0; }
 		bool hasData() const noexcept { return !text.empty() || !children.empty(); }
 
-		// Put CRLF on the end of the last child
-		// Essentially ensures that the next child added will be on a new line
-		void terminateBlock()
-		{
-			if (children.empty())
-			{
-				text = strings::ensureCRLF(text);
-			}
-			else
-			{
-				children.back()->terminateBlock();
-			}
-		}
-
 		// Add child blocks of various types
 		void addChild(const std::shared_ptr<block>& child)
 		{
@@ -88,12 +74,6 @@ namespace smartview
 			}
 		}
 
-		void addHeader(const std::wstring& _text);
-		template <typename... Args> void addHeader(const std::wstring& _text, Args... args)
-		{
-			addHeader(strings::formatmessage(_text.c_str(), args...));
-		}
-
 		template <typename... Args>
 		void addChild(const std::shared_ptr<block>& child, const std::wstring& _text, Args... args)
 		{
@@ -104,9 +84,22 @@ namespace smartview
 			}
 		}
 
+		// Add a text only node with no size/offset and no children
+		void addHeader(const std::wstring& _text);
+		template <typename... Args> void addHeader(const std::wstring& _text, Args... args)
+		{
+			addHeader(strings::formatmessage(_text.c_str(), args...));
+		}
+
+		// Add a text only node with size/offset matching the child node so that it "contains" the child
 		void addLabeledChild(const std::wstring& _text, const std::shared_ptr<block>& _block);
 
-		void addBlankLine();
+		// Add a text only node with size/offset matching the parent node so that it matches the parent
+		void addSubHeader(const std::wstring& _text);
+		template <typename... Args> void addSubHeader(const std::wstring& _text, Args... args)
+		{
+			addSubHeader(strings::formatmessage(_text.c_str(), args...));
+		}
 
 		// Static create functions returns a non parsing block
 		static std::shared_ptr<block> create();
@@ -166,17 +159,17 @@ namespace smartview
 		bool enableJunk{true};
 
 	private:
-		std::wstring toStringInternal() const;
-		// Consume binaryParser and populate members(which may also inherit from block)
+		std::vector<std::wstring> toStringsInternal() const;
+		// Consume binaryParser and populate members (which may also inherit from block)
 		virtual void parse() = 0;
-		// (optional) Stitches block submembers into a tree vis children member
+		// (optional) Stitches block submembers into a tree via children member
 		virtual void parseBlocks(){};
+		virtual bool usePipes() const { return false; }
 
 		size_t offset{};
 		size_t cb{};
 		ULONG source{};
 		std::wstring text;
 		std::vector<std::shared_ptr<block>> children;
-		bool blank{false};
 	};
 } // namespace smartview

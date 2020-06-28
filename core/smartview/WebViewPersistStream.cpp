@@ -6,7 +6,7 @@
 
 namespace smartview
 {
-	WebViewPersist::WebViewPersist(const std::shared_ptr<binaryParser>& parser)
+	void WebViewPersist::parse()
 	{
 		dwVersion = blockT<DWORD>::parse(parser);
 		dwType = blockT<DWORD>::parse(parser);
@@ -14,6 +14,42 @@ namespace smartview
 		dwUnused = blockBytes::parse(parser, 7 * sizeof(DWORD));
 		cbData = blockT<DWORD>::parse(parser);
 		lpData = blockBytes::parse(parser, *cbData, _MaxBytes);
+	}
+
+	void WebViewPersist::parseBlocks()
+	{
+		addChild(
+			dwVersion,
+			L"dwVersion = 0x%1!08X! = %2!ws!",
+			dwVersion->getData(),
+			flags::InterpretFlags(flagWebViewVersion, *dwVersion).c_str());
+		addChild(
+			dwType,
+			L"dwType = 0x%1!08X! = %2!ws!",
+			dwType->getData(),
+			flags::InterpretFlags(flagWebViewType, *dwType).c_str());
+		addChild(
+			dwFlags,
+			L"dwFlags = 0x%1!08X! = %2!ws!",
+			dwFlags->getData(),
+			flags::InterpretFlags(flagWebViewFlags, *dwFlags).c_str());
+		addLabeledChild(L"dwUnused", dwUnused);
+
+		addChild(cbData, L"cbData = 0x%1!08X!", cbData->getData());
+
+		switch (*dwType)
+		{
+		case WEBVIEWURL:
+		{
+			auto url = create(L"wzURL");
+			addChild(url);
+			url->addChild(lpData, lpData->toTextString(false));
+			break;
+		}
+		default:
+			addLabeledChild(L"lpData", lpData);
+			break;
+		}
 	}
 
 	void WebViewPersistStream::parse()
@@ -43,56 +79,19 @@ namespace smartview
 			m_lpWebViews.reserve(cWebViews);
 			for (auto i = 0; i < cWebViews; i++)
 			{
-				m_lpWebViews.emplace_back(std::make_shared<WebViewPersist>(parser));
+				m_lpWebViews.emplace_back(block::parse<WebViewPersist>(parser, false));
 			}
 		}
 	}
 
 	void WebViewPersistStream::parseBlocks()
 	{
-		setText(L"Web View Persistence Object Stream\r\n");
-		addHeader(L"cWebViews = %1!d!", m_lpWebViews.size());
+		setText(L"Web View Persistence Object Stream");
+		addSubHeader(L"cWebViews = %1!d!", m_lpWebViews.size());
 		auto i = 0;
 		for (const auto& view : m_lpWebViews)
 		{
-			terminateBlock();
-			addBlankLine();
-
-			addHeader(L"Web View %1!d!\r\n", i);
-			addChild(
-				view->dwVersion,
-				L"dwVersion = 0x%1!08X! = %2!ws!\r\n",
-				view->dwVersion->getData(),
-				flags::InterpretFlags(flagWebViewVersion, *view->dwVersion).c_str());
-			addChild(
-				view->dwType,
-				L"dwType = 0x%1!08X! = %2!ws!\r\n",
-				view->dwType->getData(),
-				flags::InterpretFlags(flagWebViewType, *view->dwType).c_str());
-			addChild(
-				view->dwFlags,
-				L"dwFlags = 0x%1!08X! = %2!ws!\r\n",
-				view->dwFlags->getData(),
-				flags::InterpretFlags(flagWebViewFlags, *view->dwFlags).c_str());
-			addLabeledChild(L"dwUnused = ", view->dwUnused);
-
-			terminateBlock();
-			addChild(view->cbData, L"cbData = 0x%1!08X!\r\n", view->cbData->getData());
-
-			switch (*view->dwType)
-			{
-			case WEBVIEWURL:
-			{
-				addHeader(L"wzURL = ");
-				addChild(view->lpData, view->lpData->toTextString(false));
-				break;
-			}
-			default:
-				addLabeledChild(L"lpData = ", view->lpData);
-				break;
-			}
-
-			i++;
+			addChild(view, L"Web View %1!d!", i++);
 		}
 	}
 } // namespace smartview

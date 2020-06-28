@@ -1,4 +1,3 @@
 Folder User Field Stream
-FolderUserFieldAnsi.FieldDefinitionCount = 0
-
-FolderUserFieldUnicode.FieldDefinitionCount = 1
+	FolderUserFieldAnsi.FieldDefinitionCount = 0
+	FolderUserFieldUnicode.FieldDefinitionCount = 1

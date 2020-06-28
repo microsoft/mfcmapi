@@ -403,7 +403,22 @@ namespace stringtest
 			Assert::AreEqual(std::vector<std::wstring>{L"", L""}, strings::split(L".", L'.'));
 		}
 
-		TEST_METHOD(Test_join) { Assert::AreEqual(fullstring, strings::join(words, L' ')); }
+		TEST_METHOD(Test_join)
+		{
+			Assert::AreEqual(std::wstring{}, strings::join({}, L' '));
+
+			// join keeping empty strings
+			Assert::AreEqual(fullstring, strings::join(words, L' '));
+			Assert::AreEqual(std::wstring(L"1 2"), strings::join({L"1", L"2"}, L' '));
+			Assert::AreEqual(std::wstring(L"1  2"), strings::join({L"1", L"", L"2"}, L' '));
+			Assert::AreEqual(std::wstring(L"  1  2 "), strings::join({L"", L"", L"1", L"", L"2", L""}, L' '));
+
+			// join skipping empty strings
+			Assert::AreEqual(std::wstring(L"this is a string yes"), strings::join(words, L' ', true));
+			Assert::AreEqual(std::wstring(L"1 2"), strings::join({L"1", L"2"}, L' ', true));
+			Assert::AreEqual(std::wstring(L"1 2"), strings::join({L"1", L"", L"2"}, L' ', true));
+			Assert::AreEqual(std::wstring(L"1 2"), strings::join({L"", L"", L"1", L"", L"2", L""}, L' ', true));
+		}
 
 		TEST_METHOD(Test_currency)
 		{
@@ -597,6 +612,13 @@ namespace stringtest
 			Assert::AreEqual(false, strings::compareInsensitive(L"hello1", L"hello"));
 			Assert::AreEqual(false, strings::compareInsensitive(L"hello ", L"HELLO"));
 			Assert::AreEqual(false, strings::compareInsensitive(L"hello", L"HELLO "));
+		}
+
+		TEST_METHOD(Test_CollapseTree)
+		{
+			Assert::AreEqual(std::wstring(L"a b"), strings::collapseTree(L"a\r\n\tb"));
+			Assert::AreEqual(std::wstring(L"a b c"), strings::collapseTree(L"a\r\n\tb\r\n\n\r\r\tc"));
+			Assert::AreEqual(std::wstring(L"a b"), strings::collapseTree(L"\ta\r\n\tb\n\t"));
 		}
 	};
 } // namespace stringtest

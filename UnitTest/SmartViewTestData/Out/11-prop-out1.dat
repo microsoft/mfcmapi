@@ -1,10 +1,12 @@
 Property[0]
-Property = 0x3001001F
-Name: PR_DISPLAY_NAME_W
-Other Matches: PidTagDisplayName, PR_DISPLAY_NAME, PR_DISPLAY_NAME_A, ptagDisplayName
-PropString = Mister Mistter AltPropString = cb: 28 lpb: 4D006900730074006500720020004D00690073007400740065007200
+	Property = 0x3001001F
+		Name: PR_DISPLAY_NAME_W
+		Other Matches: PidTagDisplayName, PR_DISPLAY_NAME, PR_DISPLAY_NAME_A, ptagDisplayName
+	PropString = Mister Mistter
+	AltPropString = cb: 28 lpb: 4D006900730074006500720020004D00690073007400740065007200
 Property[1]
-Property = 0x30070040
-Name: PR_CREATION_TIME
-Other Matches: PidTagCreationTime, ptagCreationTime
-PropString = 07:16:34.571 PM 1/7/2018 AltPropString = Low: 0x085535B0 High: 0x01D387EC
+	Property = 0x30070040
+		Name: PR_CREATION_TIME
+		Other Matches: PidTagCreationTime, ptagCreationTime
+	PropString = 07:16:34.571 PM 1/7/2018
+	AltPropString = Low: 0x085535B0 High: 0x01D387EC

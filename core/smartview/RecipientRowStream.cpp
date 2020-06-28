@@ -1,10 +1,11 @@
 #include <core/stdafx.h>
 #include <core/smartview/RecipientRowStream.h>
 #include <core/smartview/PropertiesStruct.h>
+#include <core/smartview/SPropValueStruct.h>
 
 namespace smartview
 {
-	ADRENTRYStruct::ADRENTRYStruct(const std::shared_ptr<binaryParser>& parser)
+	void ADRENTRYStruct::parse()
 	{
 		cValues = blockT<DWORD>::parse(parser);
 		ulReserved1 = blockT<DWORD>::parse(parser);
@@ -16,6 +17,19 @@ namespace smartview
 				rgPropVals = std::make_shared<PropertiesStruct>();
 				rgPropVals->SetMaxEntries(*cValues);
 				rgPropVals->block::parse(parser, false);
+			}
+		}
+	}
+
+	void ADRENTRYStruct::parseBlocks()
+	{
+		addChild(cValues, L"cValues = 0x%1!08X! = %1!d!", cValues->getData());
+		addChild(ulReserved1, L"ulReserved1 = 0x%1!08X! = %1!d!", ulReserved1->getData());
+		if (rgPropVals)
+		{
+			for (const auto& prop : rgPropVals->Props())
+			{
+				addChild(prop);
 			}
 		}
 	}
@@ -32,7 +46,7 @@ namespace smartview
 				m_lpAdrEntry.reserve(*m_cRowCount);
 				for (DWORD i = 0; i < *m_cRowCount; i++)
 				{
-					m_lpAdrEntry.emplace_back(std::make_shared<ADRENTRYStruct>(parser));
+					m_lpAdrEntry.emplace_back(block::parse<ADRENTRYStruct>(parser, false));
 				}
 			}
 		}
@@ -40,21 +54,15 @@ namespace smartview
 
 	void RecipientRowStream::parseBlocks()
 	{
-		setText(L"Recipient Row Stream\r\n");
-		addChild(m_cVersion, L"cVersion = %1!d!\r\n", m_cVersion->getData());
-		addChild(m_cRowCount, L"cRowCount = %1!d!\r\n", m_cRowCount->getData());
+		setText(L"Recipient Row Stream");
+		addChild(m_cVersion, L"cVersion = %1!d!", m_cVersion->getData());
+		addChild(m_cRowCount, L"cRowCount = %1!d!", m_cRowCount->getData());
 		if (!m_lpAdrEntry.empty())
 		{
-			addBlankLine();
 			auto i = DWORD{};
 			for (const auto& entry : m_lpAdrEntry)
 			{
-				terminateBlock();
-				addHeader(L"Row %1!d!\r\n", i);
-				addChild(entry->cValues, L"cValues = 0x%1!08X! = %1!d!\r\n", entry->cValues->getData());
-				addChild(entry->ulReserved1, L"ulReserved1 = 0x%1!08X! = %1!d!\r\n", entry->ulReserved1->getData());
-				addChild(entry->rgPropVals);
-
+				addChild(entry, L"Row %1!d!", i);
 				i++;
 			}
 		}

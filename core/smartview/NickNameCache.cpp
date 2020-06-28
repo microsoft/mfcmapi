@@ -1,9 +1,10 @@
 #include <core/stdafx.h>
 #include <core/smartview/NickNameCache.h>
+#include <core/smartview/SPropValueStruct.h>
 
 namespace smartview
 {
-	SRowStruct::SRowStruct(const std::shared_ptr<binaryParser>& parser)
+	void SRowStruct::parse()
 	{
 		cValues = blockT<DWORD>::parse(parser);
 
@@ -17,7 +18,19 @@ namespace smartview
 				lpProps->block::parse(parser, false);
 			}
 		}
-	} // namespace smartview
+	}
+
+	void SRowStruct::parseBlocks()
+	{
+		addChild(cValues, L"cValues = 0x%1!08X! = %1!d!", cValues->getData());
+		if (lpProps)
+		{
+			for (const auto& prop : lpProps->Props())
+			{
+				addChild(prop);
+			}
+		}
+	}
 
 	void NickNameCache::parse()
 	{
@@ -33,7 +46,7 @@ namespace smartview
 				m_lpRows.reserve(*m_cRowCount);
 				for (DWORD i = 0; i < *m_cRowCount; i++)
 				{
-					m_lpRows.emplace_back(std::make_shared<SRowStruct>(parser));
+					m_lpRows.emplace_back(block::parse<SRowStruct>(parser, false));
 				}
 			}
 		}
@@ -45,11 +58,11 @@ namespace smartview
 
 	void NickNameCache::parseBlocks()
 	{
-		setText(L"Nickname Cache\r\n");
-		addLabeledChild(L"Metadata1 = ", m_Metadata1);
+		setText(L"Nickname Cache");
+		addLabeledChild(L"Metadata1", m_Metadata1);
 
-		addChild(m_ulMajorVersion, L"Major Version = %1!d!\r\n", m_ulMajorVersion->getData());
-		addChild(m_ulMinorVersion, L"Minor Version = %1!d!\r\n", m_ulMinorVersion->getData());
+		addChild(m_ulMajorVersion, L"Major Version = %1!d!", m_ulMajorVersion->getData());
+		addChild(m_ulMinorVersion, L"Minor Version = %1!d!", m_ulMinorVersion->getData());
 		addChild(m_cRowCount, L"Row Count = %1!d!", m_cRowCount->getData());
 
 		if (!m_lpRows.empty())
@@ -57,22 +70,12 @@ namespace smartview
 			auto i = DWORD{};
 			for (const auto& row : m_lpRows)
 			{
-				terminateBlock();
-				if (i > 0) addBlankLine();
-				auto rowBlock = create(L"Row %1!d!\r\n", i);
-				addChild(rowBlock);
-				rowBlock->addChild(row->cValues, L"cValues = 0x%1!08X! = %1!d!\r\n", row->cValues->getData());
-				rowBlock->addChild(row->lpProps);
-
+				addChild(row, L"Row %1!d!", i);
 				i++;
 			}
 		}
 
-		terminateBlock();
-		addBlankLine();
-
-		addLabeledChild(L"Extra Info = ", m_lpbEI);
-
-		addLabeledChild(L"Metadata 2 = ", m_Metadata2);
+		addLabeledChild(L"Extra Info", m_lpbEI);
+		addLabeledChild(L"Metadata 2", m_Metadata2);
 	}
 } // namespace smartview

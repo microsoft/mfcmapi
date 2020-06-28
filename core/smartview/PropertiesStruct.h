@@ -3,7 +3,7 @@
 
 namespace smartview
 {
-	struct SPropValueStruct;
+	class SPropValueStruct;
 	class PropertiesStruct : public block
 	{
 	public:

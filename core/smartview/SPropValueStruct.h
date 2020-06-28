@@ -5,7 +5,7 @@
 
 namespace smartview
 {
-	struct SPropValueStruct : public block
+	class SPropValueStruct : public block
 	{
 	public:
 		void parse(
@@ -18,13 +18,14 @@ namespace smartview
 			m_doNickname = doNickname;
 			m_doRuleProcessing = doRuleProcessing;
 
-			block::parse(binaryParser, 0, false);
+			block::parse(binaryParser, false);
 		}
 
 		std::shared_ptr<blockT<WORD>> PropType = emptyT<WORD>();
 		std::shared_ptr<blockT<WORD>> PropID = emptyT<WORD>();
 		std::shared_ptr<blockT<ULONG>> ulPropTag = emptyT<ULONG>();
 		std::shared_ptr<blockPV> value;
+		int getIndex() const { return m_index; }
 
 	private:
 		void parse() override;

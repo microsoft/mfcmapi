@@ -9,13 +9,15 @@
 
 namespace smartview
 {
-	struct AddressListEntryStruct
+	class AddressListEntryStruct : public block
 	{
+	private:
+		void parse() override;
+		void parseBlocks() override;
+
 		std::shared_ptr<blockT<DWORD>> PropertyCount = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> Pad = emptyT<DWORD>();
 		std::shared_ptr<PropertiesStruct> Props;
-
-		AddressListEntryStruct(const std::shared_ptr<binaryParser>& parser);
 	};
 
 	class SearchFolderDefinition : public block

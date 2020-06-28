@@ -1,39 +1,48 @@
-Recurrence Pattern: 
-ReaderVersion: 0x3004
-WriterVersion: 0x3004
-RecurFrequency: 0x200B = IDC_RCEV_PAT_ORB_WEEKLY
-PatternType: 0x0001 = rptWeek
-CalendarType: 0x0000 = CAL_DEFAULT
-FirstDateTime: 0x000021C0 = 8640
-Period: 0x00000002 = 2
-SlidingFlag: 0x00000000
-PatternTypeSpecific.WeekRecurrencePattern: 0x00000010 = rdfThu
-EndType: 0x00002021 = IDC_RCEV_PAT_ERB_END
-OccurrenceCount: 0x00000012 = 18
-FirstDOW: 0x00000000 = Sunday
-DeletedInstanceCount: 0x00000004 = 4
-DeletedInstanceDates[0]: 0x0CDB6A80 = 12:00:00.000 AM 2/17/2011
-DeletedInstanceDates[1]: 0x0CDBB940 = 12:00:00.000 AM 3/3/2011
-DeletedInstanceDates[2]: 0x0CDC0800 = 12:00:00.000 AM 3/17/2011
-DeletedInstanceDates[3]: 0x0CDC56C0 = 12:00:00.000 AM 3/31/2011
-ModifiedInstanceCount: 0x00000001 = 1
-ModifiedInstanceDates[0]: 0x0CDB6A80 = 12:00:00.000 AM 2/17/2011
-StartDate: 0x0CD8F480 = 215544960 = 12:00:00.000 AM 10/28/2010
-EndDate: 0x0CDE56A0 = 215897760 = 12:00:00.000 AM 6/30/2011
-Appointment Recurrence Pattern: 
-ReaderVersion2: 0x00003006
-WriterVersion2: 0x00003009
-StartTimeOffset: 0x00000366 = 870 = 02:30:00.000 PM 1/1/1601
-EndTimeOffset: 0x000003A2 = 930 = 03:30:00.000 PM 1/1/1601
-ExceptionCount: 0x0001
-ExceptionInfo[0].StartDateTime: 0x0CDB6DE6 = 02:30:00.000 PM 2/17/2011
-ExceptionInfo[0].EndDateTime: 0x0CDB6E22 = 03:30:00.000 PM 2/17/2011
-ExceptionInfo[0].OriginalStartDate: 0x0CDB6DE6 = 02:30:00.000 PM 2/17/2011
-ExceptionInfo[0].OverrideFlags: 0x0282 = ARO_MEETINGTYPE | ARO_SUBTYPE | ARO_EXCEPTIONAL_BODY
-ExceptionInfo[0].MeetingType: 0x00000001 = asfMeeting
-ExceptionInfo[0].SubType: 0x00000000
-ReservedBlock1Size: 0x00000000
-ExtendedException[0].ChangeHighlight.ChangeHighlightSize: 0x00000004
-ExtendedException[0].ChangeHighlight.ChangeHighlightValue: 0x00000180 = BIT_CH_BODY | BIT_CH_CUSTOM
-ExtendedException[0].ReservedBlockEE1Size: 0x00000000
-ReservedBlock2Size: 0x00000000
+Recurrence Pattern
+	ReaderVersion: 0x3004
+	WriterVersion: 0x3004
+	RecurFrequency: 0x200B = IDC_RCEV_PAT_ORB_WEEKLY
+	PatternType: 0x0001 = rptWeek
+	CalendarType: 0x0000 = CAL_DEFAULT
+	FirstDateTime: 0x000021C0 = 8640
+	Period: 0x00000002 = 2
+	SlidingFlag: 0x00000000
+	PatternTypeSpecific
+		WeekRecurrencePattern: 0x00000010 = rdfThu
+	EndType: 0x00002021 = IDC_RCEV_PAT_ERB_END
+	OccurrenceCount: 0x00000012 = 18
+	FirstDOW: 0x00000000 = Sunday
+	DeletedInstanceCount: 0x00000004 = 4
+		DeletedInstanceDates[0]
+			0x0CDB6A80 = 12:00:00.000 AM 2/17/2011
+		DeletedInstanceDates[1]
+			0x0CDBB940 = 12:00:00.000 AM 3/3/2011
+		DeletedInstanceDates[2]
+			0x0CDC0800 = 12:00:00.000 AM 3/17/2011
+		DeletedInstanceDates[3]
+			0x0CDC56C0 = 12:00:00.000 AM 3/31/2011
+	ModifiedInstanceCount: 0x00000001 = 1
+		ModifiedInstanceDates[0]
+			0x0CDB6A80 = 12:00:00.000 AM 2/17/2011
+	StartDate: 0x0CD8F480 = 215544960 = 12:00:00.000 AM 10/28/2010
+	EndDate: 0x0CDE56A0 = 215897760 = 12:00:00.000 AM 6/30/2011
+Appointment Recurrence Pattern
+	ReaderVersion2: 0x00003006
+	WriterVersion2: 0x00003009
+	StartTimeOffset: 0x00000366 = 870 = 02:30:00.000 PM 1/1/1601
+	EndTimeOffset: 0x000003A2 = 930 = 03:30:00.000 PM 1/1/1601
+	ExceptionCount: 0x0001
+		ExceptionInfo[0]
+			StartDateTime: 0x0CDB6DE6 = 02:30:00.000 PM 2/17/2011
+			EndDateTime: 0x0CDB6E22 = 03:30:00.000 PM 2/17/2011
+			OriginalStartDate: 0x0CDB6DE6 = 02:30:00.000 PM 2/17/2011
+			OverrideFlags: 0x0282 = ARO_MEETINGTYPE | ARO_SUBTYPE | ARO_EXCEPTIONAL_BODY
+			MeetingType: 0x00000001 = asfMeeting
+			SubType: 0x00000000
+	ReservedBlock1Size: 0x00000000
+	ExtendedException[0]
+		ChangeHighlight
+			ChangeHighlightSize: 0x00000004
+			ChangeHighlightValue: 0x00000180 = BIT_CH_BODY | BIT_CH_CUSTOM
+		ReservedBlockEE1Size: 0x00000000
+	ReservedBlock2Size: 0x00000000

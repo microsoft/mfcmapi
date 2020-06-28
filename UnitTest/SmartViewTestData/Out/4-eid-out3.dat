@@ -1,10 +1,12 @@
-Wrapped Entry ID:
-abFlags = 0x00000000
-Provider GUID = {D3AD91C0-9D51-11CF-A4A9-00AA0047FAA4} = WAB_GUID
-Wrapped Entry Type = 0xB5 = BFLAGS_MASK_OUTLOOK | Type: BFLAGS_EXTERNAL_MAILUSER | Not a contact
-Exchange Address Entry ID:
-abFlags = 0x00000000
-Provider GUID = {C840A7DC-42C0-1A10-B4B9-08002B2FE182} = muidEMSAB
-Version = 0x00000001 = EMS_VERSION
-Type = 0x00000000 = DT_MAILUSER
-X500DN = /o=microsoft/ou=something/cn=Recipients/cn=12345
+Entry ID
+	abFlags = 0x00000000
+	Provider GUID = {D3AD91C0-9D51-11CF-A4A9-00AA0047FAA4} = WAB_GUID
+	Wrapped Entry ID
+		Wrapped Entry Type = 0xB5 = BFLAGS_MASK_OUTLOOK | Type: BFLAGS_EXTERNAL_MAILUSER | Not a contact
+		Entry ID
+			abFlags = 0x00000000
+			Provider GUID = {C840A7DC-42C0-1A10-B4B9-08002B2FE182} = muidEMSAB
+			Exchange Address Entry ID
+				Version = 0x00000001 = EMS_VERSION
+				Type = 0x00000000 = DT_MAILUSER
+				X500DN = /o=microsoft/ou=something/cn=Recipients/cn=12345

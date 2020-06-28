@@ -5,7 +5,7 @@
 
 namespace smartview
 {
-	ResponseLevel::ResponseLevel(const std::shared_ptr<binaryParser>& parser)
+	void ResponseLevel::parse()
 	{
 		const auto r1 = blockT<BYTE>::parse(parser);
 		const auto r2 = blockT<BYTE>::parse(parser);
@@ -27,6 +27,14 @@ namespace smartview
 		const auto r5 = blockT<BYTE>::parse(parser);
 		Random = blockT<BYTE>::create(static_cast<BYTE>(*r5 >> 4), r5->getSize(), r5->getOffset());
 		Level = blockT<BYTE>::create(static_cast<BYTE>(*r5 & 0xf), r5->getSize(), r5->getOffset());
+	}
+
+	void ResponseLevel::parseBlocks()
+	{
+		addChild(DeltaCode, L"DeltaCode = %1!d!", DeltaCode->getData());
+		addChild(TimeDelta, L"TimeDelta = 0x%1!08X! = %1!d!", TimeDelta->getData());
+		addChild(Random, L"Random = 0x%1!02X! = %1!d!", Random->getData());
+		addChild(Level, L"ResponseLevel = 0x%1!02X! = %1!d!", Level->getData());
 	}
 
 	void ConversationIndex::parse()
@@ -84,22 +92,22 @@ namespace smartview
 			m_lpResponseLevels.reserve(ulResponseLevels);
 			for (ULONG i = 0; i < ulResponseLevels; i++)
 			{
-				m_lpResponseLevels.emplace_back(std::make_shared<ResponseLevel>(parser));
+				m_lpResponseLevels.emplace_back(block::parse<ResponseLevel>(parser, false));
 			}
 		}
 	}
 
 	void ConversationIndex::parseBlocks()
 	{
-		setText(L"Conversation Index: \r\n");
+		setText(L"Conversation Index");
 
 		std::wstring PropString;
 		std::wstring AltPropString;
 		strings::FileTimeToString(*m_ftCurrent, PropString, AltPropString);
-		addChild(m_UnnamedByte, L"Unnamed byte = 0x%1!02X! = %1!d!\r\n", m_UnnamedByte->getData());
+		addChild(m_UnnamedByte, L"Unnamed byte = 0x%1!02X! = %1!d!", m_UnnamedByte->getData());
 		addChild(
 			m_ftCurrent,
-			L"Current FILETIME: (Low = 0x%1!08X!, High = 0x%2!08X!) = %3!ws!\r\n",
+			L"Current FILETIME: (Low = 0x%1!08X!, High = 0x%2!08X!) = %3!ws!",
 			m_ftCurrent->getData().dwLowDateTime,
 			m_ftCurrent->getData().dwHighDateTime,
 			PropString.c_str());
@@ -110,27 +118,7 @@ namespace smartview
 			auto i = 0;
 			for (const auto& responseLevel : m_lpResponseLevels)
 			{
-				terminateBlock();
-				addChild(
-					responseLevel->DeltaCode,
-					L"ResponseLevel[%1!d!].DeltaCode = %2!d!\r\n",
-					i,
-					responseLevel->DeltaCode->getData());
-				addChild(
-					responseLevel->TimeDelta,
-					L"ResponseLevel[%1!d!].TimeDelta = 0x%2!08X! = %2!d!\r\n",
-					i,
-					responseLevel->TimeDelta->getData());
-				addChild(
-					responseLevel->Random,
-					L"ResponseLevel[%1!d!].Random = 0x%2!02X! = %2!d!\r\n",
-					i,
-					responseLevel->Random->getData());
-				addChild(
-					responseLevel->Level,
-					L"ResponseLevel[%1!d!].ResponseLevel = 0x%2!02X! = %2!d!",
-					i,
-					responseLevel->Level->getData());
+				addChild(responseLevel, L"ResponseLevel[%1!d!]", i);
 
 				i++;
 			}

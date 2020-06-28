@@ -5,7 +5,7 @@
 
 namespace smartview
 {
-	PersistElement::PersistElement(const std::shared_ptr<binaryParser>& parser)
+	void PersistElement::parse()
 	{
 		wElementID = blockT<WORD>::parse(parser);
 		wElementDataSize = blockT<WORD>::parse(parser);
@@ -16,36 +16,20 @@ namespace smartview
 		}
 	}
 
-	void AdditionalRenEntryIDs::parse()
+	void PersistElement::parseBlocks()
 	{
-		WORD wPersistDataCount = 0;
-		// Run through the parser once to count the number of PersistData structs
-		while (parser->getSize() >= 2 * sizeof(WORD))
-		{
-			const auto& wPersistID = blockT<WORD>::parse(parser);
-			const auto& wDataElementSize = blockT<WORD>::parse(parser);
-			// Must have at least wDataElementSize bytes left to be a valid data element
-			if (parser->getSize() < *wDataElementSize) break;
+		addChild(
+			wElementID,
+			L"ElementID = 0x%1!04X! = %2!ws!",
+			wElementID->getData(),
+			flags::InterpretFlags(flagElementID, wElementID->getData()).c_str());
 
-			parser->advance(*wDataElementSize);
-			wPersistDataCount++;
-			if (wPersistID == PersistData::PERISIST_SENTINEL) break;
-		}
+		addChild(wElementDataSize, L"ElementDataSize = 0x%1!04X!", wElementDataSize->getData());
 
-		// Now we parse for real
-		parser->rewind();
-
-		if (wPersistDataCount && wPersistDataCount < _MaxEntriesSmall)
-		{
-			m_ppdPersistData.reserve(wPersistDataCount);
-			for (WORD iPersistElement = 0; iPersistElement < wPersistDataCount; iPersistElement++)
-			{
-				m_ppdPersistData.emplace_back(std::make_shared<PersistData>(parser));
-			}
-		}
+		addLabeledChild(L"ElementData", lpbElementData);
 	}
 
-	PersistData::PersistData(const std::shared_ptr<binaryParser>& parser)
+	void PersistData::parse()
 	{
 		WORD wDataElementCount = 0;
 		wPersistID = blockT<WORD>::parse(parser);
@@ -75,7 +59,7 @@ namespace smartview
 			ppeDataElement.reserve(wDataElementCount);
 			for (WORD iDataElement = 0; iDataElement < wDataElementCount; iDataElement++)
 			{
-				ppeDataElement.emplace_back(std::make_shared<PersistElement>(parser));
+				ppeDataElement.emplace_back(block::parse<PersistElement>(parser, false));
 			}
 		}
 
@@ -86,66 +70,75 @@ namespace smartview
 		// Junk data remains - can't use GetRemainingData here since it would eat the whole buffer
 		if (parser->getOffset() < cbRecordSize)
 		{
-			JunkData = blockBytes::parse(parser, cbRecordSize - parser->getOffset());
+			junkData = blockBytes::parse(parser, cbRecordSize - parser->getOffset());
+		}
+	}
+
+	void PersistData::parseBlocks()
+	{
+		addChild(
+			wPersistID,
+			L"PersistID = 0x%1!04X! = %2!ws!",
+			wPersistID->getData(),
+			flags::InterpretFlags(flagPersistID, wPersistID->getData()).c_str());
+		addChild(wDataElementsSize, L"DataElementsSize = 0x%1!04X!", wDataElementsSize->getData());
+
+		if (!ppeDataElement.empty())
+		{
+			auto iDataElement = 0;
+			for (const auto& dataElement : ppeDataElement)
+			{
+				addChild(dataElement, L"DataElement[%1!d!]", iDataElement);
+				iDataElement++;
+			}
+		}
+
+		if (!junkData->empty())
+		{
+			addLabeledChild(strings::formatmessage(L"Unparsed data size = 0x%1!08X!", junkData->size()), junkData);
+		}
+	}
+
+	void AdditionalRenEntryIDs::parse()
+	{
+		WORD wPersistDataCount = 0;
+		// Run through the parser once to count the number of PersistData structs
+		while (parser->getSize() >= 2 * sizeof(WORD))
+		{
+			const auto& wPersistID = blockT<WORD>::parse(parser);
+			const auto& wDataElementSize = blockT<WORD>::parse(parser);
+			// Must have at least wDataElementSize bytes left to be a valid data element
+			if (parser->getSize() < *wDataElementSize) break;
+
+			parser->advance(*wDataElementSize);
+			wPersistDataCount++;
+			if (wPersistID == PersistData::PERISIST_SENTINEL) break;
+		}
+
+		// Now we parse for real
+		parser->rewind();
+
+		if (wPersistDataCount && wPersistDataCount < _MaxEntriesSmall)
+		{
+			m_ppdPersistData.reserve(wPersistDataCount);
+			for (WORD iPersistElement = 0; iPersistElement < wPersistDataCount; iPersistElement++)
+			{
+				m_ppdPersistData.emplace_back(block::parse<PersistData>(parser, false));
+			}
 		}
 	}
 
 	void AdditionalRenEntryIDs::parseBlocks()
 	{
-		setText(L"Additional Ren Entry IDs\r\n");
-		addHeader(L"PersistDataCount = %1!d!", m_ppdPersistData.size());
+		setText(L"Additional Ren Entry IDs");
+		addSubHeader(L"PersistDataCount = %1!d!", m_ppdPersistData.size());
 
 		if (!m_ppdPersistData.empty())
 		{
 			auto iPersistElement = 0;
 			for (const auto& persistData : m_ppdPersistData)
 			{
-				terminateBlock();
-				addBlankLine();
-				auto element = create(L"Persist Element %1!d!:\r\n", iPersistElement);
-				addChild(element);
-
-				element->addChild(
-					persistData->wPersistID,
-					L"PersistID = 0x%1!04X! = %2!ws!\r\n",
-					persistData->wPersistID->getData(),
-					flags::InterpretFlags(flagPersistID, persistData->wPersistID->getData()).c_str());
-				element->addChild(
-					persistData->wDataElementsSize,
-					L"DataElementsSize = 0x%1!04X!",
-					persistData->wDataElementsSize->getData());
-
-				if (!persistData->ppeDataElement.empty())
-				{
-					auto iDataElement = 0;
-					for (const auto& dataElement : persistData->ppeDataElement)
-					{
-						element->terminateBlock();
-						auto de = create(L"DataElement: %1!d!\r\n", iDataElement);
-						element->addChild(de);
-
-						de->addChild(
-							dataElement->wElementID,
-							L"\tElementID = 0x%1!04X! = %2!ws!\r\n",
-							dataElement->wElementID->getData(),
-							flags::InterpretFlags(flagElementID, dataElement->wElementID->getData()).c_str());
-
-						de->addChild(
-							dataElement->wElementDataSize,
-							L"\tElementDataSize = 0x%1!04X!\r\n",
-							dataElement->wElementDataSize->getData());
-
-						de->addLabeledChild(L"\tElementData = ", dataElement->lpbElementData);
-						iDataElement++;
-					}
-				}
-
-				if (!persistData->JunkData->empty())
-				{
-					element->terminateBlock();
-					element->addHeader(L"Unparsed data size = 0x%1!08X!\r\n", persistData->JunkData->size());
-					element->addChild(persistData->JunkData);
-				}
+				addChild(persistData, L"Persist Element %1!d!", iPersistElement);
 
 				iPersistElement++;
 			}
