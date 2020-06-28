@@ -655,8 +655,7 @@ namespace controls::sortlistctrl
 	void CSortListCtrl::SetItemText(int nItem, int nSubItem, const std::wstring& lpszText)
 	{
 		// Remove any whitespace before setting in the list
-		auto trimmedText = strings::replace(
-			lpszText, [](const WCHAR& chr) { return std::wstring(L"\t\r\n").find(chr) != std::wstring::npos; }, L' ');
+		auto trimmedText = strings::collapseTree(lpszText);
 
 		auto lvi = LVITEMW();
 		lvi.iSubItem = nSubItem;

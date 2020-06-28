@@ -62,8 +62,8 @@ namespace strings
 	LPBYTE ByteVectorToLPBYTE(const std::vector<BYTE>& bin) noexcept;
 
 	std::vector<std::wstring> split(const std::wstring& str, wchar_t delim);
-	std::wstring join(const std::vector<std::wstring>& elems, const std::wstring& delim);
-	std::wstring join(const std::vector<std::wstring>& elems, wchar_t delim);
+	std::wstring join(const std::vector<std::wstring>& elems, const std::wstring& delim, bool bSkipEmpty = false);
+	std::wstring join(const std::vector<std::wstring>& elems, wchar_t delim, bool bSkipEmpty = false);
 
 	// Base64 functions
 	std::vector<BYTE> Base64Decode(const std::wstring& szEncodedStr);
@@ -89,4 +89,5 @@ namespace strings
 	std::map<std::wstring, std::wstring> tokenize(const std::wstring str);
 
 	std::wstring MAPINAMEIDToString(_In_ const MAPINAMEID& mapiNameId);
+	std::wstring collapseTree(const std::wstring& src);
 } // namespace strings
