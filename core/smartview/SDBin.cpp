@@ -7,25 +7,9 @@
 
 namespace smartview
 {
-	SDBin::~SDBin()
+	SDBin::SDBin(_In_opt_ LPMAPIPROP lpMAPIProp, bool bFB)
 	{
-		if (m_lpMAPIProp) m_lpMAPIProp->Release();
-	}
-
-	void SDBin::Init(_In_opt_ LPMAPIPROP lpMAPIProp, bool bFB) noexcept
-	{
-		if (m_lpMAPIProp) m_lpMAPIProp->Release();
-		m_lpMAPIProp = lpMAPIProp;
-		if (m_lpMAPIProp) m_lpMAPIProp->AddRef();
-		m_bFB = bFB;
-	}
-
-	void SDBin::parse() { m_SDbin = blockBytes::parse(parser, parser->getSize()); }
-
-	void SDBin::parseBlocks()
-	{
-		auto acetype = sid::aceType::Message;
-		switch (mapi::GetMAPIObjectType(m_lpMAPIProp))
+		switch (mapi::GetMAPIObjectType(lpMAPIProp))
 		{
 		case MAPI_STORE:
 		case MAPI_ADDRBOOK:
@@ -35,13 +19,19 @@ namespace smartview
 			break;
 		}
 
-		if (m_bFB) acetype = sid::aceType::FreeBusy;
+		if (bFB) acetype = sid::aceType::FreeBusy;
+	}
 
+	void SDBin::parse() { m_SDbin = blockBytes::parse(parser, parser->getSize()); }
+
+	void SDBin::parseBlocks()
+	{
 		if (m_SDbin)
 		{
+			setText(L"Security Descriptor");
+
 			// TODO: more accurately break this parsing into blocks with proper offsets
 			const auto sd = SDToString(*m_SDbin, acetype);
-			setText(L"Security Descriptor");
 			auto si = create(L"Security Info");
 			addChild(si);
 			if (!sd.info.empty())

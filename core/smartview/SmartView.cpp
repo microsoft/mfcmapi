@@ -114,17 +114,9 @@ namespace smartview
 		case parserType::SID:
 			return std::make_shared<SIDBin>();
 		case parserType::SECURITYDESCRIPTOR:
-		{
-			auto parser = std::make_shared<SDBin>();
-			if (parser) parser->Init(lpMAPIProp, false);
-			return parser;
-		}
+			return std::make_shared<SDBin>(lpMAPIProp, false);
 		case parserType::FBSECURITYDESCRIPTOR:
-		{
-			auto parser = std::make_shared<SDBin>();
-			if (parser) parser->Init(lpMAPIProp, true);
-			return parser;
-		}
+			return std::make_shared<SDBin>(lpMAPIProp, true);
 		case parserType::XID:
 			return std::make_shared<XID>();
 		}
