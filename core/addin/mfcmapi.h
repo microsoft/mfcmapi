@@ -143,11 +143,11 @@ enum class parserType
 	PCL,
 	FBSECURITYDESCRIPTOR,
 	XID,
+	RULEACTION,
+	EXTENDEDRULEACTION,
 	LONGRTIME,
 	PTI8,
 	SFIDMID,
-	RULEACTION,
-	EXTENDEDRULEACTION,
 	END // This must be the end of the enum
 };
 

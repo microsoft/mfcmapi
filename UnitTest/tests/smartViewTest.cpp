@@ -229,12 +229,7 @@ namespace SmartViewTest
 		TEST(XID, 32XID, 3)
 		TEST(XID, 32XID, 4)
 
-		TEST_METHOD(Test_RULEACTION)
-		{
-		}
-
-		TEST_METHOD(Test_EXTENDEDRULEACTION)
-		{
-		}
+		//TEST(RULEACTION, 33RULEACTION, 1)
+		//TEST(EXTENDEDRULEACTION, 34EXRULEACTION, 1)
 	};
 } // namespace SmartViewTest
