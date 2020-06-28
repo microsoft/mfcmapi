@@ -23,13 +23,13 @@ Property Definition Stream
 			Length = 0x0000
 		InternalType = 0x00000001 = iTypeNumber
 		SkipBlockCount = 2
-		SkipBlock: 0
+		SkipBlock[0]
 			Size = 0x00000017
 			FieldName
 				Length = 0x000B
 				Characters
 					combonumber
-		SkipBlock: 1
+		SkipBlock[1]
 			Size = 0x00000000
 	Definition: 1
 		Flags = 0x00000045 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS | PDO_PRINT_SAVEAS_DEF
@@ -55,13 +55,13 @@ Property Definition Stream
 			Length = 0x0000
 		InternalType = 0x00000001 = iTypeNumber
 		SkipBlockCount = 2
-		SkipBlock: 0
+		SkipBlock[0]
 			Size = 0x0000000B
 			FieldName
 				Length = 0x0005
 				Characters
 					flark
-		SkipBlock: 1
+		SkipBlock[1]
 			Size = 0x00000000
 	Definition: 2
 		Flags = 0x00000045 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS | PDO_PRINT_SAVEAS_DEF
@@ -83,13 +83,13 @@ Property Definition Stream
 			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
-		SkipBlock: 0
+		SkipBlock[0]
 			Size = 0x00000009
 			FieldName
 				Length = 0x0004
 				Characters
 					fook
-		SkipBlock: 1
+		SkipBlock[1]
 			Size = 0x00000000
 	Definition: 3
 		Flags = 0x00000000 = 0x0
@@ -113,13 +113,13 @@ Property Definition Stream
 			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
-		SkipBlock: 0
+		SkipBlock[0]
 			Size = 0x0000000F
 			FieldName
 				Length = 0x0007
 				Characters
 					Mileage
-		SkipBlock: 1
+		SkipBlock[1]
 			Size = 0x00000000
 	Definition: 4
 		Flags = 0x00000041 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS_DEF
@@ -143,13 +143,13 @@ Property Definition Stream
 			Length = 0x0000
 		InternalType = 0x00000001 = iTypeNumber
 		SkipBlockCount = 2
-		SkipBlock: 0
+		SkipBlock[0]
 			Size = 0x0000000D
 			FieldName
 				Length = 0x0006
 				Characters
 					Numero
-		SkipBlock: 1
+		SkipBlock[1]
 			Size = 0x00000000
 	Definition: 5
 		Flags = 0x0000004D = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS | PDO_CALC_AUTO | PDO_PRINT_SAVEAS_DEF
@@ -171,13 +171,13 @@ Property Definition Stream
 			Length = 0x0000
 		InternalType = 0x00000001 = iTypeNumber
 		SkipBlockCount = 2
-		SkipBlock: 0
+		SkipBlock[0]
 			Size = 0x00000011
 			FieldName
 				Length = 0x0008
 				Characters
 					percento
-		SkipBlock: 1
+		SkipBlock[1]
 			Size = 0x00000000
 	Definition: 6
 		Flags = 0x00000044 = PDO_PRINT_SAVEAS | PDO_PRINT_SAVEAS_DEF
@@ -202,13 +202,13 @@ Property Definition Stream
 			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
-		SkipBlock: 0
+		SkipBlock[0]
 			Size = 0x0000000F
 			FieldName
 				Length = 0x0007
 				Characters
 					Subject
-		SkipBlock: 1
+		SkipBlock[1]
 			Size = 0x00000000
 	Definition: 7
 		Flags = 0x0000004C = PDO_PRINT_SAVEAS | PDO_CALC_AUTO | PDO_PRINT_SAVEAS_DEF
@@ -237,11 +237,11 @@ Property Definition Stream
 			Length = 0x0000
 		InternalType = 0xFFFFFFFF = iTypeUnknown | iTypeString
 		SkipBlockCount = 2
-		SkipBlock: 0
+		SkipBlock[0]
 			Size = 0x00000005
 			FieldName
 				Length = 0x0002
 				Characters
 					To
-		SkipBlock: 1
+		SkipBlock[1]
 			Size = 0x00000000

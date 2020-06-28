@@ -21,13 +21,13 @@ Property Definition Stream
 			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
-		SkipBlock: 0
+		SkipBlock[0]
 			Size = 0x00000007
 			FieldName
 				Length = 0x0003
 				Characters
 					foo
-		SkipBlock: 1
+		SkipBlock[1]
 			Size = 0x00000000
 	Definition: 1
 		Flags = 0x00000045 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS | PDO_PRINT_SAVEAS_DEF
@@ -49,13 +49,13 @@ Property Definition Stream
 			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
-		SkipBlock: 0
+		SkipBlock[0]
 			Size = 0x0000001B
 			FieldName
 				Length = 0x000D
 				Characters
 					MyMFCMAPIProp
-		SkipBlock: 1
+		SkipBlock[1]
 			Size = 0x00000000
 	Definition: 2
 		Flags = 0x00000045 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS | PDO_PRINT_SAVEAS_DEF
@@ -77,13 +77,13 @@ Property Definition Stream
 			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
-		SkipBlock: 0
+		SkipBlock[0]
 			Size = 0x00000017
 			FieldName
 				Length = 0x000B
 				Characters
 					MyUserProp1
-		SkipBlock: 1
+		SkipBlock[1]
 			Size = 0x00000000
 	Definition: 3
 		Flags = 0x00000045 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS | PDO_PRINT_SAVEAS_DEF
@@ -105,11 +105,11 @@ Property Definition Stream
 			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
-		SkipBlock: 0
+		SkipBlock[0]
 			Size = 0x0000000B
 			FieldName
 				Length = 0x0005
 				Characters
 					Texty
-		SkipBlock: 1
+		SkipBlock[1]
 			Size = 0x00000000

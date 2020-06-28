@@ -8,7 +8,7 @@ Additional Ren Entry IDs
 	Persist Element 1
 		PersistID = 0x8003 = 0x8003
 		DataElementsSize = 0x0032
-		DataElement: 0
+		DataElement[0]
 			ElementID = 0x0001 = RSF_ELID_ENTRYID
 			ElementDataSize = 0x002E
 			ElementData
@@ -16,7 +16,7 @@ Additional Ren Entry IDs
 	Persist Element 2
 		PersistID = 0x8005 = 0x8005
 		DataElementsSize = 0x0032
-		DataElement: 0
+		DataElement[0]
 			ElementID = 0x0001 = RSF_ELID_ENTRYID
 			ElementDataSize = 0x002E
 			ElementData
@@ -24,7 +24,7 @@ Additional Ren Entry IDs
 	Persist Element 3
 		PersistID = 0x8002 = RSF_PID_SEND_AND_TRACK
 		DataElementsSize = 0x0032
-		DataElement: 0
+		DataElement[0]
 			ElementID = 0x0001 = RSF_ELID_ENTRYID
 			ElementDataSize = 0x002E
 			ElementData
@@ -32,7 +32,7 @@ Additional Ren Entry IDs
 	Persist Element 4
 		PersistID = 0x8004 = RSF_PID_TODO_SEARCH
 		DataElementsSize = 0x0032
-		DataElement: 0
+		DataElement[0]
 			ElementID = 0x0001 = RSF_ELID_ENTRYID
 			ElementDataSize = 0x002E
 			ElementData
@@ -40,7 +40,7 @@ Additional Ren Entry IDs
 	Persist Element 5
 		PersistID = 0x8006 = RSF_PID_CONV_ACTIONS
 		DataElementsSize = 0x0032
-		DataElement: 0
+		DataElement[0]
 			ElementID = 0x0001 = RSF_ELID_ENTRYID
 			ElementDataSize = 0x002E
 			ElementData
@@ -48,7 +48,7 @@ Additional Ren Entry IDs
 	Persist Element 6
 		PersistID = 0x8007 = RSF_PID_COMBINED_ACTIONS
 		DataElementsSize = 0x0032
-		DataElement: 0
+		DataElement[0]
 			ElementID = 0x0001 = RSF_ELID_ENTRYID
 			ElementDataSize = 0x002E
 			ElementData
@@ -56,7 +56,7 @@ Additional Ren Entry IDs
 	Persist Element 7
 		PersistID = 0x8008 = RSF_PID_SUGGESTED_CONTACTS
 		DataElementsSize = 0x0032
-		DataElement: 0
+		DataElement[0]
 			ElementID = 0x0001 = RSF_ELID_ENTRYID
 			ElementDataSize = 0x002E
 			ElementData

@@ -88,7 +88,7 @@ namespace smartview
 			auto iDataElement = 0;
 			for (const auto& dataElement : ppeDataElement)
 			{
-				addChild(dataElement, L"DataElement: %1!d!", iDataElement);
+				addChild(dataElement, L"DataElement[%1!d!]", iDataElement);
 				iDataElement++;
 			}
 		}

@@ -202,7 +202,7 @@ namespace smartview
 			auto iSkipBlock = 0;
 			for (const auto& sb : psbSkipBlocks)
 			{
-				addChild(sb, L"SkipBlock: %1!d!", iSkipBlock);
+				addChild(sb, L"SkipBlock[%1!d!]", iSkipBlock);
 
 				iSkipBlock++;
 			}

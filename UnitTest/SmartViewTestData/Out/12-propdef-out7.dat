@@ -21,13 +21,13 @@ Property Definition Stream
 			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
-		SkipBlock: 0
+		SkipBlock[0]
 			Size = 0x00000021
 			FieldName
 				Length = 0x000F
 				Characters
 					crmTestProperty
-		SkipBlock: 1
+		SkipBlock[1]
 			Size = 0x00000000
 	Definition: 1
 		Flags = 0x00000045 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS | PDO_PRINT_SAVEAS_DEF
@@ -49,11 +49,11 @@ Property Definition Stream
 			Length = 0x0000
 		InternalType = 0x00000000 = iTypeString
 		SkipBlockCount = 2
-		SkipBlock: 0
+		SkipBlock[0]
 			Size = 0x0000001F
 			FieldName
 				Length = 0x000F
 				Characters
 					crmTestProperty
-		SkipBlock: 1
+		SkipBlock[1]
 			Size = 0x00000000
