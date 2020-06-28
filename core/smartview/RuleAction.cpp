@@ -51,11 +51,11 @@ namespace smartview
 		std::shared_ptr<blockT<BYTE>> FolderInThisStore = emptyT<BYTE>();
 		std::shared_ptr<blockT<DWORD>> StoreEIDSize = emptyT<DWORD>();
 		std::shared_ptr<EntryIdStruct> StoreEID;
-		std::shared_ptr<blockBytes> StoreEIDBytes;
+		std::shared_ptr<blockBytes> StoreEIDBytes = emptyBB();
 		std::shared_ptr<blockT<DWORD>> FolderEIDSize = emptyT<DWORD>();
 		std::shared_ptr<EntryIdStruct> FolderEID;
 		std::shared_ptr<ServerEID> FolderEIDserverEID;
-		std::shared_ptr<blockBytes> FolderEIDBytes;
+		std::shared_ptr<blockBytes> FolderEIDBytes = emptyBB();
 		void parse() override
 		{
 			if (m_bExtended)
@@ -186,7 +186,7 @@ namespace smartview
 	class ActionDataDefer : public ActionData
 	{
 	private:
-		std::shared_ptr<blockBytes> deferBytes;
+		std::shared_ptr<blockBytes> deferBytes = emptyBB();
 		void parse() override { deferBytes = blockBytes::parse(parser, parser->getSize()); }
 		void parseBlocks()
 		{
