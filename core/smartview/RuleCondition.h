@@ -19,8 +19,9 @@ namespace smartview
 	// http://msdn.microsoft.com/en-us/library/ee158295.aspx
 	//   This structure specifies a Property Name
 	//
-	struct PropertyName : public block
+	class PropertyName : public block
 	{
+	public:
 		PropertyName(std::shared_ptr<blockT<WORD>> _PropId) : PropId(_PropId) {}
 
 	private:
