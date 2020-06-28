@@ -380,4 +380,42 @@ namespace smartview
 		addChild(ActionFlavor, L"ActionFlavor: 0x%1!08X!\r\n", ActionFlavor->getData());
 		addChild(ActionData);
 	}
+
+	void RuleAction ::parse()
+	{
+		if (m_bExtended)
+		{
+			namedPropertyInformation = block::parse<NamedPropertyInformation>(parser, 0, false);
+			RuleVersion = blockT<DWORD>::parse(parser);
+		}
+
+		NoOfActions = m_bExtended ? blockT<DWORD>::parse(parser) : blockT<DWORD>::parse<WORD>(parser);
+		if (*NoOfActions < _MaxEntriesSmall)
+		{
+			ActionBlocks.reserve(*NoOfActions);
+			for (DWORD i = 0; i < *NoOfActions; i++)
+			{
+				auto actionBlock = std::make_shared<ActionBlock>(m_bExtended);
+				actionBlock->block::parse(parser, false);
+				ActionBlocks.push_back(actionBlock);
+			}
+		}
+	}
+
+	void RuleAction ::parseBlocks()
+	{
+		setText(m_bExtended ? L"Extended Rule Action\r\n" : L"Rule Action\r\n");
+		if (m_bExtended)
+		{
+			addChild(namedPropertyInformation);
+			addChild(RuleVersion, L"RuleVersion: 0x%1!08X!\r\n", RuleVersion->getData());
+		}
+
+		addChild(NoOfActions, L"NoOfActions: 0x%1!08X!\r\n", NoOfActions->getData());
+		auto i = 0;
+		for (const auto actionBlock : ActionBlocks)
+		{
+			addChild(actionBlock, L"ActionBlocks[%1!d!]\r\n", i++);
+		}
+	}
 } // namespace smartview

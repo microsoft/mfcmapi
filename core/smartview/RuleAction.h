@@ -21,7 +21,6 @@ namespace smartview
 	class ActionData : public block
 	{
 	public:
-		ActionData() = default;
 		void parse(std::shared_ptr<binaryParser>& _parser, size_t size, bool bExtended)
 		{
 			m_bExtended = bExtended;
@@ -42,14 +41,14 @@ namespace smartview
 		ActionBlock(bool bExtended) : m_bExtended(bExtended) {}
 
 	private:
+		void parse() override;
+		void parseBlocks() override;
+
 		bool m_bExtended{};
 		std::shared_ptr<blockT<DWORD>> ActionLength = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> ActionType = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> ActionFlavor = emptyT<DWORD>();
 		std::shared_ptr<ActionData> ActionData;
-
-		void parse() override;
-		void parseBlocks() override;
 	};
 
 	// [MS-OXORULE] 2.2.5 RuleAction Structure
@@ -60,47 +59,13 @@ namespace smartview
 		RuleAction(bool bExtended) : m_bExtended(bExtended) {}
 
 	private:
+		void parse() override;
+		void parseBlocks() override;
+
 		bool m_bExtended{};
 		std::shared_ptr<NamedPropertyInformation> namedPropertyInformation;
 		std::shared_ptr<blockT<DWORD>> RuleVersion = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> NoOfActions = emptyT<DWORD>();
 		std::vector<std::shared_ptr<ActionBlock>> ActionBlocks;
-		void parse() override
-		{
-			if (m_bExtended)
-			{
-				namedPropertyInformation = block::parse<NamedPropertyInformation>(parser, 0, false);
-				RuleVersion = blockT<DWORD>::parse(parser);
-			}
-
-			NoOfActions = m_bExtended ? blockT<DWORD>::parse(parser) : blockT<DWORD>::parse<WORD>(parser);
-			if (*NoOfActions < _MaxEntriesSmall)
-			{
-				ActionBlocks.reserve(*NoOfActions);
-				for (DWORD i = 0; i < *NoOfActions; i++)
-				{
-					auto actionBlock = std::make_shared<ActionBlock>(m_bExtended);
-					actionBlock->block::parse(parser, false);
-					ActionBlocks.push_back(actionBlock);
-				}
-			}
-		}
-
-		void parseBlocks() override
-		{
-			setText(m_bExtended ? L"Extended Rule Action\r\n" : L"Rule Action\r\n");
-			if (m_bExtended)
-			{
-				addChild(namedPropertyInformation);
-				addChild(RuleVersion, L"RuleVersion: 0x%1!08X!\r\n", RuleVersion->getData());
-			}
-
-			addChild(NoOfActions, L"NoOfActions: 0x%1!08X!\r\n", NoOfActions->getData());
-			auto i = 0;
-			for (const auto actionBlock : ActionBlocks)
-			{
-				addChild(actionBlock, L"ActionBlocks[%1!d!]\r\n", i++);
-			}
-		}
 	};
 } // namespace smartview
