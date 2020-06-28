@@ -1,5 +1,6 @@
 Rule Condition
-	Number of named props = 0x0000
+	NamedPropertyInformation
+		Number of named props = 0x0000
 	Restriction
 	|	rt = 0x3 = RES_CONTENT
 	|	resContent

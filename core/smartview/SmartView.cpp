@@ -79,15 +79,11 @@ namespace smartview
 			return std::make_shared<EntryList>();
 		case parserType::RULECONDITION:
 		{
-			auto parser = std::make_shared<RuleCondition>();
-			if (parser) parser->Init(false);
-			return parser;
+			return std::make_shared<RuleCondition>(false);
 		}
 		case parserType::EXTENDEDRULECONDITION:
 		{
-			auto parser = std::make_shared<RuleCondition>();
-			if (parser) parser->Init(true);
-			return parser;
+			return std::make_shared<RuleCondition>(true);
 		}
 		case parserType::RESTRICTION:
 		{
