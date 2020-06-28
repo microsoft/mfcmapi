@@ -4,7 +4,7 @@
 
 namespace smartview
 {
-	TombstoneRecord::TombstoneRecord(const std::shared_ptr<binaryParser>& parser)
+	void TombstoneRecord::parse()
 	{
 		StartTime = blockT<DWORD>::parse(parser);
 		EndTime = blockT<DWORD>::parse(parser);
@@ -12,6 +12,16 @@ namespace smartview
 		GlobalObjectId = block::parse<smartview::GlobalObjectId>(parser, *GlobalObjectIdSize, false);
 		UsernameSize = blockT<WORD>::parse(parser);
 		szUsername = blockStringA::parse(parser, *UsernameSize);
+	}
+
+	void TombstoneRecord::parseBlocks()
+	{
+		addChild(StartTime, L"StartTime = 0x%1!08X! = %2!ws!", StartTime->getData(), RTimeToString(*StartTime).c_str());
+		addChild(EndTime, L"Endtime = 0x%1!08X! = %2!ws!", EndTime->getData(), RTimeToString(*EndTime).c_str());
+		addChild(GlobalObjectIdSize, L"GlobalObjectIdSize = 0x%1!08X!", GlobalObjectIdSize->getData());
+		addChild(GlobalObjectId);
+		addChild(UsernameSize, L"UsernameSize= 0x%1!04X!", UsernameSize->getData());
+		addChild(szUsername, L"szUsername = %1!hs!", szUsername->c_str());
 	}
 
 	void TombStone::parse()
@@ -46,7 +56,7 @@ namespace smartview
 			m_lpRecords.reserve(actualRecordsCount);
 			for (auto i = 0; i < actualRecordsCount; i++)
 			{
-				m_lpRecords.emplace_back(std::make_shared<TombstoneRecord>(parser));
+				m_lpRecords.emplace_back(block::parse<TombstoneRecord>(parser, false));
 			}
 		}
 	}
@@ -64,23 +74,7 @@ namespace smartview
 		auto i = 0;
 		for (const auto& record : m_lpRecords)
 		{
-			auto recordBlock = create(L"Record[%1!d!]", i++);
-			addChild(recordBlock);
-			recordBlock->addChild(
-				record->StartTime,
-				L"StartTime = 0x%1!08X! = %2!ws!",
-				record->StartTime->getData(),
-				RTimeToString(*record->StartTime).c_str());
-			recordBlock->addChild(
-				record->EndTime,
-				L"Endtime = 0x%1!08X! = %2!ws!",
-				record->EndTime->getData(),
-				RTimeToString(*record->EndTime).c_str());
-			recordBlock->addChild(
-				record->GlobalObjectIdSize, L"GlobalObjectIdSize = 0x%1!08X!", record->GlobalObjectIdSize->getData());
-			recordBlock->addChild(record->GlobalObjectId);
-			recordBlock->addChild(record->UsernameSize, L"UsernameSize= 0x%1!04X!", record->UsernameSize->getData());
-			recordBlock->addChild(record->szUsername, L"szUsername = %1!hs!", record->szUsername->c_str());
+			addChild(record, L"Record[%1!d!]", i++);
 		}
 	}
 } // namespace smartview
