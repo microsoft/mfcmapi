@@ -5,7 +5,7 @@
 
 namespace smartview
 {
-	VerbData::VerbData(const std::shared_ptr<binaryParser>& parser)
+	void VerbData::parse()
 	{
 		VerbType = blockT<DWORD>::parse(parser);
 		DisplayNameCount = blockT<BYTE>::parse(parser);
@@ -26,12 +26,45 @@ namespace smartview
 		Internal6 = blockT<DWORD>::parse(parser);
 	}
 
-	VerbExtraData::VerbExtraData(const std::shared_ptr<binaryParser>& parser)
+	void VerbData::parseBlocks()
+	{
+		addChild(VerbType, L"VerbType = 0x%1!08X!", VerbType->getData());
+		addChild(DisplayNameCount, L"DisplayNameCount = 0x%1!02X!", DisplayNameCount->getData());
+		addChild(DisplayName, L"DisplayName = \"%1!hs!\"", DisplayName->c_str());
+		addChild(MsgClsNameCount, L"MsgClsNameCount = 0x%1!02X!", MsgClsNameCount->getData());
+		addChild(MsgClsName, L"MsgClsName = \"%1!hs!\"", MsgClsName->c_str());
+		addChild(Internal1StringCount, L"Internal1StringCount = 0x%1!02X!", Internal1StringCount->getData());
+		addChild(Internal1String, L"Internal1String = \"%1!hs!\"", Internal1String->c_str());
+		addChild(DisplayNameCountRepeat, L"DisplayNameCountRepeat = 0x%1!02X!", DisplayNameCountRepeat->getData());
+		addChild(DisplayNameRepeat, L"DisplayNameRepeat = \"%1!hs!\"", DisplayNameRepeat->c_str());
+		addChild(Internal2, L"Internal2 = 0x%1!08X!", Internal2->getData());
+		addChild(Internal3, L"Internal3 = 0x%1!08X!", Internal3->getData());
+		addChild(fUseUSHeaders, L"fUseUSHeaders = 0x%1!02X!", fUseUSHeaders->getData());
+		addChild(Internal4, L"Internal4 = 0x%1!08X!", Internal4->getData());
+		addChild(SendBehavior, L"SendBehavior = 0x%1!08X!", SendBehavior->getData());
+		addChild(Internal5, L"Internal5 = 0x%1!08X!", Internal5->getData());
+		addChild(
+			ID,
+			L"ID = 0x%1!08X! = %2!ws!",
+			ID->getData(),
+			InterpretNumberAsStringProp(*ID, PR_LAST_VERB_EXECUTED).c_str());
+		addChild(Internal6, L"Internal6 = 0x%1!08X!", Internal6->getData());
+	}
+
+	void VerbExtraData::parse()
 	{
 		DisplayNameCount = blockT<BYTE>::parse(parser);
 		DisplayName = blockStringW::parse(parser, *DisplayNameCount);
 		DisplayNameCountRepeat = blockT<BYTE>::parse(parser);
 		DisplayNameRepeat = blockStringW::parse(parser, *DisplayNameCountRepeat);
+	}
+
+	void VerbExtraData::parseBlocks()
+	{
+		addChild(DisplayNameCount, L"DisplayNameCount = 0x%1!02X!", DisplayNameCount->getData());
+		addChild(DisplayName, L"DisplayName = \"%1!ws!\"", DisplayName->c_str());
+		addChild(DisplayNameCountRepeat, L"DisplayNameCountRepeat = 0x%1!02X!", DisplayNameCountRepeat->getData());
+		addChild(DisplayNameRepeat, L"DisplayNameRepeat = \"%1!ws!\"", DisplayNameRepeat->c_str());
 	}
 
 	void VerbStream::parse()
@@ -44,7 +77,7 @@ namespace smartview
 			m_lpVerbData.reserve(*m_Count);
 			for (DWORD i = 0; i < *m_Count; i++)
 			{
-				m_lpVerbData.emplace_back(std::make_shared<VerbData>(parser));
+				m_lpVerbData.emplace_back(block::parse<VerbData>(parser, false));
 			}
 		}
 
@@ -55,7 +88,7 @@ namespace smartview
 			m_lpVerbExtraData.reserve(*m_Count);
 			for (DWORD i = 0; i < *m_Count; i++)
 			{
-				m_lpVerbExtraData.emplace_back(std::make_shared<VerbExtraData>(parser));
+				m_lpVerbExtraData.emplace_back(block::parse<VerbExtraData>(parser, false));
 			}
 		}
 	}
@@ -69,42 +102,7 @@ namespace smartview
 		auto i = 0;
 		for (const auto& verbData : m_lpVerbData)
 		{
-			auto dataBlock = create(L"VerbData[%1!d!]", i);
-			addChild(dataBlock);
-			dataBlock->addChild(verbData->VerbType, L"VerbType = 0x%1!08X!", verbData->VerbType->getData());
-			dataBlock->addChild(
-				verbData->DisplayNameCount, L"DisplayNameCount = 0x%1!02X!", verbData->DisplayNameCount->getData());
-			dataBlock->addChild(verbData->DisplayName, L"DisplayName = \"%1!hs!\"", verbData->DisplayName->c_str());
-			dataBlock->addChild(
-				verbData->MsgClsNameCount, L"MsgClsNameCount = 0x%1!02X!", verbData->MsgClsNameCount->getData());
-			dataBlock->addChild(verbData->MsgClsName, L"MsgClsName = \"%1!hs!\"", verbData->MsgClsName->c_str());
-			dataBlock->addChild(
-				verbData->Internal1StringCount,
-				L"Internal1StringCount = 0x%1!02X!",
-				verbData->Internal1StringCount->getData());
-			dataBlock->addChild(
-				verbData->Internal1String, L"Internal1String = \"%1!hs!\"", verbData->Internal1String->c_str());
-			dataBlock->addChild(
-				verbData->DisplayNameCountRepeat,
-				L"DisplayNameCountRepeat = 0x%1!02X!",
-				verbData->DisplayNameCountRepeat->getData());
-			dataBlock->addChild(
-				verbData->DisplayNameRepeat, L"DisplayNameRepeat = \"%1!hs!\"", verbData->DisplayNameRepeat->c_str());
-			dataBlock->addChild(verbData->Internal2, L"Internal2 = 0x%1!08X!", verbData->Internal2->getData());
-			dataBlock->addChild(verbData->Internal3, L"Internal3 = 0x%1!08X!", verbData->Internal3->getData());
-			dataBlock->addChild(
-				verbData->fUseUSHeaders, L"fUseUSHeaders = 0x%1!02X!", verbData->fUseUSHeaders->getData());
-			dataBlock->addChild(verbData->Internal4, L"Internal4 = 0x%1!08X!", verbData->Internal4->getData());
-			dataBlock->addChild(verbData->SendBehavior, L"SendBehavior = 0x%1!08X!", verbData->SendBehavior->getData());
-			dataBlock->addChild(verbData->Internal5, L"Internal5 = 0x%1!08X!", verbData->Internal5->getData());
-			dataBlock->addChild(
-				verbData->ID,
-				L"ID = 0x%1!08X! = %2!ws!",
-				verbData->ID->getData(),
-				InterpretNumberAsStringProp(*verbData->ID, PR_LAST_VERB_EXECUTED).c_str());
-			dataBlock->addChild(verbData->Internal6, L"Internal6 = 0x%1!08X!", verbData->Internal6->getData());
-
-			i++;
+			addChild(verbData, L"VerbData[%1!d!]", i++);
 		}
 
 		addChild(m_Version2, L"Version2 = 0x%1!04X!", m_Version2->getData());
@@ -113,18 +111,7 @@ namespace smartview
 		for (const auto& ved : m_lpVerbExtraData)
 		{
 			auto dataBlock = create(L"VerbExtraData[%1!d!]", i);
-			addChild(dataBlock);
-			dataBlock->addChild(
-				ved->DisplayNameCount, L"DisplayNameCount = 0x%1!02X!", ved->DisplayNameCount->getData());
-			dataBlock->addChild(ved->DisplayName, L"DisplayName = \"%1!ws!\"", ved->DisplayName->c_str());
-			dataBlock->addChild(
-				ved->DisplayNameCountRepeat,
-				L"DisplayNameCountRepeat = 0x%1!02X!",
-				ved->DisplayNameCountRepeat->getData());
-			dataBlock->addChild(
-				ved->DisplayNameRepeat, L"DisplayNameRepeat = \"%1!ws!\"", ved->DisplayNameRepeat->c_str());
-
-			i++;
+			addChild(ved, L"VerbExtraData[%1!d!]", i++);
 		}
 	}
 } // namespace smartview
