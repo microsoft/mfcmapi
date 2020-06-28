@@ -655,12 +655,12 @@ namespace controls::sortlistctrl
 	void CSortListCtrl::SetItemText(int nItem, int nSubItem, const std::wstring& lpszText)
 	{
 		// Remove any whitespace before setting in the list
-		auto szWhitespace = strings::replace(
-			lpszText, [](const WCHAR& chr) { return std::wstring(L"\t\r\n").find(chr) == std::wstring::npos; }, L' ');
+		auto trimmedText = strings::replace(
+			lpszText, [](const WCHAR& chr) { return std::wstring(L"\t\r\n").find(chr) != std::wstring::npos; }, L' ');
 
 		auto lvi = LVITEMW();
 		lvi.iSubItem = nSubItem;
-		lvi.pszText = const_cast<LPWSTR>(lpszText.c_str());
+		lvi.pszText = const_cast<LPWSTR>(trimmedText.c_str());
 		static_cast<void>(::SendMessage(m_hWnd, LVM_SETITEMTEXTW, nItem, reinterpret_cast<LPARAM>(&lvi)));
 	}
 
