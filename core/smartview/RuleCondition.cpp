@@ -69,7 +69,7 @@ namespace smartview
 		{
 			addChild(NamedPropertiesSize, L"Named prop size = 0x%1!08X!", NamedPropertiesSize->getData());
 
-			for (auto i = 0; i < PropertyName.size(); i++)
+			for (size_t i = 0; i < PropertyName.size(); i++)
 			{
 				addChild(PropertyName[i], L"Named Prop 0x%1!04X!", i);
 			}
