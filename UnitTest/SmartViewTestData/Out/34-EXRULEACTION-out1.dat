@@ -1,0 +1,44 @@
+Extended Rule Action
+	NamedPropertyInformation
+		Number of named props = 0x0001
+		Named prop size = 0x00000084
+		Named Prop 0x0000
+			PropID = 0x837E
+			Kind = 0x01
+			Guid = {00020329-0000-0000-C000-000000000046}
+			NameSize = 0x72
+			Name = http://schemas.microsoft.com/exchange/junkemailmovestamp
+	RuleVersion: 0x00000001
+	NoOfActions: 0x00000002
+	ActionBlocks[0]
+		ActionLength: 0x0000004F
+		ActionType: OP_MOVE = 1
+		ActionFlavor: 0x00000000
+		ActionDataMoveCopy
+			FolderInThisStore: false
+			StoreEIDSize: 0x00000010
+			StoreEIDBytes
+				cb: 16 lpb: 6A07EF6249312049B80C4C3EE1CF2698
+			FolderEIDSize: 0x0000002E
+			FolderEID
+				Entry ID
+					abFlags = 0x00000000
+					Provider GUID = {B11B1AC3-55FC-46D3-9318-6631C218FEB6} = Unknown GUID
+					Exchange Folder Entry ID
+						Folder Type = 0x0001 = eitLTPrivateFolder
+						Database GUID = {35D0C2CD-0AC8-4878-AA53-2A41B8AAE17F} = Unknown GUID
+						GlobalCounter
+							cb: 6 lpb: 000000000122
+						Pad
+							cb: 2 lpb: 0000
+	ActionBlocks[1]
+		ActionLength: 0x00000011
+		ActionType: OP_TAG = 9
+		ActionFlavor: 0x00000000
+		ActionDataTag
+			Unknown: 0x00
+			TaggedPropertyValue
+				Property[0]
+					Property = 0x837E0003
+					PropString = 930864138
+					AltPropString = 0x377BDC0A
