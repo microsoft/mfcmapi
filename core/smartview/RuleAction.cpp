@@ -358,10 +358,14 @@ namespace smartview
 
 		ActionType = blockT<DWORD>::parse(parser); // TODO: not m_bExtended may be 1 byte
 		ActionFlavor = blockT<DWORD>::parse(parser);
-		ActionData = getActionDataParser(*ActionType);
-		if (ActionData)
+		// ActionLength includes the size of ActionType and ActionFlavor
+		if (*ActionLength > 2 * sizeof DWORD)
 		{
-			ActionData->parse(parser, 0, m_bExtended);
+			ActionData = getActionDataParser(*ActionType);
+			if (ActionData)
+			{
+				ActionData->parse(parser, *ActionLength - 2 * sizeof DWORD, m_bExtended);
+			}
 		}
 	}
 
