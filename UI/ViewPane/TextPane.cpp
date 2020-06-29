@@ -232,9 +232,12 @@ namespace viewpane
 			// Clear the modify bits so we can detect changes later
 			m_EditBox.SetModify(false);
 
-			// Remove the awful autoselect of the edit control that scrolls to the end of multiline text
 			if (m_bMultiline)
 			{
+				LONG stops = 16; // 16 dialog template units. Default is 32.
+				EC_B(::SendMessage(m_EditBox.m_hWnd, EM_SETTABSTOPS, WPARAM{1}, reinterpret_cast<LPARAM>(&stops)));
+
+				// Remove the awful autoselect of the edit control that scrolls to the end of multiline text
 				::PostMessage(m_EditBox.m_hWnd, EM_SETSEL, static_cast<WPARAM>(0), static_cast<LPARAM>(0));
 			}
 		}
