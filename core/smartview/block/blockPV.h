@@ -228,9 +228,9 @@ namespace smartview
 
 			if (bin) delete[] bin;
 			bin = nullptr;
-			if (*cValues)
+			if (lpbin.size())
 			{
-				const auto count = cValues->getData();
+				const auto count = lpbin.size();
 				bin = new (std::nothrow) SBinary[count];
 				if (bin)
 				{
@@ -251,6 +251,12 @@ namespace smartview
 	/* case PT_MV_STRING8 */
 	class StringArrayA : public blockPV
 	{
+	public:
+		~StringArrayA()
+		{
+			if (strings) delete[] strings;
+		}
+
 	private:
 		void parse() override
 		{
@@ -261,11 +267,10 @@ namespace smartview
 			}
 			else
 			{
-				cValues = blockT<DWORD>::parse<WORD>(parser);
+				cValues = blockT<DWORD>::parse(parser);
 			}
 
-			if (cValues)
-			//if (cValues && cValues < _MaxEntriesLarge)
+			if (cValues && *cValues < _MaxEntriesLarge)
 			{
 				lppszA.reserve(*cValues);
 				for (ULONG j = 0; j < *cValues; j++)
@@ -273,17 +278,38 @@ namespace smartview
 					lppszA.emplace_back(blockStringA::parse(parser));
 				}
 			}
+
+			if (strings) delete[] strings;
+			strings = nullptr;
+			if (lppszA.size())
+			{
+				const auto count = lppszA.size();
+				strings = new (std::nothrow) LPSTR[count];
+				if (strings)
+				{
+					for (ULONG i = 0; i < count; i++)
+					{
+						strings[i] = const_cast<LPSTR>(lppszA[i]->c_str());
+					}
+				}
+			}
 		}
 
-		// TODO: Populate a SLPSTRArray struct here
 		const void getProp(SPropValue& prop) noexcept override { prop.Value.MVszA = {}; }
 		std::shared_ptr<blockT<ULONG>> cValues = emptyT<ULONG>();
 		std::vector<std::shared_ptr<blockStringA>> lppszA;
+		LPSTR* strings{};
 	};
 
 	/* case PT_MV_UNICODE */
 	class StringArrayW : public blockPV
 	{
+	public:
+		~StringArrayW()
+		{
+			if (strings) delete[] strings;
+		}
+
 	private:
 		void parse() override
 		{
@@ -305,12 +331,27 @@ namespace smartview
 					lppszW.emplace_back(blockStringW::parse(parser));
 				}
 			}
+
+			if (strings) delete[] strings;
+			strings = nullptr;
+			if (lppszW.size())
+			{
+				const auto count = lppszW.size();
+				strings = new (std::nothrow) LPWSTR[count];
+				if (strings)
+				{
+					for (ULONG i = 0; i < count; i++)
+					{
+						strings[i] = const_cast<LPWSTR>(lppszW[i]->c_str());
+					}
+				}
+			}
 		}
 
-		// TODO: Populate a SWStringArray struct here
-		const void getProp(SPropValue& prop) noexcept override { prop.Value.MVszW = {}; }
+		const void getProp(SPropValue& prop) noexcept override { prop.Value.MVszW = {*cValues, strings}; }
 		std::shared_ptr<blockT<ULONG>> cValues = emptyT<ULONG>();
 		std::vector<std::shared_ptr<blockStringW>> lppszW;
+		LPWSTR* strings{};
 	};
 
 	/* case PT_I2 */
