@@ -294,7 +294,7 @@ namespace smartview
 			}
 			else
 			{
-				cValues = blockT<DWORD>::parse<WORD>(parser);
+				cValues = blockT<DWORD>::parse(parser);
 			}
 
 			if (cValues && *cValues < _MaxEntriesLarge)

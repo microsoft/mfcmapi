@@ -283,7 +283,11 @@ namespace smartview
 		void parse() override
 		{
 			Unknown = blockT<BYTE>::parse(parser);
-			TaggedPropertyValue = block::parse<SPropValueStruct>(parser, false);
+			TaggedPropertyValue = std::make_shared<SPropValueStruct>();
+			if (TaggedPropertyValue)
+			{
+				TaggedPropertyValue->parse(parser, 0, false, false);
+			}
 		}
 
 		void parseBlocks()
