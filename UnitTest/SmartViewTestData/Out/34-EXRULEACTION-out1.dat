@@ -14,8 +14,8 @@ Extended Rule Action
 		ActionLength: 0x0000004F
 		ActionType: OP_MOVE = 1
 		ActionFlavor: 0x00000000
+		ActionFlags: 0x00000000
 		ActionDataMoveCopy
-			FolderInThisStore: false
 			StoreEIDSize: 0x00000010
 			StoreEIDBytes
 				cb: 16 lpb: 6A07EF6249312049B80C4C3EE1CF2698
@@ -35,8 +35,8 @@ Extended Rule Action
 		ActionLength: 0x00000011
 		ActionType: OP_TAG = 9
 		ActionFlavor: 0x00000000
+		ActionFlags: 0x00000000
 		ActionDataTag
-			Unknown: 0x00
 			TaggedPropertyValue
 				Property[0]
 					Property = 0x837E0003

@@ -57,7 +57,6 @@ namespace smartview
 		{
 			if (m_bExtended)
 			{
-				FolderInThisStore = blockT<BYTE>::parse(parser);
 				StoreEIDSize = blockT<DWORD>::parse(parser);
 				StoreEIDBytes = blockBytes::parse(parser, *StoreEIDSize);
 				FolderEIDSize = blockT<DWORD>::parse(parser);
@@ -92,7 +91,6 @@ namespace smartview
 			setText(L"ActionDataMoveCopy");
 			if (m_bExtended)
 			{
-				addChild(FolderInThisStore, L"FolderInThisStore: %1!ws!", *FolderInThisStore ? L"true" : L"false");
 				addChild(StoreEIDSize, L"StoreEIDSize: 0x%1!08X!", StoreEIDSize->getData());
 				addLabeledChild(L"StoreEIDBytes", StoreEIDBytes);
 				addChild(FolderEIDSize, L"FolderEIDSize: 0x%1!08X!", FolderEIDSize->getData());
@@ -278,11 +276,9 @@ namespace smartview
 	class ActionDataTag : public ActionData
 	{
 	private:
-		std::shared_ptr<blockT<BYTE>> Unknown = emptyT<BYTE>();
 		std::shared_ptr<SPropValueStruct> TaggedPropertyValue;
 		void parse() override
 		{
-			Unknown = blockT<BYTE>::parse(parser);
 			TaggedPropertyValue = std::make_shared<SPropValueStruct>();
 			if (TaggedPropertyValue)
 			{
@@ -293,7 +289,6 @@ namespace smartview
 		void parseBlocks()
 		{
 			setText(L"ActionDataTag");
-			addChild(Unknown, L"Unknown: 0x%1!02X!", Unknown->getData());
 			addLabeledChild(L"TaggedPropertyValue", TaggedPropertyValue);
 		}
 	};
@@ -360,8 +355,10 @@ namespace smartview
 			ActionLength = blockT<DWORD>::parse<WORD>(parser);
 		}
 
-		ActionType = blockT<DWORD>::parse(parser); // TODO: not m_bExtended may be 1 byte
+		ActionType = blockT<BYTE>::parse(parser); // TODO: not m_bExtended may be 1 byte
 		ActionFlavor = blockT<DWORD>::parse(parser);
+		ActionFlags = blockT<DWORD>::parse(parser);
+
 		// ActionLength includes the size of ActionType and ActionFlavor
 		if (*ActionLength > 2 * sizeof DWORD)
 		{
@@ -383,6 +380,7 @@ namespace smartview
 			flags::InterpretFlags(flagActionType, ActionType->getData()).c_str(),
 			ActionType->getData());
 		addChild(ActionFlavor, L"ActionFlavor: 0x%1!08X!", ActionFlavor->getData());
+		addChild(ActionFlags, L"ActionFlags: 0x%1!08X!", ActionFlags->getData());
 		addChild(ActionData);
 	}
 

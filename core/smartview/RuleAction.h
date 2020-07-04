@@ -46,8 +46,9 @@ namespace smartview
 
 		bool m_bExtended{};
 		std::shared_ptr<blockT<DWORD>> ActionLength = emptyT<DWORD>();
-		std::shared_ptr<blockT<DWORD>> ActionType = emptyT<DWORD>();
+		std::shared_ptr<blockT<BYTE>> ActionType = emptyT<BYTE>();
 		std::shared_ptr<blockT<DWORD>> ActionFlavor = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> ActionFlags = emptyT<DWORD>();
 		std::shared_ptr<ActionData> ActionData;
 	};
 
