@@ -208,11 +208,8 @@ namespace smartview
 				PropertyValues.reserve(*NoOfProperties);
 				for (DWORD i = 0; i < *NoOfProperties; i++)
 				{
-					auto prop = std::make_shared<SPropValueStruct>();
-					if (prop)
-					{
-						prop->parse(parser, 0, false, true);
-					}
+					auto prop = std::make_shared<SPropValueStruct>(i, false, true);
+					prop->block::parse(parser, true);
 					PropertyValues.push_back(prop);
 				}
 			}
@@ -284,11 +281,8 @@ namespace smartview
 		std::shared_ptr<SPropValueStruct> TaggedPropertyValue;
 		void parse() override
 		{
-			TaggedPropertyValue = std::make_shared<SPropValueStruct>();
-			if (TaggedPropertyValue)
-			{
-				TaggedPropertyValue->parse(parser, 0, false, true);
-			}
+			TaggedPropertyValue = std::make_shared<SPropValueStruct>(0, false, true);
+			TaggedPropertyValue->block::parse(parser, false);
 		}
 
 		void parseBlocks()

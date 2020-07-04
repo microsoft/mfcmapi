@@ -28,10 +28,10 @@ namespace smartview
 		for (;;)
 		{
 			if (dwPropCount >= m_MaxEntries) break;
-			auto sPropValueStruct = std::make_shared<SPropValueStruct>();
+			auto sPropValueStruct = std::make_shared<SPropValueStruct>(dwPropCount++, m_NickName, m_RuleCondition);
 			if (sPropValueStruct)
 			{
-				sPropValueStruct->parse(parser, dwPropCount++, m_NickName, m_RuleCondition);
+				sPropValueStruct->block::parse(parser, false);
 			}
 
 			m_Props.emplace_back(sPropValueStruct);
