@@ -418,7 +418,29 @@ namespace smartview
 			L"ActionType: %1!ws! = %2!d!",
 			flags::InterpretFlags(flagActionType, ActionType->getData()).c_str(),
 			ActionType->getData());
-		addChild(ActionFlavor, L"ActionFlavor: 0x%1!08X!", ActionFlavor->getData());
+
+		switch (*ActionType)
+		{
+		case OP_FORWARD:
+			addChild(
+				ActionFlavor,
+				L"ActionFlavor: %1!ws! = 0x%2!08X!",
+				flags::InterpretFlags(flagOpForward, ActionFlavor->getData()).c_str(),
+				ActionFlavor->getData());
+			break;
+		case OP_REPLY:
+		case OP_OOF_REPLY:
+			addChild(
+				ActionFlavor,
+				L"ActionFlavor: %1!ws! = 0x%2!08X!",
+				flags::InterpretFlags(flagOPReply, ActionFlavor->getData()).c_str(),
+				ActionFlavor->getData());
+			break;
+		default:
+			addChild(ActionFlavor, L"ActionFlavor: 0x%1!08X!", ActionFlavor->getData());
+			break;
+		}
+
 		addChild(ActionFlags, L"ActionFlags: 0x%1!08X!", ActionFlags->getData());
 		addChild(ActionData);
 	}
