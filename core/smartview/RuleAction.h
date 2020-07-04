@@ -31,7 +31,7 @@ namespace smartview
 		void parse() override {}
 		virtual void parseBlocks() = 0;
 		bool m_bExtended{};
-		BYTE actionType;
+		BYTE actionType{};
 	};
 
 	// [MS-OXORULE] 2.2.5.1 ActionBlock Structure
