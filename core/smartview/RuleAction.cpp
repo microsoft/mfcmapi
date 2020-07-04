@@ -301,46 +301,48 @@ namespace smartview
 		void parseBlocks() { setText(L"ActionDataDeleteMarkRead"); }
 	};
 
-	std::shared_ptr<ActionData> getActionDataParser(DWORD at)
+	std::shared_ptr<ActionData> getActionDataParser(DWORD at, bool bExtended)
 	{
+		std::shared_ptr<ActionData> ret{};
 		switch (at)
 		{
 		case OP_MOVE:
-			return std::make_shared<ActionDataMoveCopy>();
+			ret = std::make_shared<ActionDataMoveCopy>();
 			break;
 		case OP_COPY:
-			return std::make_shared<ActionDataMoveCopy>();
+			ret = std::make_shared<ActionDataMoveCopy>();
 			break;
 		case OP_REPLY:
-			return std::make_shared<ActionDataReply>();
+			ret = std::make_shared<ActionDataReply>();
 			break;
 		case OP_OOF_REPLY:
-			return std::make_shared<ActionDataReply>();
+			ret = std::make_shared<ActionDataReply>();
 			break;
 		case OP_DEFER_ACTION:
-			return std::make_shared<ActionDataDefer>();
+			ret = std::make_shared<ActionDataDefer>();
 			break;
 		case OP_BOUNCE:
-			return std::make_shared<ActionDataBounce>();
+			ret = std::make_shared<ActionDataBounce>();
 			break;
 		case OP_FORWARD:
-			return std::make_shared<ActionDataForwardDelegate>();
+			ret = std::make_shared<ActionDataForwardDelegate>();
 			break;
 		case OP_DELEGATE:
-			return std::make_shared<ActionDataForwardDelegate>();
+			ret = std::make_shared<ActionDataForwardDelegate>();
 			break;
 		case OP_TAG:
-			return std::make_shared<ActionDataTag>();
+			ret = std::make_shared<ActionDataTag>();
 			break;
 		case OP_DELETE:
-			return std::make_shared<ActionDataDeleteMarkRead>();
+			ret = std::make_shared<ActionDataDeleteMarkRead>();
 			break;
 		case OP_MARK_AS_READ:
-			return std::make_shared<ActionDataDeleteMarkRead>();
+			ret = std::make_shared<ActionDataDeleteMarkRead>();
 			break;
 		}
 
-		return {};
+		if (ret) ret->init(bExtended);
+		return ret;
 	}
 
 	void ActionBlock ::parse()
@@ -361,10 +363,10 @@ namespace smartview
 		// ActionLength includes the size of ActionType and ActionFlavor
 		if (*ActionLength > 2 * sizeof DWORD)
 		{
-			ActionData = getActionDataParser(*ActionType);
+			ActionData = getActionDataParser(*ActionType, m_bExtended);
 			if (ActionData)
 			{
-				ActionData->parse(parser, *ActionLength - 2 * sizeof DWORD, m_bExtended);
+				ActionData->block::parse(parser, *ActionLength - 2 * sizeof DWORD, false);
 			}
 		}
 	}

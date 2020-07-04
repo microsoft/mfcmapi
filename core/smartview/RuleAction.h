@@ -21,11 +21,7 @@ namespace smartview
 	class ActionData : public block
 	{
 	public:
-		void parse(std::shared_ptr<binaryParser>& _parser, size_t size, bool bExtended)
-		{
-			m_bExtended = bExtended;
-			block::parse(_parser, size, false);
-		}
+		void init(bool bExtended) { m_bExtended = bExtended; }
 
 	protected:
 		void parse() override {}
