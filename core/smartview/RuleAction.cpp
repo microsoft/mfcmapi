@@ -397,14 +397,15 @@ namespace smartview
 		ActionType = blockT<BYTE>::parse(parser); // TODO: not m_bExtended may be 1 byte
 		ActionFlavor = blockT<DWORD>::parse(parser);
 		ActionFlags = blockT<DWORD>::parse(parser);
+		const auto headerSize = sizeof BYTE + 2 * sizeof DWORD;
 
-		// ActionLength includes the size of ActionType and ActionFlavor
-		if (*ActionLength > 2 * sizeof DWORD)
+		// ActionLength includes the size of ActionType, ActionFlavor and Action Flags
+		if (*ActionLength > headerSize)
 		{
 			ActionData = getActionDataParser(*ActionType, m_bExtended);
 			if (ActionData)
 			{
-				ActionData->block::parse(parser, *ActionLength - 2 * sizeof DWORD, false);
+				ActionData->block::parse(parser, *ActionLength - headerSize, true);
 			}
 		}
 	}
