@@ -88,7 +88,16 @@ namespace smartview
 		}
 		void parseBlocks()
 		{
-			setText(L"ActionDataMoveCopy");
+			switch (actionType)
+			{
+			case OP_MOVE:
+				setText(L"ActionDataMove");
+				break;
+			case OP_COPY:
+				setText(L"ActionDataCopy");
+				break;
+			}
+
 			if (m_bExtended)
 			{
 				addChild(StoreEIDSize, L"StoreEIDSize: 0x%1!08X!", StoreEIDSize->getData());
@@ -149,7 +158,16 @@ namespace smartview
 		}
 		void parseBlocks()
 		{
-			setText(L"ActionDataReply");
+			switch (actionType)
+			{
+			case OP_REPLY:
+				setText(L"ActionDataReply");
+				break;
+			case OP_OOF_REPLY:
+				setText(L"ActionDataOOFReply");
+				break;
+			}
+
 			if (m_bExtended)
 			{
 				addChild(MessageEIDSize, L"MessageEIDSize: 0x%1!08X!", MessageEIDSize->getData());
@@ -248,7 +266,16 @@ namespace smartview
 		}
 		void parseBlocks()
 		{
-			setText(L"ActionDataForwardDelegate");
+			switch (actionType)
+			{
+			case OP_FORWARD:
+				setText(L"ActionDataForward");
+				break;
+			case OP_DELEGATE:
+				setText(L"ActionDataDelegate");
+				break;
+			}
+
 			addChild(RecipientCount, L"RecipientCount: 0x%1!08X!", RecipientCount->getData());
 			auto i = 0;
 			for (const auto& recipient : RecipientBlocks)
@@ -298,10 +325,21 @@ namespace smartview
 	{
 	private:
 		void parse() override {}
-		void parseBlocks() { setText(L"ActionDataDeleteMarkRead"); }
+		void parseBlocks()
+		{
+			switch (actionType)
+			{
+			case OP_DELETE:
+				setText(L"ActionDataDelete");
+				break;
+			case OP_MARK_AS_READ:
+				setText(L"ActionDataMarkRead");
+				break;
+			}
+		}
 	};
 
-	std::shared_ptr<ActionData> getActionDataParser(DWORD at, bool bExtended)
+	std::shared_ptr<ActionData> getActionDataParser(BYTE at, bool bExtended)
 	{
 		std::shared_ptr<ActionData> ret{};
 		switch (at)
@@ -341,7 +379,7 @@ namespace smartview
 			break;
 		}
 
-		if (ret) ret->init(bExtended);
+		if (ret) ret->init(at, bExtended);
 		return ret;
 	}
 

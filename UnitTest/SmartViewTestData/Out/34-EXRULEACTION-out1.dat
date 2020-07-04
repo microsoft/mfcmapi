@@ -15,7 +15,7 @@ Extended Rule Action
 		ActionType: OP_MOVE = 1
 		ActionFlavor: 0x00000000
 		ActionFlags: 0x00000000
-		ActionDataMoveCopy
+		ActionDataMove
 			StoreEIDSize: 0x00000010
 			StoreEIDBytes
 				cb: 16 lpb: 6A07EF6249312049B80C4C3EE1CF2698

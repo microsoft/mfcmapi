@@ -21,12 +21,17 @@ namespace smartview
 	class ActionData : public block
 	{
 	public:
-		void init(bool bExtended) { m_bExtended = bExtended; }
+		void init(BYTE _actionType, bool bExtended)
+		{
+			actionType = _actionType;
+			m_bExtended = bExtended;
+		}
 
 	protected:
 		void parse() override {}
 		virtual void parseBlocks() = 0;
 		bool m_bExtended{};
+		BYTE actionType;
 	};
 
 	// [MS-OXORULE] 2.2.5.1 ActionBlock Structure
