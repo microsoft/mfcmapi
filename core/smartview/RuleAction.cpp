@@ -208,7 +208,12 @@ namespace smartview
 				PropertyValues.reserve(*NoOfProperties);
 				for (DWORD i = 0; i < *NoOfProperties; i++)
 				{
-					PropertyValues.push_back(block::parse<SPropValueStruct>(parser, 0, true));
+					auto prop = std::make_shared<SPropValueStruct>();
+					if (prop)
+					{
+						prop->parse(parser, 0, false, true);
+					}
+					PropertyValues.push_back(prop);
 				}
 			}
 		};
@@ -240,7 +245,7 @@ namespace smartview
 				RecipientBlocks.reserve(*RecipientCount);
 				for (DWORD i = 0; i < *RecipientCount; i++)
 				{
-					RecipientBlocks.push_back(block::parse<RecipientBlockData>(parser, 0, true));
+					RecipientBlocks.push_back(block::parse<RecipientBlockData>(parser, 0, false));
 				}
 			}
 		}
@@ -282,7 +287,7 @@ namespace smartview
 			TaggedPropertyValue = std::make_shared<SPropValueStruct>();
 			if (TaggedPropertyValue)
 			{
-				TaggedPropertyValue->parse(parser, 0, false, false);
+				TaggedPropertyValue->parse(parser, 0, false, true);
 			}
 		}
 
