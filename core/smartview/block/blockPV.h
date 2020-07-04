@@ -75,7 +75,7 @@ namespace smartview
 		virtual const void getProp(SPropValue& prop) noexcept = 0;
 		std::shared_ptr<blockStringW> propBlock = emptySW();
 		std::shared_ptr<blockStringW> altPropBlock = emptySW();
-		std::shared_ptr<blockStringW> smartViewBlock = emptySW();
+		std::shared_ptr<block> smartViewBlock;;
 		bool propStringsGenerated{};
 	};
 
