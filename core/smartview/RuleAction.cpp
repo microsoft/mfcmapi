@@ -209,7 +209,7 @@ namespace smartview
 				for (DWORD i = 0; i < *NoOfProperties; i++)
 				{
 					auto prop = std::make_shared<SPropValueStruct>(i, false, true);
-					prop->block::parse(parser, true);
+					prop->block::parse(parser, false);
 					PropertyValues.push_back(prop);
 				}
 			}
