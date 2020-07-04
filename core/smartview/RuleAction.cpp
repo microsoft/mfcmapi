@@ -455,7 +455,7 @@ namespace smartview
 
 		addChild(NoOfActions, L"NoOfActions: 0x%1!08X!", NoOfActions->getData());
 		auto i = 0;
-		for (const auto actionBlock : ActionBlocks)
+		for (const auto& actionBlock : ActionBlocks)
 		{
 			addChild(actionBlock, L"ActionBlocks[%1!d!]", i++);
 		}
