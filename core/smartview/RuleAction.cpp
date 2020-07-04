@@ -394,7 +394,7 @@ namespace smartview
 			ActionLength = blockT<DWORD>::parse<WORD>(parser);
 		}
 
-		ActionType = blockT<BYTE>::parse(parser); // TODO: not m_bExtended may be 1 byte
+		ActionType = blockT<BYTE>::parse(parser);
 		ActionFlavor = blockT<DWORD>::parse(parser);
 		ActionFlags = blockT<DWORD>::parse(parser);
 		const auto headerSize = sizeof BYTE + 2 * sizeof DWORD;
