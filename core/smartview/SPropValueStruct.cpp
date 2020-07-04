@@ -53,10 +53,10 @@ namespace smartview
 				addChild(alt, L"AltPropString = %1!ws!", alt->c_str());
 			}
 
-			const auto szSmartView = value->SmartViewBlock();
-			if (!szSmartView->empty())
+			const auto smartView = value->SmartViewBlock();
+			if (smartView->hasData())
 			{
-				addChild(szSmartView, L"Smart View: %1!ws!", szSmartView->c_str());
+				addLabeledChild(L"Smart View", smartView);
 			}
 		}
 	}

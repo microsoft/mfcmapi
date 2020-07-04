@@ -4,4 +4,5 @@ Property[0]
 		Other Matches: PidTagObjectType, ptagObjectType
 	PropString = 6
 	AltPropString = 0x6
-	Smart View: Flags: MAPI_MAILUSER
+	Smart View
+		Flags: MAPI_MAILUSER

@@ -36,7 +36,7 @@ namespace blockPVtest
 			unittest::AreEqualEx(
 				altpropblock.c_str(), block->AltPropBlock()->c_str(), (testName + L"-altpropblock").c_str());
 			unittest::AreEqualEx(
-				smartview.c_str(), block->SmartViewBlock()->c_str(), (testName + L"-smartview").c_str());
+				smartview.c_str(), block->SmartViewBlock()->toString(), (testName + L"-smartview").c_str());
 			unittest::AreEqualEx(toNum, block->toNumberAsString(), (testName + L"-tonum").c_str());
 			// Check that we consumed the entire input
 			Assert::AreEqual(true, parser->empty(), (testName + L"-complete").c_str());
@@ -243,7 +243,7 @@ namespace blockPVtest
 				0,
 				0x2);
 			testPV(
-				L"bool-f-f"-2,
+				L"bool-f-f" - 2,
 				PR_MESSAGE_TO_ME,
 				L"0000",
 				false,
@@ -255,17 +255,7 @@ namespace blockPVtest
 				0,
 				0x2);
 			testPV(
-				L"bool-f-t",
-				PR_MESSAGE_TO_ME,
-				L"01",
-				false,
-				true,
-				propblock,
-				altpropblock,
-				smartview,
-				toNum,
-				0,
-				0x1);
+				L"bool-f-t", PR_MESSAGE_TO_ME, L"01", false, true, propblock, altpropblock, smartview, toNum, 0, 0x1);
 			testPV(
 				L"bool-t-f",
 				PR_MESSAGE_TO_ME,

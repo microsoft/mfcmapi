@@ -37,7 +37,7 @@ namespace smartview
 			ensurePropBlocks();
 			return altPropBlock;
 		}
-		_Check_return_ std::shared_ptr<blockStringW> SmartViewBlock()
+		_Check_return_ std::shared_ptr<block> SmartViewBlock()
 		{
 			ensurePropBlocks();
 			return smartViewBlock;
