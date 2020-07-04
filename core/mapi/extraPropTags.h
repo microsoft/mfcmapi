@@ -18,7 +18,7 @@ enum __NonPropFlag
 	flagRestrictionType,
 	flagBitmask,
 	flagRelop,
-	flagAccountType,
+	flagActionType,
 	flagBounceCode,
 	flagOPReply,
 	flagOpForward,
@@ -1197,3 +1197,5 @@ STDAPI STDAPICALLTYPE LaunchWizard(
 	LPCSTR* lppszServiceNameToAdd,
 	ULONG cchBufferMax,
 	_Out_cap_(cchBufferMax) LPSTR lpszNewProfileName);
+
+#define FWD_AS_SMS_ALERT 8
