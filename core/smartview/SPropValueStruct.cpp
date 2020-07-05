@@ -16,10 +16,10 @@ namespace smartview
 
 		if (m_doNickname) static_cast<void>(parser->advance(sizeof DWORD)); // reserved
 
-		value = getPVParser(*PropType);
+		value = getPVParser(*ulPropTag, m_doNickname, m_doRuleProcessing);
 		if (value)
 		{
-			value->parse(parser, *ulPropTag, m_doNickname, m_doRuleProcessing);
+			value->block::parse(parser, true);
 		}
 	}
 

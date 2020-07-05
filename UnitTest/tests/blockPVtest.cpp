@@ -26,10 +26,10 @@ namespace blockPVtest
 			size_t offset,
 			size_t size)
 		{
-			auto block = smartview::getPVParser(PROP_TYPE(ulPropTag));
+			auto block = smartview::getPVParser(ulPropTag, doNickname, doRuleProcessing);
 			auto parser = makeParser(source);
 
-			block->parse(parser, ulPropTag, doNickname, doRuleProcessing);
+			block->block::parse(parser, false);
 			Assert::AreEqual(offset, block->getOffset(), (testName + L"-offset").c_str());
 			Assert::AreEqual(size, block->getSize(), (testName + L"-size").c_str());
 			unittest::AreEqualEx(propblock.c_str(), block->PropBlock()->c_str(), (testName + L"-propblock").c_str());

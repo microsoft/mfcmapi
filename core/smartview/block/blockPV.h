@@ -15,20 +15,13 @@ namespace smartview
 	class blockPV : public block
 	{
 	public:
-		blockPV() = default;
-		void parse(std::shared_ptr<binaryParser>& _parser, ULONG ulPropTag, bool doNickname, bool doRuleProcessing)
+		void init(ULONG ulPropTag, bool doNickname, bool doRuleProcessing)
 		{
-			parser = _parser;
 			m_doNickname = doNickname;
 			m_doRuleProcessing = doRuleProcessing;
 			m_ulPropTag = ulPropTag;
-
 			svParser = FindSmartViewParserForProp(ulPropTag, nullptr, nullptr, nullptr, false, false);
-
-			ensureParsed();
 		}
-		blockPV(const blockPV&) = delete;
-		blockPV& operator=(const blockPV&) = delete;
 
 		virtual std::wstring toNumberAsString(bool /*bLabel*/ = false) { return strings::emptystring; }
 		virtual std::shared_ptr<block> toSmartView() { return emptySW(); }
@@ -169,10 +162,6 @@ namespace smartview
 	class SBinaryBlock : public blockPV
 	{
 	public:
-		void parse(std::shared_ptr<binaryParser>& _parser, ULONG ulPropTag)
-		{
-			blockPV::parse(_parser, ulPropTag, false, true);
-		}
 		operator SBinary() noexcept { return {*cb, const_cast<LPBYTE>(lpb->data())}; }
 
 		std::shared_ptr<block> toSmartView() override
@@ -233,7 +222,8 @@ namespace smartview
 				for (ULONG j = 0; j < *cValues; j++)
 				{
 					const auto block = std::make_shared<SBinaryBlock>();
-					block->parse(parser, m_ulPropTag);
+					block->init(m_ulPropTag, false, true);
+					block->block::parse(parser, true);
 					lpbin.emplace_back(block);
 				}
 			}
@@ -520,42 +510,61 @@ namespace smartview
 		std::shared_ptr<blockT<SCODE>> err = emptyT<SCODE>();
 	};
 
-	inline std::shared_ptr<blockPV> getPVParser(ULONG ulPropType)
+	inline std::shared_ptr<blockPV> getPVParser(ULONG ulPropTag, bool doNickname, bool doRuleProcessing)
 	{
-		switch (ulPropType)
+		auto ret = std::shared_ptr<blockPV>{};
+		switch (PROP_TYPE(ulPropTag))
 		{
 		case PT_I2:
-			return std::make_shared<I2BLock>();
+			ret = std::make_shared<I2BLock>();
+			break;
 		case PT_LONG:
-			return std::make_shared<LongBLock>();
+			ret = std::make_shared<LongBLock>();
+			break;
 		case PT_ERROR:
-			return std::make_shared<ErrorBlock>();
+			ret = std::make_shared<ErrorBlock>();
+			break;
 		case PT_R4:
-			return std::make_shared<R4BLock>();
+			ret = std::make_shared<R4BLock>();
+			break;
 		case PT_DOUBLE:
-			return std::make_shared<DoubleBlock>();
+			ret = std::make_shared<DoubleBlock>();
+			break;
 		case PT_BOOLEAN:
-			return std::make_shared<BooleanBlock>();
+			ret = std::make_shared<BooleanBlock>();
+			break;
 		case PT_I8:
-			return std::make_shared<I8Block>();
+			ret = std::make_shared<I8Block>();
+			break;
 		case PT_SYSTIME:
-			return std::make_shared<FILETIMEBLock>();
+			ret = std::make_shared<FILETIMEBLock>();
+			break;
 		case PT_STRING8:
-			return std::make_shared<CountedStringA>();
+			ret = std::make_shared<CountedStringA>();
+			break;
 		case PT_BINARY:
-			return std::make_shared<SBinaryBlock>();
+			ret = std::make_shared<SBinaryBlock>();
+			break;
 		case PT_UNICODE:
-			return std::make_shared<CountedStringW>();
+			ret = std::make_shared<CountedStringW>();
+			break;
 		case PT_CLSID:
-			return std::make_shared<CLSIDBlock>();
+			ret = std::make_shared<CLSIDBlock>();
+			break;
 		case PT_MV_STRING8:
-			return std::make_shared<StringArrayA>();
+			ret = std::make_shared<StringArrayA>();
+			break;
 		case PT_MV_UNICODE:
-			return std::make_shared<StringArrayW>();
+			ret = std::make_shared<StringArrayW>();
+			break;
 		case PT_MV_BINARY:
-			return std::make_shared<SBinaryArrayBlock>();
+			ret = std::make_shared<SBinaryArrayBlock>();
+			break;
 		default:
 			return nullptr;
 		}
+
+		ret->init(ulPropTag, doNickname, doRuleProcessing);
+		return ret;
 	}
 } // namespace smartview
