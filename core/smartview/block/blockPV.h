@@ -175,6 +175,11 @@ namespace smartview
 		}
 		operator SBinary() noexcept { return {*cb, const_cast<LPBYTE>(lpb->data())}; }
 
+		std::shared_ptr<block> toSmartView() override
+		{
+			return smartview::createBlock(svParser, this->operator SBinary());
+		}
+
 	private:
 		void parse() override
 		{
@@ -194,11 +199,6 @@ namespace smartview
 
 			// Note that we're not placing a restriction on how large a binary property we can parse. May need to revisit this.
 			lpb = blockBytes::parse(parser, *cb);
-		}
-
-		std::shared_ptr<block> toSmartView() override
-		{
-			return smartview::createBlock(svParser, this->operator SBinary());
 		}
 
 		const void getProp(SPropValue& prop) noexcept override { prop.Value.bin = this->operator SBinary(); }
@@ -256,7 +256,14 @@ namespace smartview
 
 		std::shared_ptr<block> toSmartView() override
 		{
-			return blockStringW::create(InterpretMVBinaryAsString(SBinaryArray{*cValues, bin}, svParser, nullptr));
+			auto smartview = block::create();
+			auto i = 0;
+			for (const auto& b : lpbin)
+			{
+				smartview->addLabeledChild(strings::format(L"Row %d", i++), b->toSmartView());
+			}
+
+			return smartview;
 		}
 
 		const void getProp(SPropValue& prop) noexcept override { prop.Value.MVbin = SBinaryArray{*cValues, bin}; }

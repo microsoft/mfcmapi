@@ -616,7 +616,7 @@ namespace smartview
 		auto szResultString = addin::AddInSmartView(svParser, bin.cb, bin.lpb);
 		if (!szResultString.empty())
 		{
-			return emptySW();
+			return blockStringW::create(szResultString);
 		}
 
 		auto svp = GetSmartViewParser(svParser, nullptr);

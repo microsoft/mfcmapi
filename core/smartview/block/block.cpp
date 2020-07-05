@@ -22,7 +22,8 @@ namespace smartview
 		}
 	}
 
-	void block::addSubHeader(const std::wstring& _text) {
+	void block::addSubHeader(const std::wstring& _text)
+	{
 		auto node = create();
 		node->setText(_text);
 		node->setOffset(getOffset());
@@ -78,7 +79,7 @@ namespace smartview
 	{
 		std::vector<std::wstring> strings;
 		strings.reserve(children.size() + 1);
-		strings.push_back(text + L"\r\n");
+		if (!text.empty()) strings.push_back(text + L"\r\n");
 
 		for (const auto& child : children)
 		{
