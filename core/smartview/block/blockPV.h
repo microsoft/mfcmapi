@@ -198,32 +198,7 @@ namespace smartview
 
 		std::shared_ptr<block> toSmartView() override
 		{
-			const auto sbinary = this->operator SBinary();
-			auto szResultString = addin::AddInSmartView(svParser, sbinary.cb, sbinary.lpb);
-			if (!szResultString.empty())
-			{
-				return emptySW();
-			}
-
-			auto svp = GetSmartViewParser(svParser, nullptr);
-			if (svp)
-			{
-				svp->parse(std::make_shared<binaryParser>(sbinary.cb, sbinary.lpb), false);
-				return svp;
-			}
-
-			// These parsers have some special casing
-			switch (svParser)
-			{
-			case parserType::DECODEENTRYID:
-				szResultString = mapi::DecodeID(sbinary.cb, sbinary.lpb);
-				break;
-			case parserType::ENCODEENTRYID:
-				szResultString = mapi::EncodeID(sbinary.cb, reinterpret_cast<LPENTRYID>(sbinary.lpb));
-				break;
-			}
-
-			return blockStringW::create(szResultString);
+			return smartview::createBlock(svParser, this->operator SBinary());
 		}
 
 		const void getProp(SPropValue& prop) noexcept override { prop.Value.bin = this->operator SBinary(); }

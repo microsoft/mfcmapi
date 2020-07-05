@@ -610,4 +610,33 @@ namespace smartview
 
 		return strings::formatmessage(IDS_FIDMIDFORMAT, WGetReplId(*pid), UllGetIdGlobcnt(*pid));
 	}
+
+	std::shared_ptr<block> createBlock(parserType svParser, const SBinary bin)
+	{
+		auto szResultString = addin::AddInSmartView(svParser, bin.cb, bin.lpb);
+		if (!szResultString.empty())
+		{
+			return emptySW();
+		}
+
+		auto svp = GetSmartViewParser(svParser, nullptr);
+		if (svp)
+		{
+			svp->parse(std::make_shared<binaryParser>(bin.cb, bin.lpb), false);
+			return svp;
+		}
+
+		// These parsers have some special casing
+		switch (svParser)
+		{
+		case parserType::DECODEENTRYID:
+			szResultString = mapi::DecodeID(bin.cb, bin.lpb);
+			break;
+		case parserType::ENCODEENTRYID:
+			szResultString = mapi::EncodeID(bin.cb, reinterpret_cast<LPENTRYID>(bin.lpb));
+			break;
+		}
+
+		return blockStringW::create(szResultString);
+	}
 } // namespace smartview
