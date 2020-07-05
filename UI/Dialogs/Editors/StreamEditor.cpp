@@ -193,7 +193,7 @@ namespace dialog::editor
 
 				// TODO: pass in named prop stuff to make this work
 				lpSmartView->SetParser(
-					smartview::FindSmartViewParserForProp(&sProp, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, false));
+					smartview::FindSmartViewParserForProp(sProp.ulPropTag, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, false));
 				lpSmartView->Parse(bin);
 			}
 		}

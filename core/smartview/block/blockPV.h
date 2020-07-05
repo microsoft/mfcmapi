@@ -6,6 +6,7 @@
 #include <core/smartview/block/blockStringW.h>
 #include <core/smartview/block/blockBytes.h>
 #include <core/smartview/block/blockT.h>
+#include <core/addin/mfcmapi.h>
 
 namespace smartview
 {
@@ -20,12 +21,15 @@ namespace smartview
 			m_doRuleProcessing = doRuleProcessing;
 			m_ulPropTag = ulPropTag;
 
+			svParser = FindSmartViewParserForProp(ulPropTag, nullptr, nullptr, nullptr, false, false);
+
 			ensureParsed();
 		}
 		blockPV(const blockPV&) = delete;
 		blockPV& operator=(const blockPV&) = delete;
 
-		virtual std::wstring toNumberAsString() { return strings::emptystring; }
+		virtual std::wstring toNumberAsString(bool /*bLabel*/ = false) { return strings::emptystring; }
+		virtual std::shared_ptr<block> toSmartView() { return emptySW(); }
 
 		_Check_return_ std::shared_ptr<blockStringW> PropBlock()
 		{
@@ -40,13 +44,14 @@ namespace smartview
 		_Check_return_ std::shared_ptr<block> SmartViewBlock()
 		{
 			ensurePropBlocks();
-			return smartViewBlock;
+			return toSmartView();
 		}
 
 	protected:
 		bool m_doNickname{};
 		bool m_doRuleProcessing{};
 		ULONG m_ulPropTag{};
+		parserType svParser{parserType::NOPARSING};
 
 	private:
 		void ensurePropBlocks()
@@ -189,6 +194,11 @@ namespace smartview
 			lpb = blockBytes::parse(parser, *cb);
 		}
 
+		std::shared_ptr<block> toSmartView() override
+		{
+			return blockStringW::create(InterpretBinaryAsString(this->operator SBinary(), svParser, nullptr));
+		}
+
 		const void getProp(SPropValue& prop) noexcept override { prop.Value.bin = this->operator SBinary(); }
 		std::shared_ptr<blockT<ULONG>> cb = emptyT<ULONG>();
 		std::shared_ptr<blockBytes> lpb = emptyBB();
@@ -240,6 +250,11 @@ namespace smartview
 					}
 				}
 			}
+		}
+
+		std::shared_ptr<block> toSmartView() override
+		{
+			return blockStringW::create(InterpretMVBinaryAsString(SBinaryArray{*cValues, bin}, svParser, nullptr));
 		}
 
 		const void getProp(SPropValue& prop) noexcept override { prop.Value.MVbin = SBinaryArray{*cValues, bin}; }
@@ -358,9 +373,9 @@ namespace smartview
 	class I2BLock : public blockPV
 	{
 	public:
-		std::wstring toNumberAsString() override
+		std::wstring toNumberAsString(bool bLabel = false) override
 		{
-			return InterpretNumberAsString(*i, m_ulPropTag, 0, nullptr, nullptr, false);
+			return InterpretNumberAsString(*i, m_ulPropTag, 0, nullptr, nullptr, bLabel);
 		}
 
 	private:
@@ -371,6 +386,8 @@ namespace smartview
 			if (m_doNickname) parser->advance(sizeof DWORD);
 		}
 
+		std::shared_ptr<block> toSmartView() override { return blockStringW::create(toNumberAsString(true)); }
+
 		const void getProp(SPropValue& prop) noexcept override { prop.Value.i = *i; }
 		std::shared_ptr<blockT<WORD>> i = emptyT<WORD>();
 	};
@@ -379,9 +396,9 @@ namespace smartview
 	class LongBLock : public blockPV
 	{
 	public:
-		std::wstring toNumberAsString() override
+		std::wstring toNumberAsString(bool bLabel = false) override
 		{
-			return InterpretNumberAsString(*l, m_ulPropTag, 0, nullptr, nullptr, false);
+			return InterpretNumberAsString(*l, m_ulPropTag, 0, nullptr, nullptr, bLabel);
 		}
 
 	private:
@@ -390,6 +407,8 @@ namespace smartview
 			l = blockT<LONG>::parse<DWORD>(parser);
 			if (m_doNickname) parser->advance(sizeof DWORD);
 		}
+
+		std::shared_ptr<block> toSmartView() override { return blockStringW::create(toNumberAsString(true)); }
 
 		const void getProp(SPropValue& prop) noexcept override { prop.Value.l = *l; }
 		std::shared_ptr<blockT<LONG>> l = emptyT<LONG>();
@@ -464,13 +483,15 @@ namespace smartview
 	class I8Block : public blockPV
 	{
 	public:
-		std::wstring toNumberAsString() override
+		std::wstring toNumberAsString(bool bLabel = false) override
 		{
-			return InterpretNumberAsString(li->getData().QuadPart, m_ulPropTag, 0, nullptr, nullptr, false);
+			return InterpretNumberAsString(li->getData().QuadPart, m_ulPropTag, 0, nullptr, nullptr, bLabel);
 		}
 
 	private:
 		void parse() override { li = blockT<LARGE_INTEGER>::parse(parser); }
+
+		std::shared_ptr<block> toSmartView() override { return blockStringW::create(toNumberAsString(true)); }
 
 		const void getProp(SPropValue& prop) noexcept override { prop.Value.li = li->getData(); }
 		std::shared_ptr<blockT<LARGE_INTEGER>> li = emptyT<LARGE_INTEGER>();

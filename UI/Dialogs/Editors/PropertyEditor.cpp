@@ -337,8 +337,10 @@ namespace dialog::editor
 
 			if (smartViewPane)
 			{
-				smartViewPane->SetParser(smartview::FindSmartViewParserForProp(
-					m_lpsInputValue, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, m_bMVRow));
+				smartViewPane->SetParser(
+					m_lpsInputValue ? smartview::FindSmartViewParserForProp(
+										  m_lpsInputValue->ulPropTag, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, m_bMVRow)
+									: parserType::NOPARSING);
 
 				smartViewPane->Parse(std::vector<BYTE>(
 					m_lpsInputValue ? mapi::getBin(m_lpsInputValue).lpb : nullptr,

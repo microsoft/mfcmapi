@@ -8,7 +8,7 @@ namespace smartview
 {
 	std::shared_ptr<block> GetSmartViewParser(parserType type, _In_opt_ LPMAPIPROP lpMAPIProp);
 	_Check_return_ parserType FindSmartViewParserForProp(
-		_In_opt_ const _SPropValue* lpProp, // required property value
+		_In_opt_ const ULONG ulPropTag, // required property tag
 		_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
 		_In_opt_ const MAPINAMEID* lpNameID, // optional named property information to avoid GetNamesFromIDs call
 		_In_opt_ const SBinary* lpMappingSignature, // optional mapping signature for object to speed named prop lookups
