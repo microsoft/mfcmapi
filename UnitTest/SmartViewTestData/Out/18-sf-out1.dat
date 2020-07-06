@@ -34,6 +34,6 @@ Search Folder Definition
 	|	|		ulPropTag = 0x0037001F (PT_UNICODE): PR_SUBJECT_W: (PidTagSubject, PR_SUBJECT, PR_SUBJECT_A, ptagSubject)
 	|	|			Name: PR_SUBJECT_W
 	|	|			Other Matches: PidTagSubject, PR_SUBJECT, PR_SUBJECT_A, ptagSubject
-	|	|		Value = Test
-	|	|		Alt: cb: 8 lpb: 5400650073007400
+	|	|		PropString = Test
+	|	|		AltPropString = cb: 8 lpb: 5400650073007400
 	SkipLen3 = 0x00000000

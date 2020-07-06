@@ -193,24 +193,7 @@ namespace smartview
 					lpProp.Props()[0]->ulPropTag,
 					L"ulPropTag = %1!ws!",
 					proptags::TagToString(*lpProp.Props()[0]->ulPropTag, nullptr, false, true).c_str());
-				if (lpProp.Props()[0]->value)
-				{
-					if (!lpProp.Props()[0]->value->PropBlock()->empty())
-					{
-						propBlock->addChild(
-							lpProp.Props()[0]->value->PropBlock(),
-							L"Value = %1!ws!",
-							lpProp.Props()[0]->value->PropBlock()->c_str());
-					}
-
-					if (!lpProp.Props()[0]->value->AltPropBlock()->empty())
-					{
-						propBlock->addChild(
-							lpProp.Props()[0]->value->AltPropBlock(),
-							L"Alt: %1!ws!",
-							lpProp.Props()[0]->value->AltPropBlock()->c_str());
-					}
-				}
+				propBlock->addChild(lpProp.Props()[0]->value);
 			}
 		}
 
@@ -282,31 +265,7 @@ namespace smartview
 					lpProp.Props()[0]->ulPropTag,
 					L"ulPropTag = %1!ws!",
 					proptags::TagToString(*lpProp.Props()[0]->ulPropTag, nullptr, false, true).c_str());
-				if (lpProp.Props()[0]->value)
-				{
-					if (!lpProp.Props()[0]->value->PropBlock()->empty())
-					{
-						propBlock->addChild(
-							lpProp.Props()[0]->value->PropBlock(),
-							L"Value = %1!ws!",
-							lpProp.Props()[0]->value->PropBlock()->c_str());
-					}
-
-					if (!lpProp.Props()[0]->value->AltPropBlock()->empty())
-					{
-						propBlock->addChild(
-							lpProp.Props()[0]->value->AltPropBlock(),
-							L"Alt: %1!ws!",
-							lpProp.Props()[0]->value->AltPropBlock()->c_str());
-					}
-
-					const auto szPropNum = lpProp.Props()[0]->value->toNumberAsString();
-					if (!szPropNum.empty())
-					{
-						// TODO: use block
-						propBlock->addHeader(L"Flags: %1!ws!", szPropNum.c_str());
-					}
-				}
+				propBlock->addChild(lpProp.Props()[0]->value);
 			}
 		}
 
@@ -474,21 +433,7 @@ namespace smartview
 					prop->ulPropTag,
 					L"ulPropTag = %1!ws!",
 					proptags::TagToString(*prop->ulPropTag, nullptr, false, true).c_str());
-
-				if (prop->value)
-				{
-					if (!prop->value->PropBlock()->empty())
-					{
-						propBlock->addChild(
-							prop->value->PropBlock(), L"Value = %1!ws!", prop->value->PropBlock()->c_str());
-					}
-
-					if (!prop->value->AltPropBlock()->empty())
-					{
-						propBlock->addChild(
-							prop->value->AltPropBlock(), L"Alt: %1!ws!", prop->value->AltPropBlock()->c_str());
-					}
-				}
+				propBlock->addChild(prop->value);
 
 				i++;
 			}
@@ -539,20 +484,7 @@ namespace smartview
 
 				propBlock->setText(
 					L"ulPropTag = %1!ws!", proptags::TagToString(*prop->ulPropTag, nullptr, false, true).c_str());
-				if (prop->value)
-				{
-					if (!prop->value->PropBlock()->empty())
-					{
-						propBlock->addChild(
-							prop->value->PropBlock(), L"Value = %1!ws!", prop->value->PropBlock()->c_str());
-					}
-
-					if (!prop->value->AltPropBlock()->empty())
-					{
-						propBlock->addChild(
-							prop->value->AltPropBlock(), L"Alt: %1!ws!", prop->value->AltPropBlock()->c_str());
-					}
-				}
+				propBlock->addChild(prop->value);
 
 				i++;
 			}
