@@ -15,12 +15,12 @@ namespace smartview
 	class blockPV : public block
 	{
 	public:
-		void init(ULONG ulPropTag, bool doNickname, bool doRuleProcessing)
+		void init(ULONG ulPropTag, bool doNickname, bool doRuleProcessing, bool bMVRow)
 		{
 			m_doNickname = doNickname;
 			m_doRuleProcessing = doRuleProcessing;
 			m_ulPropTag = ulPropTag;
-			svParser = FindSmartViewParserForProp(ulPropTag, nullptr, nullptr, nullptr, false, false);
+			svParser = FindSmartViewParserForProp(ulPropTag, nullptr, nullptr, nullptr, false, bMVRow);
 		}
 
 		virtual std::wstring toNumberAsString(bool /*bLabel*/ = false) { return strings::emptystring; }
@@ -72,6 +72,26 @@ namespace smartview
 		}
 
 		void parse() override = 0;
+		void parseBlocks() override
+		{
+			const auto propString = PropBlock();
+			if (!propString->empty())
+			{
+				addChild(propString, L"PropString = %1!ws!", propString->c_str());
+			}
+
+			const auto alt = AltPropBlock();
+			if (!alt->empty())
+			{
+				addChild(alt, L"AltPropString = %1!ws!", alt->c_str());
+			}
+
+			const auto smartView = SmartViewBlock();
+			if (smartView->hasData())
+			{
+				addLabeledChild(L"Smart View", smartView);
+			}
+		}
 		virtual const void getProp(SPropValue& prop) noexcept = 0;
 		std::shared_ptr<blockStringW> propBlock = emptySW();
 		std::shared_ptr<blockStringW> altPropBlock = emptySW();
@@ -222,8 +242,8 @@ namespace smartview
 				for (ULONG j = 0; j < *cValues; j++)
 				{
 					const auto block = std::make_shared<SBinaryBlock>();
-					block->init(m_ulPropTag, false, true);
-					block->block::parse(parser, true);
+					block->init(CHANGE_PROP_TYPE(m_ulPropTag, PT_BINARY), false, true, true);
+					block->block::parse(parser, false);
 					lpbin.emplace_back(block);
 				}
 			}
@@ -564,7 +584,7 @@ namespace smartview
 			return nullptr;
 		}
 
-		ret->init(ulPropTag, doNickname, doRuleProcessing);
+		ret->init(ulPropTag, doNickname, doRuleProcessing, false);
 		return ret;
 	}
 } // namespace smartview

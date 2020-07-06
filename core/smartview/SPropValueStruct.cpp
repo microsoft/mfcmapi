@@ -19,7 +19,7 @@ namespace smartview
 		value = getPVParser(*ulPropTag, m_doNickname, m_doRuleProcessing);
 		if (value)
 		{
-			value->block::parse(parser, true);
+			value->block::parse(parser, false);
 		}
 	}
 
@@ -39,25 +39,6 @@ namespace smartview
 			ulPropTag->addSubHeader(L"Other Matches: %1!ws!", propTagNames.otherMatches.c_str());
 		}
 
-		if (value)
-		{
-			const auto propString = value->PropBlock();
-			if (!propString->empty())
-			{
-				addChild(propString, L"PropString = %1!ws!", propString->c_str());
-			}
-
-			const auto alt = value->AltPropBlock();
-			if (!alt->empty())
-			{
-				addChild(alt, L"AltPropString = %1!ws!", alt->c_str());
-			}
-
-			const auto smartView = value->SmartViewBlock();
-			if (smartView->hasData())
-			{
-				addLabeledChild(L"Smart View", smartView);
-			}
-		}
+		addChild(value);
 	}
 } // namespace smartview
