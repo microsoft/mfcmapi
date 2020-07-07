@@ -24,9 +24,6 @@ namespace smartview
 		}
 
 	protected:
-		virtual std::wstring toNumberAsString(bool /*bLabel*/ = false) { return strings::emptystring; }
-		virtual std::shared_ptr<block> toSmartView() { return emptySW(); }
-
 		bool m_doNickname{};
 		bool m_doRuleProcessing{};
 		ULONG m_ulPropTag{};
@@ -65,7 +62,7 @@ namespace smartview
 			}
 		}
 		virtual const void getProp(SPropValue& prop) noexcept = 0;
-		bool propStringsGenerated{};
+		virtual std::shared_ptr<block> toSmartView() { return emptySW(); }
 	};
 
 	/* case PT_SYSTIME */
@@ -362,12 +359,6 @@ namespace smartview
 	/* case PT_I2 */
 	class I2BLock : public blockPV
 	{
-	public:
-		std::wstring toNumberAsString(bool bLabel = false) override
-		{
-			return InterpretNumberAsString(*i, m_ulPropTag, 0, nullptr, nullptr, bLabel);
-		}
-
 	private:
 		void parse() override
 		{
@@ -376,7 +367,10 @@ namespace smartview
 			if (m_doNickname) parser->advance(sizeof DWORD);
 		}
 
-		std::shared_ptr<block> toSmartView() override { return blockStringW::create(toNumberAsString(true)); }
+		std::shared_ptr<block> toSmartView() override
+		{
+			return blockStringW::create(InterpretNumberAsString(*i, m_ulPropTag, 0, nullptr, nullptr, true));
+		}
 
 		const void getProp(SPropValue& prop) noexcept override { prop.Value.i = *i; }
 		std::shared_ptr<blockT<WORD>> i = emptyT<WORD>();
@@ -385,12 +379,6 @@ namespace smartview
 	/* case PT_LONG */
 	class LongBLock : public blockPV
 	{
-	public:
-		std::wstring toNumberAsString(bool bLabel = false) override
-		{
-			return InterpretNumberAsString(*l, m_ulPropTag, 0, nullptr, nullptr, bLabel);
-		}
-
 	private:
 		void parse() override
 		{
@@ -398,7 +386,10 @@ namespace smartview
 			if (m_doNickname) parser->advance(sizeof DWORD);
 		}
 
-		std::shared_ptr<block> toSmartView() override { return blockStringW::create(toNumberAsString(true)); }
+		std::shared_ptr<block> toSmartView() override
+		{
+			return blockStringW::create(InterpretNumberAsString(*l, m_ulPropTag, 0, nullptr, nullptr, true));
+		}
 
 		const void getProp(SPropValue& prop) noexcept override { prop.Value.l = *l; }
 		std::shared_ptr<blockT<LONG>> l = emptyT<LONG>();
@@ -472,16 +463,14 @@ namespace smartview
 	/* case PT_I8 */
 	class I8Block : public blockPV
 	{
-	public:
-		std::wstring toNumberAsString(bool bLabel = false) override
-		{
-			return InterpretNumberAsString(li->getData().QuadPart, m_ulPropTag, 0, nullptr, nullptr, bLabel);
-		}
-
 	private:
 		void parse() override { li = blockT<LARGE_INTEGER>::parse(parser); }
 
-		std::shared_ptr<block> toSmartView() override { return blockStringW::create(toNumberAsString(true)); }
+		std::shared_ptr<block> toSmartView() override
+		{
+			return blockStringW::create(
+				InterpretNumberAsString(li->getData().QuadPart, m_ulPropTag, 0, nullptr, nullptr, true));
+		}
 
 		const void getProp(SPropValue& prop) noexcept override { prop.Value.li = li->getData(); }
 		std::shared_ptr<blockT<LARGE_INTEGER>> li = emptyT<LARGE_INTEGER>();
