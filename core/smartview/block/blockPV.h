@@ -34,22 +34,6 @@ namespace smartview
 		parserType svParser{parserType::NOPARSING};
 
 	private:
-		_Check_return_ std::shared_ptr<blockStringW> PropBlock()
-		{
-			ensurePropBlocks();
-			return propBlock;
-		}
-		_Check_return_ std::shared_ptr<blockStringW> AltPropBlock()
-		{
-			ensurePropBlocks();
-			return altPropBlock;
-		}
-		_Check_return_ std::shared_ptr<block> SmartViewBlock()
-		{
-			ensurePropBlocks();
-			return toSmartView();
-		}
-
 		void ensurePropBlocks()
 		{
 			if (propStringsGenerated) return;
@@ -75,19 +59,18 @@ namespace smartview
 		void parse() override = 0;
 		void parseBlocks() override
 		{
-			const auto propString = PropBlock();
-			if (!propString->empty())
+			ensurePropBlocks();
+			if (!propBlock->empty())
 			{
-				addChild(propString, L"PropString = %1!ws!", propString->c_str());
+				addChild(propBlock, L"PropString = %1!ws!", propBlock->c_str());
 			}
 
-			const auto alt = AltPropBlock();
-			if (!alt->empty())
+			if (!altPropBlock->empty())
 			{
-				addChild(alt, L"AltPropString = %1!ws!", alt->c_str());
+				addChild(altPropBlock, L"AltPropString = %1!ws!", altPropBlock->c_str());
 			}
 
-			const auto smartView = SmartViewBlock();
+			const auto smartView = toSmartView();
 			if (smartView->hasData())
 			{
 				addLabeledChild(L"Smart View", smartView);
