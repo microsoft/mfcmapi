@@ -69,5 +69,4 @@ namespace smartview
 	std::wstring InterpretNumberAsStringNamedProp(ULONG ulVal, ULONG ulPropNameID, _In_opt_ LPCGUID lpguidNamedProp);
 	_Check_return_ std::wstring RTimeToString(DWORD rTime);
 	_Check_return_ std::wstring FidMidToSzString(LONGLONG llID, bool bLabel);
-	std::shared_ptr<block> createBlock(parserType svParser, const SBinary bin);
 } // namespace smartview
