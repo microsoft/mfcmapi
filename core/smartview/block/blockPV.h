@@ -24,8 +24,16 @@ namespace smartview
 		}
 
 		virtual std::wstring toNumberAsString(bool /*bLabel*/ = false) { return strings::emptystring; }
+
+	protected:
 		virtual std::shared_ptr<block> toSmartView() { return emptySW(); }
 
+		bool m_doNickname{};
+		bool m_doRuleProcessing{};
+		ULONG m_ulPropTag{};
+		parserType svParser{parserType::NOPARSING};
+
+	private:
 		_Check_return_ std::shared_ptr<blockStringW> PropBlock()
 		{
 			ensurePropBlocks();
@@ -42,13 +50,6 @@ namespace smartview
 			return toSmartView();
 		}
 
-	protected:
-		bool m_doNickname{};
-		bool m_doRuleProcessing{};
-		ULONG m_ulPropTag{};
-		parserType svParser{parserType::NOPARSING};
-
-	private:
 		void ensurePropBlocks()
 		{
 			if (propStringsGenerated) return;
