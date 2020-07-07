@@ -156,7 +156,9 @@ namespace smartview
 
 		std::shared_ptr<block> toSmartView() override
 		{
-			return smartview::createBlock(svParser, this->operator SBinary());
+			auto sv = smartview::createBlock(svParser, this->operator SBinary());
+			sv->shiftOffset(lpb->getOffset());
+			return sv;
 		}
 
 	private:

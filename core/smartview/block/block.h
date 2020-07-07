@@ -42,6 +42,15 @@ namespace smartview
 		void setSize(size_t _size) noexcept { cb = _size; }
 		size_t getOffset() const noexcept { return offset; }
 		void setOffset(size_t _offset) noexcept { offset = _offset; }
+		void shiftOffset(size_t _shift)
+		{
+			offset = offset + _shift;
+			for (const auto& child : children)
+			{
+				child->shiftOffset(_shift);
+			}
+		}
+
 		ULONG getSource() const noexcept { return source; }
 		void setSource(ULONG _source)
 		{
