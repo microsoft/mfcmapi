@@ -34,9 +34,9 @@ namespace smartview
 		parserType svParser{parserType::NOPARSING};
 
 	private:
-		void ensurePropBlocks()
+		void parse() override = 0;
+		void parseBlocks() override
 		{
-			if (propStringsGenerated) return;
 			auto prop = SPropValue{m_ulPropTag, 0, {}};
 			getProp(prop);
 
@@ -44,27 +44,15 @@ namespace smartview
 			auto altPropString = std::wstring{};
 			property::parseProperty(&prop, &propString, &altPropString);
 
-			propBlock =
+			const auto propBlock =
 				blockStringW::parse(strings::RemoveInvalidCharactersW(propString, false), getSize(), getOffset());
-
-			altPropBlock =
-				blockStringW::parse(strings::RemoveInvalidCharactersW(altPropString, false), getSize(), getOffset());
-
-			const auto smartViewString = parsePropertySmartView(&prop, nullptr, nullptr, nullptr, false, false);
-			smartViewBlock = blockStringW::parse(smartViewString, getSize(), getOffset());
-
-			propStringsGenerated = true;
-		}
-
-		void parse() override = 0;
-		void parseBlocks() override
-		{
-			ensurePropBlocks();
 			if (!propBlock->empty())
 			{
 				addChild(propBlock, L"PropString = %1!ws!", propBlock->c_str());
 			}
 
+			const auto altPropBlock =
+				blockStringW::parse(strings::RemoveInvalidCharactersW(altPropString, false), getSize(), getOffset());
 			if (!altPropBlock->empty())
 			{
 				addChild(altPropBlock, L"AltPropString = %1!ws!", altPropBlock->c_str());
@@ -77,9 +65,6 @@ namespace smartview
 			}
 		}
 		virtual const void getProp(SPropValue& prop) noexcept = 0;
-		std::shared_ptr<blockStringW> propBlock = emptySW();
-		std::shared_ptr<blockStringW> altPropBlock = emptySW();
-		std::shared_ptr<block> smartViewBlock;
 		bool propStringsGenerated{};
 	};
 
