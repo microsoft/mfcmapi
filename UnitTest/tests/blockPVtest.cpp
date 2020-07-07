@@ -20,7 +20,6 @@ namespace blockPVtest
 			bool doNickname,
 			bool doRuleProcessing,
 			std::wstring propblock,
-			std::wstring toNum,
 			size_t offset,
 			size_t size)
 		{
@@ -31,7 +30,6 @@ namespace blockPVtest
 			Assert::AreEqual(offset, block->getOffset(), (testName + L"-offset").c_str());
 			Assert::AreEqual(size, block->getSize(), (testName + L"-size").c_str());
 			unittest::AreEqualEx(propblock.c_str(), block->toString(), (testName + L"-propblock").c_str());
-			unittest::AreEqualEx(toNum, block->toNumberAsString(), (testName + L"-tonum").c_str());
 			// Check that we consumed the entire input
 			Assert::AreEqual(true, parser->empty(), (testName + L"-complete").c_str());
 		}
@@ -57,7 +55,6 @@ namespace blockPVtest
 				false,
 				false,
 				propblock,
-				L"",
 				0,
 				0x16);
 			testPV(
@@ -67,7 +64,6 @@ namespace blockPVtest
 				false,
 				true,
 				propblock,
-				L"",
 				0,
 				0x18);
 			testPV(
@@ -77,7 +73,6 @@ namespace blockPVtest
 				true,
 				false,
 				propblock,
-				L"",
 				0,
 				0x20);
 		}
@@ -94,7 +89,6 @@ namespace blockPVtest
 				false,
 				false,
 				propblock,
-				L"",
 				0,
 				0x18);
 			testPV(
@@ -104,7 +98,6 @@ namespace blockPVtest
 				false,
 				true,
 				propblock,
-				L"",
 				0,
 				0x18);
 			testPV(
@@ -114,7 +107,6 @@ namespace blockPVtest
 				true,
 				false,
 				propblock,
-				L"",
 				0,
 				0x22);
 		}
@@ -125,31 +117,26 @@ namespace blockPVtest
 										  L"AltPropString = 0x9\r\n"
 										  L"Smart View\r\n"
 										  L"\tFlags: MAPI_PROFSECT");
-			auto toNum = std::wstring(L"MAPI_PROFSECT");
-			testPV(L"long-f-f", PR_OBJECT_TYPE, L"09000000", false, false, propblock, toNum, 0, 0x4);
-			testPV(L"long-f-t", PR_OBJECT_TYPE, L"09000000", false, true, propblock, toNum, 0, 0x4);
-			testPV(L"long-t-f", PR_OBJECT_TYPE, L"0900000000000000", true, false, propblock, toNum, 0, 0x8);
+			testPV(L"long-f-f", PR_OBJECT_TYPE, L"09000000", false, false, propblock, 0, 0x4);
+			testPV(L"long-f-t", PR_OBJECT_TYPE, L"09000000", false, true, propblock, 0, 0x4);
+			testPV(L"long-t-f", PR_OBJECT_TYPE, L"0900000000000000", true, false, propblock, 0, 0x8);
 		}
 
 		TEST_METHOD(Test_PT_SYSTIME)
 		{
 			auto propblock = std::wstring(L"PropString = 03:59:00.000 AM 5/10/2020\r\n"
 										  L"AltPropString = Low: 0x5606DA00 High: 0x01D6267F");
-			auto toNum = std::wstring(L"");
-			testPV(
-				L"systime-f-f", PR_MESSAGE_DELIVERY_TIME, L"00DA06567F26D601", false, false, propblock, toNum, 0, 0x8);
-			testPV(
-				L"systime-f-t", PR_MESSAGE_DELIVERY_TIME, L"00DA06567F26D601", false, true, propblock, toNum, 0, 0x8);
-			testPV(
-				L"systime-t-f", PR_MESSAGE_DELIVERY_TIME, L"00DA06567F26D601", true, false, propblock, toNum, 0, 0x8);
+			testPV(L"systime-f-f", PR_MESSAGE_DELIVERY_TIME, L"00DA06567F26D601", false, false, propblock, 0, 0x8);
+			testPV(L"systime-f-t", PR_MESSAGE_DELIVERY_TIME, L"00DA06567F26D601", false, true, propblock, 0, 0x8);
+			testPV(L"systime-t-f", PR_MESSAGE_DELIVERY_TIME, L"00DA06567F26D601", true, false, propblock, 0, 0x8);
 		}
 
 		TEST_METHOD(Test_PT_BOOLEAN)
 		{
-			testPV(L"bool-f-f-1", PR_MESSAGE_TO_ME, L"0100", false, false, L"PropString = True", L"", 0, 0x2);
-			testPV(L"bool-f-f" - 2, PR_MESSAGE_TO_ME, L"0000", false, false, L"PropString = False", L"", 0, 0x2);
-			testPV(L"bool-f-t", PR_MESSAGE_TO_ME, L"01", false, true, L"PropString = True", L"", 0, 0x1);
-			testPV(L"bool-t-f", PR_MESSAGE_TO_ME, L"0100000000000000", true, false, L"PropString = True", L"", 0, 0x8);
+			testPV(L"bool-f-f-1", PR_MESSAGE_TO_ME, L"0100", false, false, L"PropString = True", 0, 0x2);
+			testPV(L"bool-f-f" - 2, PR_MESSAGE_TO_ME, L"0000", false, false, L"PropString = False", 0, 0x2);
+			testPV(L"bool-f-t", PR_MESSAGE_TO_ME, L"01", false, true, L"PropString = True", 0, 0x1);
+			testPV(L"bool-t-f", PR_MESSAGE_TO_ME, L"0100000000000000", true, false, L"PropString = True", 0, 0x8);
 		}
 	};
 } // namespace blockPVtest

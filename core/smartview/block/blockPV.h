@@ -23,9 +23,8 @@ namespace smartview
 			svParser = FindSmartViewParserForProp(ulPropTag, nullptr, nullptr, nullptr, false, bMVRow);
 		}
 
-		virtual std::wstring toNumberAsString(bool /*bLabel*/ = false) { return strings::emptystring; }
-
 	protected:
+		virtual std::wstring toNumberAsString(bool /*bLabel*/ = false) { return strings::emptystring; }
 		virtual std::shared_ptr<block> toSmartView() { return emptySW(); }
 
 		bool m_doNickname{};
