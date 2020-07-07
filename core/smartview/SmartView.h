@@ -15,6 +15,14 @@ namespace smartview
 		bool
 			bIsAB, // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
 		bool bMVRow); // did the row come from a MV prop?
+	_Check_return_ parserType FindSmartViewParserForProp(
+		_In_opt_ const _SPropValue* lpProp, // required property value
+		_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
+		_In_opt_ const MAPINAMEID* lpNameID, // optional named property information to avoid GetNamesFromIDs call
+		_In_opt_ const SBinary* lpMappingSignature, // optional mapping signature for object to speed named prop lookups
+		bool
+			bIsAB, // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
+		bool bMVRow); // did the row come from a MV prop?
 	std::pair<ULONG, GUID> GetNamedPropInfo(
 		_In_opt_ ULONG ulPropTag,
 		_In_opt_ LPMAPIPROP lpMAPIProp,

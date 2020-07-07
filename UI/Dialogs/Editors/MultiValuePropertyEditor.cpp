@@ -55,10 +55,8 @@ namespace dialog::editor
 			auto smartViewPane = std::dynamic_pointer_cast<viewpane::SmartViewPane>(GetPane(1));
 			if (smartViewPane)
 			{
-				smartViewPane->SetParser(
-					m_lpsInputValue ? smartview::FindSmartViewParserForProp(
-										  m_lpsInputValue->ulPropTag, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, true)
-									: parserType::NOPARSING);
+				smartViewPane->SetParser(smartview::FindSmartViewParserForProp(
+					m_lpsInputValue, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, true));
 			}
 		}
 
