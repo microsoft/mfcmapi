@@ -35,7 +35,8 @@ namespace smartview
 	{
 		if (parsed || !parser || parser->empty()) return;
 		parsed = true; // parse can unset this if needed
-		const auto startOffset = parser->getOffset();
+		// Our offset is the parser's starting offset
+		setOffset(parser->getOffset());
 
 		parse();
 		parseBlocks();
@@ -46,11 +47,8 @@ namespace smartview
 			addLabeledChild(strings::formatmessage(L"Unparsed data size = 0x%1!08X!", junkData->size()), junkData);
 		}
 
-		const auto endOffset = parser->getOffset();
-
-		// Ensure we are tagged with offset and size so all top level blocks get proper highlighting
-		setOffset(startOffset);
-		setSize(endOffset - startOffset);
+		// And our size is the parser's ending offset minus our offset
+		setSize(parser->getOffset() - getOffset());
 	}
 
 	std::vector<std::wstring> tabStrings(const std::vector<std::wstring>& elems, bool usePipes)

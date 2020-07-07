@@ -37,6 +37,7 @@ namespace smartview
 		void parse() override = 0;
 		void parseBlocks() override
 		{
+			const auto size = parser->getOffset() - getOffset();
 			auto prop = SPropValue{m_ulPropTag, 0, {}};
 			getProp(prop);
 
@@ -45,14 +46,14 @@ namespace smartview
 			property::parseProperty(&prop, &propString, &altPropString);
 
 			const auto propBlock =
-				blockStringW::parse(strings::RemoveInvalidCharactersW(propString, false), getSize(), getOffset());
+				blockStringW::parse(strings::RemoveInvalidCharactersW(propString, false), size, getOffset());
 			if (!propBlock->empty())
 			{
 				addChild(propBlock, L"PropString = %1!ws!", propBlock->c_str());
 			}
 
 			const auto altPropBlock =
-				blockStringW::parse(strings::RemoveInvalidCharactersW(altPropString, false), getSize(), getOffset());
+				blockStringW::parse(strings::RemoveInvalidCharactersW(altPropString, false), size, getOffset());
 			if (!altPropBlock->empty())
 			{
 				addChild(altPropBlock, L"AltPropString = %1!ws!", altPropBlock->c_str());
