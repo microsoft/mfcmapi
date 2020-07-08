@@ -309,6 +309,12 @@
     <ClInclude Include="smartview\RuleAction.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="smartview\decodeEntryID.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\encodeEntryID.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="utility\strings.cpp">
@@ -537,6 +543,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="smartview\RuleAction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\decodeEntryID.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\encodeEntryID.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

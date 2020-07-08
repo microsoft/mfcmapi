@@ -7,7 +7,6 @@
 #include <core/smartview/block/blockBytes.h>
 #include <core/smartview/block/blockT.h>
 #include <core/addin/mfcmapi.h>
-#include <core/mapi/mapiFunctions.h>
 #include <core/addin/addin.h>
 
 namespace smartview
@@ -167,18 +166,7 @@ namespace smartview
 				return svp;
 			}
 
-			// These parsers have some special casing
-			switch (svParser)
-			{
-			case parserType::DECODEENTRYID:
-				szResultString = mapi::DecodeID(bin.cb, bin.lpb);
-				break;
-			case parserType::ENCODEENTRYID:
-				szResultString = mapi::EncodeID(bin.cb, reinterpret_cast<LPENTRYID>(bin.lpb));
-				break;
-			}
-
-			return blockStringW::create(szResultString);
+			return emptySW();
 		}
 
 	private:

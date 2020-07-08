@@ -40,6 +40,8 @@
 #include <core/smartview/SIDBin.h>
 #include <core/smartview/SDBin.h>
 #include <core/smartview/XID.h>
+#include <core/smartview/decodeEntryID.h>
+#include <core/smartview/encodeEntryID.h>
 
 namespace smartview
 {
@@ -62,6 +64,10 @@ namespace smartview
 			return std::make_shared<VerbStream>();
 		case parserType::NICKNAMECACHE:
 			return std::make_shared<NickNameCache>();
+		case parserType::DECODEENTRYID:
+			return std::make_shared<decodeEntryID>();
+		case parserType::ENCODEENTRYID:
+			return std::make_shared<encodeEntryID>();
 		case parserType::FOLDERUSERFIELDS:
 			return std::make_shared<FolderUserFieldStream>();
 		case parserType::RECIPIENTROWSTREAM:
@@ -537,18 +543,7 @@ namespace smartview
 			return svp->toString();
 		}
 
-		// These parsers have some special casing
-		switch (parser)
-		{
-		case parserType::DECODEENTRYID:
-			szResultString = mapi::DecodeID(myBin.cb, myBin.lpb);
-			break;
-		case parserType::ENCODEENTRYID:
-			szResultString = mapi::EncodeID(myBin.cb, reinterpret_cast<LPENTRYID>(myBin.lpb));
-			break;
-		}
-
-		return szResultString;
+		return {};
 	}
 
 	_Check_return_ std::wstring RTimeToString(DWORD rTime)

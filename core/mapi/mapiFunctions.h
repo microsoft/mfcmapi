@@ -152,9 +152,6 @@ namespace mapi
 
 	_Check_return_ ULONG GetMAPIObjectType(_In_opt_ LPMAPIPROP lpMAPIProp);
 
-	_Check_return_ std::wstring EncodeID(ULONG cbEID, _In_ LPENTRYID rgbID);
-	_Check_return_ std::wstring DecodeID(ULONG cbBuffer, _In_count_(cbBuffer) LPBYTE lpbBuffer);
-
 	_Check_return_ HRESULT GetPropsNULL(
 		_In_ LPMAPIPROP lpMAPIProp,
 		ULONG ulFlags,
