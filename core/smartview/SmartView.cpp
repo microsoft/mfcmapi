@@ -53,7 +53,7 @@ namespace smartview
 		auto svp = GetSmartViewParser(parser, lpMAPIProp);
 		if (svp)
 		{
-			svp->init(myBin.cb, myBin.lpb);
+			svp->parse(std::make_shared<binaryParser>(myBin.cb, myBin.lpb), true);
 			return svp;
 		}
 

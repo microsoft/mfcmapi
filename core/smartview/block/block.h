@@ -19,13 +19,6 @@ namespace smartview
 		block(const block&) = delete;
 		block& operator=(const block&) = delete;
 
-		void init(size_t _cb, _In_count_(_cb) const BYTE* _bin)
-		{
-			parser = std::make_shared<binaryParser>(_cb, _bin);
-			parsed = false;
-			enableJunk = true;
-		}
-
 		// Getters and setters
 		// Get the text for just this block
 		const std::wstring& getText() const noexcept { return text; }

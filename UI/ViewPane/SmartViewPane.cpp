@@ -181,16 +181,13 @@ namespace viewpane
 
 		const auto iStructType = static_cast<parserType>(GetDropDownSelectionValue());
 		auto szSmartViewArray = std::vector<std::wstring>{};
-		treeData = smartview::block::create(L"Multivalued Property");
+		treeData = smartview::block::create(m_bins.size() > 1 ? L"Multivalued Property" : L"");
 		auto source = 0;
 		for (auto& bin : m_bins)
 		{
-			auto parsedData = std::wstring{};
-			auto svp = smartview::GetSmartViewParser(iStructType, nullptr);
+			auto svp = smartview::InterpretBinary({bin.size(), bin.data()}, iStructType, nullptr);
 			if (svp)
 			{
-				svp->init(bin.size(), bin.data());
-				parsedData = svp->toString();
 				svp->setSource(source++);
 				if (m_bins.size() == 1)
 				{
@@ -201,20 +198,11 @@ namespace viewpane
 					treeData->addChild(svp);
 				}
 			}
-
-			if (parsedData.empty())
-			{
-				parsedData = smartview::InterpretBinary(
-								 SBinary{static_cast<ULONG>(bin.size()), bin.data()}, iStructType, nullptr)
-								 ->toString();
-			}
-
-			szSmartViewArray.push_back(parsedData);
 		}
 
 		AddChildren(nullptr, treeData);
 
-		auto szSmartView = strings::join(szSmartViewArray, L"\r\n");
+		const auto szSmartView = treeData->toString();
 		m_bHasData = !szSmartView.empty();
 		SetStringW(szSmartView);
 	}
