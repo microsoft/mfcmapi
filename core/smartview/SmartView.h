@@ -6,6 +6,8 @@ enum class parserType;
 
 namespace smartview
 {
+	std::shared_ptr<block> InterpretBinary(const SBinary myBin, parserType parser, _In_opt_ LPMAPIPROP lpMAPIProp);
+
 	std::shared_ptr<block> GetSmartViewParser(parserType type, _In_opt_ LPMAPIPROP lpMAPIProp);
 	_Check_return_ parserType FindSmartViewParserForProp(
 		_In_opt_ const ULONG ulPropTag, // required property tag
@@ -39,8 +41,8 @@ namespace smartview
 			bIsAB, // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
 		bool bMVRow); // did the row come from a MV prop?
 
-	std::wstring InterpretBinaryAsString(SBinary myBin, parserType parser, _In_opt_ LPMAPIPROP lpMAPIProp);
-	std::wstring InterpretMVLongAsString(
+	std::wstring
+		InterpretMVLongAsString(
 		std::vector<LONG> rows,
 		_In_opt_ ULONG ulPropTag,
 		_In_opt_ ULONG ulPropNameID,

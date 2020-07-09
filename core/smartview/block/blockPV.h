@@ -151,16 +151,9 @@ namespace smartview
 
 		std::shared_ptr<block> toSmartView() override
 		{
-			const auto bin = this->operator SBinary();
-			auto svp = GetSmartViewParser(svParser, nullptr);
-			if (svp)
-			{
-				svp->parse(std::make_shared<binaryParser>(bin.cb, bin.lpb), false);
-				svp->shiftOffset(lpb->getOffset());
-				return svp;
-			}
-
-			return emptySW();
+			auto svp = InterpretBinary(this->operator SBinary(), svParser, nullptr);
+			svp->shiftOffset(lpb->getOffset());
+			return svp;
 		}
 
 	private:

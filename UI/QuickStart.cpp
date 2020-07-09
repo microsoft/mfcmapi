@@ -213,8 +213,9 @@ namespace dialog
 									if (lpsProp)
 									{
 										// Get the string interpretation
-										szNicknames = smartview::InterpretBinaryAsString(
-											mapi::getBin(lpsProp), parserType::NICKNAMECACHE, lpMSG);
+										szNicknames = smartview::InterpretBinary(
+														  mapi::getBin(lpsProp), parserType::NICKNAMECACHE, lpMSG)
+														  ->toString();
 									}
 
 									lpMSG->Release();

@@ -46,6 +46,20 @@
 
 namespace smartview
 {
+	std::shared_ptr<block> InterpretBinary(const SBinary myBin, parserType parser, _In_opt_ LPMAPIPROP lpMAPIProp)
+	{
+		if (!registry::doSmartView) emptySW();
+
+		auto svp = GetSmartViewParser(parser, lpMAPIProp);
+		if (svp)
+		{
+			svp->init(myBin.cb, myBin.lpb);
+			return svp;
+		}
+
+		return emptySW();
+	}
+
 	// Functions to parse PT_LONG/PT-I2 properties
 	_Check_return_ std::wstring RTimeToSzString(DWORD rTime, bool bLabel);
 	_Check_return_ std::wstring PTI8ToSzString(LARGE_INTEGER liI8, bool bLabel);
@@ -351,7 +365,7 @@ namespace smartview
 
 			if (parser != parserType::NOPARSING)
 			{
-				return InterpretBinaryAsString(mapi::getBin(lpProp), parser, lpMAPIProp);
+				return InterpretBinary(mapi::getBin(lpProp), parser, lpMAPIProp)->toString();
 			}
 
 			break;
@@ -381,7 +395,7 @@ namespace smartview
 			}
 
 			szResult += strings::formatmessage(IDS_MVROWBIN, ulRow);
-			szResult += InterpretBinaryAsString(myBinArray.lpbin[ulRow], parser, lpMAPIProp);
+			szResult += InterpretBinary(myBinArray.lpbin[ulRow], parser, lpMAPIProp)->toString();
 		}
 
 		return szResult;
@@ -527,20 +541,6 @@ namespace smartview
 		}
 
 		return strings::join(szArray, L"\r\n");
-	}
-
-	std::wstring InterpretBinaryAsString(const SBinary myBin, parserType parser, _In_opt_ LPMAPIPROP lpMAPIProp)
-	{
-		if (!registry::doSmartView) return L"";
-
-		auto svp = GetSmartViewParser(parser, lpMAPIProp);
-		if (svp)
-		{
-			svp->init(myBin.cb, myBin.lpb);
-			return svp->toString();
-		}
-
-		return {};
 	}
 
 	_Check_return_ std::wstring RTimeToString(DWORD rTime)

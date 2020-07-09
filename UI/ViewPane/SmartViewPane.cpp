@@ -204,8 +204,9 @@ namespace viewpane
 
 			if (parsedData.empty())
 			{
-				parsedData = smartview::InterpretBinaryAsString(
-					SBinary{static_cast<ULONG>(bin.size()), bin.data()}, iStructType, nullptr);
+				parsedData = smartview::InterpretBinary(
+								 SBinary{static_cast<ULONG>(bin.size()), bin.data()}, iStructType, nullptr)
+								 ->toString();
 			}
 
 			szSmartViewArray.push_back(parsedData);

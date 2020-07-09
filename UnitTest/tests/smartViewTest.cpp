@@ -20,8 +20,8 @@ namespace SmartViewTest
 			const std::wstring testName, parserType structType, std::vector<BYTE> hex, const std::wstring expected)
 			const
 		{
-			auto actual =
-				smartview::InterpretBinaryAsString({static_cast<ULONG>(hex.size()), hex.data()}, structType, nullptr);
+			auto actual = smartview::InterpretBinary({static_cast<ULONG>(hex.size()), hex.data()}, structType, nullptr)
+							  ->toString();
 			unittest::AreEqualEx(expected, actual, testName.c_str());
 
 			if (unittest::parse_all)
@@ -30,8 +30,9 @@ namespace SmartViewTest
 				{
 					try
 					{
-						actual = smartview::InterpretBinaryAsString(
-							{static_cast<ULONG>(hex.size()), hex.data()}, parser.type, nullptr);
+						actual = smartview::InterpretBinary(
+									 {static_cast<ULONG>(hex.size()), hex.data()}, parser.type, nullptr)
+									 ->toString();
 					} catch (const int exception)
 					{
 						Logger::WriteMessage(strings::format(
