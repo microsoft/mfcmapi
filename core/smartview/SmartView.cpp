@@ -42,6 +42,7 @@
 #include <core/smartview/XID.h>
 #include <core/smartview/decodeEntryID.h>
 #include <core/smartview/encodeEntryID.h>
+#include <core/smartview/addinParser.h>
 
 namespace smartview
 {
@@ -124,9 +125,10 @@ namespace smartview
 			return std::make_shared<SDBin>(lpMAPIProp, true);
 		case parserType::XID:
 			return std::make_shared<XID>();
+		default:
+			// Any other case is either handled by an add-in or not at all
+			return std::make_shared<addinParser>(type);
 		}
-
-		return nullptr;
 	}
 
 	_Check_return_ ULONG BuildFlagIndexFromTag(
@@ -530,11 +532,6 @@ namespace smartview
 	std::wstring InterpretBinaryAsString(const SBinary myBin, parserType parser, _In_opt_ LPMAPIPROP lpMAPIProp)
 	{
 		if (!registry::doSmartView) return L"";
-		auto szResultString = addin::AddInSmartView(parser, myBin.cb, myBin.lpb);
-		if (!szResultString.empty())
-		{
-			return szResultString;
-		}
 
 		auto svp = GetSmartViewParser(parser, lpMAPIProp);
 		if (svp)

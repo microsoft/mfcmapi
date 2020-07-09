@@ -573,6 +573,7 @@
     <ClInclude Include="property\parseProperty.h" />
     <ClInclude Include="property\property.h" />
     <ClInclude Include="res\Resource.h" />
+    <ClInclude Include="smartview\addinParser.h" />
     <ClInclude Include="smartview\AdditionalRenEntryIDs.h" />
     <ClInclude Include="smartview\AppointmentRecurrencePattern.h" />
     <ClInclude Include="smartview\block\scratchBlock.h" />
@@ -661,6 +662,7 @@
     <ClCompile Include="property\attributes.cpp" />
     <ClCompile Include="property\parseProperty.cpp" />
     <ClCompile Include="property\property.cpp" />
+    <ClCompile Include="smartview\addinParser.cpp" />
     <ClCompile Include="smartview\AdditionalRenEntryIDs.cpp" />
     <ClCompile Include="smartview\AppointmentRecurrencePattern.cpp" />
     <ClCompile Include="smartview\decodeEntryID.cpp" />

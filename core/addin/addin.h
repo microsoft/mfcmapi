@@ -20,7 +20,7 @@ namespace addin
 	void LoadAddIns();
 	void UnloadAddIns();
 	void MergeAddInArrays();
-	std::wstring AddInSmartView(parserType iStructType, ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+	std::wstring AddInSmartView(parserType iStructType, ULONG cbBin, _In_count_(cbBin) const BYTE* lpBin);
 	std::wstring AddInStructTypeToString(parserType parser);
 } // namespace addin
 

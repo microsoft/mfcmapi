@@ -503,7 +503,7 @@ typedef GETSMARTVIEWPARSERTYPEARRAY* LPGETSMARTVIEWPARSERTYPEARRAY;
 typedef LPWSTR(STDMETHODCALLTYPE SMARTVIEWPARSE)(
 	_In_ LPCWSTR szParserType, // Name of parser type
 	ULONG cbBin,
-	_In_count_(cbBin) LPBYTE lpBin);
+	_In_count_(cbBin) const BYTE* lpBin);
 typedef SMARTVIEWPARSE* LPSMARTVIEWPARSE;
 
 // Function: FreeParse

@@ -16,13 +16,10 @@ namespace SmartViewTest
 		// Without this, clang gets weird
 		static const bool dummy_var = true;
 
-		void test(parserType structType, DWORD hexNum, DWORD expectedNum) const
+		void test(
+			const std::wstring testName, parserType structType, std::vector<BYTE> hex, const std::wstring expected)
+			const
 		{
-			static auto handle = GetModuleHandleW(L"UnitTest.dll");
-			// See comments on loadfile for best file encoding strategies for test data
-			const auto testName = strings::format(L"%d/%d", hexNum, expectedNum);
-			auto hex = strings::HexStringToBin(unittest::loadfile(handle, hexNum));
-			const auto expected = unittest::loadfile(handle, expectedNum);
 			auto actual =
 				smartview::InterpretBinaryAsString({static_cast<ULONG>(hex.size()), hex.data()}, structType, nullptr);
 			unittest::AreEqualEx(expected, actual, testName.c_str());
@@ -49,8 +46,28 @@ namespace SmartViewTest
 			}
 		}
 
+		void test(parserType structType, DWORD hexNum, DWORD expectedNum) const
+		{
+			static auto handle = GetModuleHandleW(L"UnitTest.dll");
+			// See comments on loadfile for best file encoding strategies for test data
+			const auto testName = strings::format(L"%d/%d", hexNum, expectedNum);
+			auto hex = strings::HexStringToBin(unittest::loadfile(handle, hexNum));
+			const auto expected = unittest::loadfile(handle, expectedNum);
+			test(testName, structType, hex, expected);
+		}
+
 	public:
 		TEST_CLASS_INITIALIZE(initialize) { unittest::init(); }
+
+		TEST_METHOD(SmartViewAddInTest1)
+		{
+			test(
+				std::wstring(L"SmartViewAddInTest1"),
+				parserType::END,
+				std::vector<BYTE>{1, 2, 3, 4},
+				std::wstring(L"Unknown Parser 38\r\n"
+							 L"\tcb: 4 lpb: 01020304"));
+		}
 
 		TEST(ADDITIONALRENENTRYIDSEX, 1AEI, 1)
 		TEST(ADDITIONALRENENTRYIDSEX, 1AEI, 2)

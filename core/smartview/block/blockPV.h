@@ -152,12 +152,6 @@ namespace smartview
 		std::shared_ptr<block> toSmartView() override
 		{
 			const auto bin = this->operator SBinary();
-			auto szResultString = addin::AddInSmartView(svParser, bin.cb, bin.lpb);
-			if (!szResultString.empty())
-			{
-				return blockStringW::create(szResultString);
-			}
-
 			auto svp = GetSmartViewParser(svParser, nullptr);
 			if (svp)
 			{

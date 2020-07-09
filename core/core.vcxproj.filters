@@ -315,6 +315,9 @@
     <ClInclude Include="smartview\encodeEntryID.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="smartview\addinParser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="utility\strings.cpp">
@@ -549,6 +552,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="smartview\encodeEntryID.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\addinParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
