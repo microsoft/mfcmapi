@@ -185,7 +185,8 @@ namespace viewpane
 		auto source = 0;
 		for (auto& bin : m_bins)
 		{
-			auto svp = smartview::InterpretBinary({bin.size(), bin.data()}, iStructType, nullptr);
+			auto svp =
+				smartview::InterpretBinary({static_cast<ULONG>(bin.size()), bin.data()}, iStructType, nullptr);
 			if (svp)
 			{
 				svp->setSource(source++);
