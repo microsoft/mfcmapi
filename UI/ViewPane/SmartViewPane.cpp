@@ -202,10 +202,7 @@ namespace viewpane
 		}
 
 		AddChildren(nullptr, treeData);
-
-		const auto szSmartView = treeData->toString();
-		m_bHasData = !szSmartView.empty();
-		SetStringW(szSmartView);
+		SetStringW(treeData->toString());
 	}
 
 	void SmartViewPane::AddChildren(HTREEITEM parent, const std::shared_ptr<smartview::block>& data)
