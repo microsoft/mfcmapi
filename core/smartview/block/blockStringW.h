@@ -22,6 +22,7 @@ namespace smartview
 			ret->parsed = true;
 			ret->enableJunk = false;
 			ret->data = _data;
+			ret->setText(_data);
 			ret->setSize(_size);
 			ret->setOffset(_offset);
 			return ret;

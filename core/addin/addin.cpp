@@ -738,7 +738,7 @@ namespace addin
 		return L"";
 	}
 
-	std::wstring AddInSmartView(parserType iStructType, ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
+	std::wstring AddInSmartView(parserType iStructType, ULONG cbBin, _In_count_(cbBin) const BYTE* lpBin)
 	{
 		// Don't let add-ins hijack our built in types
 		if (iStructType < parserType::END) return L"";

@@ -573,6 +573,7 @@
     <ClInclude Include="property\parseProperty.h" />
     <ClInclude Include="property\property.h" />
     <ClInclude Include="res\Resource.h" />
+    <ClInclude Include="smartview\addinParser.h" />
     <ClInclude Include="smartview\AdditionalRenEntryIDs.h" />
     <ClInclude Include="smartview\AppointmentRecurrencePattern.h" />
     <ClInclude Include="smartview\block\scratchBlock.h" />
@@ -583,6 +584,8 @@
     <ClInclude Include="smartview\block\blockStringA.h" />
     <ClInclude Include="smartview\block\blockStringW.h" />
     <ClInclude Include="smartview\block\blockT.h" />
+    <ClInclude Include="smartview\decodeEntryID.h" />
+    <ClInclude Include="smartview\encodeEntryID.h" />
     <ClInclude Include="smartview\RuleAction.h" />
     <ClInclude Include="smartview\ConversationIndex.h" />
     <ClInclude Include="smartview\EntryIdStruct.h" />
@@ -659,8 +662,11 @@
     <ClCompile Include="property\attributes.cpp" />
     <ClCompile Include="property\parseProperty.cpp" />
     <ClCompile Include="property\property.cpp" />
+    <ClCompile Include="smartview\addinParser.cpp" />
     <ClCompile Include="smartview\AdditionalRenEntryIDs.cpp" />
     <ClCompile Include="smartview\AppointmentRecurrencePattern.cpp" />
+    <ClCompile Include="smartview\decodeEntryID.cpp" />
+    <ClCompile Include="smartview\encodeEntryID.cpp" />
     <ClCompile Include="smartview\RuleAction.cpp" />
     <ClCompile Include="smartview\ConversationIndex.cpp" />
     <ClCompile Include="smartview\EntryIdStruct.cpp" />

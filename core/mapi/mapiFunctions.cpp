@@ -257,42 +257,6 @@ namespace mapi
 		return ulObjType;
 	}
 
-	constexpr WORD kwBaseOffset = 0xAC00; // Hangul char range (AC00-D7AF)
-	_Check_return_ std::wstring EncodeID(ULONG cbEID, _In_ LPENTRYID rgbID)
-	{
-		auto pbSrc = reinterpret_cast<LPBYTE>(rgbID);
-		std::wstring wzIDEncoded;
-		wzIDEncoded.reserve(cbEID);
-
-		// rgbID is the item Entry ID or the attachment ID
-		// cbID is the size in bytes of rgbID
-		for (ULONG i = 0; i < cbEID; i++, pbSrc++)
-		{
-			wzIDEncoded.push_back(static_cast<WCHAR>(*pbSrc + kwBaseOffset));
-		}
-
-		// wzIDEncoded now contains the entry ID encoded.
-		return wzIDEncoded;
-	}
-
-	_Check_return_ std::wstring DecodeID(ULONG cbBuffer, _In_count_(cbBuffer) LPBYTE lpbBuffer)
-	{
-		if (cbBuffer % 2) return strings::emptystring;
-
-		const auto cbDecodedBuffer = cbBuffer / 2;
-		auto lpDecoded = std::vector<BYTE>();
-		lpDecoded.reserve(cbDecodedBuffer);
-
-		// Subtract kwBaseOffset from every character and place result in lpDecoded
-		auto lpwzSrc = reinterpret_cast<LPWSTR>(lpbBuffer);
-		for (ULONG i = 0; i < cbDecodedBuffer; i++, lpwzSrc++)
-		{
-			lpDecoded.push_back(static_cast<BYTE>(*lpwzSrc - kwBaseOffset));
-		}
-
-		return strings::BinToHexString(lpDecoded, true);
-	}
-
 	_Check_return_ HRESULT GetPropsNULL(
 		_In_ LPMAPIPROP lpMAPIProp,
 		ULONG ulFlags,

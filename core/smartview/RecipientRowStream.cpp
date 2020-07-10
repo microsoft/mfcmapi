@@ -1,7 +1,5 @@
 #include <core/stdafx.h>
 #include <core/smartview/RecipientRowStream.h>
-#include <core/smartview/PropertiesStruct.h>
-#include <core/smartview/SPropValueStruct.h>
 
 namespace smartview
 {
@@ -14,8 +12,7 @@ namespace smartview
 		{
 			if (*cValues < _MaxEntriesSmall)
 			{
-				rgPropVals = std::make_shared<PropertiesStruct>();
-				rgPropVals->SetMaxEntries(*cValues);
+				rgPropVals = std::make_shared<PropertiesStruct>(*cValues, false, false);
 				rgPropVals->block::parse(parser, false);
 			}
 		}
@@ -25,13 +22,7 @@ namespace smartview
 	{
 		addChild(cValues, L"cValues = 0x%1!08X! = %1!d!", cValues->getData());
 		addChild(ulReserved1, L"ulReserved1 = 0x%1!08X! = %1!d!", ulReserved1->getData());
-		if (rgPropVals)
-		{
-			for (const auto& prop : rgPropVals->Props())
-			{
-				addChild(prop);
-			}
-		}
+		addChild(rgPropVals);
 	}
 
 	void RecipientRowStream::parse()

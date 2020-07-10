@@ -54,7 +54,7 @@ void DoSmartView()
 				sBin.lpb = bin.data();
 			}
 
-			auto szString = smartview::InterpretBinaryAsString(sBin, ulStructType, nullptr);
+			auto szString = smartview::InterpretBinary(sBin, ulStructType, nullptr)->toString();
 			if (!szString.empty())
 			{
 				if (fOut)

@@ -322,6 +322,12 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mfcmapi.exe.manifest</AdditionalManifestFiles>
     </Manifest>
+    <PostBuildEvent>
+      <Message>Copy Release build</Message>
+      <Command>copy "$(TargetPath)" "$(SolutionDir)"
+copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
+      </Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">
     <ClCompile>

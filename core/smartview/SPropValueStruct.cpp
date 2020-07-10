@@ -1,6 +1,7 @@
 #include <core/stdafx.h>
 #include <core/smartview/SPropValueStruct.h>
 #include <core/interpret/proptags.h>
+#include <core/interpret/proptype.h>
 
 namespace smartview
 {
@@ -16,17 +17,21 @@ namespace smartview
 
 		if (m_doNickname) static_cast<void>(parser->advance(sizeof DWORD)); // reserved
 
-		value = getPVParser(*PropType);
+		value = getPVParser(*ulPropTag, m_doNickname, m_doRuleProcessing);
 		if (value)
 		{
-			value->parse(parser, *ulPropTag, m_doNickname, m_doRuleProcessing);
+			value->block::parse(parser, false);
 		}
 	}
 
 	void SPropValueStruct::parseBlocks()
 	{
 		setText(L"Property[%1!d!]", m_index);
-		addChild(ulPropTag, L"Property = 0x%1!08X!", ulPropTag->getData());
+		addChild(
+			ulPropTag,
+			L"PropTag = 0x%1!08X! (%2!ws!)",
+			ulPropTag->getData(),
+			proptype::TypeToString(*ulPropTag).c_str());
 
 		const auto propTagNames = proptags::PropTagToPropName(*ulPropTag, false);
 		if (!propTagNames.bestGuess.empty())
@@ -39,25 +44,6 @@ namespace smartview
 			ulPropTag->addSubHeader(L"Other Matches: %1!ws!", propTagNames.otherMatches.c_str());
 		}
 
-		if (value)
-		{
-			const auto propString = value->PropBlock();
-			if (!propString->empty())
-			{
-				addChild(propString, L"PropString = %1!ws!", propString->c_str());
-			}
-
-			const auto alt = value->AltPropBlock();
-			if (!alt->empty())
-			{
-				addChild(alt, L"AltPropString = %1!ws!", alt->c_str());
-			}
-
-			const auto szSmartView = value->SmartViewBlock();
-			if (!szSmartView->empty())
-			{
-				addChild(szSmartView, L"Smart View: %1!ws!", szSmartView->c_str());
-			}
-		}
+		addChild(value);
 	}
 } // namespace smartview

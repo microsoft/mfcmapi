@@ -28,5 +28,5 @@ Search Folder Definition
 	Restriction
 	|	rt = 0x8 = RES_EXIST
 	|	resExist
-	|	|	ulPropTag = 0x8010101F (PT_MV_UNICODE)
+	|	|	PropTag = 0x8010101F (PT_MV_UNICODE)
 	SkipLen3 = 0x00000000

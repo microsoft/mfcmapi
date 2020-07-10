@@ -1,16 +1,8 @@
 #include <core/stdafx.h>
 #include <core/smartview/PropertiesStruct.h>
-#include <core/smartview/SPropValueStruct.h>
 
 namespace smartview
 {
-	void PropertiesStruct::parse(const std::shared_ptr<binaryParser>& _parser, DWORD cValues, bool bRuleCondition)
-	{
-		SetMaxEntries(cValues);
-		if (bRuleCondition) EnableRuleConditionParsing();
-		block::parse(_parser, false);
-	}
-
 	void PropertiesStruct::parse()
 	{
 		// For consistancy with previous parsings, we'll refuse to parse if asked to parse more than _MaxEntriesSmall
@@ -29,12 +21,18 @@ namespace smartview
 		{
 			if (dwPropCount >= m_MaxEntries) break;
 			auto sPropValueStruct = std::make_shared<SPropValueStruct>(dwPropCount++, m_NickName, m_RuleCondition);
+			const auto offset = parser->getOffset();
 			if (sPropValueStruct)
 			{
 				sPropValueStruct->block::parse(parser, false);
+				m_Props.emplace_back(sPropValueStruct);
 			}
 
-			m_Props.emplace_back(sPropValueStruct);
+			// If we parsed nothing, we're done.
+			if (parser->getOffset() == offset)
+			{
+				break;
+			}
 		}
 	}
 

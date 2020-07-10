@@ -1,17 +1,16 @@
 #pragma once
 #include <core/smartview/block/block.h>
+#include <core/smartview/SPropValueStruct.h>
 
 namespace smartview
 {
-	class SPropValueStruct;
 	class PropertiesStruct : public block
 	{
 	public:
-		void parse(const std::shared_ptr<binaryParser>& _parser, DWORD cValues, bool bRuleCondition);
-		void SetMaxEntries(DWORD maxEntries) noexcept { m_MaxEntries = maxEntries; }
-		void EnableNickNameParsing() noexcept { m_NickName = true; }
-		void EnableRuleConditionParsing() noexcept { m_RuleCondition = true; }
-		_Check_return_ std::vector<std::shared_ptr<SPropValueStruct>>& Props() noexcept { return m_Props; }
+		PropertiesStruct(DWORD cValues, bool bNickName, bool bRuleCondition)
+			: m_MaxEntries(cValues), m_NickName(bNickName), m_RuleCondition(bRuleCondition)
+		{
+		}
 
 	private:
 		void parse() override;

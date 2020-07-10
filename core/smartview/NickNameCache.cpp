@@ -1,6 +1,5 @@
 #include <core/stdafx.h>
 #include <core/smartview/NickNameCache.h>
-#include <core/smartview/SPropValueStruct.h>
 
 namespace smartview
 {
@@ -12,9 +11,7 @@ namespace smartview
 		{
 			if (*cValues < _MaxEntriesSmall)
 			{
-				lpProps = std::make_shared<PropertiesStruct>();
-				lpProps->EnableNickNameParsing();
-				lpProps->SetMaxEntries(*cValues);
+				lpProps = std::make_shared<PropertiesStruct>(*cValues, true, false);
 				lpProps->block::parse(parser, false);
 			}
 		}
@@ -23,13 +20,7 @@ namespace smartview
 	void SRowStruct::parseBlocks()
 	{
 		addChild(cValues, L"cValues = 0x%1!08X! = %1!d!", cValues->getData());
-		if (lpProps)
-		{
-			for (const auto& prop : lpProps->Props())
-			{
-				addChild(prop);
-			}
-		}
+		addChild(lpProps);
 	}
 
 	void NickNameCache::parse()

@@ -6,52 +6,33 @@
 #include <core/smartview/block/blockStringW.h>
 #include <core/smartview/block/blockBytes.h>
 #include <core/smartview/block/blockT.h>
+#include <core/addin/mfcmapi.h>
+#include <core/addin/addin.h>
 
 namespace smartview
 {
 	class blockPV : public block
 	{
 	public:
-		blockPV() = default;
-		void parse(std::shared_ptr<binaryParser>& _parser, ULONG ulPropTag, bool doNickname, bool doRuleProcessing)
+		void init(ULONG ulPropTag, bool doNickname, bool doRuleProcessing, bool bMVRow)
 		{
-			parser = _parser;
 			m_doNickname = doNickname;
 			m_doRuleProcessing = doRuleProcessing;
 			m_ulPropTag = ulPropTag;
-
-			ensureParsed();
-		}
-		blockPV(const blockPV&) = delete;
-		blockPV& operator=(const blockPV&) = delete;
-
-		virtual std::wstring toNumberAsString() { return strings::emptystring; }
-
-		_Check_return_ std::shared_ptr<blockStringW> PropBlock()
-		{
-			ensurePropBlocks();
-			return propBlock;
-		}
-		_Check_return_ std::shared_ptr<blockStringW> AltPropBlock()
-		{
-			ensurePropBlocks();
-			return altPropBlock;
-		}
-		_Check_return_ std::shared_ptr<blockStringW> SmartViewBlock()
-		{
-			ensurePropBlocks();
-			return smartViewBlock;
+			svParser = FindSmartViewParserForProp(ulPropTag, nullptr, nullptr, nullptr, false, bMVRow);
 		}
 
 	protected:
 		bool m_doNickname{};
 		bool m_doRuleProcessing{};
 		ULONG m_ulPropTag{};
+		parserType svParser{parserType::NOPARSING};
 
 	private:
-		void ensurePropBlocks()
+		void parse() override = 0;
+		void parseBlocks() override
 		{
-			if (propStringsGenerated) return;
+			const auto size = parser->getOffset() - getOffset();
 			auto prop = SPropValue{m_ulPropTag, 0, {}};
 			getProp(prop);
 
@@ -59,24 +40,28 @@ namespace smartview
 			auto altPropString = std::wstring{};
 			property::parseProperty(&prop, &propString, &altPropString);
 
-			propBlock =
-				blockStringW::parse(strings::RemoveInvalidCharactersW(propString, false), getSize(), getOffset());
+			const auto propBlock =
+				blockStringW::parse(strings::RemoveInvalidCharactersW(propString, false), size, getOffset());
+			if (!propBlock->empty())
+			{
+				addChild(propBlock, L"PropString = %1!ws!", propBlock->c_str());
+			}
 
-			altPropBlock =
-				blockStringW::parse(strings::RemoveInvalidCharactersW(altPropString, false), getSize(), getOffset());
+			const auto altPropBlock =
+				blockStringW::parse(strings::RemoveInvalidCharactersW(altPropString, false), size, getOffset());
+			if (!altPropBlock->empty())
+			{
+				addChild(altPropBlock, L"AltPropString = %1!ws!", altPropBlock->c_str());
+			}
 
-			const auto smartViewString = parsePropertySmartView(&prop, nullptr, nullptr, nullptr, false, false);
-			smartViewBlock = blockStringW::parse(smartViewString, getSize(), getOffset());
-
-			propStringsGenerated = true;
+			const auto smartView = toSmartView();
+			if (smartView->hasData())
+			{
+				addLabeledChild(L"Smart View", smartView);
+			}
 		}
-
-		void parse() override = 0;
 		virtual const void getProp(SPropValue& prop) noexcept = 0;
-		std::shared_ptr<blockStringW> propBlock = emptySW();
-		std::shared_ptr<blockStringW> altPropBlock = emptySW();
-		std::shared_ptr<blockStringW> smartViewBlock = emptySW();
-		bool propStringsGenerated{};
+		virtual std::shared_ptr<block> toSmartView() { return emptySW(); }
 	};
 
 	/* case PT_SYSTIME */
@@ -162,11 +147,14 @@ namespace smartview
 	class SBinaryBlock : public blockPV
 	{
 	public:
-		void parse(std::shared_ptr<binaryParser>& _parser, ULONG ulPropTag)
-		{
-			blockPV::parse(_parser, ulPropTag, false, true);
-		}
 		operator SBinary() noexcept { return {*cb, const_cast<LPBYTE>(lpb->data())}; }
+
+		std::shared_ptr<block> toSmartView() override
+		{
+			auto svp = InterpretBinary(this->operator SBinary(), svParser, nullptr);
+			svp->shiftOffset(lpb->getOffset());
+			return svp;
+		}
 
 	private:
 		void parse() override
@@ -221,7 +209,8 @@ namespace smartview
 				for (ULONG j = 0; j < *cValues; j++)
 				{
 					const auto block = std::make_shared<SBinaryBlock>();
-					block->parse(parser, m_ulPropTag);
+					block->init(CHANGE_PROP_TYPE(m_ulPropTag, PT_BINARY), false, true, true);
+					block->block::parse(parser, false);
 					lpbin.emplace_back(block);
 				}
 			}
@@ -240,6 +229,18 @@ namespace smartview
 					}
 				}
 			}
+		}
+
+		std::shared_ptr<block> toSmartView() override
+		{
+			auto smartview = block::create();
+			auto i = 0;
+			for (const auto& b : lpbin)
+			{
+				smartview->addLabeledChild(strings::format(L"Row %d", i++), b->toSmartView());
+			}
+
+			return smartview;
 		}
 
 		const void getProp(SPropValue& prop) noexcept override { prop.Value.MVbin = SBinaryArray{*cValues, bin}; }
@@ -357,18 +358,17 @@ namespace smartview
 	/* case PT_I2 */
 	class I2BLock : public blockPV
 	{
-	public:
-		std::wstring toNumberAsString() override
-		{
-			return InterpretNumberAsString(*i, m_ulPropTag, 0, nullptr, nullptr, false);
-		}
-
 	private:
 		void parse() override
 		{
 			if (m_doNickname) i = blockT<WORD>::parse(parser); // TODO: This can't be right
 			if (m_doNickname) parser->advance(sizeof WORD);
 			if (m_doNickname) parser->advance(sizeof DWORD);
+		}
+
+		std::shared_ptr<block> toSmartView() override
+		{
+			return blockStringW::create(InterpretNumberAsString(*i, m_ulPropTag, 0, nullptr, nullptr, true));
 		}
 
 		const void getProp(SPropValue& prop) noexcept override { prop.Value.i = *i; }
@@ -378,17 +378,16 @@ namespace smartview
 	/* case PT_LONG */
 	class LongBLock : public blockPV
 	{
-	public:
-		std::wstring toNumberAsString() override
-		{
-			return InterpretNumberAsString(*l, m_ulPropTag, 0, nullptr, nullptr, false);
-		}
-
 	private:
 		void parse() override
 		{
 			l = blockT<LONG>::parse<DWORD>(parser);
 			if (m_doNickname) parser->advance(sizeof DWORD);
+		}
+
+		std::shared_ptr<block> toSmartView() override
+		{
+			return blockStringW::create(InterpretNumberAsString(*l, m_ulPropTag, 0, nullptr, nullptr, true));
 		}
 
 		const void getProp(SPropValue& prop) noexcept override { prop.Value.l = *l; }
@@ -463,14 +462,14 @@ namespace smartview
 	/* case PT_I8 */
 	class I8Block : public blockPV
 	{
-	public:
-		std::wstring toNumberAsString() override
-		{
-			return InterpretNumberAsString(li->getData().QuadPart, m_ulPropTag, 0, nullptr, nullptr, false);
-		}
-
 	private:
 		void parse() override { li = blockT<LARGE_INTEGER>::parse(parser); }
+
+		std::shared_ptr<block> toSmartView() override
+		{
+			return blockStringW::create(
+				InterpretNumberAsString(li->getData().QuadPart, m_ulPropTag, 0, nullptr, nullptr, true));
+		}
 
 		const void getProp(SPropValue& prop) noexcept override { prop.Value.li = li->getData(); }
 		std::shared_ptr<blockT<LARGE_INTEGER>> li = emptyT<LARGE_INTEGER>();
@@ -490,42 +489,61 @@ namespace smartview
 		std::shared_ptr<blockT<SCODE>> err = emptyT<SCODE>();
 	};
 
-	inline std::shared_ptr<blockPV> getPVParser(ULONG ulPropType)
+	inline std::shared_ptr<blockPV> getPVParser(ULONG ulPropTag, bool doNickname, bool doRuleProcessing)
 	{
-		switch (ulPropType)
+		auto ret = std::shared_ptr<blockPV>{};
+		switch (PROP_TYPE(ulPropTag))
 		{
 		case PT_I2:
-			return std::make_shared<I2BLock>();
+			ret = std::make_shared<I2BLock>();
+			break;
 		case PT_LONG:
-			return std::make_shared<LongBLock>();
+			ret = std::make_shared<LongBLock>();
+			break;
 		case PT_ERROR:
-			return std::make_shared<ErrorBlock>();
+			ret = std::make_shared<ErrorBlock>();
+			break;
 		case PT_R4:
-			return std::make_shared<R4BLock>();
+			ret = std::make_shared<R4BLock>();
+			break;
 		case PT_DOUBLE:
-			return std::make_shared<DoubleBlock>();
+			ret = std::make_shared<DoubleBlock>();
+			break;
 		case PT_BOOLEAN:
-			return std::make_shared<BooleanBlock>();
+			ret = std::make_shared<BooleanBlock>();
+			break;
 		case PT_I8:
-			return std::make_shared<I8Block>();
+			ret = std::make_shared<I8Block>();
+			break;
 		case PT_SYSTIME:
-			return std::make_shared<FILETIMEBLock>();
+			ret = std::make_shared<FILETIMEBLock>();
+			break;
 		case PT_STRING8:
-			return std::make_shared<CountedStringA>();
+			ret = std::make_shared<CountedStringA>();
+			break;
 		case PT_BINARY:
-			return std::make_shared<SBinaryBlock>();
+			ret = std::make_shared<SBinaryBlock>();
+			break;
 		case PT_UNICODE:
-			return std::make_shared<CountedStringW>();
+			ret = std::make_shared<CountedStringW>();
+			break;
 		case PT_CLSID:
-			return std::make_shared<CLSIDBlock>();
+			ret = std::make_shared<CLSIDBlock>();
+			break;
 		case PT_MV_STRING8:
-			return std::make_shared<StringArrayA>();
+			ret = std::make_shared<StringArrayA>();
+			break;
 		case PT_MV_UNICODE:
-			return std::make_shared<StringArrayW>();
+			ret = std::make_shared<StringArrayW>();
+			break;
 		case PT_MV_BINARY:
-			return std::make_shared<SBinaryArrayBlock>();
+			ret = std::make_shared<SBinaryArrayBlock>();
+			break;
 		default:
 			return nullptr;
 		}
+
+		ret->init(ulPropTag, doNickname, doRuleProcessing, false);
+		return ret;
 	}
 } // namespace smartview

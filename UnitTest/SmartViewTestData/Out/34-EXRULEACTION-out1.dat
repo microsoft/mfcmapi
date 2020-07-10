@@ -39,6 +39,6 @@ Extended Rule Action
 		ActionDataTag
 			TaggedPropertyValue
 				Property[0]
-					Property = 0x837E0003
+					PropTag = 0x837E0003 (PT_LONG)
 					PropString = 930864138
 					AltPropString = 0x377BDC0A
