@@ -10,6 +10,7 @@ namespace smartview
 	private:
 		void parse() override;
 		void parseBlocks() override;
+
 		std::shared_ptr<blockT<DWORD>> dwVersion = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> dwType = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> dwFlags = emptyT<DWORD>();

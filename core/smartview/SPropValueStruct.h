@@ -8,14 +8,9 @@ namespace smartview
 	class SPropValueStruct : public block
 	{
 	public:
-		SPropValueStruct(
-			int index,
-			bool doNickname,
-			bool doRuleProcessing) noexcept
+		SPropValueStruct(int index, bool doNickname, bool doRuleProcessing) noexcept
+			: m_index(index), m_doNickname(doNickname), m_doRuleProcessing(doRuleProcessing)
 		{
-			m_index = index;
-			m_doNickname = doNickname;
-			m_doRuleProcessing = doRuleProcessing;
 		}
 
 	private:
