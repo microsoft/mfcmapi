@@ -4,7 +4,7 @@
 
 namespace smartview
 {
-	_Check_return_ std::wstring DecodeID(ULONG cbBuffer, _In_count_(cbBuffer) const BYTE* lpbBuffer)
+	_Check_return_ std::wstring DecodeID(size_t cbBuffer, _In_count_(cbBuffer) const BYTE* lpbBuffer)
 	{
 		if (cbBuffer % 2) return strings::emptystring;
 
@@ -14,7 +14,7 @@ namespace smartview
 
 		// Subtract kwBaseOffset from every character and place result in lpDecoded
 		auto lpwzSrc = reinterpret_cast<LPCWSTR>(lpbBuffer);
-		for (ULONG i = 0; i < cbDecodedBuffer; i++, lpwzSrc++)
+		for (size_t i = 0; i < cbDecodedBuffer; i++, lpwzSrc++)
 		{
 			lpDecoded.push_back(static_cast<BYTE>(*lpwzSrc - kwBaseOffset));
 		}

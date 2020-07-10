@@ -21,7 +21,7 @@ namespace smartview
 		{
 			if (dwPropCount >= m_MaxEntries) break;
 			auto sPropValueStruct = std::make_shared<SPropValueStruct>(dwPropCount++, m_NickName, m_RuleCondition);
-			const auto offset = parser->getOffset();
+			const auto curOffset = parser->getOffset();
 			if (sPropValueStruct)
 			{
 				sPropValueStruct->block::parse(parser, false);
@@ -29,7 +29,7 @@ namespace smartview
 			}
 
 			// If we parsed nothing, we're done.
-			if (parser->getOffset() == offset)
+			if (parser->getOffset() == curOffset)
 			{
 				break;
 			}
