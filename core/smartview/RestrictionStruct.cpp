@@ -116,11 +116,7 @@ namespace smartview
 		void parseBlocks()
 		{
 			setText(L"resNot");
-
-			if (lpRes)
-			{
-				addChild(lpRes, L"lpRes");
-			}
+			addChild(lpRes, L"lpRes");
 		}
 
 		std::shared_ptr<RestrictionStruct> lpRes;
@@ -210,11 +206,7 @@ namespace smartview
 		{
 			setText(L"resCount");
 			addChild(ulCount, L"resCount.ulCount = 0x%1!08X!", ulCount->getData());
-
-			if (lpRes)
-			{
-				addChild(lpRes, L"lpRes");
-			}
+			addChild(lpRes, L"lpRes");
 		}
 
 		std::shared_ptr<blockT<DWORD>> ulCount = emptyT<DWORD>();
@@ -365,11 +357,7 @@ namespace smartview
 			setText(L"resSub");
 			addChild(
 				ulSubObject, L"SubObject = %1!ws!", proptags::TagToString(*ulSubObject, nullptr, false, true).c_str());
-
-			if (lpRes)
-			{
-				addChild(lpRes, L"lpRes");
-			}
+			addChild(lpRes, L"lpRes");
 		}
 
 		std::shared_ptr<blockT<DWORD>> ulSubObject = emptyT<DWORD>();
@@ -413,8 +401,8 @@ namespace smartview
 		}
 
 		std::shared_ptr<blockT<DWORD>> cValues = emptyT<DWORD>(); /* # of properties in lpProp */
-		std::shared_ptr<RestrictionStruct> lpRes;
 		std::shared_ptr<PropertiesStruct> lpProp;
+		std::shared_ptr<RestrictionStruct> lpRes;
 	};
 
 	class SAnnotationRestrictionStruct : public blockRes
@@ -452,8 +440,8 @@ namespace smartview
 		}
 
 		std::shared_ptr<blockT<DWORD>> cValues = emptyT<DWORD>(); /* # of properties in lpProp */
-		std::shared_ptr<RestrictionStruct> lpRes;
 		std::shared_ptr<PropertiesStruct> lpProp;
+		std::shared_ptr<RestrictionStruct> lpRes;
 	};
 
 	// If bRuleCondition is true, parse restrictions as defined in [MS-OXCDATA] 2.12
