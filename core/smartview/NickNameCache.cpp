@@ -11,7 +11,7 @@ namespace smartview
 		{
 			if (*cValues < _MaxEntriesSmall)
 			{
-				lpProps = std::make_shared<PropertiesStruct>(*cValues, false, true);
+				lpProps = std::make_shared<PropertiesStruct>(*cValues, true, false);
 				lpProps->block::parse(parser, false);
 			}
 		}
@@ -20,13 +20,7 @@ namespace smartview
 	void SRowStruct::parseBlocks()
 	{
 		addChild(cValues, L"cValues = 0x%1!08X! = %1!d!", cValues->getData());
-		if (lpProps)
-		{
-			for (const auto& prop : lpProps->Props())
-			{
-				addChild(prop);
-			}
-		}
+		addChild(lpProps);
 	}
 
 	void NickNameCache::parse()

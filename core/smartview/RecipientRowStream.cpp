@@ -22,13 +22,7 @@ namespace smartview
 	{
 		addChild(cValues, L"cValues = 0x%1!08X! = %1!d!", cValues->getData());
 		addChild(ulReserved1, L"ulReserved1 = 0x%1!08X! = %1!d!", ulReserved1->getData());
-		if (rgPropVals)
-		{
-			for (const auto& prop : rgPropVals->Props())
-			{
-				addChild(prop);
-			}
-		}
+		addChild(rgPropVals);
 	}
 
 	void RecipientRowStream::parse()

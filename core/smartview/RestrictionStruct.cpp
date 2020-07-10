@@ -5,6 +5,7 @@
 #include <core/mapi/extraPropTags.h>
 #include <core/smartview/SmartView.h>
 #include <core/interpret/proptags.h>
+#include <core/smartview/SPropValueStruct.h>
 
 namespace smartview
 {
@@ -169,7 +170,7 @@ namespace smartview
 		{
 			ulFuzzyLevel = blockT<DWORD>::parse(parser);
 			ulPropTag = blockT<DWORD>::parse(parser);
-			lpProp = std::make_shared<PropertiesStruct>(1, m_bRuleCondition, false);
+			lpProp = std::make_shared<SPropValueStruct>(0, false, m_bRuleCondition);
 			lpProp->block::parse(parser, false);
 		}
 
@@ -183,16 +184,12 @@ namespace smartview
 				ulFuzzyLevel->getData());
 
 			addChild(ulPropTag, L"PropTag = %1!ws!", proptags::TagToString(*ulPropTag, nullptr, false, true).c_str());
-
-			if (!lpProp->Props().empty())
-			{
-				addChild(lpProp->Props()[0], L"lpProp");
-			}
+			addChild(lpProp, L"lpProp");
 		}
 
 		std::shared_ptr<blockT<DWORD>> ulFuzzyLevel = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> ulPropTag = emptyT<DWORD>();
-		std::shared_ptr < PropertiesStruct> lpProp;
+		std::shared_ptr<SPropValueStruct> lpProp;
 	};
 
 	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxcdata/66b892da-032a-4f66-812a-01c11457d5ce
@@ -237,7 +234,7 @@ namespace smartview
 				relop = blockT<DWORD>::parse(parser);
 
 			ulPropTag = blockT<DWORD>::parse(parser);
-			lpProp = std::make_shared<PropertiesStruct>(1, m_bRuleCondition, false);
+			lpProp = std::make_shared<SPropValueStruct>(0, false, m_bRuleCondition);
 			lpProp->block::parse(parser, false);
 		}
 
@@ -250,17 +247,12 @@ namespace smartview
 				flags::InterpretFlags(flagRelop, *relop).c_str(),
 				relop->getData());
 			addChild(ulPropTag, L"PropTag = %1!ws!", proptags::TagToString(*ulPropTag, nullptr, false, true).c_str());
-
-			if (!lpProp->Props().empty())
-			{
-				addChild(lpProp->Props()[0], L"lpProp");
-			}
+			addChild(lpProp, L"lpProp");
 		}
 
 		std::shared_ptr<blockT<DWORD>> relop = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> ulPropTag = emptyT<DWORD>();
-		std::shared_ptr<PropertiesStruct> lpProp;
-
+		std::shared_ptr<SPropValueStruct> lpProp;
 	};
 
 	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxcdata/c1526deb-d05d-4d42-af68-d0233e4cd064
@@ -371,9 +363,7 @@ namespace smartview
 		{
 			setText(L"resSub");
 			addChild(
-				ulSubObject,
-				L"SubObject = %1!ws!",
-				proptags::TagToString(*ulSubObject, nullptr, false, true).c_str());
+				ulSubObject, L"SubObject = %1!ws!", proptags::TagToString(*ulSubObject, nullptr, false, true).c_str());
 
 			if (lpRes)
 			{
@@ -398,7 +388,7 @@ namespace smartview
 			else
 				cValues = blockT<DWORD>::parse(parser);
 
-			lpProp = std::make_shared<PropertiesStruct>(*cValues, m_bRuleCondition, false);
+			lpProp = std::make_shared<PropertiesStruct>(*cValues, false, m_bRuleCondition);
 			lpProp->block::parse(parser, false);
 
 			// Check if a restriction is present
@@ -413,12 +403,7 @@ namespace smartview
 		{
 			setText(L"resComment");
 			addChild(cValues, L"cValues = 0x%1!08X!", cValues->getData());
-
-			auto i = 0;
-			for (const auto& prop : lpProp->Props())
-			{
-				addChild(prop, L"lpProp[0x%1!08X!]", i++);
-			}
+			addChild(lpProp);
 
 			if (lpRes)
 			{
@@ -442,7 +427,7 @@ namespace smartview
 			else
 				cValues = blockT<DWORD>::parse(parser);
 
-			lpProp = std::make_shared<PropertiesStruct>(*cValues, m_bRuleCondition, false);
+			lpProp = std::make_shared<PropertiesStruct>(*cValues, false, m_bRuleCondition);
 			lpProp->block::parse(parser, false);
 
 			// Check if a restriction is present
@@ -457,12 +442,7 @@ namespace smartview
 		{
 			setText(L"resAnnotation");
 			addChild(cValues, L"cValues = 0x%1!08X!", cValues->getData());
-
-			auto i = 0;
-			for (const auto& prop : lpProp->Props())
-			{
-				addChild(prop, L"lpProp[0x%1!08X!]", i++);
-			}
+			addChild(lpProp);
 
 			if (lpRes)
 			{
