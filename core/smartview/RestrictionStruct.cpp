@@ -31,13 +31,14 @@ namespace smartview
 				for (ULONG i = 0; i < *cRes; i++)
 				{
 					if (!parser->getSize()) break;
-					lpRes.emplace_back(
-						std::make_shared<RestrictionStruct>(parser, m_ulDepth + 1, m_bRuleCondition, m_bExtendedCount));
+					auto res = std::make_shared<RestrictionStruct>(m_ulDepth + 1, m_bRuleCondition, m_bExtendedCount);
+					res->block::parse(parser, false);
+					lpRes.emplace_back(res);
 				}
 			}
 		}
 
-		void parseBlocks(ULONG ulTabLevel)
+		void parseBlocks()
 		{
 			setText(L"resAnd");
 			addChild(cRes, L"cRes = 0x%1!08X!", cRes->getData());
@@ -45,7 +46,6 @@ namespace smartview
 			auto i = 0;
 			for (const auto& res : lpRes)
 			{
-				res->parseBlocks(ulTabLevel + 1);
 				addChild(res, L"lpRes[0x%1!08X!]", i++);
 			}
 		}
@@ -76,13 +76,14 @@ namespace smartview
 				for (ULONG i = 0; i < *cRes; i++)
 				{
 					if (!parser->getSize()) break;
-					lpRes.emplace_back(
-						std::make_shared<RestrictionStruct>(parser, m_ulDepth + 1, m_bRuleCondition, m_bExtendedCount));
+					auto res = std::make_shared<RestrictionStruct>(m_ulDepth + 1, m_bRuleCondition, m_bExtendedCount);
+					res->block::parse(parser, false);
+					lpRes.emplace_back(res);
 				}
 			}
 		}
 
-		void parseBlocks(ULONG ulTabLevel)
+		void parseBlocks()
 		{
 			setText(L"resOr");
 			addChild(cRes, L"cRes = 0x%1!08X!", cRes->getData());
@@ -90,7 +91,6 @@ namespace smartview
 			auto i = 0;
 			for (const auto& res : lpRes)
 			{
-				res->parseBlocks(ulTabLevel + 1);
 				addChild(res, L"lpRes[0x%1!08X!]", i++);
 			}
 		}
@@ -108,17 +108,17 @@ namespace smartview
 		{
 			if (m_ulDepth < _MaxDepth && parser->getSize())
 			{
-				lpRes = std::make_shared<RestrictionStruct>(parser, m_ulDepth + 1, m_bRuleCondition, m_bExtendedCount);
+				lpRes = std::make_shared<RestrictionStruct>(m_ulDepth + 1, m_bRuleCondition, m_bExtendedCount);
+				lpRes->block::parse(parser, false);
 			}
 		}
 
-		void parseBlocks(ULONG ulTabLevel)
+		void parseBlocks()
 		{
 			setText(L"resNot");
 
 			if (lpRes)
 			{
-				lpRes->parseBlocks(ulTabLevel + 1);
 				addChild(lpRes, L"lpRes");
 			}
 		}
@@ -142,7 +142,7 @@ namespace smartview
 			ulPropTag2 = blockT<DWORD>::parse(parser);
 		}
 
-		void parseBlocks(ULONG /*ulTabLevel*/)
+		void parseBlocks()
 		{
 			setText(L"resCompareProps");
 			addChild(
@@ -174,7 +174,7 @@ namespace smartview
 			lpProp->block::parse(parser, false);
 		}
 
-		void parseBlocks(ULONG /*ulTabLevel*/)
+		void parseBlocks()
 		{
 			setText(L"resContent");
 			addChild(
@@ -201,18 +201,18 @@ namespace smartview
 			ulCount = blockT<DWORD>::parse(parser);
 			if (m_ulDepth < _MaxDepth && parser->getSize())
 			{
-				lpRes = std::make_shared<RestrictionStruct>(parser, m_ulDepth + 1, m_bRuleCondition, m_bExtendedCount);
+				lpRes = std::make_shared<RestrictionStruct>(m_ulDepth + 1, m_bRuleCondition, m_bExtendedCount);
+				lpRes->block::parse(parser, false);
 			}
 		}
 
-		void parseBlocks(ULONG ulTabLevel)
+		void parseBlocks()
 		{
 			setText(L"resCount");
 			addChild(ulCount, L"resCount.ulCount = 0x%1!08X!", ulCount->getData());
 
 			if (lpRes)
 			{
-				lpRes->parseBlocks(ulTabLevel + 1);
 				addChild(lpRes, L"lpRes");
 			}
 		}
@@ -238,7 +238,7 @@ namespace smartview
 			lpProp->block::parse(parser, false);
 		}
 
-		void parseBlocks(ULONG /*ulTabLevel*/)
+		void parseBlocks()
 		{
 			setText(L"resProperty");
 			addChild(
@@ -271,7 +271,7 @@ namespace smartview
 			ulMask = blockT<DWORD>::parse(parser);
 		}
 
-		void parseBlocks(ULONG /*ulTabLevel*/)
+		void parseBlocks()
 		{
 			setText(L"resBitMask");
 			addChild(
@@ -312,7 +312,7 @@ namespace smartview
 			cb = blockT<DWORD>::parse(parser);
 		}
 
-		void parseBlocks(ULONG /*ulTabLevel*/)
+		void parseBlocks()
 		{
 			setText(L"resSize");
 			addChild(
@@ -336,7 +336,7 @@ namespace smartview
 	private:
 		void parse() override { ulPropTag = blockT<DWORD>::parse(parser); }
 
-		void parseBlocks(ULONG /*ulTabLevel*/)
+		void parseBlocks()
 		{
 			setText(L"resExist");
 			addChild(ulPropTag, L"PropTag = %1!ws!", proptags::TagToString(*ulPropTag, nullptr, false, true).c_str());
@@ -355,11 +355,12 @@ namespace smartview
 			ulSubObject = blockT<DWORD>::parse(parser);
 			if (m_ulDepth < _MaxDepth && parser->getSize())
 			{
-				lpRes = std::make_shared<RestrictionStruct>(parser, m_ulDepth + 1, m_bRuleCondition, m_bExtendedCount);
+				lpRes = std::make_shared<RestrictionStruct>(m_ulDepth + 1, m_bRuleCondition, m_bExtendedCount);
+				lpRes->block::parse(parser, false);
 			}
 		}
 
-		void parseBlocks(ULONG ulTabLevel)
+		void parseBlocks()
 		{
 			setText(L"resSub");
 			addChild(
@@ -367,7 +368,6 @@ namespace smartview
 
 			if (lpRes)
 			{
-				lpRes->parseBlocks(ulTabLevel + 1);
 				addChild(lpRes, L"lpRes");
 			}
 		}
@@ -395,11 +395,12 @@ namespace smartview
 			const auto resExists = blockT<BYTE>::parse(parser);
 			if (*resExists && m_ulDepth < _MaxDepth && parser->getSize())
 			{
-				lpRes = std::make_shared<RestrictionStruct>(parser, m_ulDepth + 1, m_bRuleCondition, m_bExtendedCount);
+				lpRes = std::make_shared<RestrictionStruct>(m_ulDepth + 1, m_bRuleCondition, m_bExtendedCount);
+				lpRes->block::parse(parser, false);
 			}
 		}
 
-		void parseBlocks(ULONG ulTabLevel)
+		void parseBlocks()
 		{
 			setText(L"resComment");
 			addChild(cValues, L"cValues = 0x%1!08X!", cValues->getData());
@@ -407,7 +408,6 @@ namespace smartview
 
 			if (lpRes)
 			{
-				lpRes->parseBlocks(ulTabLevel + 1);
 				addChild(lpRes, L"lpRes");
 			}
 		}
@@ -434,11 +434,12 @@ namespace smartview
 			const auto& resExists = blockT<BYTE>::parse(parser);
 			if (*resExists && m_ulDepth < _MaxDepth && parser->getSize())
 			{
-				lpRes = std::make_shared<RestrictionStruct>(parser, m_ulDepth + 1, m_bRuleCondition, m_bExtendedCount);
+				lpRes = std::make_shared<RestrictionStruct>(m_ulDepth + 1, m_bRuleCondition, m_bExtendedCount);
+				lpRes->block::parse(parser, false);
 			}
 		}
 
-		void parseBlocks(ULONG ulTabLevel)
+		void parseBlocks()
 		{
 			setText(L"resAnnotation");
 			addChild(cValues, L"cValues = 0x%1!08X!", cValues->getData());
@@ -446,7 +447,6 @@ namespace smartview
 
 			if (lpRes)
 			{
-				lpRes->parseBlocks(ulTabLevel + 1);
 				addChild(lpRes, L"lpRes");
 			}
 		}
@@ -464,7 +464,7 @@ namespace smartview
 	//   https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxocfg/6d9acc02-dafa-494b-88ae-1c4385e547d6
 	// Never fails, but will not parse restrictions above _MaxDepth
 	// [MS-OXCDATA] 2.11.4 TaggedPropertyValue Structure
-	void RestrictionStruct::parse(ULONG ulDepth)
+	void RestrictionStruct::parse()
 	{
 		if (m_bRuleCondition)
 		{
@@ -520,7 +520,7 @@ namespace smartview
 
 		if (res)
 		{
-			res->init(ulDepth, m_bRuleCondition, m_bExtendedCount);
+			res->init(m_ulDepth, m_bRuleCondition, m_bExtendedCount);
 			res->block::parse(parser, false);
 		}
 	}
@@ -528,20 +528,17 @@ namespace smartview
 	// There may be restrictions with over 100 nested levels, but we're not going to try to parse them
 #define _MaxRestrictionNesting 100
 
-	void RestrictionStruct::parseBlocks(ULONG ulTabLevel)
+	void RestrictionStruct::parseBlocks()
 	{
-		if (ulTabLevel > _MaxRestrictionNesting)
+		if (m_ulDepth > _MaxRestrictionNesting)
 		{
 			addHeader(L"Restriction nested too many (%d) levels.", _MaxRestrictionNesting);
 			return;
 		}
 
+		setText(L"Restriction");
 		addChild(rt, L"rt = 0x%1!X! = %2!ws!", rt->getData(), flags::InterpretFlags(flagRestrictionType, *rt).c_str());
 
-		if (res)
-		{
-			res->parseBlocks(ulTabLevel);
-			addChild(res);
-		}
+		addChild(res);
 	}
 } // namespace smartview

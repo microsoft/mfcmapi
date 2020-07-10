@@ -13,7 +13,6 @@ namespace smartview
 			m_bRuleCondition = bRuleCondition;
 			m_bExtendedCount = bExtendedCount;
 		}
-		virtual void parseBlocks(ULONG ulTabLevel) = 0;
 
 	protected:
 		const inline std::wstring makeTabs(ULONG ulTabLevel) const { return std::wstring(ulTabLevel, L'\t'); }
@@ -23,38 +22,25 @@ namespace smartview
 
 	private:
 		void parse() override = 0;
-		void parseBlocks() override{};
+		void parseBlocks() override = 0;
 		bool usePipes() const override { return true; }
 	};
 
 	class RestrictionStruct : public block
 	{
 	public:
+		RestrictionStruct(ULONG ulDepth, bool bRuleCondition, bool bExtendedCount)
+			: m_ulDepth(ulDepth), m_bRuleCondition(bRuleCondition), m_bExtendedCount(bExtendedCount)
+		{
+		}
 		RestrictionStruct(bool bRuleCondition, bool bExtendedCount)
-			: m_bRuleCondition(bRuleCondition), m_bExtendedCount(bExtendedCount)
+			: m_ulDepth(0), m_bRuleCondition(bRuleCondition), m_bExtendedCount(bExtendedCount)
 		{
 		}
-		RestrictionStruct(
-			const std::shared_ptr<binaryParser>& _parser,
-			ULONG ulDepth,
-			bool bRuleCondition,
-			bool bExtendedCount)
-			: m_bRuleCondition(bRuleCondition), m_bExtendedCount(bExtendedCount)
-		{
-			parser = _parser;
-			parse(ulDepth);
-			parsed = true;
-		}
-		void parseBlocks(ULONG ulTabLevel);
 
 	private:
-		void parse() override { parse(0); }
-		void parse(ULONG ulDepth);
-		void parseBlocks() override
-		{
-			setText(L"Restriction");
-			parseBlocks(0);
-		};
+		void parse() override;
+		void parseBlocks() override;
 		bool usePipes() const override { return true; }
 
 		std::shared_ptr<blockT<DWORD>> rt = emptyT<DWORD>(); /* Restriction type */
@@ -62,5 +48,6 @@ namespace smartview
 
 		bool m_bRuleCondition{};
 		bool m_bExtendedCount{};
+		ULONG m_ulDepth{};
 	};
 } // namespace smartview
