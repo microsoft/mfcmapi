@@ -13,7 +13,7 @@ namespace smartview
 	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxocfg/001660fe-9839-41b9-9d5f-cd2b1a577e3b
 	class SAndRestrictionStruct : public blockRes
 	{
-	public:
+	private:
 		void parse() override
 		{
 			if (!m_bRuleCondition || m_bExtendedCount)
@@ -58,7 +58,7 @@ namespace smartview
 	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxocfg/09499990-ab00-4d4f-9c0d-cff61d9cddff
 	class SOrRestrictionStruct : public blockRes
 	{
-	public:
+	private:
 		void parse() override
 		{
 			if (!m_bRuleCondition || m_bExtendedCount)
@@ -103,7 +103,7 @@ namespace smartview
 	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxocfg/f10fbc18-b384-4cd8-9490-a6955035e2ec
 	class SNotRestrictionStruct : public blockRes
 	{
-	public:
+	private:
 		void parse() override
 		{
 			if (m_ulDepth < _MaxDepth && parser->getSize())
@@ -130,7 +130,7 @@ namespace smartview
 	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxocfg/e0dc196d-e041-4d80-bc44-89b94fd71158
 	class SComparePropsRestrictionStruct : public blockRes
 	{
-	public:
+	private:
 		void parse() override
 		{
 			if (m_bRuleCondition)
@@ -165,7 +165,7 @@ namespace smartview
 	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxocfg/e6ded216-f49e-49b9-8b26-e1743e76c897
 	class SContentRestrictionStruct : public blockRes
 	{
-	public:
+	private:
 		void parse() override
 		{
 			ulFuzzyLevel = blockT<DWORD>::parse(parser);
@@ -195,7 +195,7 @@ namespace smartview
 	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxcdata/66b892da-032a-4f66-812a-01c11457d5ce
 	class SCountRestrictionStruct : public blockRes
 	{
-	public:
+	private:
 		void parse() override
 		{
 			ulCount = blockT<DWORD>::parse(parser);
@@ -225,7 +225,7 @@ namespace smartview
 	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxocfg/4e66da53-032b-46f0-8b84-39ee1e96de80
 	class SPropertyRestrictionStruct : public blockRes
 	{
-	public:
+	private:
 		void parse() override
 		{
 			if (m_bRuleCondition)
@@ -259,7 +259,7 @@ namespace smartview
 	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxocfg/e6ded216-f49e-49b9-8b26-e1743e76c897
 	class SBitMaskRestrictionStruct : public blockRes
 	{
-	public:
+	private:
 		void parse() override
 		{
 			if (m_bRuleCondition)
@@ -300,7 +300,7 @@ namespace smartview
 	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxocfg/c6915f61-debe-466c-9145-ffadee0cb28e
 	class SSizeRestrictionStruct : public blockRes
 	{
-	public:
+	private:
 		void parse() override
 		{
 			if (m_bRuleCondition)
@@ -333,7 +333,7 @@ namespace smartview
 	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxocfg/116661e8-6c17-417c-a75d-261ac0ac29ba
 	class SExistRestrictionStruct : public blockRes
 	{
-	public:
+	private:
 		void parse() override { ulPropTag = blockT<DWORD>::parse(parser); }
 
 		void parseBlocks(ULONG /*ulTabLevel*/)
@@ -349,7 +349,7 @@ namespace smartview
 	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxocfg/550dc0ac-01cf-4ee2-b15c-799faa852120
 	class SSubRestrictionStruct : public blockRes
 	{
-	public:
+	private:
 		void parse() override
 		{
 			ulSubObject = blockT<DWORD>::parse(parser);
@@ -380,7 +380,7 @@ namespace smartview
 	// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxocfg/2ffa8c7a-38c1-4446-8fe1-13b52854460e
 	class SCommentRestrictionStruct : public blockRes
 	{
-	public:
+	private:
 		void parse() override
 		{
 			if (m_bRuleCondition)
@@ -419,7 +419,7 @@ namespace smartview
 
 	class SAnnotationRestrictionStruct : public blockRes
 	{
-	public:
+	private:
 		void parse() override
 		{
 			if (m_bRuleCondition)
