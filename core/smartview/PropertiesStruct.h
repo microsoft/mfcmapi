@@ -11,9 +11,6 @@ namespace smartview
 			: m_MaxEntries(cValues), m_RuleCondition(bRuleCondition), m_NickName(bNickName)
 		{
 		}
-		void SetMaxEntries(DWORD maxEntries) noexcept { m_MaxEntries = maxEntries; }
-		void EnableNickNameParsing() noexcept { m_NickName = true; }
-		void EnableRuleConditionParsing() noexcept { m_RuleCondition = true; }
 		_Check_return_ std::vector<std::shared_ptr<SPropValueStruct>>& Props() noexcept { return m_Props; }
 
 	private:
