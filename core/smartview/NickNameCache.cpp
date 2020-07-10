@@ -1,6 +1,5 @@
 #include <core/stdafx.h>
 #include <core/smartview/NickNameCache.h>
-#include <core/smartview/SPropValueStruct.h>
 
 namespace smartview
 {

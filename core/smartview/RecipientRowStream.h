@@ -1,7 +1,7 @@
 #pragma once
 #include <core/smartview/block/block.h>
-#include <core/smartview/PropertiesStruct.h>
 #include <core/smartview/block/blockT.h>
+#include <core/smartview/PropertiesStruct.h>
 
 namespace smartview
 {

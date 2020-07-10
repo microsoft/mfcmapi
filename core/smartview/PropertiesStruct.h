@@ -1,9 +1,9 @@
 #pragma once
 #include <core/smartview/block/block.h>
+#include <core/smartview/SPropValueStruct.h>
 
 namespace smartview
 {
-	class SPropValueStruct;
 	class PropertiesStruct : public block
 	{
 	public:
