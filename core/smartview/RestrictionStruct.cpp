@@ -186,14 +186,7 @@ namespace smartview
 
 			if (!lpProp.Props().empty())
 			{
-				auto propBlock = create(L"lpProp");
-				addChild(propBlock);
-
-				propBlock->addChild(
-					lpProp.Props()[0]->ulPropTag,
-					L"ulPropTag = %1!ws!",
-					proptags::TagToString(*lpProp.Props()[0]->ulPropTag, nullptr, false, true).c_str());
-				propBlock->addChild(lpProp.Props()[0]->value);
+				addChild(lpProp.Props()[0], L"lpProp");
 			}
 		}
 
@@ -259,13 +252,7 @@ namespace smartview
 
 			if (!lpProp.Props().empty())
 			{
-				auto propBlock = create(L"lpProp");
-				addChild(propBlock);
-				propBlock->addChild(
-					lpProp.Props()[0]->ulPropTag,
-					L"ulPropTag = %1!ws!",
-					proptags::TagToString(*lpProp.Props()[0]->ulPropTag, nullptr, false, true).c_str());
-				propBlock->addChild(lpProp.Props()[0]->value);
+				addChild(lpProp.Props()[0], L"lpProp");
 			}
 		}
 
@@ -427,15 +414,7 @@ namespace smartview
 			auto i = 0;
 			for (const auto& prop : lpProp.Props())
 			{
-				auto propBlock = create(L"lpProp[0x%1!08X!]", i);
-				addChild(propBlock);
-				propBlock->addChild(
-					prop->ulPropTag,
-					L"ulPropTag = %1!ws!",
-					proptags::TagToString(*prop->ulPropTag, nullptr, false, true).c_str());
-				propBlock->addChild(prop->value);
-
-				i++;
+				addChild(prop, L"lpProp[0x%1!08X!]", i++);
 			}
 
 			if (lpRes)
@@ -478,15 +457,7 @@ namespace smartview
 			auto i = 0;
 			for (const auto& prop : lpProp.Props())
 			{
-				auto propBlock = create(L"lpProp[0x%1!08X!]", i);
-				addChild(propBlock);
-				propBlock->addChild(prop->ulPropTag);
-
-				propBlock->setText(
-					L"ulPropTag = %1!ws!", proptags::TagToString(*prop->ulPropTag, nullptr, false, true).c_str());
-				propBlock->addChild(prop->value);
-
-				i++;
+				addChild(prop, L"lpProp[0x%1!08X!]", i++);
 			}
 
 			if (lpRes)

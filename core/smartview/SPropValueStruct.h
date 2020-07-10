@@ -18,15 +18,14 @@ namespace smartview
 			m_doRuleProcessing = doRuleProcessing;
 		}
 
-		std::shared_ptr<blockT<ULONG>> ulPropTag = emptyT<ULONG>();
-		std::shared_ptr<blockPV> value;
-
 	private:
 		void parse() override;
 		void parseBlocks() override;
 
 		std::shared_ptr<blockT<WORD>> PropType = emptyT<WORD>();
 		std::shared_ptr<blockT<WORD>> PropID = emptyT<WORD>();
+		std::shared_ptr<blockT<ULONG>> ulPropTag = emptyT<ULONG>();
+		std::shared_ptr<blockPV> value;
 		bool m_doNickname{};
 		bool m_doRuleProcessing{};
 		int m_index{};

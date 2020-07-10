@@ -31,7 +31,7 @@ Search Folder Definition
 	|	|	ulFuzzyLevel = FL_PHRASE_MATCH | FL_IGNORECASE | FL_SUBSTRING = 0x00010021
 	|	|	ulPropTag = 0x0037001F (PT_UNICODE): PR_SUBJECT_W: (PidTagSubject, PR_SUBJECT, PR_SUBJECT_A, ptagSubject)
 	|	|	lpProp
-	|	|		ulPropTag = 0x0037001F (PT_UNICODE): PR_SUBJECT_W: (PidTagSubject, PR_SUBJECT, PR_SUBJECT_A, ptagSubject)
+	|	|		PropTag = 0x0037001F (PT_UNICODE)
 	|	|			Name: PR_SUBJECT_W
 	|	|			Other Matches: PidTagSubject, PR_SUBJECT, PR_SUBJECT_A, ptagSubject
 	|	|		PropString = Test

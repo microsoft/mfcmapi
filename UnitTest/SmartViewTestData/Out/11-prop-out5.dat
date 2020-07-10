@@ -1,5 +1,5 @@
 Property[0]
-	Property = 0x0FF9000A
+	PropTag = 0x0FF9000A (PT_ERROR)
 		Name: PR_RECORD_KEY
 		Other Matches: PidTagRecordKey, ptagRecordKey
 	PropString = Err: 0x8004010F=MAPI_E_NOT_FOUND
