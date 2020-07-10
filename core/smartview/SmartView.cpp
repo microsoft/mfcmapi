@@ -110,7 +110,7 @@ namespace smartview
 		case parserType::RESTRICTION:
 			return std::make_shared<RestrictionStruct>(false, true);
 		case parserType::PROPERTIES:
-			return std::make_shared<PropertiesStruct>();
+			return std::make_shared<PropertiesStruct>(_MaxEntriesSmall, false, false);
 		case parserType::ENTRYID:
 			return std::make_shared<EntryIdStruct>();
 		case parserType::GLOBALOBJECTID:

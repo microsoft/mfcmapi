@@ -7,7 +7,10 @@ namespace smartview
 	class PropertiesStruct : public block
 	{
 	public:
-		void parse(const std::shared_ptr<binaryParser>& _parser, DWORD cValues, bool bRuleCondition);
+		PropertiesStruct(DWORD cValues, bool bRuleCondition, bool bNickName)
+			: m_MaxEntries(cValues), m_RuleCondition(bRuleCondition), m_NickName(bNickName)
+		{
+		}
 		void SetMaxEntries(DWORD maxEntries) noexcept { m_MaxEntries = maxEntries; }
 		void EnableNickNameParsing() noexcept { m_NickName = true; }
 		void EnableRuleConditionParsing() noexcept { m_RuleCondition = true; }
@@ -21,5 +24,5 @@ namespace smartview
 		bool m_RuleCondition{};
 		DWORD m_MaxEntries{_MaxEntriesSmall};
 		std::vector<std::shared_ptr<SPropValueStruct>> m_Props;
-	};
+	}; // namespace smartview
 } // namespace smartview

@@ -13,8 +13,7 @@ namespace smartview
 		Pad = blockT<DWORD>::parse(parser);
 		if (*PropertyCount)
 		{
-			Props = std::make_shared<PropertiesStruct>();
-			Props->SetMaxEntries(*PropertyCount);
+			Props = std::make_shared<PropertiesStruct>(*PropertyCount, false, false);
 			Props->block::parse(parser, false);
 		}
 	}

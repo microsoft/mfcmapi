@@ -3,13 +3,6 @@
 
 namespace smartview
 {
-	void PropertiesStruct::parse(const std::shared_ptr<binaryParser>& _parser, DWORD cValues, bool bRuleCondition)
-	{
-		SetMaxEntries(cValues);
-		if (bRuleCondition) EnableRuleConditionParsing();
-		block::parse(_parser, false);
-	}
-
 	void PropertiesStruct::parse()
 	{
 		// For consistancy with previous parsings, we'll refuse to parse if asked to parse more than _MaxEntriesSmall

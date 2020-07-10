@@ -12,8 +12,7 @@ namespace smartview
 		{
 			if (*cValues < _MaxEntriesSmall)
 			{
-				rgPropVals = std::make_shared<PropertiesStruct>();
-				rgPropVals->SetMaxEntries(*cValues);
+				rgPropVals = std::make_shared<PropertiesStruct>(*cValues, false, false);
 				rgPropVals->block::parse(parser, false);
 			}
 		}
