@@ -7,18 +7,12 @@ namespace smartview
 	class blockRes : public block
 	{
 	public:
-		blockRes() = default;
-		void parse(std::shared_ptr<binaryParser>& _parser, ULONG ulDepth, bool bRuleCondition, bool bExtendedCount)
+		void init(ULONG ulDepth, bool bRuleCondition, bool bExtendedCount)
 		{
-			parser = _parser;
 			m_ulDepth = ulDepth;
 			m_bRuleCondition = bRuleCondition;
 			m_bExtendedCount = bExtendedCount;
-
-			ensureParsed();
 		}
-		blockRes(const blockRes&) = delete;
-		blockRes& operator=(const blockRes&) = delete;
 		virtual void parseBlocks(ULONG ulTabLevel) = 0;
 
 	protected:

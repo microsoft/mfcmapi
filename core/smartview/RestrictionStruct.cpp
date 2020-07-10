@@ -520,7 +520,8 @@ namespace smartview
 
 		if (res)
 		{
-			res->parse(parser, ulDepth, m_bRuleCondition, m_bExtendedCount);
+			res->init(ulDepth, m_bRuleCondition, m_bExtendedCount);
+			res->block::parse(parser, false);
 		}
 	}
 
