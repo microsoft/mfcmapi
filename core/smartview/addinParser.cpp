@@ -8,7 +8,7 @@ namespace smartview
 
 	void addinParser::parseBlocks()
 	{
-		auto sv = addin::AddInSmartView(type, bin->size(), bin->data());
+		auto sv = addin::AddInSmartView(type, static_cast<ULONG>(bin->size()), bin->data());
 		if (!sv.empty())
 		{
 			setText(addin::AddInStructTypeToString(type));

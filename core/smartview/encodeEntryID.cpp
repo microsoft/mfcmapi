@@ -3,14 +3,14 @@
 
 namespace smartview
 {
-	_Check_return_ std::wstring EncodeID(ULONG cbEID, _In_ const BYTE* pbSrc)
+	_Check_return_ std::wstring EncodeID(size_t cbEID, _In_ const BYTE* pbSrc)
 	{
 		std::wstring wzIDEncoded;
 		wzIDEncoded.reserve(cbEID);
 
 		// pbSrc is the item Entry ID or the attachment ID
 		// cbEID is the size in bytes of pbSrc
-		for (ULONG i = 0; i < cbEID; i++, pbSrc++)
+		for (size_t i = 0; i < cbEID; i++, pbSrc++)
 		{
 			wzIDEncoded.push_back(static_cast<WCHAR>(*pbSrc + kwBaseOffset));
 		}
