@@ -20,5 +20,5 @@ namespace smartview
 		bool m_RuleCondition{};
 		DWORD m_MaxEntries{_MaxEntriesSmall};
 		std::vector<std::shared_ptr<SPropValueStruct>> m_Props;
-	}; // namespace smartview
+	};
 } // namespace smartview
