@@ -28,8 +28,8 @@ Search Folder Definition
 	Restriction
 	|	rt = 0x3 = RES_CONTENT
 	|	resContent
-	|	|	ulFuzzyLevel = FL_PHRASE_MATCH | FL_IGNORECASE | FL_SUBSTRING = 0x00010021
-	|	|	ulPropTag = 0x0037001F (PT_UNICODE): PR_SUBJECT_W: (PidTagSubject, PR_SUBJECT, PR_SUBJECT_A, ptagSubject)
+	|	|	FuzzyLevel = FL_PHRASE_MATCH | FL_IGNORECASE | FL_SUBSTRING = 0x00010021
+	|	|	PropTag = 0x0037001F (PT_UNICODE): PR_SUBJECT_W: (PidTagSubject, PR_SUBJECT, PR_SUBJECT_A, ptagSubject)
 	|	|	lpProp
 	|	|		PropTag = 0x0037001F (PT_UNICODE)
 	|	|			Name: PR_SUBJECT_W

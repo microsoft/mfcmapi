@@ -151,9 +151,9 @@ namespace smartview
 				flags::InterpretFlags(flagRelop, *relop).c_str(),
 				relop->getData());
 			addChild(
-				ulPropTag1, L"ulPropTag1 = %1!ws!", proptags::TagToString(*ulPropTag1, nullptr, false, true).c_str());
+				ulPropTag1, L"PropTag1 = %1!ws!", proptags::TagToString(*ulPropTag1, nullptr, false, true).c_str());
 			addChild(
-				ulPropTag2, L"ulPropTag2 = %1!ws!", proptags::TagToString(*ulPropTag2, nullptr, false, true).c_str());
+				ulPropTag2, L"PropTag2 = %1!ws!", proptags::TagToString(*ulPropTag2, nullptr, false, true).c_str());
 		}
 
 		std::shared_ptr<blockT<DWORD>> relop = emptyT<DWORD>();
@@ -178,11 +178,11 @@ namespace smartview
 			setText(L"resContent");
 			addChild(
 				ulFuzzyLevel,
-				L"ulFuzzyLevel = %1!ws! = 0x%2!08X!",
+				L"FuzzyLevel = %1!ws! = 0x%2!08X!",
 				flags::InterpretFlags(flagFuzzyLevel, *ulFuzzyLevel).c_str(),
 				ulFuzzyLevel->getData());
 
-			addChild(ulPropTag, L"ulPropTag = %1!ws!", proptags::TagToString(*ulPropTag, nullptr, false, true).c_str());
+			addChild(ulPropTag, L"PropTag = %1!ws!", proptags::TagToString(*ulPropTag, nullptr, false, true).c_str());
 
 			if (!lpProp.Props().empty())
 			{
@@ -248,7 +248,7 @@ namespace smartview
 				L"relop = %1!ws! = 0x%2!08X!",
 				flags::InterpretFlags(flagRelop, *relop).c_str(),
 				relop->getData());
-			addChild(ulPropTag, L"ulPropTag = %1!ws!", proptags::TagToString(*ulPropTag, nullptr, false, true).c_str());
+			addChild(ulPropTag, L"PropTag = %1!ws!", proptags::TagToString(*ulPropTag, nullptr, false, true).c_str());
 
 			if (!lpProp.Props().empty())
 			{
@@ -285,15 +285,15 @@ namespace smartview
 				L"relBMR = %1!ws! = 0x%2!08X!",
 				flags::InterpretFlags(flagBitmask, *relBMR).c_str(),
 				relBMR->getData());
-			addChild(ulPropTag, L"ulPropTag = %1!ws!", proptags::TagToString(*ulPropTag, nullptr, false, true).c_str());
+			addChild(ulPropTag, L"PropTag = %1!ws!", proptags::TagToString(*ulPropTag, nullptr, false, true).c_str());
 			const auto szPropNum = InterpretNumberAsStringProp(*ulMask, *ulPropTag);
 			if (szPropNum.empty())
 			{
-				addChild(ulMask, L"ulMask = 0x%1!08X!", ulMask->getData());
+				addChild(ulMask, L"Mask = 0x%1!08X!", ulMask->getData());
 			}
 			else
 			{
-				addChild(ulMask, L"ulMask = %1!ws! = 0x%2!08X!", szPropNum.c_str(), ulMask->getData());
+				addChild(ulMask, L"Mask = %1!ws! = 0x%2!08X!", szPropNum.c_str(), ulMask->getData());
 			}
 		}
 
@@ -327,7 +327,7 @@ namespace smartview
 				flags::InterpretFlags(flagRelop, *relop).c_str(),
 				relop->getData());
 			addChild(cb, L"cb = 0x%1!08X!", cb->getData());
-			addChild(ulPropTag, L"ulPropTag = %1!ws!", proptags::TagToString(*ulPropTag, nullptr, false, true).c_str());
+			addChild(ulPropTag, L"PropTag = %1!ws!", proptags::TagToString(*ulPropTag, nullptr, false, true).c_str());
 		}
 
 		std::shared_ptr<blockT<DWORD>> relop = emptyT<DWORD>();
@@ -345,7 +345,7 @@ namespace smartview
 		void parseBlocks(ULONG /*ulTabLevel*/)
 		{
 			setText(L"resExist");
-			addChild(ulPropTag, L"ulPropTag = %1!ws!", proptags::TagToString(*ulPropTag, nullptr, false, true).c_str());
+			addChild(ulPropTag, L"PropTag = %1!ws!", proptags::TagToString(*ulPropTag, nullptr, false, true).c_str());
 		}
 
 		std::shared_ptr<blockT<DWORD>> ulPropTag = emptyT<DWORD>();
@@ -370,7 +370,7 @@ namespace smartview
 			setText(L"resSub");
 			addChild(
 				ulSubObject,
-				L"ulSubObject = %1!ws!",
+				L"SubObject = %1!ws!",
 				proptags::TagToString(*ulSubObject, nullptr, false, true).c_str());
 
 			if (lpRes)
