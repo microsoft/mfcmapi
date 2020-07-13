@@ -64,8 +64,8 @@ namespace clitest
 			//	std::vector<std::wstring> GetCommandLine(_In_ int argc, _In_count_(argc) const char* const argv[]);
 			auto noarg = std::vector<LPCSTR>{"app.exe"};
 			Assert::AreEqual({}, cli::GetCommandLine(static_cast<int>(noarg.size()), noarg.data()));
-			auto argv = std::vector<LPCSTR>{"app.exe", "-arg1", "-arg2"};
-			Assert::AreEqual({L"-arg1", L"-arg2"}, cli::GetCommandLine(static_cast<int>(argv.size()), argv.data()));
+			auto argv = std::vector<LPCSTR>{"app.exe", "-arg1", "-arg2", "testü"};
+			Assert::AreEqual({L"-arg1", L"-arg2", L"testü"}, cli::GetCommandLine(static_cast<int>(argv.size()), argv.data()));
 		}
 
 		TEST_METHOD(Test_GetOption)
