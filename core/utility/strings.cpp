@@ -162,8 +162,7 @@ namespace strings
 	std::wstring LPCSTRToWstring(LPCSTR src)
 	{
 		if (!src) return L"";
-		std::string ansi = src;
-		return {ansi.begin(), ansi.end()};
+		return stringTowstring(std::string(src));
 	}
 
 	// Converts wstring to LPCWSTR allocated with new

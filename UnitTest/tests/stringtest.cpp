@@ -52,16 +52,21 @@ namespace stringtest
 		{
 			Assert::AreEqual(
 				std::basic_string<TCHAR>(_T("Hello World")), strings::wstringTotstring(std::wstring(L"Hello World")));
+			Assert::AreEqual(std::basic_string<TCHAR>(_T("testü")), strings::wstringTotstring(std::wstring(L"testü")));
 
 			Assert::AreEqual(std::wstring(L""), strings::LPCTSTRToWstring(nullptr));
 			Assert::AreEqual(std::wstring(L"Hello World"), strings::LPCTSTRToWstring(_T("Hello World")));
+			Assert::AreEqual(std::wstring(L"testü"), strings::LPCTSTRToWstring(_T("testü")));
 
 			Assert::AreEqual(std::wstring(L""), strings::LPCSTRToWstring(nullptr));
 			Assert::AreEqual(std::wstring(L"Hello World"), strings::LPCSTRToWstring("Hello World"));
+			Assert::AreEqual(std::wstring(L"testü"), strings::LPCSTRToWstring("testü"));
 
 			Assert::AreEqual(std::wstring(L"hello world"), strings::wstringToLower(std::wstring(L"Hello World")));
+			Assert::AreEqual(std::wstring(L"testü"), strings::wstringToLower(std::wstring(L"TESTü")));
 
 			Assert::AreEqual(L"test", strings::wstringToLPCWSTR(L"test"));
+			Assert::AreEqual(L"testü", strings::wstringToLPCWSTR(L"testü"));
 			Assert::AreEqual(L"", strings::wstringToLPCWSTR(L""));
 
 			Assert::AreEqual(std::wstring(L"test"), strings::stringTowstring(std::string("test")));
