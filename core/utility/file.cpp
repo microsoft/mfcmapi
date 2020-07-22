@@ -3,10 +3,13 @@
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 #include <core/utility/error.h>
+#include <mapistub/library/stubutils.h>
 #include <ShlObj.h>
 
 namespace file
 {
+	std::wstring GetSystemDirectory() { return mapistub::GetSystemDirectory(); }
+
 	std::wstring ShortenPath(const std::wstring& path)
 	{
 		if (!path.empty())
@@ -71,13 +74,13 @@ namespace file
 		_In_ const std::wstring& szRootPath,
 		_In_opt_ const _SBinary* lpBin)
 	{
-		output::DebugPrint(output::DBGGeneric, L"BuildFileNameAndPath ext = \"%ws\"\n", szExt.c_str());
-		output::DebugPrint(output::DBGGeneric, L"BuildFileNameAndPath subj = \"%ws\"\n", szSubj.c_str());
-		output::DebugPrint(output::DBGGeneric, L"BuildFileNameAndPath rootPath = \"%ws\"\n", szRootPath.c_str());
+		output::DebugPrint(output::dbgLevel::Generic, L"BuildFileNameAndPath ext = \"%ws\"\n", szExt.c_str());
+		output::DebugPrint(output::dbgLevel::Generic, L"BuildFileNameAndPath subj = \"%ws\"\n", szSubj.c_str());
+		output::DebugPrint(output::dbgLevel::Generic, L"BuildFileNameAndPath rootPath = \"%ws\"\n", szRootPath.c_str());
 
 		// Set up the path portion of the output.
 		auto cleanRoot = ShortenPath(szRootPath);
-		output::DebugPrint(output::DBGGeneric, L"BuildFileNameAndPath cleanRoot = \"%ws\"\n", cleanRoot.c_str());
+		output::DebugPrint(output::dbgLevel::Generic, L"BuildFileNameAndPath cleanRoot = \"%ws\"\n", cleanRoot.c_str());
 
 		// If we don't have enough space for even the shortest filename, give up.
 		if (cleanRoot.length() >= MAXMSGPATH) return strings::emptystring;
@@ -97,7 +100,7 @@ namespace file
 			cleanSubj = L"UnknownSubject"; // STRING_OK
 		}
 
-		output::DebugPrint(output::DBGGeneric, L"BuildFileNameAndPath cleanSubj = \"%ws\"\n", cleanSubj.c_str());
+		output::DebugPrint(output::dbgLevel::Generic, L"BuildFileNameAndPath cleanSubj = \"%ws\"\n", cleanSubj.c_str());
 
 		std::wstring szBin;
 		if (lpBin && lpBin->cb)
@@ -108,7 +111,7 @@ namespace file
 		if (cleanSubj.length() + szBin.length() <= maxFile)
 		{
 			auto szFile = cleanRoot + cleanSubj + szBin + szExt;
-			output::DebugPrint(output::DBGGeneric, L"BuildFileNameAndPath fileOut= \"%ws\"\n", szFile.c_str());
+			output::DebugPrint(output::dbgLevel::Generic, L"BuildFileNameAndPath fileOut= \"%ws\"\n", szFile.c_str());
 			return szFile;
 		}
 
@@ -116,24 +119,24 @@ namespace file
 		// Compute a shorter subject length that should fit.
 		const auto maxSubj = maxFile - min(MAXBIN, szBin.length()) - 1;
 		auto szFile = cleanSubj.substr(0, maxSubj) + szBin.substr(0, MAXBIN);
-		output::DebugPrint(output::DBGGeneric, L"BuildFileNameAndPath shorter file = \"%ws\"\n", szFile.c_str());
-		output::DebugPrint(output::DBGGeneric, L"BuildFileNameAndPath new length = %d\n", szFile.length());
+		output::DebugPrint(output::dbgLevel::Generic, L"BuildFileNameAndPath shorter file = \"%ws\"\n", szFile.c_str());
+		output::DebugPrint(output::dbgLevel::Generic, L"BuildFileNameAndPath new length = %d\n", szFile.length());
 
 		if (szFile.length() >= maxFile)
 		{
 			szFile = cleanSubj.substr(0, MAXSUBJTIGHT) + szBin.substr(0, MAXBIN);
-			output::DebugPrint(output::DBGGeneric, L"BuildFileNameAndPath shorter file = \"%ws\"\n", szFile.c_str());
-			output::DebugPrint(output::DBGGeneric, L"BuildFileNameAndPath new length = %d\n", szFile.length());
+			output::DebugPrint(output::dbgLevel::Generic, L"BuildFileNameAndPath shorter file = \"%ws\"\n", szFile.c_str());
+			output::DebugPrint(output::dbgLevel::Generic, L"BuildFileNameAndPath new length = %d\n", szFile.length());
 		}
 
 		if (szFile.length() >= maxFile)
 		{
-			output::DebugPrint(output::DBGGeneric, L"BuildFileNameAndPath failed to build a string\n");
+			output::DebugPrint(output::dbgLevel::Generic, L"BuildFileNameAndPath failed to build a string\n");
 			return strings::emptystring;
 		}
 
 		auto szOut = cleanRoot + szFile + szExt;
-		output::DebugPrint(output::DBGGeneric, L"BuildFileNameAndPath fileOut= \"%ws\"\n", szOut.c_str());
+		output::DebugPrint(output::dbgLevel::Generic, L"BuildFileNameAndPath fileOut= \"%ws\"\n", szOut.c_str());
 		return szOut;
 	}
 
@@ -145,23 +148,6 @@ namespace file
 		{
 			buf.resize(buf.size() + MAX_PATH);
 			copied = EC_D(DWORD, ::GetModuleFileNameW(hModule, &buf[0], static_cast<DWORD>(buf.size())));
-		} while (copied >= buf.size());
-
-		buf.resize(copied);
-
-		const auto path = std::wstring(buf.begin(), buf.end());
-
-		return path;
-	}
-
-	std::wstring GetSystemDirectory()
-	{
-		auto buf = std::vector<wchar_t>();
-		auto copied = DWORD();
-		do
-		{
-			buf.resize(buf.size() + MAX_PATH);
-			copied = EC_D(DWORD, ::GetSystemDirectoryW(&buf[0], static_cast<UINT>(buf.size())));
 		} while (copied >= buf.size());
 
 		buf.resize(copied);

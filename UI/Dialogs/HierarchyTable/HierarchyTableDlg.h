@@ -21,18 +21,18 @@ namespace dialog
 			_In_opt_ LPMAPIPROP lpRootContainer,
 			ULONG nIDContextMenu,
 			ULONG ulAddInContext);
-		virtual ~CHierarchyTableDlg();
+		~CHierarchyTableDlg();
 
 	protected:
 		// Overrides from base class
 		void CreateDialogAndMenu(const UINT nIDMenuResource, const UINT uiClassMenuResource);
 		void OnInitMenu(_In_ CMenu* pMenu) override;
 		// Get the current root container - does not addref
-		LPMAPICONTAINER GetRootContainer() const { return m_lpContainer; }
+		LPMAPICONTAINER GetRootContainer() const noexcept { return m_lpContainer; }
 		void SetRootContainer(LPUNKNOWN container);
 
 		controls::CHierarchyTableTreeCtrl m_lpHierarchyTableTreeCtrl{};
-		ULONG m_ulDisplayFlags{};
+		tableDisplayFlags m_displayFlags{tableDisplayFlags::dfNormal};
 		LPMAPICONTAINER m_lpContainer{};
 
 	private:

@@ -1,5 +1,5 @@
 #pragma once
-#include <core/smartview/smartViewParser.h>
+#include <core/smartview/block/block.h>
 #include <core/smartview/RecurrencePattern.h>
 #include <core/smartview/block/blockStringA.h>
 #include <core/smartview/block/blockStringW.h>
@@ -11,12 +11,18 @@ namespace smartview
 	// ExceptionInfo
 	// =====================
 	//   This structure specifies an exception
-	struct ExceptionInfo
+	class ExceptionInfo : public block
 	{
+	public:
+		std::shared_ptr<blockT<WORD>> OverrideFlags = emptyT<WORD>();
+
+	private:
+		void parse() override;
+		void parseBlocks() override;
+
 		std::shared_ptr<blockT<DWORD>> StartDateTime = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> EndDateTime = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> OriginalStartDate = emptyT<DWORD>();
-		std::shared_ptr<blockT<WORD>> OverrideFlags = emptyT<WORD>();
 		std::shared_ptr<blockT<WORD>> SubjectLength = emptyT<WORD>();
 		std::shared_ptr<blockT<WORD>> SubjectLength2 = emptyT<WORD>();
 		std::shared_ptr<blockStringA> Subject = emptySA();
@@ -30,12 +36,14 @@ namespace smartview
 		std::shared_ptr<blockT<DWORD>> Attachment = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> SubType = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> AppointmentColor = emptyT<DWORD>();
-
-		ExceptionInfo(const std::shared_ptr<binaryParser>& parser);
 	};
 
-	struct ChangeHighlight
+	class ChangeHighlight : public block
 	{
+	private:
+		void parse() override;
+		void parseBlocks() override;
+
 		std::shared_ptr<blockT<DWORD>> ChangeHighlightSize = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> ChangeHighlightValue = emptyT<DWORD>();
 		std::shared_ptr<blockBytes> Reserved = emptyBB();
@@ -44,9 +52,16 @@ namespace smartview
 	// ExtendedException
 	// =====================
 	//   This structure specifies additional information about an exception
-	struct ExtendedException
+	class ExtendedException : public block
 	{
-		ChangeHighlight ChangeHighlight;
+	public:
+		ExtendedException(DWORD _writerVersion2, WORD _flags) : writerVersion2(_writerVersion2), flags(_flags) {}
+
+	private:
+		void parse() override;
+		void parseBlocks() override;
+
+		std::shared_ptr<ChangeHighlight> ChangeHighlight;
 		std::shared_ptr<blockT<DWORD>> ReservedBlockEE1Size = emptyT<DWORD>();
 		std::shared_ptr<blockBytes> ReservedBlockEE1 = emptyBB();
 		std::shared_ptr<blockT<DWORD>> StartDateTime = emptyT<DWORD>();
@@ -59,20 +74,21 @@ namespace smartview
 		std::shared_ptr<blockT<DWORD>> ReservedBlockEE2Size = emptyT<DWORD>();
 		std::shared_ptr<blockBytes> ReservedBlockEE2 = emptyBB();
 
-		ExtendedException(const std::shared_ptr<binaryParser>& parser, DWORD writerVersion2, WORD flags);
+		DWORD writerVersion2{};
+		WORD flags{};
 	};
 
 	// AppointmentRecurrencePattern
 	// =====================
 	//   This structure specifies a recurrence pattern for a calendar object
 	//   including information about exception property values.
-	class AppointmentRecurrencePattern : public smartViewParser
+	class AppointmentRecurrencePattern : public block
 	{
 	private:
 		void parse() override;
 		void parseBlocks() override;
 
-		RecurrencePattern m_RecurrencePattern;
+		std::shared_ptr<RecurrencePattern> m_RecurrencePattern;
 		std::shared_ptr<blockT<DWORD>> m_ReaderVersion2 = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> m_WriterVersion2 = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> m_StartTimeOffset = emptyT<DWORD>();

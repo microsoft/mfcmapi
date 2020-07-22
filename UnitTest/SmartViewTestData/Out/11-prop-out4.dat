@@ -1,5 +1,5 @@
 Property[0]
-Property = 0x0E0F000B
-Name: PR_RESPONSIBILITY
-Other Matches: PidTagResponsibility, ptagResponsibility
-PropString = False
+	PropTag = 0x0E0F000B (PT_BOOLEAN)
+		Name: PR_RESPONSIBILITY
+		Other Matches: PidTagResponsibility, ptagResponsibility
+	PropString = False

@@ -63,9 +63,6 @@
     <ClInclude Include="stdafx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="mapi\stubutils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="interpret\smartViewParsers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -85,9 +82,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="mapi\cache\MapiObjects.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="mapi\cache\NamedPropCache.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="property\attributes.h">
@@ -234,9 +228,6 @@
     <ClInclude Include="mapi\mapiStoreFunctions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="smartview\binaryParser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="mapi\processor\mapiProcessor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -256,9 +247,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="utility\cli.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="smartview\smartViewParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="sortlistdata\binaryData.h">
@@ -300,6 +288,36 @@
     <ClInclude Include="propertyBag\mapiPropPropertyBag.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="mapi\cache\namedProps.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mapi\cache\namedPropCache.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\SPropValueStruct.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\block\blockPV.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\block\binaryParser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\block\scratchBlock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\RuleAction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\decodeEntryID.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\encodeEntryID.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\addinParser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="utility\strings.cpp">
@@ -323,12 +341,6 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="mapi\mapiStubLibrary.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="mapi\stubutils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="utility\import.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -339,9 +351,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="mapi\cache\MapiObjects.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="mapi\cache\NamedPropCache.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="property\attributes.cpp">
@@ -491,9 +500,6 @@
     <ClCompile Include="utility\cli.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="smartview\smartViewParser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="sortlistdata\binaryData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -525,6 +531,30 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="propertyBag\mapiPropPropertyBag.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mapi\cache\namedProps.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mapi\cache\namedPropCache.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\SPropValueStruct.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\block\block.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\RuleAction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\decodeEntryID.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\encodeEntryID.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\addinParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -568,5 +598,6 @@
     <Image Include="res\bldver.rc">
       <Filter>Resource Files</Filter>
     </Image>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

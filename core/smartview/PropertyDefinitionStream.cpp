@@ -3,12 +3,12 @@
 #include <core/interpret/flags.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/utility/strings.h>
-#include <core/mapi/cache/namedPropCache.h>
+#include <core/mapi/cache/namedProps.h>
 #include <core/interpret/proptags.h>
 
 namespace smartview
 {
-	void PackedAnsiString::parse(const std::shared_ptr<binaryParser>& parser)
+	void PackedAnsiString::parse()
 	{
 		cchLength = blockT<BYTE>::parse(parser);
 		if (*cchLength == 0xFF)
@@ -20,7 +20,27 @@ namespace smartview
 			blockStringA::parse(parser, *cchExtendedLength ? cchExtendedLength->getData() : cchLength->getData());
 	}
 
-	void PackedUnicodeString::parse(const std::shared_ptr<binaryParser>& parser)
+	void PackedAnsiString::parseBlocks()
+	{
+		addChild(cchLength);
+
+		if (*cchLength == 0xFF)
+		{
+			cchLength->setText(L"Length = 0x%1!04X!", cchExtendedLength->getData());
+			cchLength->setSize(cchLength->getSize() + cchExtendedLength->getSize());
+		}
+		else
+		{
+			cchLength->setText(L"Length = 0x%1!04X!", cchLength->getData());
+		}
+
+		if (szCharacters->length())
+		{
+			addLabeledChild(L"Characters", szCharacters);
+		}
+	}
+
+	void PackedUnicodeString::parse()
 	{
 		cchLength = blockT<BYTE>::parse(parser);
 		if (*cchLength == 0xFF)
@@ -32,12 +52,32 @@ namespace smartview
 			blockStringW::parse(parser, *cchExtendedLength ? cchExtendedLength->getData() : cchLength->getData());
 	}
 
-	SkipBlock::SkipBlock(const std::shared_ptr<binaryParser>& parser, DWORD iSkip)
+	void PackedUnicodeString::parseBlocks()
+	{
+		addChild(cchLength);
+
+		if (*cchLength == 0xFF)
+		{
+			cchLength->setText(L"Length = 0x%1!04X!", cchExtendedLength->getData());
+			cchLength->setSize(cchLength->getSize() + cchExtendedLength->getSize());
+		}
+		else
+		{
+			cchLength->setText(L"Length = 0x%1!04X!", cchLength->getData());
+		}
+
+		if (szCharacters->length())
+		{
+			addLabeledChild(L"Characters", szCharacters);
+		}
+	}
+
+	void SkipBlock::parse()
 	{
 		dwSize = blockT<DWORD>::parse(parser);
 		if (iSkip == 0)
 		{
-			lpbContentText.parse(parser);
+			lpbContentText = block::parse<PackedUnicodeString>(parser, false);
 		}
 		else
 		{
@@ -45,7 +85,21 @@ namespace smartview
 		}
 	}
 
-	FieldDefinition::FieldDefinition(const std::shared_ptr<binaryParser>& parser, WORD version)
+	void SkipBlock::parseBlocks()
+	{
+		addChild(dwSize, L"Size = 0x%1!08X!", dwSize->getData());
+
+		if (iSkip == 0)
+		{
+			addChild(lpbContentText, L"FieldName");
+		}
+		else if (!lpbContent->empty())
+		{
+			addLabeledChild(L"Content", lpbContent);
+		}
+	}
+
+	void FieldDefinition::parse()
 	{
 		dwFlags = blockT<DWORD>::parse(parser);
 		wVT = blockT<WORD>::parse(parser);
@@ -53,11 +107,11 @@ namespace smartview
 		wNmidNameLength = blockT<WORD>::parse(parser);
 		szNmidName = blockStringW::parse(parser, *wNmidNameLength);
 
-		pasNameANSI.parse(parser);
-		pasFormulaANSI.parse(parser);
-		pasValidationRuleANSI.parse(parser);
-		pasValidationTextANSI.parse(parser);
-		pasErrorANSI.parse(parser);
+		pasNameANSI = block::parse<PackedAnsiString>(parser, false);
+		pasFormulaANSI = block::parse<PackedAnsiString>(parser, false);
+		pasValidationRuleANSI = block::parse<PackedAnsiString>(parser, false);
+		pasValidationTextANSI = block::parse<PackedAnsiString>(parser, false);
+		pasErrorANSI = block::parse<PackedAnsiString>(parser, false);
 
 		if (version == PropDefV2)
 		{
@@ -84,174 +138,106 @@ namespace smartview
 				psbSkipBlocks.reserve(skipBlockCount);
 				for (DWORD i = 0; i < skipBlockCount; i++)
 				{
-					psbSkipBlocks.emplace_back(std::make_shared<SkipBlock>(parser, i));
+					auto skipBlock = std::make_shared<SkipBlock>(i);
+					skipBlock->block::parse(parser, false);
+					psbSkipBlocks.emplace_back(skipBlock);
 				}
+			}
+		}
+	}
+
+	void FieldDefinition::parseBlocks()
+	{
+		auto szFlags = flags::InterpretFlags(flagPDOFlag, *dwFlags);
+		addChild(dwFlags, L"Flags = 0x%1!08X! = %2!ws!", dwFlags->getData(), szFlags.c_str());
+		auto szVarEnum = flags::InterpretFlags(flagVarEnum, *wVT);
+		addChild(wVT, L"VT = 0x%1!04X! = %2!ws!", wVT->getData(), szVarEnum.c_str());
+		addChild(dwDispid, L"DispID = 0x%1!08X!", dwDispid->getData());
+
+		if (*dwDispid)
+		{
+			if (*dwDispid < 0x8000)
+			{
+				auto propTagNames = proptags::PropTagToPropName(*dwDispid, false);
+				if (!propTagNames.bestGuess.empty())
+				{
+					dwDispid->addSubHeader(L" = %1!ws!", propTagNames.bestGuess.c_str());
+				}
+
+				if (!propTagNames.otherMatches.empty())
+				{
+					dwDispid->addSubHeader(L": (%1!ws!)", propTagNames.otherMatches.c_str());
+				}
+			}
+			else
+			{
+				std::wstring szDispidName;
+				auto mnid = MAPINAMEID{};
+				mnid.lpguid = nullptr;
+				mnid.ulKind = MNID_ID;
+				mnid.Kind.lID = *dwDispid;
+				szDispidName = strings::join(cache::NameIDToPropNames(&mnid), L", ");
+				if (!szDispidName.empty())
+				{
+					dwDispid->addSubHeader(L" = %1!ws!", szDispidName.c_str());
+				}
+			}
+		}
+
+		addChild(wNmidNameLength, L"NmidNameLength = 0x%1!04X!", wNmidNameLength->getData());
+		addChild(szNmidName, L"NmidName = %1!ws!", szNmidName->c_str());
+
+		addChild(pasNameANSI, L"NameAnsi");
+		addChild(pasFormulaANSI, L"FormulaANSI");
+		addChild(pasValidationRuleANSI, L"ValidationRuleANSI");
+		addChild(pasValidationTextANSI, L"ValidationTextANSI");
+		addChild(pasErrorANSI, L"ErrorANSI");
+
+		if (version == PropDefV2)
+		{
+			szFlags = flags::InterpretFlags(flagInternalType, *dwInternalType);
+			addChild(dwInternalType, L"InternalType = 0x%1!08X! = %2!ws!", dwInternalType->getData(), szFlags.c_str());
+			addHeader(L"SkipBlockCount = %1!d!", psbSkipBlocks.size());
+
+			auto iSkipBlock = 0;
+			for (const auto& sb : psbSkipBlocks)
+			{
+				addChild(sb, L"SkipBlock[%1!d!]", iSkipBlock);
+
+				iSkipBlock++;
 			}
 		}
 	}
 
 	void PropertyDefinitionStream::parse()
 	{
-		m_wVersion = blockT<WORD>::parse(m_Parser);
-		m_dwFieldDefinitionCount = blockT<DWORD>::parse(m_Parser);
+		m_wVersion = blockT<WORD>::parse(parser);
+		m_dwFieldDefinitionCount = blockT<DWORD>::parse(parser);
 		if (*m_dwFieldDefinitionCount)
 		{
 			if (*m_dwFieldDefinitionCount < _MaxEntriesLarge)
 			{
 				for (DWORD i = 0; i < *m_dwFieldDefinitionCount; i++)
 				{
-					m_pfdFieldDefinitions.emplace_back(std::make_shared<FieldDefinition>(m_Parser, *m_wVersion));
+					auto def = std::make_shared<FieldDefinition>(*m_wVersion);
+					def->block::parse(parser, false);
+					m_pfdFieldDefinitions.emplace_back(def);
 				}
 			}
 		}
-	}
-
-	std::shared_ptr<block> PackedAnsiString::toBlock(_In_ const std::wstring& szFieldName)
-	{
-		auto& data = cchLength;
-
-		if (*cchLength == 0xFF)
-		{
-			data->setText(L"\t%1!ws!: Length = 0x%2!04X!", szFieldName.c_str(), cchExtendedLength->getData());
-			data->setSize(cchLength->getSize() + cchExtendedLength->getSize());
-		}
-		else
-		{
-			data->setText(L"\t%1!ws!: Length = 0x%2!04X!", szFieldName.c_str(), cchLength->getData());
-		}
-
-		if (szCharacters->length())
-		{
-			data->addHeader(L" Characters = ");
-			data->addChild(szCharacters, szCharacters->toWstring());
-		}
-
-		data->terminateBlock();
-		return data;
-	}
-
-	std::shared_ptr<block> PackedUnicodeString::toBlock(_In_ const std::wstring& szFieldName)
-	{
-		auto& data = cchLength;
-
-		if (*cchLength == 0xFF)
-		{
-			data->setText(L"\t%1!ws!: Length = 0x%2!04X!", szFieldName.c_str(), cchExtendedLength->getData());
-			data->setSize(cchLength->getSize() + cchExtendedLength->getSize());
-		}
-		else
-		{
-			data->setText(L"\t%1!ws!: Length = 0x%2!04X!", szFieldName.c_str(), cchLength->getData());
-		}
-
-		if (szCharacters->length())
-		{
-			data->addHeader(L" Characters = ");
-			data->addChild(szCharacters, szCharacters->c_str());
-		}
-
-		data->terminateBlock();
-		return data;
 	}
 
 	void PropertyDefinitionStream::parseBlocks()
 	{
-		setRoot(L"Property Definition Stream\r\n");
+		setText(L"Property Definition Stream");
 		auto szVersion = flags::InterpretFlags(flagPropDefVersion, *m_wVersion);
-		addChild(m_wVersion, L"Version = 0x%1!04X! = %2!ws!\r\n", m_wVersion->getData(), szVersion.c_str());
+		addChild(m_wVersion, L"Version = 0x%1!04X! = %2!ws!", m_wVersion->getData(), szVersion.c_str());
 		addChild(m_dwFieldDefinitionCount, L"FieldDefinitionCount = 0x%1!08X!", m_dwFieldDefinitionCount->getData());
 
-		auto iDef = 0;
+		auto i = 0;
 		for (const auto& def : m_pfdFieldDefinitions)
 		{
-			terminateBlock();
-			auto fieldDef = std::make_shared<block>();
-			addChild(fieldDef);
-			fieldDef->setText(L"Definition: %1!d!\r\n", iDef);
-
-			auto szFlags = flags::InterpretFlags(flagPDOFlag, *def->dwFlags);
-			fieldDef->addChild(
-				def->dwFlags, L"\tFlags = 0x%1!08X! = %2!ws!\r\n", def->dwFlags->getData(), szFlags.c_str());
-			auto szVarEnum = flags::InterpretFlags(flagVarEnum, *def->wVT);
-			fieldDef->addChild(def->wVT, L"\tVT = 0x%1!04X! = %2!ws!\r\n", def->wVT->getData(), szVarEnum.c_str());
-			fieldDef->addChild(def->dwDispid, L"\tDispID = 0x%1!08X!", def->dwDispid->getData());
-
-			if (*def->dwDispid)
-			{
-				if (*def->dwDispid < 0x8000)
-				{
-					auto propTagNames = proptags::PropTagToPropName(*def->dwDispid, false);
-					if (!propTagNames.bestGuess.empty())
-					{
-						def->dwDispid->addHeader(L" = %1!ws!", propTagNames.bestGuess.c_str());
-					}
-
-					if (!propTagNames.otherMatches.empty())
-					{
-						def->dwDispid->addHeader(L": (%1!ws!)", propTagNames.otherMatches.c_str());
-					}
-				}
-				else
-				{
-					std::wstring szDispidName;
-					auto mnid = MAPINAMEID{};
-					mnid.lpguid = nullptr;
-					mnid.ulKind = MNID_ID;
-					mnid.Kind.lID = *def->dwDispid;
-					szDispidName = strings::join(cache::NameIDToPropNames(&mnid), L", ");
-					if (!szDispidName.empty())
-					{
-						def->dwDispid->addHeader(L" = %1!ws!", szDispidName.c_str());
-					}
-				}
-			}
-
-			fieldDef->terminateBlock();
-			fieldDef->addChild(
-				def->wNmidNameLength, L"\tNmidNameLength = 0x%1!04X!\r\n", def->wNmidNameLength->getData());
-			fieldDef->addChild(def->szNmidName, L"\tNmidName = %1!ws!\r\n", def->szNmidName->c_str());
-
-			fieldDef->addChild(def->pasNameANSI.toBlock(L"NameAnsi"));
-			fieldDef->addChild(def->pasFormulaANSI.toBlock(L"FormulaANSI"));
-			fieldDef->addChild(def->pasValidationRuleANSI.toBlock(L"ValidationRuleANSI"));
-			fieldDef->addChild(def->pasValidationTextANSI.toBlock(L"ValidationTextANSI"));
-			fieldDef->addChild(def->pasErrorANSI.toBlock(L"ErrorANSI"));
-
-			if (*m_wVersion == PropDefV2)
-			{
-				szFlags = flags::InterpretFlags(flagInternalType, *def->dwInternalType);
-				fieldDef->addChild(
-					def->dwInternalType,
-					L"\tInternalType = 0x%1!08X! = %2!ws!\r\n",
-					def->dwInternalType->getData(),
-					szFlags.c_str());
-				fieldDef->addHeader(L"\tSkipBlockCount = %1!d!", def->psbSkipBlocks.size());
-
-				auto iSkipBlock = 0;
-				for (const auto& sb : def->psbSkipBlocks)
-				{
-					fieldDef->terminateBlock();
-					auto skipBlock = std::make_shared<block>();
-					fieldDef->addChild(skipBlock);
-					skipBlock->setText(L"\tSkipBlock: %1!d!\r\n", iSkipBlock);
-					skipBlock->addChild(sb->dwSize, L"\t\tSize = 0x%1!08X!", sb->dwSize->getData());
-
-					if (iSkipBlock == 0)
-					{
-						skipBlock->terminateBlock();
-						skipBlock->addChild(sb->lpbContentText.toBlock(L"\tFieldName"));
-					}
-					else if (!sb->lpbContent->empty())
-					{
-						skipBlock->terminateBlock();
-						skipBlock->addLabledChild(L"\t\tContent = ", sb->lpbContent);
-					}
-
-					iSkipBlock++;
-				}
-			}
-
-			iDef++;
+			addChild(def, L"Definition[%1!d!]", i++);
 		}
 	}
 } // namespace smartview

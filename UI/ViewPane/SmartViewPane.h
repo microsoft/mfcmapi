@@ -2,9 +2,9 @@
 #include <UI/ViewPane/DropDownPane.h>
 #include <UI/ViewPane/SplitterPane.h>
 #include <UI/ViewPane/TreePane.h>
-#include <core/smartview/smartViewParser.h>
+#include <core/smartview/block/block.h>
 
-enum __ParsingTypeEnum;
+enum class parserType;
 
 namespace viewpane
 {
@@ -13,8 +13,8 @@ namespace viewpane
 	public:
 		static std::shared_ptr<SmartViewPane> Create(int paneID, UINT uidLabel);
 
-		SmartViewPane(); 
-		void SetParser(__ParsingTypeEnum iParser);
+		SmartViewPane();
+		void SetParser(parserType parser);
 		void Parse(const std::vector<BYTE>& myBin) { Parse(std::vector<std::vector<BYTE>>{myBin}); }
 		void Parse(const std::vector<std::vector<BYTE>>& myBins);
 		std::function<void(smartview::block*)> OnItemSelected = nullptr;
@@ -39,7 +39,7 @@ namespace viewpane
 			int iEditHeight) override; // height of an edit control
 
 		std::vector<std::vector<BYTE>> m_bins;
-		std::shared_ptr<smartview::block> treeData = std::make_shared<smartview::block>();
+		std::shared_ptr<smartview::block> treeData = smartview::block::create();
 		std::shared_ptr<SplitterPane> m_Splitter;
 		std::shared_ptr<TreePane> m_TreePane;
 		bool m_bHasData{false};

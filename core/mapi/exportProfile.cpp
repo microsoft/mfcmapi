@@ -12,7 +12,7 @@
 
 namespace output
 {
-	void ExportProfileSection(FILE* fProfile, LPPROFSECT lpSect, LPSBinary lpSectBin)
+	void ExportProfileSection(FILE* fProfile, LPPROFSECT lpSect, const SBinary* lpSectBin)
 	{
 		if (!fProfile || !lpSect) return;
 
@@ -35,7 +35,7 @@ namespace output
 			OutputToFilef(
 				fProfile, L"<properties listtype=\"profilesection\" profilesection=\"%ws\">\n", szBin.c_str());
 
-			outputProperties(output::DBGNoDebug, fProfile, cValues, lpAllProps, nullptr, false);
+			outputProperties(dbgLevel::NoDebug, fProfile, cValues, lpAllProps, nullptr, false);
 
 			OutputToFile(fProfile, L"</properties>\n");
 
@@ -47,52 +47,53 @@ namespace output
 	{
 		if (!fProfile || !lpRow) return;
 
-		Outputf(output::DBGNoDebug, fProfile, true, L"<provider index = \"0x%08X\">\n", iRow);
+		Outputf(dbgLevel::NoDebug, fProfile, true, L"<provider index = \"0x%08X\">\n", iRow);
 
 		OutputToFile(fProfile, L"<properties listtype=\"row\">\n");
-		outputSRow(output::DBGNoDebug, fProfile, lpRow, nullptr);
+		outputSRow(dbgLevel::NoDebug, fProfile, lpRow, nullptr);
 		OutputToFile(fProfile, L"</properties>\n");
 
 		auto lpProviderUID = PpropFindProp(lpRow->lpProps, lpRow->cValues, PR_PROVIDER_UID);
 
 		if (lpProviderUID)
 		{
-			auto lpSect = mapi::profile::OpenProfileSection(lpProviderAdmin, &lpProviderUID->Value.bin);
+			auto lpSect = mapi::profile::OpenProfileSection(lpProviderAdmin, &mapi::getBin(lpProviderUID));
 			if (lpSect)
 			{
-				ExportProfileSection(fProfile, lpSect, &lpProviderUID->Value.bin);
+				ExportProfileSection(fProfile, lpSect, &mapi::getBin(lpProviderUID));
 				lpSect->Release();
 			}
 		}
 
-		output::OutputToFile(fProfile, L"</provider>\n");
+		OutputToFile(fProfile, L"</provider>\n");
 	}
 
 	void ExportProfileService(FILE* fProfile, int iRow, LPSERVICEADMIN lpServiceAdmin, LPSRow lpRow)
 	{
 		if (!fProfile || !lpRow) return;
 
-		Outputf(output::DBGNoDebug, fProfile, true, L"<service index = \"0x%08X\">\n", iRow);
+		Outputf(dbgLevel::NoDebug, fProfile, true, L"<service index = \"0x%08X\">\n", iRow);
 
 		OutputToFile(fProfile, L"<properties listtype=\"row\">\n");
-		outputSRow(output::DBGNoDebug, fProfile, lpRow, nullptr);
+		outputSRow(dbgLevel::NoDebug, fProfile, lpRow, nullptr);
 		OutputToFile(fProfile, L"</properties>\n");
 
-		auto lpServiceUID = PpropFindProp(lpRow->lpProps, lpRow->cValues, PR_SERVICE_UID);
+		const auto lpServiceUID = PpropFindProp(lpRow->lpProps, lpRow->cValues, PR_SERVICE_UID);
 
 		if (lpServiceUID)
 		{
-			auto lpSect = mapi::profile::OpenProfileSection(lpServiceAdmin, &lpServiceUID->Value.bin);
+			auto bin = mapi::getBin(lpServiceUID);
+			auto lpSect = mapi::profile::OpenProfileSection(lpServiceAdmin, &bin);
 			if (lpSect)
 			{
-				ExportProfileSection(fProfile, lpSect, &lpServiceUID->Value.bin);
+				ExportProfileSection(fProfile, lpSect, &bin);
 				lpSect->Release();
 			}
 
 			LPPROVIDERADMIN lpProviderAdmin = nullptr;
 
 			EC_MAPI_S(lpServiceAdmin->AdminProviders(
-				reinterpret_cast<LPMAPIUID>(lpServiceUID->Value.bin.lpb),
+				reinterpret_cast<LPMAPIUID>(bin.lpb),
 				0, // fMapiUnicode is not supported
 				&lpProviderAdmin));
 
@@ -125,11 +126,11 @@ namespace output
 			}
 		}
 
-		output::OutputToFile(fProfile, L"</service>\n");
+		OutputToFile(fProfile, L"</service>\n");
 	}
 
 	void ExportProfile(
-		_In_ const std::string& szProfile,
+		_In_ const std::wstring& szProfile,
 		_In_ const std::wstring& szProfileSection,
 		bool bByteSwapped,
 		const std::wstring& szFileName)
@@ -137,10 +138,13 @@ namespace output
 		if (szProfile.empty()) return;
 
 		DebugPrint(
-			DBGGeneric, L"ExportProfile: Saving profile \"%hs\" to \"%ws\"\n", szProfile.c_str(), szFileName.c_str());
+			dbgLevel::Generic,
+			L"ExportProfile: Saving profile \"%ws\" to \"%ws\"\n",
+			szProfile.c_str(),
+			szFileName.c_str());
 		if (!szProfileSection.empty())
 		{
-			DebugPrint(output::DBGGeneric, L"ExportProfile: Restricting to \"%ws\"\n", szProfileSection.c_str());
+			DebugPrint(dbgLevel::Generic, L"ExportProfile: Restricting to \"%ws\"\n", szProfileSection.c_str());
 		}
 
 		LPPROFADMIN lpProfAdmin = nullptr;
@@ -151,21 +155,21 @@ namespace output
 			fProfile = MyOpenFile(szFileName, true);
 		}
 
-		output::OutputToFile(fProfile, output::g_szXMLHeader);
-		Outputf(output::DBGNoDebug, fProfile, true, L"<profile profilename= \"%hs\">\n", szProfile.c_str());
+		OutputToFile(fProfile, g_szXMLHeader);
+		Outputf(dbgLevel::NoDebug, fProfile, true, L"<profile profilename= \"%ws\">\n", szProfile.c_str());
 
 		EC_MAPI_S(MAPIAdminProfiles(0, &lpProfAdmin));
 		if (lpProfAdmin)
 		{
 			LPSERVICEADMIN lpServiceAdmin = nullptr;
-			EC_MAPI_S(
-				lpProfAdmin->AdminServices(LPTSTR(szProfile.c_str()), LPTSTR(""), NULL, MAPI_DIALOG, &lpServiceAdmin));
+			EC_MAPI_S(lpProfAdmin->AdminServices(
+				LPTSTR(strings::wstringTostring(szProfile).c_str()), LPTSTR(""), NULL, MAPI_DIALOG, &lpServiceAdmin));
 			if (lpServiceAdmin)
 			{
 				if (!szProfileSection.empty())
 				{
 					const auto guid = guid::GUIDNameToGUID(szProfileSection, bByteSwapped);
-					auto sBin = SBinary{sizeof(GUID), LPBYTE(&guid)};
+					auto sBin = SBinary{sizeof(GUID), reinterpret_cast<LPBYTE>(const_cast<GUID*>(&guid))};
 
 					auto lpSect = mapi::profile::OpenProfileSection(lpServiceAdmin, &sBin);
 					if (lpSect)
@@ -203,7 +207,7 @@ namespace output
 			lpProfAdmin->Release();
 		}
 
-		output::OutputToFile(fProfile, L"</profile>");
+		OutputToFile(fProfile, L"</profile>");
 
 		if (fProfile)
 		{

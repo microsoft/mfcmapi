@@ -25,7 +25,7 @@ namespace dialog
 		// If the previous foreground window is ours, remember its handle for computing cascades
 		m_hWndPrevious = ::GetForegroundWindow();
 		DWORD pid = NULL;
-		(void) GetWindowThreadProcessId(m_hWndPrevious, &pid);
+		static_cast<void>(GetWindowThreadProcessId(m_hWndPrevious, &pid));
 		if (GetCurrentProcessId() != pid)
 		{
 			m_hWndPrevious = nullptr;
@@ -38,9 +38,9 @@ namespace dialog
 		if (m_lpNonModalParent) m_lpNonModalParent->Release();
 	}
 
-	void CMyDialog::SetStatusHeight(const int iHeight) { m_iStatusHeight = iHeight; }
+	void CMyDialog::SetStatusHeight(const int iHeight) noexcept { m_iStatusHeight = iHeight; }
 
-	int CMyDialog::GetStatusHeight() const { return m_iStatusHeight; }
+	int CMyDialog::GetStatusHeight() const noexcept { return m_iStatusHeight; }
 
 	std::wstring FormatHT(const LRESULT ht)
 	{
@@ -77,7 +77,7 @@ namespace dialog
 	LRESULT CheckButtons(HWND hWnd, POINT pt)
 	{
 		auto ret = HTNOWHERE;
-		output::DebugPrint(output::DBGUI, L"CheckButtons: pt = %d %d", pt.x, pt.y);
+		output::DebugPrint(output::dbgLevel::UI, L"CheckButtons: pt = %d %d", pt.x, pt.y);
 
 		// Get the screen coordinates of our window
 		auto rcWindow = RECT{};
@@ -87,28 +87,28 @@ namespace dialog
 		// GetCaptionRects coordinates are now compatible
 		pt.x -= rcWindow.left;
 		pt.y -= rcWindow.top;
-		output::Outputf(output::DBGUI, nullptr, false, L" mapped = %d %d\r\n", pt.x, pt.y);
+		output::Outputf(output::dbgLevel::UI, nullptr, false, L" mapped = %d %d\r\n", pt.x, pt.y);
 
 		auto rcCloseIcon = RECT{};
 		auto rcMaxIcon = RECT{};
 		auto rcMinIcon = RECT{};
 		ui::GetCaptionRects(hWnd, nullptr, nullptr, &rcCloseIcon, &rcMaxIcon, &rcMinIcon, nullptr);
 		output::DebugPrint(
-			output::DBGUI,
+			output::dbgLevel::UI,
 			L"rcMinIcon: %d %d %d %d\n",
 			rcMinIcon.left,
 			rcMinIcon.top,
 			rcMinIcon.right,
 			rcMinIcon.bottom);
 		output::DebugPrint(
-			output::DBGUI,
+			output::dbgLevel::UI,
 			L"rcMaxIcon: %d %d %d %d\n",
 			rcMaxIcon.left,
 			rcMaxIcon.top,
 			rcMaxIcon.right,
 			rcMaxIcon.bottom);
 		output::DebugPrint(
-			output::DBGUI,
+			output::dbgLevel::UI,
 			L"rcCloseIcon: %d %d %d %d\n",
 			rcCloseIcon.left,
 			rcCloseIcon.top,
@@ -118,7 +118,7 @@ namespace dialog
 		if (PtInRect(&rcMaxIcon, pt)) ret = HTMAXBUTTON;
 		if (PtInRect(&rcMinIcon, pt)) ret = HTMINBUTTON;
 
-		output::DebugPrint(output::DBGUI, L"CheckButtons result: %ws\r\n", FormatHT(ret).c_str());
+		output::DebugPrint(output::dbgLevel::UI, L"CheckButtons result: %ws\r\n", FormatHT(ret).c_str());
 
 		return ret;
 	}
@@ -129,7 +129,7 @@ namespace dialog
 	{
 		// These are screen coordinates of the mouse pointer
 		const POINT pt = {GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)};
-		output::DebugPrint(output::DBGUI, L"WM_NCHITTEST: pt = %d %d\r\n", pt.x, pt.y);
+		output::DebugPrint(output::dbgLevel::UI, L"WM_NCHITTEST: pt = %d %d\r\n", pt.x, pt.y);
 
 		auto ht = CDialog::WindowProc(WM_NCHITTEST, wParam, lParam);
 		if (ht == HTCAPTION || ht == HTCLOSE || ht == HTMAXBUTTON || ht == HTMINBUTTON)
@@ -141,7 +141,7 @@ namespace dialog
 		}
 
 		ui::DrawSystemButtons(m_hWnd, nullptr, ht, true);
-		output::DebugPrint(output::DBGUI, L"%ws\r\n", FormatHT(ht).c_str());
+		output::DebugPrint(output::dbgLevel::UI, L"%ws\r\n", FormatHT(ht).c_str());
 		return ht;
 	}
 
@@ -150,12 +150,12 @@ namespace dialog
 	{
 		// These are client coordinates - we need to translate them to screen coordinates
 		POINT pt = {GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)};
-		output::DebugPrint(output::DBGUI, L"NCHitTestMouse: pt = %d %d", pt.x, pt.y);
-		(void) MapWindowPoints(hWnd, nullptr, &pt, 1); // Map our client point to the screen
-		output::Outputf(output::DBGUI, nullptr, false, L" mapped = %d %d\r\n", pt.x, pt.y);
+		output::DebugPrint(output::dbgLevel::UI, L"NCHitTestMouse: pt = %d %d", pt.x, pt.y);
+		static_cast<void>(MapWindowPoints(hWnd, nullptr, &pt, 1)); // Map our client point to the screen
+		output::Outputf(output::dbgLevel::UI, nullptr, false, L" mapped = %d %d\r\n", pt.x, pt.y);
 
 		const auto ht = CheckButtons(hWnd, pt);
-		output::DebugPrint(output::DBGUI, L"%ws\r\n", FormatHT(ht).c_str());
+		output::DebugPrint(output::dbgLevel::UI, L"%ws\r\n", FormatHT(ht).c_str());
 		return ht;
 	}
 
@@ -171,13 +171,13 @@ namespace dialog
 				switch (msg.message)
 				{
 				case WM_LBUTTONUP:
-					output::DebugPrint(output::DBGUI, L"WM_LBUTTONUP\n");
+					output::DebugPrint(output::dbgLevel::UI, L"WM_LBUTTONUP\n");
 					ui::DrawSystemButtons(hWnd, nullptr, HTNOWHERE, false);
 					ReleaseCapture();
 					return NCHitTestMouse(hWnd, msg.lParam) == iHitTest;
 
 				case WM_MOUSEMOVE:
-					output::DebugPrint(output::DBGUI, L"WM_MOUSEMOVE\n");
+					output::DebugPrint(output::dbgLevel::UI, L"WM_MOUSEMOVE\n");
 					ui::DrawSystemButtons(hWnd, nullptr, iHitTest, NCHitTestMouse(hWnd, msg.lParam) != iHitTest);
 
 					break;
@@ -250,23 +250,23 @@ namespace dialog
 				{
 					auto var = PROPVARIANT{};
 					var.vt = VT_LPWSTR;
-					var.pwszVal = const_cast<LPWSTR>(L"Microsoft.MFCMAPI");
+					var.pwszVal = L"Microsoft.MFCMAPI";
 
-					(void) pps->SetValue(PKEY_AppUserModel_ID, var);
+					static_cast<void>(pps->SetValue(PKEY_AppUserModel_ID, var));
 				}
 
 				if (pps) pps->Release();
 			}
 
-			if (import::pfnSetWindowTheme) (void) import::pfnSetWindowTheme(m_hWnd, L"", L"");
+			if (import::pfnSetWindowTheme) static_cast<void>(import::pfnSetWindowTheme(m_hWnd, L"", L""));
 			{
 				// These calls force Windows to initialize the system menu for this window.
 				// This avoids repaints whenever the system menu is later accessed.
 				// We eliminate classic mode visual artifacts with this call.
-				(void) ::GetSystemMenu(m_hWnd, false);
+				static_cast<void>(::GetSystemMenu(m_hWnd, false));
 				auto mbi = MENUBARINFO{};
 				mbi.cbSize = sizeof mbi;
-				(void) GetMenuBarInfo(m_hWnd, OBJID_SYSMENU, 0, &mbi);
+				static_cast<void>(GetMenuBarInfo(m_hWnd, OBJID_SYSMENU, 0, &mbi));
 			}
 			break;
 		}
@@ -277,7 +277,7 @@ namespace dialog
 	void CMyDialog::SetTitle(_In_ const std::wstring& szTitle) const
 	{
 		// Set the title bar directly using DefWindowProcW to avoid converting Unicode
-		DefWindowProcW(m_hWnd, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(szTitle.c_str()));
+		::DefWindowProcW(m_hWnd, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(szTitle.c_str()));
 		ui::DrawWindowFrame(m_hWnd, true, GetStatusHeight());
 	}
 
@@ -320,10 +320,10 @@ namespace dialog
 		{
 			// Cheap cascade effect
 			auto rc = RECT{};
-			(void) ::GetWindowRect(m_hWndPrevious, &rc);
+			static_cast<void>(::GetWindowRect(m_hWndPrevious, &rc));
 			const LONG lOffset = GetSystemMetrics(SM_CXSMSIZE);
-			(void) ::SetWindowPos(
-				m_hWnd, nullptr, rc.left + lOffset, rc.top + lOffset, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+			static_cast<void>(
+				::SetWindowPos(m_hWnd, nullptr, rc.left + lOffset, rc.top + lOffset, 0, 0, SWP_NOSIZE | SWP_NOZORDER));
 		}
 		else
 		{

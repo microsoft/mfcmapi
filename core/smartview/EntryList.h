@@ -1,19 +1,24 @@
 #pragma once
-#include <core/smartview/smartViewParser.h>
+#include <core/smartview/block/block.h>
 #include <core/smartview/EntryIdStruct.h>
 
 namespace smartview
 {
-	struct EntryListEntryStruct
+	class EntryListEntryStruct : public block
 	{
+	public:
+		void parseEntryID();
+
+	private:
+		void parse() override;
+		void parseBlocks() override;
+
 		std::shared_ptr<blockT<DWORD>> EntryLength = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> EntryLengthPad = emptyT<DWORD>();
-		EntryIdStruct EntryId;
-
-		EntryListEntryStruct(const std::shared_ptr<binaryParser>& parser);
+		std::shared_ptr<EntryIdStruct> EntryId;
 	};
 
-	class EntryList : public smartViewParser
+	class EntryList : public block
 	{
 	private:
 		void parse() override;

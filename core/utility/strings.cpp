@@ -1,6 +1,7 @@
 #include <core/stdafx.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
+#include <core/interpret/guid.h>
 
 namespace strings
 {
@@ -8,7 +9,7 @@ namespace strings
 
 	std::wstring formatV(LPCWSTR szMsg, va_list argList)
 	{
-		auto len = _vscwprintf(szMsg, argList);
+		const auto len = _vscwprintf(szMsg, argList);
 		if (0 != len)
 		{
 			auto buffer = std::wstring(len + 1, '\0'); // Include extra since _vsnwprintf_s writes a null terminator
@@ -41,7 +42,7 @@ namespace strings
 	// This will try to load the string from the executable, which is fine for MFCMAPI and MrMAPI
 	// In our unit tests, we must load strings from UnitTest.dll, so we use setTestInstance
 	// to populate an appropriate HINSTANCE
-	void setTestInstance(HINSTANCE hInstance) { g_testInstance = hInstance; }
+	void setTestInstance(HINSTANCE hInstance) noexcept { g_testInstance = hInstance; }
 
 	std::wstring loadstring(DWORD dwID)
 	{
@@ -71,7 +72,7 @@ namespace strings
 		if (dw)
 		{
 			auto ret = std::wstring(buffer);
-			(void) LocalFree(buffer);
+			static_cast<void>(LocalFree(buffer));
 			return ret;
 		}
 
@@ -92,7 +93,7 @@ namespace strings
 		if (dw)
 		{
 			auto ret = std::wstring(buffer);
-			(void) LocalFree(buffer);
+			static_cast<void>(LocalFree(buffer));
 			return ret;
 		}
 
@@ -119,6 +120,7 @@ namespace strings
 		return ret;
 	}
 
+	// This function should be used as little as possible as for many strings this conversion does not make sense
 	std::basic_string<TCHAR> wstringTotstring(const std::wstring& src)
 	{
 #ifdef _UNICODE
@@ -128,17 +130,21 @@ namespace strings
 #endif
 	}
 
-	std::string wstringTostring(const std::wstring& src) { return std::string(src.begin(), src.end()); }
+	// This function should be used as little as possible as for many strings this conversion does not make sense
+	std::string wstringTostring(const std::wstring& src)
+	{
+		std::string dst;
+		dst.reserve(src.length());
+		std::transform(src.begin(), src.end(), std::back_inserter(dst), [](auto c) { return static_cast<char>(c); });
+		return dst;
+	}
 
 	std::wstring stringTowstring(const std::string& src)
 	{
 		std::wstring dst;
 		dst.reserve(src.length());
-		for (auto ch : src)
-		{
-			dst.push_back(ch & 255);
-		}
-
+		std::transform(
+			src.begin(), src.end(), std::back_inserter(dst), [](auto c) { return static_cast<wchar_t>(c & 255); });
 		return dst;
 	}
 
@@ -156,12 +162,11 @@ namespace strings
 	std::wstring LPCSTRToWstring(LPCSTR src)
 	{
 		if (!src) return L"";
-		std::string ansi = src;
-		return std::wstring(ansi.begin(), ansi.end());
+		return stringTowstring(std::string(src));
 	}
 
 	// Converts wstring to LPCWSTR allocated with new
-	LPCWSTR wstringToLPCWSTR(const std::wstring& src)
+	LPCWSTR wstringToLPCWSTR(const std::wstring& src) noexcept
 	{
 		const auto cch = src.length() + 1;
 		const auto cb = cch * sizeof WCHAR;
@@ -183,7 +188,7 @@ namespace strings
 		return dst;
 	}
 
-	bool tryWstringToUlong(ULONG& out, const std::wstring& src, int radix, bool rejectInvalidCharacters)
+	bool tryWstringToUlong(ULONG& out, const std::wstring& src, int radix, bool rejectInvalidCharacters) noexcept
 	{
 		// Default our out to 0 for failures
 		out = 0;
@@ -206,7 +211,7 @@ namespace strings
 	}
 
 	// Converts a std::wstring to a ulong. Will return 0 if string is empty or contains non-numeric data.
-	ULONG wstringToUlong(const std::wstring& src, int radix, bool rejectInvalidCharacters)
+	ULONG wstringToUlong(const std::wstring& src, int radix, bool rejectInvalidCharacters) noexcept
 	{
 		ULONG ulArg{};
 		if (tryWstringToUlong(ulArg, src, radix, rejectInvalidCharacters))
@@ -218,7 +223,7 @@ namespace strings
 	}
 
 	// Converts a std::wstring to a long. Will return 0 if string is empty or contains non-numeric data.
-	long wstringToLong(const std::wstring& src, int radix)
+	long wstringToLong(const std::wstring& src, int radix) noexcept
 	{
 		if (src.empty()) return 0;
 
@@ -235,7 +240,7 @@ namespace strings
 	}
 
 	// Converts a std::wstring to a double. Will return 0 if string is empty or contains non-numeric data.
-	double wstringToDouble(const std::wstring& src)
+	double wstringToDouble(const std::wstring& src) noexcept
 	{
 		if (src.empty()) return 0;
 
@@ -251,18 +256,46 @@ namespace strings
 		return dArg;
 	}
 
-	__int64 wstringToInt64(const std::wstring& src)
+	__int64 wstringToInt64(const std::wstring& src) noexcept
 	{
 		if (src.empty()) return 0;
 
-		return _wtoi64(src.c_str());
+		return _wtoi64(trimWhitespace(src).c_str());
+	}
+
+	__int64 wstringToCurrency(const std::wstring& src)
+	{
+		if (src.empty()) return 0;
+		const auto periodCount = std::count(src.begin(), src.end(), L'.');
+		if (periodCount > 1) return 0; // reject multiple periods
+		auto left = std::wstring{};
+		auto right = std::wstring{};
+		if (periodCount == 1)
+		{
+			// We need to shift the period right "4 spaces"
+			// Suppose we take AAA.BBB and split into two strings, AAA and BBB
+			// We can then take the first four characters in B, padding with 0 if needed
+			// And join them to A to get our result
+			const auto halves = split(trimWhitespace(src) + L"0000", L'.');
+			left = trimWhitespace(halves[0]);
+			right = std::wstring(trimWhitespace(halves[1]), 0, 4);
+		}
+		else
+		{
+			left = trim(src);
+			right = L"0000";
+		}
+
+		const auto whole = left + right;
+
+		return _wtoi64(whole.c_str());
 	}
 
 	std::wstring strip(const std::wstring& str, const std::function<bool(const WCHAR&)>& func)
 	{
 		std::wstring result;
 		result.reserve(str.length());
-		remove_copy_if(str.begin(), str.end(), back_inserter(result), func);
+		std::remove_copy_if(str.begin(), str.end(), back_inserter(result), func);
 		return result;
 	}
 
@@ -333,7 +366,7 @@ namespace strings
 	std::wstring indent(int iIndent) { return std::wstring(iIndent, L'\t'); }
 
 	// Find valid printable Unicode characters
-	bool InvalidCharacter(ULONG chr, bool bMultiLine)
+	bool InvalidCharacter(ULONG chr, bool bMultiLine) noexcept
 	{
 		// Remove range of control characters
 		if (chr >= 0x80 && chr <= 0x9F) return true;
@@ -362,7 +395,7 @@ namespace strings
 		std::replace_if(
 			szBin.begin(),
 			szBin.end(),
-			[bMultiLine](const char& chr) { return InvalidCharacter(0xFF & chr, bMultiLine); },
+			[bMultiLine](const char& chr) noexcept { return InvalidCharacter(0xFF & chr, bMultiLine); },
 			'.');
 
 		if (nullTerminated) szBin.back() = '\0';
@@ -377,7 +410,7 @@ namespace strings
 		std::replace_if(
 			szBin.begin(),
 			szBin.end(),
-			[bMultiLine](const WCHAR& chr) { return InvalidCharacter(chr, bMultiLine); },
+			[bMultiLine](const WCHAR& chr) noexcept { return InvalidCharacter(chr, bMultiLine); },
 			L'.');
 
 		if (nullTerminated) szBin.back() = L'\0';
@@ -517,7 +550,7 @@ namespace strings
 	}
 
 	// Converts vector<BYTE> to LPBYTE allocated with new
-	LPBYTE ByteVectorToLPBYTE(const std::vector<BYTE>& bin)
+	LPBYTE ByteVectorToLPBYTE(const std::vector<BYTE>& bin) noexcept
 	{
 		if (bin.empty()) return nullptr;
 
@@ -541,28 +574,44 @@ namespace strings
 			elems.push_back(item);
 		}
 
+		// If the last character is a delimiter, the above won't get our final "string".
+		// For instamce, "1." has only mapped to "1" so far.
+		// Add a final "" to finish the split.
+		if (str.length() >= 1 && str.back() == delim)
+		{
+			elems.push_back(L"");
+		}
+
 		return elems;
 	}
 
-	std::wstring join(const std::vector<std::wstring>& elems, const std::wstring& delim)
+	std::wstring join(const std::vector<std::wstring>& elems, const std::wstring& delim, bool bSkipEmpty)
 	{
 		if (elems.empty()) return emptystring;
 
 		std::wstringstream ss;
 		auto iter = elems.begin();
+		bool needDelim = false;
 		while (true)
 		{
+			if (bSkipEmpty && iter->empty())
+			{
+				if (++iter == elems.end()) break;
+				continue;
+			}
+
+			if (needDelim) ss << delim;
 			ss << *iter;
 			if (++iter == elems.end()) break;
-			ss << delim;
+			needDelim = true;
 		}
 
 		return ss.str();
 	}
 
-	std::wstring join(const std::vector<std::wstring>& elems, const wchar_t delim)
+	std::wstring join(const std::vector<std::wstring>& elems, const wchar_t delim, bool bSkipEmpty)
 	{
-		return join(elems, std::wstring(1, delim));
+		return join(elems, std::wstring(1, delim), bSkipEmpty);
 	}
 
 	// clang-format off
@@ -792,44 +841,44 @@ namespace strings
 		if (ulPropType != PT_STRING8 && ulPropType != PT_UNICODE)
 		{
 			output::DebugPrint(
-				output::DBGGeneric, L"CheckStringProp: Called with invalid ulPropType of 0x%X\n", ulPropType);
+				output::dbgLevel::Generic, L"CheckStringProp: Called with invalid ulPropType of 0x%X\n", ulPropType);
 			return false;
 		}
 
 		if (!lpProp)
 		{
-			output::DebugPrint(output::DBGGeneric, L"CheckStringProp: lpProp is NULL\n");
+			output::DebugPrint(output::dbgLevel::Generic, L"CheckStringProp: lpProp is NULL\n");
 			return false;
 		}
 
 		if (PROP_TYPE(lpProp->ulPropTag) == PT_ERROR)
 		{
-			output::DebugPrint(output::DBGGeneric, L"CheckStringProp: lpProp->ulPropTag is of type PT_ERROR\n");
+			output::DebugPrint(output::dbgLevel::Generic, L"CheckStringProp: lpProp->ulPropTag is of type PT_ERROR\n");
 			return false;
 		}
 
 		if (ulPropType != PROP_TYPE(lpProp->ulPropTag))
 		{
 			output::DebugPrint(
-				output::DBGGeneric, L"CheckStringProp: lpProp->ulPropTag is not of type 0x%X\n", ulPropType);
+				output::dbgLevel::Generic, L"CheckStringProp: lpProp->ulPropTag is not of type 0x%X\n", ulPropType);
 			return false;
 		}
 
 		if (lpProp->Value.LPSZ == nullptr)
 		{
-			output::DebugPrint(output::DBGGeneric, L"CheckStringProp: lpProp->Value.LPSZ is NULL\n");
+			output::DebugPrint(output::dbgLevel::Generic, L"CheckStringProp: lpProp->Value.LPSZ is NULL\n");
 			return false;
 		}
 
 		if (ulPropType == PT_STRING8 && lpProp->Value.lpszA[0] == NULL)
 		{
-			output::DebugPrint(output::DBGGeneric, L"CheckStringProp: lpProp->Value.lpszA[0] is NULL\n");
+			output::DebugPrint(output::dbgLevel::Generic, L"CheckStringProp: lpProp->Value.lpszA[0] is NULL\n");
 			return false;
 		}
 
 		if (ulPropType == PT_UNICODE && lpProp->Value.lpszW[0] == NULL)
 		{
-			output::DebugPrint(output::DBGGeneric, L"CheckStringProp: lpProp->Value.lpszW[0] is NULL\n");
+			output::DebugPrint(output::dbgLevel::Generic, L"CheckStringProp: lpProp->Value.lpszW[0] is NULL\n");
 			return false;
 		}
 
@@ -869,5 +918,33 @@ namespace strings
 		}
 
 		return ret;
+	}
+
+	std::wstring MAPINAMEIDToString(_In_ const MAPINAMEID& mapiNameId)
+	{
+		const auto guidstr = guid::GUIDToStringAndName(mapiNameId.lpguid);
+		if (mapiNameId.ulKind == MNID_ID)
+		{
+			return strings::format(L"ulKind=MNID_ID, lID=%04X, guid=%ws", mapiNameId.Kind.lID, guidstr.c_str());
+		}
+		else if (mapiNameId.ulKind == MNID_STRING)
+		{
+			return strings::format(
+				L"ulKind=MNID_STRING, lpwstrName='%ws', guid=%ws", mapiNameId.Kind.lpwstrName, guidstr.c_str());
+		}
+
+		return {};
+	}
+
+	std::wstring collapseTree(const std::wstring& src)
+	{
+		// Strategy: Split to lines, trim whitepace around lines, join with spaces
+		auto lines = strings::split(src, L'\n');
+		for (auto& line : lines)
+		{
+			line = strings::trimWhitespace(line);
+		}
+
+		return join(lines, L' ', true);
 	}
 } // namespace strings

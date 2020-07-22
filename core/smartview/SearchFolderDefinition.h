@@ -1,5 +1,5 @@
 #pragma once
-#include <core/smartview/smartViewParser.h>
+#include <core/smartview/block/block.h>
 #include <core/smartview/EntryList.h>
 #include <core/smartview/PropertiesStruct.h>
 #include <core/smartview/RestrictionStruct.h>
@@ -9,16 +9,18 @@
 
 namespace smartview
 {
-	struct AddressListEntryStruct
+	class AddressListEntryStruct : public block
 	{
+	private:
+		void parse() override;
+		void parseBlocks() override;
+
 		std::shared_ptr<blockT<DWORD>> PropertyCount = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> Pad = emptyT<DWORD>();
-		PropertiesStruct Props;
-
-		AddressListEntryStruct(const std::shared_ptr<binaryParser>& parser);
+		std::shared_ptr<PropertiesStruct> Props;
 	};
 
-	class SearchFolderDefinition : public smartViewParser
+	class SearchFolderDefinition : public block
 	{
 	private:
 		void parse() override;
@@ -37,7 +39,7 @@ namespace smartview
 		std::shared_ptr<blockT<WORD>> m_FolderList1LengthExtended = emptyT<WORD>();
 		std::shared_ptr<blockStringW> m_FolderList1 = emptySW();
 		std::shared_ptr<blockT<DWORD>> m_FolderList2Length = emptyT<DWORD>();
-		EntryList m_FolderList2;
+		std::shared_ptr<EntryList> m_FolderList2;
 		std::shared_ptr<blockT<DWORD>> m_AddressCount = emptyT<DWORD>(); // SFST_BINARY
 		std::vector<std::shared_ptr<AddressListEntryStruct>> m_Addresses; // SFST_BINARY
 		std::shared_ptr<blockT<DWORD>> m_SkipLen2 = emptyT<DWORD>();

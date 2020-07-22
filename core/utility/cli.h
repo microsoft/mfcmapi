@@ -23,7 +23,7 @@ namespace cli
 		const size_t maxArgs{};
 		const int flags{};
 
-		option(LPCWSTR _szSwitch, int _mode, UINT _minArgs, UINT _maxArgs, int _optionFlags)
+		option(LPCWSTR _szSwitch, int _mode, UINT _minArgs, UINT _maxArgs, int _optionFlags) noexcept
 			: szSwitch{_szSwitch}, mode{_mode}, minArgs{_minArgs}, maxArgs{_maxArgs}, flags{_optionFlags}
 		{
 		}
@@ -39,7 +39,7 @@ namespace cli
 			return _Pos < size() && strings::tryWstringToUlong(num, args[_Pos], radix, true);
 		}
 
-		void clear()
+		void clear() noexcept
 		{
 			seen = false;
 			args.clear();
@@ -84,7 +84,7 @@ namespace cli
 	// If the mode isn't set (is 0), then we can set it to any mode
 	// If the mode IS set (non 0), then we can only set it to the same mode
 	// IE trying to change the mode from anything but unset will fail
-	bool bSetMode(_In_ int& pMode, _In_ int targetMode);
+	bool bSetMode(_In_ int& pMode, _In_ int targetMode) noexcept;
 
 	std::deque<std::wstring> GetCommandLine(_In_ int argc, _In_count_(argc) const char* const argv[]);
 

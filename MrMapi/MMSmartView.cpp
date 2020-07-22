@@ -13,14 +13,14 @@ void DoSmartView()
 	// Ignore the reg key that disables smart view parsing
 	registry::doSmartView = true;
 
-	auto ulStructType = IDS_STNOPARSING;
+	auto ulStructType = parserType::NOPARSING;
 	const auto ulSVParser = cli::switchParser.atULONG(0);
 	if (ulSVParser && ulSVParser < SmartViewParserTypeArray.size())
 	{
-		ulStructType = static_cast<__ParsingTypeEnum>(SmartViewParserTypeArray[ulSVParser].ulValue);
+		ulStructType = static_cast<parserType>(SmartViewParserTypeArray[ulSVParser].type);
 	}
 
-	if (ulStructType)
+	if (ulStructType != parserType::NOPARSING)
 	{
 		FILE* fOut = nullptr;
 		const auto input = cli::switchInput[0];
@@ -54,12 +54,12 @@ void DoSmartView()
 				sBin.lpb = bin.data();
 			}
 
-			auto szString = smartview::InterpretBinaryAsString(sBin, ulStructType, nullptr);
+			auto szString = smartview::InterpretBinary(sBin, ulStructType, nullptr)->toString();
 			if (!szString.empty())
 			{
 				if (fOut)
 				{
-					output::Output(output::DBGNoDebug, fOut, false, szString);
+					output::Output(output::dbgLevel::NoDebug, fOut, false, szString);
 				}
 				else
 				{

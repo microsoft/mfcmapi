@@ -18,7 +18,7 @@ namespace file
 	{
 		if (!lppStorage) return MAPI_E_INVALID_PARAMETER;
 		output::DebugPrint(
-			output::DBGGeneric,
+			output::dbgLevel::Generic,
 			L"MyStgOpenStorage: Opening \"%ws\", bBestAccess == %ws\n",
 			szMessageFile.c_str(),
 			bBestAccess ? L"True" : L"False");
@@ -215,13 +215,13 @@ namespace file
 				subj = lpProps[ePR_SUBJECT_W].Value.lpszW;
 			}
 
-			LPSBinary lpRecordKey = nullptr;
+			SBinary recordKey = {};
 			if (PR_RECORD_KEY == lpProps[ePR_RECORD_KEY].ulPropTag)
 			{
-				lpRecordKey = &lpProps[ePR_RECORD_KEY].Value.bin;
+				recordKey = mapi::getBin(lpProps[ePR_RECORD_KEY]);
 			}
 
-			szFileOut = BuildFileNameAndPath(ext, subj, dir, lpRecordKey);
+			szFileOut = BuildFileNameAndPath(ext, subj, dir, &recordKey);
 		}
 
 		MAPIFreeBuffer(lpProps);
@@ -250,7 +250,9 @@ namespace file
 		if (szPathName.length() >= MAXMSGPATH) return MAPI_E_INVALID_PARAMETER;
 
 		output::DebugPrint(
-			output::DBGGeneric, L"SaveFolderContentsToMSG: Saving contents of folder to \"%ws\"\n", szPathName.c_str());
+			output::dbgLevel::Generic,
+			L"SaveFolderContentsToMSG: Saving contents of folder to \"%ws\"\n",
+			szPathName.c_str());
 
 		LPMAPITABLE lpFolderContents = nullptr;
 		auto hRes =
@@ -306,7 +308,7 @@ namespace file
 			pStrmSrc->Stat(&StatInfo, STATFLAG_NONAME);
 
 			output::DebugPrint(
-				output::DBGStream, L"WriteStreamToFile: Writing cb = %llu bytes\n", StatInfo.cbSize.QuadPart);
+				output::dbgLevel::Stream, L"WriteStreamToFile: Writing cb = %llu bytes\n", StatInfo.cbSize.QuadPart);
 
 			hRes = EC_MAPI(pStrmSrc->CopyTo(pStrmDest, StatInfo.cbSize, nullptr, nullptr));
 
@@ -327,7 +329,7 @@ namespace file
 		LPSTREAM pStrmSrc = nullptr;
 
 		if (!lpMessage || szFileName.empty()) return MAPI_E_INVALID_PARAMETER;
-		output::DebugPrint(output::DBGGeneric, L"SaveToEML: Saving message to \"%ws\"\n", szFileName.c_str());
+		output::DebugPrint(output::dbgLevel::Generic, L"SaveToEML: Saving message to \"%ws\"\n", szFileName.c_str());
 
 		// Open the property of the attachment
 		// containing the file data
@@ -341,7 +343,7 @@ namespace file
 		{
 			if (hRes == MAPI_E_NOT_FOUND)
 			{
-				output::DebugPrint(output::DBGGeneric, L"No internet content found\n");
+				output::DebugPrint(output::dbgLevel::Generic, L"No internet content found\n");
 			}
 		}
 		else
@@ -365,7 +367,7 @@ namespace file
 		_In_ STGOPTIONS* pStgOptions,
 		_Pre_null_ void* reserved,
 		_In_ REFIID riid,
-		_Out_ void** ppObjectOpen)
+		_Out_ void** ppObjectOpen) noexcept
 	{
 		if (pName.empty()) return MAPI_E_INVALID_PARAMETER;
 
@@ -468,16 +470,17 @@ namespace file
 
 		LPMESSAGE lpMessage = nullptr;
 
-		output::DebugPrint(output::DBGGeneric, L"SaveToMSG: Saving message to \"%ws\"\n", szPathName.c_str());
+		output::DebugPrint(output::dbgLevel::Generic, L"SaveToMSG: Saving message to \"%ws\"\n", szPathName.c_str());
 
-		output::DebugPrint(output::DBGGeneric, L"Source Message =\n");
-		output::outputBinary(output::DBGGeneric, nullptr, entryID.Value.bin);
+		output::DebugPrint(output::dbgLevel::Generic, L"Source Message =\n");
+		const auto bin = mapi::getBin(entryID);
+		output::outputBinary(output::dbgLevel::Generic, nullptr, bin);
 
 		auto lpMapiContainer = mapi::safe_cast<LPMAPICONTAINER>(lpFolder);
 		if (lpMapiContainer)
 		{
 			lpMessage = mapi::CallOpenEntry<LPMESSAGE>(
-				nullptr, nullptr, lpMapiContainer, nullptr, &entryID.Value.bin, nullptr, MAPI_BEST_ACCESS, nullptr);
+				nullptr, nullptr, lpMapiContainer, nullptr, &bin, nullptr, MAPI_BEST_ACCESS, nullptr);
 		}
 
 		auto hRes = S_OK;
@@ -486,16 +489,16 @@ namespace file
 			const auto szSubj =
 				strings::CheckStringProp(lpSubject, PT_UNICODE) ? lpSubject->Value.lpszW : L"UnknownSubject";
 			const auto recordKey =
-				lpRecordKey && lpRecordKey->ulPropTag == PR_RECORD_KEY ? &lpRecordKey->Value.bin : nullptr;
+				lpRecordKey && lpRecordKey->ulPropTag == PR_RECORD_KEY ? &mapi::getBin(lpRecordKey) : nullptr;
 
 			auto szFileName = BuildFileNameAndPath(L".msg", szSubj, szPathName, recordKey); // STRING_OK
 			if (!szFileName.empty())
 			{
-				output::DebugPrint(output::DBGGeneric, L"Saving to = \"%ws\"\n", szFileName.c_str());
+				output::DebugPrint(output::dbgLevel::Generic, L"Saving to = \"%ws\"\n", szFileName.c_str());
 
 				hRes = EC_H(SaveToMSG(lpMessage, szFileName, bUnicode, hWnd, false));
 
-				output::DebugPrint(output::DBGGeneric, L"Message Saved\n");
+				output::DebugPrint(output::dbgLevel::Generic, L"Message Saved\n");
 			}
 		}
 
@@ -510,7 +513,7 @@ namespace file
 	{
 		if (!lpMessage || szFileName.empty()) return MAPI_E_INVALID_PARAMETER;
 
-		output::DebugPrint(output::DBGGeneric, L"SaveToMSG: Saving message to \"%ws\"\n", szFileName.c_str());
+		output::DebugPrint(output::dbgLevel::Generic, L"SaveToMSG: Saving message to \"%ws\"\n", szFileName.c_str());
 
 		LPSTORAGE pStorage = nullptr;
 		LPMESSAGE pIMsg = nullptr;
@@ -570,7 +573,7 @@ namespace file
 																						  {PR_URL_COMP_NAME}};
 
 		if (!lpMessage || !lpAdrBook || szFileName.empty()) return MAPI_E_INVALID_PARAMETER;
-		output::DebugPrint(output::DBGGeneric, L"SaveToTNEF: Saving message to \"%ws\"\n", szFileName.c_str());
+		output::DebugPrint(output::dbgLevel::Generic, L"SaveToTNEF: Saving message to \"%ws\"\n", szFileName.c_str());
 
 		LPSTREAM lpStream = nullptr;
 		LPITNEF lpTNEF = nullptr;
@@ -742,7 +745,7 @@ namespace file
 		if (!lpAttach || szFileName.empty()) return MAPI_E_INVALID_PARAMETER;
 
 		output::DebugPrint(
-			output::DBGGeneric, L"WriteEmbeddedMSGToFile: Saving attachment to \"%ws\"\n", szFileName.c_str());
+			output::dbgLevel::Generic, L"WriteEmbeddedMSGToFile: Saving attachment to \"%ws\"\n", szFileName.c_str());
 
 		LPMESSAGE lpAttachMsg = nullptr;
 		auto hRes = EC_MAPI(lpAttach->OpenProperty(
@@ -779,7 +782,8 @@ namespace file
 		{
 			if (hRes == MAPI_E_NOT_FOUND)
 			{
-				output::DebugPrint(output::DBGGeneric, L"No attachments found. Maybe the attachment was a message?\n");
+				output::DebugPrint(
+					output::dbgLevel::Generic, L"No attachments found. Maybe the attachment was a message?\n");
 			}
 			else
 				CHECKHRES(hRes);

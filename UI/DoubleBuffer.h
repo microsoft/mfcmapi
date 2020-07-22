@@ -13,12 +13,12 @@ namespace ui
 		HDC m_hdcPaint;
 		RECT m_rcPaint;
 
-		void Cleanup();
+		void Cleanup() noexcept;
 
 	public:
 		CDoubleBuffer();
 		~CDoubleBuffer();
-		void Begin(_Inout_ HDC& hdc, _In_ const RECT& prcPaint);
-		void End(_Inout_ HDC& hdc);
+		void Begin(_Inout_ HDC& hdc, _In_ const RECT& prcPaint) noexcept;
+		void End(_Inout_ HDC& hdc) noexcept;
 	};
 } // namespace ui

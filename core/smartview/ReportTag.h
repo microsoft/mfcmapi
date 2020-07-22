@@ -1,5 +1,5 @@
 #pragma once
-#include <core/smartview/smartViewParser.h>
+#include <core/smartview/block/block.h>
 #include <core/smartview/block/blockStringA.h>
 #include <core/smartview/block/blockBytes.h>
 #include <core/smartview/block/blockT.h>
@@ -7,13 +7,15 @@
 namespace smartview
 {
 	// [MS-OXOMSG].pdf
-	class ReportTag : public smartViewParser
+	class ReportTag : public block
 	{
 	private:
 		void parse() override;
 		void parseBlocks() override;
-		void
-		addEID(const std::wstring& label, const std::shared_ptr<blockT<ULONG>>& cb, std::shared_ptr<blockBytes>& eid);
+		void addEID(
+			const std::wstring& label,
+			const std::shared_ptr<blockT<ULONG>>& cb,
+			const std::shared_ptr<blockBytes>& eid);
 
 		std::shared_ptr<blockBytes> m_Cookie = emptyBB(); // 8 characters + NULL terminator
 		std::shared_ptr<blockT<DWORD>> m_Version = emptyT<DWORD>();

@@ -8,6 +8,8 @@
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 #include <core/mapi/mapiFunctions.h>
+#include <core/mapi/cache/mapiObjects.h>
+#include <UI/file/exporter.h>
 
 namespace dialog
 {
@@ -53,6 +55,7 @@ namespace dialog
 
 	BEGIN_MESSAGE_MAP(SingleMessageDialog, CBaseDialog)
 	ON_COMMAND(ID_REFRESHVIEW, OnRefreshView)
+	ON_COMMAND(ID_SAVEMESSAGETOFILE, OnSaveMessageToFile)
 	ON_COMMAND(ID_ATTACHMENTPROPERTIES, OnAttachmentProperties)
 	ON_COMMAND(ID_RECIPIENTPROPERTIES, OnRecipientProperties)
 	ON_COMMAND(ID_RTFSYNC, OnRTFSync)
@@ -66,21 +69,31 @@ namespace dialog
 	void SingleMessageDialog::OnRefreshView()
 	{
 		if (!m_lpPropDisplay) return;
-		(void) m_lpPropDisplay->RefreshMAPIPropList();
+		static_cast<void>(m_lpPropDisplay->RefreshMAPIPropList());
+	}
+
+	void SingleMessageDialog::OnSaveMessageToFile()
+	{
+		if (!m_lpMessage) return;
+		auto exporter = file::exporter();
+		if (exporter.init(this, false, m_lpMapiObjects->GetAddrBook(true)))
+		{
+			EC_H_S(exporter.exportMessage(m_lpMessage));
+		}
 	}
 
 	void SingleMessageDialog::OnAttachmentProperties()
 	{
 		if (!m_lpMessage) return;
 
-		EC_H_S(DisplayTable(m_lpMessage, PR_MESSAGE_ATTACHMENTS, otDefault, this));
+		EC_H_S(DisplayTable(m_lpMessage, PR_MESSAGE_ATTACHMENTS, objectType::default, this));
 	}
 
 	void SingleMessageDialog::OnRecipientProperties()
 	{
 		if (!m_lpMessage) return;
 
-		EC_H_S(DisplayTable(m_lpMessage, PR_MESSAGE_RECIPIENTS, otDefault, this));
+		EC_H_S(DisplayTable(m_lpMessage, PR_MESSAGE_RECIPIENTS, objectType::default, this));
 	}
 
 	void SingleMessageDialog::OnRTFSync()
@@ -100,16 +113,19 @@ namespace dialog
 			if (m_lpMessage)
 			{
 				output::DebugPrint(
-					output::DBGGeneric, L"Calling RTFSync on %p with flags 0x%X\n", m_lpMessage, MyData.GetHex(0));
+					output::dbgLevel::Generic,
+					L"Calling RTFSync on %p with flags 0x%X\n",
+					m_lpMessage,
+					MyData.GetHex(0));
 				hRes = EC_MAPI(RTFSync(m_lpMessage, MyData.GetHex(0), &bMessageUpdated));
-				output::DebugPrint(output::DBGGeneric, L"RTFSync returned %d\n", bMessageUpdated);
+				output::DebugPrint(output::dbgLevel::Generic, L"RTFSync returned %d\n", bMessageUpdated);
 
 				if (SUCCEEDED(hRes))
 				{
 					EC_MAPI_S(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 				}
 
-				(void) m_lpPropDisplay->RefreshMAPIPropList();
+				static_cast<void>(m_lpPropDisplay->RefreshMAPIPropList());
 			}
 		}
 	}
@@ -120,7 +136,7 @@ namespace dialog
 
 		if (m_lpMessage)
 		{
-			output::DebugPrint(output::DBGGeneric, L"Editing body on %p\n", m_lpMessage);
+			output::DebugPrint(output::dbgLevel::Generic, L"Editing body on %p\n", m_lpMessage);
 
 			editor::CStreamEditor MyEditor(
 				this,
@@ -137,9 +153,9 @@ namespace dialog
 				0);
 			MyEditor.DisableSave();
 
-			(void) MyEditor.DisplayDialog();
+			static_cast<void>(MyEditor.DisplayDialog());
 
-			(void) m_lpPropDisplay->RefreshMAPIPropList();
+			static_cast<void>(m_lpPropDisplay->RefreshMAPIPropList());
 		}
 	}
 
@@ -149,7 +165,7 @@ namespace dialog
 
 		if (m_lpMessage)
 		{
-			output::DebugPrint(output::DBGGeneric, L"Testing HTML on %p\n", m_lpMessage);
+			output::DebugPrint(output::dbgLevel::Generic, L"Testing HTML on %p\n", m_lpMessage);
 
 			editor::CStreamEditor MyEditor(
 				this,
@@ -166,9 +182,9 @@ namespace dialog
 				0);
 			MyEditor.DisableSave();
 
-			(void) MyEditor.DisplayDialog();
+			static_cast<void>(MyEditor.DisplayDialog());
 
-			(void) m_lpPropDisplay->RefreshMAPIPropList();
+			static_cast<void>(m_lpPropDisplay->RefreshMAPIPropList());
 		}
 	}
 
@@ -178,7 +194,7 @@ namespace dialog
 
 		if (m_lpMessage)
 		{
-			output::DebugPrint(output::DBGGeneric, L"Testing body on %p\n", m_lpMessage);
+			output::DebugPrint(output::dbgLevel::Generic, L"Testing body on %p\n", m_lpMessage);
 
 			editor::CStreamEditor MyEditor(
 				this,
@@ -195,9 +211,9 @@ namespace dialog
 				0);
 			MyEditor.DisableSave();
 
-			(void) MyEditor.DisplayDialog();
+			static_cast<void>(MyEditor.DisplayDialog());
 
-			(void) m_lpPropDisplay->RefreshMAPIPropList();
+			static_cast<void>(m_lpPropDisplay->RefreshMAPIPropList());
 		}
 	}
 
@@ -207,11 +223,11 @@ namespace dialog
 
 		if (m_lpMessage)
 		{
-			output::DebugPrint(output::DBGGeneric, L"Saving changes on %p\n", m_lpMessage);
+			output::DebugPrint(output::dbgLevel::Generic, L"Saving changes on %p\n", m_lpMessage);
 
 			EC_MAPI_S(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 
-			(void) m_lpPropDisplay->RefreshMAPIPropList();
+			static_cast<void>(m_lpPropDisplay->RefreshMAPIPropList());
 		}
 	}
 } // namespace dialog

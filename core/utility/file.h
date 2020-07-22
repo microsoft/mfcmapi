@@ -2,6 +2,7 @@
 
 namespace file
 {
+	std::wstring GetSystemDirectory();
 	std::wstring ShortenPath(const std::wstring& path);
 	std::wstring GetDirectoryPath(HWND hWnd);
 
@@ -18,6 +19,5 @@ namespace file
 		_In_opt_ const _SBinary* lpBin);
 
 	std::wstring GetModuleFileName(_In_opt_ HMODULE hModule);
-	std::wstring GetSystemDirectory();
 	std::map<std::wstring, std::wstring> GetFileVersionInfo(_In_opt_ HMODULE hModule);
 } // namespace file

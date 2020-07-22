@@ -1,4 +1,4 @@
-// Common functions for MFC MAPI
+// Common functions for MFCMAPI
 
 #include <StdAfx.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
@@ -29,7 +29,7 @@
 namespace dialog
 {
 	_Check_return_ HRESULT
-	DisplayObject(_In_ LPMAPIPROP lpUnk, ULONG ulObjType, ObjectType tType, _In_ CBaseDialog* lpHostDlg)
+	DisplayObject(_In_ LPMAPIPROP lpUnk, ULONG ulObjType, objectType tType, _In_ CBaseDialog* lpHostDlg)
 	{
 		if (!lpHostDlg || !lpUnk) return MAPI_E_INVALID_PARAMETER;
 
@@ -42,13 +42,13 @@ namespace dialog
 		// If we weren't passed an object type, go get one - careful! Some objects lie!
 		if (!ulObjType)
 		{
-			ulObjType = mapi::GetMAPIObjectType(static_cast<LPMAPIPROP>(lpUnk));
+			ulObjType = mapi::GetMAPIObjectType(lpUnk);
 		}
 
 		auto szFlags = smartview::InterpretNumberAsStringProp(ulObjType, PR_OBJECT_TYPE);
 		output::DebugPrint(
-			output::DBGGeneric,
-			L"DisplayObject asked to display %p, with ObjectType of 0x%08X and MAPI type of 0x%08X = %ws\n",
+			output::dbgLevel::Generic,
+			L"DisplayObject asked to display %p, with objectType of 0x%08X and MAPI type of 0x%08X = %ws\n",
 			lpUnk,
 			tType,
 			ulObjType,
@@ -68,7 +68,11 @@ namespace dialog
 			lpMapiObjects->SetMDB(lpTempMDB);
 
 			new CMsgStoreDlg(
-				lpParentWnd, lpMapiObjects, lpUnk, nullptr, otStoreDeletedItems == tType ? dfDeleted : dfNormal);
+				lpParentWnd,
+				lpMapiObjects,
+				lpUnk,
+				nullptr,
+				objectType::storeDeletedItems == tType ? tableDisplayFlags::dfDeleted : tableDisplayFlags::dfNormal);
 
 			// restore the old MDB
 			lpMapiObjects->SetMDB(lpMDB); // ...we can put it back
@@ -80,12 +84,12 @@ namespace dialog
 		case MAPI_FOLDER:
 		{
 			// There are two ways to display a folder...either the contents table or the hierarchy table.
-			if (otHierarchy == tType)
+			if (tType == objectType::hierarchy)
 			{
 				const auto lpMDB = lpMapiObjects->GetMDB(); // do not release
 				if (lpMDB)
 				{
-					new CMsgStoreDlg(lpParentWnd, lpMapiObjects, lpMDB, lpUnk, dfNormal);
+					new CMsgStoreDlg(lpParentWnd, lpMapiObjects, lpMDB, lpUnk, tableDisplayFlags::dfNormal);
 				}
 				else
 				{
@@ -93,12 +97,11 @@ namespace dialog
 					const auto lpMAPISession = lpMapiObjects->GetSession(); // do not release
 					if (lpMAPISession)
 					{
-						auto lpNewMDB =
-							mapi::store::OpenStoreFromMAPIProp(lpMAPISession, static_cast<LPMAPIPROP>(lpUnk));
+						auto lpNewMDB = mapi::store::OpenStoreFromMAPIProp(lpMAPISession, lpUnk);
 						if (lpNewMDB)
 						{
 							lpMapiObjects->SetMDB(lpNewMDB);
-							new CMsgStoreDlg(lpParentWnd, lpMapiObjects, lpNewMDB, lpUnk, dfNormal);
+							new CMsgStoreDlg(lpParentWnd, lpMapiObjects, lpNewMDB, lpUnk, tableDisplayFlags::dfNormal);
 
 							// restore the old MDB
 							lpMapiObjects->SetMDB(nullptr);
@@ -107,9 +110,13 @@ namespace dialog
 					}
 				}
 			}
-			else if (otContents == tType || otAssocContents == tType)
+			else if (tType == objectType::contents || tType == objectType::assocContents)
 			{
-				new CFolderDlg(lpParentWnd, lpMapiObjects, lpUnk, otAssocContents == tType ? dfAssoc : dfNormal);
+				new CFolderDlg(
+					lpParentWnd,
+					lpMapiObjects,
+					lpUnk,
+					tType == objectType::assocContents ? tableDisplayFlags::dfAssoc : tableDisplayFlags::dfNormal);
 			}
 		}
 		break;
@@ -142,7 +149,7 @@ namespace dialog
 
 			szFlags = smartview::InterpretNumberAsStringProp(ulObjType, PR_OBJECT_TYPE);
 			output::DebugPrint(
-				output::DBGGeneric,
+				output::dbgLevel::Generic,
 				L"DisplayObject: Object type: 0x%08X = %ws not implemented\r\n" // STRING_OK
 				L"This is not an error. It just means no specialized viewer has been implemented for this object "
 				L"type.", // STRING_OK
@@ -154,7 +161,7 @@ namespace dialog
 		return S_OK;
 	}
 
-	_Check_return_ HRESULT DisplayTable(_In_ LPMAPITABLE lpTable, ObjectType tType, _In_ CBaseDialog* lpHostDlg)
+	_Check_return_ HRESULT DisplayTable(_In_ LPMAPITABLE lpTable, objectType tType, _In_ CBaseDialog* lpHostDlg)
 	{
 		if (!lpHostDlg) return MAPI_E_INVALID_PARAMETER;
 
@@ -164,18 +171,18 @@ namespace dialog
 		const auto lpParentWnd = lpHostDlg->GetParentWnd(); // do not release
 		if (!lpParentWnd) return MAPI_E_INVALID_PARAMETER;
 
-		output::DebugPrint(output::DBGGeneric, L"DisplayTable asked to display %p\n", lpTable);
+		output::DebugPrint(output::dbgLevel::Generic, L"DisplayTable asked to display %p\n", lpTable);
 
 		switch (tType)
 		{
-		case otStatus:
+		case objectType::status:
 		{
 			if (!lpTable) return MAPI_E_INVALID_PARAMETER;
 			new CContentsTableDlg(
 				lpParentWnd,
 				lpMapiObjects,
 				IDS_STATUSTABLE,
-				mfcmapiCALL_CREATE_DIALOG,
+				createDialogType::CALL_CREATE_DIALOG,
 				nullptr,
 				lpTable,
 				&columns::sptSTATUSCols.tags,
@@ -184,14 +191,14 @@ namespace dialog
 				MENU_CONTEXT_STATUS_TABLE);
 			break;
 		}
-		case otReceive:
+		case objectType::receive:
 		{
 			if (!lpTable) return MAPI_E_INVALID_PARAMETER;
 			new CContentsTableDlg(
 				lpParentWnd,
 				lpMapiObjects,
 				IDS_RECEIVEFOLDERTABLE,
-				mfcmapiCALL_CREATE_DIALOG,
+				createDialogType::CALL_CREATE_DIALOG,
 				nullptr,
 				lpTable,
 				&columns::sptRECEIVECols.tags,
@@ -200,14 +207,14 @@ namespace dialog
 				MENU_CONTEXT_RECIEVE_FOLDER_TABLE);
 			break;
 		}
-		case otHierarchy:
+		case objectType::hierarchy:
 		{
 			if (!lpTable) return MAPI_E_INVALID_PARAMETER;
 			new CContentsTableDlg(
 				lpParentWnd,
 				lpMapiObjects,
 				IDS_HIERARCHYTABLE,
-				mfcmapiCALL_CREATE_DIALOG,
+				createDialogType::CALL_CREATE_DIALOG,
 				nullptr,
 				lpTable,
 				&columns::sptHIERARCHYCols.tags,
@@ -217,15 +224,15 @@ namespace dialog
 			break;
 		}
 		default:
-		case otDefault:
+		case objectType::default:
 		{
 			if (!lpTable) return MAPI_E_INVALID_PARAMETER;
-			if (otDefault != tType) error::ErrDialog(__FILE__, __LINE__, IDS_EDDISPLAYTABLE, tType);
+			if (tType != objectType::default) error::ErrDialog(__FILE__, __LINE__, IDS_EDDISPLAYTABLE, tType);
 			new CContentsTableDlg(
 				lpParentWnd,
 				lpMapiObjects,
 				IDS_CONTENTSTABLE,
-				mfcmapiCALL_CREATE_DIALOG,
+				createDialogType::CALL_CREATE_DIALOG,
 				nullptr,
 				lpTable,
 				&columns::sptDEFCols.tags,
@@ -240,7 +247,7 @@ namespace dialog
 	}
 
 	_Check_return_ HRESULT
-	DisplayTable(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, ObjectType tType, _In_ CBaseDialog* lpHostDlg)
+	DisplayTable(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, objectType tType, _In_ CBaseDialog* lpHostDlg)
 	{
 		LPMAPITABLE lpTable = nullptr;
 
@@ -300,7 +307,7 @@ namespace dialog
 	}
 
 	_Check_return_ HRESULT
-	DisplayExchangeTable(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, ObjectType tType, _In_ CBaseDialog* lpHostDlg)
+	DisplayExchangeTable(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, objectType tType, _In_ CBaseDialog* lpHostDlg)
 	{
 		LPEXCHANGEMODIFYTABLE lpExchTbl = nullptr;
 		LPMAPITABLE lpMAPITable = nullptr;
@@ -325,10 +332,10 @@ namespace dialog
 		{
 			switch (tType)
 			{
-			case otRules:
+			case objectType::rules:
 				new CRulesDlg(lpParentWnd, lpMapiObjects, lpExchTbl);
 				break;
-			case otACL:
+			case objectType::ACL:
 			{
 				editor::CEditor MyData(
 					lpHostDlg, IDS_ACLTABLE, IDS_ACLTABLEPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
@@ -382,7 +389,7 @@ namespace dialog
 
 			if (Cancel.DisplayDialog())
 			{
-				output::DebugPrint(output::DBGGeneric, L"bShouldCancel: User asked to cancel\n");
+				output::DebugPrint(output::dbgLevel::Generic, L"bShouldCancel: User asked to cancel\n");
 				return true;
 			}
 		}
@@ -408,7 +415,7 @@ namespace dialog
 		if (lpMDB && mapi::store::StoreSupportsManageStore(lpMDB))
 		{
 			LPMAPITABLE lpMailboxTable = nullptr;
-			const auto szServerName = strings::stringTowstring(mapi::store::GetServerName(lpMAPISession));
+			const auto szServerName = mapi::store::GetServerName(lpMAPISession);
 
 			editor::CEditor MyData(
 				static_cast<CWnd*>(lpParent),
@@ -431,7 +438,7 @@ namespace dialog
 				}
 				else
 				{
-					auto szServerDN = mapi::store::BuildServerDN(strings::wstringTostring(MyData.GetStringW(0)), "");
+					auto szServerDN = mapi::store::BuildServerDN(MyData.GetStringW(0), L"");
 					if (!szServerDN.empty())
 					{
 						LPMDB lpOldMDB = nullptr;
@@ -507,7 +514,8 @@ namespace dialog
 		if (lpPrivateMDB) lpPrivateMDB->Release();
 	}
 
-	void DisplayPublicFolderTable(_In_ ui::CParentWnd* lpParent, _In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects)
+	void
+	DisplayPublicFolderTable(_In_ ui::CParentWnd* lpParent, _In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects)
 	{
 		if (!lpParent || !lpMapiObjects) return;
 		LPMDB lpPrivateMDB = nullptr;
@@ -525,7 +533,7 @@ namespace dialog
 		if (lpMDB && mapi::store::StoreSupportsManageStore(lpMDB))
 		{
 			LPMAPITABLE lpPFTable = nullptr;
-			const auto szServerName = strings::stringTowstring(mapi::store::GetServerName(lpMAPISession));
+			const auto szServerName = mapi::store::GetServerName(lpMAPISession);
 
 			editor::CEditor MyData(
 				reinterpret_cast<CWnd*>(lpParent),
@@ -549,7 +557,7 @@ namespace dialog
 				}
 				else
 				{
-					auto szServerDN = mapi::store::BuildServerDN(strings::wstringTostring(MyData.GetStringW(0)), "");
+					auto szServerDN = mapi::store::BuildServerDN(MyData.GetStringW(0), L"");
 					if (!szServerDN.empty())
 					{
 						LPMDB lpOldMDB = nullptr;
@@ -629,23 +637,20 @@ namespace dialog
 		if (lpPrivateMDB) lpPrivateMDB->Release();
 	}
 
-	void ResolveMessageClass(
-		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
-		_In_opt_ LPMAPIFOLDER lpMAPIFolder,
-		_Out_ LPMAPIFORMINFO* lppMAPIFormInfo)
+	_Check_return_ LPMAPIFORMINFO
+	ResolveMessageClass(_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects, _In_opt_ LPMAPIFOLDER lpMAPIFolder)
 	{
 		LPMAPIFORMMGR lpMAPIFormMgr = nullptr;
-		if (!lpMapiObjects || !lppMAPIFormInfo) return;
-
-		*lppMAPIFormInfo = nullptr;
+		if (!lpMapiObjects) return nullptr;
 
 		const auto lpMAPISession = lpMapiObjects->GetSession(); // do not release
-		if (!lpMAPISession) return;
+		if (!lpMAPISession) nullptr;
 
+		LPMAPIFORMINFO lpMAPIFormInfo = nullptr;
 		EC_MAPI_S(MAPIOpenFormMgr(lpMAPISession, &lpMAPIFormMgr));
 		if (lpMAPIFormMgr)
 		{
-			output::DebugPrint(output::DBGForms, L"OnResolveMessageClass: resolving message class\n");
+			output::DebugPrint(output::dbgLevel::Forms, L"OnResolveMessageClass: resolving message class\n");
 			editor::CEditor MyData(
 				nullptr, IDS_RESOLVECLASS, IDS_RESOLVECLASSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 			MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_CLASS, false));
@@ -653,50 +658,48 @@ namespace dialog
 
 			if (MyData.DisplayDialog())
 			{
-				auto szClass = MyData.GetStringW(0); // ResolveMessageClass requires an ANSI string
+				auto szClass = MyData.GetStringW(0);
 				const auto ulFlags = MyData.GetHex(1);
 				if (!szClass.empty())
 				{
-					LPMAPIFORMINFO lpMAPIFormInfo = nullptr;
 					output::DebugPrint(
-						output::DBGForms,
+						output::dbgLevel::Forms,
 						L"OnResolveMessageClass: Calling ResolveMessageClass(\"%ws\",0x%08X)\n",
 						szClass.c_str(),
 						ulFlags); // STRING_OK
+					// ResolveMessageClass requires an ANSI string
 					EC_MAPI_S(lpMAPIFormMgr->ResolveMessageClass(
 						strings::wstringTostring(szClass).c_str(), ulFlags, lpMAPIFolder, &lpMAPIFormInfo));
 					if (lpMAPIFormInfo)
 					{
-						output::outputFormInfo(output::DBGForms, nullptr, lpMAPIFormInfo);
-						*lppMAPIFormInfo = lpMAPIFormInfo;
+						output::outputFormInfo(output::dbgLevel::Forms, nullptr, lpMAPIFormInfo);
 					}
 				}
 			}
 
 			lpMAPIFormMgr->Release();
 		}
+
+		return lpMAPIFormInfo;
 	}
 
-	void SelectForm(
+	_Check_return_ LPMAPIFORMINFO SelectForm(
 		_In_ HWND hWnd,
 		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
-		_In_opt_ LPMAPIFOLDER lpMAPIFolder,
-		_Out_ LPMAPIFORMINFO* lppMAPIFormInfo)
+		_In_opt_ LPMAPIFOLDER lpMAPIFolder)
 	{
 		LPMAPIFORMMGR lpMAPIFormMgr = nullptr;
+		LPMAPIFORMINFO lpMAPIFormInfo = nullptr;
 
-		if (!lpMapiObjects || !lppMAPIFormInfo) return;
-
-		*lppMAPIFormInfo = nullptr;
+		if (!lpMapiObjects) return nullptr;
 
 		const auto lpMAPISession = lpMapiObjects->GetSession(); // do not release
-		if (!lpMAPISession) return;
+		if (!lpMAPISession) return nullptr;
 
 		EC_MAPI_S(MAPIOpenFormMgr(lpMAPISession, &lpMAPIFormMgr));
 
 		if (lpMAPIFormMgr)
 		{
-			LPMAPIFORMINFO lpMAPIFormInfo = nullptr;
 			// Apparently, SelectForm doesn't support unicode
 			auto szTitle = strings::wstringTostring(strings::loadstring(IDS_SELECTFORMPROPS));
 			EC_H_CANCEL_S(lpMAPIFormMgr->SelectForm(
@@ -708,11 +711,12 @@ namespace dialog
 
 			if (lpMAPIFormInfo)
 			{
-				output::outputFormInfo(output::DBGForms, nullptr, lpMAPIFormInfo);
-				*lppMAPIFormInfo = lpMAPIFormInfo;
+				output::outputFormInfo(output::dbgLevel::Forms, nullptr, lpMAPIFormInfo);
 			}
 
 			lpMAPIFormMgr->Release();
 		}
+
+		return lpMAPIFormInfo;
 	}
 } // namespace dialog

@@ -16,7 +16,7 @@ namespace mapi
 		STDMETHODIMP_(ULONG) Release() override;
 		STDMETHODIMP_(ULONG) OnNotify(ULONG cNotify, LPNOTIFICATION lpNotifications) override;
 
-		void SetAdviseTarget(LPMAPIPROP lpProp);
+		void SetAdviseTarget(LPMAPIPROP lpProp) noexcept;
 
 	private:
 		LONG m_cRef{1};

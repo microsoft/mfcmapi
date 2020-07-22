@@ -4,72 +4,63 @@
 #include <UI/profile.h>
 #include <core/utility/import.h>
 #include <UI/Dialogs/Editors/Editor.h>
-#include <core/utility/file.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
+#include <core/utility/file.h>
 #include <core/addin/mfcmapi.h>
+#include <core/mapi/extraPropTags.h>
 
-namespace ui
+namespace ui::profile
 {
-	namespace profile
+	std::wstring LaunchProfileWizard(_In_ HWND hParentWnd, ULONG ulFlags, _In_ const std::wstring& szServiceNameToAdd)
 	{
-		// This declaration is missing from the MAPI headers
-		STDAPI STDAPICALLTYPE LaunchWizard(
-			HWND hParentWnd,
-			ULONG ulFlags,
-			LPCSTR* lppszServiceNameToAdd,
-			ULONG cchBufferMax,
-			_Out_cap_(cchBufferMax) LPSTR lpszNewProfileName);
+		CHAR szProfName[80] = {0};
+		constexpr ULONG cchProfName = _countof(szProfName);
+		const auto szServiceNameToAddA = strings::wstringTostring(szServiceNameToAdd);
+		LPCSTR szServices[] = {szServiceNameToAddA.c_str(), nullptr};
 
-		std::wstring
-		LaunchProfileWizard(_In_ HWND hParentWnd, ULONG ulFlags, _In_ const std::string& szServiceNameToAdd)
+		output::DebugPrint(
+			output::dbgLevel::Generic, L"LaunchProfileWizard: Using LAUNCHWIZARDENTRY to launch wizard API.\n");
+
+		// Call LaunchWizard to add the service.
+		const auto hRes = WC_MAPI(LaunchWizard(hParentWnd, ulFlags, szServices, cchProfName, szProfName));
+		if (hRes == MAPI_E_CALL_FAILED)
 		{
-			CHAR szProfName[80] = {0};
-			const ULONG cchProfName = _countof(szProfName);
-			LPCSTR szServices[] = {szServiceNameToAdd.c_str(), nullptr};
+			CHECKHRESMSG(hRes, IDS_LAUNCHWIZARDFAILED);
+		}
+		else
+			CHECKHRES(hRes);
 
+		if (SUCCEEDED(hRes))
+		{
 			output::DebugPrint(
-				output::DBGGeneric, L"LaunchProfileWizard: Using LAUNCHWIZARDENTRY to launch wizard API.\n");
-
-			// Call LaunchWizard to add the service.
-			const auto hRes = WC_MAPI(LaunchWizard(hParentWnd, ulFlags, szServices, cchProfName, szProfName));
-			if (hRes == MAPI_E_CALL_FAILED)
-			{
-				CHECKHRESMSG(hRes, IDS_LAUNCHWIZARDFAILED);
-			}
-			else
-				CHECKHRES(hRes);
-
-			if (SUCCEEDED(hRes))
-			{
-				output::DebugPrint(
-					output::DBGGeneric, L"LaunchProfileWizard: Profile \"%hs\" configured.\n", szProfName);
-			}
-
-			return strings::LPCSTRToWstring(szProfName);
+				output::dbgLevel::Generic, L"LaunchProfileWizard: Profile \"%hs\" configured.\n", szProfName);
 		}
 
-		void DisplayMAPISVCPath(_In_ CWnd* pParentWnd)
-		{
-			output::DebugPrint(output::DBGGeneric, L"DisplayMAPISVCPath()\n");
+		return strings::LPCSTRToWstring(szProfName);
+	}
 
-			dialog::editor::CEditor MyData(pParentWnd, IDS_MAPISVCTITLE, IDS_MAPISVCTEXT, CEDITOR_BUTTON_OK);
-			MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_FILEPATH, true));
-			MyData.SetStringW(0, GetMAPISVCPath());
+	void DisplayMAPISVCPath(_In_ CWnd* pParentWnd)
+	{
+		output::DebugPrint(output::dbgLevel::Generic, L"DisplayMAPISVCPath()\n");
 
-			(void) MyData.DisplayDialog();
-		}
+		dialog::editor::CEditor MyData(pParentWnd, IDS_MAPISVCTITLE, IDS_MAPISVCTEXT, CEDITOR_BUTTON_OK);
+		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_FILEPATH, true));
+		MyData.SetStringW(0, GetMAPISVCPath());
 
-		struct SERVICESINIREC
-		{
-			LPCWSTR lpszSection;
-			LPCWSTR lpszKey;
-			ULONG ulKey;
-			LPCWSTR lpszValue;
-		};
+		static_cast<void>(MyData.DisplayDialog());
+	}
 
-		static SERVICESINIREC aEMSServicesIni[] = {
-			// clang-format off
+	struct SERVICESINIREC
+	{
+		LPCWSTR lpszSection;
+		LPCWSTR lpszKey;
+		ULONG ulKey;
+		LPCWSTR lpszValue;
+	};
+
+	static SERVICESINIREC aEMSServicesIni[] = {
+		// clang-format off
 			{L"Default Services", L"MSEMS", 0L, L"Microsoft Exchange Server"}, // STRING_OK
 			{L"Services", L"MSEMS", 0L, L"Microsoft Exchange Server"}, // STRING_OK
 
@@ -138,12 +129,12 @@ namespace ui
 			{L"EMS_Hook", L"PR_RESOURCE_FLAGS", 0L, L"HOOK_INBOUND"}, // STRING_OK
 
 			{nullptr, nullptr, 0L, nullptr}
-			// clang-format on
-		};
+		// clang-format on
+	};
 
-		// Here's an example of the array to use to remove a service
-		static SERVICESINIREC aREMOVE_MSEMSServicesIni[] = {
-			// clang-format off
+	// Here's an example of the array to use to remove a service
+	static SERVICESINIREC aREMOVE_MSEMSServicesIni[] = {
+		// clang-format off
 			{L"Default Services", L"MSEMS", 0L, nullptr}, // STRING_OK
 			{L"Services", L"MSEMS", 0L, nullptr}, // STRING_OK
 			{L"MSEMS", nullptr, 0L, nullptr}, // STRING_OK
@@ -156,11 +147,11 @@ namespace ui
 			{L"EMS_Hook", nullptr, 0L, nullptr}, // STRING_OK
 			{L"EMSDelegate", nullptr, 0L, nullptr}, // STRING_OK
 			{nullptr, nullptr, 0L, nullptr}
-			// clang-format on
-		};
+		// clang-format on
+	};
 
-		static SERVICESINIREC aPSTServicesIni[] = {
-			// clang-format off
+	static SERVICESINIREC aPSTServicesIni[] = {
+		// clang-format off
 			{L"Services", L"MSPST MS", 0L, L"Personal Folders File (.pst)"}, // STRING_OK
 			{L"Services", L"MSPST AB", 0L, L"Personal Address Book"}, // STRING_OK
 
@@ -196,11 +187,11 @@ namespace ui
 			{L"MSPST MSP", L"PR_SERVICE_DLL_NAME", 0L, L"mspst.dll"}, // STRING_OK
 
 			{nullptr, nullptr, 0L, nullptr}
-			// clang-format on
-		};
+		// clang-format on
+	};
 
-		static SERVICESINIREC aREMOVE_MSPSTServicesIni[] = {
-			// clang-format off
+	static SERVICESINIREC aREMOVE_MSPSTServicesIni[] = {
+		// clang-format off
 			{L"Default Services", L"MSPST MS", 0L, nullptr}, // STRING_OK
 			{L"Default Services", L"MSPST AB", 0L, nullptr}, // STRING_OK
 			{L"Services", L"MSPST MS", 0L, nullptr}, // STRING_OK
@@ -215,130 +206,129 @@ namespace ui
 			{L"MSPST MSP", nullptr, 0L, nullptr}, // STRING_OK
 
 			{nullptr, nullptr, 0L, nullptr}
-			// clang-format on
-		};
+		// clang-format on
+	};
 
-		// Function name : GetMAPISVCPath
-		// Description : This will get the correct path to the MAPISVC.INF file.
-		// Return type : wstring
-		std::wstring GetMAPISVCPath()
+	// Function name : GetMAPISVCPath
+	// Description : This will get the correct path to the MAPISVC.INF file.
+	// Return type : wstring
+	std::wstring GetMAPISVCPath()
+	{
+		auto szMAPIDir = import::GetMAPIPath(L"Microsoft Outlook"); // STRING_OK
+
+		// We got the path to MAPI - need to strip it
+		if (!szMAPIDir.empty())
 		{
-			auto szMAPIDir = import::GetMAPIPath(L"Microsoft Outlook"); // STRING_OK
-
-			// We got the path to MAPI - need to strip it
-			if (!szMAPIDir.empty())
-			{
-				szMAPIDir.erase(szMAPIDir.find_last_of(L'\\'), std::string::npos);
-			}
-			else
-			{
-				// Fall back on System32
-				szMAPIDir = file::GetSystemDirectory();
-			}
-
-			if (!szMAPIDir.empty())
-			{
-				szMAPIDir += L"\\MAPISVC.INF";
-			}
-
-			return szMAPIDir;
+			szMAPIDir.erase(szMAPIDir.find_last_of(L'\\'), std::string::npos);
+		}
+		else
+		{
+			// Fall back on System32
+			szMAPIDir = file::GetSystemDirectory();
 		}
 
-		// Add values to MAPISVC.INF
-		_Check_return_ HRESULT HrSetProfileParameters(_In_ SERVICESINIREC* lpServicesIni)
+		if (!szMAPIDir.empty())
 		{
-			auto hRes = S_OK;
-
-			output::DebugPrint(output::DBGGeneric, L"HrSetProfileParameters()\n");
-
-			if (!lpServicesIni) return MAPI_E_INVALID_PARAMETER;
-
-			auto szServicesIni = GetMAPISVCPath();
-
-			if (szServicesIni.empty())
-			{
-				hRes = MAPI_E_NOT_FOUND;
-			}
-			else
-			{
-				output::DebugPrint(output::DBGGeneric, L"Writing to this file: \"%ws\"\n", szServicesIni.c_str());
-
-				// Loop through and add items to MAPISVC.INF
-				auto n = 0;
-
-				while (lpServicesIni[n].lpszSection != nullptr)
-				{
-					std::wstring lpszProp = lpServicesIni[n].lpszKey;
-					std::wstring lpszValue = lpServicesIni[n].lpszValue;
-
-					// Switch the property if necessary
-					if (lpszProp.empty() && lpServicesIni[n].ulKey != 0)
-					{
-						lpszProp = strings::format(
-							L"%lx", // STRING_OK
-							lpServicesIni[n].ulKey);
-					}
-
-					// Write the item to MAPISVC.INF
-					output::DebugPrint(
-						output::DBGGeneric,
-						L"\tWriting: \"%ws\"::\"%ws\"::\"%ws\"\n",
-						lpServicesIni[n].lpszSection,
-						lpszProp.c_str(),
-						lpszValue.c_str());
-
-					hRes = EC_B(WritePrivateProfileStringW(
-						lpServicesIni[n].lpszSection, lpszProp.c_str(), lpszValue.c_str(), szServicesIni.c_str()));
-					n++;
-				}
-
-				// Flush the information - we can ignore the return code
-				WritePrivateProfileStringW(nullptr, nullptr, nullptr, szServicesIni.c_str());
-			}
-
-			return hRes;
+			szMAPIDir += L"\\MAPISVC.INF";
 		}
 
-		void AddServicesToMapiSvcInf()
+		return szMAPIDir;
+	}
+
+	// Add values to MAPISVC.INF
+	_Check_return_ HRESULT HrSetProfileParameters(_In_ SERVICESINIREC* lpServicesIni)
+	{
+		auto hRes = S_OK;
+
+		output::DebugPrint(output::dbgLevel::Generic, L"HrSetProfileParameters()\n");
+
+		if (!lpServicesIni) return MAPI_E_INVALID_PARAMETER;
+
+		auto szServicesIni = GetMAPISVCPath();
+
+		if (szServicesIni.empty())
 		{
-			dialog::editor::CEditor MyData(
-				nullptr, IDS_ADDSERVICESTOINF, IDS_ADDSERVICESTOINFPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-			MyData.AddPane(viewpane::CheckPane::Create(0, IDS_EXCHANGE, false, false));
-			MyData.AddPane(viewpane::CheckPane::Create(1, IDS_PST, false, false));
+			hRes = MAPI_E_NOT_FOUND;
+		}
+		else
+		{
+			output::DebugPrint(output::dbgLevel::Generic, L"Writing to this file: \"%ws\"\n", szServicesIni.c_str());
 
-			if (MyData.DisplayDialog())
+			// Loop through and add items to MAPISVC.INF
+			auto n = 0;
+
+			while (lpServicesIni[n].lpszSection != nullptr)
 			{
-				if (MyData.GetCheck(0))
+				std::wstring lpszProp = lpServicesIni[n].lpszKey;
+				std::wstring lpszValue = lpServicesIni[n].lpszValue;
+
+				// Switch the property if necessary
+				if (lpszProp.empty() && lpServicesIni[n].ulKey != 0)
 				{
-					EC_H_S(HrSetProfileParameters(aEMSServicesIni));
+					lpszProp = strings::format(
+						L"%lx", // STRING_OK
+						lpServicesIni[n].ulKey);
 				}
 
-				if (MyData.GetCheck(1))
-				{
-					EC_H_S(HrSetProfileParameters(aPSTServicesIni));
-				}
+				// Write the item to MAPISVC.INF
+				output::DebugPrint(
+					output::dbgLevel::Generic,
+					L"\tWriting: \"%ws\"::\"%ws\"::\"%ws\"\n",
+					lpServicesIni[n].lpszSection,
+					lpszProp.c_str(),
+					lpszValue.c_str());
+
+				hRes = EC_B(WritePrivateProfileStringW(
+					lpServicesIni[n].lpszSection, lpszProp.c_str(), lpszValue.c_str(), szServicesIni.c_str()));
+				n++;
 			}
+
+			// Flush the information - we can ignore the return code
+			WritePrivateProfileStringW(nullptr, nullptr, nullptr, szServicesIni.c_str());
 		}
 
-		void RemoveServicesFromMapiSvcInf()
+		return hRes;
+	}
+
+	void AddServicesToMapiSvcInf()
+	{
+		dialog::editor::CEditor MyData(
+			nullptr, IDS_ADDSERVICESTOINF, IDS_ADDSERVICESTOINFPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+		MyData.AddPane(viewpane::CheckPane::Create(0, IDS_EXCHANGE, false, false));
+		MyData.AddPane(viewpane::CheckPane::Create(1, IDS_PST, false, false));
+
+		if (MyData.DisplayDialog())
 		{
-			dialog::editor::CEditor MyData(
-				nullptr, IDS_REMOVEFROMINF, IDS_REMOVEFROMINFPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-			MyData.AddPane(viewpane::CheckPane::Create(0, IDS_EXCHANGE, false, false));
-			MyData.AddPane(viewpane::CheckPane::Create(1, IDS_PST, false, false));
-
-			if (MyData.DisplayDialog())
+			if (MyData.GetCheck(0))
 			{
-				if (MyData.GetCheck(0))
-				{
-					EC_H_S(HrSetProfileParameters(aREMOVE_MSEMSServicesIni));
-				}
+				EC_H_S(HrSetProfileParameters(aEMSServicesIni));
+			}
 
-				if (MyData.GetCheck(1))
-				{
-					EC_H_S(HrSetProfileParameters(aREMOVE_MSPSTServicesIni));
-				}
+			if (MyData.GetCheck(1))
+			{
+				EC_H_S(HrSetProfileParameters(aPSTServicesIni));
 			}
 		}
-	} // namespace profile
-} // namespace ui
+	}
+
+	void RemoveServicesFromMapiSvcInf()
+	{
+		dialog::editor::CEditor MyData(
+			nullptr, IDS_REMOVEFROMINF, IDS_REMOVEFROMINFPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+		MyData.AddPane(viewpane::CheckPane::Create(0, IDS_EXCHANGE, false, false));
+		MyData.AddPane(viewpane::CheckPane::Create(1, IDS_PST, false, false));
+
+		if (MyData.DisplayDialog())
+		{
+			if (MyData.GetCheck(0))
+			{
+				EC_H_S(HrSetProfileParameters(aREMOVE_MSEMSServicesIni));
+			}
+
+			if (MyData.GetCheck(1))
+			{
+				EC_H_S(HrSetProfileParameters(aREMOVE_MSPSTServicesIni));
+			}
+		}
+	}
+} // namespace ui::profile

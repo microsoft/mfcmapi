@@ -6,8 +6,11 @@ namespace dialog
 	class CAbDlg : public CContentsTableDlg
 	{
 	public:
-		CAbDlg(_In_ ui::CParentWnd* pParentWnd, _In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects, _In_ LPMAPIPROP lpAbCont);
-		virtual ~CAbDlg();
+		CAbDlg(
+			_In_ ui::CParentWnd* pParentWnd,
+			_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
+			_In_ LPMAPIPROP lpAbCont);
+		~CAbDlg();
 
 	private:
 		// Overrides from base class

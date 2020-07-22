@@ -5,19 +5,15 @@
 #include <core/addin/mfcmapi.h>
 #include <UI/FakeSplitter.h>
 
-namespace controls
+namespace controls::sortlistctrl
 {
-	class CFakeSplitter;
-	namespace sortlistctrl
-	{
-		class CSingleMAPIPropListCtrl;
-	}
-} // namespace controls
+	class CSingleMAPIPropListCtrl;
+} // namespace controls::sortlistctrl
 
 namespace cache
 {
 	class CMapiObjects;
-}
+} // namespace cache
 
 namespace mapi
 {
@@ -39,7 +35,7 @@ namespace dialog
 			_In_ ui::CParentWnd* pParentWnd,
 			_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 			ULONG ulAddInContext);
-		virtual ~CBaseDialog();
+		~CBaseDialog();
 
 		STDMETHODIMP_(ULONG) AddRef();
 		STDMETHODIMP_(ULONG) Release();
@@ -51,20 +47,20 @@ namespace dialog
 
 		void UpdateTitleBarText(_In_ const std::wstring& szMsg) const;
 		void UpdateTitleBarText() const;
-		void UpdateStatusBarText(__StatusPaneEnum nPos, _In_ const std::wstring& szMsg);
-		void __cdecl UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg);
-		void __cdecl UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg, ULONG ulParam1);
+		void UpdateStatusBarText(statusPane nPos, _In_ const std::wstring& szMsg);
+		void __cdecl UpdateStatusBarText(statusPane nPos, UINT uidMsg);
+		void __cdecl UpdateStatusBarText(statusPane nPos, UINT uidMsg, ULONG ulParam1);
 		void __cdecl UpdateStatusBarText(
-			__StatusPaneEnum nPos,
+			statusPane nPos,
 			UINT uidMsg,
-			std::wstring& szParam1,
-			std::wstring& szParam2,
-			std::wstring& szParam3);
-		void OnOpenEntryID(_In_opt_ LPSBinary lpBin);
-		_Check_return_ ui::CParentWnd* GetParentWnd() const;
-		_Check_return_ std::shared_ptr<cache::CMapiObjects> GetMapiObjects() const;
+			const std::wstring& szParam1,
+			const std::wstring& szParam2,
+			const std::wstring& szParam3);
+		void OnOpenEntryID(_In_ const SBinary& bin);
+		_Check_return_ ui::CParentWnd* GetParentWnd() const noexcept;
+		_Check_return_ std::shared_ptr<cache::CMapiObjects> GetMapiObjects() const noexcept;
 
-		static void UpdateStatus(HWND hWndHost, __StatusPaneEnum pane, const std::wstring& status);
+		static void UpdateStatus(HWND hWndHost, const statusPane pane, const std::wstring& status) noexcept;
 
 	protected:
 		// Overrides called by child classes
@@ -112,16 +108,30 @@ namespace dialog
 		void OnOptions();
 		void OnOutlookVersion();
 
-		void SetStatusWidths();
+		void SetStatusWidths() noexcept;
 
 		// Custom messages
 		_Check_return_ LRESULT msgOnUpdateStatusBar(WPARAM wParam, LPARAM lParam);
 		_Check_return_ LRESULT msgOnClearSingleMAPIPropList(WPARAM wParam, LPARAM lParam);
 
+		inline std::wstring getStatusMessage(statusPane pane) const noexcept
+		{
+			return m_StatusMessages[static_cast<int>(pane)];
+		}
+		inline void setStatusMessage(statusPane pane, std::wstring message) noexcept
+		{
+			m_StatusMessages[static_cast<int>(pane)] = message;
+		}
+		inline int getStatusWidth(statusPane pane) const noexcept { return m_StatusWidth[static_cast<int>(pane)]; }
+		inline void setStatusWidth(statusPane pane, int width) noexcept
+		{
+			m_StatusWidth[static_cast<int>(pane)] = width;
+		}
+
 		LONG m_cRef{1};
 		HICON m_hIcon{};
-		std::wstring m_StatusMessages[STATUSBARNUMPANES];
-		int m_StatusWidth[STATUSBARNUMPANES]{};
+		std::wstring m_StatusMessages[static_cast<int>(statusPane::numPanes)];
+		int m_StatusWidth[static_cast<int>(statusPane::numPanes)]{};
 		bool m_bDisplayingMenuText{};
 		std::wstring m_szMenuDisplacedText{};
 		mapi::adviseSink* m_lpBaseAdviseSink{};

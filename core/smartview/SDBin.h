@@ -1,22 +1,20 @@
 #pragma once
-#include <core/smartview/smartViewParser.h>
+#include <core/smartview/block/block.h>
 #include <core/smartview/block/blockBytes.h>
+#include <core/interpret/sid.h>
 
 namespace smartview
 {
-	class SDBin : public smartViewParser
+	class SDBin : public block
 	{
 	public:
-		~SDBin();
-
-		void Init(_In_opt_ LPMAPIPROP lpMAPIProp, bool bFB);
+		SDBin(_In_opt_ LPMAPIPROP lpMAPIProp, bool bFB);
 
 	private:
 		void parse() override;
 		void parseBlocks() override;
 
-		LPMAPIPROP m_lpMAPIProp{};
-		bool m_bFB{};
+		sid::aceType acetype{sid::aceType::Message};
 		std::shared_ptr<blockBytes> m_SDbin = emptyBB();
 	};
 } // namespace smartview

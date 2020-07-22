@@ -1,11 +1,15 @@
 #pragma once
-#include <core/smartview/smartViewParser.h>
+#include <core/smartview/block/block.h>
 #include <core/smartview/block/blockT.h>
 
 namespace smartview
 {
-	struct SYSTEMTIMEBlock
+	class SYSTEMTIMEBlock : public block
 	{
+	private:
+		void parse() override;
+		void parseBlocks() override;
+
 		std::shared_ptr<blockT<WORD>> wYear = emptyT<WORD>();
 		std::shared_ptr<blockT<WORD>> wMonth = emptyT<WORD>();
 		std::shared_ptr<blockT<WORD>> wDayOfWeek = emptyT<WORD>();
@@ -23,7 +27,7 @@ namespace smartview
 	//   far the shift is.  This is basically the same as
 	//   TIME_ZONE_INFORMATION documented in MSDN, except that the strings
 	//   describing the names 'daylight' and 'standard' time are omitted.
-	class TimeZone : public smartViewParser
+	class TimeZone : public block
 	{
 	private:
 		void parse() override;
@@ -33,8 +37,8 @@ namespace smartview
 		std::shared_ptr<blockT<DWORD>> m_lStandardBias = emptyT<DWORD>(); // offset from bias during standard time
 		std::shared_ptr<blockT<DWORD>> m_lDaylightBias = emptyT<DWORD>(); // offset from bias during daylight time
 		std::shared_ptr<blockT<WORD>> m_wStandardYear = emptyT<WORD>();
-		SYSTEMTIMEBlock m_stStandardDate; // time to switch to standard time
+		std::shared_ptr<SYSTEMTIMEBlock> m_stStandardDate; // time to switch to standard time
 		std::shared_ptr<blockT<WORD>> m_wDaylightDate = emptyT<WORD>();
-		SYSTEMTIMEBlock m_stDaylightDate; // time to switch to daylight time
+		std::shared_ptr<SYSTEMTIMEBlock> m_stDaylightDate; // time to switch to daylight time
 	};
 } // namespace smartview

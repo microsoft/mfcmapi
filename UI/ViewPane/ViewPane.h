@@ -9,7 +9,7 @@ namespace viewpane
 		virtual ~ViewPane() = default;
 
 		void SetLabel(const UINT uidLabel) { m_szLabel = strings::loadstring(uidLabel); }
-		void SetReadOnly(const bool bReadOnly) { m_bReadOnly = bReadOnly; }
+		void SetReadOnly(const bool bReadOnly) noexcept { m_bReadOnly = bReadOnly; }
 
 		virtual void Initialize(_In_ CWnd* pParent, _In_opt_ HDC hdc);
 		virtual void DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height);
@@ -32,13 +32,13 @@ namespace viewpane
 			int iEditHeight); // Height of an edit control
 		void SetAddInLabel(const std::wstring& szLabel);
 		virtual void UpdateButtons();
-		int GetID() const { return m_paneID; }
-		UINT GetNID() const { return m_nID; }
+		int GetID() const noexcept { return m_paneID; }
+		UINT GetNID() const noexcept { return m_nID; }
 
 	protected:
 		// Returns the height of our label, accounting for an expand/collapse button
 		// Will return 0 if we have no label or button
-		int GetLabelHeight() const
+		int GetLabelHeight() const noexcept
 		{
 			if (m_bCollapsible || !m_szLabel.empty()) return max(m_iButtonHeight, m_iLabelHeight);
 

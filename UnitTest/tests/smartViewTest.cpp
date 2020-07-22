@@ -7,470 +7,249 @@
 
 namespace SmartViewTest
 {
+#define TEST(PARSERTYPE, NAME, NUM) \
+	TEST_METHOD(PARSERTYPE##_##NUM) { test(parserType::PARSERTYPE, IDR_SV##NAME##NUM##IN, IDR_SV##NAME##NUM##OUT); }
+
 	TEST_CLASS(SmartViewTest)
 	{
 	private:
-		struct SmartViewTestResource
-		{
-			__ParsingTypeEnum structType{};
-			bool parseAll{};
-			DWORD hex{};
-			DWORD expected{};
-		};
+		// Without this, clang gets weird
+		static const bool dummy_var = true;
 
-		struct SmartViewTestData
+		void test(
+			const std::wstring testName, parserType structType, std::vector<BYTE> hex, const std::wstring expected)
+			const
 		{
-			__ParsingTypeEnum structType{};
-			bool parseAll{};
-			std::wstring testName;
-			std::vector<BYTE> hex;
-			std::wstring expected;
-		};
+			auto actual = smartview::InterpretBinary({static_cast<ULONG>(hex.size()), hex.data()}, structType, nullptr)
+							  ->toString();
+			unittest::AreEqualEx(expected, actual, testName.c_str());
 
-		void test(std::vector<SmartViewTestData> testData) const
-		{
-			for (auto& data : testData)
+			if (unittest::parse_all)
 			{
-				auto actual = smartview::InterpretBinaryAsString(
-					{static_cast<ULONG>(data.hex.size()), data.hex.data()}, data.structType, nullptr);
-				unittest::AreEqualEx(data.expected, actual, data.testName.c_str());
-
-				if (data.parseAll)
+				for (auto parser : SmartViewParserTypeArray)
 				{
-					for (ULONG iStruct = IDS_STNOPARSING; iStruct < IDS_STEND; iStruct++)
+					try
 					{
-						const auto structType = static_cast<__ParsingTypeEnum>(iStruct);
-						try
-						{
-							actual = smartview::InterpretBinaryAsString(
-								{static_cast<ULONG>(data.hex.size()), data.hex.data()}, structType, nullptr);
-						} catch (int exception)
-						{
-							Logger::WriteMessage(strings::format(
-													 L"Testing %ws failed at %ws with error 0x%08X\n",
-													 data.testName.c_str(),
-													 addin::AddInStructTypeToString(structType).c_str(),
-													 exception)
-													 .c_str());
-							Assert::Fail();
-						}
+						actual = smartview::InterpretBinary(
+									 {static_cast<ULONG>(hex.size()), hex.data()}, parser.type, nullptr)
+									 ->toString();
+					} catch (const int exception)
+					{
+						Logger::WriteMessage(strings::format(
+												 L"Testing %ws failed at %ws with error 0x%08X\n",
+												 testName.c_str(),
+												 addin::AddInStructTypeToString(parser.type).c_str(),
+												 exception)
+												 .c_str());
+						Assert::Fail();
 					}
 				}
 			}
 		}
 
-		static std::vector<SmartViewTestData> loadTestData(
-			const std::initializer_list<SmartViewTestResource>& resources)
+		void test(parserType structType, DWORD hexNum, DWORD expectedNum) const
 		{
 			static auto handle = GetModuleHandleW(L"UnitTest.dll");
-			std::vector<SmartViewTestData> testData;
-			for (const auto& resource : resources)
-			{
-				testData.push_back(SmartViewTestData{resource.structType,
-													 resource.parseAll,
-													 strings::format(L"%d/%d", resource.hex, resource.expected),
-													 strings::HexStringToBin(unittest::loadfile(handle, resource.hex)),
-													 unittest::loadfile(handle, resource.expected)});
-			}
-
-			return testData;
+			// See comments on loadfile for best file encoding strategies for test data
+			const auto testName = strings::format(L"%d/%d", hexNum, expectedNum);
+			auto hex = strings::HexStringToBin(unittest::loadfile(handle, hexNum));
+			const auto expected = unittest::loadfile(handle, expectedNum);
+			test(testName, structType, hex, expected);
 		}
 
 	public:
 		TEST_CLASS_INITIALIZE(initialize) { unittest::init(); }
 
-		TEST_METHOD(Test_STADDITIONALRENENTRYIDSEX)
+		TEST_METHOD(SmartViewAddInTest1)
 		{
-			test(loadTestData({
-				SmartViewTestResource{
-					IDS_STADDITIONALRENENTRYIDSEX, unittest::parse_all, IDR_SV1AEI1IN, IDR_SV1AEI1OUT},
-				SmartViewTestResource{
-					IDS_STADDITIONALRENENTRYIDSEX, unittest::parse_all, IDR_SV1AEI2IN, IDR_SV1AEI2OUT},
-				SmartViewTestResource{
-					IDS_STADDITIONALRENENTRYIDSEX, unittest::parse_all, IDR_SV1AEI3IN, IDR_SV1AEI3OUT},
-				SmartViewTestResource{
-					IDS_STADDITIONALRENENTRYIDSEX, unittest::parse_all, IDR_SV1AEI4IN, IDR_SV1AEI4OUT},
-			}));
+			test(
+				std::wstring(L"SmartViewAddInTest1"),
+				parserType::END,
+				std::vector<BYTE>{1, 2, 3, 4},
+				std::wstring(L"Unknown Parser 38\r\n"
+							 L"\tcb: 4 lpb: 01020304"));
 		}
 
-		TEST_METHOD(Test_STAPPOINTMENTRECURRENCEPATTERN)
-		{
-			test(loadTestData({
-				SmartViewTestResource{
-					IDS_STAPPOINTMENTRECURRENCEPATTERN, unittest::parse_all, IDR_SV2ARP1IN, IDR_SV2ARP1OUT},
-				SmartViewTestResource{
-					IDS_STAPPOINTMENTRECURRENCEPATTERN, unittest::parse_all, IDR_SV2ARP2IN, IDR_SV2ARP2OUT},
-				SmartViewTestResource{
-					IDS_STAPPOINTMENTRECURRENCEPATTERN, unittest::parse_all, IDR_SV2ARP3IN, IDR_SV2ARP3OUT},
-				SmartViewTestResource{
-					IDS_STAPPOINTMENTRECURRENCEPATTERN, unittest::parse_all, IDR_SV2ARP4IN, IDR_SV2ARP4OUT},
-			}));
-		}
+		TEST(ADDITIONALRENENTRYIDSEX, 1AEI, 1)
+		TEST(ADDITIONALRENENTRYIDSEX, 1AEI, 2)
+		TEST(ADDITIONALRENENTRYIDSEX, 1AEI, 3)
+		TEST(ADDITIONALRENENTRYIDSEX, 1AEI, 4)
 
-		TEST_METHOD(Test_STCONVERSATIONINDEX)
-		{
-			test(loadTestData({
-				SmartViewTestResource{IDS_STCONVERSATIONINDEX, unittest::parse_all, IDR_SV3CI1IN, IDR_SV3CI1OUT},
-				SmartViewTestResource{IDS_STCONVERSATIONINDEX, unittest::parse_all, IDR_SV3CI2IN, IDR_SV3CI2OUT},
-				SmartViewTestResource{IDS_STCONVERSATIONINDEX, unittest::parse_all, IDR_SV3CI3IN, IDR_SV3CI3OUT},
-				SmartViewTestResource{IDS_STCONVERSATIONINDEX, unittest::parse_all, IDR_SV3CI4IN, IDR_SV3CI4OUT},
-			}));
-		}
+		TEST(APPOINTMENTRECURRENCEPATTERN, 2ARP, 1)
+		TEST(APPOINTMENTRECURRENCEPATTERN, 2ARP, 2)
+		TEST(APPOINTMENTRECURRENCEPATTERN, 2ARP, 3)
+		TEST(APPOINTMENTRECURRENCEPATTERN, 2ARP, 4)
 
-		TEST_METHOD(Test_STENTRYID)
-		{
-			test(loadTestData({
-				SmartViewTestResource{IDS_STENTRYID, unittest::parse_all, IDR_SV4EID1IN, IDR_SV4EID1OUT},
-				SmartViewTestResource{IDS_STENTRYID, unittest::parse_all, IDR_SV4EID2IN, IDR_SV4EID2OUT},
-				SmartViewTestResource{IDS_STENTRYID, unittest::parse_all, IDR_SV4EID3IN, IDR_SV4EID3OUT},
-				SmartViewTestResource{IDS_STENTRYID, unittest::parse_all, IDR_SV4EID4IN, IDR_SV4EID4OUT},
-				SmartViewTestResource{IDS_STENTRYID, unittest::parse_all, IDR_SV4EID5IN, IDR_SV4EID5OUT},
-				SmartViewTestResource{IDS_STENTRYID, unittest::parse_all, IDR_SV4EID6IN, IDR_SV4EID6OUT},
-				SmartViewTestResource{IDS_STENTRYID, unittest::parse_all, IDR_SV4EID7IN, IDR_SV4EID7OUT},
-				SmartViewTestResource{IDS_STENTRYID, unittest::parse_all, IDR_SV4EID8IN, IDR_SV4EID8OUT},
-				SmartViewTestResource{IDS_STENTRYID, unittest::parse_all, IDR_SV4EID9IN, IDR_SV4EID9OUT},
-				SmartViewTestResource{IDS_STENTRYID, unittest::parse_all, IDR_SV4EID10IN, IDR_SV4EID10OUT},
-				SmartViewTestResource{IDS_STENTRYID, unittest::parse_all, IDR_SV4EID11IN, IDR_SV4EID11OUT},
-				SmartViewTestResource{IDS_STENTRYID, unittest::parse_all, IDR_SV4EID12IN, IDR_SV4EID12OUT},
-				SmartViewTestResource{IDS_STENTRYID, unittest::parse_all, IDR_SV4EID13IN, IDR_SV4EID13OUT},
-				SmartViewTestResource{IDS_STENTRYID, unittest::parse_all, IDR_SV4EID14IN, IDR_SV4EID14OUT},
-				SmartViewTestResource{IDS_STENTRYID, unittest::parse_all, IDR_SV4EID15IN, IDR_SV4EID15OUT},
-				SmartViewTestResource{IDS_STENTRYID, unittest::parse_all, IDR_SV4EID16IN, IDR_SV4EID16OUT},
-				SmartViewTestResource{IDS_STENTRYID, unittest::parse_all, IDR_SV4EID17IN, IDR_SV4EID17OUT},
-				SmartViewTestResource{IDS_STENTRYID, unittest::parse_all, IDR_SV4EID18IN, IDR_SV4EID18OUT},
-				SmartViewTestResource{IDS_STENTRYID, unittest::parse_all, IDR_SV4EID19IN, IDR_SV4EID19OUT},
-				SmartViewTestResource{IDS_STENTRYID, unittest::parse_all, IDR_SV4EID20IN, IDR_SV4EID20OUT},
-				SmartViewTestResource{IDS_STENTRYID, unittest::parse_all, IDR_SV4EID21IN, IDR_SV4EID21OUT},
-				SmartViewTestResource{IDS_STENTRYID, unittest::parse_all, IDR_SV4EID22IN, IDR_SV4EID22OUT},
-				SmartViewTestResource{IDS_STENTRYID, unittest::parse_all, IDR_SV4EID23IN, IDR_SV4EID23OUT},
-				SmartViewTestResource{IDS_STENTRYID, unittest::parse_all, IDR_SV4EID24IN, IDR_SV4EID24OUT},
-				SmartViewTestResource{IDS_STENTRYID, unittest::parse_all, IDR_SV4EID25IN, IDR_SV4EID25OUT},
-				SmartViewTestResource{IDS_STENTRYID, unittest::parse_all, IDR_SV4EID26IN, IDR_SV4EID26OUT},
-				SmartViewTestResource{IDS_STENTRYID, unittest::parse_all, IDR_SV4EID27IN, IDR_SV4EID27OUT},
-				SmartViewTestResource{IDS_STENTRYID, unittest::parse_all, IDR_SV4EID28IN, IDR_SV4EID28OUT},
-				SmartViewTestResource{IDS_STENTRYID, unittest::parse_all, IDR_SV4EID29IN, IDR_SV4EID29OUT},
-				SmartViewTestResource{IDS_STENTRYID, unittest::parse_all, IDR_SV4EID30IN, IDR_SV4EID30OUT},
-				SmartViewTestResource{IDS_STENTRYID, unittest::parse_all, IDR_SV4EID31IN, IDR_SV4EID31OUT},
-				SmartViewTestResource{IDS_STENTRYID, unittest::parse_all, IDR_SV4EID32IN, IDR_SV4EID32OUT},
-				SmartViewTestResource{IDS_STENTRYID, unittest::parse_all, IDR_SV4EID33IN, IDR_SV4EID33OUT},
-				SmartViewTestResource{IDS_STENTRYID, unittest::parse_all, IDR_SV4EID34IN, IDR_SV4EID34OUT},
-				SmartViewTestResource{IDS_STENTRYID, unittest::parse_all, IDR_SV4EID35IN, IDR_SV4EID35OUT},
-				SmartViewTestResource{IDS_STENTRYID, unittest::parse_all, IDR_SV4EID36IN, IDR_SV4EID36OUT},
-				SmartViewTestResource{IDS_STENTRYID, unittest::parse_all, IDR_SV4EID37IN, IDR_SV4EID37OUT},
-				SmartViewTestResource{IDS_STENTRYID, unittest::parse_all, IDR_SV4EID38IN, IDR_SV4EID38OUT},
-				SmartViewTestResource{IDS_STENTRYID, unittest::parse_all, IDR_SV4EID39IN, IDR_SV4EID39OUT},
-				SmartViewTestResource{IDS_STENTRYID, unittest::parse_all, IDR_SV4EID40IN, IDR_SV4EID40OUT},
-			}));
-		}
+		TEST(CONVERSATIONINDEX, 3CI, 1)
+		TEST(CONVERSATIONINDEX, 3CI, 2)
+		TEST(CONVERSATIONINDEX, 3CI, 3)
+		TEST(CONVERSATIONINDEX, 3CI, 4)
 
-		TEST_METHOD(Test_STENTRYLIST)
-		{
-			test(loadTestData({
-				SmartViewTestResource{IDS_STENTRYLIST, unittest::parse_all, IDR_SV5EL1IN, IDR_SV5EL1OUT},
-				SmartViewTestResource{IDS_STENTRYLIST, unittest::parse_all, IDR_SV5EL2IN, IDR_SV5EL2OUT},
-			}));
-		}
+		TEST(ENTRYID, 4EID, 1)
+		TEST(ENTRYID, 4EID, 2)
+		TEST(ENTRYID, 4EID, 3)
+		TEST(ENTRYID, 4EID, 4)
+		TEST(ENTRYID, 4EID, 5)
+		TEST(ENTRYID, 4EID, 6)
+		TEST(ENTRYID, 4EID, 7)
+		TEST(ENTRYID, 4EID, 8)
+		TEST(ENTRYID, 4EID, 9)
+		TEST(ENTRYID, 4EID, 10)
+		TEST(ENTRYID, 4EID, 11)
+		TEST(ENTRYID, 4EID, 12)
+		TEST(ENTRYID, 4EID, 13)
+		TEST(ENTRYID, 4EID, 14)
+		TEST(ENTRYID, 4EID, 15)
+		TEST(ENTRYID, 4EID, 16)
+		TEST(ENTRYID, 4EID, 17)
+		TEST(ENTRYID, 4EID, 18)
+		TEST(ENTRYID, 4EID, 19)
+		TEST(ENTRYID, 4EID, 20)
+		TEST(ENTRYID, 4EID, 21)
+		TEST(ENTRYID, 4EID, 22)
+		TEST(ENTRYID, 4EID, 23)
+		TEST(ENTRYID, 4EID, 24)
+		TEST(ENTRYID, 4EID, 25)
+		TEST(ENTRYID, 4EID, 26)
+		TEST(ENTRYID, 4EID, 27)
+		TEST(ENTRYID, 4EID, 28)
+		TEST(ENTRYID, 4EID, 29)
+		TEST(ENTRYID, 4EID, 30)
+		TEST(ENTRYID, 4EID, 31)
+		TEST(ENTRYID, 4EID, 32)
+		TEST(ENTRYID, 4EID, 33)
+		TEST(ENTRYID, 4EID, 34)
+		TEST(ENTRYID, 4EID, 35)
+		TEST(ENTRYID, 4EID, 36)
+		TEST(ENTRYID, 4EID, 37)
+		TEST(ENTRYID, 4EID, 38)
+		TEST(ENTRYID, 4EID, 39)
+		TEST(ENTRYID, 4EID, 40)
 
-		TEST_METHOD(Test_STEXTENDEDFOLDERFLAGS)
-		{
-			test(loadTestData({
-				SmartViewTestResource{IDS_STEXTENDEDFOLDERFLAGS, unittest::parse_all, IDR_SV6EFF1IN, IDR_SV6EFF1OUT},
-				SmartViewTestResource{IDS_STEXTENDEDFOLDERFLAGS, unittest::parse_all, IDR_SV6EFF2IN, IDR_SV6EFF2OUT},
-			}));
-		}
+		TEST(ENTRYLIST, 5EL, 1)
+		TEST(ENTRYLIST, 5EL, 2)
 
-		TEST_METHOD(Test_STEXTENDEDRULECONDITION)
-		{
-			test(loadTestData({
-				SmartViewTestResource{
-					IDS_STEXTENDEDRULECONDITION, unittest::parse_all, IDR_SV7EXRULE1IN, IDR_SV7EXRULE1OUT},
-				SmartViewTestResource{
-					IDS_STEXTENDEDRULECONDITION, unittest::parse_all, IDR_SV7EXRULE2IN, IDR_SV7EXRULE2OUT},
-				SmartViewTestResource{
-					IDS_STEXTENDEDRULECONDITION, unittest::parse_all, IDR_SV7EXRULE3IN, IDR_SV7EXRULE3OUT},
-				SmartViewTestResource{
-					IDS_STEXTENDEDRULECONDITION, unittest::parse_all, IDR_SV7EXRULE4IN, IDR_SV7EXRULE4OUT},
-			}));
-		}
+		TEST(EXTENDEDFOLDERFLAGS, 6EFF, 1)
+		TEST(EXTENDEDFOLDERFLAGS, 6EFF, 2)
 
-		TEST_METHOD(Test_STFLATENTRYLIST)
-		{
-			test(loadTestData({
-				SmartViewTestResource{IDS_STFLATENTRYLIST, unittest::parse_all, IDR_SV8FE1IN, IDR_SV8FE1OUT},
-				SmartViewTestResource{IDS_STFLATENTRYLIST, unittest::parse_all, IDR_SV8FE2IN, IDR_SV8FE2OUT},
-				SmartViewTestResource{IDS_STFLATENTRYLIST, unittest::parse_all, IDR_SV8FE3IN, IDR_SV8FE3OUT},
-			}));
-		}
+		TEST(EXTENDEDRULECONDITION, 7EXRULE, 1)
+		TEST(EXTENDEDRULECONDITION, 7EXRULE, 2)
+		TEST(EXTENDEDRULECONDITION, 7EXRULE, 3)
+		TEST(EXTENDEDRULECONDITION, 7EXRULE, 4)
 
-		TEST_METHOD(Test_STFOLDERUSERFIELDS)
-		{
-			test(loadTestData({
-				SmartViewTestResource{IDS_STFOLDERUSERFIELDS, unittest::parse_all, IDR_SV9FUF1IN, IDR_SV9FUF1OUT},
-				SmartViewTestResource{IDS_STFOLDERUSERFIELDS, unittest::parse_all, IDR_SV9FUF2IN, IDR_SV9FUF2OUT},
-				SmartViewTestResource{IDS_STFOLDERUSERFIELDS, unittest::parse_all, IDR_SV9FUF3IN, IDR_SV9FUF3OUT},
-				SmartViewTestResource{IDS_STFOLDERUSERFIELDS, unittest::parse_all, IDR_SV9FUF4IN, IDR_SV9FUF4OUT},
-				SmartViewTestResource{IDS_STFOLDERUSERFIELDS, unittest::parse_all, IDR_SV9FUF5IN, IDR_SV9FUF5OUT},
-			}));
-		}
+		TEST(FLATENTRYLIST, 8FE, 1)
+		TEST(FLATENTRYLIST, 8FE, 2)
+		TEST(FLATENTRYLIST, 8FE, 3)
 
-		TEST_METHOD(Test_STGLOBALOBJECTID)
-		{
-			test(loadTestData({
-				SmartViewTestResource{IDS_STGLOBALOBJECTID, unittest::parse_all, IDR_SV10GOID1IN, IDR_SV10GOID1OUT},
-				SmartViewTestResource{IDS_STGLOBALOBJECTID, unittest::parse_all, IDR_SV10GOID2IN, IDR_SV10GOID2OUT},
-			}));
-		}
+		TEST(FOLDERUSERFIELDS, 9FUF, 1)
+		TEST(FOLDERUSERFIELDS, 9FUF, 2)
+		TEST(FOLDERUSERFIELDS, 9FUF, 3)
+		TEST(FOLDERUSERFIELDS, 9FUF, 4)
+		TEST(FOLDERUSERFIELDS, 9FUF, 5)
 
-		TEST_METHOD(Test_STPROPERTY)
-		{
-			test(loadTestData({
-				SmartViewTestResource{IDS_STPROPERTIES, unittest::parse_all, IDR_SV11PROP1IN, IDR_SV11PROP1OUT},
-				SmartViewTestResource{IDS_STPROPERTIES, unittest::parse_all, IDR_SV11PROP2IN, IDR_SV11PROP2OUT},
-				SmartViewTestResource{IDS_STPROPERTIES, unittest::parse_all, IDR_SV11PROP3IN, IDR_SV11PROP3OUT},
-				SmartViewTestResource{IDS_STPROPERTIES, unittest::parse_all, IDR_SV11PROP4IN, IDR_SV11PROP4OUT},
-				SmartViewTestResource{IDS_STPROPERTIES, unittest::parse_all, IDR_SV11PROP5IN, IDR_SV11PROP5OUT},
-				SmartViewTestResource{IDS_STPROPERTIES, unittest::parse_all, IDR_SV11PROP6IN, IDR_SV11PROP6OUT},
-				SmartViewTestResource{IDS_STPROPERTIES, unittest::parse_all, IDR_SV11PROP7IN, IDR_SV11PROP7OUT},
-			}));
-		}
+		TEST(GLOBALOBJECTID, 10GOID, 1)
+		TEST(GLOBALOBJECTID, 10GOID, 2)
 
-		TEST_METHOD(Test_STPROPERTYDEFINITIONSTREAM)
-		{
-			test(loadTestData({
-				SmartViewTestResource{
-					IDS_STPROPERTYDEFINITIONSTREAM, unittest::parse_all, IDR_SV12PROPDEF1IN, IDR_SV12PROPDEF1OUT},
-				SmartViewTestResource{
-					IDS_STPROPERTYDEFINITIONSTREAM, unittest::parse_all, IDR_SV12PROPDEF2IN, IDR_SV12PROPDEF2OUT},
-				SmartViewTestResource{
-					IDS_STPROPERTYDEFINITIONSTREAM, unittest::parse_all, IDR_SV12PROPDEF3IN, IDR_SV12PROPDEF3OUT},
-				SmartViewTestResource{
-					IDS_STPROPERTYDEFINITIONSTREAM, unittest::parse_all, IDR_SV12PROPDEF4IN, IDR_SV12PROPDEF4OUT},
-				SmartViewTestResource{
-					IDS_STPROPERTYDEFINITIONSTREAM, unittest::parse_all, IDR_SV12PROPDEF5IN, IDR_SV12PROPDEF5OUT},
-				SmartViewTestResource{
-					IDS_STPROPERTYDEFINITIONSTREAM, unittest::parse_all, IDR_SV12PROPDEF6IN, IDR_SV12PROPDEF6OUT},
-				SmartViewTestResource{
-					IDS_STPROPERTYDEFINITIONSTREAM, unittest::parse_all, IDR_SV12PROPDEF7IN, IDR_SV12PROPDEF7OUT},
-				SmartViewTestResource{
-					IDS_STPROPERTYDEFINITIONSTREAM, unittest::parse_all, IDR_SV12PROPDEF8IN, IDR_SV12PROPDEF8OUT},
-			}));
-		}
+		TEST(PROPERTIES, 11PROP, 1)
+		TEST(PROPERTIES, 11PROP, 2)
+		TEST(PROPERTIES, 11PROP, 3)
+		TEST(PROPERTIES, 11PROP, 4)
+		TEST(PROPERTIES, 11PROP, 5)
+		TEST(PROPERTIES, 11PROP, 6)
+		TEST(PROPERTIES, 11PROP, 7)
+		TEST(PROPERTIES, 11PROP, 8)
 
-		TEST_METHOD(Test_STRECIPIENTROWSTREAM)
-		{
-			test(loadTestData({
-				SmartViewTestResource{
-					IDS_STRECIPIENTROWSTREAM, unittest::parse_all, IDR_SV13RECIPROW1IN, IDR_SV13RECIPROW1OUT},
-				SmartViewTestResource{
-					IDS_STRECIPIENTROWSTREAM, unittest::parse_all, IDR_SV13RECIPROW2IN, IDR_SV13RECIPROW2OUT},
-			}));
-		}
+		TEST(PROPERTYDEFINITIONSTREAM, 12PROPDEF, 1)
+		TEST(PROPERTYDEFINITIONSTREAM, 12PROPDEF, 2)
+		TEST(PROPERTYDEFINITIONSTREAM, 12PROPDEF, 3)
+		TEST(PROPERTYDEFINITIONSTREAM, 12PROPDEF, 4)
+		TEST(PROPERTYDEFINITIONSTREAM, 12PROPDEF, 5)
+		TEST(PROPERTYDEFINITIONSTREAM, 12PROPDEF, 6)
+		TEST(PROPERTYDEFINITIONSTREAM, 12PROPDEF, 7)
+		TEST(PROPERTYDEFINITIONSTREAM, 12PROPDEF, 8)
 
-		TEST_METHOD(Test_STRECURRENCEPATTERN)
-		{
-			test(loadTestData({
-				SmartViewTestResource{IDS_STRECURRENCEPATTERN, unittest::parse_all, IDR_SV14ARP1IN, IDR_SV14ARP1OUT},
-				SmartViewTestResource{IDS_STRECURRENCEPATTERN, unittest::parse_all, IDR_SV14ARP2IN, IDR_SV14ARP2OUT},
-				SmartViewTestResource{IDS_STRECURRENCEPATTERN, unittest::parse_all, IDR_SV14ARP3IN, IDR_SV14ARP3OUT},
-			}));
-		}
+		TEST(RECIPIENTROWSTREAM, 13RECIPROW, 1)
+		TEST(RECIPIENTROWSTREAM, 13RECIPROW, 2)
 
-		TEST_METHOD(Test_STREPORTTAG)
-		{
-			test(loadTestData({
-				SmartViewTestResource{
-					IDS_STREPORTTAG, unittest::parse_all, IDR_SV15REPORTTAG1IN, IDR_SV15REPORTTAG1OUT},
-			}));
-		}
+		TEST(RECURRENCEPATTERN, 14ARP, 1)
+		TEST(RECURRENCEPATTERN, 14ARP, 2)
+		TEST(RECURRENCEPATTERN, 14ARP, 3)
 
-		TEST_METHOD(Test_STRESTRICTION)
-		{
-			test(loadTestData({
-				SmartViewTestResource{IDS_STRESTRICTION, unittest::parse_all, IDR_SV16RES1IN, IDR_SV16RES1OUT},
-				SmartViewTestResource{IDS_STRESTRICTION, unittest::parse_all, IDR_SV16RES2IN, IDR_SV16RES2OUT},
-			}));
-		}
+		TEST(RESTRICTION, 16RES, 1)
+		TEST(RESTRICTION, 16RES, 2)
+		TEST(RESTRICTION, 16RES, 3)
+		TEST(RESTRICTION, 16RES, 4)
 
-		TEST_METHOD(Test_STRULECONDITION)
-		{
-			test(loadTestData({
-				SmartViewTestResource{
-					IDS_STRULECONDITION, unittest::parse_all, IDR_SV17RULECON1IN, IDR_SV17RULECON1OUT},
-				SmartViewTestResource{
-					IDS_STRULECONDITION, unittest::parse_all, IDR_SV17RULECON2IN, IDR_SV17RULECON2OUT},
-				SmartViewTestResource{
-					IDS_STRULECONDITION, unittest::parse_all, IDR_SV17RULECON3IN, IDR_SV17RULECON3OUT},
-				SmartViewTestResource{
-					IDS_STRULECONDITION, unittest::parse_all, IDR_SV17RULECON4IN, IDR_SV17RULECON4OUT},
-				SmartViewTestResource{
-					IDS_STRULECONDITION, unittest::parse_all, IDR_SV17RULECON5IN, IDR_SV17RULECON5OUT},
-			}));
-		}
+		TEST(RULECONDITION, 17RULECON, 1)
+		TEST(RULECONDITION, 17RULECON, 2)
+		TEST(RULECONDITION, 17RULECON, 3)
+		TEST(RULECONDITION, 17RULECON, 4)
 
-		TEST_METHOD(Test_STSEARCHFOLDERDEFINITION)
-		{
-			test(loadTestData({
-				SmartViewTestResource{IDS_STSEARCHFOLDERDEFINITION, unittest::parse_all, IDR_SV18SF1IN, IDR_SV18SF1OUT},
-				SmartViewTestResource{IDS_STSEARCHFOLDERDEFINITION, unittest::parse_all, IDR_SV18SF2IN, IDR_SV18SF2OUT},
-				SmartViewTestResource{IDS_STSEARCHFOLDERDEFINITION, unittest::parse_all, IDR_SV18SF3IN, IDR_SV18SF3OUT},
-				SmartViewTestResource{IDS_STSEARCHFOLDERDEFINITION, unittest::parse_all, IDR_SV18SF4IN, IDR_SV18SF4OUT},
-				SmartViewTestResource{IDS_STSEARCHFOLDERDEFINITION, unittest::parse_all, IDR_SV18SF5IN, IDR_SV18SF5OUT},
-				SmartViewTestResource{IDS_STSEARCHFOLDERDEFINITION, unittest::parse_all, IDR_SV18SF6IN, IDR_SV18SF6OUT},
-				SmartViewTestResource{IDS_STSEARCHFOLDERDEFINITION, unittest::parse_all, IDR_SV18SF7IN, IDR_SV18SF7OUT},
-			}));
-		}
+		TEST(SEARCHFOLDERDEFINITION, 18SF, 1)
+		TEST(SEARCHFOLDERDEFINITION, 18SF, 2)
+		TEST(SEARCHFOLDERDEFINITION, 18SF, 3)
+		TEST(SEARCHFOLDERDEFINITION, 18SF, 4)
+		TEST(SEARCHFOLDERDEFINITION, 18SF, 5)
+		TEST(SEARCHFOLDERDEFINITION, 18SF, 6)
+		TEST(SEARCHFOLDERDEFINITION, 18SF, 7)
 
-		TEST_METHOD(Test_STSECURITYDESCRIPTOR)
-		{
-			test(loadTestData({
-				SmartViewTestResource{IDS_STSECURITYDESCRIPTOR, unittest::parse_all, IDR_SV19SD1IN, IDR_SV19SD1OUT},
-				SmartViewTestResource{IDS_STSECURITYDESCRIPTOR, unittest::parse_all, IDR_SV19SD2IN, IDR_SV19SD2OUT},
-				SmartViewTestResource{IDS_STSECURITYDESCRIPTOR, unittest::parse_all, IDR_SV19SD3IN, IDR_SV19SD3OUT},
-				SmartViewTestResource{IDS_STSECURITYDESCRIPTOR, unittest::parse_all, IDR_SV19SD4IN, IDR_SV19SD4OUT},
-			}));
-		}
+		TEST(SECURITYDESCRIPTOR, 19SD, 1)
+		TEST(SECURITYDESCRIPTOR, 19SD, 2)
+		TEST(SECURITYDESCRIPTOR, 19SD, 3)
+		TEST(SECURITYDESCRIPTOR, 19SD, 4)
 
-		TEST_METHOD(Test_STSID)
-		{
-			test(loadTestData({
-				SmartViewTestResource{IDS_STSID, unittest::parse_all, IDR_SV20SID1IN, IDR_SV20SID1OUT},
-				SmartViewTestResource{IDS_STSID, unittest::parse_all, IDR_SV20SID2IN, IDR_SV20SID2OUT},
-				SmartViewTestResource{IDS_STSID, unittest::parse_all, IDR_SV20SID3IN, IDR_SV20SID3OUT},
-				SmartViewTestResource{IDS_STSID, unittest::parse_all, IDR_SV20SID4IN, IDR_SV20SID4OUT},
-				SmartViewTestResource{IDS_STSID, unittest::parse_all, IDR_SV20SID5IN, IDR_SV20SID5OUT},
-			}));
-		}
+		TEST(SID, 20SID, 1)
+		TEST(SID, 20SID, 2)
+		TEST(SID, 20SID, 3)
+		TEST(SID, 20SID, 4)
+		TEST(SID, 20SID, 5)
 
-		TEST_METHOD(Test_STTASKASSIGNERS)
-		{
-			test(loadTestData({
-				SmartViewTestResource{IDS_STTASKASSIGNERS, unittest::parse_all, IDR_SV21TA1IN, IDR_SV21TA1OUT},
-			}));
-		}
+		TEST(TIMEZONEDEFINITION, 23TZD, 1)
+		TEST(TIMEZONEDEFINITION, 23TZD, 2)
+		TEST(TIMEZONEDEFINITION, 23TZD, 3)
 
-		TEST_METHOD(Test_STTIMEZONE)
-		{
-			test(loadTestData({
-				SmartViewTestResource{IDS_STTIMEZONE, unittest::parse_all, IDR_SV22TZ1IN, IDR_SV22TZ1OUT},
-			}));
-		}
+		TEST(WEBVIEWPERSISTSTREAM, 24WEBVIEW, 1)
+		TEST(WEBVIEWPERSISTSTREAM, 24WEBVIEW, 2)
+		TEST(WEBVIEWPERSISTSTREAM, 24WEBVIEW, 3)
+		TEST(WEBVIEWPERSISTSTREAM, 24WEBVIEW, 4)
+		TEST(WEBVIEWPERSISTSTREAM, 24WEBVIEW, 5)
+		TEST(WEBVIEWPERSISTSTREAM, 24WEBVIEW, 6)
+		TEST(WEBVIEWPERSISTSTREAM, 24WEBVIEW, 7)
 
-		TEST_METHOD(Test_STTIMEZONEDEFINITION)
-		{
-			test(loadTestData({
-				SmartViewTestResource{IDS_STTIMEZONEDEFINITION, unittest::parse_all, IDR_SV23TZD1IN, IDR_SV23TZD1OUT},
-				SmartViewTestResource{IDS_STTIMEZONEDEFINITION, unittest::parse_all, IDR_SV23TZD2IN, IDR_SV23TZD2OUT},
-				SmartViewTestResource{IDS_STTIMEZONEDEFINITION, unittest::parse_all, IDR_SV23TZD3IN, IDR_SV23TZD3OUT},
-			}));
-		}
+		TEST(NICKNAMECACHE, 25NICKNAME, 2)
+		TEST(NICKNAMECACHE, 25NICKNAME, 3)
+		TEST(NICKNAMECACHE, 25NICKNAME, 4)
 
-		TEST_METHOD(Test_STWEBVIEWPERSISTSTREAM)
-		{
-			test(loadTestData({
-				SmartViewTestResource{
-					IDS_STWEBVIEWPERSISTSTREAM, unittest::parse_all, IDR_SV24WEBVIEW1IN, IDR_SV24WEBVIEW1OUT},
-				SmartViewTestResource{
-					IDS_STWEBVIEWPERSISTSTREAM, unittest::parse_all, IDR_SV24WEBVIEW2IN, IDR_SV24WEBVIEW2OUT},
-				SmartViewTestResource{
-					IDS_STWEBVIEWPERSISTSTREAM, unittest::parse_all, IDR_SV24WEBVIEW3IN, IDR_SV24WEBVIEW3OUT},
-				SmartViewTestResource{
-					IDS_STWEBVIEWPERSISTSTREAM, unittest::parse_all, IDR_SV24WEBVIEW4IN, IDR_SV24WEBVIEW4OUT},
-				SmartViewTestResource{
-					IDS_STWEBVIEWPERSISTSTREAM, unittest::parse_all, IDR_SV24WEBVIEW5IN, IDR_SV24WEBVIEW5OUT},
-				SmartViewTestResource{
-					IDS_STWEBVIEWPERSISTSTREAM, unittest::parse_all, IDR_SV24WEBVIEW6IN, IDR_SV24WEBVIEW6OUT},
-				SmartViewTestResource{
-					IDS_STWEBVIEWPERSISTSTREAM, unittest::parse_all, IDR_SV24WEBVIEW7IN, IDR_SV24WEBVIEW7OUT},
-			}));
-		}
+		TEST(ENCODEENTRYID, 26EIDENCODE, 1)
+		TEST(DECODEENTRYID, 27EIDDECODE, 1)
 
-		TEST_METHOD(Test_STNICKNAMECACHE)
-		{
-			test(loadTestData({
-				SmartViewTestResource{
-					IDS_STNICKNAMECACHE, unittest::parse_all, IDR_SV25NICKNAME2IN, IDR_SV25NICKNAME2OUT},
-				SmartViewTestResource{
-					IDS_STNICKNAMECACHE, unittest::parse_all, IDR_SV25NICKNAME3IN, IDR_SV25NICKNAME3OUT},
-				SmartViewTestResource{
-					IDS_STNICKNAMECACHE, unittest::parse_all, IDR_SV25NICKNAME4IN, IDR_SV25NICKNAME4OUT},
-			}));
-		}
+		TEST(VERBSTREAM, 28VERBSTREAM, 1)
+		TEST(VERBSTREAM, 28VERBSTREAM, 2)
+		TEST(VERBSTREAM, 28VERBSTREAM, 3)
+		TEST(VERBSTREAM, 28VERBSTREAM, 4)
+		TEST(VERBSTREAM, 28VERBSTREAM, 5)
+		TEST(VERBSTREAM, 28VERBSTREAM, 6)
+		TEST(VERBSTREAM, 28VERBSTREAM, 7)
 
-		TEST_METHOD(Test_STENCODEENTRYID)
-		{
-			test(loadTestData({
-				SmartViewTestResource{
-					IDS_STENCODEENTRYID, unittest::parse_all, IDR_SV26EIDENCODE1IN, IDR_SV26EIDENCODE1OUT},
-			}));
-		}
+		TEST(TOMBSTONE, 29TOMBSTONE, 1)
+		TEST(TOMBSTONE, 29TOMBSTONE, 2)
+		TEST(TOMBSTONE, 29TOMBSTONE, 3)
 
-		TEST_METHOD(Test_STDECODEENTRYID)
-		{
-			test(loadTestData({
-				SmartViewTestResource{
-					IDS_STDECODEENTRYID, unittest::parse_all, IDR_SV27EIDDECODE1IN, IDR_SV27EIDDECODE1OUT},
-			}));
-		}
+		TEST(PCL, 30PCL, 1)
+		TEST(PCL, 30PCL, 2)
+		TEST(PCL, 30PCL, 3)
 
-		TEST_METHOD(Test_STVERBSTREAM)
-		{
-			test(loadTestData({
-				SmartViewTestResource{
-					IDS_STVERBSTREAM, unittest::parse_all, IDR_SV28VERBSTREAM1IN, IDR_SV28VERBSTREAM1OUT},
-				SmartViewTestResource{
-					IDS_STVERBSTREAM, unittest::parse_all, IDR_SV28VERBSTREAM2IN, IDR_SV28VERBSTREAM2OUT},
-				SmartViewTestResource{
-					IDS_STVERBSTREAM, unittest::parse_all, IDR_SV28VERBSTREAM3IN, IDR_SV28VERBSTREAM3OUT},
-				SmartViewTestResource{
-					IDS_STVERBSTREAM, unittest::parse_all, IDR_SV28VERBSTREAM4IN, IDR_SV28VERBSTREAM4OUT},
-				SmartViewTestResource{
-					IDS_STVERBSTREAM, unittest::parse_all, IDR_SV28VERBSTREAM5IN, IDR_SV28VERBSTREAM5OUT},
-				SmartViewTestResource{
-					IDS_STVERBSTREAM, unittest::parse_all, IDR_SV28VERBSTREAM6IN, IDR_SV28VERBSTREAM6OUT},
-				SmartViewTestResource{
-					IDS_STVERBSTREAM, unittest::parse_all, IDR_SV28VERBSTREAM7IN, IDR_SV28VERBSTREAM7OUT},
-			}));
-		}
+		TEST(FBSECURITYDESCRIPTOR, 31FREEBUSYSID, 1)
+		TEST(FBSECURITYDESCRIPTOR, 31FREEBUSYSID, 2)
 
-		TEST_METHOD(Test_STTOMBSTONE)
-		{
-			test(loadTestData({
-				SmartViewTestResource{
-					IDS_STTOMBSTONE, unittest::parse_all, IDR_SV29TOMBSTONE1IN, IDR_SV29TOMBSTONE1OUT},
-				SmartViewTestResource{
-					IDS_STTOMBSTONE, unittest::parse_all, IDR_SV29TOMBSTONE2IN, IDR_SV29TOMBSTONE2OUT},
-				SmartViewTestResource{
-					IDS_STTOMBSTONE, unittest::parse_all, IDR_SV29TOMBSTONE3IN, IDR_SV29TOMBSTONE3OUT},
-			}));
-		}
+		TEST(XID, 32XID, 1)
+		TEST(XID, 32XID, 2)
+		TEST(XID, 32XID, 3)
+		TEST(XID, 32XID, 4)
 
-		TEST_METHOD(Test_STPCL)
-		{
-			test(loadTestData({
-				SmartViewTestResource{IDS_STPCL, unittest::parse_all, IDR_SV30PCL1IN, IDR_SV30PCL1OUT},
-				SmartViewTestResource{IDS_STPCL, unittest::parse_all, IDR_SV30PCL2IN, IDR_SV30PCL2OUT},
-				SmartViewTestResource{IDS_STPCL, unittest::parse_all, IDR_SV30PCL3IN, IDR_SV30PCL3OUT},
-			}));
-		}
-
-		TEST_METHOD(Test_STFBSECURITYDESCRIPTOR)
-		{
-			test(loadTestData({
-				SmartViewTestResource{
-					IDS_STFBSECURITYDESCRIPTOR, unittest::parse_all, IDR_SV31FREEBUSYSID1IN, IDR_SV31FREEBUSYSID1OUT},
-				SmartViewTestResource{
-					IDS_STFBSECURITYDESCRIPTOR, unittest::parse_all, IDR_SV31FREEBUSYSID2IN, IDR_SV31FREEBUSYSID2OUT},
-			}));
-		}
-
-		TEST_METHOD(Test_STXID)
-		{
-			test(loadTestData({
-				SmartViewTestResource{IDS_STXID, unittest::parse_all, IDR_SV32XID1IN, IDR_SV32XID1OUT},
-				SmartViewTestResource{IDS_STXID, unittest::parse_all, IDR_SV32XID2IN, IDR_SV32XID2OUT},
-				SmartViewTestResource{IDS_STXID, unittest::parse_all, IDR_SV32XID3IN, IDR_SV32XID3OUT},
-				SmartViewTestResource{IDS_STXID, unittest::parse_all, IDR_SV32XID4IN, IDR_SV32XID4OUT},
-			}));
-		}
+		//TEST(RULEACTION, 33RULEACTION, 1)
+		TEST(EXTENDEDRULEACTION, 34EXRULEACTION, 1) // OP_MOVE, OP_TAG
+		TEST(EXTENDEDRULEACTION, 34EXRULEACTION, 2) // OP_DEFER_ACTION
+		TEST(EXTENDEDRULEACTION, 34EXRULEACTION, 3) // OP_TAG, OP_MARK_AS_READ, OP_FORWARD, OP_COPY
 	};
 } // namespace SmartViewTest

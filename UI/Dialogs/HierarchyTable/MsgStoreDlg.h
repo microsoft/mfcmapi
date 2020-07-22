@@ -18,8 +18,8 @@ namespace dialog
 			_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 			_In_opt_ LPMAPIPROP lpMDB,
 			_In_opt_ LPMAPIPROP lpRootFolder,
-			ULONG ulDisplayFlags);
-		virtual ~CMsgStoreDlg();
+			tableDisplayFlags displayFlags);
+		~CMsgStoreDlg();
 
 	private:
 		// Overrides from base class
@@ -31,7 +31,7 @@ namespace dialog
 		void HandleCopy() override;
 		_Check_return_ bool HandlePaste() override;
 		void OnInitMenu(_In_ CMenu* pMenu) override;
-		LPMAPIFOLDER GetSelectedFolder(__mfcmapiModifyEnum bModify) const;
+		LPMAPIFOLDER GetSelectedFolder(modifyType bModify) const;
 
 		// Menu items
 		void OnCreateSubFolder();

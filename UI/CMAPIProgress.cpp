@@ -16,7 +16,7 @@ namespace ui
 		{
 			const auto pProgress = new (std::nothrow) CMAPIProgress(lpszContext, hWnd);
 
-			return static_cast<LPMAPIPROGRESS>(pProgress);
+			return pProgress;
 		}
 
 		return nullptr;
@@ -49,7 +49,7 @@ namespace ui
 		*ppvObj = nullptr;
 		if (riid == IID_IMAPIProgress || riid == IID_IUnknown)
 		{
-			*ppvObj = static_cast<LPVOID>(this);
+			*ppvObj = static_cast<IMAPIProgress*>(this);
 			AddRef();
 			return S_OK;
 		}
@@ -74,7 +74,7 @@ namespace ui
 	_Check_return_ STDMETHODIMP CMAPIProgress::Progress(ULONG ulValue, ULONG ulCount, ULONG ulTotal)
 	{
 		output::DebugPrintEx(
-			output::DBGGeneric,
+			output::dbgLevel::Generic,
 			CLASS,
 			L"Progress",
 			L"(%ws) - ulValue = %u, ulCount = %u, ulTotal = %u\n",
@@ -89,7 +89,7 @@ namespace ui
 		{
 			const auto iPercent = MulDiv(ulValue - m_ulMin, 100, m_ulMax - m_ulMin);
 			dialog::CBaseDialog::UpdateStatus(
-				m_hWnd, STATUSINFOTEXT, strings::formatmessage(IDS_PERCENTLOADED, m_szContext.c_str(), iPercent));
+				m_hWnd, statusPane::infoText, strings::formatmessage(IDS_PERCENTLOADED, m_szContext.c_str(), iPercent));
 		}
 
 		return S_OK;
@@ -164,7 +164,7 @@ namespace ui
 		}
 
 		output::DebugPrintEx(
-			output::DBGGeneric,
+			output::dbgLevel::Generic,
 			CLASS,
 			L"SetLimits",
 			L"(%ws) - Passed Values: lpulMin = %ws, lpulMax = %ws, lpulFlags = %ws\n",
@@ -187,7 +187,7 @@ namespace ui
 	void CMAPIProgress::OutputState(const std::wstring& lpszFunction) const
 	{
 		output::DebugPrint(
-			output::DBGGeneric,
+			output::dbgLevel::Generic,
 			L"%ws::%ws(%ws) - Current Values: Min = %u, Max = %u, Flags = %u\n",
 			CLASS.c_str(),
 			lpszFunction.c_str(),

@@ -18,7 +18,7 @@ enum __NonPropFlag
 	flagRestrictionType,
 	flagBitmask,
 	flagRelop,
-	flagAccountType,
+	flagActionType,
 	flagBounceCode,
 	flagOPReply,
 	flagOpForward,
@@ -579,19 +579,19 @@ enum
 	rptHjMonthEnd
 };
 
-const ULONG rpn1st = 1;
-const ULONG rpn2nd = 2;
-const ULONG rpn3rd = 3;
-const ULONG rpn4th = 4;
-const ULONG rpnLast = 5;
+constexpr ULONG rpn1st = 1;
+constexpr ULONG rpn2nd = 2;
+constexpr ULONG rpn3rd = 3;
+constexpr ULONG rpn4th = 4;
+constexpr ULONG rpnLast = 5;
 
-const ULONG rdfSun = 0x01;
-const ULONG rdfMon = 0x02;
-const ULONG rdfTue = 0x04;
-const ULONG rdfWed = 0x08;
-const ULONG rdfThu = 0x10;
-const ULONG rdfFri = 0x20;
-const ULONG rdfSat = 0x40;
+constexpr ULONG rdfSun = 0x01;
+constexpr ULONG rdfMon = 0x02;
+constexpr ULONG rdfTue = 0x04;
+constexpr ULONG rdfWed = 0x08;
+constexpr ULONG rdfThu = 0x10;
+constexpr ULONG rdfFri = 0x20;
+constexpr ULONG rdfSat = 0x40;
 
 // [MS-OXOTASK].pdf
 #define dispidTaskRecur 0x8116
@@ -1154,8 +1154,8 @@ enum WLinkType
 
 #define fnevIndexing ((ULONG) 0x00010000)
 
-const WORD TZRULE_FLAG_RECUR_CURRENT_TZREG = 0x0001; // see dispidApptTZDefRecur
-const WORD TZRULE_FLAG_EFFECTIVE_TZREG = 0x0002;
+constexpr WORD TZRULE_FLAG_RECUR_CURRENT_TZREG = 0x0001; // see dispidApptTZDefRecur
+constexpr WORD TZRULE_FLAG_EFFECTIVE_TZREG = 0x0002;
 
 // http://msdn2.microsoft.com/en-us/library/bb905283.aspx
 #define dispidFormStorage 0x850F
@@ -1185,3 +1185,17 @@ struct INDEX_SEARCH_PUSHER_PROCESS
 };
 
 #define MAPI_FORCE_ACCESS 0x00080000
+
+#ifndef AB_UNICODEUI
+#define AB_UNICODEUI ((ULONG) 0x00000040)
+#endif
+
+// This declaration is missing from the MAPI headers
+STDAPI STDAPICALLTYPE LaunchWizard(
+	HWND hParentWnd,
+	ULONG ulFlags,
+	LPCSTR* lppszServiceNameToAdd,
+	ULONG cchBufferMax,
+	_Out_cap_(cchBufferMax) LPSTR lpszNewProfileName);
+
+#define FWD_AS_SMS_ALERT 8

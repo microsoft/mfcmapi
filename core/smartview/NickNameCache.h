@@ -1,20 +1,22 @@
 #pragma once
-#include <core/smartview/smartViewParser.h>
+#include <core/smartview/block/block.h>
 #include <core/smartview/PropertiesStruct.h>
 #include <core/smartview/block/blockBytes.h>
 #include <core/smartview/block/blockT.h>
 
 namespace smartview
 {
-	struct SRowStruct
+	class SRowStruct : public block
 	{
-		std::shared_ptr<blockT<DWORD>> cValues = emptyT<DWORD>();
-		PropertiesStruct lpProps;
+	private:
+		void parse() override;
+		void parseBlocks() override;
 
-		SRowStruct(const std::shared_ptr<binaryParser>& parser);
+		std::shared_ptr<blockT<DWORD>> cValues = emptyT<DWORD>();
+		std::shared_ptr<PropertiesStruct> lpProps;
 	};
 
-	class NickNameCache : public smartViewParser
+	class NickNameCache : public block
 	{
 	private:
 		void parse() override;

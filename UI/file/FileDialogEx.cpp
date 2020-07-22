@@ -1,5 +1,5 @@
 #include <StdAfx.h>
-#include <UI/FileDialogEx.h>
+#include <UI/file/FileDialogEx.h>
 #include <core/utility/strings.h>
 
 namespace file
@@ -100,7 +100,11 @@ namespace file
 
 		while (lpsz != nullptr)
 		{
-			WCHAR strPath[_MAX_PATH], strDrive[_MAX_DRIVE], strDir[_MAX_DIR], strName[_MAX_FNAME], strExt[_MAX_EXT];
+			WCHAR strPath[_MAX_PATH] = {};
+			WCHAR strDrive[_MAX_DRIVE] = {};
+			WCHAR strDir[_MAX_DIR] = {};
+			WCHAR strName[_MAX_FNAME] = {};
+			WCHAR strExt[_MAX_EXT] = {};
 			_wsplitpath_s(lpsz, strDrive, _MAX_DRIVE, strDir, _MAX_DIR, strName, _MAX_FNAME, strExt, _MAX_EXT);
 			if (*strDrive || *strDir)
 			{
@@ -148,7 +152,7 @@ namespace file
 		ofn.nMaxFile = static_cast<DWORD>(szFileName.length());
 
 		ofn.lpstrDefExt = lpszDefExt.c_str();
-		ofn.Flags = dwFlags | OFN_ENABLEHOOK | OFN_EXPLORER;
+		ofn.Flags = dwFlags | OFN_ENABLESIZING;
 		ofn.hwndOwner = pParentWnd ? pParentWnd->m_hWnd : nullptr;
 
 		// setup initial file name
@@ -162,11 +166,11 @@ namespace file
 			ofn.lpstrFilter = strFilter.c_str();
 		}
 
-		BOOL bResult;
+		BOOL bResult = false;
 		if (bOpenFileDialog)
-			bResult = GetOpenFileNameW(static_cast<OPENFILENAMEW*>(&ofn));
+			bResult = GetOpenFileNameW(&ofn);
 		else
-			bResult = GetSaveFileNameW(static_cast<OPENFILENAMEW*>(&ofn));
+			bResult = GetSaveFileNameW(&ofn);
 
 		if (bResult)
 		{

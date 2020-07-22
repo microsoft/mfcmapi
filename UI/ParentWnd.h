@@ -15,7 +15,7 @@ namespace ui
 	{
 	public:
 		CParentWnd();
-		virtual ~CParentWnd();
+		~CParentWnd();
 
 		_Check_return_ STDMETHODIMP QueryInterface(REFIID riid, _Deref_out_opt_ LPVOID* ppvObj) override;
 		STDMETHODIMP_(ULONG) AddRef() override;

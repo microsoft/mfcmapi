@@ -17,8 +17,8 @@ namespace dialog
 			_In_ ui::CParentWnd* pParentWnd,
 			_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 			_In_ LPMAPIPROP lpMAPIFolder,
-			ULONG ulDisplayFlags);
-		virtual ~CFolderDlg();
+			tableDisplayFlags displayFlags);
+		~CFolderDlg();
 
 	private:
 		// Overrides from base class
@@ -67,7 +67,7 @@ namespace dialog
 		_Check_return_ HRESULT OnResendSelectedItem(int iItem, _In_ sortlistdata::sortListData* lpData);
 		_Check_return_ HRESULT OnSaveAttachments(int iItem, _In_ sortlistdata::sortListData* lpData);
 		_Check_return_ HRESULT OnSubmitMessage(int iItem, _In_ sortlistdata::sortListData* lpData);
-		LPMESSAGE OpenMessage(int iSelectedItem, __mfcmapiModifyEnum bModify);
+		LPMESSAGE OpenMessage(int iSelectedItem, modifyType bModify);
 
 		_Check_return_ bool MultiSelectComplex(WORD wMenuSelect);
 		_Check_return_ bool MultiSelectSimple(WORD wMenuSelect);

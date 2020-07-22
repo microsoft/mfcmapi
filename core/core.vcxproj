@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Microsoft.SourceLink.GitHub.1.0.0\build\Microsoft.SourceLink.GitHub.props" Condition="Exists('..\packages\Microsoft.SourceLink.GitHub.1.0.0\build\Microsoft.SourceLink.GitHub.props')" />
+  <Import Project="..\packages\Microsoft.SourceLink.Common.1.0.0\build\Microsoft.SourceLink.Common.props" Condition="Exists('..\packages\Microsoft.SourceLink.Common.1.0.0\build\Microsoft.SourceLink.Common.props')" />
+  <Import Project="..\packages\Microsoft.Build.Tasks.Git.1.0.0\build\Microsoft.Build.Tasks.Git.props" Condition="Exists('..\packages\Microsoft.Build.Tasks.Git.1.0.0\build\Microsoft.Build.Tasks.Git.props')" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug Unicode|Win32">
       <Configuration>Debug Unicode</Configuration>
@@ -47,13 +50,13 @@
     <ProjectGuid>{D2390ABA-E7B0-476D-BB38-089FEAB5357D}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>core</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
     <UseOfMfc>Static</UseOfMfc>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -61,7 +64,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <UseOfMfc>Static</UseOfMfc>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -69,7 +72,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
     <UseOfMfc>Static</UseOfMfc>
@@ -77,7 +80,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
     <UseOfMfc>Static</UseOfMfc>
@@ -85,7 +88,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Prefast|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
     <UseOfMfc>Static</UseOfMfc>
@@ -93,7 +96,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
     <UseOfMfc>Static</UseOfMfc>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -101,7 +104,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <UseOfMfc>Static</UseOfMfc>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -109,7 +112,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
     <UseOfMfc>Static</UseOfMfc>
@@ -117,7 +120,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
     <UseOfMfc>Static</UseOfMfc>
@@ -125,7 +128,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Prefast|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
     <UseOfMfc>Static</UseOfMfc>
@@ -252,6 +255,7 @@
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <StringPooling>true</StringPooling>
       <PrecompiledHeaderFile>core/stdafx.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -261,6 +265,7 @@
     </Link>
     <Lib>
       <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\mapistub\$(Configuration);</AdditionalLibraryDirectories>
     </Lib>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -279,6 +284,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <StringPooling>true</StringPooling>
       <PrecompiledHeaderFile>core/stdafx.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -288,6 +294,7 @@
     </Link>
     <Lib>
       <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\mapistub\$(Configuration);</AdditionalLibraryDirectories>
     </Lib>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -309,6 +316,7 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeaderFile>core/stdafx.h</PrecompiledHeaderFile>
       <EnablePREfast>true</EnablePREfast>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -318,6 +326,7 @@
     </Link>
     <Lib>
       <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\mapistub\$(Configuration);</AdditionalLibraryDirectories>
     </Lib>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -336,6 +345,7 @@
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <StringPooling>true</StringPooling>
       <PrecompiledHeaderFile>core/stdafx.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -344,6 +354,7 @@
     <Lib>
       <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
       <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\mapistub\$(Configuration);</AdditionalLibraryDirectories>
     </Lib>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -362,6 +373,7 @@
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <StringPooling>true</StringPooling>
       <PrecompiledHeaderFile>core/stdafx.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -370,6 +382,7 @@
     <Lib>
       <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
       <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\mapistub\$(Configuration);</AdditionalLibraryDirectories>
     </Lib>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -388,6 +401,7 @@
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <StringPooling>true</StringPooling>
       <PrecompiledHeaderFile>core/stdafx.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -395,6 +409,7 @@
     </Link>
     <Lib>
       <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
+      <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\mapistub\$(Configuration);</AdditionalLibraryDirectories>
     </Lib>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;_DEBUG;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -413,6 +428,7 @@
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <StringPooling>true</StringPooling>
       <PrecompiledHeaderFile>core/stdafx.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -420,6 +436,7 @@
     </Link>
     <Lib>
       <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
+      <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\mapistub\$(Configuration);</AdditionalLibraryDirectories>
     </Lib>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;_DEBUG;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -439,6 +456,7 @@
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <StringPooling>true</StringPooling>
       <PrecompiledHeaderFile>core/stdafx.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -449,6 +467,9 @@
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;NDEBUG;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
+    <Lib>
+      <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\mapistub\$(Configuration);</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">
     <ClCompile>
@@ -463,6 +484,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <StringPooling>true</StringPooling>
       <PrecompiledHeaderFile>core/stdafx.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -473,6 +495,9 @@
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;NDEBUG;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
+    <Lib>
+      <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\mapistub\$(Configuration);</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Prefast|x64'">
     <ClCompile>
@@ -490,6 +515,7 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeaderFile>core/stdafx.h</PrecompiledHeaderFile>
       <EnablePREfast>true</EnablePREfast>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -500,6 +526,9 @@
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;_DEBUG;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
+    <Lib>
+      <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\mapistub\$(Configuration);</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="addin\addin.h" />
@@ -516,9 +545,10 @@
     <ClInclude Include="interpret\sid.h" />
     <ClInclude Include="interpret\smartViewParsers.h" />
     <ClInclude Include="mapi\adviseSink.h" />
+    <ClInclude Include="mapi\cache\namedPropCache.h" />
     <ClInclude Include="mapi\cache\globalCache.h" />
     <ClInclude Include="mapi\cache\mapiObjects.h" />
-    <ClInclude Include="mapi\cache\namedPropCache.h" />
+    <ClInclude Include="mapi\cache\namedProps.h" />
     <ClInclude Include="mapi\columnTags.h" />
     <ClInclude Include="mapi\exportProfile.h" />
     <ClInclude Include="mapi\extraPropTags.h" />
@@ -534,7 +564,6 @@
     <ClInclude Include="mapi\mapiStoreFunctions.h" />
     <ClInclude Include="mapi\processor\dumpStore.h" />
     <ClInclude Include="mapi\processor\mapiProcessor.h" />
-    <ClInclude Include="mapi\stubutils.h" />
     <ClInclude Include="addin\mfcmapi.h" />
     <ClInclude Include="mapi\version.h" />
     <ClInclude Include="propertyBag\mapiPropPropertyBag.h" />
@@ -544,14 +573,20 @@
     <ClInclude Include="property\parseProperty.h" />
     <ClInclude Include="property\property.h" />
     <ClInclude Include="res\Resource.h" />
+    <ClInclude Include="smartview\addinParser.h" />
     <ClInclude Include="smartview\AdditionalRenEntryIDs.h" />
     <ClInclude Include="smartview\AppointmentRecurrencePattern.h" />
-    <ClInclude Include="smartview\binaryParser.h" />
+    <ClInclude Include="smartview\block\scratchBlock.h" />
+    <ClInclude Include="smartview\block\binaryParser.h" />
     <ClInclude Include="smartview\block\block.h" />
     <ClInclude Include="smartview\block\blockBytes.h" />
+    <ClInclude Include="smartview\block\blockPV.h" />
     <ClInclude Include="smartview\block\blockStringA.h" />
     <ClInclude Include="smartview\block\blockStringW.h" />
     <ClInclude Include="smartview\block\blockT.h" />
+    <ClInclude Include="smartview\decodeEntryID.h" />
+    <ClInclude Include="smartview\encodeEntryID.h" />
+    <ClInclude Include="smartview\RuleAction.h" />
     <ClInclude Include="smartview\ConversationIndex.h" />
     <ClInclude Include="smartview\EntryIdStruct.h" />
     <ClInclude Include="smartview\EntryList.h" />
@@ -572,7 +607,6 @@
     <ClInclude Include="smartview\SearchFolderDefinition.h" />
     <ClInclude Include="smartview\SIDBin.h" />
     <ClInclude Include="smartview\SmartView.h" />
-    <ClInclude Include="smartview\smartViewParser.h" />
     <ClInclude Include="smartview\TaskAssigners.h" />
     <ClInclude Include="smartview\TimeZone.h" />
     <ClInclude Include="smartview\TimeZoneDefinition.h" />
@@ -586,6 +620,7 @@
     <ClInclude Include="sortlistdata\data.h" />
     <ClInclude Include="sortlistdata\mvPropData.h" />
     <ClInclude Include="sortlistdata\nodeData.h" />
+    <ClInclude Include="smartview\SPropValueStruct.h" />
     <ClInclude Include="sortlistdata\propListData.h" />
     <ClInclude Include="sortlistdata\resData.h" />
     <ClInclude Include="sortlistdata\sortListData.h" />
@@ -606,9 +641,10 @@
     <ClCompile Include="interpret\proptype.cpp" />
     <ClCompile Include="interpret\sid.cpp" />
     <ClCompile Include="mapi\adviseSink.cpp" />
+    <ClCompile Include="mapi\cache\namedPropCache.cpp" />
     <ClCompile Include="mapi\cache\globalCache.cpp" />
     <ClCompile Include="mapi\cache\mapiObjects.cpp" />
-    <ClCompile Include="mapi\cache\namedPropCache.cpp" />
+    <ClCompile Include="mapi\cache\namedProps.cpp" />
     <ClCompile Include="mapi\exportProfile.cpp" />
     <ClCompile Include="mapi\mapiABFunctions.cpp" />
     <ClCompile Include="mapi\mapiFile.cpp" />
@@ -618,18 +654,20 @@
     <ClCompile Include="mapi\mapiProfileFunctions.cpp" />
     <ClCompile Include="mapi\mapiProgress.cpp" />
     <ClCompile Include="mapi\mapiStoreFunctions.cpp" />
-    <ClCompile Include="mapi\mapiStubLibrary.cpp" />
     <ClCompile Include="mapi\processor\dumpStore.cpp" />
     <ClCompile Include="mapi\processor\mapiProcessor.cpp" />
-    <ClCompile Include="mapi\stubutils.cpp" />
     <ClCompile Include="mapi\version.cpp" />
     <ClCompile Include="propertyBag\mapiPropPropertyBag.cpp" />
     <ClCompile Include="propertyBag\rowPropertyBag.cpp" />
     <ClCompile Include="property\attributes.cpp" />
     <ClCompile Include="property\parseProperty.cpp" />
     <ClCompile Include="property\property.cpp" />
+    <ClCompile Include="smartview\addinParser.cpp" />
     <ClCompile Include="smartview\AdditionalRenEntryIDs.cpp" />
     <ClCompile Include="smartview\AppointmentRecurrencePattern.cpp" />
+    <ClCompile Include="smartview\decodeEntryID.cpp" />
+    <ClCompile Include="smartview\encodeEntryID.cpp" />
+    <ClCompile Include="smartview\RuleAction.cpp" />
     <ClCompile Include="smartview\ConversationIndex.cpp" />
     <ClCompile Include="smartview\EntryIdStruct.cpp" />
     <ClCompile Include="smartview\EntryList.cpp" />
@@ -650,7 +688,7 @@
     <ClCompile Include="smartview\SearchFolderDefinition.cpp" />
     <ClCompile Include="smartview\SIDBin.cpp" />
     <ClCompile Include="smartview\SmartView.cpp" />
-    <ClCompile Include="smartview\smartViewParser.cpp" />
+    <ClCompile Include="smartview\block\block.cpp" />
     <ClCompile Include="smartview\TaskAssigners.cpp" />
     <ClCompile Include="smartview\TimeZone.cpp" />
     <ClCompile Include="smartview\TimeZoneDefinition.cpp" />
@@ -663,6 +701,7 @@
     <ClCompile Include="sortlistdata\contentsData.cpp" />
     <ClCompile Include="sortlistdata\mvPropData.cpp" />
     <ClCompile Include="sortlistdata\nodeData.cpp" />
+    <ClCompile Include="smartview\SPropValueStruct.cpp" />
     <ClCompile Include="sortlistdata\propListData.cpp" />
     <ClCompile Include="sortlistdata\resData.cpp" />
     <ClCompile Include="sortlistdata\sortListData.cpp" />
@@ -687,6 +726,7 @@
     <ClCompile Include="utility\strings.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="res\MFCMapi.rc2" />
     <None Include="res\splith.cur" />
     <None Include="res\splitv.cur" />
@@ -701,7 +741,15 @@
     <Image Include="res\minimize.bmp" />
     <Image Include="res\restore.bmp" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\mapistub\mapistub.vcxproj">
+      <Project>{acd4dd9f-0fb8-42c8-bc1c-25a5a29cb40c}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\packages\Microsoft.Build.Tasks.Git.1.0.0\build\Microsoft.Build.Tasks.Git.targets" Condition="Exists('..\packages\Microsoft.Build.Tasks.Git.1.0.0\build\Microsoft.Build.Tasks.Git.targets')" />
+    <Import Project="..\packages\Microsoft.SourceLink.Common.1.0.0\build\Microsoft.SourceLink.Common.targets" Condition="Exists('..\packages\Microsoft.SourceLink.Common.1.0.0\build\Microsoft.SourceLink.Common.targets')" />
+    <Import Project="..\packages\Microsoft.SourceLink.GitHub.1.0.0\build\Microsoft.SourceLink.GitHub.targets" Condition="Exists('..\packages\Microsoft.SourceLink.GitHub.1.0.0\build\Microsoft.SourceLink.GitHub.targets')" />
   </ImportGroup>
 </Project>

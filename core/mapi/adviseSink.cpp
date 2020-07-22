@@ -27,7 +27,7 @@ namespace mapi
 		*ppvObj = nullptr;
 		if (riid == IID_IMAPIAdviseSink || riid == IID_IUnknown)
 		{
-			*ppvObj = static_cast<LPVOID>(this);
+			*ppvObj = static_cast<IMAPIAdviseSink*>(this);
 			AddRef();
 			return S_OK;
 		}
@@ -52,7 +52,7 @@ namespace mapi
 
 	STDMETHODIMP_(ULONG) adviseSink::OnNotify(ULONG cNotify, LPNOTIFICATION lpNotifications)
 	{
-		output::outputNotifications(output::DBGNotify, nullptr, cNotify, lpNotifications, m_lpAdviseTarget);
+		output::outputNotifications(output::dbgLevel::Notify, nullptr, cNotify, lpNotifications, m_lpAdviseTarget);
 		if (onNotifyCallback)
 		{
 			onNotifyCallback(m_hWndParent, m_hTreeParent, cNotify, lpNotifications);
@@ -61,7 +61,7 @@ namespace mapi
 		return S_OK;
 	}
 
-	void adviseSink::SetAdviseTarget(LPMAPIPROP lpProp)
+	void adviseSink::SetAdviseTarget(LPMAPIPROP lpProp) noexcept
 	{
 		if (m_lpAdviseTarget) m_lpAdviseTarget->Release();
 		m_lpAdviseTarget = lpProp;

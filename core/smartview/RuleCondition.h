@@ -1,5 +1,5 @@
 #pragma once
-#include <core/smartview/smartViewParser.h>
+#include <core/smartview/block/block.h>
 #include <core/smartview/RestrictionStruct.h>
 #include <core/smartview/block/blockStringW.h>
 #include <core/smartview/block/blockT.h>
@@ -19,15 +19,24 @@ namespace smartview
 	// http://msdn.microsoft.com/en-us/library/ee158295.aspx
 	//   This structure specifies a Property Name
 	//
-	struct PropertyName
+	class PropertyName : public block
 	{
+	public:
+		PropertyName(std::shared_ptr<blockT<WORD>> _PropId) : PropId(_PropId) {}
+
+	private:
+		void parse() override;
+		void parseBlocks() override;
+
+		// This will be borrowed during construction
+		// so we can render ids and names together
+		std::shared_ptr<blockT<WORD>> PropId = emptyT<WORD>();
+
 		std::shared_ptr<blockT<BYTE>> Kind = emptyT<BYTE>();
 		std::shared_ptr<blockT<GUID>> Guid = emptyT<GUID>();
 		std::shared_ptr<blockT<DWORD>> LID = emptyT<DWORD>();
 		std::shared_ptr<blockT<BYTE>> NameSize = emptyT<BYTE>();
 		std::shared_ptr<blockStringW> Name = emptySW();
-
-		PropertyName(const std::shared_ptr<binaryParser>& parser);
 	};
 
 	// [MS-OXORULE] 2.2.4.2 NamedPropertyInformation Structure
@@ -35,24 +44,28 @@ namespace smartview
 	// =====================
 	//   This structure specifies named property information for a rule condition
 	//
-	struct NamedPropertyInformation
+	class NamedPropertyInformation : public block
 	{
+	private:
+		void parse() override;
+		void parseBlocks() override;
+
 		std::shared_ptr<blockT<WORD>> NoOfNamedProps = emptyT<WORD>();
 		std::vector<std::shared_ptr<blockT<WORD>>> PropId;
 		std::shared_ptr<blockT<DWORD>> NamedPropertiesSize = emptyT<DWORD>();
 		std::vector<std::shared_ptr<PropertyName>> PropertyName;
 	};
 
-	class RuleCondition : public smartViewParser
+	class RuleCondition : public block
 	{
 	public:
-		void Init(bool bExtended);
+		RuleCondition(bool bExtended) : m_bExtended(bExtended) {}
 
 	private:
 		void parse() override;
 		void parseBlocks() override;
 
-		NamedPropertyInformation m_NamedPropertyInformation;
+		std::shared_ptr<NamedPropertyInformation> m_NamedPropertyInformation;
 		std::shared_ptr<RestrictionStruct> m_lpRes;
 		bool m_bExtended{};
 	};

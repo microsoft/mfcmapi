@@ -9,9 +9,11 @@ namespace propertybag
 	public:
 		rowPropertyBag(sortlistdata::sortListData* lpListData);
 		virtual ~rowPropertyBag() = default;
+		rowPropertyBag(const rowPropertyBag&) = delete;
+		rowPropertyBag& operator=(const rowPropertyBag&) = delete;
 
-		ULONG GetFlags() const override;
-		propBagType GetType() const override { return pbRow; }
+		propBagFlags GetFlags() const override;
+		propBagType GetType() const override { return propBagType::Row; }
 		bool IsEqual(const std::shared_ptr<IMAPIPropertyBag> lpPropBag) const override;
 
 		// Returns the underlying MAPI prop object, if one exists. Does NOT ref count it.

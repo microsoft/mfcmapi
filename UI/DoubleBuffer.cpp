@@ -10,7 +10,7 @@ namespace ui
 
 	CDoubleBuffer::~CDoubleBuffer() { Cleanup(); }
 
-	void CDoubleBuffer::Begin(_Inout_ HDC& hdc, _In_ const RECT& rcPaint)
+	void CDoubleBuffer::Begin(_Inout_ HDC& hdc, _In_ const RECT& rcPaint) noexcept
 	{
 #ifdef SKIPBUFFER
 		UNREFERENCED_PARAMETER(hdc);
@@ -25,13 +25,13 @@ namespace ui
 
 				if (m_hbmpMem)
 				{
-					(void) SelectObject(m_hdcMem, m_hbmpMem);
-					(void) CopyRect(&m_rcPaint, &rcPaint);
-					(void) OffsetWindowOrgEx(m_hdcMem, m_rcPaint.left, m_rcPaint.top, nullptr);
+					static_cast<void>(SelectObject(m_hdcMem, m_hbmpMem));
+					static_cast<void>(CopyRect(&m_rcPaint, &rcPaint));
+					static_cast<void>(OffsetWindowOrgEx(m_hdcMem, m_rcPaint.left, m_rcPaint.top, nullptr));
 
-					(void) SelectObject(m_hdcMem, GetCurrentObject(hdc, OBJ_FONT));
-					(void) SelectObject(m_hdcMem, GetCurrentObject(hdc, OBJ_BRUSH));
-					(void) SelectObject(m_hdcMem, GetCurrentObject(hdc, OBJ_PEN));
+					static_cast<void>(SelectObject(m_hdcMem, GetCurrentObject(hdc, OBJ_FONT)));
+					static_cast<void>(SelectObject(m_hdcMem, GetCurrentObject(hdc, OBJ_BRUSH)));
+					static_cast<void>(SelectObject(m_hdcMem, GetCurrentObject(hdc, OBJ_PEN)));
 					// cache the original DC and pass out the memory DC
 					m_hdcPaint = hdc;
 					hdc = m_hdcMem;
@@ -45,7 +45,7 @@ namespace ui
 #endif
 	}
 
-	void CDoubleBuffer::End(_Inout_ HDC& hdc)
+	void CDoubleBuffer::End(_Inout_ HDC& hdc) noexcept
 	{
 		if (hdc && hdc == m_hdcMem)
 		{
@@ -67,17 +67,17 @@ namespace ui
 		}
 	}
 
-	void CDoubleBuffer::Cleanup()
+	void CDoubleBuffer::Cleanup() noexcept
 	{
 		if (m_hbmpMem)
 		{
-			(void) DeleteObject(m_hbmpMem);
+			static_cast<void>(DeleteObject(m_hbmpMem));
 			m_hbmpMem = nullptr;
 		}
 
 		if (m_hdcMem)
 		{
-			(void) DeleteDC(m_hdcMem);
+			static_cast<void>(DeleteDC(m_hdcMem));
 			m_hdcMem = nullptr;
 		}
 

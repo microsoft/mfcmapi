@@ -1,66 +1,70 @@
 #pragma once
 #include <core/smartview/block/block.h>
-#include <core/smartview/BinaryParser.h>
+#include <core/smartview/block/binaryParser.h>
 
 namespace smartview
 {
-	template <typename T, typename SOURCE_T = T> class blockT : public block
+	template <typename T> class blockT : public block
 	{
 	public:
 		blockT() = default;
 		blockT(const blockT&) = delete;
 		blockT& operator=(const blockT&) = delete;
-		blockT(const T& _data, size_t _size, size_t _offset)
+		blockT(const T& _data, size_t _size, size_t _offset) noexcept
 		{
-			set = true;
+			parsed = true;
 			data = _data;
 			setSize(_size);
 			setOffset(_offset);
 		}
 
-		virtual bool isSet() const { return set; }
-
 		// Mimic type T
-		void setData(const T& _data) { data = _data; }
-		T getData() const { return data; }
-		operator T&() { return data; }
-		operator T() const { return data; }
+		void setData(const T& _data) noexcept { data = _data; }
+		T getData() const noexcept { return data; }
+		operator T&() noexcept { return data; }
+		operator T() const noexcept { return data; }
 
-		// Fill out object of type T, reading from type SOURCE_U
-		template <typename SOURCE_U> void parse(const std::shared_ptr<binaryParser>& parser)
-		{
-			static const size_t sizeU = sizeof SOURCE_U;
-			// TODO: Consider what a failure block really looks like
-			if (!parser->checkSize(sizeU)) return;
-
-			setOffset(parser->getOffset());
-			// TODO: Can we remove this cast?
-			setData(*reinterpret_cast<const SOURCE_U*>(parser->getAddress()));
-			setSize(sizeU);
-			parser->advance(sizeU);
-
-			set = true;
-		}
-
-		// Build and return object of type T, reading from type SOURCE_T
-		// Usage: std::shared_ptr<blockT<T>> tmp = blockT<T, SOURCE_T>::parser(parser);
 		static std::shared_ptr<blockT<T>> parse(const std::shared_ptr<binaryParser>& parser)
 		{
 			auto ret = std::make_shared<blockT<T>>();
-			ret->parse<SOURCE_T>(parser);
+			ret->parser = parser;
+			ret->ensureParsed();
 			return ret;
+		}
+
+		// Build and return object of type T, reading from type U
+		// Usage: std::shared_ptr<blockT<T>> tmp = blockT<T>::parser<U>(parser);
+		template <typename U> static std::shared_ptr<blockT<T>> parse(const std::shared_ptr<binaryParser>& parser)
+		{
+			if (!parser->checkSize(sizeof U)) return std::make_shared<blockT<T>>();
+
+			const U _data = *reinterpret_cast<const U*>(parser->getAddress());
+			const auto offset = parser->getOffset();
+			parser->advance(sizeof U);
+			return create(_data, sizeof U, offset);
 		}
 
 		static std::shared_ptr<blockT<T>> create(const T& _data, size_t _size, size_t _offset)
 		{
-			return std::make_shared<blockT<T>>(_data, _size, _offset);
+			const auto ret = std::make_shared<blockT<T>>(_data, _size, _offset);
+			ret->parsed = true;
+			return ret;
 		}
 
 	private:
+		void parse() override
+		{
+			parsed = false;
+			if (!parser->checkSize(sizeof T)) return;
+
+			data = *reinterpret_cast<const T*>(parser->getAddress());
+			parser->advance(sizeof T);
+			parsed = true;
+		};
+
 		// Construct directly from a parser
 		blockT(const std::shared_ptr<binaryParser>& parser) { parse<T>(parser); }
 		T data{};
-		bool set{false};
 	};
 
 	template <typename T> std::shared_ptr<blockT<T>> emptyT() { return std::make_shared<blockT<T>>(); }

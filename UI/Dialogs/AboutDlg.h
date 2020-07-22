@@ -10,7 +10,7 @@ namespace dialog
 	{
 	public:
 		CAboutDlg(_In_ CWnd* pParentWnd);
-		virtual ~CAboutDlg();
+		~CAboutDlg();
 
 	private:
 		void OnOK() override;

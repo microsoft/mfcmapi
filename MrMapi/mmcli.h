@@ -92,6 +92,6 @@ namespace cli
 		OPT_PROFILE = 0x0400,
 	};
 
-	void DisplayUsage(BOOL bFull);
+	void DisplayUsage(BOOL bFull) noexcept;
 	void PostParseCheck(OPTIONS& _options);
 } // namespace cli

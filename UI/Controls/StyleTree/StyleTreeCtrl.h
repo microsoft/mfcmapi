@@ -6,7 +6,7 @@ namespace controls
 	{
 	public:
 		void Create(_In_ CWnd* pCreateParent, bool bReadOnly);
-		_Check_return_ bool IsItemSelected() const { return m_bItemSelected; }
+		_Check_return_ bool IsItemSelected() const noexcept { return m_bItemSelected; }
 		void Refresh();
 		HTREEITEM
 		AddChildNode(
@@ -45,6 +45,7 @@ namespace controls
 		// Removes any existing node data and replaces it with lpData
 		void SetNodeData(HWND hWnd, HTREEITEM hItem, LPARAM lpData) const;
 		void OnSelChanged(_In_opt_ NMHDR* pNMHDR, _In_opt_ LRESULT* pResult);
+		std::wstring GetItemTextW(HTREEITEM hItem) const;
 
 		bool m_bSortNodes{false};
 		bool m_bShuttingDown{false};

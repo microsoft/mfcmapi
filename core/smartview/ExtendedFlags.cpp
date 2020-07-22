@@ -6,7 +6,7 @@
 
 namespace smartview
 {
-	ExtendedFlag::ExtendedFlag(const std::shared_ptr<binaryParser>& parser)
+	void ExtendedFlag::parse()
 	{
 		Id = blockT<BYTE>::parse(parser);
 		Cb = blockT<BYTE>::parse(parser);
@@ -22,31 +22,63 @@ namespace smartview
 		{
 		case EFPB_FLAGS:
 			if (*Cb == sizeof(DWORD))
-				Data.ExtendedFlags = blockT<DWORD>::parse(parser);
+				ExtendedFlags = blockT<DWORD>::parse(parser);
 			else
 				bBadData = true;
 			break;
 		case EFPB_CLSIDID:
 			if (*Cb == sizeof(GUID))
-				Data.SearchFolderID = blockT<GUID>::parse(parser);
+				SearchFolderID = blockT<GUID>::parse(parser);
 			else
 				bBadData = true;
 			break;
 		case EFPB_SFTAG:
 			if (*Cb == sizeof(DWORD))
-				Data.SearchFolderTag = blockT<DWORD>::parse(parser);
+				SearchFolderTag = blockT<DWORD>::parse(parser);
 			else
 				bBadData = true;
 			break;
 		case EFPB_TODO_VERSION:
 			if (*Cb == sizeof(DWORD))
-				Data.ToDoFolderVersion = blockT<DWORD>::parse(parser);
+				ToDoFolderVersion = blockT<DWORD>::parse(parser);
 			else
 				bBadData = true;
 			break;
 		default:
 			lpUnknownData = blockBytes::parse(parser, *Cb, _MaxBytes);
 			break;
+		}
+	}
+
+	void ExtendedFlag::parseBlocks()
+	{
+		auto szFlags = flags::InterpretFlags(flagExtendedFolderFlagType, *Id);
+		addChild(Id, L"Id = 0x%1!02X! = %2!ws!", Id->getData(), szFlags.c_str());
+		Id->addChild(Cb, L"Cb = 0x%1!02X! = %1!d!", Cb->getData());
+
+		switch (*Id)
+		{
+		case EFPB_FLAGS:
+			Id->addChild(
+				ExtendedFlags,
+				L"Extended Flags = 0x%1!08X! = %2!ws!",
+				ExtendedFlags->getData(),
+				flags::InterpretFlags(flagExtendedFolderFlag, *ExtendedFlags).c_str());
+			break;
+		case EFPB_CLSIDID:
+			Id->addChild(SearchFolderID, L"SearchFolderID = %1!ws!", guid::GUIDToString(*SearchFolderID).c_str());
+			break;
+		case EFPB_SFTAG:
+			Id->addChild(SearchFolderTag, L"SearchFolderTag = 0x%1!08X!", SearchFolderTag->getData());
+			break;
+		case EFPB_TODO_VERSION:
+			Id->addChild(ToDoFolderVersion, L"ToDoFolderVersion = 0x%1!08X!", ToDoFolderVersion->getData());
+			break;
+		}
+
+		if (lpUnknownData->size())
+		{
+			addLabeledChild(L"Unknown Data", lpUnknownData);
 		}
 	}
 
@@ -57,25 +89,25 @@ namespace smartview
 		for (;;)
 		{
 			// Must have at least 2 bytes left to have another flag
-			if (m_Parser->getSize() < 2) break;
-			m_Parser->advance(sizeof BYTE);
-			const auto cbData = blockT<BYTE>::parse(m_Parser);
+			if (parser->getSize() < 2) break;
+			parser->advance(sizeof BYTE);
+			const auto cbData = blockT<BYTE>::parse(parser);
 			// Must have at least cbData bytes left to be a valid flag
-			if (m_Parser->getSize() < *cbData) break;
+			if (parser->getSize() < *cbData) break;
 
-			m_Parser->advance(*cbData);
+			parser->advance(*cbData);
 			ulNumFlags++;
 		}
 
 		// Now we parse for real
-		m_Parser->rewind();
+		parser->rewind();
 
 		if (ulNumFlags && ulNumFlags < _MaxEntriesSmall)
 		{
 			m_pefExtendedFlags.reserve(ulNumFlags);
 			for (ULONG i = 0; i < ulNumFlags; i++)
 			{
-				const auto flag = std::make_shared<ExtendedFlag>(m_Parser);
+				const auto flag = block::parse<ExtendedFlag>(parser, false);
 				m_pefExtendedFlags.push_back(flag);
 				if (flag->bBadData) break;
 			}
@@ -84,57 +116,15 @@ namespace smartview
 
 	void ExtendedFlags::parseBlocks()
 	{
-		setRoot(L"Extended Flags:\r\n");
-		addHeader(L"Number of flags = %1!d!", m_pefExtendedFlags.size());
+		setText(L"Extended Flags");
+		addSubHeader(L"Number of flags = %1!d!", m_pefExtendedFlags.size());
 
 		if (m_pefExtendedFlags.size())
 		{
+			int i = 0;
 			for (const auto& extendedFlag : m_pefExtendedFlags)
 			{
-				terminateBlock();
-				auto szFlags = flags::InterpretFlags(flagExtendedFolderFlagType, *extendedFlag->Id);
-				addChild(
-					extendedFlag->Id, L"Id = 0x%1!02X! = %2!ws!\r\n", extendedFlag->Id->getData(), szFlags.c_str());
-				addChild(extendedFlag->Cb, L"Cb = 0x%1!02X! = %1!d!\r\n", extendedFlag->Cb->getData());
-
-				switch (*extendedFlag->Id)
-				{
-				case EFPB_FLAGS:
-					terminateBlock();
-					addChild(
-						extendedFlag->Data.ExtendedFlags,
-						L"\tExtended Flags = 0x%1!08X! = %2!ws!",
-						extendedFlag->Data.ExtendedFlags->getData(),
-						flags::InterpretFlags(flagExtendedFolderFlag, *extendedFlag->Data.ExtendedFlags).c_str());
-					break;
-				case EFPB_CLSIDID:
-					terminateBlock();
-					addChild(
-						extendedFlag->Data.SearchFolderID,
-						L"\tSearchFolderID = %1!ws!",
-						guid::GUIDToString(*extendedFlag->Data.SearchFolderID).c_str());
-					break;
-				case EFPB_SFTAG:
-					terminateBlock();
-					addChild(
-						extendedFlag->Data.SearchFolderTag,
-						L"\tSearchFolderTag = 0x%1!08X!",
-						extendedFlag->Data.SearchFolderTag->getData());
-					break;
-				case EFPB_TODO_VERSION:
-					terminateBlock();
-					addChild(
-						extendedFlag->Data.ToDoFolderVersion,
-						L"\tToDoFolderVersion = 0x%1!08X!",
-						extendedFlag->Data.ToDoFolderVersion->getData());
-					break;
-				}
-
-				if (extendedFlag->lpUnknownData->size())
-				{
-					terminateBlock();
-					addLabledChild(L"\tUnknown Data = ", extendedFlag->lpUnknownData);
-				}
+				addChild(extendedFlag, L"Flag[%1!d!]", i++);
 			}
 		}
 	}

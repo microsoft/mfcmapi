@@ -21,36 +21,33 @@ enum CmdMode
 	cmdmode4,
 };
 
+#pragma warning(push)
+#pragma warning(disable : 5054) // warning C5054: operator '|': deprecated between enumerations of different types
 cli::option switchMode1{L"mode1", cmdmode1, 0, 1, cli::OPT_NEEDNUM | OPT_10};
 cli::option switchMode2{L"mode2", cmdmode2, 2, 2, OPT_20};
+#pragma warning(pop)
 
 const std::vector<cli::option*> g_options = {&cli::switchHelp, &cli::switchVerbose, &switchMode1, &switchMode2};
 
-namespace Microsoft
+namespace Microsoft::VisualStudio::CppUnitTestFramework
 {
-	namespace VisualStudio
+	template <> inline std::wstring ToString<cli::modeEnum>(const cli::modeEnum& q) { RETURN_WIDE_STRING(q); }
+
+	void AreEqual(
+		const cli::option* expected,
+		const cli::option* actual,
+		const wchar_t* message = nullptr,
+		const __LineInfo* pLineInfo = nullptr)
 	{
-		namespace CppUnitTestFramework
-		{
-			template <> inline std::wstring ToString<cli::modeEnum>(const cli::modeEnum& q) { RETURN_WIDE_STRING(q); }
+		if (expected == actual) return;
 
-			void AreEqual(
-				const cli::option* expected,
-				const cli::option* actual,
-				const wchar_t* message = nullptr,
-				const __LineInfo* pLineInfo = nullptr)
-			{
-				if (expected == actual) return;
+		Logger::WriteMessage(strings::format(L"Switch:\n").c_str());
+		if (expected) Logger::WriteMessage(strings::format(L"Expected: %ws\n", expected->name()).c_str());
+		if (actual) Logger::WriteMessage(strings::format(L"Actual: %ws\n", actual->name()).c_str());
 
-				Logger::WriteMessage(strings::format(L"Switch:\n").c_str());
-				if (expected) Logger::WriteMessage(strings::format(L"Expected: %ws\n", expected->name()).c_str());
-				if (actual) Logger::WriteMessage(strings::format(L"Actual: %ws\n", actual->name()).c_str());
-
-				Assert::Fail(ToString(message).c_str(), pLineInfo);
-			}
-		} // namespace CppUnitTestFramework
-	} // namespace VisualStudio
-} // namespace Microsoft
+		Assert::Fail(ToString(message).c_str(), pLineInfo);
+	}
+} // namespace Microsoft::VisualStudio::CppUnitTestFramework
 
 namespace clitest
 {
@@ -66,9 +63,9 @@ namespace clitest
 		{
 			//	std::vector<std::wstring> GetCommandLine(_In_ int argc, _In_count_(argc) const char* const argv[]);
 			auto noarg = std::vector<LPCSTR>{"app.exe"};
-			Assert::AreEqual({}, cli::GetCommandLine(int(noarg.size()), noarg.data()));
-			auto argv = std::vector<LPCSTR>{"app.exe", "-arg1", "-arg2"};
-			Assert::AreEqual({L"-arg1", L"-arg2"}, cli::GetCommandLine(int(argv.size()), argv.data()));
+			Assert::AreEqual({}, cli::GetCommandLine(static_cast<int>(noarg.size()), noarg.data()));
+			auto argv = std::vector<LPCSTR>{"app.exe", "-arg1", "-arg2", "testü"};
+			Assert::AreEqual({L"-arg1", L"-arg2", L"testü"}, cli::GetCommandLine(static_cast<int>(argv.size()), argv.data()));
 		}
 
 		TEST_METHOD(Test_GetOption)
@@ -103,7 +100,7 @@ namespace clitest
 			const cli::option& option,
 			const std::deque<std::wstring>& argsRemainder,
 			const std::vector<std::wstring>& expectedArgs,
-			const std::vector<std::wstring>& expectedRemainder)
+			const std::vector<std::wstring>& expectedRemainder) noexcept
 		{
 			if (option.size() != expectedArgs.size()) return false;
 			for (UINT i = 0; i < option.size(); i++)
@@ -150,7 +147,7 @@ namespace clitest
 			auto args = _args;
 			cli::OPTIONS options{};
 
-			auto result = option.scanArgs(args, options, g_options);
+			const auto result = option.scanArgs(args, options, g_options);
 
 			if (targetResult == result)
 			{
@@ -333,5 +330,5 @@ namespace clitest
 			test_ParseArgs({L"unswitch", L"-switch2"}, {&switch1, &switch2}, cmdmode2, {&switch2}, L"unswitch");
 			test_ParseArgs({L"unswitch1", L"unswitch2"}, {&switch1, &switch2}, cli::cmdmodeHelp, {}, {});
 		}
-	}; // namespace clitest
+	};
 } // namespace clitest

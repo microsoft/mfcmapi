@@ -12,7 +12,7 @@ namespace dialog
 			_In_ ui::CParentWnd* pParentWnd,
 			_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 			_In_opt_ LPMAPIPROP lpMAPIProp);
-		virtual ~SingleMessageDialog();
+		~SingleMessageDialog();
 
 	protected:
 		// Overrides from base class
@@ -23,6 +23,7 @@ namespace dialog
 
 		// Menu items
 		void OnRefreshView() override;
+		void OnSaveMessageToFile();
 		void OnAttachmentProperties();
 		void OnRecipientProperties();
 		void OnRTFSync();

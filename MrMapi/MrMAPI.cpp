@@ -18,8 +18,7 @@
 #include <core/utility/strings.h>
 #include <core/utility/import.h>
 #include <core/mapi/mapiStoreFunctions.h>
-#include <core/mapi/cache/namedPropCache.h>
-#include <core/mapi/stubutils.h>
+#include <mapistub/library/stubutils.h>
 #include <core/addin/addin.h>
 #include <core/utility/registry.h>
 #include <core/utility/output.h>
@@ -36,7 +35,7 @@ _Check_return_ LPMAPISESSION MrMAPILogonEx(const std::wstring& lpszProfile)
 	// TODO: profile parameter should be ansi in ansi builds
 	LPMAPISESSION lpSession = nullptr;
 	const auto hRes = WC_MAPI(
-		MAPILogonEx(NULL, LPTSTR((lpszProfile.empty() ? NULL : lpszProfile.c_str())), NULL, ulFlags, &lpSession));
+		MAPILogonEx(NULL, LPTSTR((lpszProfile.empty() ? nullptr : lpszProfile.c_str())), nullptr, ulFlags, &lpSession));
 	if (FAILED(hRes)) printf("MAPILogonEx returned an error: 0x%08lx\n", hRes);
 	return lpSession;
 }
@@ -60,13 +59,13 @@ bool LoadMAPIVersion(const std::wstring& lpszVersion)
 {
 	// Load DLLS and get functions from them
 	import::ImportProcs();
-	output::DebugPrint(output::DBGGeneric, L"LoadMAPIVersion(%ws)\n", lpszVersion.c_str());
+	output::DebugPrint(output::dbgLevel::Generic, L"LoadMAPIVersion(%ws)\n", lpszVersion.c_str());
 
 	std::wstring szPath;
 	auto paths = mapistub::GetMAPIPaths();
 	if (lpszVersion == L"0")
 	{
-		output::DebugPrint(output::DBGGeneric, L"Listing MAPI\n");
+		output::DebugPrint(output::dbgLevel::Generic, L"Listing MAPI\n");
 		for (const auto& path : paths)
 		{
 
@@ -78,7 +77,7 @@ bool LoadMAPIVersion(const std::wstring& lpszVersion)
 	const auto ulVersion = strings::wstringToUlong(lpszVersion, 10);
 	if (ulVersion == 0)
 	{
-		output::DebugPrint(output::DBGGeneric, L"Got a string\n");
+		output::DebugPrint(output::dbgLevel::Generic, L"Got a string\n");
 
 		for (const auto& path : paths)
 		{
@@ -91,33 +90,33 @@ bool LoadMAPIVersion(const std::wstring& lpszVersion)
 	}
 	else
 	{
-		output::DebugPrint(output::DBGGeneric, L"Got a number %u\n", ulVersion);
+		output::DebugPrint(output::dbgLevel::Generic, L"Got a number %u\n", ulVersion);
 		switch (ulVersion)
 		{
 		case 1: // system
 			szPath = mapistub::GetMAPISystemDir();
 			break;
 		case 11: // Outlook 2003 (11)
-			szPath = mapistub::GetInstalledOutlookMAPI(oqcOffice11);
+			szPath = mapistub::GetInstalledOutlookMAPI(mapistub::oqcOffice11);
 			break;
 		case 12: // Outlook 2007 (12)
-			szPath = mapistub::GetInstalledOutlookMAPI(oqcOffice12);
+			szPath = mapistub::GetInstalledOutlookMAPI(mapistub::oqcOffice12);
 			break;
 		case 14: // Outlook 2010 (14)
-			szPath = mapistub::GetInstalledOutlookMAPI(oqcOffice14);
+			szPath = mapistub::GetInstalledOutlookMAPI(mapistub::oqcOffice14);
 			break;
 		case 15: // Outlook 2013 (15)
-			szPath = mapistub::GetInstalledOutlookMAPI(oqcOffice15);
+			szPath = mapistub::GetInstalledOutlookMAPI(mapistub::oqcOffice15);
 			break;
 		case 16: // Outlook 2016 (16)
-			szPath = mapistub::GetInstalledOutlookMAPI(oqcOffice16);
+			szPath = mapistub::GetInstalledOutlookMAPI(mapistub::oqcOffice16);
 			break;
 		}
 	}
 
 	if (!szPath.empty())
 	{
-		output::DebugPrint(output::DBGGeneric, L"Found MAPI path %ws\n", szPath.c_str());
+		output::DebugPrint(output::dbgLevel::Generic, L"Found MAPI path %ws\n", szPath.c_str());
 		const auto hMAPI = WC_D(HMODULE, import::MyLoadLibraryW(szPath));
 		mapistub::SetMAPIHandle(hMAPI);
 	}
@@ -138,6 +137,7 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 	registry::parseNamedProps = true;
 	registry::cacheNamedProps = true;
 	registry::debugTag = 0;
+	output::initStubCallbacks();
 
 	SetDllDirectory(_T(""));
 	import::MyHeapSetInformation(nullptr, HeapEnableTerminationOnCorruption, nullptr, 0);

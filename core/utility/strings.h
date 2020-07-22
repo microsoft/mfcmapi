@@ -7,7 +7,7 @@ namespace strings
 	//#define CHECKFORMATPARAMS
 
 	extern std::wstring emptystring;
-	void setTestInstance(HINSTANCE hInstance);
+	void setTestInstance(HINSTANCE hInstance) noexcept;
 	std::wstring loadstring(DWORD dwID);
 	std::wstring formatV(LPCWSTR szMsg, va_list argList);
 	std::wstring format(LPCWSTR szMsg, ...);
@@ -25,13 +25,19 @@ namespace strings
 	std::wstring stringTowstring(const std::string& src);
 	std::wstring LPCTSTRToWstring(LPCTSTR src);
 	std::wstring LPCSTRToWstring(LPCSTR src);
-	LPCWSTR wstringToLPCWSTR(const std::wstring& src);
+	LPCWSTR wstringToLPCWSTR(const std::wstring& src) noexcept;
 	std::wstring wstringToLower(const std::wstring& src);
-	bool tryWstringToUlong(ULONG& out, const std::wstring& src, int radix, bool rejectInvalidCharacters = true);
-	ULONG wstringToUlong(const std::wstring& src, int radix, bool rejectInvalidCharacters = true);
-	long wstringToLong(const std::wstring& src, int radix);
-	double wstringToDouble(const std::wstring& src);
-	__int64 wstringToInt64(const std::wstring& src);
+	inline bool compareInsensitive(const std::wstring& lhs, const std::wstring& rhs) noexcept
+	{
+		return wstringToLower(lhs) == wstringToLower(rhs);
+	}
+	bool
+	tryWstringToUlong(ULONG& out, const std::wstring& src, int radix, bool rejectInvalidCharacters = true) noexcept;
+	ULONG wstringToUlong(const std::wstring& src, int radix, bool rejectInvalidCharacters = true) noexcept;
+	long wstringToLong(const std::wstring& src, int radix) noexcept;
+	double wstringToDouble(const std::wstring& src) noexcept;
+	__int64 wstringToInt64(const std::wstring& src) noexcept;
+	__int64 wstringToCurrency(const std::wstring& src);
 
 	std::wstring StripCharacter(const std::wstring& szString, const WCHAR& character);
 	std::wstring StripCarriage(const std::wstring& szString);
@@ -53,11 +59,11 @@ namespace strings
 	std::wstring BinToHexString(_In_opt_count_(cb) const BYTE* lpb, size_t cb, bool bPrependCB);
 	std::wstring BinToHexString(_In_opt_ const SBinary* lpBin, bool bPrependCB);
 	std::vector<BYTE> HexStringToBin(_In_ const std::wstring& input, size_t cbTarget = 0);
-	LPBYTE ByteVectorToLPBYTE(const std::vector<BYTE>& bin);
+	LPBYTE ByteVectorToLPBYTE(const std::vector<BYTE>& bin) noexcept;
 
 	std::vector<std::wstring> split(const std::wstring& str, wchar_t delim);
-	std::wstring join(const std::vector<std::wstring>& elems, const std::wstring& delim);
-	std::wstring join(const std::vector<std::wstring>& elems, wchar_t delim);
+	std::wstring join(const std::vector<std::wstring>& elems, const std::wstring& delim, bool bSkipEmpty = false);
+	std::wstring join(const std::vector<std::wstring>& elems, wchar_t delim, bool bSkipEmpty = false);
 
 	// Base64 functions
 	std::vector<BYTE> Base64Decode(const std::wstring& szEncodedStr);
@@ -81,4 +87,7 @@ namespace strings
 
 	// Tokenize strings of the form "a: b c: d" into a map where a->b, c->d, etc
 	std::map<std::wstring, std::wstring> tokenize(const std::wstring str);
+
+	std::wstring MAPINAMEIDToString(_In_ const MAPINAMEID& mapiNameId);
+	std::wstring collapseTree(const std::wstring& src);
 } // namespace strings

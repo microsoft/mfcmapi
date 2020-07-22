@@ -25,7 +25,7 @@ LPMDB OpenStore(_In_ LPMAPISESSION lpMAPISession, ULONG ulIndex)
 		if (SUCCEEDED(hRes))
 		{
 			LPSRowSet lpRow = nullptr;
-			hRes = WC_MAPI(lpStoreTable->SeekRow(BOOKMARK_BEGINNING, ulIndex, NULL));
+			hRes = WC_MAPI(lpStoreTable->SeekRow(BOOKMARK_BEGINNING, ulIndex, nullptr));
 			if (SUCCEEDED(hRes))
 			{
 				hRes = WC_MAPI(lpStoreTable->QueryRows(1, NULL, &lpRow));
@@ -34,7 +34,7 @@ LPMDB OpenStore(_In_ LPMAPISESSION lpMAPISession, ULONG ulIndex)
 			if (SUCCEEDED(hRes) && lpRow && 1 == lpRow->cRows && PR_ENTRYID == lpRow->aRow[0].lpProps[0].ulPropTag)
 			{
 				lpMDB = mapi::store::CallOpenMsgStore(
-					lpMAPISession, NULL, &lpRow->aRow[0].lpProps[0].Value.bin, MDB_NO_DIALOG | MDB_WRITE);
+					lpMAPISession, NULL, &mapi::getBin(lpRow->aRow[0].lpProps[0]), MDB_NO_DIALOG | MDB_WRITE);
 			}
 
 			if (lpRow) FreeProws(lpRow);
@@ -170,13 +170,11 @@ void PrintObjectProperty(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag)
 	LPSPropValue lpAllProps = nullptr;
 	ULONG cValues = 0L;
 
-	SPropTagArray sTag = {0};
-	sTag.cValues = 1;
-	sTag.aulPropTag[0] = ulPropTag;
+	SPropTagArray sTag = {1, ulPropTag};
 
 	WC_H_GETPROPS_S(lpMAPIProp->GetProps(&sTag, fMapiUnicode, &cValues, &lpAllProps));
 
-	output::outputProperties(output::DBGNoDebug, stdout, cValues, lpAllProps, lpMAPIProp, true);
+	output::outputProperties(output::dbgLevel::NoDebug, stdout, cValues, lpAllProps, lpMAPIProp, true);
 
 	MAPIFreeBuffer(lpAllProps);
 }
@@ -194,9 +192,7 @@ void PrintObjectProperties(const std::wstring& szObjType, _In_ LPMAPIPROP lpMAPI
 
 	if (ulPropTag)
 	{
-		SPropTagArray sTag = {0};
-		sTag.cValues = 1;
-		sTag.aulPropTag[0] = ulPropTag;
+		SPropTagArray sTag = {1, ulPropTag};
 
 		hRes = WC_H_GETPROPS(lpMAPIProp->GetProps(&sTag, fMapiUnicode, &cValues, &lpAllProps));
 	}
@@ -213,7 +209,7 @@ void PrintObjectProperties(const std::wstring& szObjType, _In_ LPMAPIPROP lpMAPI
 	{
 		wprintf(L"<properties>\n");
 
-		output::outputProperties(output::DBGNoDebug, stdout, cValues, lpAllProps, lpMAPIProp, true);
+		output::outputProperties(output::dbgLevel::NoDebug, stdout, cValues, lpAllProps, lpMAPIProp, true);
 
 		wprintf(L"</properties>\n");
 
@@ -253,12 +249,11 @@ void PrintStoreTable(_In_ LPMAPISESSION lpMAPISession, ULONG ulPropTag)
 
 	if (lpStoreTable)
 	{
-		auto sTags = LPSPropTagArray(&columns::sptSTORECols);
+		auto sTags = reinterpret_cast<LPSPropTagArray>(&columns::sptSTORECols);
 		SPropTagArray sTag = {0};
 		if (ulPropTag)
 		{
-			sTag.cValues = 1;
-			sTag.aulPropTag[0] = ulPropTag;
+			sTag = {1, ulPropTag};
 			sTags = &sTag;
 		}
 
@@ -288,7 +283,7 @@ void PrintStoreTable(_In_ LPMAPISESSION lpMAPISession, ULONG ulPropTag)
 						else
 						{
 							output::outputProperties(
-								output::DBGNoDebug,
+								output::dbgLevel::NoDebug,
 								stdout,
 								lpRows->aRow[i].cValues,
 								lpRows->aRow[i].lpProps,

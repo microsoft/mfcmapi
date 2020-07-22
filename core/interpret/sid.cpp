@@ -78,7 +78,7 @@ namespace sid
 		const auto subAuthorityCount = buf.size() >= 2 ? buf[1] : 0;
 		if (buf.size() < sizeof(SID) - sizeof(DWORD) + sizeof(DWORD) * subAuthorityCount) return {};
 
-		return GetTextualSid(static_cast<PSID>(buf.data()));
+		return GetTextualSid(buf.data());
 	}
 
 	_Check_return_ SidAccount LookupAccountSid(PSID SidStart)
@@ -123,10 +123,10 @@ namespace sid
 		const auto subAuthorityCount = buf.size() >= 2 ? buf[1] : 0;
 		if (buf.size() < sizeof(SID) - sizeof(DWORD) + sizeof(DWORD) * subAuthorityCount) return {};
 
-		return LookupAccountSid(static_cast<PSID>(buf.data()));
+		return LookupAccountSid(buf.data());
 	}
 
-	std::wstring ACEToString(_In_opt_ void* pACE, eAceType acetype)
+	std::wstring ACEToString(_In_opt_ void* pACE, aceType acetype)
 	{
 		std::vector<std::wstring> aceString;
 		ACCESS_MASK Mask = 0;
@@ -177,13 +177,13 @@ namespace sid
 
 		switch (acetype)
 		{
-		case acetypeContainer:
+		case aceType::Container:
 			szAceMask = flags::InterpretFlags(flagACEMaskContainer, Mask);
 			break;
-		case acetypeMessage:
+		case aceType::Message:
 			szAceMask = flags::InterpretFlags(flagACEMaskNonContainer, Mask);
 			break;
-		case acetypeFreeBusy:
+		case aceType::FreeBusy:
 			szAceMask = flags::InterpretFlags(flagACEMaskFreeBusy, Mask);
 			break;
 		};
@@ -217,7 +217,7 @@ namespace sid
 		return strings::join(aceString, L"\r\n");
 	}
 
-	_Check_return_ SecurityDescriptor SDToString(const std::vector<BYTE>& buf, eAceType acetype)
+	_Check_return_ SecurityDescriptor SDToString(const std::vector<BYTE>& buf, aceType acetype)
 	{
 		if (buf.empty()) return {};
 

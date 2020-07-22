@@ -18,7 +18,7 @@ void FindNameIDArrayMatches(
 	_In_count_(ulMyArray) NAMEID_ARRAY_ENTRY* MyArray,
 	_In_ ULONG ulMyArray,
 	_Out_ ULONG* lpulNumExacts,
-	_Out_ ULONG* lpulFirstExact)
+	_Out_ ULONG* lpulFirstExact) noexcept
 {
 	ULONG ulLowerBound = 0;
 	auto ulUpperBound = ulMyArray - 1; // ulMyArray-1 is the last entry
@@ -92,7 +92,7 @@ void FindNameIDArrayMatches(
 
 // prints the type of a prop tag
 // no pretty stuff or \n - calling function gets to do that
-void PrintType(_In_ ULONG ulPropTag)
+void PrintType(_In_ ULONG ulPropTag) noexcept
 {
 	auto bNeedInstance = false;
 
@@ -120,7 +120,7 @@ void PrintType(_In_ ULONG ulPropTag)
 	if (bNeedInstance) printf(" | MV_INSTANCE");
 }
 
-void PrintKnownTypes()
+void PrintKnownTypes() noexcept
 {
 	// Do a linear search through PropTypeArray - ulPropTypeArray will be small
 	printf("%-18s%-9s%s\n", "Type", "Hex", "Decimal");
@@ -134,7 +134,7 @@ void PrintKnownTypes()
 }
 
 // Print the tag found in the array at ulRow
-void PrintTag(_In_ ULONG ulRow)
+void PrintTag(_In_ ULONG ulRow) noexcept
 {
 	printf("0x%08lX,%ws,", PropTagArray[ulRow].ulValue, PropTagArray[ulRow].lpszName);
 	PrintType(PropTagArray[ulRow].ulValue);
@@ -272,7 +272,7 @@ void PrintTagFromName(_In_z_ LPCWSTR lpszPropName, _In_ ULONG ulType)
 
 // Search for properties matching lpszPropName on a substring
 // If ulType isn't ulNoMatch, restrict on the property type as well
-void PrintTagFromPartialName(_In_opt_z_ LPCWSTR lpszPropName, _In_ ULONG ulType)
+void PrintTagFromPartialName(_In_opt_z_ LPCWSTR lpszPropName, _In_ ULONG ulType) noexcept
 {
 	if (lpszPropName)
 		printf("Searching for \"%ws\"\n", lpszPropName);
@@ -301,7 +301,7 @@ void PrintTagFromPartialName(_In_opt_z_ LPCWSTR lpszPropName, _In_ ULONG ulType)
 	printf("Found %lu matches.\n", ulNumMatches);
 }
 
-void PrintGUID(_In_ LPCGUID lpGUID)
+void PrintGUID(_In_ LPCGUID lpGUID) noexcept
 {
 	// PSUNKNOWN isn't a real guid - just a placeholder - don't print it
 	if (!lpGUID || IsEqualGUID(*lpGUID, guid::PSUNKNOWN))
@@ -335,7 +335,7 @@ void PrintGUID(_In_ LPCGUID lpGUID)
 	}
 }
 
-void PrintGUIDs()
+void PrintGUIDs() noexcept
 {
 	for (const auto& guid : PropGuidArray)
 	{
@@ -356,7 +356,7 @@ void PrintGUIDs()
 	}
 }
 
-void PrintDispID(_In_ ULONG ulRow)
+void PrintDispID(_In_ ULONG ulRow) noexcept
 {
 	printf("0x%04lX,%ws,", NameIDArray[ulRow].lValue, NameIDArray[ulRow].lpszName);
 	PrintGUID(NameIDArray[ulRow].lpGuid);
@@ -375,7 +375,7 @@ void PrintDispID(_In_ ULONG ulRow)
 	printf("\n");
 }
 
-void PrintDispIDFromNum(_In_ ULONG ulDispID)
+void PrintDispIDFromNum(_In_ ULONG ulDispID) noexcept
 {
 	ULONG ulNumExacts = NULL;
 	ULONG ulFirstExactMatch = cache::ulNoMatch;
@@ -395,7 +395,7 @@ void PrintDispIDFromNum(_In_ ULONG ulDispID)
 	}
 }
 
-void PrintDispIDFromName(_In_opt_z_ LPCWSTR lpszDispIDName)
+void PrintDispIDFromName(_In_opt_z_ LPCWSTR lpszDispIDName) noexcept
 {
 	if (!lpszDispIDName) return;
 
@@ -439,7 +439,7 @@ void PrintDispIDFromName(_In_opt_z_ LPCWSTR lpszDispIDName)
 }
 
 // Search for properties matching lpszPropName on a substring
-void PrintDispIDFromPartialName(_In_opt_z_ LPCWSTR lpszDispIDName, _In_ ULONG ulType)
+void PrintDispIDFromPartialName(_In_opt_z_ LPCWSTR lpszDispIDName, _In_ ULONG ulType) noexcept
 {
 	if (lpszDispIDName)
 		printf("Searching for \"%ws\"\n", lpszDispIDName);
@@ -546,8 +546,8 @@ void DoPropTags()
 	auto propName = cli::switchUnswitched[0];
 	const auto lpszPropName = propName.empty() ? nullptr : propName.c_str();
 	const auto ulPropNum = strings::wstringToUlong(propName, cli::switchDecimal.isSet() ? 10 : 16);
-	if (lpszPropName) output::DebugPrint(output::DBGGeneric, L"lpszPropName = %ws\n", lpszPropName);
-	output::DebugPrint(output::DBGGeneric, L"ulPropNum = 0x%08X\n", ulPropNum);
+	if (lpszPropName) output::DebugPrint(output::dbgLevel::Generic, L"lpszPropName = %ws\n", lpszPropName);
+	output::DebugPrint(output::dbgLevel::Generic, L"ulPropNum = 0x%08X\n", ulPropNum);
 	const auto ulTypeNum =
 		cli::switchType.empty() ? cache::ulNoMatch : proptype::PropTypeNameToPropType(cli::switchType[0]);
 
@@ -607,14 +607,14 @@ void DoPropTags()
 	}
 }
 
-void DoGUIDs() { PrintGUIDs(); }
+void DoGUIDs() noexcept { PrintGUIDs(); }
 
-void DoFlagSearch()
+void DoFlagSearch() noexcept
 {
 	const auto lpszFlagName = cli::switchFlag[0];
 	for (const auto& flag : FlagArray)
 	{
-		if (!_wcsicmp(flag.lpszName, lpszFlagName.c_str()))
+		if (strings::compareInsensitive(flag.lpszName, lpszFlagName))
 		{
 			printf("%ws = 0x%08lX\n", flag.lpszName, flag.lFlagValue);
 			break;

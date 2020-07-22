@@ -8,7 +8,7 @@ namespace sortlistdata
 	class commentData : public IData
 	{
 	public:
-		commentData(_In_opt_ const _SPropValue* lpOldProp);
+		commentData(_In_opt_ const _SPropValue* lpOldProp) noexcept;
 
 		static void init(sortListData* data, _In_opt_ const _SPropValue* lpOldProp);
 

@@ -39,7 +39,7 @@ namespace viewpane
 
 		for (const auto& smartViewParserType : SmartViewParserTypeArray)
 		{
-			InsertDropString(smartViewParserType.lpszName, smartViewParserType.ulValue);
+			InsertDropString(smartViewParserType.lpszName, static_cast<ULONG>(smartViewParserType.type));
 		}
 
 		DropDownPane::Initialize(pParent, hdc);
@@ -159,11 +159,11 @@ namespace viewpane
 		}
 	}
 
-	void SmartViewPane::SetParser(const __ParsingTypeEnum iParser)
+	void SmartViewPane::SetParser(const parserType parser)
 	{
 		for (size_t iDropNum = 0; iDropNum < SmartViewParserTypeArray.size(); iDropNum++)
 		{
-			if (iParser == static_cast<__ParsingTypeEnum>(SmartViewParserTypeArray[iDropNum].ulValue))
+			if (parser == static_cast<parserType>(SmartViewParserTypeArray[iDropNum].type))
 			{
 				SetSelection(iDropNum);
 				break;
@@ -179,44 +179,30 @@ namespace viewpane
 		// Clear the visual tree before we recompute treeData so we have nothing pointing to data in treeData
 		if (m_TreePane) m_TreePane->m_Tree.Refresh();
 
-		const auto iStructType = static_cast<__ParsingTypeEnum>(GetDropDownSelectionValue());
+		const auto iStructType = static_cast<parserType>(GetDropDownSelectionValue());
 		auto szSmartViewArray = std::vector<std::wstring>{};
-		treeData = std::make_shared<smartview::block>();
-		auto svp = smartview::GetSmartViewParser(iStructType, nullptr);
+		treeData = smartview::block::create(m_bins.size() > 1 ? L"Multivalued Property" : L"");
 		auto source = 0;
 		for (auto& bin : m_bins)
 		{
-			auto parsedData = std::wstring{};
+			auto svp =
+				smartview::InterpretBinary({static_cast<ULONG>(bin.size()), bin.data()}, iStructType, nullptr);
 			if (svp)
 			{
-				svp->init(bin.size(), bin.data());
-				parsedData = svp->toString();
-				auto node = svp->getBlock();
-				node->setSource(source++);
+				svp->setSource(source++);
 				if (m_bins.size() == 1)
 				{
-					treeData = node;
+					treeData = svp;
 				}
 				else
 				{
-					treeData->addChild(node);
+					treeData->addChild(svp);
 				}
 			}
-
-			if (parsedData.empty())
-			{
-				parsedData =
-					smartview::InterpretBinaryAsString(SBinary{ULONG(bin.size()), bin.data()}, iStructType, nullptr);
-			}
-
-			szSmartViewArray.push_back(parsedData);
 		}
 
 		AddChildren(nullptr, treeData);
-
-		auto szSmartView = strings::join(szSmartViewArray, L"\r\n");
-		m_bHasData = !szSmartView.empty();
-		SetStringW(szSmartView);
+		SetStringW(treeData->toString());
 	}
 
 	void SmartViewPane::AddChildren(HTREEITEM parent, const std::shared_ptr<smartview::block>& data)
@@ -307,7 +293,7 @@ namespace viewpane
 					ui::DrawSegoeTextW(
 						lvcd->nmcd.hdc,
 						blockString,
-						MyGetSysColor(ui::cGlow),
+						MyGetSysColor(ui::uiColor::Glow),
 						rect,
 						false,
 						DT_SINGLELINE | DT_VCENTER | DT_CENTER);

@@ -67,11 +67,13 @@ namespace error
 	};
 	typedef ERROR_ARRAY_ENTRY* LPERROR_ARRAY_ENTRY;
 
-	inline _Check_return_ HRESULT CheckMe(const HRESULT hRes) noexcept { return hRes; }
+	inline _Check_return_ constexpr HRESULT CheckMe(const HRESULT hRes) noexcept { return hRes; }
 
 	std::wstring ProblemArrayToString(_In_ const SPropProblemArray& problems);
 	std::wstring MAPIErrToString(ULONG ulFlags, _In_ const MAPIERROR& err);
 	std::wstring TnefProblemArrayToString(_In_ const STnefProblemArray& error);
+
+	template <typename T> void CheckExtendedError(HRESULT hRes, T lpObject);
 } // namespace error
 
 // Macros for debug output
@@ -116,7 +118,7 @@ namespace error
 	}()
 
 // Execute a function, log and return the HRESULT
-// Logs a MAPI call trace under DBGMAPIFunctions
+// Logs a MAPI call trace under output::dbgLevel::MAPIFunctions
 // Will display dialog on error
 #define EC_MAPI(fnx) \
 	error::CheckMe([&]() -> HRESULT { \
@@ -126,7 +128,7 @@ namespace error
 	}())
 
 // Execute a function, log and swallow the HRESULT
-// Logs a MAPI call trace under DBGMAPIFunctions
+// Logs a MAPI call trace under output::dbgLevel::MAPIFunctions
 // Will display dialog on error
 #define EC_MAPI_S(fnx) \
 	[&]() -> void { \
@@ -135,7 +137,7 @@ namespace error
 	}()
 
 // Execute a function, log and return the HRESULT
-// Logs a MAPI call trace under DBGMAPIFunctions
+// Logs a MAPI call trace under output::dbgLevel::MAPIFunctions
 // Will not display an error dialog
 #define WC_MAPI(fnx) \
 	error::CheckMe([&]() -> HRESULT { \
@@ -145,7 +147,7 @@ namespace error
 	}())
 
 // Execute a function, log and swallow the HRESULT
-// Logs a MAPI call trace under DBGMAPIFunctions
+// Logs a MAPI call trace under output::dbgLevel::MAPIFunctions
 // Will not display an error dialog
 #define WC_MAPI_S(fnx) \
 	[&]() -> void { \
@@ -225,7 +227,7 @@ namespace error
 	[&]() -> void { \
 		if (!(fnx)) \
 		{ \
-			(void) error::CheckWin32Error(true, __FILE__, __LINE__, #fnx); \
+			static_cast<void>(error::CheckWin32Error(true, __FILE__, __LINE__, #fnx)); \
 		} \
 	}()
 
@@ -241,7 +243,7 @@ namespace error
 	[&]() -> void { \
 		if (!(fnx)) \
 		{ \
-			(void) error::CheckWin32Error(false, __FILE__, __LINE__, #fnx); \
+			static_cast<void>(error::CheckWin32Error(false, __FILE__, __LINE__, #fnx)); \
 		} \
 	}()
 
@@ -249,10 +251,10 @@ namespace error
 // Will display dialog on error
 #define EC_D(_TYPE, fnx) \
 	[&]() -> _TYPE { \
-		auto __ret = (fnx); \
+		const auto __ret = (fnx); \
 		if (!__ret) \
 		{ \
-			(void) error::CheckWin32Error(true, __FILE__, __LINE__, #fnx); \
+			static_cast<void>(error::CheckWin32Error(true, __FILE__, __LINE__, #fnx)); \
 		} \
 		return __ret; \
 	}()
@@ -264,7 +266,7 @@ namespace error
 		const auto __ret = (fnx); \
 		if (!__ret) \
 		{ \
-			(void) error::CheckWin32Error(false, __FILE__, __LINE__, #fnx); \
+			static_cast<void>(error::CheckWin32Error(false, __FILE__, __LINE__, #fnx)); \
 		} \
 		return __ret; \
 	}()
@@ -275,9 +277,20 @@ namespace error
 	[&]() -> void { \
 		if (!(fnx)) \
 		{ \
-			(void) error::CheckWin32Error(false, __FILE__, __LINE__, #fnx); \
+			static_cast<void>(error::CheckWin32Error(false, __FILE__, __LINE__, #fnx)); \
 		} \
 	}()
+
+// Execute a function, log and return the HRESULT
+// Does not log/display on error if it matches __ignore
+// Does not suppress __ignore as return value so caller can check it
+// Will display dialog on error
+#define EC_H_IGNORE_RET(__ignore, fnx) \
+	error::CheckMe([&]() -> HRESULT { \
+		const auto __hRes = (fnx); \
+		error::LogFunctionCall(__hRes, __ignore, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
+		return __hRes; \
+	}())
 
 // Execute a function, log and return the HRESULT
 // MAPI's GetProps call will return MAPI_W_ERRORS_RETURNED if even one prop fails
@@ -334,7 +347,7 @@ namespace error
 #define WC_H_GETPROPS_S(fnx) WC_H_IGNORE_S(MAPI_W_ERRORS_RETURNED, fnx)
 
 // Execute a function, log and return the HRESULT
-// Logs a MAPI call trace under DBGMAPIFunctions
+// Logs a MAPI call trace under output::dbgLevel::MAPIFunctions
 // Some MAPI functions allow MAPI_E_CANCEL or MAPI_E_USER_CANCEL.
 // I don't consider these to be errors.
 // Will display dialog on error
@@ -352,7 +365,7 @@ namespace error
 	}())
 
 // Execute a function, log and swallow the HRESULT
-// Logs a MAPI call trace under DBGMAPIFunctions
+// Logs a MAPI call trace under output::dbgLevel::MAPIFunctions
 // Some MAPI functions allow MAPI_E_CANCEL or MAPI_E_USER_CANCEL.
 // I don't consider these to be errors.
 // Will display dialog on error
@@ -389,7 +402,7 @@ namespace error
 		{ \
 			const std::wstring szProbArray = error::ProblemArrayToString(*(problemarray)); \
 			error::ErrDialog(__FILE__, __LINE__, IDS_EDPROBLEMARRAY, szProbArray.c_str()); \
-			output::DebugPrint(output::DBGGeneric, L"Problem array:\n%ws\n", szProbArray.c_str()); \
+			output::DebugPrint(output::dbgLevel::Generic, L"Problem array:\n%ws\n", szProbArray.c_str()); \
 		} \
 	}
 
@@ -398,7 +411,7 @@ namespace error
 		if (problemarray) \
 		{ \
 			const std::wstring szProbArray = error::ProblemArrayToString(*(problemarray)); \
-			output::DebugPrint(output::DBGGeneric, L"Problem array:\n%ws\n", szProbArray.c_str()); \
+			output::DebugPrint(output::dbgLevel::Generic, L"Problem array:\n%ws\n", szProbArray.c_str()); \
 		} \
 	}
 
@@ -408,7 +421,7 @@ namespace error
 		{ \
 			const std::wstring szErr = error::MAPIErrToString((__ulflags), *(__lperr)); \
 			error::ErrDialog(__FILE__, __LINE__, IDS_EDMAPIERROR, szErr.c_str()); \
-			output::DebugPrint(output::DBGGeneric, L"LPMAPIERROR:\n%ws\n", szErr.c_str()); \
+			output::DebugPrint(output::dbgLevel::Generic, L"LPMAPIERROR:\n%ws\n", szErr.c_str()); \
 		} \
 	}
 
@@ -418,6 +431,6 @@ namespace error
 		{ \
 			const std::wstring szProbArray = error::TnefProblemArrayToString(*(problemarray)); \
 			error::ErrDialog(__FILE__, __LINE__, IDS_EDTNEFPROBLEMARRAY, szProbArray.c_str()); \
-			output::DebugPrint(output::DBGGeneric, L"TNEF Problem array:\n%ws\n", szProbArray.c_str()); \
+			output::DebugPrint(output::dbgLevel::Generic, L"TNEF Problem array:\n%ws\n", szProbArray.c_str()); \
 		} \
 	}

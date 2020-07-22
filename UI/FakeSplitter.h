@@ -9,10 +9,10 @@ namespace dialog
 
 namespace controls
 {
-	enum SplitType
+	enum class splitType
 	{
-		SplitVertical = 0,
-		SplitHorizontal = 1
+		vertical = 0,
+		horizontal = 1
 	};
 
 	// Implementation of a lite Splitter class.
@@ -21,12 +21,12 @@ namespace controls
 	{
 	public:
 		CFakeSplitter() = default;
-		virtual ~CFakeSplitter();
+		~CFakeSplitter();
 
 		void Init(HWND hWnd);
-		void SetPaneOne(HWND paneOne);
-		void SetPaneTwo(HWND paneTwo);
-		void SetPaneOne(std::shared_ptr<viewpane::ViewPane> paneOne)
+		void SetPaneOne(HWND paneOne) noexcept;
+		void SetPaneTwo(HWND paneTwo) noexcept;
+		void SetPaneOne(std::shared_ptr<viewpane::ViewPane> paneOne) noexcept
 		{
 			m_ViewPaneOne = paneOne;
 			if (m_ViewPaneOne)
@@ -39,13 +39,13 @@ namespace controls
 			}
 		}
 
-		void SetPaneTwo(std::shared_ptr<viewpane::ViewPane> paneTwo) { m_ViewPaneTwo = paneTwo; }
+		void SetPaneTwo(std::shared_ptr<viewpane::ViewPane> paneTwo) noexcept { m_ViewPaneTwo = paneTwo; }
 
 		void SetPercent(FLOAT iNewPercent);
-		void SetSplitType(SplitType stSplitType);
+		void SetSplitType(splitType stSplitType) noexcept;
 		void OnSize(UINT nType, int cx, int cy);
 		void DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height);
-		int GetSplitWidth() const { return m_iSplitWidth; }
+		int GetSplitWidth() const noexcept { return m_iSplitWidth; }
 
 		// Callbacks
 		std::function<int()> PaneOneMinSpanCallback = nullptr;
@@ -55,7 +55,7 @@ namespace controls
 		void OnPaint();
 		void OnMouseMove(UINT nFlags, CPoint point);
 		LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
-		_Check_return_ int HitTest(LONG x, LONG y) const;
+		_Check_return_ int HitTest(LONG x, LONG y) const noexcept;
 
 		// starting and stopping tracking
 		void StartTracking(int ht);
@@ -71,7 +71,7 @@ namespace controls
 		std::shared_ptr<viewpane::ViewPane> m_ViewPaneTwo{};
 		int m_iSplitWidth{};
 		int m_iSplitPos{1};
-		SplitType m_SplitType{SplitHorizontal};
+		splitType m_SplitType{splitType::horizontal};
 		HCURSOR m_hSplitCursorV{};
 		HCURSOR m_hSplitCursorH{};
 

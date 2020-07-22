@@ -21,20 +21,20 @@ namespace error
 		_In_z_ LPCSTR szFile,
 		int iLine)
 	{
-		if (fIsSet(output::DBGMAPIFunctions) && bMAPICall)
+		if (fIsSet(output::dbgLevel::MAPIFunctions) && bMAPICall)
 		{
 			const auto szFunctionString = strings::formatmessage(IDS_FUNCTION, szFile, iLine, szFunction);
 
-			output::Output(output::DBGMAPIFunctions, nullptr, true, szFunctionString);
-			output::Output(output::DBGMAPIFunctions, nullptr, false, L"\n");
+			output::Output(output::dbgLevel::MAPIFunctions, nullptr, true, szFunctionString);
+			output::Output(output::dbgLevel::MAPIFunctions, nullptr, false, L"\n");
 		}
 
 		// Check if we have no work to do
 		if (hRes == S_OK || hRes == hrIgnore) return;
-		if (!fIsSet(output::DBGHRes)) return;
+		if (!(bShowDialog && displayError) && !fIsSet(output::dbgLevel::HRes)) return;
 
 		// Get our error message if we have one
-		auto szErrorMsg =
+		const auto szErrorMsg =
 			bSystemCall ? strings::formatmessagesys(uidErrorMsg) : uidErrorMsg ? strings::loadstring(uidErrorMsg) : L"";
 
 		const auto szErrString = strings::formatmessage(
@@ -46,8 +46,11 @@ namespace error
 			szFile,
 			iLine);
 
-		output::Output(output::DBGHRes, nullptr, true, strings::StripCarriage(szErrString));
-		output::Output(output::DBGHRes, nullptr, false, L"\n");
+		if (fIsSet(output::dbgLevel::HRes))
+		{
+			output::Output(output::dbgLevel::HRes, nullptr, true, strings::StripCarriage(szErrString));
+			output::Output(output::dbgLevel::HRes, nullptr, false, L"\n");
+		}
 
 		if (bShowDialog && displayError)
 		{
@@ -76,8 +79,8 @@ namespace error
 
 		const auto szCombo = szErrorBegin + strings::formatmessage(IDS_INFILEONLINE, szFile, iLine);
 
-		output::Output(output::DBGHRes, nullptr, true, szCombo);
-		output::Output(output::DBGHRes, nullptr, false, L"\n");
+		output::Output(output::dbgLevel::HRes, nullptr, true, szCombo);
+		output::Output(output::dbgLevel::HRes, nullptr, false, L"\n");
 
 		if (displayError)
 		{
@@ -142,4 +145,23 @@ namespace error
 
 		return szOut;
 	}
+
+	template <typename T> void CheckExtendedError(HRESULT hRes, T lpObject)
+	{
+		if (hRes == MAPI_E_EXTENDED_ERROR)
+		{
+			LPMAPIERROR lpErr = nullptr;
+			hRes = WC_MAPI(lpObject->GetLastError(hRes, fMapiUnicode, &lpErr));
+			if (lpErr)
+			{
+				EC_MAPIERR(fMapiUnicode, lpErr);
+				MAPIFreeBuffer(lpErr);
+			}
+		}
+		else
+			CHECKHRES(hRes);
+	}
+
+	template void CheckExtendedError<LPMAPIFORMCONTAINER>(HRESULT hRes, LPMAPIFORMCONTAINER lpObject);
+	template void CheckExtendedError<LPMAPIFORMMGR>(HRESULT hRes, LPMAPIFORMMGR lpObject);
 } // namespace error

@@ -10,7 +10,7 @@ namespace sortlistdata
 	public:
 		static void init(sortListData* data, _In_ ULONG ulPropTag);
 
-		propListData(_In_ ULONG ulPropTag);
+		propListData(_In_ ULONG ulPropTag) noexcept;
 
 		ULONG m_ulPropTag{};
 	};

@@ -1,6 +1,7 @@
 ﻿#include <core/stdafx.h>
 #include <core/sortlistdata/mvPropData.h>
 #include <core/sortlistdata/sortListData.h>
+#include <core/mapi/mapiFunctions.h>
 
 namespace sortlistdata
 {
@@ -90,7 +91,7 @@ namespace sortlistdata
 			m_val.lpszW = const_cast<LPWSTR>(m_lpszW.c_str());
 			break;
 		case PT_BINARY:
-			m_lpBin.assign(m_val.bin.lpb, m_val.bin.lpb + lpProp->Value.bin.cb);
+			m_lpBin.assign(m_val.bin.lpb, m_val.bin.lpb + mapi::getBin(lpProp).cb);
 			m_val.bin.cb = static_cast<ULONG>(m_lpBin.size());
 			m_val.bin.lpb = m_lpBin.data();
 			break;

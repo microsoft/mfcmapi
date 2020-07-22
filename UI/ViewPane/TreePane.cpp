@@ -62,7 +62,7 @@ namespace viewpane
 		_In_ const int height)
 	{
 		output::DebugPrint(
-			output::DBGDraw, L"TreePane::DeferWindowPos x:%d y:%d width:%d height:%d \n", x, y, width, height);
+			output::dbgLevel::Draw, L"TreePane::DeferWindowPos x:%d y:%d width:%d height:%d \n", x, y, width, height);
 
 		auto curY = y;
 		const auto labelHeight = GetLabelHeight();

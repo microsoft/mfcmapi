@@ -56,6 +56,6 @@ namespace dialog
 	void SingleRecipientDialog::OnRefreshView()
 	{
 		if (!m_lpPropDisplay) return;
-		(void) m_lpPropDisplay->RefreshMAPIPropList();
+		static_cast<void>(m_lpPropDisplay->RefreshMAPIPropList());
 	}
 } // namespace dialog

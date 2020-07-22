@@ -10,7 +10,7 @@ namespace sortlistdata
 		data->init(std::make_shared<binaryData>(lpOldBin));
 	}
 
-	binaryData::binaryData(_In_opt_ LPSBinary lpOldBin)
+	binaryData::binaryData(_In_opt_ LPSBinary lpOldBin) noexcept
 	{
 		if (lpOldBin)
 		{

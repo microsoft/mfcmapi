@@ -1,14 +1,17 @@
-Predecessor Change List:
-Count = 3
-XID[0]:
-XidSize = 0x00000016 = 22
-NamespaceGuid = {41213B37-7628-44FE-8E8D-71BE34CC3154}
-LocalId = cb: 6 lpb: 000061E71533
-XID[1]:
-XidSize = 0x00000016 = 22
-NamespaceGuid = {487F266F-8738-48D9-AAFC-A58AB2BC910F}
-LocalId = cb: 6 lpb: 0000DC0B3A12
-XID[2]:
-XidSize = 0x00000014 = 20
-NamespaceGuid = {1CC6AB8F-4C6C-475E-930B-9B30AA0ED4EB}
-LocalId = cb: 4 lpb: 00005CA8
+Predecessor Change List
+	Count = 3
+	XID[0]
+		XidSize = 0x00000016 = 22
+		NamespaceGuid = {41213B37-7628-44FE-8E8D-71BE34CC3154}
+		LocalId
+			cb: 6 lpb: 000061E71533
+	XID[1]
+		XidSize = 0x00000016 = 22
+		NamespaceGuid = {487F266F-8738-48D9-AAFC-A58AB2BC910F}
+		LocalId
+			cb: 6 lpb: 0000DC0B3A12
+	XID[2]
+		XidSize = 0x00000014 = 20
+		NamespaceGuid = {1CC6AB8F-4C6C-475E-930B-9B30AA0ED4EB}
+		LocalId
+			cb: 4 lpb: 00005CA8

@@ -26,7 +26,7 @@ namespace viewpane
 		const auto check = GetSystemMetrics(SM_CXMENUCHECK);
 		const auto edge = check / 5;
 		output::DebugPrint(
-			output::DBGDraw,
+			output::dbgLevel::Draw,
 			L"CheckPane::GetMinWidth Label:%d + check:%d + edge:%d = minwidth:%d\n",
 			label,
 			check,
@@ -42,13 +42,13 @@ namespace viewpane
 		ViewPane::Initialize(pParent, hdc);
 
 		EC_B_S(m_Check.Create(
-			NULL,
+			nullptr,
 			WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE | BS_AUTOCHECKBOX | (m_bReadOnly ? WS_DISABLED : 0),
 			CRect(0, 0, 0, 0),
 			pParent,
 			m_nID));
 		m_Check.SetCheck(m_bCheckValue);
-		SetWindowTextW(m_Check.m_hWnd, m_szLabel.c_str());
+		::SetWindowTextW(m_Check.m_hWnd, m_szLabel.c_str());
 
 		m_bInitialized = true;
 	}
@@ -60,7 +60,7 @@ namespace viewpane
 		_In_ const int width,
 		_In_ const int height)
 	{
-		output::DebugPrint(output::DBGDraw, L"CheckPane::DeferWindowPos x:%d width:%d \n", x, width);
+		output::DebugPrint(output::dbgLevel::Draw, L"CheckPane::DeferWindowPos x:%d width:%d \n", x, width);
 		EC_B_S(::DeferWindowPos(hWinPosInfo, m_Check.GetSafeHwnd(), nullptr, x, y, width, height, SWP_NOZORDER));
 	}
 
@@ -94,17 +94,19 @@ namespace viewpane
 		rcCheck.top = (rc.bottom - rc.top - lCheck) / 2;
 		rcCheck.bottom = rcCheck.top + lCheck;
 
-		FillRect(hDC, &rc, GetSysBrush(ui::cBackground));
+		FillRect(hDC, &rc, GetSysBrush(ui::uiColor::Background));
 		FrameRect(
 			hDC,
 			&rcCheck,
-			GetSysBrush(bDisabled ? ui::cFrameUnselected : bGlow || bFocused ? ui::cGlow : ui::cFrameSelected));
+			GetSysBrush(
+				bDisabled ? ui::uiColor::FrameUnselected
+						  : bGlow || bFocused ? ui::uiColor::Glow : ui::uiColor::FrameSelected));
 		if (bChecked)
 		{
 			auto rcFill = rcCheck;
 			const auto deflate = lEdge;
 			InflateRect(&rcFill, -deflate, -deflate);
-			FillRect(hDC, &rcFill, GetSysBrush(ui::cGlow));
+			FillRect(hDC, &rcFill, GetSysBrush(ui::uiColor::Glow));
 		}
 
 		auto rcLabel = rc;
@@ -112,7 +114,7 @@ namespace viewpane
 		rcLabel.right = rcLabel.left + ui::GetTextExtentPoint32(hDC, szButton).cx;
 
 		output::DebugPrint(
-			output::DBGDraw,
+			output::dbgLevel::Draw,
 			L"CheckButton::Draw left:%d width:%d checkwidth:%d space:%d labelwidth:%d (scroll:%d 2frame:%d), \"%ws\"\n",
 			rc.left,
 			rc.right - rc.left,
@@ -126,7 +128,7 @@ namespace viewpane
 		ui::DrawSegoeTextW(
 			hDC,
 			szButton,
-			bDisabled ? MyGetSysColor(ui::cTextDisabled) : MyGetSysColor(ui::cText),
+			bDisabled ? MyGetSysColor(ui::uiColor::TextDisabled) : MyGetSysColor(ui::uiColor::Text),
 			rcLabel,
 			false,
 			DT_SINGLELINE | DT_VCENTER);

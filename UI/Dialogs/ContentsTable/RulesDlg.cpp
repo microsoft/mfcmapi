@@ -25,7 +25,7 @@ namespace dialog
 			  pParentWnd,
 			  lpMapiObjects,
 			  IDS_RULESTABLE,
-			  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+			  createDialogType::DO_NOT_CALL_CREATE_DIALOG,
 			  nullptr,
 			  nullptr,
 			  &columns::sptRULECols.tags,
@@ -76,7 +76,7 @@ namespace dialog
 		if (!m_lpExchTbl || !m_lpContentsTableListCtrl) return;
 
 		if (m_lpContentsTableListCtrl->IsLoading()) m_lpContentsTableListCtrl->OnCancelTableLoad();
-		output::DebugPrintEx(output::DBGGeneric, CLASS, L"OnRefreshView", L"\n");
+		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"OnRefreshView", L"\n");
 
 		if (m_lpExchTbl)
 		{
@@ -86,7 +86,7 @@ namespace dialog
 			EC_MAPI_S(m_lpExchTbl->GetTable(0, &lpMAPITable));
 			if (lpMAPITable)
 			{
-				m_lpContentsTableListCtrl->SetContentsTable(lpMAPITable, dfDeleted, NULL);
+				m_lpContentsTableListCtrl->SetContentsTable(lpMAPITable, tableDisplayFlags::dfDeleted, NULL);
 
 				lpMAPITable->Release();
 			}
@@ -163,8 +163,8 @@ namespace dialog
 								{
 									if (lpData->lpSourceProps[ulSrc].ulPropTag == PR_RULE_PROVIDER_DATA)
 									{
-										if (!lpData->lpSourceProps[ulSrc].Value.bin.cb ||
-											!lpData->lpSourceProps[ulSrc].Value.bin.lpb)
+										const auto bin = mapi::getBin(lpData->lpSourceProps[ulSrc]);
+										if (!bin.cb || !bin.lpb)
 										{
 											// PR_RULE_PROVIDER_DATA was NULL - we don't want this
 											continue;

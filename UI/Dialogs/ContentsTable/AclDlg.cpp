@@ -30,7 +30,7 @@ namespace dialog
 			  pParentWnd,
 			  lpMapiObjects,
 			  fFreeBusyVisible ? IDS_ACLFBTABLE : IDS_ACLTABLE,
-			  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+			  createDialogType::DO_NOT_CALL_CREATE_DIALOG,
 			  nullptr,
 			  nullptr,
 			  &columns::sptACLCols.tags,
@@ -68,7 +68,7 @@ namespace dialog
 	ON_COMMAND(ID_MODIFYSELECTEDITEM, OnModifySelectedItem)
 	END_MESSAGE_MAP()
 
-	_Check_return_ LPMAPIPROP CAclDlg::OpenItemProp(int /*iSelectedItem*/, __mfcmapiModifyEnum /*bModify*/)
+	_Check_return_ LPMAPIPROP CAclDlg::OpenItemProp(int /*iSelectedItem*/, modifyType /*bModify*/)
 	{
 		// Don't do anything because we don't want to override the properties that we have
 		return nullptr;
@@ -95,7 +95,7 @@ namespace dialog
 		if (!m_lpExchTbl || !m_lpContentsTableListCtrl) return;
 
 		if (m_lpContentsTableListCtrl->IsLoading()) m_lpContentsTableListCtrl->OnCancelTableLoad();
-		output::DebugPrintEx(output::DBGGeneric, CLASS, L"OnRefreshView", L"\n");
+		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"OnRefreshView", L"\n");
 
 		if (m_lpExchTbl)
 		{
@@ -106,7 +106,7 @@ namespace dialog
 
 			if (lpMAPITable)
 			{
-				m_lpContentsTableListCtrl->SetContentsTable(lpMAPITable, dfNormal, NULL);
+				m_lpContentsTableListCtrl->SetContentsTable(lpMAPITable, tableDisplayFlags::dfNormal, NULL);
 
 				lpMAPITable->Release();
 			}
@@ -123,7 +123,7 @@ namespace dialog
 
 		if (!MyData.DisplayDialog())
 		{
-			output::DebugPrint(output::DBGGeneric, L"OnAddItem cancelled.\n");
+			output::DebugPrint(output::dbgLevel::Generic, L"OnAddItem cancelled.\n");
 			return;
 		}
 
@@ -141,8 +141,8 @@ namespace dialog
 				const auto bin = MyData.GetBinary(0, false);
 
 				lpNewItem->aEntries[0].rgPropVals[0].ulPropTag = PR_MEMBER_ENTRYID;
-				lpNewItem->aEntries[0].rgPropVals[0].Value.bin =
-					SBinary{static_cast<ULONG>(bin.size()), const_cast<BYTE*>(bin.data())};
+				mapi::setBin(lpNewItem->aEntries[0].rgPropVals[0]) = {static_cast<ULONG>(bin.size()),
+																	  const_cast<BYTE*>(bin.data())};
 				lpNewItem->aEntries[0].rgPropVals[1].ulPropTag = PR_MEMBER_RIGHTS;
 				lpNewItem->aEntries[0].rgPropVals[1].Value.ul = MyData.GetHex(1);
 

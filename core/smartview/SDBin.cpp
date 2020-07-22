@@ -7,49 +7,42 @@
 
 namespace smartview
 {
-	SDBin::~SDBin()
+	SDBin::SDBin(_In_opt_ LPMAPIPROP lpMAPIProp, bool bFB)
 	{
-		if (m_lpMAPIProp) m_lpMAPIProp->Release();
-	}
-
-	void SDBin::Init(_In_opt_ LPMAPIPROP lpMAPIProp, bool bFB)
-	{
-		if (m_lpMAPIProp) m_lpMAPIProp->Release();
-		m_lpMAPIProp = lpMAPIProp;
-		if (m_lpMAPIProp) m_lpMAPIProp->AddRef();
-		m_bFB = bFB;
-	}
-
-	void SDBin::parse() { m_SDbin = blockBytes::parse(m_Parser, m_Parser->getSize()); }
-
-	void SDBin::parseBlocks()
-	{
-		auto acetype = sid::acetypeMessage;
-		switch (mapi::GetMAPIObjectType(m_lpMAPIProp))
+		switch (mapi::GetMAPIObjectType(lpMAPIProp))
 		{
 		case MAPI_STORE:
 		case MAPI_ADDRBOOK:
 		case MAPI_FOLDER:
 		case MAPI_ABCONT:
-			acetype = sid::acetypeContainer;
+			acetype = sid::aceType::Container;
 			break;
 		}
 
-		if (m_bFB) acetype = sid::acetypeFreeBusy;
+		if (bFB) acetype = sid::aceType::FreeBusy;
+	}
 
+	void SDBin::parse() { m_SDbin = blockBytes::parse(parser, parser->getSize()); }
+
+	void SDBin::parseBlocks()
+	{
 		if (m_SDbin)
 		{
+			setText(L"Security Descriptor");
+
 			// TODO: more accurately break this parsing into blocks with proper offsets
 			const auto sd = SDToString(*m_SDbin, acetype);
-			setRoot(L"Security Descriptor:\r\n");
-			addHeader(L"Security Info: ");
-			addChild(m_SDbin, sd.info);
+			auto si = create(L"Security Info");
+			addChild(si);
+			if (!sd.info.empty())
+			{
+				si->addChild(m_SDbin, sd.info);
+			}
 
-			terminateBlock();
 			const auto sdVersion = SECURITY_DESCRIPTOR_VERSION(m_SDbin->data());
 			auto szFlags = flags::InterpretFlags(flagSecurityVersion, sdVersion);
-			addHeader(L"Security Version: 0x%1!04X! = %2!ws!\r\n", sdVersion, szFlags.c_str());
-			addHeader(L"Descriptor:\r\n");
+			addHeader(L"Security Version: 0x%1!04X! = %2!ws!", sdVersion, szFlags.c_str());
+			addHeader(L"Descriptor");
 			addHeader(sd.dacl);
 		}
 	}

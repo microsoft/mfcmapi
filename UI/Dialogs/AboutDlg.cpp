@@ -11,7 +11,7 @@ namespace dialog
 	void DisplayAboutDlg(_In_ CWnd* lpParentWnd)
 	{
 		CAboutDlg AboutDlg(lpParentWnd);
-		(void) EC_D_DIALOG(AboutDlg.DoModal());
+		static_cast<void>(EC_D_DIALOG(AboutDlg.DoModal()));
 	}
 
 	static std::wstring CLASS = L"CAboutDlg";
@@ -24,7 +24,7 @@ namespace dialog
 	{
 		const auto bRet = CMyDialog::OnInitDialog();
 
-		auto szProductName = strings::loadstring(ID_PRODUCTNAME);
+		auto szProductName = strings::loadstring(ID_PRODUCTNAME_FULL);
 		SetTitle(szProductName);
 
 		RECT rcClient = {0};
@@ -86,21 +86,21 @@ namespace dialog
 		m_HelpText.SetFont(GetFont());
 
 		auto szHelpText = strings::formatmessage(IDS_HELPTEXT, szProductName.c_str());
-		SetWindowTextW(m_HelpText.m_hWnd, szHelpText.c_str());
+		::SetWindowTextW(m_HelpText.m_hWnd, szHelpText.c_str());
 
 		auto rcCheck = rcHelpText;
 		rcCheck.top = rcHelpText.bottom + iMargin;
 		rcCheck.bottom = rcCheck.top + iCheckHeight;
 
 		EC_B_S(m_DisplayAboutCheck.Create(
-			NULL,
+			nullptr,
 			WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE | BS_AUTOCHECKBOX,
 			rcCheck,
 			this,
 			IDD_DISPLAYABOUT));
 		m_DisplayAboutCheck.SetCheck(registry::displayAboutDialog ? BST_CHECKED : BST_UNCHECKED);
 		auto szDisplayAboutCheck = strings::loadstring(IDS_DISPLAYABOUTCHECK);
-		SetWindowTextW(m_DisplayAboutCheck.m_hWnd, szDisplayAboutCheck.c_str());
+		::SetWindowTextW(m_DisplayAboutCheck.m_hWnd, szDisplayAboutCheck.c_str());
 
 		auto fileVersionInfo = file::GetFileVersionInfo(nullptr);
 
@@ -112,7 +112,7 @@ namespace dialog
 
 			if (uiRet != 0)
 			{
-				SetDlgItemTextW(m_hWnd, i, fileVersionInfo[szResult].c_str());
+				::SetDlgItemTextW(m_hWnd, i, fileVersionInfo[szResult].c_str());
 			}
 		}
 
@@ -154,7 +154,7 @@ namespace dialog
 		{
 			RECT rect = {0};
 			::GetClientRect(m_hWnd, &rect);
-			const auto hOld = SelectObject(reinterpret_cast<HDC>(wParam), GetSysBrush(ui::cBackground));
+			const auto hOld = SelectObject(reinterpret_cast<HDC>(wParam), GetSysBrush(ui::uiColor::Background));
 			const auto bRet =
 				PatBlt(reinterpret_cast<HDC>(wParam), 0, 0, rect.right - rect.left, rect.bottom - rect.top, PATCOPY);
 			SelectObject(reinterpret_cast<HDC>(wParam), hOld);

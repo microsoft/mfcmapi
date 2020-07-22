@@ -50,41 +50,57 @@ namespace stringtest
 
 		TEST_METHOD(Test_stringConverters)
 		{
-			const auto lpctstr = _T("Hello World");
-			const auto lpcstr = "Hello World";
-			const auto tstr = std::basic_string<TCHAR>(lpctstr);
-			const auto wstr = std::wstring(L"Hello World");
-			const auto str = std::string(lpcstr);
-			const auto wstrLower = std::wstring(L"hello world");
+			Assert::AreEqual(
+				std::basic_string<TCHAR>(_T("Hello World")), strings::wstringTotstring(std::wstring(L"Hello World")));
+			Assert::AreEqual(std::basic_string<TCHAR>(_T("testü")), strings::wstringTotstring(std::wstring(L"testü")));
 
-			Assert::AreEqual(tstr, strings::wstringTotstring(wstr));
-			Assert::AreEqual(str, strings::wstringTostring(wstr));
-			Assert::AreEqual(wstr, strings::stringTowstring(str));
-			Assert::AreEqual(wstr, strings::LPCTSTRToWstring(lpctstr));
-			Assert::AreEqual(wstr, strings::LPCSTRToWstring(lpcstr));
-			Assert::AreEqual(wstrLower, strings::wstringToLower(wstr));
+			Assert::AreEqual(std::wstring(L""), strings::LPCTSTRToWstring(nullptr));
+			Assert::AreEqual(std::wstring(L"Hello World"), strings::LPCTSTRToWstring(_T("Hello World")));
+			Assert::AreEqual(std::wstring(L"testü"), strings::LPCTSTRToWstring(_T("testü")));
+
+			Assert::AreEqual(std::wstring(L""), strings::LPCSTRToWstring(nullptr));
+			Assert::AreEqual(std::wstring(L"Hello World"), strings::LPCSTRToWstring("Hello World"));
+			Assert::AreEqual(std::wstring(L"testü"), strings::LPCSTRToWstring("testü"));
+
+			Assert::AreEqual(std::wstring(L"hello world"), strings::wstringToLower(std::wstring(L"Hello World")));
+			Assert::AreEqual(std::wstring(L"testü"), strings::wstringToLower(std::wstring(L"TESTü")));
+
+			Assert::AreEqual(L"test", strings::wstringToLPCWSTR(L"test"));
+			Assert::AreEqual(L"testü", strings::wstringToLPCWSTR(L"testü"));
+			Assert::AreEqual(L"", strings::wstringToLPCWSTR(L""));
+
+			Assert::AreEqual(std::wstring(L"test"), strings::stringTowstring(std::string("test")));
+			Assert::AreEqual(std::wstring(L"test"), strings::stringTowstring("test"));
+			Assert::AreEqual(std::wstring(L"test\r\nstring"), strings::stringTowstring(std::string("test\r\nstring")));
+			Assert::AreEqual(std::wstring(L"abcÿþðdef"), strings::stringTowstring(std::string("abcÿþðdef")));
+			Assert::AreEqual(std::wstring(L"te\0st"), strings::stringTowstring(std::string("te\0st")));
+			Assert::AreEqual(std::wstring(L""), strings::stringTowstring(""));
 			Assert::AreEqual(
 				std::wstring(L"abc\xDC\xA7\x40\xC8\xC0\x42"), strings::stringTowstring("abc\xDC\xA7\x40\xC8\xC0\x42"));
 
-			Assert::AreEqual(std::wstring(L""), strings::LPCTSTRToWstring(nullptr));
-			Assert::AreEqual(std::wstring(L""), strings::LPCSTRToWstring(nullptr));
-			Assert::AreEqual(L"test", strings::wstringToLPCWSTR(L"test"));
-			Assert::AreEqual(L"", strings::wstringToLPCWSTR(L""));
+			Assert::AreEqual(std::string("test"), strings::wstringTostring(std::wstring(L"test")));
+			Assert::AreEqual(std::string("test"), strings::wstringTostring(L"test"));
+			Assert::AreEqual(std::string("test\r\nstring"), strings::wstringTostring(std::wstring(L"test\r\nstring")));
+			Assert::AreEqual(std::string("abcÿþðdef"), strings::wstringTostring(std::wstring(L"abcÿþðdef")));
+			Assert::AreEqual(std::string("te\0st"), strings::wstringTostring(std::wstring(L"te\0st")));
+			Assert::AreEqual(std::string(""), strings::wstringTostring(L""));
+			Assert::AreEqual(
+				std::string("abc\xDC\xA7\x40\xC8\xC0\x42"), strings::wstringTostring(L"abc\xDC\xA7\x40\xC8\xC0\x42"));
 		}
 
 		TEST_METHOD(Test_wstringToUlong)
 		{
-			Assert::AreEqual(ULONG(0), strings::wstringToUlong(L"", 10));
-			Assert::AreEqual(ULONG(1234), strings::wstringToUlong(L"1234", 10));
-			Assert::AreEqual(ULONG(1234), strings::wstringToUlong(std::wstring(L"1234"), 10));
-			Assert::AreEqual(ULONG(1234), strings::wstringToUlong(L"1234test", 10, false));
-			Assert::AreEqual(ULONG(0), strings::wstringToUlong(L"1234test", 10));
-			Assert::AreEqual(ULONG(0), strings::wstringToUlong(L"1234test", 10, true));
-			Assert::AreEqual(ULONG(4660), strings::wstringToUlong(L"1234", 16));
-			Assert::AreEqual(ULONG(4660), strings::wstringToUlong(L"0x1234", 16));
-			Assert::AreEqual(ULONG(0), strings::wstringToUlong(L"x1234", 16));
-			Assert::AreEqual(ULONG(42), strings::wstringToUlong(L"101010", 2));
-			Assert::AreEqual(ULONG(42), strings::wstringToUlong(L"1010102", 2, false));
+			Assert::AreEqual(ULONG{0}, strings::wstringToUlong(L"", 10));
+			Assert::AreEqual(ULONG{1234}, strings::wstringToUlong(L"1234", 10));
+			Assert::AreEqual(ULONG{1234}, strings::wstringToUlong(std::wstring(L"1234"), 10));
+			Assert::AreEqual(ULONG{1234}, strings::wstringToUlong(L"1234test", 10, false));
+			Assert::AreEqual(ULONG{0}, strings::wstringToUlong(L"1234test", 10));
+			Assert::AreEqual(ULONG{0}, strings::wstringToUlong(L"1234test", 10, true));
+			Assert::AreEqual(ULONG{4660}, strings::wstringToUlong(L"1234", 16));
+			Assert::AreEqual(ULONG{4660}, strings::wstringToUlong(L"0x1234", 16));
+			Assert::AreEqual(ULONG{0}, strings::wstringToUlong(L"x1234", 16));
+			Assert::AreEqual(ULONG{42}, strings::wstringToUlong(L"101010", 2));
+			Assert::AreEqual(ULONG{42}, strings::wstringToUlong(L"1010102", 2, false));
 
 			Assert::AreEqual(ULONG_MAX, strings::wstringToUlong(L"-1", 10));
 			Assert::AreEqual(ULONG_MAX - 1, strings::wstringToUlong(L"-2", 10));
@@ -108,18 +124,18 @@ namespace stringtest
 
 		TEST_METHOD(Test_wstringToLong)
 		{
-			Assert::AreEqual(long(0), strings::wstringToLong(L"", 10));
-			Assert::AreEqual(long(1234), strings::wstringToLong(L"1234", 10));
-			Assert::AreEqual(long(1234), strings::wstringToLong(std::wstring(L"1234"), 10));
-			Assert::AreEqual(long(0), strings::wstringToLong(L"1234test", 10));
-			Assert::AreEqual(long(4660), strings::wstringToLong(L"1234", 16));
-			Assert::AreEqual(long(4660), strings::wstringToLong(L"0x1234", 16));
-			Assert::AreEqual(long(0), strings::wstringToLong(L"x1234", 16));
-			Assert::AreEqual(long(42), strings::wstringToLong(L"101010", 2));
-			Assert::AreEqual(long(0), strings::wstringToLong(L"1010102", 2));
+			Assert::AreEqual(long{0}, strings::wstringToLong(L"", 10));
+			Assert::AreEqual(long{1234}, strings::wstringToLong(L"1234", 10));
+			Assert::AreEqual(long{1234}, strings::wstringToLong(std::wstring(L"1234"), 10));
+			Assert::AreEqual(long{0}, strings::wstringToLong(L"1234test", 10));
+			Assert::AreEqual(long{4660}, strings::wstringToLong(L"1234", 16));
+			Assert::AreEqual(long{4660}, strings::wstringToLong(L"0x1234", 16));
+			Assert::AreEqual(long{0}, strings::wstringToLong(L"x1234", 16));
+			Assert::AreEqual(long{42}, strings::wstringToLong(L"101010", 2));
+			Assert::AreEqual(long{0}, strings::wstringToLong(L"1010102", 2));
 
-			Assert::AreEqual(long(-1), strings::wstringToLong(L"-1", 10));
-			Assert::AreEqual(long(-2), strings::wstringToLong(L"-2", 10));
+			Assert::AreEqual(long{-1}, strings::wstringToLong(L"-1", 10));
+			Assert::AreEqual(long{-2}, strings::wstringToLong(L"-2", 10));
 			Assert::AreEqual(LONG_MAX - 1, strings::wstringToLong(L"2147483646", 10));
 			Assert::AreEqual(LONG_MAX, strings::wstringToLong(L"2147483647", 10));
 			Assert::AreEqual(LONG_MAX, strings::wstringToLong(L"2147483648", 10));
@@ -127,26 +143,68 @@ namespace stringtest
 
 		TEST_METHOD(Test_wstringToDouble)
 		{
-			Assert::AreEqual(double(1234), strings::wstringToDouble(L"1234"));
-			Assert::AreEqual(double(12.34), strings::wstringToDouble(L"12.34"));
-			Assert::AreEqual(double(0), strings::wstringToDouble(L"12.34test"));
+			Assert::AreEqual(double{1234}, strings::wstringToDouble(L"1234"));
+			Assert::AreEqual(double{12.34}, strings::wstringToDouble(L"12.34"));
+			Assert::AreEqual(double{0}, strings::wstringToDouble(L"12.34test"));
 			Assert::AreEqual(
-				double(1e+52), strings::wstringToDouble(L"9999999999999999999999999999999999999999999999999999"));
+				double{1e+52}, strings::wstringToDouble(L"9999999999999999999999999999999999999999999999999999"));
 			Assert::AreEqual(
-				double(1e-52), strings::wstringToDouble(L".0000000000000000000000000000000000000000000000000001"));
-			Assert::AreEqual(double(0), strings::wstringToDouble(L"0"));
-			Assert::AreEqual(double(0), strings::wstringToDouble(L""));
+				double{1e-52}, strings::wstringToDouble(L".0000000000000000000000000000000000000000000000000001"));
+			Assert::AreEqual(double{0}, strings::wstringToDouble(L"0"));
+			Assert::AreEqual(double{0}, strings::wstringToDouble(L""));
 		}
 
 		TEST_METHOD(Test_wstringToInt64)
 		{
-			Assert::AreEqual(__int64(1234), strings::wstringToInt64(L"1234"));
-			Assert::AreEqual(__int64(-1), strings::wstringToInt64(L"-1"));
+			Assert::AreEqual(__int64{1234}, strings::wstringToInt64(L"1234"));
+			Assert::AreEqual(__int64{1234}, strings::wstringToInt64(L" 1234"));
+			Assert::AreEqual(__int64{1234}, strings::wstringToInt64(L"1234 "));
+			Assert::AreEqual(__int64{1234}, strings::wstringToInt64(L"1234.1"));
+			Assert::AreEqual(__int64{1234}, strings::wstringToInt64(L"1234blah"));
+			Assert::AreEqual(__int64{-1}, strings::wstringToInt64(L"-1"));
 			Assert::AreEqual(INT64_MAX - 1, strings::wstringToInt64(L"9223372036854775806"));
 			Assert::AreEqual(INT64_MAX, strings::wstringToInt64(L"9223372036854775807"));
-			Assert::AreEqual(INT64_MAX, strings::wstringToInt64(L"9223372036854775808"));
-			Assert::AreEqual(__int64(0), strings::wstringToInt64(L"0"));
-			Assert::AreEqual(__int64(0), strings::wstringToInt64(L""));
+			Assert::AreEqual(
+				INT64_MAX, strings::wstringToInt64(L"9223372036854775808")); // positive overflow converts to INT64_MAX
+			Assert::AreEqual(__int64{0}, strings::wstringToInt64(L"0"));
+			Assert::AreEqual(__int64{0}, strings::wstringToInt64(L""));
+			Assert::AreEqual(__int64{0}, strings::wstringToInt64(L"test")); // non numbers convert to 0
+		}
+
+		TEST_METHOD(Test_wstringToCurrency)
+		{
+			Assert::AreEqual(__int64{0}, strings::wstringToCurrency(L"test")); // Non numbers convert to 0
+			Assert::AreEqual(__int64{0}, strings::wstringToCurrency(L"1.2.3")); // Too many decimal places convert to 0
+
+			Assert::AreEqual(__int64{0}, strings::wstringToCurrency(L""));
+			Assert::AreEqual(__int64{1234}, strings::wstringToCurrency(L".1234"));
+			Assert::AreEqual(__int64{1234}, strings::wstringToCurrency(L"0.1234"));
+			Assert::AreEqual(__int64{1234}, strings::wstringToCurrency(L"00.1234"));
+			Assert::AreEqual(__int64{1234}, strings::wstringToCurrency(L"00.123400"));
+
+			Assert::AreEqual(__int64{123400}, strings::wstringToCurrency(L"12.34"));
+			Assert::AreEqual(__int64{12340000}, strings::wstringToCurrency(L"1234"));
+			Assert::AreEqual(__int64{12340000}, strings::wstringToCurrency(L"1234."));
+			Assert::AreEqual(__int64{12340000}, strings::wstringToCurrency(L"1234.0"));
+			Assert::AreEqual(__int64{12340000}, strings::wstringToCurrency(L"1234.00"));
+			Assert::AreEqual(__int64{12340000}, strings::wstringToCurrency(L"1234.000"));
+			Assert::AreEqual(__int64{12340000}, strings::wstringToCurrency(L"1234.0000"));
+			Assert::AreEqual(__int64{12340000}, strings::wstringToCurrency(L"1234.00000"));
+
+			Assert::AreEqual(__int64{0}, strings::wstringToCurrency(L"0"));
+			Assert::AreEqual(__int64{0}, strings::wstringToCurrency(L".0"));
+			Assert::AreEqual(__int64{0}, strings::wstringToCurrency(L"0.0"));
+			Assert::AreEqual(__int64{0}, strings::wstringToCurrency(L"0.00"));
+			Assert::AreEqual(__int64{0}, strings::wstringToCurrency(L"000."));
+
+			Assert::AreEqual(INT64_MAX, strings::wstringToCurrency(L"922337203685477.5807"));
+			Assert::AreEqual(INT64_MAX, strings::wstringToCurrency(L"922337203685477.58071"));
+			Assert::AreEqual(INT64_MAX, strings::wstringToCurrency(L"922337203685477.5808"));
+
+			Assert::AreEqual(__int64{123400}, strings::wstringToCurrency(L" 12.34"));
+			Assert::AreEqual(__int64{123400}, strings::wstringToCurrency(L"12 .34"));
+			Assert::AreEqual(__int64{123400}, strings::wstringToCurrency(L"12. 34"));
+			Assert::AreEqual(__int64{123400}, strings::wstringToCurrency(L"12.34 "));
 		}
 
 		TEST_METHOD(Test_StripCharacter)
@@ -337,19 +395,35 @@ namespace stringtest
 
 		TEST_METHOD(Test_split)
 		{
-			auto splitWords = strings::split(fullstring, L' ');
+			Assert::AreEqual(words, strings::split(fullstring, L' '));
 
-			size_t i = 0;
-			for (i = 0; i < splitWords.size(); i++)
-			{
-				Assert::IsTrue(i < words.size());
-				Assert::AreEqual(words[i], splitWords[i]);
-			}
+			Assert::AreEqual(std::vector<std::wstring>{L"1", L"2"}, strings::split(L"1.2", L'.'));
+			Assert::AreEqual(std::vector<std::wstring>{L"1", L"", L"2"}, strings::split(L"1..2", L'.'));
+			Assert::AreEqual(std::vector<std::wstring>{L"", L"2"}, strings::split(L".2", L'.'));
+			Assert::AreEqual(std::vector<std::wstring>{L"", L"", L"2"}, strings::split(L"..2", L'.'));
+			Assert::AreEqual(std::vector<std::wstring>{L"1", L""}, strings::split(L"1.", L'.'));
+			Assert::AreEqual(std::vector<std::wstring>{L"1", L"", L""}, strings::split(L"1..", L'.'));
 
-			Assert::IsTrue(i == words.size());
+			Assert::AreEqual(std::vector<std::wstring>{L"1234"}, strings::split(L"1234", L'.'));
+			Assert::AreEqual(std::vector<std::wstring>{L"", L""}, strings::split(L".", L'.'));
 		}
 
-		TEST_METHOD(Test_join) { Assert::AreEqual(fullstring, strings::join(words, L' ')); }
+		TEST_METHOD(Test_join)
+		{
+			Assert::AreEqual(std::wstring{}, strings::join({}, L' '));
+
+			// join keeping empty strings
+			Assert::AreEqual(fullstring, strings::join(words, L' '));
+			Assert::AreEqual(std::wstring(L"1 2"), strings::join({L"1", L"2"}, L' '));
+			Assert::AreEqual(std::wstring(L"1  2"), strings::join({L"1", L"", L"2"}, L' '));
+			Assert::AreEqual(std::wstring(L"  1  2 "), strings::join({L"", L"", L"1", L"", L"2", L""}, L' '));
+
+			// join skipping empty strings
+			Assert::AreEqual(std::wstring(L"this is a string yes"), strings::join(words, L' ', true));
+			Assert::AreEqual(std::wstring(L"1 2"), strings::join({L"1", L"2"}, L' ', true));
+			Assert::AreEqual(std::wstring(L"1 2"), strings::join({L"1", L"", L"2"}, L' ', true));
+			Assert::AreEqual(std::wstring(L"1 2"), strings::join({L"", L"", L"1", L"", L"2", L""}, L' ', true));
+		}
 
 		TEST_METHOD(Test_currency)
 		{
@@ -372,20 +446,20 @@ namespace stringtest
 
 		TEST_METHOD(Test_offsets)
 		{
-			Assert::AreEqual(size_t(1), strings::OffsetToFilteredOffset(L" A B", 0));
-			Assert::AreEqual(size_t(3), strings::OffsetToFilteredOffset(L" A B", 1));
-			Assert::AreEqual(size_t(4), strings::OffsetToFilteredOffset(L" A B", 2));
+			Assert::AreEqual(size_t{1}, strings::OffsetToFilteredOffset(L" A B", 0));
+			Assert::AreEqual(size_t{3}, strings::OffsetToFilteredOffset(L" A B", 1));
+			Assert::AreEqual(size_t{4}, strings::OffsetToFilteredOffset(L" A B", 2));
 			Assert::AreEqual(static_cast<size_t>(-1), strings::OffsetToFilteredOffset(L"foo", 9));
 			Assert::AreEqual(static_cast<size_t>(-1), strings::OffsetToFilteredOffset(L"", 0));
-			Assert::AreEqual(size_t(0), strings::OffsetToFilteredOffset(L"foo", 0));
-			Assert::AreEqual(size_t(1), strings::OffsetToFilteredOffset(L"foo", 1));
-			Assert::AreEqual(size_t(2), strings::OffsetToFilteredOffset(L"foo", 2));
-			Assert::AreEqual(size_t(3), strings::OffsetToFilteredOffset(L"foo", 3));
-			Assert::AreEqual(size_t(5), strings::OffsetToFilteredOffset(L"    foo", 1));
+			Assert::AreEqual(size_t{0}, strings::OffsetToFilteredOffset(L"foo", 0));
+			Assert::AreEqual(size_t{1}, strings::OffsetToFilteredOffset(L"foo", 1));
+			Assert::AreEqual(size_t{2}, strings::OffsetToFilteredOffset(L"foo", 2));
+			Assert::AreEqual(size_t{3}, strings::OffsetToFilteredOffset(L"foo", 3));
+			Assert::AreEqual(size_t{5}, strings::OffsetToFilteredOffset(L"    foo", 1));
 			Assert::AreEqual(static_cast<size_t>(-1), strings::OffsetToFilteredOffset(L"    foo", 4));
-			Assert::AreEqual(size_t(5), strings::OffsetToFilteredOffset(L"f o  o", 2));
-			Assert::AreEqual(size_t(27), strings::OffsetToFilteredOffset(L"\r1\n2\t3 4-5.6,7\\8/9'a{b}c`d\"e", 13));
-			Assert::AreEqual(size_t(28), strings::OffsetToFilteredOffset(L"\r1\n2\t3 4-5.6,7\\8/9'a{b}c`d\"e", 14));
+			Assert::AreEqual(size_t{5}, strings::OffsetToFilteredOffset(L"f o  o", 2));
+			Assert::AreEqual(size_t{27}, strings::OffsetToFilteredOffset(L"\r1\n2\t3 4-5.6,7\\8/9'a{b}c`d\"e", 13));
+			Assert::AreEqual(size_t{28}, strings::OffsetToFilteredOffset(L"\r1\n2\t3 4-5.6,7\\8/9'a{b}c`d\"e", 14));
 		}
 
 		TEST_METHOD(Test_beginsWith)
@@ -533,6 +607,23 @@ namespace stringtest
 				Assert::AreEqual(std::wstring(L"123:45"), tok1[L"cb"]);
 				Assert::AreEqual(std::wstring(L"ab"), tok1[L"lpb"]);
 			}
+		}
+
+		TEST_METHOD(Test_Case)
+		{
+			Assert::AreEqual(true, strings::compareInsensitive(L"hello", L"HELLO"));
+			Assert::AreEqual(true, strings::compareInsensitive(L"HELLO", L"hello"));
+			Assert::AreEqual(false, strings::compareInsensitive(L"hello", L"hello1"));
+			Assert::AreEqual(false, strings::compareInsensitive(L"hello1", L"hello"));
+			Assert::AreEqual(false, strings::compareInsensitive(L"hello ", L"HELLO"));
+			Assert::AreEqual(false, strings::compareInsensitive(L"hello", L"HELLO "));
+		}
+
+		TEST_METHOD(Test_CollapseTree)
+		{
+			Assert::AreEqual(std::wstring(L"a b"), strings::collapseTree(L"a\r\n\tb"));
+			Assert::AreEqual(std::wstring(L"a b c"), strings::collapseTree(L"a\r\n\tb\r\n\n\r\r\tc"));
+			Assert::AreEqual(std::wstring(L"a b"), strings::collapseTree(L"\ta\r\n\tb\n\t"));
 		}
 	};
 } // namespace stringtest

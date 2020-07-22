@@ -16,8 +16,8 @@ namespace controls
 					 WS_CHILD | WS_TABSTOP | WS_CLIPSIBLINGS | WS_VISIBLE;
 		if (!bReadOnly) style |= TVS_EDITLABELS;
 		CTreeCtrl::Create(style, CRect(0, 0, 0, 0), pCreateParent, IDC_FOLDER_TREE);
-		TreeView_SetBkColor(m_hWnd, ui::MyGetSysColor(ui::cBackground));
-		TreeView_SetTextColor(m_hWnd, ui::MyGetSysColor(ui::cText));
+		TreeView_SetBkColor(m_hWnd, ui::MyGetSysColor(ui::uiColor::Background));
+		TreeView_SetTextColor(m_hWnd, ui::MyGetSysColor(ui::uiColor::Text));
 		::SendMessageA(m_hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(ui::GetSegoeFont()), false);
 	}
 
@@ -148,12 +148,14 @@ namespace controls
 			tvItem.mask = TVIF_PARAM;
 			if (TreeView_GetItem(hWnd, &tvItem) && tvItem.lParam)
 			{
-				output::DebugPrintEx(output::DBGHierarchy, CLASS, L"SetNodeData", L"Node %p, replacing data\n", hItem);
+				output::DebugPrintEx(
+					output::dbgLevel::Hierarchy, CLASS, L"SetNodeData", L"Node %p, replacing data\n", hItem);
 				if (FreeNodeDataCallback) FreeNodeDataCallback(tvItem.lParam);
 			}
 			else
 			{
-				output::DebugPrintEx(output::DBGHierarchy, CLASS, L"SetNodeData", L"Node %p, first data\n", hItem);
+				output::DebugPrintEx(
+					output::dbgLevel::Hierarchy, CLASS, L"SetNodeData", L"Node %p, first data\n", hItem);
 			}
 
 			tvItem.lParam = lpData;
@@ -180,6 +182,11 @@ namespace controls
 		if (pResult) *pResult = 0;
 	}
 
+	std::wstring StyleTreeCtrl::GetItemTextW(HTREEITEM hItem) const
+	{
+		return strings::LPCTSTRToWstring(GetItemText(hItem));
+	}
+
 	HTREEITEM
 	StyleTreeCtrl::AddChildNode(
 		_In_ const std::wstring& szName,
@@ -188,7 +195,7 @@ namespace controls
 		const std::function<void(HTREEITEM hItem)>& callback) const
 	{
 		output::DebugPrintEx(
-			output::DBGHierarchy,
+			output::dbgLevel::Hierarchy,
 			CLASS,
 			L"AddNode",
 			L"Adding Node \"%ws\" under node %p, callback = %ws\n",
@@ -245,7 +252,7 @@ namespace controls
 	void StyleTreeCtrl::OnRightClick(_In_ NMHDR* /*pNMHDR*/, _In_ LRESULT* pResult)
 	{
 		// Send WM_CONTEXTMENU to self
-		(void) SendMessage(WM_CONTEXTMENU, reinterpret_cast<WPARAM>(m_hWnd), GetMessagePos());
+		static_cast<void>(SendMessage(WM_CONTEXTMENU, reinterpret_cast<WPARAM>(m_hWnd), GetMessagePos()));
 
 		// Mark message as handled and suppress default handling
 		*pResult = 1;
@@ -263,7 +270,7 @@ namespace controls
 			if (item)
 			{
 				auto rc = RECT{};
-				(void) GetItemRect(item, &rc, true);
+				static_cast<void>(GetItemRect(item, &rc, true));
 				pos.x = rc.left;
 				pos.y = rc.top;
 				::ClientToScreen(hwnd, &pos);
@@ -295,12 +302,12 @@ namespace controls
 		if (pNMTreeView)
 		{
 			output::DebugPrintEx(
-				output::DBGHierarchy,
+				output::dbgLevel::Hierarchy,
 				CLASS,
 				L"OnItemExpanding",
 				L"Expanding item %p \"%ws\" action = 0x%08X state = 0x%08X\n",
 				pNMTreeView->itemNew.hItem,
-				strings::LPCTSTRToWstring(GetItemText(pNMTreeView->itemOld.hItem)).c_str(),
+				GetItemTextW(pNMTreeView->itemOld.hItem).c_str(),
 				pNMTreeView->action,
 				pNMTreeView->itemNew.state);
 			if (pNMTreeView->action & TVE_EXPAND)
@@ -350,7 +357,7 @@ namespace controls
 
 	void StyleTreeCtrl::OnKeyDown(const UINT nChar, const UINT nRepCnt, const UINT nFlags)
 	{
-		output::DebugPrintEx(output::DBGMenu, CLASS, L"OnKeyDown", L"0x%X\n", nChar);
+		output::DebugPrintEx(output::dbgLevel::Menu, CLASS, L"OnKeyDown", L"0x%X\n", nChar);
 
 		const auto bCtrlPressed = GetKeyState(VK_CONTROL) < 0;
 		const auto bShiftPressed = GetKeyState(VK_SHIFT) < 0;
@@ -372,12 +379,12 @@ namespace controls
 		if (pNMTreeView)
 		{
 			output::DebugPrintEx(
-				output::DBGHierarchy,
+				output::dbgLevel::Hierarchy,
 				CLASS,
 				L"OnDeleteItem",
 				L"Deleting item %p \"%ws\"\n",
 				pNMTreeView->itemOld.hItem,
-				strings::LPCTSTRToWstring(GetItemText(pNMTreeView->itemOld.hItem)).c_str());
+				GetItemTextW(pNMTreeView->itemOld.hItem).c_str());
 
 			if (FreeNodeDataCallback) FreeNodeDataCallback(pNMTreeView->itemOld.lParam);
 
@@ -390,7 +397,7 @@ namespace controls
 				if (!(hPrev || hNext))
 				{
 					output::DebugPrintEx(
-						output::DBGHierarchy,
+						output::dbgLevel::Hierarchy,
 						CLASS,
 						L"OnDeleteItem",
 						L"%p has no siblings\n",

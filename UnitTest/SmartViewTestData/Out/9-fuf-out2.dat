@@ -1,220 +1,201 @@
 Folder User Field Stream
-FolderUserFieldAnsi.FieldDefinitionCount = 9
-
-Field 0
-FieldType = 0x00000006 = ftBoolean
-FieldNameLength = 0x00000007 = 7
-FieldName = MyBool2
-PropSetGuid = {00020329-0000-0000-C000-000000000046}
-fcapm = 0x80000007 = FCAPM_CAN_EDIT | FCAPM_CAN_SORT | FCAPM_CAN_GROUP | FCAPM_CAN_EDIT_IN_ITEM
-dwString = 0x00020002
-dwBitmap = 0xFDCC0202
-dwDisplay = 0x00040001
-iFmt = 0x00000001
-wszFormulaLength = 0x0000 = 0
-
-Field 1
-FieldType = 0x0000000C = ftFloat
-FieldNameLength = 0x00000009 = 9
-FieldName = 1 Decimal
-PropSetGuid = {00020329-0000-0000-C000-000000000046}
-fcapm = 0x80000007 = FCAPM_CAN_EDIT | FCAPM_CAN_SORT | FCAPM_CAN_GROUP | FCAPM_CAN_EDIT_IN_ITEM
-dwString = 0x00000000
-dwBitmap = 0x00000000
-dwDisplay = 0x00000002
-iFmt = 0x00000002
-wszFormulaLength = 0x0000 = 0
-
-Field 2
-FieldType = 0x0000000E = ftCurrency
-FieldNameLength = 0x0000000E = 14
-FieldName = Currency Comma
-PropSetGuid = {00020329-0000-0000-C000-000000000046}
-fcapm = 0x80000007 = FCAPM_CAN_EDIT | FCAPM_CAN_SORT | FCAPM_CAN_GROUP | FCAPM_CAN_EDIT_IN_ITEM
-dwString = 0x00000000
-dwBitmap = 0x00000000
-dwDisplay = 0x00000001
-iFmt = 0x00000001
-wszFormulaLength = 0x0000 = 0
-
-Field 3
-FieldType = 0x0000000C = ftFloat
-FieldNameLength = 0x0000000F = 15
-FieldName = Number Computer
-PropSetGuid = {00020329-0000-0000-C000-000000000046}
-fcapm = 0x80000007 = FCAPM_CAN_EDIT | FCAPM_CAN_SORT | FCAPM_CAN_GROUP | FCAPM_CAN_EDIT_IN_ITEM
-dwString = 0x00000000
-dwBitmap = 0x00000000
-dwDisplay = 0x00000005
-iFmt = 0x00000005
-wszFormulaLength = 0x0000 = 0
-
-Field 4
-FieldType = 0x0000000C = ftFloat
-FieldNameLength = 0x00000011 = 17
-FieldName = Percent 2 Decimal
-PropSetGuid = {00020329-0000-0000-C000-000000000046}
-fcapm = 0x81000007 = FCAPM_CAN_EDIT | FCAPM_CAN_SORT | FCAPM_CAN_GROUP | FCAPM_PERCENT | FCAPM_CAN_EDIT_IN_ITEM
-dwString = 0x00000000
-dwBitmap = 0x00000000
-dwDisplay = 0x00000002
-iFmt = 0x00000002
-wszFormulaLength = 0x0000 = 0
-
-Field 5
-FieldType = 0x00000001 = ftString
-FieldNameLength = 0x00000020 = 32
-FieldName = Long Name jakshfkljashfkjashflja
-PropSetGuid = {00020329-0000-0000-C000-000000000046}
-fcapm = 0x80000007 = FCAPM_CAN_EDIT | FCAPM_CAN_SORT | FCAPM_CAN_GROUP | FCAPM_CAN_EDIT_IN_ITEM
-dwString = 0x00000000
-dwBitmap = 0x00000000
-dwDisplay = 0x00000000
-iFmt = 0x00000000
-wszFormulaLength = 0x0000 = 0
-
-Field 6
-FieldType = 0x00000012 = ftCalc
-FieldNameLength = 0x00000009 = 9
-FieldName = Formula 1
-PropSetGuid = {00020329-0000-0000-C000-000000000046}
-fcapm = 0x00000100 = FCAPM_MULTILINE_TEXT
-dwString = 0x00000000
-dwBitmap = 0x00000000
-dwDisplay = 0x00000000
-iFmt = 0x00000000
-wszFormulaLength = 0x0022 = 34
-wszFormula = [_3587]+DateAdd(1,2,1975)+[_34062]
-
-Field 7
-FieldType = 0x00000003 = ftInteger
-FieldNameLength = 0x00000010 = 16
-FieldName = Integer Computer
-PropSetGuid = {00020329-0000-0000-C000-000000000046}
-fcapm = 0x80000007 = FCAPM_CAN_EDIT | FCAPM_CAN_SORT | FCAPM_CAN_GROUP | FCAPM_CAN_EDIT_IN_ITEM
-dwString = 0x00000000
-dwBitmap = 0x00000000
-dwDisplay = 0x00000002
-iFmt = 0x00000002
-wszFormulaLength = 0x0000 = 0
-
-Field 8
-FieldType = 0x00000000 = ftNull
-FieldNameLength = 0x00000000 = 0
-PropSetGuid = {00000000-0000-0000-0000-000000000000}
-fcapm = 0x00000000 = 0x0
-dwString = 0x00000000
-dwBitmap = 0x00000000
-dwDisplay = 0x00000000
-iFmt = 0x00000000
-wszFormulaLength = 0x0000 = 0
-
-FolderUserFieldUnicode.FieldDefinitionCount = 9
-
-Field 0
-FieldType = 0x00000006 = ftBoolean
-FieldNameLength = 0x00000007 = 7
-FieldName = MyBool2
-PropSetGuid = {00020329-0000-0000-C000-000000000046}
-fcapm = 0x80000007 = FCAPM_CAN_EDIT | FCAPM_CAN_SORT | FCAPM_CAN_GROUP | FCAPM_CAN_EDIT_IN_ITEM
-dwString = 0x00020002
-dwBitmap = 0xFDCC0202
-dwDisplay = 0x00040001
-iFmt = 0x00000001
-wszFormulaLength = 0x0000 = 0
-
-Field 1
-FieldType = 0x0000000C = ftFloat
-FieldNameLength = 0x00000009 = 9
-FieldName = 1 Decimal
-PropSetGuid = {00020329-0000-0000-C000-000000000046}
-fcapm = 0x80000007 = FCAPM_CAN_EDIT | FCAPM_CAN_SORT | FCAPM_CAN_GROUP | FCAPM_CAN_EDIT_IN_ITEM
-dwString = 0x00000000
-dwBitmap = 0x00000000
-dwDisplay = 0x00000002
-iFmt = 0x00000002
-wszFormulaLength = 0x0000 = 0
-
-Field 2
-FieldType = 0x0000000E = ftCurrency
-FieldNameLength = 0x0000000E = 14
-FieldName = Currency Comma
-PropSetGuid = {00020329-0000-0000-C000-000000000046}
-fcapm = 0x80000007 = FCAPM_CAN_EDIT | FCAPM_CAN_SORT | FCAPM_CAN_GROUP | FCAPM_CAN_EDIT_IN_ITEM
-dwString = 0x00000000
-dwBitmap = 0x00000000
-dwDisplay = 0x00000001
-iFmt = 0x00000001
-wszFormulaLength = 0x0000 = 0
-
-Field 3
-FieldType = 0x0000000C = ftFloat
-FieldNameLength = 0x0000000F = 15
-FieldName = Number Computer
-PropSetGuid = {00020329-0000-0000-C000-000000000046}
-fcapm = 0x80000007 = FCAPM_CAN_EDIT | FCAPM_CAN_SORT | FCAPM_CAN_GROUP | FCAPM_CAN_EDIT_IN_ITEM
-dwString = 0x00000000
-dwBitmap = 0x00000000
-dwDisplay = 0x00000005
-iFmt = 0x00000005
-wszFormulaLength = 0x0000 = 0
-
-Field 4
-FieldType = 0x0000000C = ftFloat
-FieldNameLength = 0x00000011 = 17
-FieldName = Percent 2 Decimal
-PropSetGuid = {00020329-0000-0000-C000-000000000046}
-fcapm = 0x81000007 = FCAPM_CAN_EDIT | FCAPM_CAN_SORT | FCAPM_CAN_GROUP | FCAPM_PERCENT | FCAPM_CAN_EDIT_IN_ITEM
-dwString = 0x00000000
-dwBitmap = 0x00000000
-dwDisplay = 0x00000002
-iFmt = 0x00000002
-wszFormulaLength = 0x0000 = 0
-
-Field 5
-FieldType = 0x00000001 = ftString
-FieldNameLength = 0x00000020 = 32
-FieldName = Long Name jakshfkljashfkjashflja
-PropSetGuid = {00020329-0000-0000-C000-000000000046}
-fcapm = 0x80000007 = FCAPM_CAN_EDIT | FCAPM_CAN_SORT | FCAPM_CAN_GROUP | FCAPM_CAN_EDIT_IN_ITEM
-dwString = 0x00000000
-dwBitmap = 0x00000000
-dwDisplay = 0x00000000
-iFmt = 0x00000000
-wszFormulaLength = 0x0000 = 0
-
-Field 6
-FieldType = 0x00000012 = ftCalc
-FieldNameLength = 0x00000009 = 9
-FieldName = Formula 1
-PropSetGuid = {00020329-0000-0000-C000-000000000046}
-fcapm = 0x00000100 = FCAPM_MULTILINE_TEXT
-dwString = 0x00000000
-dwBitmap = 0x00000000
-dwDisplay = 0x00000000
-iFmt = 0x00000000
-wszFormulaLength = 0x0022 = 34
-wszFormula = [_3587]+DateAdd(1,2,1975)+[_34062]
-
-Field 7
-FieldType = 0x00000003 = ftInteger
-FieldNameLength = 0x00000010 = 16
-FieldName = Integer Computer
-PropSetGuid = {00020329-0000-0000-C000-000000000046}
-fcapm = 0x80000007 = FCAPM_CAN_EDIT | FCAPM_CAN_SORT | FCAPM_CAN_GROUP | FCAPM_CAN_EDIT_IN_ITEM
-dwString = 0x00000000
-dwBitmap = 0x00000000
-dwDisplay = 0x00000002
-iFmt = 0x00000002
-wszFormulaLength = 0x0000 = 0
-
-Field 8
-FieldType = 0x00000000 = ftNull
-FieldNameLength = 0x00000000 = 0
-PropSetGuid = {00000000-0000-0000-0000-000000000000}
-fcapm = 0x00000000 = 0x0
-dwString = 0x00000000
-dwBitmap = 0x00000000
-dwDisplay = 0x00000000
-iFmt = 0x00000000
-wszFormulaLength = 0x0000 = 0
+	FolderUserFieldAnsi.FieldDefinitionCount = 9
+		Field 0
+			FieldType = 0x00000006 = ftBoolean
+			FieldNameLength = 0x00000007 = 7
+			FieldName = MyBool2
+			PropSetGuid = {00020329-0000-0000-C000-000000000046}
+			fcapm = 0x80000007 = FCAPM_CAN_EDIT | FCAPM_CAN_SORT | FCAPM_CAN_GROUP | FCAPM_CAN_EDIT_IN_ITEM
+			dwString = 0x00020002
+			dwBitmap = 0xFDCC0202
+			dwDisplay = 0x00040001
+			iFmt = 0x00000001
+			wszFormulaLength = 0x0000 = 0
+		Field 1
+			FieldType = 0x0000000C = ftFloat
+			FieldNameLength = 0x00000009 = 9
+			FieldName = 1 Decimal
+			PropSetGuid = {00020329-0000-0000-C000-000000000046}
+			fcapm = 0x80000007 = FCAPM_CAN_EDIT | FCAPM_CAN_SORT | FCAPM_CAN_GROUP | FCAPM_CAN_EDIT_IN_ITEM
+			dwString = 0x00000000
+			dwBitmap = 0x00000000
+			dwDisplay = 0x00000002
+			iFmt = 0x00000002
+			wszFormulaLength = 0x0000 = 0
+		Field 2
+			FieldType = 0x0000000E = ftCurrency
+			FieldNameLength = 0x0000000E = 14
+			FieldName = Currency Comma
+			PropSetGuid = {00020329-0000-0000-C000-000000000046}
+			fcapm = 0x80000007 = FCAPM_CAN_EDIT | FCAPM_CAN_SORT | FCAPM_CAN_GROUP | FCAPM_CAN_EDIT_IN_ITEM
+			dwString = 0x00000000
+			dwBitmap = 0x00000000
+			dwDisplay = 0x00000001
+			iFmt = 0x00000001
+			wszFormulaLength = 0x0000 = 0
+		Field 3
+			FieldType = 0x0000000C = ftFloat
+			FieldNameLength = 0x0000000F = 15
+			FieldName = Number Computer
+			PropSetGuid = {00020329-0000-0000-C000-000000000046}
+			fcapm = 0x80000007 = FCAPM_CAN_EDIT | FCAPM_CAN_SORT | FCAPM_CAN_GROUP | FCAPM_CAN_EDIT_IN_ITEM
+			dwString = 0x00000000
+			dwBitmap = 0x00000000
+			dwDisplay = 0x00000005
+			iFmt = 0x00000005
+			wszFormulaLength = 0x0000 = 0
+		Field 4
+			FieldType = 0x0000000C = ftFloat
+			FieldNameLength = 0x00000011 = 17
+			FieldName = Percent 2 Decimal
+			PropSetGuid = {00020329-0000-0000-C000-000000000046}
+			fcapm = 0x81000007 = FCAPM_CAN_EDIT | FCAPM_CAN_SORT | FCAPM_CAN_GROUP | FCAPM_PERCENT | FCAPM_CAN_EDIT_IN_ITEM
+			dwString = 0x00000000
+			dwBitmap = 0x00000000
+			dwDisplay = 0x00000002
+			iFmt = 0x00000002
+			wszFormulaLength = 0x0000 = 0
+		Field 5
+			FieldType = 0x00000001 = ftString
+			FieldNameLength = 0x00000020 = 32
+			FieldName = Long Name jakshfkljashfkjashflja
+			PropSetGuid = {00020329-0000-0000-C000-000000000046}
+			fcapm = 0x80000007 = FCAPM_CAN_EDIT | FCAPM_CAN_SORT | FCAPM_CAN_GROUP | FCAPM_CAN_EDIT_IN_ITEM
+			dwString = 0x00000000
+			dwBitmap = 0x00000000
+			dwDisplay = 0x00000000
+			iFmt = 0x00000000
+			wszFormulaLength = 0x0000 = 0
+		Field 6
+			FieldType = 0x00000012 = ftCalc
+			FieldNameLength = 0x00000009 = 9
+			FieldName = Formula 1
+			PropSetGuid = {00020329-0000-0000-C000-000000000046}
+			fcapm = 0x00000100 = FCAPM_MULTILINE_TEXT
+			dwString = 0x00000000
+			dwBitmap = 0x00000000
+			dwDisplay = 0x00000000
+			iFmt = 0x00000000
+			wszFormulaLength = 0x0022 = 34
+			wszFormula = [_3587]+DateAdd(1,2,1975)+[_34062]
+		Field 7
+			FieldType = 0x00000003 = ftInteger
+			FieldNameLength = 0x00000010 = 16
+			FieldName = Integer Computer
+			PropSetGuid = {00020329-0000-0000-C000-000000000046}
+			fcapm = 0x80000007 = FCAPM_CAN_EDIT | FCAPM_CAN_SORT | FCAPM_CAN_GROUP | FCAPM_CAN_EDIT_IN_ITEM
+			dwString = 0x00000000
+			dwBitmap = 0x00000000
+			dwDisplay = 0x00000002
+			iFmt = 0x00000002
+			wszFormulaLength = 0x0000 = 0
+		Field 8
+			FieldType = 0x00000000 = ftNull
+			FieldNameLength = 0x00000000 = 0
+			PropSetGuid = {00000000-0000-0000-0000-000000000000}
+			fcapm = 0x00000000 = 0x0
+			dwString = 0x00000000
+			dwBitmap = 0x00000000
+			dwDisplay = 0x00000000
+			iFmt = 0x00000000
+			wszFormulaLength = 0x0000 = 0
+	FolderUserFieldUnicode.FieldDefinitionCount = 9
+		Field 0
+			FieldType = 0x00000006 = ftBoolean
+			FieldNameLength = 0x00000007 = 7
+			FieldName = MyBool2
+			PropSetGuid = {00020329-0000-0000-C000-000000000046}
+			fcapm = 0x80000007 = FCAPM_CAN_EDIT | FCAPM_CAN_SORT | FCAPM_CAN_GROUP | FCAPM_CAN_EDIT_IN_ITEM
+			dwString = 0x00020002
+			dwBitmap = 0xFDCC0202
+			dwDisplay = 0x00040001
+			iFmt = 0x00000001
+			wszFormulaLength = 0x0000 = 0
+		Field 1
+			FieldType = 0x0000000C = ftFloat
+			FieldNameLength = 0x00000009 = 9
+			FieldName = 1 Decimal
+			PropSetGuid = {00020329-0000-0000-C000-000000000046}
+			fcapm = 0x80000007 = FCAPM_CAN_EDIT | FCAPM_CAN_SORT | FCAPM_CAN_GROUP | FCAPM_CAN_EDIT_IN_ITEM
+			dwString = 0x00000000
+			dwBitmap = 0x00000000
+			dwDisplay = 0x00000002
+			iFmt = 0x00000002
+			wszFormulaLength = 0x0000 = 0
+		Field 2
+			FieldType = 0x0000000E = ftCurrency
+			FieldNameLength = 0x0000000E = 14
+			FieldName = Currency Comma
+			PropSetGuid = {00020329-0000-0000-C000-000000000046}
+			fcapm = 0x80000007 = FCAPM_CAN_EDIT | FCAPM_CAN_SORT | FCAPM_CAN_GROUP | FCAPM_CAN_EDIT_IN_ITEM
+			dwString = 0x00000000
+			dwBitmap = 0x00000000
+			dwDisplay = 0x00000001
+			iFmt = 0x00000001
+			wszFormulaLength = 0x0000 = 0
+		Field 3
+			FieldType = 0x0000000C = ftFloat
+			FieldNameLength = 0x0000000F = 15
+			FieldName = Number Computer
+			PropSetGuid = {00020329-0000-0000-C000-000000000046}
+			fcapm = 0x80000007 = FCAPM_CAN_EDIT | FCAPM_CAN_SORT | FCAPM_CAN_GROUP | FCAPM_CAN_EDIT_IN_ITEM
+			dwString = 0x00000000
+			dwBitmap = 0x00000000
+			dwDisplay = 0x00000005
+			iFmt = 0x00000005
+			wszFormulaLength = 0x0000 = 0
+		Field 4
+			FieldType = 0x0000000C = ftFloat
+			FieldNameLength = 0x00000011 = 17
+			FieldName = Percent 2 Decimal
+			PropSetGuid = {00020329-0000-0000-C000-000000000046}
+			fcapm = 0x81000007 = FCAPM_CAN_EDIT | FCAPM_CAN_SORT | FCAPM_CAN_GROUP | FCAPM_PERCENT | FCAPM_CAN_EDIT_IN_ITEM
+			dwString = 0x00000000
+			dwBitmap = 0x00000000
+			dwDisplay = 0x00000002
+			iFmt = 0x00000002
+			wszFormulaLength = 0x0000 = 0
+		Field 5
+			FieldType = 0x00000001 = ftString
+			FieldNameLength = 0x00000020 = 32
+			FieldName = Long Name jakshfkljashfkjashflja
+			PropSetGuid = {00020329-0000-0000-C000-000000000046}
+			fcapm = 0x80000007 = FCAPM_CAN_EDIT | FCAPM_CAN_SORT | FCAPM_CAN_GROUP | FCAPM_CAN_EDIT_IN_ITEM
+			dwString = 0x00000000
+			dwBitmap = 0x00000000
+			dwDisplay = 0x00000000
+			iFmt = 0x00000000
+			wszFormulaLength = 0x0000 = 0
+		Field 6
+			FieldType = 0x00000012 = ftCalc
+			FieldNameLength = 0x00000009 = 9
+			FieldName = Formula 1
+			PropSetGuid = {00020329-0000-0000-C000-000000000046}
+			fcapm = 0x00000100 = FCAPM_MULTILINE_TEXT
+			dwString = 0x00000000
+			dwBitmap = 0x00000000
+			dwDisplay = 0x00000000
+			iFmt = 0x00000000
+			wszFormulaLength = 0x0022 = 34
+			wszFormula = [_3587]+DateAdd(1,2,1975)+[_34062]
+		Field 7
+			FieldType = 0x00000003 = ftInteger
+			FieldNameLength = 0x00000010 = 16
+			FieldName = Integer Computer
+			PropSetGuid = {00020329-0000-0000-C000-000000000046}
+			fcapm = 0x80000007 = FCAPM_CAN_EDIT | FCAPM_CAN_SORT | FCAPM_CAN_GROUP | FCAPM_CAN_EDIT_IN_ITEM
+			dwString = 0x00000000
+			dwBitmap = 0x00000000
+			dwDisplay = 0x00000002
+			iFmt = 0x00000002
+			wszFormulaLength = 0x0000 = 0
+		Field 8
+			FieldType = 0x00000000 = ftNull
+			FieldNameLength = 0x00000000 = 0
+			PropSetGuid = {00000000-0000-0000-0000-000000000000}
+			fcapm = 0x00000000 = 0x0
+			dwString = 0x00000000
+			dwBitmap = 0x00000000
+			dwDisplay = 0x00000000
+			iFmt = 0x00000000
+			wszFormulaLength = 0x0000 = 0

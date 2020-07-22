@@ -11,7 +11,8 @@ For assistance using MFCMAPI, developing add-ins, or general MAPI development, c
 # Become a fan on Facebook!
 <a href="https://www.facebook.com/MFCMAPI/"><img style="border: none;" title="Facebook Badge" src="https://badge.facebook.com/badge/26764016480.2776.1538253884.png" alt="Facebook Badge" /></a>
 
-Interested in Exchange Web Services (EWS)? Try [EWSEditor](https://ewseditor.codeplex.com)!
+Interested in Exchange Web Services (EWS)? Try [EWSEditor](https://github.com/dseph/EwsEditor)!
 
 Build status:  
-[![Build status](https://ci.appveyor.com/api/projects/status/v9e7q7wbtjehj7oa?svg=true)](https://ci.appveyor.com/project/stephenegriffin/mfcmapi)  
+Release: [![Release](https://dev.azure.com/mrmapi/MFCMAPI/_apis/build/status/Release/MFCMAPI%20Build?branchName=master)](https://dev.azure.com/mrmapi/MFCMAPI/_build/latest?definitionId=13&branchName=master)  
+CI: [![CI](https://dev.azure.com/mrmapi/MFCMAPI/_apis/build/status/Continuous%20Integration/ci?branchName=master)](https://dev.azure.com/mrmapi/MFCMAPI/_build/latest?definitionId=14&branchName=master)  

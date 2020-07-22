@@ -10,7 +10,7 @@ namespace sortlistdata
 		data->init(std::make_shared<commentData>(lpOldProp), true);
 	}
 
-	commentData::commentData(_In_opt_ const _SPropValue* lpOldProp)
+	commentData::commentData(_In_opt_ const _SPropValue* lpOldProp) noexcept
 	{
 		m_lpOldProp = lpOldProp;
 		m_lpNewProp = nullptr;

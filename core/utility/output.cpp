@@ -4,6 +4,7 @@
 #include <core/utility/file.h>
 #include <core/utility/registry.h>
 #include <core/utility/error.h>
+#include <mapistub/library/stubutils.h>
 
 #ifdef CHECKFORMATPARAMS
 #undef Outputf
@@ -55,18 +56,21 @@ namespace output
 		if (bDoOutput && !bOldDoOutput)
 		{
 			auto appName = file::GetModuleFileName(nullptr);
-			DebugPrint(output::DBGGeneric, L"%ws: Debug printing to file enabled.\n", appName.c_str());
+			DebugPrint(dbgLevel::Generic, L"%ws: Debug printing to file enabled.\n", appName.c_str());
 
-			outputVersion(output::DBGVersionBanner, nullptr);
+			outputVersion(dbgLevel::VersionBanner, nullptr);
 		}
 	}
 
-	bool fIsSet(output::DBGLEVEL ulTag) { return registry::debugTag & ulTag; }
-	bool fIsSetv(output::DBGLEVEL ulTag) { return (ulTag != DBGNoDebug) && (registry::debugTag & ulTag); }
-
-	bool earlyExit(output::DBGLEVEL ulDbgLvl, bool fFile)
+	bool fIsSet(dbgLevel ulTag) noexcept { return registry::debugTag & static_cast<DWORD>(ulTag); }
+	bool fIsSetv(dbgLevel ulTag) noexcept
 	{
-		assert(output::DBGNoDebug != ulDbgLvl || fFile);
+		return (ulTag != dbgLevel::NoDebug) && (registry::debugTag & static_cast<DWORD>(ulTag));
+	}
+
+	bool earlyExit(dbgLevel ulDbgLvl, bool fFile)
+	{
+		assert(dbgLevel::NoDebug != ulDbgLvl || fFile);
 
 		// quick check to see if we have anything to print - so we can avoid executing the call
 		if (!fFile && !registry::debugToFile && !fIsSetv(ulDbgLvl)) return true;
@@ -110,7 +114,7 @@ namespace output
 		return nullptr;
 	}
 
-	void CloseFile(_In_opt_ FILE* fFile)
+	void CloseFile(_In_opt_ FILE* fFile) noexcept
 	{
 		if (fFile) fclose(fFile);
 	}
@@ -124,7 +128,7 @@ namespace output
 		}
 	}
 
-	void OutputThreadTime(output::DBGLEVEL ulDbgLvl)
+	void OutputThreadTime(dbgLevel ulDbgLvl)
 	{
 		// Compute current time and thread for a time stamp
 		std::wstring szThreadTime;
@@ -161,7 +165,7 @@ namespace output
 	}
 
 	// The root of all debug output - call no debug output functions besides OutputDebugString from here!
-	void Output(output::DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, const std::wstring& szMsg)
+	void Output(dbgLevel ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, const std::wstring& szMsg)
 	{
 		if (earlyExit(ulDbgLvl, fFile)) return;
 		if (szMsg.empty()) return; // nothing to print? Cool!
@@ -199,7 +203,7 @@ namespace output
 		}
 	}
 
-	void __cdecl Outputf(output::DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, LPCWSTR szMsg, ...)
+	void __cdecl Outputf(dbgLevel ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, LPCWSTR szMsg, ...)
 	{
 		if (earlyExit(ulDbgLvl, fFile)) return;
 
@@ -217,22 +221,30 @@ namespace output
 		va_start(argList, szMsg);
 		if (argList)
 		{
-			Output(output::DBGNoDebug, fFile, true, strings::formatV(szMsg, argList));
+			Output(dbgLevel::NoDebug, fFile, true, strings::formatV(szMsg, argList));
 		}
 		else
 		{
-			Output(output::DBGNoDebug, fFile, true, szMsg);
+			Output(dbgLevel::NoDebug, fFile, true, szMsg);
 		}
 
 		va_end(argList);
 	}
 
-	void __cdecl DebugPrint(output::DBGLEVEL ulDbgLvl, LPCWSTR szMsg, ...)
+	void __cdecl DebugPrint(dbgLevel ulDbgLvl, LPCWSTR szMsg, ...)
 	{
 		if (!fIsSetv(ulDbgLvl) && !registry::debugToFile) return;
 
 		va_list argList = nullptr;
 		va_start(argList, szMsg);
+		DebugPrint(ulDbgLvl, szMsg, argList);
+		va_end(argList);
+	}
+
+	void __cdecl DebugPrint(dbgLevel ulDbgLvl, LPCWSTR szMsg, va_list argList)
+	{
+		if (!fIsSetv(ulDbgLvl) && !registry::debugToFile) return;
+
 		if (argList)
 		{
 			Output(ulDbgLvl, nullptr, true, strings::formatV(szMsg, argList));
@@ -241,13 +253,11 @@ namespace output
 		{
 			Output(ulDbgLvl, nullptr, true, szMsg);
 		}
-
-		va_end(argList);
 	}
 
 	void __cdecl DebugPrintEx(
-		output::DBGLEVEL ulDbgLvl,
-		std::wstring& szClass,
+		dbgLevel ulDbgLvl,
+		const std::wstring& szClass,
 		const std::wstring& szFunc,
 		LPCWSTR szMsg,
 		...)
@@ -269,7 +279,7 @@ namespace output
 		va_end(argList);
 	}
 
-	void OutputIndent(output::DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile, int iIndent)
+	void OutputIndent(dbgLevel ulDbgLvl, _In_opt_ FILE* fFile, int iIndent)
 	{
 		if (earlyExit(ulDbgLvl, fFile)) return;
 
@@ -278,7 +288,7 @@ namespace output
 	}
 
 #define MAXBYTES 4096
-	void outputStream(output::DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSTREAM lpStream)
+	void outputStream(dbgLevel ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSTREAM lpStream)
 	{
 		if (earlyExit(ulDbgLvl, fFile)) return;
 
@@ -291,7 +301,7 @@ namespace output
 		const auto li = LARGE_INTEGER{};
 		const auto hRes = WC_H_MSG(IDS_STREAMSEEKFAILED, lpStream->Seek(li, STREAM_SEEK_SET, nullptr));
 
-		BYTE bBuf[MAXBYTES + 2]; // Allocate some extra for NULL terminators - 2 for Unicode
+		BYTE bBuf[MAXBYTES + 2] = {}; // Allocate some extra for NULL terminators - 2 for Unicode
 		ULONG ulNumBytes = 0;
 		if (hRes == S_OK) do
 			{
@@ -312,7 +322,7 @@ namespace output
 			} while (ulNumBytes > 0);
 	}
 
-	void outputVersion(output::DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile)
+	void outputVersion(dbgLevel ulDbgLvl, _In_opt_ FILE* fFile)
 	{
 		if (earlyExit(ulDbgLvl, fFile)) return;
 
@@ -332,15 +342,12 @@ namespace output
 		}
 	}
 
-	void OutputCDataOpen(output::DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile)
-	{
-		Output(ulDbgLvl, fFile, false, L"<![CDATA[");
-	}
+	void OutputCDataOpen(dbgLevel ulDbgLvl, _In_opt_ FILE* fFile) { Output(ulDbgLvl, fFile, false, L"<![CDATA["); }
 
-	void OutputCDataClose(output::DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile) { Output(ulDbgLvl, fFile, false, L"]]>"); }
+	void OutputCDataClose(dbgLevel ulDbgLvl, _In_opt_ FILE* fFile) { Output(ulDbgLvl, fFile, false, L"]]>"); }
 
 	void OutputXMLValue(
-		DBGLEVEL ulDbgLvl,
+		dbgLevel ulDbgLvl,
 		_In_opt_ FILE* fFile,
 		UINT uidTag,
 		const std::wstring& szValue,
@@ -369,5 +376,11 @@ namespace output
 		}
 
 		Outputf(ulDbgLvl, fFile, false, L"</%ws>\n", szTag.c_str());
+	}
+
+	void initStubCallbacks()
+	{
+		mapistub::logLoadMapiCallback = [](auto _1, auto _2) { DebugPrint(dbgLevel::LoadMAPI, _1, _2); };
+		mapistub::logLoadLibraryCallback = [](auto _1, auto _2) { DebugPrint(dbgLevel::LoadLibrary, _1, _2); };
 	}
 } // namespace output

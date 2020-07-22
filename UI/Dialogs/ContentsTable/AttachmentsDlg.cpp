@@ -3,7 +3,7 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/ContentsTable/AttachmentsDlg.h>
 #include <UI/Controls/SortList/ContentsTableListCtrl.h>
-#include <UI/FileDialogEx.h>
+#include <UI/file/FileDialogEx.h>
 #include <core/mapi/cache/mapiObjects.h>
 #include <core/mapi/columnTags.h>
 #include <core/mapi/mapiProgress.h>
@@ -30,7 +30,7 @@ namespace dialog
 			  pParentWnd,
 			  lpMapiObjects,
 			  IDS_ATTACHMENTS,
-			  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+			  createDialogType::DO_NOT_CALL_CREATE_DIALOG,
 			  nullptr,
 			  lpMAPITable,
 			  &columns::sptATTACHCols.tags,
@@ -107,7 +107,7 @@ namespace dialog
 				auto lpMessage = OpenEmbeddedMessage();
 				if (lpMessage)
 				{
-					WC_H_S(DisplayObject(lpMessage, MAPI_MESSAGE, otDefault, this));
+					WC_H_S(DisplayObject(lpMessage, MAPI_MESSAGE, objectType::default, this));
 					lpMessage->Release();
 				}
 			}
@@ -118,10 +118,10 @@ namespace dialog
 	{
 		LPATTACH lpAttach = nullptr;
 
-		const auto hRes = WC_MAPI(m_lpMessage->OpenAttach(ulAttachNum, NULL, MAPI_MODIFY, &lpAttach));
+		const auto hRes = WC_MAPI(m_lpMessage->OpenAttach(ulAttachNum, nullptr, MAPI_MODIFY, &lpAttach));
 		if (hRes == MAPI_E_NO_ACCESS)
 		{
-			WC_MAPI_S(m_lpMessage->OpenAttach(ulAttachNum, NULL, MAPI_BEST_ACCESS, &lpAttach));
+			WC_MAPI_S(m_lpMessage->OpenAttach(ulAttachNum, nullptr, MAPI_BEST_ACCESS, &lpAttach));
 		}
 
 		return lpAttach;
@@ -156,10 +156,11 @@ namespace dialog
 		return lpMessage;
 	}
 
-	_Check_return_ LPMAPIPROP CAttachmentsDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum /*bModify*/)
+	_Check_return_ LPMAPIPROP CAttachmentsDlg::OpenItemProp(int iSelectedItem, modifyType /*bModify*/)
 	{
 		if (!m_lpContentsTableListCtrl) return nullptr;
-		output::DebugPrintEx(output::DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
+		output::DebugPrintEx(
+			output::dbgLevel::OpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
 
 		// Find the highlighted item AttachNum
 		const auto lpListData = m_lpContentsTableListCtrl->GetSortListData(iSelectedItem);
@@ -209,7 +210,7 @@ namespace dialog
 		if (!m_lpContentsTableListCtrl || !m_lpMessage) return;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		output::DebugPrintEx(output::DBGGeneric, CLASS, L"HandleCopy", L"\n");
+		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"HandleCopy", L"\n");
 		if (!m_lpContentsTableListCtrl) return;
 
 		const ULONG ulNumSelected = m_lpContentsTableListCtrl->GetSelectedCount();
@@ -239,7 +240,7 @@ namespace dialog
 		if (CBaseDialog::HandlePaste()) return true;
 
 		if (!m_lpContentsTableListCtrl || !m_lpMessage) return false;
-		output::DebugPrintEx(output::DBGGeneric, CLASS, L"HandlePaste", L"\n");
+		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"HandlePaste", L"\n");
 
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
@@ -259,12 +260,12 @@ namespace dialog
 				LPSPropProblemArray lpProblems = nullptr;
 
 				// Open the attachment source
-				EC_MAPI_S(lpSourceMessage->OpenAttach(ulAtt, NULL, MAPI_DEFERRED_ERRORS, &lpAttSrc));
+				EC_MAPI_S(lpSourceMessage->OpenAttach(ulAtt, nullptr, MAPI_DEFERRED_ERRORS, &lpAttSrc));
 				if (lpAttSrc)
 				{
 					ULONG ulAttNum = NULL;
 					// Create the attachment destination
-					EC_MAPI_S(m_lpMessage->CreateAttach(NULL, MAPI_DEFERRED_ERRORS, &ulAttNum, &lpAttDst));
+					EC_MAPI_S(m_lpMessage->CreateAttach(nullptr, MAPI_DEFERRED_ERRORS, &ulAttNum, &lpAttDst));
 					if (lpAttDst)
 					{
 						auto lpProgress = mapi::mapiui::GetMAPIProgress(L"IAttach::CopyTo", m_hWnd); // STRING_OK
@@ -272,7 +273,7 @@ namespace dialog
 						// Copy from source to destination
 						EC_MAPI_S(lpAttSrc->CopyTo(
 							0,
-							NULL,
+							nullptr,
 							nullptr,
 							lpProgress ? reinterpret_cast<ULONG_PTR>(m_hWnd) : NULL,
 							lpProgress,
@@ -331,7 +332,7 @@ namespace dialog
 		for (const auto& attachnum : attachnums)
 		{
 			output::DebugPrintEx(
-				output::DBGDeleteSelectedItem,
+				output::dbgLevel::DeleteSelectedItem,
 				CLASS,
 				L"OnDeleteSelectedItem",
 				L"Deleting attachment 0x%08X\n",
@@ -392,7 +393,7 @@ namespace dialog
 					const auto ulAttachNum = contents->m_ulAttachNum;
 
 					EC_MAPI_S(m_lpMessage->OpenAttach(
-						ulAttachNum, NULL, MAPI_BEST_ACCESS, static_cast<LPATTACH*>(&lpAttach)));
+						ulAttachNum, nullptr, MAPI_BEST_ACCESS, static_cast<LPATTACH*>(&lpAttach)));
 
 					if (lpAttach)
 					{
@@ -421,7 +422,7 @@ namespace dialog
 			LPATTACH lpAttachment = nullptr;
 			ULONG ulAttachNum = 0;
 
-			auto hRes = EC_MAPI(m_lpMessage->CreateAttach(NULL, NULL, &ulAttachNum, &lpAttachment));
+			auto hRes = EC_MAPI(m_lpMessage->CreateAttach(nullptr, NULL, &ulAttachNum, &lpAttachment));
 
 			if (SUCCEEDED(hRes) && lpAttachment)
 			{
@@ -431,11 +432,11 @@ namespace dialog
 				spvAttach[1].ulPropTag = PR_RENDERING_POSITION;
 				spvAttach[1].Value.l = -1;
 				spvAttach[2].ulPropTag = PR_ATTACH_FILENAME_W;
-				spvAttach[2].Value.lpszW = LPWSTR(szAttachName.c_str());
+				spvAttach[2].Value.lpszW = const_cast<LPWSTR>(szAttachName.c_str());
 				spvAttach[3].ulPropTag = PR_DISPLAY_NAME_W;
-				spvAttach[3].Value.lpszW = LPWSTR(szAttachName.c_str());
+				spvAttach[3].Value.lpszW = const_cast<LPWSTR>(szAttachName.c_str());
 
-				hRes = EC_MAPI(lpAttachment->SetProps(_countof(spvAttach), spvAttach, NULL));
+				hRes = EC_MAPI(lpAttachment->SetProps(_countof(spvAttach), spvAttach, nullptr));
 				if (SUCCEEDED(hRes))
 				{
 					LPSTREAM pStreamFile = nullptr;
@@ -459,7 +460,7 @@ namespace dialog
 
 							if (SUCCEEDED(hRes))
 							{
-								hRes = EC_MAPI(pStreamFile->CopyTo(pStreamAtt, StatInfo.cbSize, NULL, NULL));
+								hRes = EC_MAPI(pStreamFile->CopyTo(pStreamAtt, StatInfo.cbSize, nullptr, nullptr));
 							}
 
 							if (SUCCEEDED(hRes))

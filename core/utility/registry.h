@@ -6,35 +6,36 @@ namespace registry
 {
 	static const wchar_t* RKEY_ROOT = L"SOFTWARE\\Microsoft\\MFCMAPI";
 
-	enum __REGKEYTYPES
+	enum class regKeyType
 	{
-		regDWORD,
-		regSTRING
+		dword,
+		string
 	};
 
-	enum __REGOPTIONTYPE
+	enum class regOptionType
 	{
-		regoptCheck,
-		regoptString,
-		regoptStringHex,
-		regoptStringDec
+		check,
+		string,
+		stringHex,
+		stringDec
 	};
 
 	class __RegKey
 	{
 	public:
 		std::wstring szKeyName;
-		__REGKEYTYPES ulRegKeyType;
-		__REGOPTIONTYPE ulRegOptType;
-		DWORD ulDefDWORD;
-		DWORD ulCurDWORD;
+		regKeyType ulRegKeyType{};
+		regOptionType ulRegOptType{};
+		DWORD ulDefDWORD{};
+		DWORD ulCurDWORD{};
 		std::wstring szDefSTRING;
 		std::wstring szCurSTRING;
-		bool bRefresh;
-		UINT uiOptionsPrompt;
+		bool bRefresh{};
+		UINT uiOptionsPrompt{};
 
+		__RegKey() = default;
 		__RegKey(const __RegKey&) = delete;
-		__RegKey& operator=(__RegKey const&) = delete;
+		virtual __RegKey& operator=(__RegKey const&) = delete;
 		__RegKey(__RegKey&&) = delete;
 		__RegKey& operator=(__RegKey&&) = delete;
 		~__RegKey() = default;
@@ -47,17 +48,17 @@ namespace registry
 			: __RegKey{}
 		{
 			szKeyName = _szKeyName;
-			ulRegKeyType = regDWORD;
-			ulRegOptType = regoptCheck;
+			ulRegKeyType = regKeyType::dword;
+			ulRegOptType = regOptionType::check;
 			ulDefDWORD = _default;
 			ulCurDWORD = _default;
 			bRefresh = _refresh;
 			uiOptionsPrompt = _uiOptionsPrompt;
 		}
 
-		operator bool() const { return ulCurDWORD != 0; }
+		operator bool() const noexcept { return ulCurDWORD != 0; }
 
-		boolRegKey& operator=(const bool val)
+		boolRegKey& operator=(const bool val) noexcept
 		{
 			ulCurDWORD = val;
 			return *this;
@@ -69,14 +70,14 @@ namespace registry
 	public:
 		dwordRegKey(
 			const std::wstring& _szKeyName,
-			const __REGOPTIONTYPE _ulRegOptType,
+			const regOptionType _ulRegOptType,
 			const DWORD _default,
 			const bool _refresh,
 			const int _uiOptionsPrompt)
 			: __RegKey{}
 		{
 			szKeyName = _szKeyName;
-			ulRegKeyType = regDWORD;
+			ulRegKeyType = regKeyType::dword;
 			ulRegOptType = _ulRegOptType;
 			ulDefDWORD = _default;
 			ulCurDWORD = _default;
@@ -84,15 +85,15 @@ namespace registry
 			uiOptionsPrompt = _uiOptionsPrompt;
 		}
 
-		operator DWORD() const { return ulCurDWORD; }
+		operator DWORD() const noexcept { return ulCurDWORD; }
 
-		dwordRegKey& operator=(const DWORD val)
+		dwordRegKey& operator=(const DWORD val) noexcept
 		{
 			ulCurDWORD = val;
 			return *this;
 		}
 
-		dwordRegKey& operator|=(const DWORD val)
+		dwordRegKey& operator|=(const DWORD val) noexcept
 		{
 			ulCurDWORD |= val;
 			return *this;
@@ -110,8 +111,8 @@ namespace registry
 			: __RegKey{}
 		{
 			szKeyName = _szKeyName;
-			ulRegKeyType = regSTRING;
-			ulRegOptType = regoptString;
+			ulRegKeyType = regKeyType::string;
+			ulRegOptType = regOptionType::string;
 			szDefSTRING = _default;
 			szCurSTRING = _default;
 			bRefresh = _refresh;
@@ -130,7 +131,10 @@ namespace registry
 		_NODISCARD bool empty() const noexcept { return szCurSTRING.empty(); }
 		void clear() noexcept { szCurSTRING.clear(); }
 		void push_back(const wchar_t _Ch) { szCurSTRING.push_back(_Ch); }
-		_NODISCARD std::wstring::reference operator[](const std::wstring::size_type _Off) { return szCurSTRING[_Off]; }
+		_NODISCARD std::wstring::reference operator[](const std::wstring::size_type _Off) noexcept
+		{
+			return szCurSTRING[_Off];
+		}
 	};
 
 	extern std::vector<__RegKey*> RegKeys;

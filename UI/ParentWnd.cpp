@@ -2,9 +2,8 @@
 #include <UI/ParentWnd.h>
 #include <core/utility/import.h>
 #include <UI/MyWinApp.h>
-#include <core/mapi/cache/namedPropCache.h>
 #include <UI/UIFunctions.h>
-#include <core/mapi/stubutils.h>
+#include <mapistub/library/stubutils.h>
 #include <core/addin/addin.h>
 #include <core/utility/registry.h>
 #include <core/utility/output.h>
@@ -48,12 +47,12 @@ namespace ui
 		registry::ReadFromRegistry();
 		// After this call we may output to the debug file
 		output::OpenDebugFile();
-		output::outputVersion(output::DBGVersionBanner, nullptr);
+		output::outputVersion(output::dbgLevel::VersionBanner, nullptr);
 		// Force the system riched20 so we don't load office's version.
-		(void) import::LoadFromSystemDir(L"riched20.dll"); // STRING_OK
+		static_cast<void>(import::LoadFromSystemDir(L"riched20.dll")); // STRING_OK
 		// Second part is to load rundll32.exe
 		// Don't plan on unloading this, so don't care about the return value
-		(void) import::LoadFromSystemDir(L"rundll32.exe"); // STRING_OK
+		static_cast<void>(import::LoadFromSystemDir(L"rundll32.exe")); // STRING_OK
 
 		// Load DLLS and get functions from them
 		import::ImportProcs();
@@ -96,7 +95,7 @@ namespace ui
 		*ppvObj = nullptr;
 		if (riid == IID_IUnknown)
 		{
-			*ppvObj = static_cast<LPVOID>(this);
+			*ppvObj = this;
 			AddRef();
 			return S_OK;
 		}

@@ -20,7 +20,7 @@ namespace dialog
 			_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 			_In_ const std::wstring& lpszServerName,
 			_In_ LPMAPITABLE lpMAPITable);
-		virtual ~CMailboxTableDlg();
+		~CMailboxTableDlg();
 
 	private:
 		// Overrides from base class

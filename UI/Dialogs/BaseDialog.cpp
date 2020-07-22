@@ -72,7 +72,7 @@ namespace dialog
 	{
 		const auto lCount = InterlockedIncrement(&m_cRef);
 		TRACE_ADDREF(CLASS, lCount);
-		output::DebugPrint(output::DBGRefCount, L"CBaseDialog::AddRef(\"%ws\")\n", m_szTitle.c_str());
+		output::DebugPrint(output::dbgLevel::RefCount, L"CBaseDialog::AddRef(\"%ws\")\n", m_szTitle.c_str());
 		return lCount;
 	}
 
@@ -80,7 +80,7 @@ namespace dialog
 	{
 		const auto lCount = InterlockedDecrement(&m_cRef);
 		TRACE_RELEASE(CLASS, lCount);
-		output::DebugPrint(output::DBGRefCount, L"CBaseDialog::Release(\"%ws\")\n", m_szTitle.c_str());
+		output::DebugPrint(output::dbgLevel::RefCount, L"CBaseDialog::Release(\"%ws\")\n", m_szTitle.c_str());
 		if (!lCount) delete this;
 		return lCount;
 	}
@@ -119,11 +119,11 @@ namespace dialog
 			ui::DrawStatus(
 				m_hWnd,
 				GetStatusHeight(),
-				m_StatusMessages[STATUSDATA1],
-				m_StatusWidth[STATUSDATA1],
-				m_StatusMessages[STATUSDATA2],
-				m_StatusWidth[STATUSDATA2],
-				m_StatusMessages[STATUSINFOTEXT]);
+				getStatusMessage(statusPane::data1),
+				getStatusWidth(statusPane::data1),
+				getStatusMessage(statusPane::data2),
+				getStatusWidth(statusPane::data2),
+				getStatusMessage(statusPane::infoText));
 			break;
 		}
 
@@ -134,9 +134,9 @@ namespace dialog
 	{
 		UpdateTitleBarText();
 
-		m_StatusWidth[STATUSDATA1] = 0;
-		m_StatusWidth[STATUSDATA2] = 0;
-		m_StatusWidth[STATUSINFOTEXT] = -1;
+		setStatusWidth(statusPane::data1, 0);
+		setStatusWidth(statusPane::data2, 0);
+		setStatusWidth(statusPane::infoText, -1);
 
 		SetIcon(m_hIcon, false); // Set small icon - large icon isn't used
 
@@ -154,7 +154,8 @@ namespace dialog
 		const UINT uiClassMenuResource,
 		const UINT uidClassMenuTitle)
 	{
-		output::DebugPrintEx(output::DBGCreateDialog, CLASS, L"CreateDialogAndMenu", L"id = 0x%X\n", nIDMenuResource);
+		output::DebugPrintEx(
+			output::dbgLevel::CreateDialog, CLASS, L"CreateDialogAndMenu", L"id = 0x%X\n", nIDMenuResource);
 
 		m_lpszTemplateName = MAKEINTRESOURCE(IDD_BLANK_DIALOG);
 
@@ -191,7 +192,7 @@ namespace dialog
 		auto mi = MENUINFO{};
 		mi.cbSize = sizeof(MENUINFO);
 		mi.fMask = MIM_BACKGROUND;
-		mi.hbrBack = GetSysBrush(ui::cBackground);
+		mi.hbrBack = GetSysBrush(ui::uiColor::Background);
 		SetMenuInfo(hMenu, &mi);
 
 		ui::ConvertMenuOwnerDraw(hMenu, true);
@@ -203,7 +204,7 @@ namespace dialog
 	_Check_return_ bool CBaseDialog::HandleMenu(const WORD wMenuSelect)
 	{
 		output::DebugPrint(
-			output::DBGMenu, L"CBaseDialog::HandleMenu wMenuSelect = 0x%X = %u\n", wMenuSelect, wMenuSelect);
+			output::dbgLevel::Menu, L"CBaseDialog::HandleMenu wMenuSelect = 0x%X = %u\n", wMenuSelect, wMenuSelect);
 		switch (wMenuSelect)
 		{
 		case ID_HEXEDITOR:
@@ -216,7 +217,7 @@ namespace dialog
 			OnCompareEntryIDs();
 			return true;
 		case ID_OPENENTRYID:
-			OnOpenEntryID(nullptr);
+			OnOpenEntryID({});
 			return true;
 		case ID_COMPUTESTOREHASH:
 			OnComputeStoreHash();
@@ -225,7 +226,7 @@ namespace dialog
 			HandleCopy();
 			return true;
 		case ID_PASTE:
-			(void) HandlePaste();
+			static_cast<void>(HandlePaste());
 			return true;
 		case ID_OUTLOOKVERSION:
 			OnOutlookVersion();
@@ -269,12 +270,12 @@ namespace dialog
 	{
 		if (!m_bDisplayingMenuText)
 		{
-			m_szMenuDisplacedText = m_StatusMessages[STATUSINFOTEXT];
+			m_szMenuDisplacedText = getStatusMessage(statusPane::infoText);
 		}
 
 		if (nItemID && !(nFlags & (MF_SEPARATOR | MF_POPUP)))
 		{
-			UpdateStatusBarText(STATUSINFOTEXT, nItemID); // This will LoadString the menu help text for us
+			UpdateStatusBarText(statusPane::infoText, nItemID); // This will LoadString the menu help text for us
 			m_bDisplayingMenuText = true;
 		}
 		else
@@ -283,7 +284,7 @@ namespace dialog
 		}
 		if (!m_bDisplayingMenuText)
 		{
-			UpdateStatusBarText(STATUSINFOTEXT, m_szMenuDisplacedText);
+			UpdateStatusBarText(statusPane::infoText, m_szMenuDisplacedText);
 		}
 	}
 
@@ -291,7 +292,7 @@ namespace dialog
 	CBaseDialog::HandleKeyDown(const UINT nChar, const bool bShift, const bool bCtrl, const bool bMenu)
 	{
 		output::DebugPrintEx(
-			output::DBGMenu,
+			output::dbgLevel::Menu,
 			CLASS,
 			L"HandleKeyDown",
 			L"nChar = 0x%0X, bShift = 0x%X, bCtrl = 0x%X, bMenu = 0x%X\n",
@@ -347,7 +348,7 @@ namespace dialog
 		case 'V':
 			if (bCtrl)
 			{
-				(void) HandlePaste();
+				static_cast<void>(HandlePaste());
 				return true;
 			}
 			break;
@@ -369,7 +370,7 @@ namespace dialog
 			OnEscHit();
 			return true;
 		case VK_RETURN:
-			output::DebugPrint(output::DBGMenu, L"CBaseDialog::HandleKeyDown posting ID_DISPLAYSELECTEDITEM\n");
+			output::DebugPrint(output::dbgLevel::Menu, L"CBaseDialog::HandleKeyDown posting ID_DISPLAYSELECTEDITEM\n");
 			PostMessage(WM_COMMAND, ID_DISPLAYSELECTEDITEM, NULL);
 			return true;
 		}
@@ -390,7 +391,10 @@ namespace dialog
 		Release();
 	}
 
-	void CBaseDialog::OnEscHit() { output::DebugPrintEx(output::DBGGeneric, CLASS, L"OnEscHit", L"Not implemented\n"); }
+	void CBaseDialog::OnEscHit()
+	{
+		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"OnEscHit", L"Not implemented\n");
+	}
 
 	void CBaseDialog::OnOptions()
 	{
@@ -420,11 +424,11 @@ namespace dialog
 		if (pMain) pMain->OnOpenMessageStoreTable();
 	}
 
-	void CBaseDialog::HandleCopy() { output::DebugPrintEx(output::DBGGeneric, CLASS, L"HandleCopy", L"\n"); }
+	void CBaseDialog::HandleCopy() { output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"HandleCopy", L"\n"); }
 
 	_Check_return_ bool CBaseDialog::HandlePaste()
 	{
-		output::DebugPrintEx(output::DBGGeneric, CLASS, L"HandlePaste", L"\n");
+		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"HandlePaste", L"\n");
 		const auto ulStatus = cache::CGlobalCache::getInstance().GetBufferStatus();
 
 		if (m_lpPropDisplay && ulStatus & BUFFER_PROPTAG && ulStatus & BUFFER_SOURCEPROPOBJ)
@@ -440,12 +444,13 @@ namespace dialog
 
 	void CBaseDialog::OnDeleteSelectedItem()
 	{
-		output::DebugPrintEx(output::DBGDeleteSelectedItem, CLASS, L"OnDeleteSelectedItem", L" Not Implemented\n");
+		output::DebugPrintEx(
+			output::dbgLevel::DeleteSelectedItem, CLASS, L"OnDeleteSelectedItem", L" Not Implemented\n");
 	}
 
 	void CBaseDialog::OnRefreshView()
 	{
-		output::DebugPrintEx(output::DBGGeneric, CLASS, L"OnRefreshView", L" Not Implemented\n");
+		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"OnRefreshView", L" Not Implemented\n");
 	}
 
 	void CBaseDialog::OnUpdateSingleMAPIPropListCtrl(
@@ -453,7 +458,7 @@ namespace dialog
 		_In_opt_ sortlistdata::sortListData* lpListData) const
 	{
 		output::DebugPrintEx(
-			output::DBGGeneric, CLASS, L"OnUpdateSingleMAPIPropListCtrl", L"Setting item %p\n", lpMAPIProp);
+			output::dbgLevel::Generic, CLASS, L"OnUpdateSingleMAPIPropListCtrl", L"Setting item %p\n", lpMAPIProp);
 
 		if (m_lpPropDisplay)
 		{
@@ -472,7 +477,7 @@ namespace dialog
 				hMenuBar, uiPos, MF_BYPOSITION | MF_POPUP, reinterpret_cast<UINT_PTR>(hMenuToAdd), szTitle.c_str());
 			if (IDR_MENU_PROPERTY == uiResource)
 			{
-				(void) ui::addinui::ExtendAddInMenu(hMenuToAdd, MENU_CONTEXT_PROPERTY);
+				static_cast<void>(ui::addinui::ExtendAddInMenu(hMenuToAdd, MENU_CONTEXT_PROPERTY));
 			}
 		}
 	}
@@ -483,10 +488,10 @@ namespace dialog
 		if (nState == 1 && !bMinimized) EC_B_S(RedrawWindow());
 	}
 
-	void CBaseDialog::SetStatusWidths()
+	void CBaseDialog::SetStatusWidths() noexcept
 	{
-		const auto iData1 = !m_StatusMessages[STATUSDATA1].empty();
-		const auto iData2 = !m_StatusMessages[STATUSDATA2].empty();
+		const auto iData1 = !getStatusMessage(statusPane::data1).empty();
+		const auto iData2 = !getStatusMessage(statusPane::data2).empty();
 
 		auto sizeData1 = SIZE{};
 		auto sizeData2 = SIZE{};
@@ -499,12 +504,12 @@ namespace dialog
 
 				if (iData1)
 				{
-					sizeData1 = ui::GetTextExtentPoint32(hdc, m_StatusMessages[STATUSDATA1]);
+					sizeData1 = ui::GetTextExtentPoint32(hdc, getStatusMessage(statusPane::data1));
 				}
 
 				if (iData2)
 				{
-					sizeData2 = ui::GetTextExtentPoint32(hdc, m_StatusMessages[STATUSDATA2]);
+					sizeData2 = ui::GetTextExtentPoint32(hdc, getStatusMessage(statusPane::data2));
 				}
 
 				SelectObject(hdc, hfontOld);
@@ -519,9 +524,9 @@ namespace dialog
 		if (sizeData1.cx) iWidthData1 = sizeData1.cx + 4 * nSpacing;
 		if (sizeData2.cx) iWidthData2 = sizeData2.cx + 4 * nSpacing;
 
-		m_StatusWidth[STATUSDATA1] = iWidthData1;
-		m_StatusWidth[STATUSDATA2] = iWidthData2;
-		m_StatusWidth[STATUSINFOTEXT] = -1;
+		setStatusWidth(statusPane::data1, iWidthData1);
+		setStatusWidth(statusPane::data2, iWidthData2);
+		setStatusWidth(statusPane::infoText, -1);
 		auto rcStatus = RECT{};
 		::GetClientRect(m_hWnd, &rcStatus);
 		rcStatus.top = rcStatus.bottom - GetStatusHeight();
@@ -555,30 +560,30 @@ namespace dialog
 		}
 	}
 
-	void CBaseDialog::UpdateStatusBarText(const __StatusPaneEnum nPos, _In_ const std::wstring& szMsg)
+	void CBaseDialog::UpdateStatusBarText(const statusPane nPos, _In_ const std::wstring& szMsg)
 	{
-		if (nPos < STATUSBARNUMPANES) m_StatusMessages[nPos] = szMsg;
+		if (nPos < statusPane::numPanes) setStatusMessage(nPos, szMsg);
 
 		SetStatusWidths();
 	}
 
-	void __cdecl CBaseDialog::UpdateStatusBarText(const __StatusPaneEnum nPos, const UINT uidMsg)
+	void __cdecl CBaseDialog::UpdateStatusBarText(const statusPane nPos, const UINT uidMsg)
 	{
 		UpdateStatusBarText(nPos, uidMsg, strings::emptystring, strings::emptystring, strings::emptystring);
 	}
 
-	void __cdecl CBaseDialog::UpdateStatusBarText(const __StatusPaneEnum nPos, UINT const uidMsg, ULONG const ulParam1)
+	void __cdecl CBaseDialog::UpdateStatusBarText(const statusPane nPos, UINT const uidMsg, ULONG const ulParam1)
 	{
 		auto szParam1 = std::to_wstring(ulParam1);
 		UpdateStatusBarText(nPos, uidMsg, szParam1, strings::emptystring, strings::emptystring);
 	}
 
 	void __cdecl CBaseDialog::UpdateStatusBarText(
-		__StatusPaneEnum const nPos,
+		statusPane const nPos,
 		UINT uidMsg,
-		std::wstring& szParam1,
-		std::wstring& szParam2,
-		std::wstring& szParam3)
+		const std::wstring& szParam1,
+		const std::wstring& szParam2,
+		const std::wstring& szParam3)
 	{
 		std::wstring szStatBarString;
 
@@ -622,15 +627,16 @@ namespace dialog
 		SetTitle(strings::formatmessage(IDS_TITLEBARPLAIN, m_szTitle.c_str()));
 	}
 
-	void CBaseDialog::UpdateStatus(HWND hWndHost, __StatusPaneEnum const pane, const std::wstring& status)
+	void CBaseDialog::UpdateStatus(HWND hWndHost, const statusPane pane, const std::wstring& status) noexcept
 	{
-		(void) ::SendMessage(hWndHost, WM_MFCMAPI_UPDATESTATUSBAR, pane, reinterpret_cast<LPARAM>(status.c_str()));
+		static_cast<void>(::SendMessage(
+			hWndHost, WM_MFCMAPI_UPDATESTATUSBAR, static_cast<WPARAM>(pane), reinterpret_cast<LPARAM>(status.c_str())));
 	}
 
 	// WM_MFCMAPI_UPDATESTATUSBAR
 	_Check_return_ LRESULT CBaseDialog::msgOnUpdateStatusBar(WPARAM wParam, LPARAM const lParam)
 	{
-		const auto iPane = static_cast<__StatusPaneEnum>(wParam);
+		const auto iPane = static_cast<statusPane>(wParam);
 		const std::wstring szStr = reinterpret_cast<LPWSTR>(lParam);
 		UpdateStatusBarText(iPane, szStr);
 
@@ -654,17 +660,17 @@ namespace dialog
 		const auto szVersionString = version::GetOutlookVersionString();
 
 		MyEID.AddPane(viewpane::TextPane::CreateMultiLinePane(0, IDS_OUTLOOKVERSIONPROMPT, szVersionString, true));
-		(void) MyEID.DisplayDialog();
+		static_cast<void>(MyEID.DisplayDialog());
 	}
 
-	void CBaseDialog::OnOpenEntryID(_In_opt_ LPSBinary lpBin)
+	void CBaseDialog::OnOpenEntryID(_In_ const SBinary& lpBin)
 	{
 		if (!m_lpMapiObjects) return;
 
 		editor::CEditor MyEID(this, IDS_OPENEID, IDS_OPENEIDPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 		MyEID.AddPane(
-			viewpane::TextPane::CreateSingleLinePane(0, IDS_EID, strings::BinToHexString(lpBin, false), false));
+			viewpane::TextPane::CreateSingleLinePane(0, IDS_EID, strings::BinToHexString(&lpBin, false), false));
 
 		const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 		MyEID.AddPane(viewpane::CheckPane::Create(1, IDS_USEMDB, lpMDB != nullptr, lpMDB == nullptr));
@@ -698,12 +704,12 @@ namespace dialog
 
 		if (MyEID.GetCheck(9))
 		{
-			(void) mapi::UnwrapContactEntryID(sBin.cb, sBin.lpb, &sBin.cb, &sBin.lpb);
+			static_cast<void>(mapi::UnwrapContactEntryID(sBin.cb, sBin.lpb, &sBin.cb, &sBin.lpb));
 		}
 
 		if (MyEID.GetCheck(8) && lpAB) // Do IAddrBook->Details here
 		{
-			auto ulUIParam = reinterpret_cast<ULONG_PTR>(static_cast<void*>(m_hWnd));
+			auto ulUIParam = reinterpret_cast<ULONG_PTR>(m_hWnd);
 
 			EC_H_CANCEL_S(lpAB->Details(
 				&ulUIParam,
@@ -735,7 +741,7 @@ namespace dialog
 			{
 				auto szFlags = smartview::InterpretNumberAsStringProp(ulObjType, PR_OBJECT_TYPE);
 				output::DebugPrint(
-					output::DBGGeneric,
+					output::dbgLevel::Generic,
 					L"OnOpenEntryID: Got object (%p) of type 0x%08X = %ws\n",
 					lpUnk,
 					ulObjType,
@@ -744,7 +750,7 @@ namespace dialog
 				auto lpTemp = mapi::safe_cast<LPMAPIPROP>(lpUnk);
 				if (lpTemp)
 				{
-					WC_H_S(DisplayObject(lpTemp, ulObjType, otHierarchy, this));
+					WC_H_S(DisplayObject(lpTemp, ulObjType, objectType::hierarchy, this));
 					lpTemp->Release();
 				}
 
@@ -829,7 +835,7 @@ namespace dialog
 
 			editor::CEditor Result(this, IDS_COMPAREEIDSRESULT, NULL, CEDITOR_BUTTON_OK);
 			Result.SetPromptPostFix(szRet);
-			(void) Result.DisplayDialog();
+			static_cast<void>(Result.DisplayDialog());
 		}
 	}
 
@@ -855,7 +861,7 @@ namespace dialog
 
 		editor::CEditor Result(this, IDS_STOREHASH, NULL, CEDITOR_BUTTON_OK);
 		Result.SetPromptPostFix(szHash);
-		(void) Result.DisplayDialog();
+		static_cast<void>(Result.DisplayDialog());
 	}
 
 	void CBaseDialog::OnNotificationsOn()
@@ -983,11 +989,14 @@ namespace dialog
 	_Check_return_ bool CBaseDialog::HandleAddInMenu(const WORD wMenuSelect)
 	{
 		output::DebugPrintEx(
-			output::DBGAddInPlumbing, CLASS, L"HandleAddInMenu", L"wMenuSelect = 0x%08X\n", wMenuSelect);
+			output::dbgLevel::AddInPlumbing, CLASS, L"HandleAddInMenu", L"wMenuSelect = 0x%08X\n", wMenuSelect);
 		return false;
 	}
 
-	_Check_return_ ui::CParentWnd* CBaseDialog::GetParentWnd() const { return m_lpParent; }
+	_Check_return_ ui::CParentWnd* CBaseDialog::GetParentWnd() const noexcept { return m_lpParent; }
 
-	_Check_return_ std::shared_ptr<cache::CMapiObjects> CBaseDialog::GetMapiObjects() const { return m_lpMapiObjects; }
+	_Check_return_ std::shared_ptr<cache::CMapiObjects> CBaseDialog::GetMapiObjects() const noexcept
+	{
+		return m_lpMapiObjects;
+	}
 } // namespace dialog

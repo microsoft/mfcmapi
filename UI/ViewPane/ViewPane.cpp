@@ -19,14 +19,15 @@ namespace viewpane
 		auto curX = x;
 		if (m_bCollapsible)
 		{
-			StyleButton(m_CollapseButton.m_hWnd, m_bCollapsed ? ui::bsUpArrow : ui::bsDownArrow);
+			StyleButton(
+				m_CollapseButton.m_hWnd, m_bCollapsed ? ui::uiButtonStyle::UpArrow : ui::uiButtonStyle::DownArrow);
 			::DeferWindowPos(
 				hWinPosInfo, m_CollapseButton.GetSafeHwnd(), nullptr, curX, y, width, labelHeight, SWP_NOZORDER);
 			curX += m_iButtonHeight;
 		}
 
 		output::DebugPrint(
-			output::DBGDraw,
+			output::dbgLevel::Draw,
 			L"ViewPane::DeferWindowPos x:%d width:%d labelpos:%d labelwidth:%d \n",
 			x,
 			width,
@@ -46,16 +47,16 @@ namespace viewpane
 
 		EC_B_S(m_Label.Create(
 			WS_CHILD | WS_CLIPSIBLINGS | ES_READONLY | WS_VISIBLE, CRect(0, 0, 0, 0), pParent, iCurIDLabel));
-		SetWindowTextW(m_Label.m_hWnd, m_szLabel.c_str());
+		::SetWindowTextW(m_Label.m_hWnd, m_szLabel.c_str());
 		ui::SubclassLabel(m_Label.m_hWnd);
 
 		if (m_bCollapsible)
 		{
-			StyleLabel(m_Label.m_hWnd, ui::lsPaneHeaderLabel);
+			StyleLabel(m_Label.m_hWnd, ui::uiLabelStyle::PaneHeaderLabel);
 
 			// Assign a nID to the collapse button that is IDD_COLLAPSE more than the control's nID
 			EC_B_S(m_CollapseButton.Create(
-				NULL,
+				nullptr,
 				WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE,
 				CRect(0, 0, 0, 0),
 				pParent,
@@ -65,7 +66,10 @@ namespace viewpane
 		const auto sizeText = ui::GetTextExtentPoint32(hdc, m_szLabel);
 		m_iLabelWidth = sizeText.cx;
 		output::DebugPrint(
-			output::DBGDraw, L"ViewPane::Initialize m_iLabelWidth:%d \"%ws\"\n", m_iLabelWidth, m_szLabel.c_str());
+			output::dbgLevel::Draw,
+			L"ViewPane::Initialize m_iLabelWidth:%d \"%ws\"\n",
+			m_iLabelWidth,
+			m_szLabel.c_str());
 	}
 
 	ULONG ViewPane::HandleChange(UINT nID)

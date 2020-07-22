@@ -9,14 +9,14 @@ namespace dialog
 	public:
 		CMyDialog();
 		CMyDialog(UINT nIDTemplate, CWnd* pParentWnd = nullptr);
-		virtual ~CMyDialog();
+		~CMyDialog();
 		void DisplayParentedDialog(ui::CParentWnd* lpNonModalParent, UINT iAutoCenterWidth);
 
 	protected:
 		LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
 		BOOL CheckAutoCenter() override;
-		void SetStatusHeight(int iHeight);
-		int GetStatusHeight() const;
+		void SetStatusHeight(int iHeight) noexcept;
+		int GetStatusHeight() const noexcept;
 		void SetTitle(_In_ const std::wstring& szTitle) const;
 
 	private:

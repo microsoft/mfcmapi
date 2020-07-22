@@ -3,7 +3,7 @@
 
 namespace smartview
 {
-	TaskAssigner::TaskAssigner(const std::shared_ptr<binaryParser>& parser)
+	void TaskAssigner::parse()
 	{
 		cbAssigner = blockT<DWORD>::parse(parser);
 		const auto ulSize = min(*cbAssigner, (ULONG) parser->getSize());
@@ -16,42 +16,43 @@ namespace smartview
 		parser->clearCap();
 	}
 
+	void TaskAssigner::parseBlocks()
+	{
+		addChild(cbEntryID, L"cbEntryID = 0x%1!08X! = %1!d!", cbEntryID->getData());
+		addLabeledChild(L"lpEntryID", lpEntryID);
+		addChild(szDisplayName, L"szDisplayName (ANSI) = %1!hs!", szDisplayName->c_str());
+		addChild(wzDisplayName, L"szDisplayName (Unicode) = %1!ws!", wzDisplayName->c_str());
+
+		if (!JunkData->empty())
+		{
+			addChild(JunkData, L"Unparsed Data Size = 0x%1!08X!", JunkData->size());
+			addChild(JunkData);
+		}
+	}
+
 	void TaskAssigners::parse()
 	{
-		m_cAssigners = blockT<DWORD>::parse(m_Parser);
+		m_cAssigners = blockT<DWORD>::parse(parser);
 
 		if (*m_cAssigners && *m_cAssigners < _MaxEntriesSmall)
 		{
 			m_lpTaskAssigners.reserve(*m_cAssigners);
 			for (DWORD i = 0; i < *m_cAssigners; i++)
 			{
-				m_lpTaskAssigners.emplace_back(std::make_shared<TaskAssigner>(m_Parser));
+				m_lpTaskAssigners.emplace_back(block::parse<TaskAssigner>(parser, false));
 			}
 		}
 	}
 
 	void TaskAssigners::parseBlocks()
 	{
-		setRoot(L"Task Assigners: \r\n");
+		setText(L"Task Assigners");
 		addChild(m_cAssigners, L"cAssigners = 0x%1!08X! = %1!d!", m_cAssigners->getData());
 
 		auto i = 0;
 		for (const auto& ta : m_lpTaskAssigners)
 		{
-			terminateBlock();
-			addHeader(L"Task Assigner[%1!d!]\r\n", i);
-			addChild(ta->cbEntryID, L"\tcbEntryID = 0x%1!08X! = %1!d!\r\n", ta->cbEntryID->getData());
-			addLabledChild(L"\tlpEntryID = ", ta->lpEntryID);
-			addChild(ta->szDisplayName, L"\tszDisplayName (ANSI) = %1!hs!\r\n", ta->szDisplayName->c_str());
-			addChild(ta->wzDisplayName, L"\tszDisplayName (Unicode) = %1!ws!", ta->wzDisplayName->c_str());
-
-			if (!ta->JunkData->empty())
-			{
-				terminateBlock();
-				addChild(ta->JunkData, L"\tUnparsed Data Size = 0x%1!08X!\r\n", ta->JunkData->size());
-				addChild(ta->JunkData);
-			}
-
+			addChild(ta, L"Task Assigner[%1!d!]", i);
 			i++;
 		}
 	}

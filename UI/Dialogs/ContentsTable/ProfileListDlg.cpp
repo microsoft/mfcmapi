@@ -6,7 +6,7 @@
 #include <core/mapi/columnTags.h>
 #include <core/mapi/mapiProfileFunctions.h>
 #include <UI/profile.h>
-#include <UI/FileDialogEx.h>
+#include <UI/file/FileDialogEx.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/ContentsTable/MsgServiceTableDlg.h>
 #include <core/mapi/cache/globalCache.h>
@@ -28,7 +28,7 @@ namespace dialog
 			  pParentWnd,
 			  lpMapiObjects,
 			  IDS_PROFILES,
-			  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+			  createDialogType::DO_NOT_CALL_CREATE_DIALOG,
 			  nullptr,
 			  lpMAPITable,
 			  &columns::sptPROFLISTCols.tags,
@@ -96,11 +96,11 @@ namespace dialog
 		if (!m_lpContentsTableListCtrl) return;
 
 		if (m_lpContentsTableListCtrl->IsLoading()) m_lpContentsTableListCtrl->OnCancelTableLoad();
-		output::DebugPrintEx(output::DBGGeneric, CLASS, L"OnRefreshView", L"\n");
+		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"OnRefreshView", L"\n");
 
 		// Wipe out current references to the profile table so the refresh will work
 		// If we don't do this, we get the old table back again.
-		m_lpContentsTableListCtrl->SetContentsTable(nullptr, dfNormal, NULL);
+		m_lpContentsTableListCtrl->SetContentsTable(nullptr, tableDisplayFlags::dfNormal, NULL);
 
 		LPPROFADMIN lpProfAdmin = nullptr;
 		EC_MAPI_S(MAPIAdminProfiles(0, &lpProfAdmin));
@@ -112,7 +112,7 @@ namespace dialog
 
 		if (lpProfTable)
 		{
-			m_lpContentsTableListCtrl->SetContentsTable(lpProfTable, dfNormal, NULL);
+			m_lpContentsTableListCtrl->SetContentsTable(lpProfTable, tableDisplayFlags::dfNormal, NULL);
 
 			lpProfTable->Release();
 		}
@@ -150,8 +150,7 @@ namespace dialog
 
 		if (!MyData.DisplayDialog()) return;
 
-		auto szProfName =
-			ui::profile::LaunchProfileWizard(m_hWnd, MyData.GetHex(0), strings::wstringTostring(MyData.GetStringW(1)));
+		auto szProfName = ui::profile::LaunchProfileWizard(m_hWnd, MyData.GetHex(0), MyData.GetStringW(1));
 		OnRefreshView(); // Update the view since we don't have notifications here.
 	}
 
@@ -173,8 +172,8 @@ namespace dialog
 		if (!MyData.DisplayDialog()) return;
 
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
-		auto szServer = strings::wstringTostring(MyData.GetStringW(0));
-		auto szMailbox = strings::wstringTostring(MyData.GetStringW(1));
+		auto szServer = MyData.GetStringW(0);
+		auto szMailbox = MyData.GetStringW(1);
 
 		if (!szServer.empty() && !szMailbox.empty())
 		{
@@ -186,10 +185,10 @@ namespace dialog
 				if (!contents) break;
 
 				output::DebugPrintEx(
-					output::DBGGeneric,
+					output::dbgLevel::Generic,
 					CLASS,
 					L"OnAddExchangeToProfile", // STRING_OK
-					L"Adding Server \"%hs\" and Mailbox \"%hs\" to profile \"%hs\"\n", // STRING_OK
+					L"Adding Server \"%ws\" and Mailbox \"%ws\" to profile \"%ws\"\n", // STRING_OK
 					szServer.c_str(),
 					szMailbox.c_str(),
 					contents->m_szProfileDisplayName.c_str());
@@ -228,14 +227,14 @@ namespace dialog
 				{
 					auto szPath = MyFile.GetStringW(0);
 					const auto bPasswordSet = MyFile.GetCheck(1);
-					auto szPwd = strings::wstringTostring(MyFile.GetStringW(2));
+					auto szPwd = MyFile.GetStringW(2);
 
 					output::DebugPrintEx(
-						output::DBGGeneric,
+						output::dbgLevel::Generic,
 						CLASS,
 						L"AddPSTToProfile",
-						L"Adding PST \"%ws\" to profile \"%hs\", bUnicodePST = 0x%X\n, bPasswordSet = 0x%X, password = "
-						L"\"%hs\"\n",
+						L"Adding PST \"%ws\" to profile \"%ws\", bUnicodePST = 0x%X\n, bPasswordSet = 0x%X, password = "
+						L"\"%ws\"\n",
 						szPath.c_str(),
 						contents->m_szProfileDisplayName.c_str(),
 						bUnicodePST,
@@ -270,7 +269,7 @@ namespace dialog
 		if (!MyData.DisplayDialog()) return;
 
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
-		auto szService = strings::wstringTostring(MyData.GetStringW(0));
+		auto szService = MyData.GetStringW(0);
 		auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
 		for (const auto& lpListData : items)
 		{
@@ -279,10 +278,10 @@ namespace dialog
 			if (!contents) break;
 
 			output::DebugPrintEx(
-				output::DBGGeneric,
+				output::dbgLevel::Generic,
 				CLASS,
 				L"OnAddServiceToProfile",
-				L"Adding service \"%hs\" to profile \"%hs\"\n",
+				L"Adding service \"%ws\" to profile \"%ws\"\n",
 				szService.c_str(),
 				contents->m_szProfileDisplayName.c_str());
 
@@ -304,13 +303,13 @@ namespace dialog
 		if (!MyData.DisplayDialog()) return;
 
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
-		auto szProfile = strings::wstringTostring(MyData.GetStringW(0));
+		auto szProfile = MyData.GetStringW(0);
 
 		output::DebugPrintEx(
-			output::DBGGeneric,
+			output::dbgLevel::Generic,
 			CLASS,
 			L"OnCreateProfile", // STRING_OK
-			L"Creating profile \"%hs\"\n", // STRING_OK
+			L"Creating profile \"%ws\"\n", // STRING_OK
 			szProfile.c_str());
 
 		EC_H_S(mapi::profile::HrCreateProfile(szProfile));
@@ -334,10 +333,10 @@ namespace dialog
 			if (!contents) break;
 
 			output::DebugPrintEx(
-				output::DBGDeleteSelectedItem,
+				output::dbgLevel::DeleteSelectedItem,
 				CLASS,
 				L"OnDeleteSelectedItem",
-				L"Deleting profile \"%hs\"\n",
+				L"Deleting profile \"%ws\"\n",
 				contents->m_szProfileDisplayName.c_str());
 
 			EC_H_S(mapi::profile::HrRemoveProfile(contents->m_szProfileDisplayName));
@@ -361,10 +360,10 @@ namespace dialog
 			if (!contents) break;
 
 			output::DebugPrintEx(
-				output::DBGDeleteSelectedItem,
+				output::dbgLevel::DeleteSelectedItem,
 				CLASS,
 				L"OnGetProfileServiceVersion",
-				L"Getting profile service version for \"%hs\"\n",
+				L"Getting profile service version for \"%ws\"\n",
 				contents->m_szProfileDisplayName.c_str());
 
 			ULONG ulServerVersion = 0;
@@ -391,7 +390,8 @@ namespace dialog
 			if (bFoundServerVersion)
 			{
 				MyData.SetStringf(0, L"%u = 0x%X", ulServerVersion, ulServerVersion); // STRING_OK
-				output::DebugPrint(output::DBGGeneric, L"PR_PROFILE_SERVER_VERSION == 0x%08X\n", ulServerVersion);
+				output::DebugPrint(
+					output::dbgLevel::Generic, L"PR_PROFILE_SERVER_VERSION == 0x%08X\n", ulServerVersion);
 			}
 			else
 			{
@@ -400,13 +400,13 @@ namespace dialog
 
 			if (bFoundServerFullVersion)
 			{
-				output::DebugPrint(output::DBGGeneric, L"PR_PROFILE_SERVER_FULL_VERSION = \n");
+				output::DebugPrint(output::dbgLevel::Generic, L"PR_PROFILE_SERVER_FULL_VERSION = \n");
 				MyData.SetStringf(1, L"%u = 0x%X", storeVersion.wMajorVersion, storeVersion.wMajorVersion); // STRING_OK
 				MyData.SetStringf(2, L"%u = 0x%X", storeVersion.wMinorVersion, storeVersion.wMinorVersion); // STRING_OK
 				MyData.SetStringf(3, L"%u = 0x%X", storeVersion.wBuild, storeVersion.wBuild); // STRING_OK
 				MyData.SetStringf(4, L"%u = 0x%X", storeVersion.wMinorBuild, storeVersion.wMinorBuild); // STRING_OK
 				output::DebugPrint(
-					output::DBGGeneric,
+					output::dbgLevel::Generic,
 					L"\twMajorVersion 0x%04X\n" // STRING_OK
 					L"\twMinorVersion 0x%04X\n" // STRING_OK
 					L"\twBuild 0x%04X\n" // STRING_OK
@@ -424,7 +424,7 @@ namespace dialog
 				MyData.LoadString(4, IDS_NOTFOUND);
 			}
 
-			(void) MyData.DisplayDialog();
+			static_cast<void>(MyData.DisplayDialog());
 		}
 	}
 
@@ -442,10 +442,10 @@ namespace dialog
 			if (contents)
 			{
 				output::DebugPrintEx(
-					output::DBGGeneric,
+					output::dbgLevel::Generic,
 					CLASS,
 					L"OnSetDefaultProfile",
-					L"Setting profile \"%hs\" as default\n",
+					L"Setting profile \"%ws\" as default\n",
 					contents->m_szProfileDisplayName.c_str());
 
 				EC_H_S(mapi::profile::HrSetDefaultProfile(contents->m_szProfileDisplayName));
@@ -462,7 +462,7 @@ namespace dialog
 
 		if (MyData.DisplayDialog())
 		{
-			auto szProfileName = strings::wstringTostring(MyData.GetStringW(0));
+			const auto szProfileName = MyData.GetStringW(0);
 			if (!szProfileName.empty())
 			{
 				new CMsgServiceTableDlg(m_lpParent, m_lpMapiObjects, szProfileName);
@@ -474,7 +474,7 @@ namespace dialog
 	{
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		output::DebugPrintEx(output::DBGGeneric, CLASS, L"HandleCopy", L"\n");
+		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"HandleCopy", L"\n");
 		if (!m_lpContentsTableListCtrl) return;
 
 		// Find the highlighted profile
@@ -495,18 +495,17 @@ namespace dialog
 
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		output::DebugPrintEx(output::DBGGeneric, CLASS, L"HandlePaste", L"\n");
+		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"HandlePaste", L"\n");
 
 		const auto szOldProfile = cache::CGlobalCache::getInstance().GetProfileToCopy();
 
 		editor::CEditor MyData(this, IDS_COPYPROFILE, NULL, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(
-			0, IDS_COPYPROFILEPROMPT, strings::stringTowstring(szOldProfile), false));
+		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_COPYPROFILEPROMPT, szOldProfile, false));
 
 		if (MyData.DisplayDialog())
 		{
-			const auto szNewProfile = strings::wstringTostring(MyData.GetStringW(0));
+			const auto szNewProfile = MyData.GetStringW(0);
 
 			WC_MAPI_S(mapi::profile::HrCopyProfile(szOldProfile, szNewProfile));
 
@@ -520,7 +519,7 @@ namespace dialog
 	{
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		output::DebugPrintEx(output::DBGGeneric, CLASS, L"OnExportProfile", L"\n");
+		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"OnExportProfile", L"\n");
 		if (!m_lpContentsTableListCtrl) return;
 
 		// Find the highlighted profile
@@ -530,11 +529,9 @@ namespace dialog
 			const auto contents = lpListData->cast<sortlistdata::contentsData>();
 			if (contents)
 			{
-				const auto szProfileName = strings::stringTowstring(contents->m_szProfileDisplayName);
-
 				auto file = file::CFileDialogExW::SaveAs(
 					L"xml", // STRING_OK
-					szProfileName + L".xml",
+					contents->m_szProfileDisplayName + L".xml",
 					OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
 					strings::loadstring(IDS_XMLFILES),
 					this);

@@ -100,14 +100,14 @@ namespace viewpane
 
 		*pcb = 0;
 
-		output::DebugPrint(output::DBGStream, L"EditStreamReadCallBack: cb = %d\n", cb);
+		output::DebugPrint(output::dbgLevel::Stream, L"EditStreamReadCallBack: cb = %d\n", cb);
 
 		const ULONG cbTemp = cb / 2;
 		ULONG cbTempRead = 0;
 		auto buffer = std::vector<BYTE>(cbTemp);
 
 		EC_MAPI_S(stmData->Read(buffer.data(), cbTemp, &cbTempRead));
-		output::DebugPrint(output::DBGStream, L"EditStreamReadCallBack: read %u bytes\n", cbTempRead);
+		output::DebugPrint(output::dbgLevel::Stream, L"EditStreamReadCallBack: read %u bytes\n", cbTempRead);
 
 		memset(pbBuff, 0, cbTempRead * 2);
 		ULONG iBinPos = 0;
@@ -223,7 +223,7 @@ namespace viewpane
 
 			// Set maximum text size
 			// Use -1 to allow for VERY LARGE strings
-			(void) ::SendMessage(m_EditBox.m_hWnd, EM_EXLIMITTEXT, static_cast<WPARAM>(0), static_cast<LPARAM>(-1));
+			static_cast<void>(::SendMessage(m_EditBox.m_hWnd, EM_EXLIMITTEXT, WPARAM{0}, LPARAM{-1}));
 
 			SetEditBoxText();
 
@@ -232,9 +232,12 @@ namespace viewpane
 			// Clear the modify bits so we can detect changes later
 			m_EditBox.SetModify(false);
 
-			// Remove the awful autoselect of the edit control that scrolls to the end of multiline text
 			if (m_bMultiline)
 			{
+				LONG stops = 16; // 16 dialog template units. Default is 32.
+				EC_B(::SendMessage(m_EditBox.m_hWnd, EM_SETTABSTOPS, WPARAM{1}, reinterpret_cast<LPARAM>(&stops)));
+
+				// Remove the awful autoselect of the edit control that scrolls to the end of multiline text
 				::PostMessage(m_EditBox.m_hWnd, EM_SETSEL, static_cast<WPARAM>(0), static_cast<LPARAM>(0));
 			}
 		}
@@ -247,8 +250,11 @@ namespace viewpane
 		size_t cbCur{};
 	};
 
-	_Check_return_ static DWORD CALLBACK
-	FakeEditStreamReadCallBack(const DWORD_PTR dwCookie, _In_ LPBYTE pbBuff, const LONG cb, _In_count_(cb) LONG* pcb)
+	_Check_return_ static DWORD CALLBACK FakeEditStreamReadCallBack(
+		const DWORD_PTR dwCookie,
+		_In_ LPBYTE pbBuff,
+		const LONG cb,
+		_In_count_(cb) LONG* pcb) noexcept
 	{
 		if (!pbBuff || !pcb || !dwCookie) return 0;
 
@@ -259,7 +265,7 @@ namespace viewpane
 
 		*pcb = cbRead;
 
-		if (cbRead) memcpy(pbBuff, LPBYTE(lpfs->lpszW.c_str()) + lpfs->cbCur, cbRead);
+		if (cbRead) memcpy(pbBuff, reinterpret_cast<LPBYTE>(lpfs->lpszW.data()) + lpfs->cbCur, cbRead);
 
 		lpfs->cbCur += cbRead;
 
@@ -286,7 +292,7 @@ namespace viewpane
 		// read the 'text stream' into control
 		const auto lBytesRead = m_EditBox.StreamIn(SF_TEXT | SF_UNICODE, es);
 		output::DebugPrintEx(
-			output::DBGStream, CLASS, L"SetEditBoxText", L"read %d bytes from the stream\n", lBytesRead);
+			output::dbgLevel::Stream, CLASS, L"SetEditBoxText", L"read %d bytes from the stream\n", lBytesRead);
 
 		// Clear the modify bit so this stream appears untouched
 		m_EditBox.SetModify(false);
@@ -302,7 +308,7 @@ namespace viewpane
 		SetEditBoxText();
 	}
 
-	void TextPane::SetBinary(_In_opt_count_(cb) LPBYTE lpb, const size_t cb)
+	void TextPane::SetBinary(_In_opt_count_(cb) const BYTE* lpb, const size_t cb)
 	{
 		if (!lpb || !cb)
 		{
@@ -333,7 +339,7 @@ namespace viewpane
 
 	void TextPane::SetReadOnly()
 	{
-		m_EditBox.SetBackgroundColor(false, MyGetSysColor(ui::cBackgroundReadOnly));
+		m_EditBox.SetBackgroundColor(false, MyGetSysColor(ui::uiColor::BackgroundReadOnly));
 		m_EditBox.SetReadOnly();
 	}
 
@@ -408,14 +414,14 @@ namespace viewpane
 	void TextPane::SetBinaryStream(_In_ LPSTREAM lpStreamIn)
 	{
 		EDITSTREAM es = {0, 0, EditStreamReadCallBack};
-		const UINT uFormat = SF_TEXT;
+		constexpr UINT uFormat = SF_TEXT;
 
 		es.dwCookie = reinterpret_cast<DWORD_PTR>(lpStreamIn);
 
 		// read the 'text' stream into control
 		const auto lBytesRead = m_EditBox.StreamIn(uFormat, es);
 		output::DebugPrintEx(
-			output::DBGStream, CLASS, L"InitEditFromStream", L"read %d bytes from the stream\n", lBytesRead);
+			output::dbgLevel::Stream, CLASS, L"InitEditFromStream", L"read %d bytes from the stream\n", lBytesRead);
 
 		// Clear the modify bit so this stream appears untouched
 		m_EditBox.SetModify(false);
@@ -430,7 +436,11 @@ namespace viewpane
 			ULONG cbWritten = 0;
 			const auto hRes = EC_MAPI(lpStreamOut->Write(bin.data(), static_cast<ULONG>(bin.size()), &cbWritten));
 			output::DebugPrintEx(
-				output::DBGStream, CLASS, L"WriteToBinaryStream", L"wrote 0x%X bytes to the stream\n", cbWritten);
+				output::dbgLevel::Stream,
+				CLASS,
+				L"WriteToBinaryStream",
+				L"wrote 0x%X bytes to the stream\n",
+				cbWritten);
 
 			if (SUCCEEDED(hRes))
 			{
@@ -445,8 +455,12 @@ namespace viewpane
 		const auto eventMask = ::SendMessage(m_EditBox.GetSafeHwnd(), EM_SETEVENTMASK, 0, 0);
 		::SendMessage(m_EditBox.GetSafeHwnd(), WM_SETREDRAW, false, 0);
 
+		// Grab the original scroll position
+		const auto originalScroll = POINT{};
+		::SendMessage(m_EditBox.GetSafeHwnd(), EM_GETSCROLLPOS, 0, reinterpret_cast<LPARAM>(&originalScroll));
+
 		// Grab the original range so we can restore it later
-		auto originalRange = CHARRANGE{};
+		const auto originalRange = CHARRANGE{};
 		::SendMessage(m_EditBox.GetSafeHwnd(), EM_EXGETSEL, 0, reinterpret_cast<LPARAM>(&originalRange));
 
 		// Select the entire range
@@ -468,8 +482,8 @@ namespace viewpane
 			auto charrange = CHARRANGE{static_cast<LONG>(range.start), static_cast<LONG>(range.end)};
 			::SendMessage(m_EditBox.GetSafeHwnd(), EM_EXSETSEL, 0, reinterpret_cast<LPARAM>(&charrange));
 
-			charformat.crTextColor = MyGetSysColor(ui::cTextHighlight);
-			charformat.crBackColor = MyGetSysColor(ui::cTextHighlightBackground);
+			charformat.crTextColor = MyGetSysColor(ui::uiColor::TextHighlight);
+			charformat.crBackColor = MyGetSysColor(ui::uiColor::TextHighlightBackground);
 			::SendMessage(
 				m_EditBox.GetSafeHwnd(), EM_SETCHARFORMAT, SCF_SELECTION, reinterpret_cast<LPARAM>(&charformat));
 		}
@@ -477,6 +491,9 @@ namespace viewpane
 		// Set our original selection range back
 		::SendMessage(m_EditBox.GetSafeHwnd(), EM_EXSETSEL, 0, reinterpret_cast<LPARAM>(&originalRange));
 		::SendMessage(m_EditBox.GetSafeHwnd(), EM_HIDESELECTION, false, 0);
+
+		// Set our original scroll position
+		::SendMessage(m_EditBox.GetSafeHwnd(), EM_SETSCROLLPOS, 0, reinterpret_cast<LPARAM>(&originalScroll));
 
 		// Reenable redraw and events
 		::SendMessage(m_EditBox.GetSafeHwnd(), WM_SETREDRAW, true, 0);
