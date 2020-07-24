@@ -29,7 +29,6 @@ void PrintGuid(const GUID& lpGuid)
 class NamedPropEntry
 {
 public:
-	NamedPropEntry() : Kind(0), PropTag(0), PropSetGuid({0}), PropName(), PropId(0) {}
 
 	NamedPropEntry(ULONG propTag, LPGUID lpGuid, LPWSTR name)
 	{
@@ -47,15 +46,11 @@ public:
 		this->PropId = id;
 	}
 
-	/*NamedPropEntry(const ULONG propTag, const GUID& PropSetGuid, const std::wstring& name, const ULONG id)
-	{
-	}*/
-
-	ULONG PropTag;
-	GUID PropSetGuid;
-	ULONG Kind;
+	ULONG PropTag = 0;
+	GUID PropSetGuid = { 0 };
+	ULONG Kind = 0;
 	std::wstring PropName;
-	ULONG PropId;
+	ULONG PropId = 0;
 };
 
 void DoNamedProps(_In_opt_ LPMDB lpMDB)

@@ -258,6 +258,7 @@ namespace cli
 			switchSearchState.name(),
 			switchFolder.name(),
 			switchProfile.name());
+		printf("   MrMAPI -%ws [-%ws <profile>]", switchNamedProps.name(), switchProfile.name());
 
 		if (bFull)
 		{
