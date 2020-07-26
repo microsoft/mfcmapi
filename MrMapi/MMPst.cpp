@@ -94,38 +94,38 @@ struct HEADER2UNICODE
 
 void PrintCryptType(BYTE bCryptMethod) noexcept
 {
-	printf("0x%02X (", bCryptMethod);
+	wprintf(L"0x%02X (", bCryptMethod);
 	switch (bCryptMethod)
 	{
 	case NDB_CRYPT_NONE:
-		printf("not encoded");
+		wprintf(L"not encoded");
 		break;
 	case NDB_CRYPT_PERMUTE:
-		printf("permutative encoding");
+		wprintf(L"permutative encoding");
 		break;
 	case NDB_CRYPT_CYCLIC:
-		printf("cyclic encoding");
+		wprintf(L"cyclic encoding");
 		break;
 	}
 
-	printf(")");
+	wprintf(L")");
 }
 
 void PrintAMAPValid(BYTE fAMapValid) noexcept
 {
-	printf("0x%02X (", fAMapValid);
+	wprintf(L"0x%02X (", fAMapValid);
 	switch (fAMapValid)
 	{
 	case 0:
-		printf("not valid");
+		wprintf(L"not valid");
 		break;
 	case 1:
 	case 2:
-		printf("valid");
+		wprintf(L"valid");
 		break;
 	}
 
-	printf(")");
+	wprintf(L")");
 }
 
 #define KB (1024)
@@ -138,34 +138,34 @@ void PrintFileSize(ULONGLONG ullFileSize) noexcept
 	if (ullFileSize > GB)
 	{
 		scaledSize = ullFileSize / static_cast<double>(GB);
-		printf("%.2f GB", scaledSize);
+		wprintf(L"%.2f GB", scaledSize);
 	}
 	else if (ullFileSize > MB)
 	{
 		scaledSize = ullFileSize / static_cast<double>(MB);
-		printf("%.2f MB", scaledSize);
+		wprintf(L"%.2f MB", scaledSize);
 	}
 	else if (ullFileSize > KB)
 	{
 		scaledSize = ullFileSize / static_cast<double>(KB);
-		printf("%.2f KB", scaledSize);
+		wprintf(L"%.2f KB", scaledSize);
 	}
 
-	printf(" (%I64u bytes)", ullFileSize);
+	wprintf(L" (%I64u bytes)", ullFileSize);
 }
 
 void DoPST()
 {
 	const auto input = cli::switchInput[0];
-	printf("Analyzing %ws\n", input.c_str());
+	wprintf(L"Analyzing %ws\n", input.c_str());
 
 	struct _stat64 stats = {};
 	if (FAILED(EC_W32(_wstati64(input.c_str(), &stats))))
 	{
-		printf("Input file does not exist.\n");
+		wprintf(L"Input file does not exist.\n");
 		if (cli::switchVerbose.isSet())
 		{
-			printf("errno = %d\n", errno);
+			wprintf(L"errno = %d\n", errno);
 		}
 
 		return;
@@ -174,10 +174,10 @@ void DoPST()
 	const auto fIn = output::MyOpenFileMode(input, L"rb");
 	if (!fIn)
 	{
-		printf("Cannot open input file. Try closing Outlook and trying again.\n");
-		printf("File Size (actual) = ");
+		wprintf(L"Cannot open input file. Try closing Outlook and trying again.\n");
+		wprintf(L"File Size (actual) = ");
 		PrintFileSize(stats.st_size);
-		printf("\n");
+		wprintf(L"\n");
 		return;
 	}
 
@@ -191,7 +191,7 @@ void DoPST()
 
 		if (NDBANSISMALL == pstHeader.wVer || NDBANSILARGE == pstHeader.wVer)
 		{
-			printf("ANSI PST (%ws)\n", NDBANSISMALL == pstHeader.wVer ? L"small" : L"large");
+			wprintf(L"ANSI PST (%ws)\n", NDBANSISMALL == pstHeader.wVer ? L"small" : L"large");
 			HEADER2ANSI h2Ansi = {0};
 			if (fread(&h2Ansi, sizeof(HEADER2ANSI), 1, fIn))
 			{
@@ -203,7 +203,7 @@ void DoPST()
 		}
 		else if (NDBUNICODE == pstHeader.wVer || NDBUNICODE2 == pstHeader.wVer)
 		{
-			printf("Unicode PST\n");
+			wprintf(L"Unicode PST\n");
 			HEADER2UNICODE h2Unicode = {};
 			if (fread(&h2Unicode, sizeof(HEADER2UNICODE), 1, fIn))
 			{
@@ -216,48 +216,48 @@ void DoPST()
 
 		if (ibFileEof != static_cast<ULONGLONG>(stats.st_size))
 		{
-			printf("File Size (header) = ");
+			wprintf(L"File Size (header) = ");
 			PrintFileSize(ibFileEof);
-			printf("\n");
-			printf("File Size (actual) = ");
+			wprintf(L"\n");
+			wprintf(L"File Size (actual) = ");
 			PrintFileSize(stats.st_size);
-			printf("\n");
+			wprintf(L"\n");
 		}
 		else
 		{
-			printf("File Size = ");
+			wprintf(L"File Size = ");
 			PrintFileSize(ibFileEof);
-			printf("\n");
+			wprintf(L"\n");
 		}
 
-		printf("Free Space = ");
+		wprintf(L"Free Space = ");
 		PrintFileSize(cbAMapFree);
-		printf("\n");
+		wprintf(L"\n");
 		if (ibFileEof != 0)
 		{
 			const auto percentFree = cbAMapFree * 100.0 / ibFileEof;
-			printf("Percent free = %.2f%%\n", percentFree);
+			wprintf(L"Percent free = %.2f%%\n", percentFree);
 		}
 
 		if (cli::switchVerbose.isSet())
 		{
-			printf("\n");
-			printf("fAMapValid = ");
+			wprintf(L"\n");
+			wprintf(L"fAMapValid = ");
 			PrintAMAPValid(fAMapValid);
-			printf("\n");
-			printf("Crypt Method = ");
+			wprintf(L"\n");
+			wprintf(L"Crypt Method = ");
 			PrintCryptType(bCryptMethod);
-			printf("\n");
+			wprintf(L"\n");
 
-			printf("Magic Number = 0x%08X\n", pstHeader.dwMagic);
-			printf("wMagicClient = 0x%04X\n", pstHeader.wMagicClient);
-			printf("wVer = 0x%04X\n", pstHeader.wVer);
-			printf("wVerClient = 0x%04X\n", pstHeader.wVerClient);
+			wprintf(L"Magic Number = 0x%08X\n", pstHeader.dwMagic);
+			wprintf(L"wMagicClient = 0x%04X\n", pstHeader.wMagicClient);
+			wprintf(L"wVer = 0x%04X\n", pstHeader.wVer);
+			wprintf(L"wVerClient = 0x%04X\n", pstHeader.wVerClient);
 		}
 	}
 	else
 	{
-		printf("Could not read from file. File may be locked or empty.\n");
+		wprintf(L"Could not read from file. File may be locked or empty.\n");
 	}
 
 	fclose(fIn);

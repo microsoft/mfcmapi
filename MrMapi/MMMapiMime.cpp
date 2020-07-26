@@ -18,67 +18,67 @@ void DoMAPIMIME(_In_opt_ LPMAPISESSION lpMAPISession)
 	const auto cSetType = static_cast<CHARSETTYPE>(cli::switchCharset.atULONG(1));
 	const auto cSetApplyType = static_cast<CSETAPPLYTYPE>(cli::switchCharset.atULONG(2));
 
-	printf("Message File Converter\n");
-	printf("Options specified:\n");
-	printf("   Input File: %ws\n", input.c_str());
-	printf("   Output File: %ws\n", output.c_str());
-	printf("   Conversion Type: ");
+	wprintf(L"Message File Converter\n");
+	wprintf(L"Options specified:\n");
+	wprintf(L"   Input File: %ws\n", input.c_str());
+	wprintf(L"   Output File: %ws\n", output.c_str());
+	wprintf(L"   Conversion Type: ");
 	if (cli::switchMAPI.isSet())
 	{
-		printf("MAPI -> MIME\n");
+		wprintf(L"MAPI -> MIME\n");
 
-		printf("   Save Format: %s\n", cli::switchRFC822.isSet() ? "RFC822" : "RFC1521");
+		wprintf(L"   Save Format: %ws\n", cli::switchRFC822.isSet() ? L"RFC822" : L"RFC1521");
 
 		if (cli::switchWrap.isSet())
 		{
-			printf("   Line Wrap: ");
+			wprintf(L"   Line Wrap: ");
 			if (ulWrapLines == 0)
-				printf("OFF\n");
+				wprintf(L"OFF\n");
 			else
-				printf("%lu\n", ulWrapLines);
+				wprintf(L"%lu\n", ulWrapLines);
 		}
 	}
 	else if (cli::switchMAPI.isSet())
 	{
-		printf("MIME -> MAPI\n");
+		wprintf(L"MIME -> MAPI\n");
 		if (cli::switchUnicode.isSet())
 		{
-			printf("   Building Unicode MSG file\n");
+			wprintf(L"   Building Unicode MSG file\n");
 		}
 
 		if (cli::switchCharset.isSet())
 		{
-			printf("   CodePage: %lu\n", ulCodePage);
-			printf("   CharSetType: ");
+			wprintf(L"   CodePage: %lu\n", ulCodePage);
+			wprintf(L"   CharSetType: ");
 			switch (cSetType)
 			{
 			case CHARSET_BODY:
-				printf("CHARSET_BODY");
+				wprintf(L"CHARSET_BODY");
 				break;
 			case CHARSET_HEADER:
-				printf("CHARSET_HEADER");
+				wprintf(L"CHARSET_HEADER");
 				break;
 			case CHARSET_WEB:
-				printf("CHARSET_WEB");
+				wprintf(L"CHARSET_WEB");
 				break;
 			}
 
-			printf("\n");
-			printf("   CharSetApplyType: ");
+			wprintf(L"\n");
+			wprintf(L"   CharSetApplyType: ");
 			switch (cSetApplyType)
 			{
 			case CSET_APPLY_UNTAGGED:
-				printf("CSET_APPLY_UNTAGGED");
+				wprintf(L"CSET_APPLY_UNTAGGED");
 				break;
 			case CSET_APPLY_ALL:
-				printf("CSET_APPLY_ALL");
+				wprintf(L"CSET_APPLY_ALL");
 				break;
 			case CSET_APPLY_TAG_ALL:
-				printf("CSET_APPLY_TAG_ALL");
+				wprintf(L"CSET_APPLY_TAG_ALL");
 				break;
 			}
 
-			printf("\n");
+			wprintf(L"\n");
 		}
 	}
 
@@ -87,7 +87,7 @@ void DoMAPIMIME(_In_opt_ LPMAPISESSION lpMAPISession)
 		auto szFlags = flags::InterpretFlags(flagCcsf, convertFlags);
 		if (!szFlags.empty())
 		{
-			printf("   Conversion Flags: %ws\n", szFlags.c_str());
+			wprintf(L"   Conversion Flags: %ws\n", szFlags.c_str());
 		}
 	}
 
@@ -96,13 +96,13 @@ void DoMAPIMIME(_In_opt_ LPMAPISESSION lpMAPISession)
 		auto szType = flags::InterpretFlags(flagIet, ulEncodingType);
 		if (!szType.empty())
 		{
-			printf("   Encoding Type: %ws\n", szType.c_str());
+			wprintf(L"   Encoding Type: %ws\n", szType.c_str());
 		}
 	}
 
 	if (cli::switchAddressBook.isSet())
 	{
-		printf("   Using Address Book\n");
+		wprintf(L"   Using Address Book\n");
 	}
 
 	auto hRes = S_OK;
@@ -111,7 +111,7 @@ void DoMAPIMIME(_In_opt_ LPMAPISESSION lpMAPISession)
 	if (cli::switchAddressBook.isSet() && lpMAPISession)
 	{
 		hRes = WC_MAPI(lpMAPISession->OpenAddressBook(NULL, nullptr, AB_NO_DIALOG, &lpAdrBook));
-		if (FAILED(hRes)) printf("OpenAddressBook returned an error: 0x%08lx\n", hRes);
+		if (FAILED(hRes)) wprintf(L"OpenAddressBook returned an error: 0x%08lx\n", hRes);
 	}
 
 	if (cli::switchMIME.isSet())
@@ -135,7 +135,7 @@ void DoMAPIMIME(_In_opt_ LPMAPISESSION lpMAPISession)
 			hRes = WC_H(import::MyMimeOleGetCodePageCharset(ulCodePage, cSetType, &hCharSet));
 			if (FAILED(hRes))
 			{
-				printf("MimeOleGetCodePageCharset returned 0x%08lX\n", hRes);
+				wprintf(L"MimeOleGetCodePageCharset returned 0x%08lX\n", hRes);
 			}
 		}
 
@@ -155,15 +155,15 @@ void DoMAPIMIME(_In_opt_ LPMAPISESSION lpMAPISession)
 
 	if (SUCCEEDED(hRes))
 	{
-		printf("File converted successfully.\n");
+		wprintf(L"File converted successfully.\n");
 	}
 	else if (REGDB_E_CLASSNOTREG == hRes)
 	{
-		printf("MAPI <-> MIME converter not found. Perhaps Outlook is not installed.\n");
+		wprintf(L"MAPI <-> MIME converter not found. Perhaps Outlook is not installed.\n");
 	}
 	else
 	{
-		printf("Conversion returned an error: 0x%08lx\n", hRes);
+		wprintf(L"Conversion returned an error: 0x%08lx\n", hRes);
 	}
 
 	if (lpAdrBook) lpAdrBook->Release();

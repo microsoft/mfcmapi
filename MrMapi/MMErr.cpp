@@ -11,7 +11,7 @@ namespace error
 
 void PrintErrFromNum(_In_ ULONG ulError)
 {
-	printf("0x%08lX = %ws\n", ulError, error::ErrorNameFromErrorCode(ulError).c_str());
+	wprintf(L"0x%08lX = %ws\n", ulError, error::ErrorNameFromErrorCode(ulError).c_str());
 }
 
 void PrintErrFromName(_In_ const std::wstring& lpszError) noexcept
@@ -22,7 +22,7 @@ void PrintErrFromName(_In_ const std::wstring& lpszError) noexcept
 	{
 		if (0 == lstrcmpiW(szErr, error::g_ErrorArray[i].lpszName))
 		{
-			printf("0x%08lX = %ws\n", error::g_ErrorArray[i].ulErrorName, szErr);
+			wprintf(L"0x%08lX = %ws\n", error::g_ErrorArray[i].ulErrorName, szErr);
 		}
 	}
 }
@@ -30,9 +30,9 @@ void PrintErrFromName(_In_ const std::wstring& lpszError) noexcept
 void PrintErrFromPartialName(_In_ const std::wstring& lpszError) noexcept
 {
 	if (!lpszError.empty())
-		printf("Searching for \"%ws\"\n", lpszError.c_str());
+		wprintf(L"Searching for \"%ws\"\n", lpszError.c_str());
 	else
-		printf("Searching for all errors\n");
+		wprintf(L"Searching for all errors\n");
 
 	ULONG ulNumMatches = 0;
 
@@ -40,12 +40,12 @@ void PrintErrFromPartialName(_In_ const std::wstring& lpszError) noexcept
 	{
 		if (lpszError.empty() || nullptr != StrStrIW(error::g_ErrorArray[ulCur].lpszName, lpszError.c_str()))
 		{
-			printf("0x%08lX = %ws\n", error::g_ErrorArray[ulCur].ulErrorName, error::g_ErrorArray[ulCur].lpszName);
+			wprintf(L"0x%08lX = %ws\n", error::g_ErrorArray[ulCur].ulErrorName, error::g_ErrorArray[ulCur].lpszName);
 			ulNumMatches++;
 		}
 	}
 
-	printf("Found %lu matches.\n", ulNumMatches);
+	wprintf(L"Found %lu matches.\n", ulNumMatches);
 }
 
 void DoErrorParse()
