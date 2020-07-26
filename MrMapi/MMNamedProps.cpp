@@ -60,7 +60,7 @@ void DoNamedProps(_In_opt_ LPMDB lpMDB)
 	{
 		wprintf(L"\n");
 		std::vector<NamedPropEntry> props;
-		for (std::uint32_t i = 0; i < cPropNames; i++)
+		for (ULONG i = 0; i < cPropNames; i++)
 		{
 			switch (pNames[i]->ulKind)
 			{
