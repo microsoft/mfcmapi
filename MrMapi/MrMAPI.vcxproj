@@ -577,6 +577,7 @@
     <ClInclude Include="MMFidMid.h" />
     <ClInclude Include="MMFolder.h" />
     <ClInclude Include="MMMapiMime.h" />
+    <ClInclude Include="MMNamedProps.h" />
     <ClInclude Include="MMProfile.h" />
     <ClInclude Include="MMPropTag.h" />
     <ClInclude Include="MMPst.h" />
@@ -592,6 +593,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="mmcli.cpp" />
+    <ClCompile Include="MMNamedProps.cpp" />
     <ClCompile Include="MrMAPI.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>

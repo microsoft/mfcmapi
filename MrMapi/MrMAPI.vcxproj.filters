@@ -16,6 +16,9 @@
     <ClInclude Include="mmcli.h">
       <Filter>Source Files\MrMAPI</Filter>
     </ClInclude>
+    <ClInclude Include="MMNamedProps.h">
+      <Filter>Source Files\MrMAPI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MMAcls.cpp">
@@ -103,6 +106,9 @@
       <Filter>Source Files\MrMAPI</Filter>
     </ClInclude>
     <ClCompile Include="mmcli.cpp">
+      <Filter>Source Files\MrMAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="MMNamedProps.cpp">
       <Filter>Source Files\MrMAPI</Filter>
     </ClCompile>
   </ItemGroup>
