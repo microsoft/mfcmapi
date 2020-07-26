@@ -30,26 +30,20 @@ class NamedPropEntry
 {
 public:
 	NamedPropEntry(ULONG propTag, LPGUID lpGuid, LPWSTR name)
+		: Kind{MNID_STRING}, PropTag{propTag}, PropSetGuid{*lpGuid}, PropName{name}
 	{
-		this->Kind = MNID_STRING;
-		this->PropTag = propTag;
-		this->PropSetGuid = *lpGuid;
-		this->PropName = name;
 	}
 
 	NamedPropEntry(ULONG propTag, LPGUID lpGuid, ULONG id)
+		: Kind{MNID_ID}, PropTag{propTag}, PropSetGuid{*lpGuid}, PropId{id}
 	{
-		this->Kind = MNID_ID;
-		this->PropTag = propTag;
-		this->PropSetGuid = *lpGuid;
-		this->PropId = id;
 	}
 
-	ULONG PropTag = 0;
-	GUID PropSetGuid = {0};
-	ULONG Kind = 0;
+	ULONG PropTag{0};
+	GUID PropSetGuid{0};
+	ULONG Kind{0};
 	std::wstring PropName;
-	ULONG PropId = 0;
+	ULONG PropId{0};
 };
 
 void DoNamedProps(_In_opt_ LPMDB lpMDB)
