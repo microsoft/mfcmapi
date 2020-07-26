@@ -29,7 +29,6 @@ void PrintGuid(const GUID& lpGuid)
 class NamedPropEntry
 {
 public:
-
 	NamedPropEntry(ULONG propTag, LPGUID lpGuid, LPWSTR name)
 	{
 		this->Kind = MNID_STRING;
@@ -47,7 +46,7 @@ public:
 	}
 
 	ULONG PropTag = 0;
-	GUID PropSetGuid = { 0 };
+	GUID PropSetGuid = {0};
 	ULONG Kind = 0;
 	std::wstring PropName;
 	ULONG PropId = 0;
