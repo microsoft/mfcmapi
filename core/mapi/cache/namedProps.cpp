@@ -321,7 +321,7 @@ namespace cache
 			}
 
 			namePropNames.dasl = strings::format(
-				L"id/%s/%04X%04X", // STRING_OK
+				L"id/%ws/%04X%04X", // STRING_OK
 				szDASLGuid.c_str(),
 				lpNameID->Kind.lID,
 				PROP_TYPE(ulPropTag));

@@ -330,13 +330,13 @@ void DumpHierarchyTable(
 					{
 						for (ULONG iTab = 0; iTab < ulDepth; iTab++)
 						{
-							printf("  ");
+							wprintf(L"  ");
 						}
 					}
 
 					if (PR_DISPLAY_NAME_W == lpRow->aRow[i].lpProps[ePR_DISPLAY_NAME_W].ulPropTag)
 					{
-						printf("%ws\n", lpRow->aRow[i].lpProps[ePR_DISPLAY_NAME_W].Value.lpszW);
+						wprintf(L"%ws\n", lpRow->aRow[i].lpProps[ePR_DISPLAY_NAME_W].Value.lpszW);
 					}
 
 					if (PR_ENTRYID == lpRow->aRow[i].lpProps[ePR_ENTRYID].ulPropTag)
@@ -539,21 +539,21 @@ void DumpSearchState(
 		const auto hRes = WC_H(lpFolder->GetSearchCriteria(fMapiUnicode, &lpRes, &lpEntryList, &ulSearchState));
 		if (MAPI_E_NOT_INITIALIZED == hRes)
 		{
-			printf("No search criteria has been set on this folder.\n");
+			wprintf(L"No search criteria has been set on this folder.\n");
 		}
 		else if (MAPI_E_NO_SUPPORT == hRes)
 		{
-			printf("This does not appear to be a search folder.\n");
+			wprintf(L"This does not appear to be a search folder.\n");
 		}
 		else if (SUCCEEDED(hRes))
 		{
 			auto szFlags = flags::InterpretFlags(flagSearchState, ulSearchState);
-			printf("Search state %ws == 0x%08X\n", szFlags.c_str(), ulSearchState);
-			printf("\n");
-			printf("Search Scope:\n");
+			wprintf(L"Search state %ws == 0x%08X\n", szFlags.c_str(), ulSearchState);
+			wprintf(L"\n");
+			wprintf(L"Search Scope:\n");
 			output::outputEntryList(output::dbgLevel::NoDebug, stdout, lpEntryList);
-			printf("\n");
-			printf("Search Criteria:\n");
+			wprintf(L"\n");
+			wprintf(L"Search Criteria:\n");
 			output::outputRestriction(output::dbgLevel::NoDebug, stdout, lpRes, nullptr);
 		}
 
@@ -573,10 +573,10 @@ void DoFolderProps(_In_opt_ LPMAPIFOLDER lpFolder)
 void DoFolderSize(_In_opt_ LPMAPIFOLDER lpFolder)
 {
 	const LONGLONG ullSize = ComputeFolderSize(cli::switchProfile[0], lpFolder, cli::switchFolder[0]);
-	printf("Folder size (including subfolders)\n");
-	printf("Bytes: %I64d\n", ullSize);
-	printf("KB: %I64d\n", ullSize / 1024);
-	printf("MB: %I64d\n", ullSize / (1024 * 1024));
+	wprintf(L"Folder size (including subfolders)\n");
+	wprintf(L"Bytes: %I64d\n", ullSize);
+	wprintf(L"KB: %I64d\n", ullSize / 1024);
+	wprintf(L"MB: %I64d\n", ullSize / (1024 * 1024));
 }
 
 void DoChildFolders(_In_opt_ LPMAPIFOLDER lpFolder)

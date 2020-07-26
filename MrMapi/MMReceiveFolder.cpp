@@ -11,11 +11,11 @@ void PrintReceiveFolderTable(_In_ LPMDB lpMDB)
 	auto hRes = WC_MAPI(lpMDB->GetReceiveFolderTable(0, &lpReceiveFolderTable));
 	if (FAILED(hRes))
 	{
-		printf("<receivefoldertable error=0x%lx />\n", hRes);
+		wprintf(L"<receivefoldertable error=0x%lx />\n", hRes);
 		return;
 	}
 
-	printf("<receivefoldertable>\n");
+	wprintf(L"<receivefoldertable>\n");
 
 	if (lpReceiveFolderTable)
 	{
@@ -36,7 +36,7 @@ void PrintReceiveFolderTable(_In_ LPMDB lpMDB)
 
 			for (ULONG i = 0; i < lpRows->cRows; i++)
 			{
-				printf("<properties index=\"%lu\">\n", iRow);
+				wprintf(L"<properties index=\"%lu\">\n", iRow);
 				output::outputProperties(
 					output::dbgLevel::NoDebug,
 					stdout,
@@ -44,7 +44,7 @@ void PrintReceiveFolderTable(_In_ LPMDB lpMDB)
 					lpRows->aRow[i].lpProps,
 					nullptr,
 					false);
-				printf("</properties>\n");
+				wprintf(L"</properties>\n");
 				iRow++;
 			}
 		}
@@ -52,7 +52,7 @@ void PrintReceiveFolderTable(_In_ LPMDB lpMDB)
 		if (lpRows) FreeProws(lpRows);
 	}
 
-	printf("</receivefoldertable>\n");
+	wprintf(L"</receivefoldertable>\n");
 	if (lpReceiveFolderTable)
 	{
 		lpReceiveFolderTable->Release();

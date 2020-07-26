@@ -26,11 +26,11 @@ void DoSmartView()
 		const auto input = cli::switchInput[0];
 		const auto output = cli::switchOutput[0];
 		const auto fIn = output::MyOpenFileMode(input, L"rb");
-		if (!fIn) printf("Cannot open input file %ws\n", input.c_str());
+		if (!fIn) wprintf(L"Cannot open input file %ws\n", input.c_str());
 		if (!output.empty())
 		{
 			fOut = output::MyOpenFileMode(output, L"wb");
-			if (!fOut) printf("Cannot open output file %ws\n", output.c_str());
+			if (!fOut) wprintf(L"Cannot open output file %ws\n", output.c_str());
 		}
 
 		if (fIn && (output.empty() || fOut))

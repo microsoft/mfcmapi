@@ -328,7 +328,7 @@ namespace output
 						ulDbgLvl,
 						fFile,
 						true,
-						L"lpNotifications[%u].info.err.lpMAPIError = %s\n",
+						L"lpNotifications[%u].info.err.lpMAPIError = %ws\n",
 						i,
 						error::MAPIErrToString(
 							lpNotifications[i].info.err.ulFlags, *lpNotifications[i].info.err.lpMAPIError)
