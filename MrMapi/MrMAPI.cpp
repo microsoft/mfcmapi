@@ -23,6 +23,8 @@
 #include <core/utility/registry.h>
 #include <core/utility/output.h>
 #include <core/utility/cli.h>
+#include <io.h>
+#include <fcntl.h>
 
 // Initialize MFC for LoadString support later on
 void InitMFC() { AfxWinInit(::GetModuleHandle(nullptr), nullptr, ::GetCommandLine(), 0); }
@@ -36,7 +38,7 @@ _Check_return_ LPMAPISESSION MrMAPILogonEx(const std::wstring& lpszProfile)
 	LPMAPISESSION lpSession = nullptr;
 	const auto hRes = WC_MAPI(
 		MAPILogonEx(NULL, LPTSTR((lpszProfile.empty() ? nullptr : lpszProfile.c_str())), nullptr, ulFlags, &lpSession));
-	if (FAILED(hRes)) printf("MAPILogonEx returned an error: 0x%08lx\n", hRes);
+	if (FAILED(hRes)) wprintf(L"MAPILogonEx returned an error: 0x%08lx\n", hRes);
 	return lpSession;
 }
 
@@ -69,7 +71,7 @@ bool LoadMAPIVersion(const std::wstring& lpszVersion)
 		for (const auto& path : paths)
 		{
 
-			printf("MAPI path: %ws\n", strings::wstringToLower(path).c_str());
+			wprintf(L"MAPI path: %ws\n", strings::wstringToLower(path).c_str());
 		}
 		return true;
 	}
@@ -131,6 +133,10 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 	LPMAPISESSION lpMAPISession{};
 	LPMDB lpMDB{};
 	LPMAPIFOLDER lpFolder{};
+
+	// Enable unicode output through wprintf
+	// Don't use printf in this mode!
+	_setmode(_fileno(stdout), _O_U16TEXT);
 
 	registry::doSmartView = true;
 	registry::useGetPropList = true;
@@ -195,7 +201,7 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 			hRes = WC_MAPI(MAPIInitialize(nullptr));
 			if (FAILED(hRes))
 			{
-				printf("Error initializing MAPI: 0x%08lx\n", hRes);
+				wprintf(L"Error initializing MAPI: 0x%08lx\n", hRes);
 			}
 			else
 			{
@@ -212,7 +218,7 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 		if (lpMAPISession && ProgOpts.flags & cli::OPT_NEEDFOLDER)
 		{
 			hRes = WC_H(HrMAPIOpenStoreAndFolder(lpMAPISession, cli::switchFolder[0], &lpMDB, &lpFolder));
-			if (FAILED(hRes)) printf("HrMAPIOpenStoreAndFolder returned an error: 0x%08lx\n", hRes);
+			if (FAILED(hRes)) wprintf(L"HrMAPIOpenStoreAndFolder returned an error: 0x%08lx\n", hRes);
 		}
 
 		// If they passed a store index then open it
@@ -223,14 +229,14 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 		if (lpMAPISession && gotStoreIndex && !lpMDB)
 		{
 			lpMDB = OpenStore(lpMAPISession, ulStoreIndex);
-			if (!lpMDB) printf("OpenStore failed\n");
+			if (!lpMDB) wprintf(L"OpenStore failed\n");
 		}
 
 		if (lpMAPISession && ProgOpts.flags & cli::OPT_NEEDSTORE && !lpMDB)
 		{
 			// If they needed a store but didn't specify, get the default one
 			lpMDB = OpenExchangeOrDefaultMessageStore(lpMAPISession);
-			if (!lpMDB) printf("OpenExchangeOrDefaultMessageStore failed.\n");
+			if (!lpMDB) wprintf(L"OpenExchangeOrDefaultMessageStore failed.\n");
 		}
 
 		switch (ProgOpts.mode)
