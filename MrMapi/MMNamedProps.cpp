@@ -103,7 +103,7 @@ void DoNamedProps(_In_opt_ LPMDB lpMDB)
 			return i.PropTag < j.PropTag;
 		});
 
-		for (int i = 0; i < props.size(); i++)
+		for (size_t i = 0; i < props.size(); i++)
 		{
 			wprintf(L"[%08x] (", props[i].PropTag);
 			PrintGuid(props[i].PropSetGuid);
