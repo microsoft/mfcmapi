@@ -22,6 +22,7 @@ namespace cli
 	option switchSearch{L"Search", cmdmodeUnknown, 0, 0, OPT_NOOPT};
 	option switchDecimal{L"Number", cmdmodeUnknown, 0, 0, OPT_NOOPT};
 	option switchFolder{L"Folder", cmdmodeUnknown, 1, 1, OPT_INITALL | OPT_NEEDFOLDER};
+	option switchNamedProps{L"NamedProps", cmdmodeNamedProps, 0, 0, OPT_INITALL | OPT_NEEDSTORE};
 	option switchOutput{L"Output", cmdmodeUnknown, 1, 1, OPT_NOOPT};
 	option switchDispid{L"Dispids", cmdmodePropTag, 0, 0, OPT_NOOPT};
 	option switchType{L"Type", cmdmodePropTag, 0, 1, OPT_NOOPT};
@@ -76,6 +77,7 @@ namespace cli
 		&switchVerbose,
 		&switchSearch,
 		&switchDecimal,
+		&switchNamedProps,
 		&switchFolder,
 		&switchOutput,
 		&switchDispid,
@@ -256,6 +258,7 @@ namespace cli
 			switchSearchState.name(),
 			switchFolder.name(),
 			switchProfile.name());
+		wprintf(L"   MrMAPI -%ws [-%ws <profile>]", switchNamedProps.name(), switchProfile.name());
 
 		if (bFull)
 		{

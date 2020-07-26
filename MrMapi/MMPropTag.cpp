@@ -310,8 +310,8 @@ void PrintGUID(_In_ LPCGUID lpGUID) noexcept
 		return;
 	}
 
-	printf(
-		"{%.8lX-%.4X-%.4X-%.2X%.2X-%.2X%.2X%.2X%.2X%.2X%.2X}",
+	wprintf(
+		L"{%.8lX-%.4X-%.4X-%.2X%.2X-%.2X%.2X%.2X%.2X%.2X%.2X}",
 		lpGUID->Data1,
 		lpGUID->Data2,
 		lpGUID->Data3,
@@ -339,8 +339,8 @@ void PrintGUIDs() noexcept
 {
 	for (const auto& guid : PropGuidArray)
 	{
-		printf(
-			"{%.8lX-%.4X-%.4X-%.2X%.2X-%.2X%.2X%.2X%.2X%.2X%.2X}",
+		wprintf(
+			L"{%.8lX-%.4X-%.4X-%.2X%.2X-%.2X%.2X%.2X%.2X%.2X%.2X}",
 			guid.lpGuid->Data1,
 			guid.lpGuid->Data2,
 			guid.lpGuid->Data3,

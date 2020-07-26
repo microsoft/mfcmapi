@@ -6,6 +6,7 @@
 #include <MrMapi/MMErr.h>
 #include <MrMapi/MMFidMid.h>
 #include <MrMapi/MMFolder.h>
+#include <MrMapi/MMNamedProps.h>
 #include <MrMapi/MMProfile.h>
 #include <MrMapi/MMPropTag.h>
 #include <MrMapi/MMRules.h>
@@ -296,6 +297,9 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 			break;
 		case cli::cmdmodeSearchState:
 			DoSearchState(lpFolder);
+			break;
+		case cli::cmdmodeNamedProps:
+			DoNamedProps(lpMDB);
 			break;
 		case cli::cmdmodeUnknown:
 			break;
