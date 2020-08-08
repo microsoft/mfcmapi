@@ -431,6 +431,11 @@ namespace stringtest
 			Assert::AreEqual(std::wstring(L"858993.4593"), strings::CurrencyToString(CURRENCY({1, 2})));
 		}
 
+		std::vector<BYTE> stringToByte(const std::string str)
+		{
+			return std::vector<BYTE>(LPBYTE(str.c_str()), LPBYTE(str.c_str()) + str.length());
+		};
+
 		TEST_METHOD(Test_base64)
 		{
 			Assert::AreEqual(
@@ -442,6 +447,28 @@ namespace stringtest
 			Assert::AreEqual(std::vector<byte>{}, strings::Base64Decode(std::wstring(L"123")));
 			Assert::AreEqual(std::vector<byte>{}, strings::Base64Decode(std::wstring(L"12345===")));
 			Assert::AreEqual(std::vector<byte>{}, strings::Base64Decode(std::wstring(L"12345!==")));
+			Assert::AreEqual(std::vector<byte>{}, strings::Base64Decode(std::wstring(L"123")));
+
+			Assert::AreEqual(
+				stringToByte("abcdefghijklmnopqrstuvwxlyz"),
+				strings::Base64Decode(L"YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4bHl6"));
+			Assert::AreEqual(
+				stringToByte("!@#$%^&*()_+-=[]\\{}|;':\",./<>?"),
+				strings::Base64Decode(L"IUAjJCVeJiooKV8rLT1bXVx7fXw7JzoiLC4vPD4/"));
+			Assert::AreEqual(
+				stringToByte("If you can read this yo"), strings::Base64Decode(L"SWYgeW91IGNhbiByZWFkIHRoaXMgeW8="));
+			Assert::AreEqual(
+				stringToByte("u understand the example."),
+				strings::Base64Decode(L"dSB1bmRlcnN0YW5kIHRoZSBleGFtcGxlLg=="));
+			Assert::AreEqual(stringToByte("END"), strings::Base64Decode(L"RU5E"));
+
+			// These are invalid base64 so they should be rejected
+			Assert::AreEqual({}, strings::Base64Decode(L"RU5E="));
+			Assert::AreEqual({}, strings::Base64Decode(L"RU5E=="));
+			Assert::AreEqual({}, strings::Base64Decode(L"RU5E==="));
+			Assert::AreEqual({}, strings::Base64Decode(L"RU5E===="));
+			Assert::AreEqual({}, strings::Base64Decode(L"RU5E===x"));
+			Assert::AreEqual({}, strings::Base64Decode(L"...."));
 		}
 
 		TEST_METHOD(Test_offsets)

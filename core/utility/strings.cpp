@@ -615,6 +615,7 @@ namespace strings
 	}
 
 	// clang-format off
+	// 0x7f means invalid character
 	static const char pBase64[] = {
 		0x3e, 0x7f, 0x7f, 0x7f, 0x3f, 0x34, 0x35, 0x36,
 		0x37, 0x38, 0x39, 0x3a, 0x3b, 0x3c, 0x3d, 0x7f,
@@ -629,6 +630,7 @@ namespace strings
 	};
 	// clang-format on
 
+	// https://tools.ietf.org/html/rfc4648
 	std::vector<BYTE> Base64Decode(const std::wstring& szEncodedStr)
 	{
 		const auto cchLen = szEncodedStr.length();
@@ -659,9 +661,10 @@ namespace strings
 					break;
 				}
 
-				if (c[i] < 0x2b || c[i] > 0x7a) return std::vector<BYTE>();
+				if (c[i] < 0x2b || c[i] > 0x7a) return std::vector<BYTE>(); // Accept '+' through 'z' at first
 
 				c[i] = pBase64[c[i] - 0x2b];
+				if (c[i] == 0x7f) return std::vector<BYTE>(); // and then reject characters which mapped to 0x7f
 			}
 
 			bTmp[0] = static_cast<BYTE>(c[0] << 2 | c[1] >> 4);
