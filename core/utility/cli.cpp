@@ -112,13 +112,13 @@ namespace cli
 	}
 
 	// Converts an argc/argv style command line to a vector
-	std::deque<std::wstring> GetCommandLine(_In_ int argc, _In_count_(argc) const char* const argv[])
+	std::deque<std::wstring> GetCommandLine(_In_ int argc, _In_count_(argc) const wchar_t* const argv[])
 	{
 		auto args = std::deque<std::wstring>{};
 
 		for (auto i = 1; i < argc; i++)
 		{
-			args.emplace_back(strings::LPCSTRToWstring(argv[i]));
+			args.emplace_back(argv[i]);
 		}
 
 		return args;
