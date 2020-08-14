@@ -1,4 +1,4 @@
-#include <UnitTest/stdafx.h>
+﻿#include <UnitTest/stdafx.h>
 #include <UnitTest/UnitTest.h>
 #include <core/utility/cli.h>
 
@@ -62,10 +62,12 @@ namespace clitest
 		TEST_METHOD(Test_GetCommandLine)
 		{
 			//	std::vector<std::wstring> GetCommandLine(_In_ int argc, _In_count_(argc) const char* const argv[]);
-			auto noarg = std::vector<LPCSTR>{"app.exe"};
+			auto noarg = std::vector<LPCWSTR>{L"app.exe"};
 			Assert::AreEqual({}, cli::GetCommandLine(static_cast<int>(noarg.size()), noarg.data()));
-			auto argv = std::vector<LPCSTR>{"app.exe", "-arg1", "-arg2", "test�"};
-			Assert::AreEqual({L"-arg1", L"-arg2", L"test�"}, cli::GetCommandLine(static_cast<int>(argv.size()), argv.data()));
+			auto argv = std::vector<LPCWSTR>{L"app.exe", L"-arg1", L"-arg2", L"testü", L"ěřů"};
+			Assert::AreEqual(
+				{L"-arg1", L"-arg2", L"testü", L"ěřů"},
+				cli::GetCommandLine(static_cast<int>(argv.size()), argv.data()));
 		}
 
 		TEST_METHOD(Test_GetOption)

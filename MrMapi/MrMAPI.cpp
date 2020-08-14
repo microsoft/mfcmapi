@@ -126,7 +126,7 @@ bool LoadMAPIVersion(const std::wstring& lpszVersion)
 	return false;
 }
 
-void main(_In_ int argc, _In_count_(argc) char* argv[])
+void wmain(_In_ int argc, _In_count_(argc) wchar_t* argv[])
 {
 	auto hRes = S_OK;
 	auto bMAPIInit = false;

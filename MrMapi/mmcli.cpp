@@ -472,7 +472,7 @@ namespace cli
 			// Print smart view options
 			for (ULONG i = 1; i < SmartViewParserTypeArray.size(); i++)
 			{
-				_tprintf(_T("   %2lu %ws\n"), i, SmartViewParserTypeArray[i].lpszName);
+				wprintf(L"   %2lu %ws\n", i, SmartViewParserTypeArray[i].lpszName);
 			}
 
 			wprintf(L"\n");

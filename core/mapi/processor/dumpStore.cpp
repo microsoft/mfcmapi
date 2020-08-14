@@ -223,7 +223,7 @@ namespace mapi::processor
 		if (m_szFolderPath.empty()) return;
 		if (m_bOutputList)
 		{
-			_tprintf(_T("Subject, Message Class, Filename\n"));
+			wprintf(L"Subject, Message Class, Filename\n");
 			return;
 		}
 

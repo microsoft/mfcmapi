@@ -86,7 +86,7 @@ namespace cli
 	// IE trying to change the mode from anything but unset will fail
 	bool bSetMode(_In_ int& pMode, _In_ int targetMode) noexcept;
 
-	std::deque<std::wstring> GetCommandLine(_In_ int argc, _In_count_(argc) const char* const argv[]);
+	std::deque<std::wstring> GetCommandLine(_In_ int argc, _In_count_(argc) const wchar_t* const argv[]);
 
 	// Parses command line arguments and fills out OPTIONS
 	void ParseArgs(OPTIONS& options, std::deque<std::wstring>& args, const std::vector<option*>& optionsArray);
