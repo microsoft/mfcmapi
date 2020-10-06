@@ -114,7 +114,7 @@ namespace output
 #endif
 
 	void outputVersion(dbgLevel ulDbgLvl, _In_opt_ FILE* fFile);
-	void outputStream(dbgLevel ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSTREAM lpStream);
+	void outputStream(dbgLevel ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSTREAM lpStream, bool bUnicode);
 
 	void OutputXMLValue(
 		dbgLevel ulDbgLvl,

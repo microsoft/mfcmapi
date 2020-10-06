@@ -288,7 +288,7 @@ namespace output
 	}
 
 #define MAXBYTES 4096
-	void outputStream(dbgLevel ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSTREAM lpStream)
+	void outputStream(dbgLevel ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSTREAM lpStream, bool bUnicode)
 	{
 		if (earlyExit(ulDbgLvl, fFile)) return;
 
@@ -312,12 +312,11 @@ namespace output
 				{
 					bBuf[ulNumBytes] = 0;
 					bBuf[ulNumBytes + 1] = 0; // In case we are in Unicode
-					// TODO: Check how this works in Unicode vs ANSI
-					Output(
-						ulDbgLvl,
-						fFile,
-						true,
-						strings::StripCarriage(strings::LPCTSTRToWstring(reinterpret_cast<TCHAR*>(bBuf))));
+
+					const auto bOutputBuf = bUnicode ? std::wstring((LPWSTR) bBuf)
+											   : strings::LPCSTRToWstring(reinterpret_cast<CHAR*>(bBuf));
+
+					Output(ulDbgLvl, fFile, true, strings::StripCarriage(bOutputBuf));
 				}
 			} while (ulNumBytes > 0);
 	}

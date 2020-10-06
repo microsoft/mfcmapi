@@ -402,7 +402,8 @@ namespace dialog::editor
 
 		output::DebugPrintEx(
 			output::dbgLevel::Stream, CLASS, L"WriteTextStreamToProperty", L"Wrote out this stream:\n");
-		output::outputStream(output::dbgLevel::Stream, nullptr, m_lpStream);
+		const auto bUnicode = PROP_TYPE(m_ulPropTag) == PT_UNICODE;
+		output::outputStream(output::dbgLevel::Stream, nullptr, m_lpStream, bUnicode);
 	}
 
 	_Check_return_ ULONG CStreamEditor::HandleChange(UINT nID)

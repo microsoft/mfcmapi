@@ -336,6 +336,7 @@ namespace mapi::processor
 		LPSTREAM lpStream = nullptr;
 		LPSTREAM lpRTFUncompressed = nullptr;
 		LPSTREAM lpOutputStream = nullptr;
+		const auto bUnicode = PROP_TYPE(ulBodyTag) == PT_UNICODE;
 
 		const auto hRes = WC_MAPI(
 			lpMessage->OpenProperty(ulBodyTag, &IID_IStream, STGM_READ, NULL, reinterpret_cast<LPUNKNOWN*>(&lpStream)));
@@ -393,7 +394,7 @@ namespace mapi::processor
 				if (lpOutputStream)
 				{
 					output::OutputCDataOpen(output::dbgLevel::NoDebug, fMessageProps);
-					output::outputStream(output::dbgLevel::NoDebug, fMessageProps, lpOutputStream);
+					output::outputStream(output::dbgLevel::NoDebug, fMessageProps, lpOutputStream, bUnicode);
 					output::OutputCDataClose(output::dbgLevel::NoDebug, fMessageProps);
 				}
 			}
