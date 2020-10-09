@@ -18,7 +18,7 @@ namespace cache
 		// Returns a vector of NamedPropCacheEntry for the input tags
 		// Sourced directly from MAPI
 		_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>>
-		GetNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp, _In_ LPSPropTagArray* lppPropTags, ULONG ulFlags)
+		GetNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp, _In_opt_ LPSPropTagArray* lppPropTags, ULONG ulFlags)
 		{
 			if (!lpMAPIProp) return {};
 
@@ -256,13 +256,50 @@ namespace cache
 		}
 	}
 
+	_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>>
+	GetAllNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp)
+	{
+		LPSPropTagArray pProps = nullptr;
+		auto names = directMapi::GetNamesFromIDs(lpMAPIProp, &pProps, 0);
+
+		if (names.size() == 0)
+		{
+			// We didn't get any names - try manual
+			const auto ulLowerBound = __LOWERBOUND;
+			const auto ulUpperBound = FindHighestNamedProp(lpMAPIProp);
+
+			// TODO: Batch this
+			output::DebugPrint(
+				output::dbgLevel::NamedProp,
+				L"GetAllNamesFromIDs: Walking through all IDs from 0x%X to 0x%X, looking for mappings to names\n",
+				ulLowerBound,
+				ulUpperBound);
+			for (auto iTag = ulLowerBound; iTag <= ulUpperBound; iTag++)
+			{
+				const auto ulPropTag = PROP_TAG(NULL, iTag);
+				const auto name = cache::GetNameFromID(lpMAPIProp, ulPropTag, NULL);
+				if (cache::namedPropCacheEntry::valid(name))
+				{
+					output::DebugPrint(
+						output::dbgLevel::NamedProp,
+						L"GetAllNamesFromIDs: Found an ID with a name (0x%X). Adding to extra prop list.\n",
+						iTag);
+					names.push_back(name);
+				}
+			}
+		}
+
+		return names;
+	}
+
 	// If signature is empty then do not use a signature
 	_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>> namedPropCache::GetNamesFromIDs(
 		_In_ LPMAPIPROP lpMAPIProp,
 		const std::vector<BYTE>& sig,
-		_In_ LPSPropTagArray* lppPropTags)
+		_In_opt_ LPSPropTagArray* lppPropTags)
 	{
-		if (!lpMAPIProp || !lppPropTags || !*lppPropTags) return {};
+		if (!lpMAPIProp) return {};
+		if (!lppPropTags || !*lppPropTags) return GetAllNamesFromIDs(lpMAPIProp);
 
 		// We're going to walk the cache, looking for the values we need. As soon as we have all the values we need, we're done
 		// If we reach the end of the cache and don't have everything, we set up to make a GetNamesFromIDs call.
@@ -373,7 +410,7 @@ namespace cache
 		{
 			results->cValues = countIDs;
 			ULONG i = 0;
-			for (const auto nameID : nameIDs)
+			for (const auto& nameID : nameIDs)
 			{
 				const auto lpEntry = find(sig, nameID);
 

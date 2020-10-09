@@ -178,7 +178,7 @@ namespace cache
 
 	// No signature form: look up and use signature if possible
 	_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>>
-	GetNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp, _In_ LPSPropTagArray* lppPropTags, ULONG ulFlags)
+	GetNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp, _In_opt_ LPSPropTagArray* lppPropTags, ULONG ulFlags)
 	{
 		SBinary sig = {};
 		LPSPropValue lpProp = nullptr;
@@ -198,15 +198,13 @@ namespace cache
 	_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>> GetNamesFromIDs(
 		_In_ LPMAPIPROP lpMAPIProp,
 		_In_opt_ const SBinary* sig,
-		_In_ LPSPropTagArray* lppPropTags,
+		_In_opt_ LPSPropTagArray* lppPropTags,
 		ULONG ulFlags)
 	{
 		if (!lpMAPIProp) return {};
 
 		// Check if we're bypassing the cache:
 		if (!registry::cacheNamedProps ||
-			// Assume an array was passed - none of my calling code passes a NULL tag array
-			!lppPropTags || !*lppPropTags ||
 			// None of my code uses these flags, but bypass the cache if we see them
 			ulFlags)
 		{
@@ -437,5 +435,54 @@ namespace cache
 		}
 
 		return results;
+	}
+
+		ULONG FindHighestNamedProp(_In_ LPMAPIPROP lpMAPIProp)
+	{
+		output::DebugPrint(
+			output::dbgLevel::NamedProp, L"FindHighestNamedProp: Searching for the highest named prop mapping\n");
+
+		ULONG ulLower = __LOWERBOUND;
+		ULONG ulUpper = __UPPERBOUND;
+		ULONG ulHighestKnown = 0;
+		auto ulCurrent = (ulUpper + ulLower) / 2;
+
+		while (ulUpper - ulLower > 1)
+		{
+			const auto ulPropTag = PROP_TAG(NULL, ulCurrent);
+			const auto name = cache::GetNameFromID(lpMAPIProp, ulPropTag, NULL);
+			if (cache::namedPropCacheEntry::valid(name))
+			{
+				// Found a named property, reset lower bound
+
+				// Avoid NameIDToStrings call if we're not debug printing
+				if (fIsSet(output::dbgLevel::NamedProp))
+				{
+					output::DebugPrint(
+						output::dbgLevel::NamedProp,
+						L"FindHighestNamedProp: Found a named property at 0x%04X.\n",
+						ulCurrent);
+					const auto namePropNames =
+						cache::NameIDToStrings(ulPropTag, nullptr, name->getMapiNameId(), nullptr, false);
+					output::DebugPrint(
+						output::dbgLevel::NamedProp,
+						L"FindHighestNamedProp: Name = %ws, GUID = %ws\n",
+						namePropNames.name.c_str(),
+						namePropNames.guid.c_str());
+				}
+
+				ulHighestKnown = ulCurrent;
+				ulLower = ulCurrent;
+			}
+			else
+			{
+				// Did not find a named property, reset upper bound
+				ulUpper = ulCurrent;
+			}
+
+			ulCurrent = (ulUpper + ulLower) / 2;
+		}
+
+		return ulHighestKnown;
 	}
 } // namespace cache

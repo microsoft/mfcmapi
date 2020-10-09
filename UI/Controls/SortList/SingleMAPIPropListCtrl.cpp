@@ -1015,87 +1015,16 @@ namespace controls::sortlistctrl
 	{
 		if (!m_lpPropBag) return;
 
-		auto hRes = S_OK;
-		// Exchange can return MAPI_E_NOT_ENOUGH_MEMORY when I call this - give it a try - PSTs support it
 		output::DebugPrintEx(
-			output::dbgLevel::NamedProp, CLASS, L"FindAllNamedProps", L"Calling GetIDsFromNames with a NULL\n");
-		auto lptag = cache::GetIDsFromNames(m_lpPropBag->GetMAPIProp(), {}, NULL);
-		if (lptag && lptag->cValues)
+			output::dbgLevel::NamedProp, CLASS, L"FindAllNamedProps", L"Calling GetNamesFromIDs with a NULL\n");
+		const auto names = cache::GetNamesFromIDs(m_lpPropBag->GetMAPIProp(), nullptr, 0);
+		if (names.size() > 0)
 		{
-			// Now we have an array of tags - add them in:
-			AddPropsToExtraProps(lptag, false);
-		}
-		else
-		{
-			output::DebugPrintEx(
-				output::dbgLevel::NamedProp,
-				CLASS,
-				L"FindAllNamedProps",
-				L"Exchange didn't support GetIDsFromNames(NULL).\n");
-
-#define __LOWERBOUND 0x8000
-#define __UPPERBOUNDDEFAULT 0x8FFF
-#define __UPPERBOUND 0xFFFF
-
-			dialog::editor::CEditor MyData(
-				this, IDS_FINDNAMEPROPSLIMIT, IDS_FINDNAMEPROPSLIMITPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-			MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_LOWERBOUND, false));
-			MyData.SetHex(0, __LOWERBOUND);
-			MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_UPPERBOUND, false));
-			MyData.SetHex(1, __UPPERBOUNDDEFAULT);
-
-			if (MyData.DisplayDialog())
+			for (const auto& name : names)
 			{
-				const auto ulLowerBound = MyData.GetHex(0);
-				const auto ulUpperBound = MyData.GetHex(1);
-
-				output::DebugPrintEx(
-					output::dbgLevel::NamedProp,
-					CLASS,
-					L"FindAllNamedProps",
-					L"Walking through all IDs from 0x%X to 0x%X, looking for mappings to names\n",
-					ulLowerBound,
-					ulUpperBound);
-				if (ulLowerBound < __LOWERBOUND)
-				{
-					error::ErrDialog(__FILE__, __LINE__, IDS_EDLOWERBOUNDTOOLOW, ulLowerBound, __LOWERBOUND);
-					hRes = MAPI_E_INVALID_PARAMETER;
-				}
-				else if (ulUpperBound > __UPPERBOUND)
-				{
-					error::ErrDialog(__FILE__, __LINE__, IDS_EDUPPERBOUNDTOOHIGH, ulUpperBound, __UPPERBOUND);
-					hRes = MAPI_E_INVALID_PARAMETER;
-				}
-				else if (ulLowerBound > ulUpperBound)
-				{
-					error::ErrDialog(__FILE__, __LINE__, IDS_EDLOWEROVERUPPER, ulLowerBound, ulUpperBound);
-					hRes = MAPI_E_INVALID_PARAMETER;
-				}
-				else
-				{
-					for (auto iTag = ulLowerBound; iTag <= ulUpperBound; iTag++)
-					{
-						const auto ulPropTag = PROP_TAG(NULL, iTag);
-						const auto name = cache::GetNameFromID(m_lpPropBag->GetMAPIProp(), ulPropTag, NULL);
-						if (cache::namedPropCacheEntry::valid(name))
-						{
-							output::DebugPrintEx(
-								output::dbgLevel::NamedProp,
-								CLASS,
-								L"FindAllNamedProps",
-								L"Found an ID with a name (0x%X). Adding to extra prop list.\n",
-								iTag);
-							AddPropToExtraProps(ulPropTag, false);
-						}
-					}
-				}
+				AddPropToExtraProps(PROP_TAG(NULL,name->getPropID()), false);
 			}
-		}
 
-		MAPIFreeBuffer(lptag);
-
-		if (SUCCEEDED(hRes))
-		{
 			// Refresh the display
 			WC_H_S(RefreshMAPIPropList());
 		}
@@ -1108,50 +1037,7 @@ namespace controls::sortlistctrl
 		output::DebugPrintEx(
 			output::dbgLevel::NamedProp, CLASS, L"CountNamedProps", L"Searching for the highest named prop mapping\n");
 
-		ULONG ulLower = 0x8000;
-		ULONG ulUpper = 0xFFFF;
-		ULONG ulHighestKnown = 0;
-		auto ulCurrent = (ulUpper + ulLower) / 2;
-
-		while (ulUpper - ulLower > 1)
-		{
-			const auto ulPropTag = PROP_TAG(NULL, ulCurrent);
-			const auto name = cache::GetNameFromID(m_lpPropBag->GetMAPIProp(), ulPropTag, NULL);
-			if (cache::namedPropCacheEntry::valid(name))
-			{
-				// Found a named property, reset lower bound
-
-				// Avoid NameIDToStrings call if we're not debug printing
-				if (fIsSet(output::dbgLevel::NamedProp))
-				{
-					output::DebugPrintEx(
-						output::dbgLevel::NamedProp,
-						CLASS,
-						L"CountNamedProps",
-						L"Found a named property at 0x%04X.\n",
-						ulCurrent);
-					const auto namePropNames =
-						cache::NameIDToStrings(ulPropTag, nullptr, name->getMapiNameId(), nullptr, false);
-					output::DebugPrintEx(
-						output::dbgLevel::NamedProp,
-						CLASS,
-						L"CountNamedProps",
-						L"Name = %ws, GUID = %ws\n",
-						namePropNames.name.c_str(),
-						namePropNames.guid.c_str());
-				}
-
-				ulHighestKnown = ulCurrent;
-				ulLower = ulCurrent;
-			}
-			else
-			{
-				// Did not find a named property, reset upper bound
-				ulUpper = ulCurrent;
-			}
-
-			ulCurrent = (ulUpper + ulLower) / 2;
-		}
+		ULONG ulHighestKnown = cache::FindHighestNamedProp(m_lpPropBag->GetMAPIProp());
 
 		dialog::editor::CEditor MyResult(this, IDS_COUNTNAMEDPROPS, IDS_COUNTNAMEDPROPSPROMPT, CEDITOR_BUTTON_OK);
 		if (ulHighestKnown)
@@ -1165,8 +1051,7 @@ namespace controls::sortlistctrl
 					CLASS,
 					L"CountNamedProps",
 					L"Found a named property at 0x%04X.\n",
-					ulCurrent);
-				ulHighestKnown = ulCurrent;
+					ulHighestKnown);
 			}
 
 			MyResult.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_HIGHESTNAMEDPROPTOTAL, true));
