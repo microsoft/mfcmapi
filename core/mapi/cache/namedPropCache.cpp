@@ -331,7 +331,7 @@ namespace cache
 		{
 			output::DebugPrint(output::dbgLevel::NamedPropCache, L"GetNamesFromIDs: making direct all for all props\n");
 			LPSPropTagArray pProps = nullptr;
-			auto names = directMapi::GetNamesFromIDs(lpMAPIProp, &pProps, NULL);
+			const auto names = directMapi::GetNamesFromIDs(lpMAPIProp, &pProps, NULL);
 			// Cache the results
 			add(names, sig);
 			return names;
