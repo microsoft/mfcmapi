@@ -59,10 +59,9 @@ namespace cache
 				for (const auto& name : range)
 				{
 					if (name->getMapiNameId()->lpguid != nullptr)
-						if (name->getMapiNameId()->lpguid != nullptr)
-						{
-							names.push_back(name);
-						}
+					{
+						names.push_back(name);
+					}
 				}
 			}
 
