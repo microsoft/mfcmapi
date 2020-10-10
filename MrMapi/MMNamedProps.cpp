@@ -45,7 +45,7 @@ void DoNamedProps(_In_opt_ LPMDB lpMDB)
 			// If the Property set GUIDs don't match, sort by that
 			const auto iNameId = i->getMapiNameId();
 			const auto jNameId = j->getMapiNameId();
-			auto res = memcmp(iNameId->lpguid, jNameId->lpguid, sizeof(GUID));
+			const auto res = memcmp(iNameId->lpguid, jNameId->lpguid, sizeof(GUID));
 			if (res) return res < 0;
 
 			// If they are different kinds, use that next
