@@ -255,9 +255,31 @@ namespace cache
 			}
 		}
 	}
-
 	_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>>
-	GetAllNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp)
+	GetRange(_In_ LPMAPIPROP lpMAPIProp, ULONG start, ULONG end)
+	{
+		if (start > end) return {};
+		// Allocate our tag array
+		ULONG count = end - start + 1;
+		auto lpTag = mapi::allocate<LPSPropTagArray>(CbNewSPropTagArray(count));
+		if (lpTag)
+		{
+			// Populate the array
+			lpTag->cValues = count;
+			for (ULONG tag = start, i = 0; tag <= end; tag++, i++)
+			{
+				mapi::setTag(lpTag, i) = PROP_TAG(PT_NULL, tag);
+			}
+
+			auto names = cache::GetNamesFromIDs(lpMAPIProp, &lpTag, NULL);
+			MAPIFreeBuffer(lpTag);
+			return names;
+		}
+
+		return {};
+	}
+
+	_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>> GetAllNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp)
 	{
 		LPSPropTagArray pProps = nullptr;
 		auto names = directMapi::GetNamesFromIDs(lpMAPIProp, &pProps, 0);
@@ -267,24 +289,23 @@ namespace cache
 			// We didn't get any names - try manual
 			const auto ulLowerBound = __LOWERBOUND;
 			const auto ulUpperBound = FindHighestNamedProp(lpMAPIProp);
+			const auto batchSize = 200;
 
-			// TODO: Batch this
 			output::DebugPrint(
 				output::dbgLevel::NamedProp,
 				L"GetAllNamesFromIDs: Walking through all IDs from 0x%X to 0x%X, looking for mappings to names\n",
 				ulLowerBound,
 				ulUpperBound);
-			for (auto iTag = ulLowerBound; iTag <= ulUpperBound; iTag++)
+			for (auto iTag = ulLowerBound; iTag <= ulUpperBound && iTag < __UPPERBOUND; iTag += batchSize - 1)
 			{
-				const auto ulPropTag = PROP_TAG(NULL, iTag);
-				const auto name = cache::GetNameFromID(lpMAPIProp, ulPropTag, NULL);
-				if (cache::namedPropCacheEntry::valid(name))
+				const auto range = GetRange(lpMAPIProp, iTag, min(iTag + batchSize - 1, ulUpperBound));
+				for (const auto& name : range)
 				{
-					output::DebugPrint(
-						output::dbgLevel::NamedProp,
-						L"GetAllNamesFromIDs: Found an ID with a name (0x%X). Adding to extra prop list.\n",
-						iTag);
-					names.push_back(name);
+					if (name->getMapiNameId()->lpguid != nullptr)
+					if (name->getMapiNameId()->lpguid != nullptr)
+					{
+						names.push_back(name);
+					}
 				}
 			}
 		}

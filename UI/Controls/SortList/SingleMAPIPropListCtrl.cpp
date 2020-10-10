@@ -1022,7 +1022,7 @@ namespace controls::sortlistctrl
 		{
 			for (const auto& name : names)
 			{
-				AddPropToExtraProps(PROP_TAG(NULL,name->getPropID()), false);
+				AddPropToExtraProps(PROP_TAG(NULL, name->getPropID()), false);
 			}
 
 			// Refresh the display

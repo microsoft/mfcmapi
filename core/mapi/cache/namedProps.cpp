@@ -437,7 +437,7 @@ namespace cache
 		return results;
 	}
 
-		ULONG FindHighestNamedProp(_In_ LPMAPIPROP lpMAPIProp)
+	ULONG FindHighestNamedProp(_In_ LPMAPIPROP lpMAPIProp)
 	{
 		output::DebugPrint(
 			output::dbgLevel::NamedProp, L"FindHighestNamedProp: Searching for the highest named prop mapping\n");
