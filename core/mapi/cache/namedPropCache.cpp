@@ -20,7 +20,7 @@ namespace cache
 		{
 			if (start > end) return {};
 			// Allocate our tag array
-			ULONG count = end - start + 1;
+			const auto count = end - start + 1;
 			auto lpTag = mapi::allocate<LPSPropTagArray>(CbNewSPropTagArray(count));
 			if (lpTag)
 			{
