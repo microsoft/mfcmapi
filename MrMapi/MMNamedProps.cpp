@@ -30,11 +30,13 @@ void PrintGuid(const GUID& lpGuid)
 void DoNamedProps(_In_opt_ LPMDB lpMDB)
 {
 	if (!lpMDB) return;
+	registry::cacheNamedProps = false;
 
 	wprintf(L"Dumping named properties...\n");
 	wprintf(L"\n");
 
-	auto names = cache::GetNamesFromIDs(lpMDB, nullptr, 0);
+	LPSPropTagArray pProps = nullptr;
+	auto names = cache::GetNamesFromIDs(lpMDB, &pProps, 0);
 
 	std::sort(
 		names.begin(),
