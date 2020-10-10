@@ -66,7 +66,7 @@ void DoNamedProps(_In_opt_ LPMDB lpMDB)
 			return i->getPropID() < j->getPropID();
 		});
 
-	for (const auto name : names)
+	for (const auto& name : names)
 	{
 		wprintf(L"[%08x] (", name->getPropID());
 		const auto nameId = name->getMapiNameId();
