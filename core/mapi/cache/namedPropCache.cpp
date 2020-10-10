@@ -46,7 +46,7 @@ namespace cache
 			// We didn't get any names - try manual
 			const auto ulLowerBound = __LOWERBOUND;
 			const auto ulUpperBound = FindHighestNamedProp(lpMAPIProp);
-			const auto batchSize = 400;
+			const ULONG batchSize = registry::namedPropBatchSize;
 
 			output::DebugPrint(
 				output::dbgLevel::NamedProp,
