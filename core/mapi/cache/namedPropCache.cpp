@@ -41,7 +41,6 @@ namespace cache
 
 		_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>> GetAllNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp)
 		{
-			LPSPropTagArray pProps = nullptr;
 			auto names = std::vector<std::shared_ptr<namedPropCacheEntry>>{};
 
 			// We didn't get any names - try manual
@@ -73,7 +72,7 @@ namespace cache
 		// Returns a vector of NamedPropCacheEntry for the input tags
 		// Sourced directly from MAPI
 		_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>>
-		GetNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp, _In_opt_ LPSPropTagArray* lppPropTags, ULONG ulFlags)
+		GetNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp, _In_ LPSPropTagArray* lppPropTags, ULONG ulFlags)
 		{
 			if (!lpMAPIProp) return {};
 
@@ -85,7 +84,7 @@ namespace cache
 				WC_H_GETPROPS(lpMAPIProp->GetNamesFromIDs(lppPropTags, nullptr, ulFlags, &ulPropNames, &lppPropNames));
 
 			// If we failed and we were doing an all props lookup, try it manually instead
-			if (hRes == MAPI_E_CALL_FAILED && (!lppPropTags || !*lppPropTags))
+			if (hRes == MAPI_E_CALL_FAILED && (!*lppPropTags))
 			{
 				return GetAllNamesFromIDs(lpMAPIProp);
 			}
@@ -97,7 +96,7 @@ namespace cache
 				for (ULONG i = 0; i < ulPropNames; i++)
 				{
 					auto ulPropID = ULONG{};
-					if (lppPropTags && *lppPropTags) ulPropID = PROP_ID(mapi::getTag(*lppPropTags, i));
+					if (*lppPropTags) ulPropID = PROP_ID(mapi::getTag(*lppPropTags, i));
 					ids.emplace_back(namedPropCacheEntry::make(lppPropNames[i], ulPropID));
 				}
 			}
@@ -323,12 +322,12 @@ namespace cache
 	_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>> namedPropCache::GetNamesFromIDs(
 		_In_ LPMAPIPROP lpMAPIProp,
 		const std::vector<BYTE>& sig,
-		_In_opt_ LPSPropTagArray* lppPropTags)
+		_In_ LPSPropTagArray* lppPropTags)
 	{
 		if (!lpMAPIProp) return {};
 
 		// If this is a get all names call, we have to go direct to MAPI since we cannot trust the cache is full.
-		if (!lppPropTags || !*lppPropTags)
+		if (!*lppPropTags)
 		{
 			output::DebugPrint(output::dbgLevel::NamedPropCache, L"GetNamesFromIDs: making direct all for all props\n");
 			LPSPropTagArray pProps = nullptr;
