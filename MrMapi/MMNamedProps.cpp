@@ -8,6 +8,7 @@
 #include <core/utility/registry.h>
 #include <core/utility/output.h>
 #include <core/mapi/mapiFunctions.h>
+#include <core/mapi/cache/namedProps.h>
 
 void PrintGuid(const GUID& lpGuid)
 {
@@ -26,97 +27,59 @@ void PrintGuid(const GUID& lpGuid)
 		lpGuid.Data4[7]);
 }
 
-class NamedPropEntry
-{
-public:
-	NamedPropEntry(ULONG propTag, LPGUID lpGuid, LPWSTR name)
-		: Kind{MNID_STRING}, PropTag{propTag}, PropSetGuid{*lpGuid}, PropName{name}
-	{
-	}
-
-	NamedPropEntry(ULONG propTag, LPGUID lpGuid, ULONG id)
-		: Kind{MNID_ID}, PropTag{propTag}, PropSetGuid{*lpGuid}, PropId{id}
-	{
-	}
-
-	ULONG PropTag{0};
-	GUID PropSetGuid{0};
-	ULONG Kind{0};
-	std::wstring PropName;
-	ULONG PropId{0};
-};
-
 void DoNamedProps(_In_opt_ LPMDB lpMDB)
 {
-	auto hRes = S_OK;
+	if (!lpMDB) return;
+	registry::cacheNamedProps = false;
+
 	wprintf(L"Dumping named properties...\n");
+	wprintf(L"\n");
 
-	ULONG cPropNames = 0;
 	LPSPropTagArray pProps = nullptr;
-	LPMAPINAMEID* pNames = nullptr;
-	hRes = WC_MAPI(lpMDB->GetNamesFromIDs(&pProps, nullptr, 0, &cPropNames, &pNames));
+	auto names = cache::GetNamesFromIDs(lpMDB, &pProps, 0);
 
-	if (SUCCEEDED(hRes))
-	{
-		wprintf(L"\n");
-		std::vector<NamedPropEntry> props;
-		for (ULONG i = 0; i < cPropNames; i++)
-		{
-			switch (pNames[i]->ulKind)
-			{
-			case MNID_STRING:
-				props.emplace_back(pProps->aulPropTag[i], pNames[i]->lpguid, pNames[i]->Kind.lpwstrName);
-				break;
-			case MNID_ID:
-				props.emplace_back(pProps->aulPropTag[i], pNames[i]->lpguid, pNames[i]->Kind.lID);
-				break;
-			}
-		}
-
-		std::sort(props.begin(), props.end(), [](NamedPropEntry& i, NamedPropEntry& j) {
+	std::sort(
+		names.begin(),
+		names.end(),
+		[](std::shared_ptr<cache::namedPropCacheEntry>& i, std::shared_ptr<cache::namedPropCacheEntry>& j) {
 			// If the Property set GUIDs don't match, sort by that
-			auto res = memcmp(&i.PropSetGuid, &j.PropSetGuid, sizeof(GUID));
+			const auto iNameId = i->getMapiNameId();
+			const auto jNameId = j->getMapiNameId();
+			const auto res = memcmp(iNameId->lpguid, jNameId->lpguid, sizeof(GUID));
 			if (res) return res < 0;
 
 			// If they are different kinds, use that next
-			if (i.Kind != j.Kind)
+			if (iNameId->ulKind != jNameId->ulKind)
 			{
-				return i.Kind < j.Kind;
+				return iNameId->ulKind < jNameId->ulKind;
 			}
 
-			switch (i.Kind)
+			switch (iNameId->ulKind)
 			{
 			case MNID_ID:
-				return i.PropId < j.PropId;
+				return iNameId->Kind.lID < jNameId->Kind.lID;
 			case MNID_STRING:
-				return i.PropName < j.PropName;
+				return std::wstring(iNameId->Kind.lpwstrName) < std::wstring(jNameId->Kind.lpwstrName);
 			}
 
 			// This shouldn't ever actually hit
-			return i.PropTag < j.PropTag;
+			return i->getPropID() < j->getPropID();
 		});
 
-		for (size_t i = 0; i < props.size(); i++)
+	for (const auto& name : names)
+	{
+		wprintf(L"[%08x] (", name->getPropID());
+		const auto nameId = name->getMapiNameId();
+		PrintGuid(*nameId->lpguid);
+		switch (nameId->ulKind)
 		{
-			wprintf(L"[%08x] (", props[i].PropTag);
-			PrintGuid(props[i].PropSetGuid);
-			switch (props[i].Kind)
-			{
-			case MNID_ID:
-				wprintf(L":0x%08x)\n", props[i].PropId);
-				break;
+		case MNID_ID:
+			wprintf(L":0x%08x)\n", nameId->Kind.lID);
+			break;
 
-			case MNID_STRING:
-				wprintf(L":%ws)\n", props[i].PropName.c_str());
-				break;
-			}
+		case MNID_STRING:
+			wprintf(L":%ws)\n", nameId->Kind.lpwstrName);
+			break;
 		}
 	}
-	else
-	{
-		wprintf(L"FAILED. Error 0x%x\n", hRes);
-	}
-
-	if (pProps) MAPIFreeBuffer(pProps);
-	if (pNames) MAPIFreeBuffer(pNames);
 }

@@ -61,6 +61,7 @@ namespace registry
 	boolRegKey hexDialogDiag{L"HexDialogDiag", false, false, IDS_REGKEY_HEXDIALOGDIAG};
 	boolRegKey displayAboutDialog{L"DisplayAboutDialog", true, false, NULL};
 	wstringRegKey propertyColumnOrder{L"PropertyColumnOrder", L"", false, NULL};
+	dwordRegKey namedPropBatchSize{L"NamedPropBatchSize", regOptionType::stringDec, 400, false, NULL};
 
 	std::vector<__RegKey*> RegKeys = {
 		&debugTag,
@@ -93,6 +94,7 @@ namespace registry
 		&hexDialogDiag,
 		&displayAboutDialog,
 		&propertyColumnOrder,
+		&namedPropBatchSize
 	};
 
 	// If the value is not set in the registry, return the default value

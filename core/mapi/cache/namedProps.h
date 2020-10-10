@@ -76,6 +76,9 @@ namespace cache
 		bool bStringsCached{}; // We have cached strings
 	};
 
+	const ULONG __LOWERBOUND = 0x8000;
+	const ULONG __UPPERBOUND = 0xFFFF;
+
 	_Check_return_ std::shared_ptr<namedPropCacheEntry>
 	GetNameFromID(_In_ LPMAPIPROP lpMAPIProp, _In_opt_ const SBinary* sig, _In_ ULONG ulPropTag, ULONG ulFlags);
 	_Check_return_ std::shared_ptr<namedPropCacheEntry>
@@ -102,4 +105,6 @@ namespace cache
 		bool bIsAB); // true for an address book property (they can be > 8000 and not named props)
 
 	std::vector<std::wstring> NameIDToPropNames(_In_ const MAPINAMEID* lpNameID);
+
+	ULONG FindHighestNamedProp(_In_ LPMAPIPROP lpMAPIProp);
 } // namespace cache

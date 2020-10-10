@@ -15,6 +15,59 @@ namespace cache
 {
 	namespace directMapi
 	{
+		_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>>
+		GetRange(_In_ LPMAPIPROP lpMAPIProp, ULONG start, ULONG end)
+		{
+			if (start > end) return {};
+			// Allocate our tag array
+			const auto count = end - start + 1;
+			auto lpTag = mapi::allocate<LPSPropTagArray>(CbNewSPropTagArray(count));
+			if (lpTag)
+			{
+				// Populate the array
+				lpTag->cValues = count;
+				for (ULONG tag = start, i = 0; tag <= end; tag++, i++)
+				{
+					mapi::setTag(lpTag, i) = PROP_TAG(PT_NULL, tag);
+				}
+
+				auto names = GetNamesFromIDs(lpMAPIProp, &lpTag, NULL);
+				MAPIFreeBuffer(lpTag);
+				return names;
+			}
+
+			return {};
+		}
+
+		_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>> GetAllNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp)
+		{
+			auto names = std::vector<std::shared_ptr<namedPropCacheEntry>>{};
+
+			// We didn't get any names - try manual
+			const auto ulLowerBound = __LOWERBOUND;
+			const auto ulUpperBound = FindHighestNamedProp(lpMAPIProp);
+			const ULONG batchSize = registry::namedPropBatchSize;
+
+			output::DebugPrint(
+				output::dbgLevel::NamedProp,
+				L"GetAllNamesFromIDs: Walking through all IDs from 0x%X to 0x%X, looking for mappings to names\n",
+				ulLowerBound,
+				ulUpperBound);
+			for (auto iTag = ulLowerBound; iTag <= ulUpperBound && iTag < __UPPERBOUND; iTag += batchSize - 1)
+			{
+				const auto range = GetRange(lpMAPIProp, iTag, min(iTag + batchSize - 1, ulUpperBound));
+				for (const auto& name : range)
+				{
+					if (name->getMapiNameId()->lpguid != nullptr)
+					{
+						names.push_back(name);
+					}
+				}
+			}
+
+			return names;
+		}
+
 		// Returns a vector of NamedPropCacheEntry for the input tags
 		// Sourced directly from MAPI
 		_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>>
@@ -25,7 +78,15 @@ namespace cache
 			LPMAPINAMEID* lppPropNames = nullptr;
 			auto ulPropNames = ULONG{};
 
-			WC_H_GETPROPS_S(lpMAPIProp->GetNamesFromIDs(lppPropTags, nullptr, ulFlags, &ulPropNames, &lppPropNames));
+			// Try a direct call first
+			const auto hRes =
+				WC_H_GETPROPS(lpMAPIProp->GetNamesFromIDs(lppPropTags, nullptr, ulFlags, &ulPropNames, &lppPropNames));
+
+			// If we failed and we were doing an all props lookup, try it manually instead
+			if (hRes == MAPI_E_CALL_FAILED && (!*lppPropTags))
+			{
+				return GetAllNamesFromIDs(lpMAPIProp);
+			}
 
 			auto ids = std::vector<std::shared_ptr<namedPropCacheEntry>>{};
 
@@ -34,7 +95,7 @@ namespace cache
 				for (ULONG i = 0; i < ulPropNames; i++)
 				{
 					auto ulPropID = ULONG{};
-					if (lppPropTags && *lppPropTags) ulPropID = PROP_ID(mapi::getTag(*lppPropTags, i));
+					if (*lppPropTags) ulPropID = PROP_ID(mapi::getTag(*lppPropTags, i));
 					ids.emplace_back(namedPropCacheEntry::make(lppPropNames[i], ulPropID));
 				}
 			}
@@ -262,7 +323,18 @@ namespace cache
 		const std::vector<BYTE>& sig,
 		_In_ LPSPropTagArray* lppPropTags)
 	{
-		if (!lpMAPIProp || !lppPropTags || !*lppPropTags) return {};
+		if (!lpMAPIProp) return {};
+
+		// If this is a get all names call, we have to go direct to MAPI since we cannot trust the cache is full.
+		if (!*lppPropTags)
+		{
+			output::DebugPrint(output::dbgLevel::NamedPropCache, L"GetNamesFromIDs: making direct all for all props\n");
+			LPSPropTagArray pProps = nullptr;
+			const auto names = directMapi::GetNamesFromIDs(lpMAPIProp, &pProps, NULL);
+			// Cache the results
+			add(names, sig);
+			return names;
+		}
 
 		// We're going to walk the cache, looking for the values we need. As soon as we have all the values we need, we're done
 		// If we reach the end of the cache and don't have everything, we set up to make a GetNamesFromIDs call.
@@ -373,7 +445,7 @@ namespace cache
 		{
 			results->cValues = countIDs;
 			ULONG i = 0;
-			for (const auto nameID : nameIDs)
+			for (const auto& nameID : nameIDs)
 			{
 				const auto lpEntry = find(sig, nameID);
 

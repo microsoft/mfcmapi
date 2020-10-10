@@ -45,8 +45,10 @@ namespace cache
 		static void add(const std::vector<std::shared_ptr<namedPropCacheEntry>>& entries, const std::vector<BYTE>& sig);
 
 		// If signature is empty then do not use a signature
-		_Check_return_ static std::vector<std::shared_ptr<namedPropCacheEntry>>
-		GetNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp, const std::vector<BYTE>& sig, _In_ LPSPropTagArray* lppPropTags);
+		_Check_return_ static std::vector<std::shared_ptr<namedPropCacheEntry>> GetNamesFromIDs(
+			_In_ LPMAPIPROP lpMAPIProp,
+			const std::vector<BYTE>& sig,
+			_In_ LPSPropTagArray* lppPropTags);
 
 		// If signature is empty then do not use a signature
 		static _Check_return_ LPSPropTagArray GetIDsFromNames(

@@ -180,4 +180,5 @@ namespace registry
 	extern boolRegKey hexDialogDiag;
 	extern boolRegKey displayAboutDialog;
 	extern wstringRegKey propertyColumnOrder;
+	extern dwordRegKey namedPropBatchSize;
 } // namespace registry

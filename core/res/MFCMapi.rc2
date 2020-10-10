@@ -714,9 +714,6 @@ IDS_EIDEDITOR                    "Entry ID Editor"
 IDS_EIDEDITORPROMPT              "Edit Entry ID"
 
 // singlemapiproplistctrl.cpp
-IDS_FINDNAMEPROPSLIMIT           "Find All Named Props Range Limit"
-IDS_FINDNAMEPROPSLIMITPROMPT     "This function will search through all properties in the given range.\r\n\
-Bounds must be between 0x8000 and 0xFFFF"
 IDS_DELETEPROPERTY               "Delete Property"
 IDS_DELETEPROPERTYPROMPT         "This will permanently delete this property from the item."
 IDS_USEWRAPEX                    "Use WrapCompressedRTFStreamEx"
@@ -1025,8 +1022,6 @@ IDS_SEARCHPREFIX "Prefix"
 IDS_SEARCHFULLSTRING "Full string"
 
 // SingleMAPIPropListCtrl.cpp
-IDS_LOWERBOUND "Lower Bound (in hex):"
-IDS_UPPERBOUND "Upper Bound (in hex):"
 IDS_ULINCODEPAGE "ulInCodePage (in Decimal)"
 IDS_ULOUTCODEPAGE "ulOutCodePage (in Decimal)"
 IDS_COPYSTYLE "Copy style"
@@ -1688,9 +1683,6 @@ Display the ACL Table for the folder.  Look for DNs that don't resolve.  If so, 
 Either use OWA to restore the folder or disable virus scanning to allow the folder to be restored"
 IDS_EDFORMVIEWERNULLPARENT "Form Viewer created with a NULL parent!"
 IDS_EDACTIVATENEXT "ActivateNext returned S_OK but no persist!"
-IDS_EDLOWERBOUNDTOOLOW "Lower bound of 0x%X is below 0x%X"
-IDS_EDUPPERBOUNDTOOHIGH "Upper bound of 0x%X is over 0x%X"
-IDS_EDLOWEROVERUPPER "Lower bound of 0x%X is over upper bound of 0x%X"
 IDS_EDOFFSETWITHWRONGINTERFACE "You specified an offset but requested the IID_IExchangeManageStore\r\n\
 interface. This interface does not support passing an offset.\r\n"
 IDS_EDINVALIDGUID "The GUID you entered was invalid."
