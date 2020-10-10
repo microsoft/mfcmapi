@@ -256,7 +256,7 @@ namespace cache
 		}
 	}
 	_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>>
-	GetRange(_In_ LPMAPIPROP lpMAPIProp, ULONG start, ULONG end)
+	GetRange(_In_ LPMAPIPROP lpMAPIProp, const std::vector<BYTE>& sig, ULONG start, ULONG end)
 	{
 		if (start > end) return {};
 		// Allocate our tag array
@@ -271,7 +271,7 @@ namespace cache
 				mapi::setTag(lpTag, i) = PROP_TAG(PT_NULL, tag);
 			}
 
-			auto names = cache::GetNamesFromIDs(lpMAPIProp, &lpTag, NULL);
+			auto names = namedPropCache::GetNamesFromIDs(lpMAPIProp, sig, &lpTag);
 			MAPIFreeBuffer(lpTag);
 			return names;
 		}
@@ -279,7 +279,8 @@ namespace cache
 		return {};
 	}
 
-	_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>> GetAllNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp)
+	_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>>
+	GetAllNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp, const std::vector<BYTE>& sig)
 	{
 		LPSPropTagArray pProps = nullptr;
 		auto names = directMapi::GetNamesFromIDs(lpMAPIProp, &pProps, 0);
@@ -298,14 +299,14 @@ namespace cache
 				ulUpperBound);
 			for (auto iTag = ulLowerBound; iTag <= ulUpperBound && iTag < __UPPERBOUND; iTag += batchSize - 1)
 			{
-				const auto range = GetRange(lpMAPIProp, iTag, min(iTag + batchSize - 1, ulUpperBound));
+				const auto range = GetRange(lpMAPIProp, sig, iTag, min(iTag + batchSize - 1, ulUpperBound));
 				for (const auto& name : range)
 				{
 					if (name->getMapiNameId()->lpguid != nullptr)
-					if (name->getMapiNameId()->lpguid != nullptr)
-					{
-						names.push_back(name);
-					}
+						if (name->getMapiNameId()->lpguid != nullptr)
+						{
+							names.push_back(name);
+						}
 				}
 			}
 		}
@@ -320,7 +321,7 @@ namespace cache
 		_In_opt_ LPSPropTagArray* lppPropTags)
 	{
 		if (!lpMAPIProp) return {};
-		if (!lppPropTags || !*lppPropTags) return GetAllNamesFromIDs(lpMAPIProp);
+		if (!lppPropTags || !*lppPropTags) return GetAllNamesFromIDs(lpMAPIProp, sig);
 
 		// We're going to walk the cache, looking for the values we need. As soon as we have all the values we need, we're done
 		// If we reach the end of the cache and don't have everything, we set up to make a GetNamesFromIDs call.
