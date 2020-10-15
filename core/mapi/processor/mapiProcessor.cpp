@@ -525,7 +525,7 @@ namespace mapi::processor
 						DoMessagePerAttachmentWork(lpMessage, lpData, &lpRows->aRow[iRow], lpAttach, i++);
 						// Check if the attachment is an embedded message - if it is, parse it as such!
 						const auto lpAttachMethod =
-							PpropFindProp(lpRows->aRow->lpProps, lpRows->aRow->cValues, PR_ATTACH_METHOD);
+							PpropFindProp(lpRows->aRow[iRow].lpProps, lpRows->aRow[iRow].cValues, PR_ATTACH_METHOD);
 
 						if (lpAttach && lpAttachMethod && ATTACH_EMBEDDED_MSG == lpAttachMethod->Value.l)
 						{
