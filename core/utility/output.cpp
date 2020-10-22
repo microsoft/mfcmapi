@@ -80,7 +80,7 @@ namespace output
 	_Check_return_ FILE* MyOpenFile(const std::wstring& szFileName, bool bNewFile)
 	{
 		auto mode = L"a+"; // STRING_OK
-		if (bNewFile) mode = L"w"; // STRING_OK
+		if (bNewFile) mode = L"w, ccs=UNICODE"; // STRING_OK
 		return MyOpenFileMode(szFileName, mode);
 	}
 
@@ -123,8 +123,7 @@ namespace output
 	{
 		if (!szString.empty())
 		{
-			auto szStringA = strings::wstringTostring(szString);
-			fputs(szStringA.c_str(), fFile);
+			fputws(szString.c_str(), fFile);
 		}
 	}
 
