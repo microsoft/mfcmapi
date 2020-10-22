@@ -1199,3 +1199,5 @@ STDAPI STDAPICALLTYPE LaunchWizard(
 	_Out_cap_(cchBufferMax) LPSTR lpszNewProfileName);
 
 #define FWD_AS_SMS_ALERT 8
+
+#define PR_BODY_HTML_W CHANGE_PROP_TYPE(PR_BODY_HTML, PT_UNICODE)

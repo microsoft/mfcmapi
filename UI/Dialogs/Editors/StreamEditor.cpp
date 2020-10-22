@@ -16,6 +16,7 @@ namespace dialog::editor
 	enum __StreamEditorTypes
 	{
 		EDITOR_RTF,
+		EDITOR_RTF_UNICODE,
 		EDITOR_STREAM_BINARY,
 		EDITOR_STREAM_ANSI,
 		EDITOR_STREAM_UNICODE,
@@ -127,7 +128,7 @@ namespace dialog::editor
 		}
 
 		if (bEditPropAsRTF)
-			m_ulEditorType = EDITOR_RTF;
+			m_ulEditorType = m_bUseWrapEx && ulOutCodePage == CP_UNICODE ? EDITOR_RTF_UNICODE : EDITOR_RTF;
 		else
 		{
 			switch (PROP_TYPE(m_ulPropTag))
@@ -370,7 +371,7 @@ namespace dialog::editor
 		if (m_bUseWrapEx) return;
 
 		// Reopen the property stream as writeable
-		OpenPropertyStream(true, EDITOR_RTF == m_ulEditorType);
+		OpenPropertyStream(true, m_ulEditorType == EDITOR_RTF || m_ulEditorType == EDITOR_RTF_UNICODE);
 
 		// We started with a binary stream, pull binary back into the stream
 		if (m_lpStream)
@@ -429,6 +430,7 @@ namespace dialog::editor
 				lpBinPane->SetCount(lpszA.length() * sizeof(CHAR));
 				break;
 			}
+			case EDITOR_RTF_UNICODE:
 			case EDITOR_STREAM_UNICODE:
 				auto lpszW = GetStringW(m_iTextBox);
 
@@ -452,6 +454,7 @@ namespace dialog::editor
 						m_iTextBox, std::string(reinterpret_cast<LPCSTR>(bin.data()), bin.size() / sizeof(CHAR)));
 					if (lpBinPane) lpBinPane->SetCount(bin.size());
 					break;
+				case EDITOR_RTF_UNICODE:
 				case EDITOR_STREAM_UNICODE:
 					SetStringW(
 						m_iTextBox, std::wstring(reinterpret_cast<LPWSTR>(bin.data()), bin.size() / sizeof(WCHAR)));

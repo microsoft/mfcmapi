@@ -1352,7 +1352,7 @@ namespace controls::sortlistctrl
 				MyPrompt2.AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_ULINCODEPAGE, false));
 				MyPrompt2.SetDecimal(1, ulInCodePage);
 				MyPrompt2.AddPane(viewpane::TextPane::CreateSingleLinePane(2, IDS_ULOUTCODEPAGE, false));
-				MyPrompt2.SetDecimal(2, 0);
+				MyPrompt2.SetDecimal(2, CP_UNICODE);
 
 				if (!MyPrompt2.DisplayDialog()) return;
 
