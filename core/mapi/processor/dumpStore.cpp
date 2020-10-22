@@ -324,7 +324,6 @@ namespace mapi::processor
 		m_fFolderContents = nullptr;
 	}
 
-	// TODO: This fails in unicode builds since PR_RTF_COMPRESSED is always ascii.
 	void OutputBody(
 		_In_ FILE* fMessageProps,
 		_In_ LPMESSAGE lpMessage,
@@ -336,12 +335,21 @@ namespace mapi::processor
 		LPSTREAM lpStream = nullptr;
 		LPSTREAM lpRTFUncompressed = nullptr;
 		LPSTREAM lpOutputStream = nullptr;
-		const auto bUnicode = PROP_TYPE(ulBodyTag) == PT_UNICODE;
+		auto bUnicode = PROP_TYPE(ulBodyTag) == PT_UNICODE;
 
-		const auto hRes = WC_MAPI(
+		auto hRes = WC_MAPI(
 			lpMessage->OpenProperty(ulBodyTag, &IID_IStream, STGM_READ, NULL, reinterpret_cast<LPUNKNOWN*>(&lpStream)));
+		// If we get MAPI_E_NOT_FOUND on a unicode stream, try again as ansi
+		if (bUnicode && hRes == MAPI_E_NOT_FOUND)
+		{
+			bUnicode = false;
+			ulBodyTag = CHANGE_PROP_TYPE(ulBodyTag, PT_STRING8);
+			hRes = WC_MAPI(lpMessage->OpenProperty(
+				ulBodyTag, &IID_IStream, STGM_READ, NULL, reinterpret_cast<LPUNKNOWN*>(&lpStream)));
+		}
+
 		// The only error we suppress is MAPI_E_NOT_FOUND, so if a body type isn't in the output, it wasn't on the message
-		if (MAPI_E_NOT_FOUND != hRes)
+		if (hRes != MAPI_E_NOT_FOUND )
 		{
 			output::OutputToFilef(fMessageProps, L"<body property=\"%ws\"", szBodyName.c_str());
 			if (!lpStream)
@@ -358,13 +366,14 @@ namespace mapi::processor
 				{
 					if (bWrapEx)
 					{
+						bUnicode = true;
 						ULONG ulStreamFlags = NULL;
 						WC_H_S(mapi::WrapStreamForRTF(
 							lpStream,
 							true,
 							MAPI_NATIVE_BODY,
 							ulCPID,
-							CP_ACP, // requesting ANSI code page - check if this will be valid in UNICODE builds
+							CP_UNICODE,
 							&lpRTFUncompressed,
 							&ulStreamFlags));
 						auto szFlags = flags::InterpretFlags(flagStreamFlag, ulStreamFlags);
@@ -374,7 +383,7 @@ namespace mapi::processor
 							ulStreamFlags,
 							szFlags.c_str());
 						output::OutputToFilef(
-							fMessageProps, L" CodePageIn = \"%u\" CodePageOut = \"%d\"", ulCPID, CP_ACP);
+							fMessageProps, L" CodePageIn = \"%u\" CodePageOut = \"%d\"", ulCPID, CP_UNICODE);
 					}
 					else
 					{
@@ -532,8 +541,8 @@ namespace mapi::processor
 				}
 
 				// Log Body
-				OutputBody(lpMsgData->fMessageProps, lpMessage, PR_BODY, L"PR_BODY", false, NULL);
-				OutputBody(lpMsgData->fMessageProps, lpMessage, PR_BODY_HTML, L"PR_BODY_HTML", false, NULL);
+				OutputBody(lpMsgData->fMessageProps, lpMessage, PR_BODY_W, L"PR_BODY_W", false, NULL);
+				OutputBody(lpMsgData->fMessageProps, lpMessage, PR_BODY_HTML_W, L"PR_BODY_HTML", false, NULL);
 				OutputBody(lpMsgData->fMessageProps, lpMessage, PR_RTF_COMPRESSED, L"PR_RTF_COMPRESSED", false, NULL);
 
 				ULONG ulInCodePage = CP_ACP; // picking CP_ACP as our default
