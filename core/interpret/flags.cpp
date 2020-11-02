@@ -26,68 +26,66 @@ namespace flags
 		// We've matched our flag name to the array - we SHOULD return a string at this point
 		auto flags = std::vector<std::wstring>{};
 		auto lTempValue = lFlagValue;
-		for (; FlagArray[ulCurEntry].ulFlagName == ulFlagName; ulCurEntry++)
+		while (FlagArray[ulCurEntry].ulFlagName == ulFlagName)
 		{
-			if (flagFLAG == FlagArray[ulCurEntry].ulFlagType)
+			switch (FlagArray[ulCurEntry].ulFlagType)
 			{
+			case flagFLAG:
 				if (FlagArray[ulCurEntry].lFlagValue & lTempValue)
 				{
 					flags.push_back(FlagArray[ulCurEntry].lpszName);
 					lTempValue &= ~FlagArray[ulCurEntry].lFlagValue;
 				}
-			}
-			else if (flagVALUE == FlagArray[ulCurEntry].ulFlagType)
-			{
+				break;
+			case flagVALUE:
 				if (FlagArray[ulCurEntry].lFlagValue == lTempValue)
 				{
 					flags.push_back(FlagArray[ulCurEntry].lpszName);
 					lTempValue = 0;
 				}
-			}
-			else if (flagVALUEHIGHBYTES == FlagArray[ulCurEntry].ulFlagType)
-			{
+				break;
+			case flagVALUEHIGHBYTES:
 				if (FlagArray[ulCurEntry].lFlagValue == (lTempValue >> 16 & 0xFFFF))
 				{
 					flags.push_back(FlagArray[ulCurEntry].lpszName);
 					lTempValue = lTempValue - (FlagArray[ulCurEntry].lFlagValue << 16);
 				}
-			}
-			else if (flagVALUE3RDBYTE == FlagArray[ulCurEntry].ulFlagType)
-			{
+				break;
+			case flagVALUE3RDBYTE:
 				if (FlagArray[ulCurEntry].lFlagValue == (lTempValue >> 8 & 0xFF))
 				{
 					flags.push_back(FlagArray[ulCurEntry].lpszName);
 					lTempValue = lTempValue - (FlagArray[ulCurEntry].lFlagValue << 8);
 				}
-			}
-			else if (flagVALUE4THBYTE == FlagArray[ulCurEntry].ulFlagType)
-			{
+				break;
+			case flagVALUE4THBYTE:
 				if (FlagArray[ulCurEntry].lFlagValue == (lTempValue & 0xFF))
 				{
 					flags.push_back(FlagArray[ulCurEntry].lpszName);
 					lTempValue = lTempValue - FlagArray[ulCurEntry].lFlagValue;
 				}
-			}
-			else if (flagVALUELOWERNIBBLE == FlagArray[ulCurEntry].ulFlagType)
-			{
+				break;
+			case flagVALUELOWERNIBBLE:
 				if (FlagArray[ulCurEntry].lFlagValue == (lTempValue & 0x0F))
 				{
 					flags.push_back(FlagArray[ulCurEntry].lpszName);
 					lTempValue = lTempValue - FlagArray[ulCurEntry].lFlagValue;
 				}
-			}
-			else if (flagCLEARBITS == FlagArray[ulCurEntry].ulFlagType)
-			{
+				break;
+			case flagCLEARBITS:
 				// find any bits we need to clear
 				const auto lClearedBits = FlagArray[ulCurEntry].lFlagValue & lTempValue;
 				// report what we found
-				if (0 != lClearedBits)
+				if (lClearedBits != 0)
 				{
 					flags.push_back(strings::format(L"0x%X", lClearedBits)); // STRING_OK
 						// clear the bits out
 					lTempValue &= ~FlagArray[ulCurEntry].lFlagValue;
 				}
+				break;
 			}
+
+			ulCurEntry++;
 		}
 
 		if (lTempValue || flags.empty())
