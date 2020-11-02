@@ -100,12 +100,12 @@ namespace flags
 
 	// Returns a list of all known flags/values for a flag name.
 	// For instance, for flagFuzzyLevel, would return:
-	// \r\n0x00000000 FL_FULLSTRING\r\n\
-	 // 0x00000001 FL_SUBSTRING\r\n\
-	 // 0x00000002 FL_PREFIX\r\n\
-	 // 0x00010000 FL_IGNORECASE\r\n\
-	 // 0x00020000 FL_IGNORENONSPACE\r\n\
-	 // 0x00040000 FL_LOOSE
+	// 0x00000000 FL_FULLSTRING\r\n\
+	// 0x00000001 FL_SUBSTRING\r\n\
+	// 0x00000002 FL_PREFIX\r\n\
+	// 0x00010000 FL_IGNORECASE\r\n\
+	// 0x00020000 FL_IGNORENONSPACE\r\n\
+	// 0x00040000 FL_LOOSE
 	//
 	// Since the string is always appended to a prompt we include \r\n at the start
 	std::wstring AllFlagsToString(ULONG ulFlagName, bool bHex)
