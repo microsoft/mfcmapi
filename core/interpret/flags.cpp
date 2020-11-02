@@ -132,16 +132,10 @@ namespace flags
 			}
 			else
 			{
-				if (bHex)
-				{
-					flags.push_back(strings::formatmessage(
-						IDS_FLAGTOSTRINGHEX, FlagArray[ulCurEntry].lFlagValue, FlagArray[ulCurEntry].lpszName));
-				}
-				else
-				{
-					flags.push_back(strings::formatmessage(
-						IDS_FLAGTOSTRINGDEC, FlagArray[ulCurEntry].lFlagValue, FlagArray[ulCurEntry].lpszName));
-				}
+				flags.push_back(strings::formatmessage(
+					bHex ? IDS_FLAGTOSTRINGHEX : IDS_FLAGTOSTRINGDEC,
+					FlagArray[ulCurEntry].lFlagValue,
+					FlagArray[ulCurEntry].lpszName));
 			}
 		}
 
