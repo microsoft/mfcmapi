@@ -124,19 +124,17 @@ namespace flags
 
 		// We've matched our flag name to the array - we SHOULD return a string at this point
 		auto flags = std::vector<std::wstring>{};
-		for (; FlagArray[ulCurEntry].ulFlagName == ulFlagName; ulCurEntry++)
+		while (FlagArray[ulCurEntry].ulFlagName == ulFlagName)
 		{
-			if (flagCLEARBITS == FlagArray[ulCurEntry].ulFlagType)
-			{
-				// keep going
-			}
-			else
+			if (flagCLEARBITS != FlagArray[ulCurEntry].ulFlagType)
 			{
 				flags.push_back(strings::formatmessage(
 					bHex ? IDS_FLAGTOSTRINGHEX : IDS_FLAGTOSTRINGDEC,
 					FlagArray[ulCurEntry].lFlagValue,
 					FlagArray[ulCurEntry].lpszName));
 			}
+
+			ulCurEntry++;
 		}
 
 		return strings::join(flags, L"\r\n");
