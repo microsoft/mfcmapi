@@ -37,6 +37,8 @@ namespace flagtest
 				L"MAPI_P1 | MAPI_TO", flags::InterpretFlags(PROP_ID(PR_RECIPIENT_TYPE), MAPI_P1 | MAPI_TO));
 			unittest::AreEqualEx(
 				L"MAPI_SUBMITTED | 0x5", flags::InterpretFlags(PROP_ID(PR_RECIPIENT_TYPE), MAPI_SUBMITTED | 0x5));
+			unittest::AreEqualEx(
+				L"MAPI_SUBMITTED | 0x20000000 | 0x5", flags::InterpretFlags(PROP_ID(PR_RECIPIENT_TYPE), MAPI_SUBMITTED | 0x20000005));
 
 			// flagFLAG with no null
 			unittest::AreEqualEx(L"0x0", flags::InterpretFlags(PROP_ID(PR_SUBMIT_FLAGS), 0));
@@ -49,10 +51,23 @@ namespace flagtest
 				flags::InterpretFlags(
 					PROP_ID(PR_DISPLAY_TYPE_EX),
 					DTE_FLAG_REMOTE_VALID | DTE_REMOTE(DT_ROOM) | DTE_LOCAL(DT_SEC_DISTLIST)));
+
+			// FLAG_ENTRYHIGHBYTES
+			unittest::AreEqualEx(
+				L"CPU: MAPIFORM_CPU_X86 | MAPIFORM_OS_WIN_95",
+				flags::InterpretFlags(
+					PROP_ID(PR_FORM_HOST_MAP), MAPIFORM_PLATFORM(MAPIFORM_CPU_X86, MAPIFORM_OS_WIN_95)));
+
+			// NON_PROP_FLAG_ENTRYLOWERNIBBLE
+			unittest::AreEqualEx(
+				L"BFLAGS_MASK_OUTLOOK | Type: BFLAGS_INTERNAL_MAILUSER | Home Fax",
+				flags::InterpretFlags(flagWABEntryIDType, BFLAGS_MASK_OUTLOOK | BFLAGS_INTERNAL_MAILUSER | 0x10));
 		}
 
 		TEST_METHOD(Test_AllFlagsToString)
 		{
+			unittest::AreEqualEx(L"", flags::AllFlagsToString(NULL, true));
+			unittest::AreEqualEx(L"", flags::AllFlagsToString(0xFFFFFFFF, true));
 			unittest::AreEqualEx(
 				L"\r\n0x10000000 MAPI_P1\r\n"
 				L"0x80000000 MAPI_SUBMITTED\r\n"

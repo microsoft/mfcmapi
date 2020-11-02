@@ -174,7 +174,7 @@ namespace flags
 			ulCurEntry++;
 		}
 
-		if (FlagArray[ulCurEntry].ulFlagName != ulFlagName) return szFlagString;
+		if (ulCurEntry == FlagArray.size() || FlagArray[ulCurEntry].ulFlagName != ulFlagName) return szFlagString;
 
 		// We've matched our flag name to the array - we SHOULD return a string at this point
 		for (; FlagArray[ulCurEntry].ulFlagName == ulFlagName; ulCurEntry++)
