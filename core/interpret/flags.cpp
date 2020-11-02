@@ -24,94 +24,56 @@ namespace flags
 		if (FlagArray[ulCurEntry].ulFlagName != ulFlagName) return L"";
 
 		// We've matched our flag name to the array - we SHOULD return a string at this point
-		auto bNeedSeparator = false;
-
+		auto flags = std::vector<std::wstring>{};
 		auto lTempValue = lFlagValue;
-		std::wstring szTempString;
 		for (; FlagArray[ulCurEntry].ulFlagName == ulFlagName; ulCurEntry++)
 		{
 			if (flagFLAG == FlagArray[ulCurEntry].ulFlagType)
 			{
 				if (FlagArray[ulCurEntry].lFlagValue & lTempValue)
 				{
-					if (bNeedSeparator)
-					{
-						szTempString += L" | "; // STRING_OK
-					}
-
-					szTempString += FlagArray[ulCurEntry].lpszName;
+					flags.push_back(FlagArray[ulCurEntry].lpszName);
 					lTempValue &= ~FlagArray[ulCurEntry].lFlagValue;
-					bNeedSeparator = true;
 				}
 			}
 			else if (flagVALUE == FlagArray[ulCurEntry].ulFlagType)
 			{
 				if (FlagArray[ulCurEntry].lFlagValue == lTempValue)
 				{
-					if (bNeedSeparator)
-					{
-						szTempString += L" | "; // STRING_OK
-					}
-
-					szTempString += FlagArray[ulCurEntry].lpszName;
+					flags.push_back(FlagArray[ulCurEntry].lpszName);
 					lTempValue = 0;
-					bNeedSeparator = true;
 				}
 			}
 			else if (flagVALUEHIGHBYTES == FlagArray[ulCurEntry].ulFlagType)
 			{
 				if (FlagArray[ulCurEntry].lFlagValue == (lTempValue >> 16 & 0xFFFF))
 				{
-					if (bNeedSeparator)
-					{
-						szTempString += L" | "; // STRING_OK
-					}
-
-					szTempString += FlagArray[ulCurEntry].lpszName;
+					flags.push_back(FlagArray[ulCurEntry].lpszName);
 					lTempValue = lTempValue - (FlagArray[ulCurEntry].lFlagValue << 16);
-					bNeedSeparator = true;
 				}
 			}
 			else if (flagVALUE3RDBYTE == FlagArray[ulCurEntry].ulFlagType)
 			{
 				if (FlagArray[ulCurEntry].lFlagValue == (lTempValue >> 8 & 0xFF))
 				{
-					if (bNeedSeparator)
-					{
-						szTempString += L" | "; // STRING_OK
-					}
-
-					szTempString += FlagArray[ulCurEntry].lpszName;
+					flags.push_back(FlagArray[ulCurEntry].lpszName);
 					lTempValue = lTempValue - (FlagArray[ulCurEntry].lFlagValue << 8);
-					bNeedSeparator = true;
 				}
 			}
 			else if (flagVALUE4THBYTE == FlagArray[ulCurEntry].ulFlagType)
 			{
 				if (FlagArray[ulCurEntry].lFlagValue == (lTempValue & 0xFF))
 				{
-					if (bNeedSeparator)
-					{
-						szTempString += L" | "; // STRING_OK
-					}
-
-					szTempString += FlagArray[ulCurEntry].lpszName;
+					flags.push_back(FlagArray[ulCurEntry].lpszName);
 					lTempValue = lTempValue - FlagArray[ulCurEntry].lFlagValue;
-					bNeedSeparator = true;
 				}
 			}
 			else if (flagVALUELOWERNIBBLE == FlagArray[ulCurEntry].ulFlagType)
 			{
 				if (FlagArray[ulCurEntry].lFlagValue == (lTempValue & 0x0F))
 				{
-					if (bNeedSeparator)
-					{
-						szTempString += L" | "; // STRING_OK
-					}
-
-					szTempString += FlagArray[ulCurEntry].lpszName;
+					flags.push_back(FlagArray[ulCurEntry].lpszName);
 					lTempValue = lTempValue - FlagArray[ulCurEntry].lFlagValue;
-					bNeedSeparator = true;
 				}
 			}
 			else if (flagCLEARBITS == FlagArray[ulCurEntry].ulFlagType)
@@ -121,33 +83,19 @@ namespace flags
 				// report what we found
 				if (0 != lClearedBits)
 				{
-					if (bNeedSeparator)
-					{
-						szTempString += L" | "; // STRING_OK
-					}
-
-					szTempString += strings::format(L"0x%X", lClearedBits); // STRING_OK
+					flags.push_back(strings::format(L"0x%X", lClearedBits)); // STRING_OK
 						// clear the bits out
 					lTempValue &= ~FlagArray[ulCurEntry].lFlagValue;
-					bNeedSeparator = true;
 				}
 			}
 		}
 
-		// We know if we've found anything already because bNeedSeparator will be true
-		// If bNeedSeparator isn't true, we found nothing and need to tack on
-		// Otherwise, it's true, and we only tack if lTempValue still has something in it
-		if (!bNeedSeparator || lTempValue)
+		if (lTempValue || flags.empty())
 		{
-			if (bNeedSeparator)
-			{
-				szTempString += L" | "; // STRING_OK
-			}
-
-			szTempString += strings::format(L"0x%X", lTempValue); // STRING_OK
+			flags.push_back(strings::format(L"0x%X", lTempValue)); // STRING_OK
 		}
 
-		return szTempString;
+		return strings::join(flags, L" | ");
 	}
 
 	// Returns a list of all known flags/values for a flag name.
@@ -162,21 +110,20 @@ namespace flags
 	// Since the string is always appended to a prompt we include \r\n at the start
 	std::wstring AllFlagsToString(ULONG ulFlagName, bool bHex)
 	{
-		std::wstring szFlagString;
-		if (!ulFlagName) return szFlagString;
-		if (FlagArray.empty()) return szFlagString;
+		if (!ulFlagName) return L"";
+		if (FlagArray.empty()) return L"";
 
 		ULONG ulCurEntry = 0;
-		std::wstring szTempString;
 
 		while (ulCurEntry < FlagArray.size() && FlagArray[ulCurEntry].ulFlagName != ulFlagName)
 		{
 			ulCurEntry++;
 		}
 
-		if (ulCurEntry == FlagArray.size() || FlagArray[ulCurEntry].ulFlagName != ulFlagName) return szFlagString;
+		if (ulCurEntry == FlagArray.size() || FlagArray[ulCurEntry].ulFlagName != ulFlagName) return L"";
 
 		// We've matched our flag name to the array - we SHOULD return a string at this point
+		auto flags = std::vector<std::wstring>{};
 		for (; FlagArray[ulCurEntry].ulFlagName == ulFlagName; ulCurEntry++)
 		{
 			if (flagCLEARBITS == FlagArray[ulCurEntry].ulFlagType)
@@ -187,17 +134,17 @@ namespace flags
 			{
 				if (bHex)
 				{
-					szFlagString += strings::formatmessage(
-						IDS_FLAGTOSTRINGHEX, FlagArray[ulCurEntry].lFlagValue, FlagArray[ulCurEntry].lpszName);
+					flags.push_back(strings::formatmessage(
+						IDS_FLAGTOSTRINGHEX, FlagArray[ulCurEntry].lFlagValue, FlagArray[ulCurEntry].lpszName));
 				}
 				else
 				{
-					szFlagString += strings::formatmessage(
-						IDS_FLAGTOSTRINGDEC, FlagArray[ulCurEntry].lFlagValue, FlagArray[ulCurEntry].lpszName);
+					flags.push_back(strings::formatmessage(
+						IDS_FLAGTOSTRINGDEC, FlagArray[ulCurEntry].lFlagValue, FlagArray[ulCurEntry].lpszName));
 				}
 			}
 		}
 
-		return szFlagString;
+		return strings::join(flags, L"");
 	}
 } // namespace flags
