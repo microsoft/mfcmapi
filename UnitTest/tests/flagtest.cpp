@@ -69,7 +69,7 @@ namespace flagtest
 			unittest::AreEqualEx(L"", flags::AllFlagsToString(NULL, true));
 			unittest::AreEqualEx(L"", flags::AllFlagsToString(0xFFFFFFFF, true));
 			unittest::AreEqualEx(
-				L"\r\n0x10000000 MAPI_P1\r\n"
+				L"0x10000000 MAPI_P1\r\n"
 				L"0x80000000 MAPI_SUBMITTED\r\n"
 				L"0x00000000 MAPI_ORIG\r\n"
 				L"0x00000001 MAPI_TO\r\n"
@@ -77,7 +77,7 @@ namespace flagtest
 				L"0x00000003 MAPI_BCC",
 				flags::AllFlagsToString(PROP_ID(PR_RECIPIENT_TYPE), true));
 			unittest::AreEqualEx(
-				L"\r\n268435456 MAPI_P1\r\n"
+				L"268435456 MAPI_P1\r\n"
 				L"-2147483648 MAPI_SUBMITTED\r\n"
 				L"    0 MAPI_ORIG\r\n"
 				L"    1 MAPI_TO\r\n"

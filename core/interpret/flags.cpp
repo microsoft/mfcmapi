@@ -145,6 +145,6 @@ namespace flags
 			}
 		}
 
-		return strings::join(flags, L"");
+		return strings::join(flags, L"\r\n");
 	}
 } // namespace flags
