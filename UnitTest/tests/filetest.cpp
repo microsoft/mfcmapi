@@ -39,16 +39,16 @@ namespace filetest
 		TEST_METHOD(Test_GetModuleFileName)
 		{
 			unittest::AreEqualEx(
-				L"C:\\WINDOWS\\SYSTEM32\\ntdll.dll", file::GetModuleFileName(::GetModuleHandle(L"ntdll.dll")));
+				L"C:\\WINDOWS\\SYSTEM32\\ntdll.dll", file::GetModuleFileName(::GetModuleHandleW(L"ntdll.dll")));
 		}
 
 		TEST_METHOD(Test_GetFileVersionInfo)
 		{
-			auto fi1 = file::GetFileVersionInfo(::GetModuleHandle(NULL));
+			auto fi1 = file::GetFileVersionInfo(::GetModuleHandleW(NULL));
 			unittest::AreEqualEx(L"Microsoft Corporation", fi1[L"CompanyName"]);
 			unittest::AreEqualEx(L"© Microsoft Corporation. All rights reserved.", fi1[L"LegalCopyright"]);
 
-			auto fi2 = file::GetFileVersionInfo(::GetModuleHandle(L"ntdll.dll"));
+			auto fi2 = file::GetFileVersionInfo(::GetModuleHandleW(L"ntdll.dll"));
 			unittest::AreEqualEx(L"Microsoft Corporation", fi2[L"CompanyName"]);
 			unittest::AreEqualEx(L"NT Layer DLL", fi2[L"FileDescription"]);
 			unittest::AreEqualEx(L"Microsoft® Windows® Operating System", fi2[L"ProductName"]);
