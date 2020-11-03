@@ -18,6 +18,8 @@ namespace file
 			// Use the short path to give us as much room as possible
 			WC_D_S(GetShortPathNameW(path.c_str(), szShortPath, _countof(szShortPath)));
 			std::wstring ret = szShortPath;
+			if (!ret.length()) return path;
+
 			if (ret.back() != L'\\')
 			{
 				ret += L'\\';
@@ -125,7 +127,8 @@ namespace file
 		if (szFile.length() >= maxFile)
 		{
 			szFile = cleanSubj.substr(0, MAXSUBJTIGHT) + szBin.substr(0, MAXBIN);
-			output::DebugPrint(output::dbgLevel::Generic, L"BuildFileNameAndPath shorter file = \"%ws\"\n", szFile.c_str());
+			output::DebugPrint(
+				output::dbgLevel::Generic, L"BuildFileNameAndPath shorter file = \"%ws\"\n", szFile.c_str());
 			output::DebugPrint(output::dbgLevel::Generic, L"BuildFileNameAndPath new length = %d\n", szFile.length());
 		}
 
