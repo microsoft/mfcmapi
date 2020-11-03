@@ -15,19 +15,19 @@ namespace filetest
 		TEST_METHOD(Test_GetSystemDirectory)
 		{
 			// This test is likely not portable
-			unittest::AreEqualEx(L"C:\\WINDOWS\\system32", file::GetSystemDirectory());
+			unittest::AreEqualEx(L"c:\\windows\\system32", strings::wstringToLower(file::GetSystemDirectory()));
 		}
 
 		TEST_METHOD(Test_ShortenPath)
 		{
 			unittest::AreEqualEx(
-				L"C:\\thisIsAFakePath\\thisIsAnotherFakePath",
-				file::ShortenPath(L"C:\\thisIsAFakePath\\thisIsAnotherFakePath"));
+				L"c:\\thisisafakepath\\thisisanotherfakepath",
+				strings::wstringToLower(file::ShortenPath(L"C:\\thisIsAFakePath\\thisIsAnotherFakePath")));
 			// This test is likely not portable
-			unittest::AreEqualEx(L"C:\\PROGRA~1\\COMMON~1\\", file::ShortenPath(L"C:\\Program Files\\Common Files"));
+			unittest::AreEqualEx(L"c:\\progra~1\\common~1\\", strings::wstringToLower(file::ShortenPath(L"C:\\Program Files\\Common Files")));
 			// This test is likely not portable
 			unittest::AreEqualEx(
-				L"C:\\PROGRA~2\\COMMON~1\\", file::ShortenPath(L"C:\\Program Files (x86)\\Common Files"));
+				L"c:\\progra~2\\common~1\\", strings::wstringToLower(file::ShortenPath(L"C:\\Program Files (x86)\\Common Files")));
 		}
 
 		TEST_METHOD(Test_BuildFileNameAndPath)
@@ -39,7 +39,7 @@ namespace filetest
 		TEST_METHOD(Test_GetModuleFileName)
 		{
 			unittest::AreEqualEx(
-				L"C:\\WINDOWS\\SYSTEM32\\ntdll.dll", file::GetModuleFileName(::GetModuleHandleW(L"ntdll.dll")));
+				L"c:\\windows\\system32\\ntdll.dll", strings::wstringToLower(file::GetModuleFileName(::GetModuleHandleW(L"ntdll.dll"))));
 		}
 
 		TEST_METHOD(Test_GetFileVersionInfo)
