@@ -63,14 +63,14 @@ namespace mapi::processor
 	void dumpStore::InitFolderPathRoot(_In_ const std::wstring& szFolderPathRoot)
 	{
 		m_szFolderPathRoot = szFolderPathRoot;
-		if (m_szFolderPathRoot.length() >= MAXMSGPATH)
+		if (m_szFolderPathRoot.length() >= file::MAXMSGPATH)
 		{
 			output::DebugPrint(
 				output::dbgLevel::Generic,
 				L"InitFolderPathRoot: \"%ws\" length (%d) greater than max length (%d)\n",
 				m_szFolderPathRoot.c_str(),
 				m_szFolderPathRoot.length(),
-				MAXMSGPATH);
+				file::MAXMSGPATH);
 		}
 	}
 
@@ -247,7 +247,7 @@ namespace mapi::processor
 	void OutputMessageList(_In_ const _SRow* lpSRow, _In_ const std::wstring& szFolderPath, bool bOutputMSG)
 	{
 		if (!lpSRow || szFolderPath.empty()) return;
-		if (szFolderPath.length() >= MAXMSGPATH) return;
+		if (szFolderPath.length() >= file::MAXMSGPATH) return;
 
 		// Get required properties from the message
 		auto lpTemp = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, PR_SUBJECT_W);
@@ -349,7 +349,7 @@ namespace mapi::processor
 		}
 
 		// The only error we suppress is MAPI_E_NOT_FOUND, so if a body type isn't in the output, it wasn't on the message
-		if (hRes != MAPI_E_NOT_FOUND )
+		if (hRes != MAPI_E_NOT_FOUND)
 		{
 			output::OutputToFilef(fMessageProps, L"<body property=\"%ws\"", szBodyName.c_str());
 			if (!lpStream)
@@ -369,13 +369,7 @@ namespace mapi::processor
 						bUnicode = true;
 						ULONG ulStreamFlags = NULL;
 						WC_H_S(mapi::WrapStreamForRTF(
-							lpStream,
-							true,
-							MAPI_NATIVE_BODY,
-							ulCPID,
-							CP_UNICODE,
-							&lpRTFUncompressed,
-							&ulStreamFlags));
+							lpStream, true, MAPI_NATIVE_BODY, ulCPID, CP_UNICODE, &lpRTFUncompressed, &ulStreamFlags));
 						auto szFlags = flags::InterpretFlags(flagStreamFlag, ulStreamFlags);
 						output::OutputToFilef(
 							fMessageProps,
