@@ -40,6 +40,13 @@ namespace filetest
 				L"c:\\testpath\\subject.xml", file::BuildFileNameAndPath(L".xml", L"subject", L"c:\\testpath\\", NULL));
 			unittest::AreEqualEx(
 				L"c:\\testpath\\UnknownSubject.xml", file::BuildFileNameAndPath(L".xml", L"", L"c:\\testpath\\", NULL));
+			std::wstring binStr = L"binstr";
+			auto bin = SBinary{
+				static_cast<ULONG>(binStr.length() * sizeof(WCHAR)),
+				reinterpret_cast<LPBYTE>(const_cast<WCHAR*>(binStr.c_str()))};
+
+			unittest::AreEqualEx(
+				L"c:\\testpath\\subject_620069006E00730074007200.xml", file::BuildFileNameAndPath(L".xml", L"subject", L"c:\\testpath\\", &bin));
 			unittest::AreEqualEx(
 				L"c:\\testpath\\Now is the time for all good men to come to the aid of the party. This is the way the "
 				L"world ends. Not with a bang but with a whimper. So long and thanks for all the fish. That's great it "
