@@ -20,26 +20,54 @@ namespace filetest
 
 		TEST_METHOD(Test_ShortenPath)
 		{
+			unittest::AreEqualEx(L"", file::ShortenPath(L""));
 			unittest::AreEqualEx(
 				L"c:\\thisisafakepath\\thisisanotherfakepath",
 				strings::wstringToLower(file::ShortenPath(L"C:\\thisIsAFakePath\\thisIsAnotherFakePath")));
 			// This test is likely not portable
-			unittest::AreEqualEx(L"c:\\progra~1\\common~1\\", strings::wstringToLower(file::ShortenPath(L"C:\\Program Files\\Common Files")));
+			unittest::AreEqualEx(
+				L"c:\\progra~1\\common~1\\",
+				strings::wstringToLower(file::ShortenPath(L"C:\\Program Files\\Common Files")));
 			// This test is likely not portable
 			unittest::AreEqualEx(
-				L"c:\\progra~2\\common~1\\", strings::wstringToLower(file::ShortenPath(L"C:\\Program Files (x86)\\Common Files")));
+				L"c:\\progra~2\\common~1\\",
+				strings::wstringToLower(file::ShortenPath(L"C:\\Program Files (x86)\\Common Files")));
 		}
 
 		TEST_METHOD(Test_BuildFileNameAndPath)
 		{
 			unittest::AreEqualEx(
 				L"c:\\testpath\\subject.xml", file::BuildFileNameAndPath(L".xml", L"subject", L"c:\\testpath\\", NULL));
+			unittest::AreEqualEx(
+				L"c:\\testpath\\UnknownSubject.xml", file::BuildFileNameAndPath(L".xml", L"", L"c:\\testpath\\", NULL));
+			unittest::AreEqualEx(
+				L"c:\\testpath\\Now is the time for all good men to come to the aid of the party. This is the way the "
+				L"world ends. Not with a bang but with a whimper. So long and thanks for all the fish. That's great it "
+				L"starts with an earthquake_ birds and snakes an.xml",
+				file::BuildFileNameAndPath(
+					L".xml",
+					L"Now is the time for all good men to come to the aid of the party. This is the way the world "
+					L"ends. Not with a bang but with a whimper. So long and thanks for all the fish. That's great it "
+					L"starts with an earthquake, birds and snakes and aeroplanes. Lenny Bruce is not afraid.",
+					L"c:\\testpath\\",
+					NULL));
+			unittest::AreEqualEx(
+				L"",
+				file::BuildFileNameAndPath(
+					L".xml",
+					L"subject",
+					L"c:\\Now is the time for all good men to come to the aid of the party. This is the way the world "
+					L"ends. Not with a bang but with a whimper. So long and thanks for all the fish. That's great it "
+					L"starts with an earthquake, birds and snakes and aeroplanes. Lenny Bruce is not afraid.",
+					NULL));
 		}
 
 		TEST_METHOD(Test_GetModuleFileName)
 		{
 			unittest::AreEqualEx(
-				L"c:\\windows\\system32\\ntdll.dll", strings::wstringToLower(file::GetModuleFileName(::GetModuleHandleW(L"ntdll.dll"))));
+				L"c:\\windows\\system32\\ntdll.dll",
+				strings::wstringToLower(file::GetModuleFileName(::GetModuleHandleW(L"ntdll.dll"))));
+			unittest::AreEqualEx(L"", file::GetModuleFileName(HMODULE(0x1234)));
 		}
 
 		TEST_METHOD(Test_GetFileVersionInfo)
