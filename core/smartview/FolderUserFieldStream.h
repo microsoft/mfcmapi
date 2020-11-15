@@ -9,7 +9,7 @@ namespace smartview
 	class FolderFieldDefinition : public block
 	{
 	public:
-		FolderFieldDefinition::FolderFieldDefinition(bool _unicode) : unicode(_unicode) {}
+		FolderFieldDefinition(bool _unicode) : unicode(_unicode) {}
 
 	private:
 		void parse() override;

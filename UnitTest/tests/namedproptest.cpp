@@ -20,9 +20,9 @@ namespace namedproptest
 		const MAPINAMEID formStorageID = {const_cast<LPGUID>(&guid::PSETID_Common), MNID_ID, dispidFormStorage};
 		const MAPINAMEID formStorageIDLog = {const_cast<LPGUID>(&guid::PSETID_Log), MNID_ID, dispidFormStorage};
 		const MAPINAMEID formStorageName = {
-			const_cast<LPGUID>(&guid::PSETID_Common), MNID_STRING, {.lpwstrName = L"name"}};
+			const_cast<LPGUID>(&guid::PSETID_Common), MNID_STRING, {.lpwstrName = const_cast<LPWSTR>(L"name")}};
 		const MAPINAMEID formStorageName2 = {
-			const_cast<LPGUID>(&guid::PSETID_Common), MNID_STRING, {.lpwstrName = L"name2"}};
+			const_cast<LPGUID>(&guid::PSETID_Common), MNID_STRING, {.lpwstrName = const_cast<LPWSTR>(L"name2")}};
 		const MAPINAMEID pageDirStreamID = {const_cast<LPGUID>(&guid::PSETID_Common), MNID_ID, dispidPageDirStream};
 		const MAPINAMEID propDefStream = {const_cast<LPGUID>(&guid::PSETID_Common), MNID_ID, dispidPropDefStream};
 

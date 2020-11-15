@@ -126,7 +126,7 @@ bool LoadMAPIVersion(const std::wstring& lpszVersion)
 	return false;
 }
 
-void wmain(_In_ int argc, _In_count_(argc) wchar_t* argv[])
+int wmain(_In_ int argc, _In_count_(argc) wchar_t* argv[])
 {
 	auto hRes = S_OK;
 	auto bMAPIInit = false;
@@ -176,7 +176,7 @@ void wmain(_In_ int argc, _In_count_(argc) wchar_t* argv[])
 
 	if (cli::switchVersion.isSet())
 	{
-		if (LoadMAPIVersion(cli::switchVersion[0])) return;
+		if (LoadMAPIVersion(cli::switchVersion[0])) return 0;
 	}
 
 	if (ProgOpts.mode == cli::cmdmodeHelp)
@@ -322,4 +322,6 @@ void wmain(_In_ int argc, _In_count_(argc) wchar_t* argv[])
 	{
 		addin::UnloadAddIns();
 	}
+
+	return 0;
 }

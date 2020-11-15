@@ -10,7 +10,7 @@ void DumpContentsTable(
 	_In_z_ LPCWSTR lpszProfile,
 	_In_ LPMDB lpMDB,
 	_In_ LPMAPIFOLDER lpFolder,
-	_In_z_ LPWSTR lpszDir,
+	_In_z_ LPCWSTR lpszDir,
 	_In_z_ LPCWSTR lpszFolder,
 	_In_ ULONG ulCount,
 	_In_opt_ LPSRestriction lpRes)

@@ -79,25 +79,26 @@ namespace file
 		// the properties that Exchange excludes to save bits and time.
 		// Should not be necessary to exclude these, but speeds the process
 		// when a lot of messages are being copied.
-		static const SizedSPropTagArray(18, excludeTags) = {18,
-															{PR_REPLICA_VERSION,
-															 PR_DISPLAY_BCC,
-															 PR_DISPLAY_CC,
-															 PR_DISPLAY_TO,
-															 PR_ENTRYID,
-															 PR_MESSAGE_SIZE,
-															 PR_PARENT_ENTRYID,
-															 PR_RECORD_KEY,
-															 PR_STORE_ENTRYID,
-															 PR_STORE_RECORD_KEY,
-															 PR_MDB_PROVIDER,
-															 PR_ACCESS,
-															 PR_HASATTACH,
-															 PR_OBJECT_TYPE,
-															 PR_ACCESS_LEVEL,
-															 PR_HAS_NAMED_PROPERTIES,
-															 PR_REPLICA_SERVER,
-															 PR_HAS_DAMS}};
+		static const SizedSPropTagArray(18, excludeTags) = {
+			18,
+			{PR_REPLICA_VERSION,
+			 PR_DISPLAY_BCC,
+			 PR_DISPLAY_CC,
+			 PR_DISPLAY_TO,
+			 PR_ENTRYID,
+			 PR_MESSAGE_SIZE,
+			 PR_PARENT_ENTRYID,
+			 PR_RECORD_KEY,
+			 PR_STORE_ENTRYID,
+			 PR_STORE_RECORD_KEY,
+			 PR_MDB_PROVIDER,
+			 PR_ACCESS,
+			 PR_HASATTACH,
+			 PR_OBJECT_TYPE,
+			 PR_ACCESS_LEVEL,
+			 PR_HAS_NAMED_PROPERTIES,
+			 PR_REPLICA_SERVER,
+			 PR_HAS_DAMS}};
 
 		auto hRes = S_OK;
 		auto pIMsg = LoadMSGToMessage(szMessageFile);
@@ -156,7 +157,7 @@ namespace file
 				nullptr,
 				lpStream,
 				reinterpret_cast<LPTSTR>(
-					"winmail.dat"), // STRING_OK - despite its signature, this function is ANSI only
+					const_cast<LPSTR>("winmail.dat")), // STRING_OK - despite its signature, this function is ANSI only
 				TNEF_DECODE,
 				lpMessage,
 				wKeyVal,
@@ -243,8 +244,8 @@ namespace file
 			fldNUM_COLS
 		};
 
-		static const SizedSPropTagArray(fldNUM_COLS, fldCols) = {fldNUM_COLS,
-																 {PR_ENTRYID, PR_SUBJECT_W, PR_RECORD_KEY}};
+		static const SizedSPropTagArray(fldNUM_COLS, fldCols) = {
+			fldNUM_COLS, {PR_ENTRYID, PR_SUBJECT_W, PR_RECORD_KEY}};
 
 		if (!lpFolder || szPathName.empty()) return MAPI_E_INVALID_PARAMETER;
 		if (szPathName.length() >= MAXMSGPATH) return MAPI_E_INVALID_PARAMETER;
@@ -524,14 +525,15 @@ namespace file
 			// the properties that Exchange excludes to save bits and time.
 			// Should not be necessary to exclude these, but speeds the process
 			// when a lot of messages are being copied.
-			static const SizedSPropTagArray(7, excludeTags) = {7,
-															   {PR_ACCESS,
-																PR_BODY,
-																PR_RTF_SYNC_BODY_COUNT,
-																PR_RTF_SYNC_BODY_CRC,
-																PR_RTF_SYNC_BODY_TAG,
-																PR_RTF_SYNC_PREFIX_COUNT,
-																PR_RTF_SYNC_TRAILING_COUNT}};
+			static const SizedSPropTagArray(7, excludeTags) = {
+				7,
+				{PR_ACCESS,
+				 PR_BODY,
+				 PR_RTF_SYNC_BODY_COUNT,
+				 PR_RTF_SYNC_BODY_CRC,
+				 PR_RTF_SYNC_BODY_TAG,
+				 PR_RTF_SYNC_PREFIX_COUNT,
+				 PR_RTF_SYNC_TRAILING_COUNT}};
 
 			hRes = EC_H(
 				mapi::CopyTo(hWnd, lpMessage, pIMsg, &IID_IMessage, LPSPropTagArray(&excludeTags), false, bAllowUI));
@@ -569,8 +571,8 @@ namespace file
 		{
 			ulNumTNEFExcludeProps = 1
 		};
-		static const SizedSPropTagArray(ulNumTNEFExcludeProps, lpPropTnefExcludeArray) = {ulNumTNEFExcludeProps,
-																						  {PR_URL_COMP_NAME}};
+		static const SizedSPropTagArray(ulNumTNEFExcludeProps, lpPropTnefExcludeArray) = {
+			ulNumTNEFExcludeProps, {PR_URL_COMP_NAME}};
 
 		if (!lpMessage || !lpAdrBook || szFileName.empty()) return MAPI_E_INVALID_PARAMETER;
 		output::DebugPrint(output::dbgLevel::Generic, L"SaveToTNEF: Saving message to \"%ws\"\n", szFileName.c_str());
@@ -594,7 +596,7 @@ namespace file
 				nullptr,
 				lpStream,
 				reinterpret_cast<LPTSTR>(
-					"winmail.dat"), // STRING_OK - despite its signature, this function is ANSI only
+					const_cast<LPSTR>("winmail.dat")), // STRING_OK - despite its signature, this function is ANSI only
 				TNEF_ENCODE,
 				lpMessage,
 				wKeyVal,
@@ -696,8 +698,8 @@ namespace file
 			ATTACHNAME,
 			NUM_COLS
 		};
-		static SizedSPropTagArray(NUM_COLS, sptAttachTableCols) = {NUM_COLS,
-																   {PR_ATTACH_NUM, PR_ATTACH_LONG_FILENAME_W}};
+		static SizedSPropTagArray(NUM_COLS, sptAttachTableCols) = {
+			NUM_COLS, {PR_ATTACH_NUM, PR_ATTACH_LONG_FILENAME_W}};
 
 		auto bDirty = false;
 		auto hRes = IterateAttachments(

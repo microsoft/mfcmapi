@@ -175,7 +175,7 @@ namespace dialog
 					sRes.res.resProperty.relop = RELOP_EQ;
 					sRes.res.resProperty.lpProp = &sPV;
 					sPV.ulPropTag = sRes.res.resProperty.ulPropTag;
-					sPV.Value.LPSZ = _T("IPM.Configuration.Autocomplete"); // STRING_OK
+					sPV.Value.LPSZ = const_cast<LPTSTR>(_T("IPM.Configuration.Autocomplete")); // STRING_OK
 					auto hRes = WC_MAPI(lpTable->Restrict(&sRes, TBL_BATCH));
 					if (SUCCEEDED(hRes))
 					{
@@ -245,7 +245,7 @@ namespace dialog
 
 				if (lpsProp)
 				{
-					const auto bin = mapi::getBin(lpsProp);
+					const SBinary bin = mapi::getBin(lpsProp);
 					auto lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(MyResults.GetPane(1));
 					if (lpPane) lpPane->SetCount(bin.cb);
 					MyResults.SetBinary(1, bin.lpb, bin.cb);
@@ -432,7 +432,7 @@ namespace dialog
 			MyResults.AddPane(viewpane::CountedTextPane::Create(0, IDS_HEX, true, IDS_CB));
 			MyResults.AddPane(viewpane::TextPane::CreateCollapsibleTextPane(1, IDS_ANSISTRING, true));
 
-			const auto bin = mapi::getBin(lpThumbnail);
+			const SBinary bin = mapi::getBin(lpThumbnail);
 			auto lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(MyResults.GetPane(0));
 			if (lpPane) lpPane->SetCount(bin.cb);
 			MyResults.SetBinary(0, bin.lpb, bin.cb);
