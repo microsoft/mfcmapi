@@ -15,7 +15,7 @@ namespace cache
 	class namedPropCacheEntry
 	{
 	public:
-		namedPropCacheEntry::namedPropCacheEntry(
+		namedPropCacheEntry(
 			const MAPINAMEID* lpPropName,
 			ULONG _ulPropID,
 			_In_ const std::vector<BYTE>& _sig = {});

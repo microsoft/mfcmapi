@@ -314,7 +314,7 @@ namespace dialog
 				nullptr, lpAddrBook, nullptr, nullptr, cbEID, lpEID, nullptr, MAPI_MODIFY, &ulObjType);
 			if (lpDefaultDir)
 			{
-				EC_H_S(DisplayObject(lpDefaultDir, ulObjType, objectType::default, this));
+				EC_H_S(DisplayObject(lpDefaultDir, ulObjType, objectType::otDefault, this));
 
 				lpDefaultDir->Release();
 			}
@@ -343,7 +343,7 @@ namespace dialog
 				nullptr, lpAddrBook, nullptr, nullptr, cbEID, lpEID, nullptr, MAPI_MODIFY, &ulObjType);
 			if (lpPAB)
 			{
-				EC_H_S(DisplayObject(lpPAB, ulObjType, objectType::default, this));
+				EC_H_S(DisplayObject(lpPAB, ulObjType, objectType::otDefault, this));
 
 				lpPAB->Release();
 			}
@@ -1330,7 +1330,7 @@ namespace dialog
 			auto lpNewMessage = file::LoadMSGToMessage(file);
 			if (lpNewMessage)
 			{
-				WC_H_S(DisplayObject(lpNewMessage, MAPI_MESSAGE, objectType::default, this));
+				WC_H_S(DisplayObject(lpNewMessage, MAPI_MESSAGE, objectType::otDefault, this));
 				lpNewMessage->Release();
 			}
 		}

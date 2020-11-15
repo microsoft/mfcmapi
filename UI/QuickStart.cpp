@@ -123,7 +123,7 @@ namespace dialog
 
 			if (lpDefaultDir)
 			{
-				WC_H_S(DisplayObject(lpDefaultDir, ulObjType, objectType::default, lpHostDlg));
+				WC_H_S(DisplayObject(lpDefaultDir, ulObjType, objectType::otDefault, lpHostDlg));
 
 				lpDefaultDir->Release();
 			}
@@ -393,7 +393,7 @@ namespace dialog
 			auto lpMailUser = mapi::ab::SelectUser(lpAdrBook, hwnd, &ulObjType);
 			if (lpMailUser)
 			{
-				EC_H_S(DisplayObject(lpMailUser, ulObjType, objectType::default, lpHostDlg));
+				EC_H_S(DisplayObject(lpMailUser, ulObjType, objectType::otDefault, lpHostDlg));
 
 				lpMailUser->Release();
 			}

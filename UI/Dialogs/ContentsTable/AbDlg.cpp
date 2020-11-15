@@ -143,7 +143,7 @@ namespace dialog
 					nullptr, nullptr, nullptr, lpSession, cb, reinterpret_cast<LPENTRYID>(lpb), nullptr, NULL, nullptr);
 				if (lpProp)
 				{
-					EC_H_S(DisplayObject(lpProp, NULL, objectType::default, this));
+					EC_H_S(DisplayObject(lpProp, NULL, objectType::otDefault, this));
 					if (lpProp) lpProp->Release();
 				}
 			}
@@ -168,7 +168,7 @@ namespace dialog
 				EC_H_S(DisplayTable(
 					lpMailUser,
 					PR_EMS_AB_MANAGER_O,
-					objectType::default, // oType,
+					objectType::otDefault, // oType,
 					this));
 
 				lpMailUser->Release();
@@ -192,7 +192,7 @@ namespace dialog
 				EC_H_S(DisplayTable(
 					lpMailUser,
 					PR_EMS_AB_OWNER_O,
-					objectType::default, // oType,
+					objectType::otDefault, // oType,
 					this));
 
 				lpMailUser->Release();

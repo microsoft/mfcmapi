@@ -224,10 +224,10 @@ namespace dialog
 			break;
 		}
 		default:
-		case objectType::default:
+		case objectType::otDefault:
 		{
 			if (!lpTable) return MAPI_E_INVALID_PARAMETER;
-			if (tType != objectType::default) error::ErrDialog(__FILE__, __LINE__, IDS_EDDISPLAYTABLE, tType);
+			if (tType != objectType::otDefault) error::ErrDialog(__FILE__, __LINE__, IDS_EDDISPLAYTABLE, tType);
 			new CContentsTableDlg(
 				lpParentWnd,
 				lpMapiObjects,
