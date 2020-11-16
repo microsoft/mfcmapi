@@ -442,11 +442,12 @@ namespace dialog
 					lpMySortOrders->aSort[i].ulPropTag = MyPropertyTag.GetPropertyTag();
 					editor::CEditor MySortOrderDlg(
 						this, IDS_SORTORDER, IDS_SORTORDERPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-					UINT uidDropDown[] = {IDS_DDTABLESORTASCEND,
-										  IDS_DDTABLESORTDESCEND,
-										  IDS_DDTABLESORTCOMBINE,
-										  IDS_DDTABLESORTCATEGMAX,
-										  IDS_DDTABLESORTCATEGMIN};
+					UINT uidDropDown[] = {
+						IDS_DDTABLESORTASCEND,
+						IDS_DDTABLESORTDESCEND,
+						IDS_DDTABLESORTCOMBINE,
+						IDS_DDTABLESORTCATEGMAX,
+						IDS_DDTABLESORTCATEGMIN};
 					MySortOrderDlg.AddPane(
 						viewpane::DropDownPane::Create(0, IDS_SORTORDER, _countof(uidDropDown), uidDropDown, true));
 
@@ -516,12 +517,12 @@ namespace dialog
 	{
 		if (lpMessage == nullptr) return MAPI_E_INVALID_PARAMETER;
 
-		return DisplayTable(lpMessage, PR_MESSAGE_ATTACHMENTS, objectType::default, this);
+		return DisplayTable(lpMessage, PR_MESSAGE_ATTACHMENTS, objectType::otDefault, this);
 	}
 
 	_Check_return_ HRESULT CContentsTableDlg::OpenRecipientsFromMessage(_In_ LPMESSAGE lpMessage)
 	{
-		return DisplayTable(lpMessage, PR_MESSAGE_RECIPIENTS, objectType::default, this);
+		return DisplayTable(lpMessage, PR_MESSAGE_RECIPIENTS, objectType::otDefault, this);
 	}
 
 	_Check_return_ bool CContentsTableDlg::HandleAddInMenu(WORD wMenuSelect)

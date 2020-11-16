@@ -250,7 +250,7 @@ namespace dialog
 				{
 					auto var = PROPVARIANT{};
 					var.vt = VT_LPWSTR;
-					var.pwszVal = L"Microsoft.MFCMAPI";
+					var.pwszVal = const_cast<LPWSTR>(L"Microsoft.MFCMAPI");
 
 					static_cast<void>(pps->SetValue(PKEY_AppUserModel_ID, var));
 				}

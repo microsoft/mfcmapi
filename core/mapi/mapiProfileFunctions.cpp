@@ -10,8 +10,8 @@
 
 namespace mapi::profile
 {
-#define PR_MARKER PR_BODY_A
-#define MARKER_STRING "MFCMAPI Existing Provider Marker" // STRING_OK
+	constexpr ULONG PR_MARKER = PR_BODY_A;
+	constexpr LPSTR MARKER_STRING = const_cast<LPSTR>("MFCMAPI Existing Provider Marker"); // STRING_OK
 	// Walk through providers and add/remove our tag
 	// bAddMark of true will add tag, bAddMark of false will remove it
 	_Check_return_ HRESULT HrMarkExistingProviders(_In_ LPSERVICEADMIN lpServiceAdmin, bool bAddMark)

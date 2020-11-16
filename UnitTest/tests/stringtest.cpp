@@ -576,17 +576,17 @@ namespace stringtest
 			auto str = _SPropValue{};
 			str.ulPropTag = PT_UNICODE;
 			Assert::AreEqual(false, strings::CheckStringProp(&str, PT_UNICODE));
-			str.Value.lpszW = L"";
+			str.Value.lpszW = const_cast<LPWSTR>(L"");
 			Assert::AreEqual(false, strings::CheckStringProp(&str, PT_UNICODE));
-			str.Value.lpszW = L"test";
+			str.Value.lpszW = const_cast<LPWSTR>(L"test");
 			Assert::AreEqual(false, strings::CheckStringProp(&str, PT_STRING8));
 			Assert::AreEqual(true, strings::CheckStringProp(&str, PT_UNICODE));
 
 			auto str2 = _SPropValue{};
 			str2.ulPropTag = PT_STRING8;
-			str2.Value.lpszA = "";
+			str2.Value.lpszA = const_cast<LPSTR>("");
 			Assert::AreEqual(false, strings::CheckStringProp(&str2, PT_STRING8));
-			str2.Value.lpszA = "test";
+			str2.Value.lpszA = const_cast<LPSTR>("test");
 			Assert::AreEqual(true, strings::CheckStringProp(&str2, PT_STRING8));
 		}
 

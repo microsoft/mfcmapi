@@ -211,7 +211,7 @@ namespace dialog
 		EC_MAPI_S(m_lpMDB->GetOutgoingQueue(NULL, &lpMAPITable));
 		if (lpMAPITable)
 		{
-			EC_H_S(DisplayTable(lpMAPITable, objectType::default, this));
+			EC_H_S(DisplayTable(lpMAPITable, objectType::otDefault, this));
 			lpMAPITable->Release();
 		}
 	}

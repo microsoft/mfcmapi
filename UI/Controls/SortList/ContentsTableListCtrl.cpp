@@ -819,9 +819,9 @@ namespace controls::sortlistctrl
 
 	sortIcon GetImage(_In_ LPSRow lpsRowData) noexcept
 	{
-		if (!lpsRowData) return sortIcon::default;
+		if (!lpsRowData) return sortIcon::siDefault;
 
-		sortIcon ulImage = sortIcon::default;
+		sortIcon ulImage = sortIcon::siDefault;
 
 		const auto lpRowType = PpropFindProp(lpsRowData->lpProps, lpsRowData->cValues, PR_ROW_TYPE);
 		if (lpRowType && PR_ROW_TYPE == lpRowType->ulPropTag)
@@ -840,7 +840,7 @@ namespace controls::sortlistctrl
 			}
 		}
 
-		if (sortIcon::default == ulImage)
+		if (sortIcon::siDefault == ulImage)
 		{
 			const auto lpObjType = PpropFindProp(lpsRowData->lpProps, lpsRowData->cValues, PR_OBJECT_TYPE);
 			if (lpObjType && PR_OBJECT_TYPE == lpObjType->ulPropTag)
@@ -857,7 +857,7 @@ namespace controls::sortlistctrl
 		}
 
 		// We still don't have a good icon - make some heuristic guesses
-		if (ulImage == sortIcon::default)
+		if (ulImage == sortIcon::siDefault)
 		{
 			auto lpProp = PpropFindProp(lpsRowData->lpProps, lpsRowData->cValues, PR_SERVICE_UID);
 			if (!lpProp)
