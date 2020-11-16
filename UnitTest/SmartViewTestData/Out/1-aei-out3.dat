@@ -2,7 +2,7 @@ Additional Ren Entry IDs
 	PersistDataCount = 3
 	Persist Element 0
 		PersistID = 0x8003 = 0x8003
-		DataElementsSize = 0x0096
+		DataElementsSize = 0x0068
 		DataElement[0]
 			ElementID = 0x0001 = RSF_ELID_ENTRYID
 			ElementDataSize = 0x002E
@@ -15,11 +15,9 @@ Additional Ren Entry IDs
 				cb: 46 lpb: 0000000096614EC66601D211A3B10008C728E7F101004D7FE57B4C92944987F5B588C78CF72D0000026500020000
 		DataElement[2]
 			ElementID = 0x0000 = 0x0
-			ElementDataSize = 0x002E
-			ElementData
-				cb: 46 lpb: 0000000096614EC66601D211A3B10008C728E7F101004D7FE57B4C92944987F5B588C78CF72D0000026500020000
+			ElementDataSize = 0x0000
 	Persist Element 1
-		PersistID = 0x0000 = 0x0
+		PersistID = 0x8004 = RSF_PID_TODO_SEARCH
 		DataElementsSize = 0x0032
 		DataElement[0]
 			ElementID = 0x0001 = RSF_ELID_ENTRYID

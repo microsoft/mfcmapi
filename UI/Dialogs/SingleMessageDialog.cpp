@@ -86,14 +86,14 @@ namespace dialog
 	{
 		if (!m_lpMessage) return;
 
-		EC_H_S(DisplayTable(m_lpMessage, PR_MESSAGE_ATTACHMENTS, objectType::default, this));
+		EC_H_S(DisplayTable(m_lpMessage, PR_MESSAGE_ATTACHMENTS, objectType::otDefault, this));
 	}
 
 	void SingleMessageDialog::OnRecipientProperties()
 	{
 		if (!m_lpMessage) return;
 
-		EC_H_S(DisplayTable(m_lpMessage, PR_MESSAGE_RECIPIENTS, objectType::default, this));
+		EC_H_S(DisplayTable(m_lpMessage, PR_MESSAGE_RECIPIENTS, objectType::otDefault, this));
 	}
 
 	void SingleMessageDialog::OnRTFSync()

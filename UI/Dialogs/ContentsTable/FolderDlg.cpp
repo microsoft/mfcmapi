@@ -245,7 +245,7 @@ namespace dialog
 
 			if (lpMAPIProp)
 			{
-				EC_H_S(DisplayObject(lpMAPIProp, NULL, objectType::default, this));
+				EC_H_S(DisplayObject(lpMAPIProp, NULL, objectType::otDefault, this));
 				lpMAPIProp->Release();
 			}
 		} while (iItem != -1);
@@ -482,14 +482,15 @@ namespace dialog
 				// the properties that Exchange excludes to save bits and time.
 				// Should not be necessary to exclude these, but speeds the process
 				// when a lot of messages are being copied.
-				static SizedSPropTagArray(7, excludeTags) = {7,
-															 {PR_ACCESS,
-															  PR_BODY,
-															  PR_RTF_SYNC_BODY_COUNT,
-															  PR_RTF_SYNC_BODY_CRC,
-															  PR_RTF_SYNC_BODY_TAG,
-															  PR_RTF_SYNC_PREFIX_COUNT,
-															  PR_RTF_SYNC_TRAILING_COUNT}};
+				static SizedSPropTagArray(7, excludeTags) = {
+					7,
+					{PR_ACCESS,
+					 PR_BODY,
+					 PR_RTF_SYNC_BODY_COUNT,
+					 PR_RTF_SYNC_BODY_CRC,
+					 PR_RTF_SYNC_BODY_TAG,
+					 PR_RTF_SYNC_PREFIX_COUNT,
+					 PR_RTF_SYNC_TRAILING_COUNT}};
 
 				const auto lpTagsToExclude =
 					ui::mapiui::GetExcludedTags(reinterpret_cast<LPSPropTagArray>(&excludeTags), m_lpFolder, m_bIsAB);
@@ -1855,7 +1856,7 @@ namespace dialog
 
 	void CFolderDlg::OnDisplayFolder(WORD wMenuSelect)
 	{
-		auto otType = objectType::default;
+		auto otType = objectType::otDefault;
 		switch (wMenuSelect)
 		{
 		case ID_HIERARCHY:

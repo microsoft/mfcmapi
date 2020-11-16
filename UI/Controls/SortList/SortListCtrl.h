@@ -8,7 +8,7 @@ namespace controls::sortlistctrl
 	// Reorder at your own risk!!!
 	enum class sortIcon
 	{
-		default = 0,
+		siDefault = 0,
 		nodeCollapsed,
 		nodeExpanded,
 		ptUnspecified,

@@ -268,7 +268,7 @@ namespace controls::sortlistctrl
 
 	_Check_return_ sortlistdata::sortListData* CSortListCtrl::InsertRow(int iRow, const std::wstring& szText) const
 	{
-		return InsertRow(iRow, szText, 0, sortIcon::default);
+		return InsertRow(iRow, szText, 0, sortIcon::siDefault);
 	}
 
 	_Check_return_ sortlistdata::sortListData*
@@ -484,8 +484,9 @@ namespace controls::sortlistctrl
 					if (ulSourceCol < lpData->cSourceProps &&
 						PROP_TYPE(lpData->lpSourceProps[ulSourceCol].ulPropTag) == PT_SYSTIME)
 					{
-						lpData->setSortValue({lpData->lpSourceProps[ulSourceCol].Value.ft.dwLowDateTime,
-											  lpData->lpSourceProps[ulSourceCol].Value.ft.dwHighDateTime});
+						lpData->setSortValue(
+							{lpData->lpSourceProps[ulSourceCol].Value.ft.dwLowDateTime,
+							 lpData->lpSourceProps[ulSourceCol].Value.ft.dwHighDateTime});
 					}
 				}
 			}

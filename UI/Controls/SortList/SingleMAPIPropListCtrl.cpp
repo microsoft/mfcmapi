@@ -635,7 +635,7 @@ namespace controls::sortlistctrl
 		_In_opt_ const SBinary* lpMappingSignature, // optional mapping signature for object to speed named prop lookups
 		_In_ LPSPropValue lpsPropToAdd)
 	{
-		auto image = sortIcon::default;
+		auto image = sortIcon::siDefault;
 		if (lpsPropToAdd)
 		{
 			for (const auto& _PropTypeIcon : _PropTypeIcons)
@@ -1229,7 +1229,7 @@ namespace controls::sortlistctrl
 
 		if (PT_OBJECT == PROP_TYPE(ulPropTag))
 		{
-			EC_H_S(DisplayTable(lpPropBag->GetMAPIProp(), ulPropTag, dialog::objectType::default, m_lpHostDlg));
+			EC_H_S(DisplayTable(lpPropBag->GetMAPIProp(), ulPropTag, dialog::objectType::otDefault, m_lpHostDlg));
 			return;
 		}
 
@@ -1538,7 +1538,7 @@ namespace controls::sortlistctrl
 			if (lpPropBag && PT_OBJECT == PROP_TYPE(lpProp->ulPropTag))
 			{
 				EC_H_S(DisplayTable(
-					lpPropBag->GetMAPIProp(), lpProp->ulPropTag, dialog::objectType::default, m_lpHostDlg));
+					lpPropBag->GetMAPIProp(), lpProp->ulPropTag, dialog::objectType::otDefault, m_lpHostDlg));
 			}
 			else if (PT_BINARY == PROP_TYPE(lpProp->ulPropTag) || PT_MV_BINARY == PROP_TYPE(lpProp->ulPropTag))
 			{
@@ -1645,7 +1645,7 @@ namespace controls::sortlistctrl
 			EC_H_S(DisplayExchangeTable(
 				lpPropBag->GetMAPIProp(),
 				CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_OBJECT),
-				dialog::objectType::default,
+				dialog::objectType::otDefault,
 				m_lpHostDlg));
 		}
 		else
@@ -1653,7 +1653,7 @@ namespace controls::sortlistctrl
 			EC_H_S(DisplayTable(
 				lpPropBag->GetMAPIProp(),
 				CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_OBJECT),
-				dialog::objectType::default,
+				dialog::objectType::otDefault,
 				m_lpHostDlg));
 		}
 	}

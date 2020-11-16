@@ -9,7 +9,7 @@ namespace smartview
 	{
 		wElementID = blockT<WORD>::parse(parser);
 		wElementDataSize = blockT<WORD>::parse(parser);
-		if (wElementID != PersistElement::ELEMENT_SENTINEL)
+		if (*wElementID != PersistElement::ELEMENT_SENTINEL)
 		{
 			// Since this is a word, the size will never be too large
 			lpbElementData = blockBytes::parse(parser, wElementDataSize->getData());
@@ -35,7 +35,7 @@ namespace smartview
 		wPersistID = blockT<WORD>::parse(parser);
 		wDataElementsSize = blockT<WORD>::parse(parser);
 
-		if (wPersistID != PERISIST_SENTINEL && parser->getSize() >= *wDataElementsSize)
+		if (*wPersistID != PERISIST_SENTINEL && parser->getSize() >= *wDataElementsSize)
 		{
 			// Build a new parser to preread and count our elements
 			// This new parser will only contain as much space as suggested in wDataElementsSize
@@ -50,7 +50,7 @@ namespace smartview
 
 				DataElementParser->advance(*wElementDataSize);
 				wDataElementCount++;
-				if (wElementID == PersistElement::ELEMENT_SENTINEL) break;
+				if (*wElementID == PersistElement::ELEMENT_SENTINEL) break;
 			}
 		}
 
@@ -112,7 +112,7 @@ namespace smartview
 
 			parser->advance(*wDataElementSize);
 			wPersistDataCount++;
-			if (wPersistID == PersistData::PERISIST_SENTINEL) break;
+			if (*wPersistID == PersistData::PERISIST_SENTINEL) break;
 		}
 
 		// Now we parse for real
