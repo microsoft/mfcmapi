@@ -42,6 +42,7 @@ jobs:
       maximumCpuCount: true
       msbuildArchitecture: x64
       createLogFile: true
+      logFileVerbosity: diagnostic
 
   - task: VSTest@2
     displayName: 'VsTest - UnitTests'
