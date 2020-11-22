@@ -35,7 +35,7 @@ jobs:
     inputs:
       solution: '**/*.sln'
       vsVersion: latest
-      msbuildArgs: '/p:SourceLinkCreate=true /zm200'
+      msbuildArgs: '/p:SourceLinkCreate=true /Zm200'
       platform: ${{ parameters.platform }}
       configuration: ${{ parameters.configuration }}
       clean: true
