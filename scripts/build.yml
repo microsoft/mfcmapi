@@ -39,7 +39,7 @@ jobs:
       platform: ${{ parameters.platform }}
       configuration: ${{ parameters.configuration }}
       clean: true
-      maximumCpuCount: true
+      # maximumCpuCount: true
       msbuildArchitecture: x64
       createLogFile: true
 
