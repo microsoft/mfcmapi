@@ -35,11 +35,11 @@ jobs:
     inputs:
       solution: '**/*.sln'
       vsVersion: latest
-      msbuildArgs: '/p:SourceLinkCreate=true /p:Zm200'
+      msbuildArgs: '/p:SourceLinkCreate=true'
       platform: ${{ parameters.platform }}
       configuration: ${{ parameters.configuration }}
       clean: true
-      maximumCpuCount: false
+      maximumCpuCount: true
       msbuildArchitecture: x64
       createLogFile: true
 
