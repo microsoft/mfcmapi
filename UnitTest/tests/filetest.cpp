@@ -44,9 +44,23 @@ namespace filetest
 			auto bin = SBinary{
 				static_cast<ULONG>(binStr.length() * sizeof(WCHAR)),
 				reinterpret_cast<LPBYTE>(const_cast<WCHAR*>(binStr.c_str()))};
-
 			unittest::AreEqualEx(
-				L"c:\\testpath\\subject_620069006E00730074007200.xml", file::BuildFileNameAndPath(L".xml", L"subject", L"c:\\testpath\\", &bin));
+				L"c:\\testpath\\subject_620069006E00730074007200.xml",
+				file::BuildFileNameAndPath(L".xml", L"subject", L"c:\\testpath\\", &bin));
+
+			std::string mystringA = std::string(
+				"c:\\Now is the time for all good men to come to the aid of the party. This is the way the world "
+				"ends. Not with a bang but with a whimper. So long and thanks for all the fish. That's great it "
+				"starts with an earthquake, birds and snakes and aeroplanes. Lenny Bruce is not afraid.");
+			auto bufA = LPBYTE(mystringA.c_str());
+			auto cbA = mystringA.length();
+			auto sBinaryA = SBinary{static_cast<ULONG>(cbA), bufA};
+			unittest::AreEqualEx(
+				L"c:\\testpath\\subject_"
+				L"633A5C4E6F77206973207468652074696D6520666F7220616C6C20676F6F64206D656E20746F20636F6D6520746F207468652"
+				L"0616964206F66207468652070617274792E2054.xml",
+				file::BuildFileNameAndPath(L".xml", L"subject", L"c:\\testpath\\", &sBinaryA));
+
 			unittest::AreEqualEx(
 				L"c:\\testpath\\Now is the time for all good men to come to the aid of the party. This is the way the "
 				L"world ends. Not with a bang but with a whimper. So long and thanks for all the fish. That's great it "

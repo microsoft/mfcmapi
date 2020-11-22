@@ -124,20 +124,6 @@ namespace file
 		output::DebugPrint(output::dbgLevel::Generic, L"BuildFileNameAndPath shorter file = \"%ws\"\n", szFile.c_str());
 		output::DebugPrint(output::dbgLevel::Generic, L"BuildFileNameAndPath new length = %d\n", szFile.length());
 
-		if (szFile.length() >= maxFile)
-		{
-			szFile = cleanSubj.substr(0, MAXSUBJTIGHT) + szBin.substr(0, MAXBIN);
-			output::DebugPrint(
-				output::dbgLevel::Generic, L"BuildFileNameAndPath shorter file = \"%ws\"\n", szFile.c_str());
-			output::DebugPrint(output::dbgLevel::Generic, L"BuildFileNameAndPath new length = %d\n", szFile.length());
-		}
-
-		if (szFile.length() >= maxFile)
-		{
-			output::DebugPrint(output::dbgLevel::Generic, L"BuildFileNameAndPath failed to build a string\n");
-			return strings::emptystring;
-		}
-
 		auto szOut = cleanRoot + szFile + szExt;
 		output::DebugPrint(output::dbgLevel::Generic, L"BuildFileNameAndPath fileOut= \"%ws\"\n", szOut.c_str());
 		return szOut;
