@@ -18,6 +18,8 @@ namespace file
 			// Use the short path to give us as much room as possible
 			WC_D_S(GetShortPathNameW(path.c_str(), szShortPath, _countof(szShortPath)));
 			std::wstring ret = szShortPath;
+			if (!ret.length()) return path;
+
 			if (ret.back() != L'\\')
 			{
 				ret += L'\\';
@@ -122,19 +124,6 @@ namespace file
 		output::DebugPrint(output::dbgLevel::Generic, L"BuildFileNameAndPath shorter file = \"%ws\"\n", szFile.c_str());
 		output::DebugPrint(output::dbgLevel::Generic, L"BuildFileNameAndPath new length = %d\n", szFile.length());
 
-		if (szFile.length() >= maxFile)
-		{
-			szFile = cleanSubj.substr(0, MAXSUBJTIGHT) + szBin.substr(0, MAXBIN);
-			output::DebugPrint(output::dbgLevel::Generic, L"BuildFileNameAndPath shorter file = \"%ws\"\n", szFile.c_str());
-			output::DebugPrint(output::dbgLevel::Generic, L"BuildFileNameAndPath new length = %d\n", szFile.length());
-		}
-
-		if (szFile.length() >= maxFile)
-		{
-			output::DebugPrint(output::dbgLevel::Generic, L"BuildFileNameAndPath failed to build a string\n");
-			return strings::emptystring;
-		}
-
 		auto szOut = cleanRoot + szFile + szExt;
 		output::DebugPrint(output::dbgLevel::Generic, L"BuildFileNameAndPath fileOut= \"%ws\"\n", szOut.c_str());
 		return szOut;
@@ -169,8 +158,8 @@ namespace file
 				// If we were able to get the information, process it.
 				const auto pbData = std::vector<BYTE>(dwVerInfoSize);
 
-				auto hRes = EC_B(::GetFileVersionInfoW(
-					szFullPath.c_str(), NULL, dwVerInfoSize, static_cast<void*>(const_cast<BYTE*>(pbData.data()))));
+				const auto hRes = EC_B(
+					::GetFileVersionInfoW(szFullPath.c_str(), NULL, dwVerInfoSize, const_cast<BYTE*>(pbData.data())));
 
 				if (SUCCEEDED(hRes))
 				{
@@ -183,15 +172,14 @@ namespace file
 					UINT cbTranslate = 0;
 
 					// Read the list of languages and code pages.
-					hRes = EC_B(VerQueryValueW(
-						static_cast<const void*>(pbData.data()),
+					EC_B_S(VerQueryValueW(
+						pbData.data(),
 						L"\\VarFileInfo\\Translation", // STRING_OK
 						reinterpret_cast<LPVOID*>(&lpTranslate),
 						&cbTranslate));
 
 					// Read the file description for each language and code page.
-
-					if (hRes == S_OK && lpTranslate)
+					if (lpTranslate)
 					{
 						for (UINT iCodePages = 0; iCodePages < cbTranslate / sizeof(LANGANDCODEPAGE); iCodePages++)
 						{
@@ -208,13 +196,13 @@ namespace file
 								auto szVerString = strings::loadstring(iVerString);
 								auto szQueryString = szSubBlock + szVerString;
 
-								hRes = EC_B(VerQueryValueW(
+								EC_B_S(VerQueryValueW(
 									static_cast<const void*>(pbData.data()),
 									szQueryString.c_str(),
 									reinterpret_cast<void**>(&lpszVer),
 									&cchVer));
 
-								if (hRes == S_OK && cchVer && lpszVer)
+								if (cchVer && lpszVer)
 								{
 									versionStrings[szVerString] = lpszVer;
 								}

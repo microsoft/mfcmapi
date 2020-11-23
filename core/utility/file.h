@@ -2,16 +2,16 @@
 
 namespace file
 {
+	constexpr int MAXSUBJTIGHT = 10;
+	constexpr int MAXBIN = 141;
+	constexpr int MAXEXT = 4;
+	constexpr int MAXATTACH = 10;
+	constexpr int MAXMSGPATH = MAX_PATH - MAXSUBJTIGHT - MAXBIN - MAXEXT;
+
 	std::wstring GetSystemDirectory();
 	std::wstring ShortenPath(const std::wstring& path);
 	std::wstring GetDirectoryPath(HWND hWnd);
 
-#define MAXSUBJ 25
-#define MAXSUBJTIGHT 10
-#define MAXBIN 141
-#define MAXEXT 4
-#define MAXATTACH 10
-#define MAXMSGPATH (MAX_PATH - MAXSUBJTIGHT - MAXBIN - MAXEXT)
 	std::wstring BuildFileNameAndPath(
 		_In_ const std::wstring& szExt,
 		_In_ const std::wstring& szSubj,
