@@ -101,7 +101,7 @@
     <ClInclude Include="UI\file\exporter.h">
       <Filter>Source Files\UI\file</Filter>
     </ClInclude>
-    <ClInclude Include="UI\Dialogs\propList\SingleAccountDialog.h">
+    <ClInclude Include="UI\Dialogs\propList\AccountsDialog.h">
       <Filter>Source Files\UI\Dialogs\propList</Filter>
     </ClInclude>
   </ItemGroup>
@@ -162,7 +162,7 @@
     <ClCompile Include="UI\file\exporter.cpp">
       <Filter>Source Files\UI\file</Filter>
     </ClCompile>
-    <ClCompile Include="UI\Dialogs\propList\SingleAccountDialog.cpp">
+    <ClCompile Include="UI\Dialogs\propList\AccountsDialog.cpp">
       <Filter>Source Files\UI\Dialogs\propList</Filter>
     </ClCompile>
   </ItemGroup>

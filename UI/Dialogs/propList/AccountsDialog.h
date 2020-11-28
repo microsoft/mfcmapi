@@ -5,14 +5,14 @@ class CContentsTableListCtrl;
 
 namespace dialog
 {
-	class SingleAccountDialog : public CBaseDialog
+	class AccountsDialog : public CBaseDialog
 	{
 	public:
-		SingleAccountDialog(
+		AccountsDialog(
 			_In_ ui::CParentWnd* pParentWnd,
 			_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 			_In_opt_ LPMAPISESSION lpMAPISession);
-		~SingleAccountDialog();
+		~AccountsDialog();
 
 	protected:
 		// Overrides from base class

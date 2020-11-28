@@ -593,7 +593,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
   <ItemGroup>
     <ClInclude Include="UI\Controls\SortList\SortHeader.h" />
     <ClInclude Include="UI\Controls\SortList\SortListCtrl.h" />
-    <ClInclude Include="UI\Dialogs\propList\SingleAccountDialog.h" />
+    <ClInclude Include="UI\Dialogs\propList\AccountsDialog.h" />
     <ClInclude Include="UI\enums.h" />
     <ClInclude Include="UI\CMAPIProgress.h" />
     <ClInclude Include="StdAfx.h" />
@@ -673,7 +673,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="UI\addinui.cpp" />
     <ClCompile Include="UI\Controls\SortList\SortHeader.cpp" />
     <ClCompile Include="UI\Controls\SortList\SortListCtrl.cpp" />
-    <ClCompile Include="UI\Dialogs\propList\SingleAccountDialog.cpp" />
+    <ClCompile Include="UI\Dialogs\propList\AccountsDialog.cpp" />
     <ClCompile Include="UI\file\exporter.cpp" />
     <ClCompile Include="UI\file\FileDialogEx.cpp" />
     <ClCompile Include="UI\profile.cpp" />

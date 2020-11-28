@@ -1,5 +1,5 @@
 #include <StdAfx.h>
-#include <UI/Dialogs/propList/SingleAccountDialog.h>
+#include <UI/Dialogs/propList/AccountsDialog.h>
 #include <UI/Controls/SortList/SingleMAPIPropListCtrl.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <core/utility/strings.h>
@@ -9,9 +9,9 @@
 
 namespace dialog
 {
-	static std::wstring CLASS = L"SingleAccountDialog";
+	static std::wstring CLASS = L"AccountsDialog";
 
-	SingleAccountDialog::SingleAccountDialog(
+	AccountsDialog::AccountsDialog(
 		_In_ ui::CParentWnd* pParentWnd,
 		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 		_In_opt_ LPMAPISESSION lpMAPISession)
@@ -26,14 +26,14 @@ namespace dialog
 		CBaseDialog::CreateDialogAndMenu(NULL, NULL, NULL);
 	}
 
-	SingleAccountDialog::~SingleAccountDialog()
+	AccountsDialog::~AccountsDialog()
 	{
 		TRACE_DESTRUCTOR(CLASS);
 		if (m_lpMAPISession) m_lpMAPISession->Release();
 		m_lpMAPISession = nullptr;
 	}
 
-	BOOL SingleAccountDialog::OnInitDialog()
+	BOOL AccountsDialog::OnInitDialog()
 	{
 		const auto bRet = CBaseDialog::OnInitDialog();
 
@@ -54,12 +54,12 @@ namespace dialog
 		return bRet;
 	}
 
-	BEGIN_MESSAGE_MAP(SingleAccountDialog, CBaseDialog)
+	BEGIN_MESSAGE_MAP(AccountsDialog, CBaseDialog)
 	ON_COMMAND(ID_REFRESHVIEW, OnRefreshView)
 	END_MESSAGE_MAP()
 
 	// Clear the current list and get a new one with whatever code we've got in LoadMAPIPropList
-	void SingleAccountDialog::OnRefreshView()
+	void AccountsDialog::OnRefreshView()
 	{
 		if (!m_lpPropDisplay) return;
 		static_cast<void>(m_lpPropDisplay->RefreshMAPIPropList());

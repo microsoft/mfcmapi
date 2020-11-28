@@ -69,7 +69,7 @@ namespace dialog
 	BEGIN_MESSAGE_MAP(CMainDlg, CContentsTableDlg)
 	ON_COMMAND(ID_CLOSEADDRESSBOOK, OnCloseAddressBook)
 	ON_COMMAND(ID_COMPUTEGIVENSTOREHASH, OnComputeGivenStoreHash)
-	ON_COMMAND(ID_DISPLAYACCOUNTDIALOG, OnDisplayAccountDialog)
+	ON_COMMAND(ID_DISPLAYACCOUNTSDIALOG, OnDisplayAccountsDialog)
 	ON_COMMAND(ID_DISPLAYMAILBOXTABLE, OnDisplayMailboxTable)
 	ON_COMMAND(ID_DISPLAYPUBLICFOLDERTABLE, OnDisplayPublicFolderTable)
 	ON_COMMAND(ID_DUMPSTORECONTENTS, OnDumpStoreContents)
@@ -1300,11 +1300,11 @@ namespace dialog
 		CContentsTableDlg::OnDisplayItem();
 	}
 
-	void CMainDlg::OnDisplayAccountDialog()
+	void CMainDlg::OnDisplayAccountsDialog()
 	{
 		if (!m_lpParent || !m_lpMapiObjects) return;
 
-		DisplayAccountDialog(m_lpParent, m_lpMapiObjects);
+		DisplayAccountsDialog(m_lpParent, m_lpMapiObjects);
 	}
 
 	void CMainDlg::OnDisplayMailboxTable()
