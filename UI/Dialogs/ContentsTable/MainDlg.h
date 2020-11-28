@@ -39,6 +39,7 @@ namespace dialog
 		void OnConvertMSGToEML();
 		void OnConvertEMLToMSG();
 		void OnConvertMSGToXML();
+		void OnDisplayAccountDialog();
 		void OnDisplayMailboxTable();
 		void OnDisplayPublicFolderTable();
 		void OnDumpStoreContents();

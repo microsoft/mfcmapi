@@ -180,6 +180,7 @@ END
 POPUP "Profile"
 BEGIN
 MENUITEM "Show &profiles", ID_SHOWPROFILES
+MENUITEM "Show Account...", ID_DISPLAYACCOUNTDIALOG
 POPUP "Advanced profile"
 BEGIN
 MENUITEM "Launch profile wizard...", ID_LAUNCHPROFILEWIZARD

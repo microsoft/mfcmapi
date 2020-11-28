@@ -45,4 +45,5 @@ namespace dialog
 		_In_ HWND hWnd,
 		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 		_In_opt_ LPMAPIFOLDER lpMAPIFolder);
+	void DisplayAccountDialog(_In_ ui::CParentWnd* lpParent, _In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects);
 } // namespace dialog

@@ -2,6 +2,7 @@
 
 #pragma region "USES_IID definitions"
 #define INITGUID
+#define USES_IID_IMAPISession
 #define USES_IID_IMsgStore
 #define USES_IID_IMAPIProgress
 #define USES_IID_IMAPIAdviseSink

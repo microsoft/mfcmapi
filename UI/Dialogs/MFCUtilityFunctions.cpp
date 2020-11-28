@@ -15,6 +15,7 @@
 #include <UI/Dialogs/ContentsTable/AttachmentsDlg.h>
 #include <UI/Dialogs/propList/SingleMessageDialog.h>
 #include <UI/Dialogs/propList/SingleRecipientDialog.h>
+#include <UI/Dialogs/propList/SingleAccountDialog.h>
 #include <UI/Dialogs/ContentsTable/ABDlg.h>
 #include <UI/Dialogs/ContentsTable/RulesDlg.h>
 #include <UI/Dialogs/ContentsTable/AclDlg.h>
@@ -718,5 +719,13 @@ namespace dialog
 		}
 
 		return lpMAPIFormInfo;
+	}
+
+	void DisplayAccountDialog(_In_ ui::CParentWnd* lpParent, _In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects)
+	{
+		if (!lpParent || !lpMapiObjects) return;
+		const auto lpMAPISession = lpMapiObjects->LogonGetSession(lpParent->GetSafeHwnd()); // do not release
+
+		new SingleAccountDialog(lpParent, lpMapiObjects, lpMAPISession);
 	}
 } // namespace dialog

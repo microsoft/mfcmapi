@@ -17,6 +17,10 @@
 namespace mapi
 {
 	// Safely cast across MAPI interfaces. Result is addrefed and must be released.
+	// Adding interfaces:
+	// 1 Add else if to safe_cast
+	// 2 Add template to list to link an instance of the desired template
+	// 3 Add USES_ statement to guid.cpp to ensure guid symbols is linked
 	template <class T> T safe_cast(IUnknown* src)
 	{
 		if (!src) return nullptr;
@@ -24,6 +28,7 @@ namespace mapi
 		auto iid = IID();
 		// clang-format off
 		if (std::is_same_v<T, LPUNKNOWN>) iid = IID_IUnknown;
+		else if (std::is_same_v<T, LPMAPISESSION>) iid = IID_IMAPISession;
 		else if (std::is_same_v<T, LPMAPIFOLDER>) iid = IID_IMAPIFolder;
 		else if (std::is_same_v<T, LPMAPICONTAINER>) iid = IID_IMAPIContainer;
 		else if (std::is_same_v<T, LPMAILUSER>) iid = IID_IMailUser;
@@ -61,6 +66,7 @@ namespace mapi
 	}
 
 	template LPUNKNOWN safe_cast<LPUNKNOWN>(IUnknown* src);
+	template LPMAPISESSION safe_cast<LPMAPISESSION>(IUnknown* src);
 	template LPMAPIFOLDER safe_cast<LPMAPIFOLDER>(IUnknown* src);
 	template LPMAPICONTAINER safe_cast<LPMAPICONTAINER>(IUnknown* src);
 	template LPMAILUSER safe_cast<LPMAILUSER>(IUnknown* src);
