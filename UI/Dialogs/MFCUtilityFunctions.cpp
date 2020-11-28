@@ -11,10 +11,10 @@
 #include <core/interpret/guid.h>
 #include <UI/Dialogs/HierarchyTable/MsgStoreDlg.h>
 #include <UI/Dialogs/ContentsTable/FolderDlg.h>
-#include <UI/Dialogs/SingleMessageDialog.h>
 #include <UI/Dialogs/ContentsTable/RecipientsDlg.h>
 #include <UI/Dialogs/ContentsTable/AttachmentsDlg.h>
-#include <UI/Dialogs/SingleRecipientDialog.h>
+#include <UI/Dialogs/propList/SingleMessageDialog.h>
+#include <UI/Dialogs/propList/SingleRecipientDialog.h>
 #include <UI/Dialogs/ContentsTable/ABDlg.h>
 #include <UI/Dialogs/ContentsTable/RulesDlg.h>
 #include <UI/Dialogs/ContentsTable/AclDlg.h>
