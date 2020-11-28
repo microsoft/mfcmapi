@@ -5,6 +5,7 @@
 #include <core/utility/strings.h>
 #include <core/mapi/mapiFunctions.h>
 #include <core/utility/output.h>
+#include <core/propertyBag/accountPropertyBag.h>
 
 namespace dialog
 {
@@ -40,14 +41,15 @@ namespace dialog
 		{
 			// Get a property for the title bar
 			// TODO: get a good title for account
-//			m_szTitle = mapi::GetTitle(m_lpMAPISession);
+			//			m_szTitle = mapi::GetTitle(m_lpMAPISession);
 			m_szTitle = L"Custom title here";
 		}
 
 		UpdateTitleBarText();
 
 		// TODO: custom data source for accounts here
-//		EC_H_S(m_lpPropDisplay->SetDataSource(m_lpMailUser, NULL, true));
+		EC_H_S(
+			m_lpPropDisplay->SetDataSource(std::make_shared<propertybag::accountPropertyBag>(m_lpMAPISession), false));
 
 		return bRet;
 	}

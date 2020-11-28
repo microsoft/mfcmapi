@@ -36,6 +36,8 @@
 #define USES_IID_IMsgServiceAdmin2
 #define USES_IID_IMessageRaw
 #define USES_IID_IProfSect
+#define USES_IID_IOlkAccountHelper
+#define USES_IID_IOlkAccountManager
 #pragma endregion
 
 #include <initguid.h>
@@ -52,6 +54,7 @@
 
 #include <core/utility/strings.h>
 #include <core/addin/mfcmapi.h>
+#include <core/mapi/account/actMgmt.h>
 
 namespace guid
 {

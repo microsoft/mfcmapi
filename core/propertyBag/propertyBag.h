@@ -14,6 +14,7 @@ namespace propertybag
 	{
 		MAPIProp,
 		Row,
+		Account,
 	};
 
 	// TODO - Annotate for sal

@@ -1,19 +1,21 @@
 #pragma once
 #include <core/propertyBag/propertyBag.h>
 #include <core/sortlistdata/sortListData.h>
+#include <core/mapi/account/actMgmt.h>
+#include <core/mapi/account/accountHelper.h>
 
 namespace propertybag
 {
-	class rowPropertyBag : public IMAPIPropertyBag
+	class accountPropertyBag : public IMAPIPropertyBag
 	{
 	public:
-		rowPropertyBag(sortlistdata::sortListData* lpListData);
-		virtual ~rowPropertyBag() = default;
-		rowPropertyBag(const rowPropertyBag&) = delete;
-		rowPropertyBag& operator=(const rowPropertyBag&) = delete;
+		accountPropertyBag(LPMAPISESSION lpMAPISession);
+		virtual ~accountPropertyBag();
+		accountPropertyBag(const accountPropertyBag&) = delete;
+		accountPropertyBag& operator=(const accountPropertyBag&) = delete;
 
 		propBagFlags GetFlags() const override;
-		propBagType GetType() const override { return propBagType::Row; }
+		propBagType GetType() const override { return propBagType::Account; }
 		bool IsEqual(const std::shared_ptr<IMAPIPropertyBag> lpPropBag) const override;
 
 		// Returns the underlying MAPI prop object, if one exists. Does NOT ref count it.
@@ -27,8 +29,7 @@ namespace propertybag
 			ULONG FAR* lpcValues,
 			LPSPropValue FAR* lppPropArray) override;
 		_Check_return_ HRESULT GetProp(ULONG ulPropTag, LPSPropValue FAR* lppProp) override;
-		// None of our GetProps allocate anything, so nothing to do here
-		void FreeBuffer(LPSPropValue) override { return; }
+		void FreeBuffer(LPSPropValue lpsPropValue) override { MAPIFreeBuffer(lpsPropValue); }
 		// TODO: This is for paste, something we don't yet support for rows
 		_Check_return_ HRESULT SetProps(ULONG, LPSPropValue) override { return E_NOTIMPL; }
 		_Check_return_ HRESULT SetProp(LPSPropValue lpProp) override;
@@ -36,10 +37,10 @@ namespace propertybag
 		_Check_return_ HRESULT DeleteProp(ULONG) override { return E_NOTIMPL; };
 
 	private:
-		sortlistdata::sortListData* m_lpListData{};
-
-		ULONG m_cValues{};
-		LPSPropValue m_lpProps{};
-		bool m_bRowModified{};
+		LPMAPISESSION m_lpMAPISession{};
+		LPOLKACCOUNTMANAGER m_lpAcctMgr{};
+		CAccountHelper* m_lpMyAcctHelper{};
+		LPOLKACCOUNTHELPER m_lpAcctHelper{};
+		std::wstring m_lpwszProfile;
 	};
 } // namespace propertybag
