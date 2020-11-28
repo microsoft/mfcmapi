@@ -318,6 +318,12 @@
     <ClInclude Include="smartview\addinParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="mapi\account\accountHelper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mapi\account\actMgmt.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="utility\strings.cpp">
@@ -555,6 +561,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="smartview\addinParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mapi\account\accountHelper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
