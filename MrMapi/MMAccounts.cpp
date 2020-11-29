@@ -3,48 +3,41 @@
 #include <MrMapi/mmcli.h>
 #include <core/mapi/account/accountHelper.h>
 #include <core/mapi/mapiFunctions.h>
+#include <core/interpret/proptags.h>
 
 void IterateAllProps(LPOLKACCOUNT lpAccount);
 HRESULT EnumerateAccounts(LPMAPISESSION lpSession, LPCWSTR lpwszProfile, bool bIterateAllProps);
 HRESULT DisplayAccountList(LPMAPISESSION lpSession, LPCWSTR lpwszProfile, ULONG ulFlags);
 void PrintBinary(DWORD cb, const BYTE* lpb);
 
-void LogPropString(LPOLKACCOUNT lpAccount, ULONG propTag, LPCWSTR propName)
+void LogProp(LPOLKACCOUNT lpAccount, ULONG ulPropTag)
 {
 	auto pProp = ACCT_VARIANT();
-	auto hRes = lpAccount->GetProp(propTag, &pProp);
-	if (SUCCEEDED(hRes) && pProp.Val.pwsz)
+	auto hRes = lpAccount->GetProp(ulPropTag, &pProp);
+	auto szName = proptags::TagToString(ulPropTag, nullptr, false, true);
+	if (SUCCEEDED(hRes))
 	{
-		wprintf(L"%ws = \"%ws\"\n", propName, pProp.Val.pwsz);
-		(void) lpAccount->FreeMemory(reinterpret_cast<LPBYTE>(pProp.Val.pwsz));
+		switch (PROP_TYPE(ulPropTag))
+		{
+		case PT_UNICODE:
+			if (pProp.Val.pwsz)
+			{
+				wprintf(L"%ws = \"%ws\"\n", szName.c_str(), pProp.Val.pwsz);
+				(void) lpAccount->FreeMemory(reinterpret_cast<LPBYTE>(pProp.Val.pwsz));
+			}
+			break;
+		case PT_LONG:
+			wprintf(L"%ws = 0x%08lX\n", szName.c_str(), pProp.Val.dw);
+			break;
+		case PT_BINARY:
+			wprintf(L"%ws = ", szName.c_str());
+			PrintBinary(pProp.Val.bin.cb, pProp.Val.bin.pb);
+			wprintf(L"\n");
+			(void) lpAccount->FreeMemory(pProp.Val.bin.pb);
+			break;
+		}
 	}
 }
-#define LOGPROPSTRING(lpAccount, propTag) LogPropString((lpAccount), (propTag), L#propTag)
-
-void LogPropLong(LPOLKACCOUNT lpAccount, ULONG propTag, LPCWSTR propName)
-{
-	auto pProp = ACCT_VARIANT();
-	auto hRes = lpAccount->GetProp(propTag, &pProp);
-	if (SUCCEEDED(hRes) && pProp.Val.pwsz)
-	{
-		wprintf(L"%ws = 0x%08lX\n", propName, pProp.Val.dw);
-	}
-}
-#define LOGPROPLONG(lpAccount, propTag) LogPropLong((lpAccount), (propTag), L#propTag)
-
-void LogPropBinary(LPOLKACCOUNT lpAccount, ULONG propTag, LPCWSTR propName)
-{
-	auto pProp = ACCT_VARIANT();
-	auto hRes = lpAccount->GetProp(propTag, &pProp);
-	if (SUCCEEDED(hRes) && pProp.Val.pwsz)
-	{
-		wprintf(L"%ws = ", propName);
-		PrintBinary(pProp.Val.bin.cb, pProp.Val.bin.pb);
-		wprintf(L"\n");
-		(void) lpAccount->FreeMemory(pProp.Val.bin.pb);
-	}
-}
-#define LOGPROPBINARY(lpAccount, propTag) LogPropBinary((lpAccount), (propTag), L#propTag)
 
 void IterateAllProps(LPOLKACCOUNT lpAccount)
 {
@@ -137,20 +130,20 @@ HRESULT EnumerateAccounts(LPMAPISESSION lpSession, LPCWSTR lpwszProfile, bool bI
 											IID_IOlkAccount, reinterpret_cast<LPVOID*>(&lpAccount)));
 										if (lpAccount)
 										{
-											LOGPROPSTRING(lpAccount, PROP_ACCT_NAME);
-											LOGPROPSTRING(lpAccount, PROP_ACCT_USER_DISPLAY_NAME);
-											LOGPROPSTRING(lpAccount, PROP_ACCT_USER_EMAIL_ADDR);
-											LOGPROPSTRING(lpAccount, PROP_ACCT_STAMP);
-											LOGPROPSTRING(lpAccount, PROP_ACCT_SEND_STAMP);
-											LOGPROPLONG(lpAccount, PROP_ACCT_IS_EXCH);
-											LOGPROPLONG(lpAccount, PROP_ACCT_ID);
-											LOGPROPBINARY(lpAccount, PROP_ACCT_DELIVERY_FOLDER);
-											LOGPROPBINARY(lpAccount, PROP_ACCT_DELIVERY_STORE);
-											LOGPROPBINARY(lpAccount, PROP_ACCT_SENTITEMS_EID);
-											LOGPROPBINARY(lpAccount, PR_NEXT_SEND_ACCT);
-											LOGPROPBINARY(lpAccount, PR_PRIMARY_SEND_ACCT);
-											LOGPROPBINARY(lpAccount, PROP_MAPI_IDENTITY_ENTRYID);
-											LOGPROPBINARY(lpAccount, PROP_MAPI_TRANSPORT_FLAGS);
+											LogProp(lpAccount, PROP_ACCT_NAME);
+											LogProp(lpAccount, PROP_ACCT_USER_DISPLAY_NAME);
+											LogProp(lpAccount, PROP_ACCT_USER_EMAIL_ADDR);
+											LogProp(lpAccount, PROP_ACCT_STAMP);
+											LogProp(lpAccount, PROP_ACCT_SEND_STAMP);
+											LogProp(lpAccount, PROP_ACCT_IS_EXCH);
+											LogProp(lpAccount, PROP_ACCT_ID);
+											LogProp(lpAccount, PROP_ACCT_DELIVERY_FOLDER);
+											LogProp(lpAccount, PROP_ACCT_DELIVERY_STORE);
+											LogProp(lpAccount, PROP_ACCT_SENTITEMS_EID);
+											LogProp(lpAccount, PR_NEXT_SEND_ACCT);
+											LogProp(lpAccount, PR_PRIMARY_SEND_ACCT);
+											LogProp(lpAccount, PROP_MAPI_IDENTITY_ENTRYID);
+											LogProp(lpAccount, PROP_MAPI_TRANSPORT_FLAGS);
 
 											if (bIterateAllProps) IterateAllProps(lpAccount);
 											lpAccount->Release();
