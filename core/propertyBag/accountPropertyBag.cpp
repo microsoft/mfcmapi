@@ -134,12 +134,17 @@ namespace propertybag
 	{
 		if (!lppProp) return MAPI_E_INVALID_PARAMETER;
 
+		*lppProp = mapi::allocate<LPSPropValue>(sizeof(SPropValue));
 		auto pProp = ACCT_VARIANT{};
 		const auto hRes = m_lpAccount->GetProp(ulPropTag, &pProp);
 		if (SUCCEEDED(hRes))
 		{
-			*lppProp = mapi::allocate<LPSPropValue>(sizeof(SPropValue));
 			(*lppProp)[0] = convertVarToMAPI(ulPropTag, pProp, *lppProp);
+		}
+		else
+		{
+			(*lppProp)->ulPropTag = CHANGE_PROP_TYPE(ulPropTag, PT_ERROR);
+			(*lppProp)->Value.err = hRes;
 		}
 
 		return S_OK;
