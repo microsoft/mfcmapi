@@ -4,6 +4,7 @@
 #include <core/mapi/account/accountHelper.h>
 #include <core/mapi/mapiFunctions.h>
 #include <core/interpret/proptags.h>
+#include <core/interpret/proptype.h>
 
 void PrintBinary(const DWORD cb, const BYTE* lpb)
 {
@@ -36,29 +37,35 @@ void PrintBinary(const DWORD cb, const BYTE* lpb)
 void LogProp(LPOLKACCOUNT lpAccount, ULONG ulPropTag)
 {
 	auto pProp = ACCT_VARIANT();
-	auto hRes = lpAccount->GetProp(ulPropTag, &pProp);
-	auto szName = proptags::TagToString(ulPropTag, nullptr, false, true);
+	const auto hRes = lpAccount->GetProp(ulPropTag, &pProp);
 	if (SUCCEEDED(hRes))
 	{
+		const auto name = proptags::PropTagToPropName(ulPropTag, false).bestGuess;
+		const auto tag = proptype::TypeToString(PROP_TYPE(ulPropTag));
+
+		wprintf(
+			L"Prop = %ws, Type = %ws, ",
+			name.empty() ? strings::format(L"0x%08X", ulPropTag).c_str() : name.c_str(),
+			tag.c_str());
 		switch (PROP_TYPE(ulPropTag))
 		{
 		case PT_UNICODE:
 			if (pProp.Val.pwsz)
 			{
-				wprintf(L"%ws = \"%ws\"\n", szName.c_str(), pProp.Val.pwsz);
+				wprintf(L"\"%ws\"", pProp.Val.pwsz);
 				(void) lpAccount->FreeMemory(reinterpret_cast<LPBYTE>(pProp.Val.pwsz));
 			}
 			break;
 		case PT_LONG:
-			wprintf(L"%ws = 0x%08lX\n", szName.c_str(), pProp.Val.dw);
+			wprintf(L"0x%08lX", pProp.Val.dw);
 			break;
 		case PT_BINARY:
-			wprintf(L"%ws = ", szName.c_str());
 			PrintBinary(pProp.Val.bin.cb, pProp.Val.bin.pb);
-			wprintf(L"\n");
 			(void) lpAccount->FreeMemory(pProp.Val.bin.pb);
 			break;
 		}
+
+		wprintf(L"\n");
 	}
 }
 
