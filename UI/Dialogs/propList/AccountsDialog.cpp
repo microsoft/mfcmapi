@@ -119,8 +119,15 @@ namespace dialog
 						auto lpAccount = mapi::safe_cast<LPOLKACCOUNT>(lpUnk);
 						if (lpAccount)
 						{
-							// TODO: Add real identifier here
+							auto acctName = ACCT_VARIANT{};
 							auto nodeName = strings::format(L"Account %i", iAcct);
+							const auto hRes = WC_H(lpAccount->GetProp(PROP_ACCT_NAME, &acctName));
+							if (SUCCEEDED(hRes))
+							{
+								nodeName = acctName.Val.pwsz;
+								WC_H_S(lpAccount->FreeMemory(reinterpret_cast<LPBYTE>(acctName.Val.pwsz)));
+							}
+
 							m_lpAccountsList.AddChildNode(nodeName, TVI_ROOT, lpAccount, nullptr);
 						}
 					}
