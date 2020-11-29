@@ -55,7 +55,6 @@ namespace dialog
 	{
 		TRACE_DESTRUCTOR(CLASS);
 		m_lpAccountsList.DestroyWindow();
-		//		CWnd::DestroyWindow();
 
 		if (m_lpAcctHelper) m_lpAcctHelper->Release();
 		m_lpAcctHelper = nullptr;
