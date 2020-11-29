@@ -1082,6 +1082,7 @@ IDS_TABLEASCONTENTS "IMAPITable as Contents Table"
 IDS_BASEDIALOG "BaseDialog"
 IDS_MESSAGE "Message"
 IDS_ADDRESS_BOOK_ENTRY "Address Book Entry"
+IDS_ACCOUNT_DIALOG "Accounts Dialog"
 
 IDS_HELPTEXTSTARTHERE "Click Session/Logon to begin."
 IDS_HELPTEXTNOPROPS "Select an item to display properties."

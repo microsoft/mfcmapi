@@ -44,8 +44,7 @@ namespace dialog
 		: CBaseDialog(pParentWnd, lpMapiObjects, NULL)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
-		// TODO: make resource from this
-		m_szTitle = L"Account dialog"; //strings::loadstring(IDS_ADDRESS_BOOK_ENTRY);
+		m_szTitle = strings::loadstring(IDS_ACCOUNT_DIALOG);
 
 		m_lpMAPISession = mapi::safe_cast<LPMAPISESSION>(lpMAPISession);
 
