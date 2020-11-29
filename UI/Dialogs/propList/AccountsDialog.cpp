@@ -142,9 +142,7 @@ namespace dialog
 					EC_H_S(lpAcctEnum->GetNext(&lpUnk));
 					if (lpUnk)
 					{
-						LPOLKACCOUNT lpAccount = nullptr;
-
-						EC_H_S(lpUnk->QueryInterface(IID_IOlkAccount, reinterpret_cast<LPVOID*>(&lpAccount)));
+						auto lpAccount = mapi::safe_cast<LPOLKACCOUNT>(lpUnk);
 						if (lpAccount)
 						{
 							// TODO: Add real identifier here
