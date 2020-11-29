@@ -116,7 +116,7 @@ namespace propertybag
 
 	_Check_return_ HRESULT accountPropertyBag::GetProps(
 		LPSPropTagArray lpPropTagArray,
-		ULONG ulFlags,
+		ULONG /*ulFlags*/,
 		ULONG FAR* lpcValues,
 		LPSPropValue FAR* lppPropArray)
 	{
@@ -131,7 +131,7 @@ namespace propertybag
 		*lpcValues = lpPropTagArray->cValues;
 		*lppPropArray = mapi::allocate<LPSPropValue>(lpPropTagArray->cValues * sizeof(SPropValue));
 
-		for (auto iProp = 0; iProp < lpPropTagArray->cValues; iProp++)
+		for (ULONG iProp = 0; iProp < lpPropTagArray->cValues; iProp++)
 		{
 			auto pProp = ACCT_VARIANT{};
 			const auto ulPropTag = lpPropTagArray->aulPropTag[iProp];
