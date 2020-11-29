@@ -68,6 +68,7 @@ namespace dialog
 	END_MESSAGE_MAP()
 
 	// Clear the current list and get a new one with whatever code we've got in LoadMAPIPropList
+	// TODO: This is probably wrong
 	void AccountsDialog::OnRefreshView()
 	{
 		if (!m_lpPropDisplay) return;
