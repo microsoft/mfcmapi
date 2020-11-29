@@ -62,7 +62,9 @@ namespace controls
 
 		// Node management
 		void AddRootNode() const;
-		void AddNode(_In_ LPSRow lpsRow, HTREEITEM hParent, const std::function<void(HTREEITEM hItem)>& callback) const;
+		void
+		AddNode(_In_ LPSRow lpsRow, HTREEITEM hParent, const std::function<void(HTREEITEM hItem)>& itemAddedCallback)
+			const;
 
 		// Custom messages
 		_Check_return_ LRESULT msgOnAddItem(WPARAM wParam, LPARAM lParam);

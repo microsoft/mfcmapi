@@ -47,9 +47,18 @@ namespace dialog
 
 		UpdateTitleBarText();
 
-		// TODO: custom data source for accounts here
 		EC_H_S(
 			m_lpPropDisplay->SetDataSource(std::make_shared<propertybag::accountPropertyBag>(m_lpMAPISession), false));
+
+		if (m_lpFakeSplitter)
+		{
+			m_lpAccountsList.Create(&m_lpFakeSplitter, true);
+			m_lpFakeSplitter.SetPaneOne(m_lpAccountsList.GetSafeHwnd());
+			//m_lpAccountsList.AddChildNode(L"foo", TVI_ROOT, nullptr, nullptr);
+			//m_lpAccountsList.AddChildNode(L"bar", TVI_ROOT, nullptr, nullptr);
+
+			m_lpFakeSplitter.SetPercent(0.25);
+		}
 
 		return bRet;
 	}

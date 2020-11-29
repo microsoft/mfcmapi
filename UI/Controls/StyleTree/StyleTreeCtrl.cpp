@@ -139,7 +139,7 @@ namespace controls
 	}
 
 	// Removes any existing node data and replaces it with lpData
-	void StyleTreeCtrl::SetNodeData(HWND hWnd, HTREEITEM hItem, const LPARAM lpData) const
+	void StyleTreeCtrl::SetNodeData(HWND hWnd, HTREEITEM hItem, const LPVOID lpData) const
 	{
 		if (lpData)
 		{
@@ -158,7 +158,7 @@ namespace controls
 					output::dbgLevel::Hierarchy, CLASS, L"SetNodeData", L"Node %p, first data\n", hItem);
 			}
 
-			tvItem.lParam = lpData;
+			tvItem.lParam = reinterpret_cast<LPARAM>(lpData);
 			TreeView_SetItem(hWnd, &tvItem);
 			// The tree now owns our lpData
 		}
@@ -191,8 +191,8 @@ namespace controls
 	StyleTreeCtrl::AddChildNode(
 		_In_ const std::wstring& szName,
 		HTREEITEM hParent,
-		const LPARAM lpData,
-		const std::function<void(HTREEITEM hItem)>& callback) const
+		const LPVOID lpData,
+		const std::function<void(HTREEITEM hItem)>& itemAddedCallback) const
 	{
 		output::DebugPrintEx(
 			output::dbgLevel::Hierarchy,
@@ -201,7 +201,7 @@ namespace controls
 			L"Adding Node \"%ws\" under node %p, callback = %ws\n",
 			szName.c_str(),
 			hParent,
-			callback != nullptr ? L"true" : L"false");
+			itemAddedCallback != nullptr ? L"true" : L"false");
 		auto tvInsert = TVINSERTSTRUCTW{};
 
 		tvInsert.hParent = hParent;
@@ -214,9 +214,9 @@ namespace controls
 
 		SetNodeData(m_hWnd, hItem, lpData);
 
-		if (callback)
+		if (itemAddedCallback)
 		{
-			callback(hItem);
+			itemAddedCallback(hItem);
 		}
 
 		return hItem;

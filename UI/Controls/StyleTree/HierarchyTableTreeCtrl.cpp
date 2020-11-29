@@ -36,12 +36,13 @@ namespace controls
 		htcPR_DELETED_ASSOC_MSG_COUNT,
 		htcNUMCOLS
 	};
-	static const SizedSPropTagArray(htNUMCOLS, sptHTCountCols) = {htcNUMCOLS,
-																  {PR_CONTENT_COUNT,
-																   PR_ASSOC_CONTENT_COUNT,
-																   PR_DELETED_FOLDER_COUNT,
-																   PR_DELETED_MSG_COUNT,
-																   PR_DELETED_ASSOC_MSG_COUNT}};
+	static const SizedSPropTagArray(htNUMCOLS, sptHTCountCols) = {
+		htcNUMCOLS,
+		{PR_CONTENT_COUNT,
+		 PR_ASSOC_CONTENT_COUNT,
+		 PR_DELETED_FOLDER_COUNT,
+		 PR_DELETED_MSG_COUNT,
+		 PR_DELETED_ASSOC_MSG_COUNT}};
 
 	static std::wstring CLASS = L"CHierarchyTableTreeCtrl";
 
@@ -180,8 +181,7 @@ namespace controls
 				lpProps // Pass our lpProps to be archived
 			);
 
-			static_cast<void>(AddChildNode(
-				szName, TVI_ROOT, reinterpret_cast<LPARAM>(lpData), [&](auto _1) { return OnItemAdded(_1); }));
+			static_cast<void>(AddChildNode(szName, TVI_ROOT, lpData, [&](auto _1) { return OnItemAdded(_1); }));
 		}
 
 		// Node owns the lpProps memory now, so we don't free it
@@ -190,7 +190,7 @@ namespace controls
 	void CHierarchyTableTreeCtrl::AddNode(
 		_In_ const LPSRow lpsRow,
 		HTREEITEM hParent,
-		const std::function<void(HTREEITEM hItem)>& callback) const
+		const std::function<void(HTREEITEM hItem)>& itemAddedCallback) const
 	{
 		if (!lpsRow) return;
 
@@ -213,7 +213,7 @@ namespace controls
 		{
 			sortlistdata::nodeData::init(lpData, lpsRow->cValues, lpsRow->lpProps);
 
-			static_cast<void>(AddChildNode(szName, hParent, reinterpret_cast<LPARAM>(lpData), callback));
+			static_cast<void>(AddChildNode(szName, hParent, lpData, itemAddedCallback));
 		}
 	}
 

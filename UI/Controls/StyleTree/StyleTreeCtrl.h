@@ -12,8 +12,8 @@ namespace controls
 		AddChildNode(
 			_In_ const std::wstring& szName,
 			HTREEITEM hParent,
-			LPARAM lpData,
-			const std::function<void(HTREEITEM hItem)>& callback) const;
+			LPVOID lpData,
+			const std::function<void(HTREEITEM hItem)>& itemAddedCallback) const;
 
 		// Callbacks
 		std::function<bool(HTREEITEM hItem)> HasChildrenCallback = nullptr;
@@ -43,7 +43,7 @@ namespace controls
 
 		// Node management
 		// Removes any existing node data and replaces it with lpData
-		void SetNodeData(HWND hWnd, HTREEITEM hItem, LPARAM lpData) const;
+		void SetNodeData(HWND hWnd, HTREEITEM hItem, LPVOID lpData) const;
 		void OnSelChanged(_In_opt_ NMHDR* pNMHDR, _In_opt_ LRESULT* pResult);
 		std::wstring GetItemTextW(HTREEITEM hItem) const;
 

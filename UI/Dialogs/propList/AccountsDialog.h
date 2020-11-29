@@ -1,5 +1,6 @@
 #pragma once
 #include <UI/Dialogs/BaseDialog.h>
+#include <UI/Controls/StyleTree/StyleTreeCtrl.h>
 
 class CContentsTableListCtrl;
 
@@ -20,6 +21,7 @@ namespace dialog
 		BOOL OnInitDialog() override;
 
 	private:
+		controls::StyleTreeCtrl m_lpAccountsList{};
 		LPMAPISESSION m_lpMAPISession;
 
 		// Menu items
