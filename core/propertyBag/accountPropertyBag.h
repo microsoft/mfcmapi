@@ -9,7 +9,7 @@ namespace propertybag
 	class accountPropertyBag : public IMAPIPropertyBag
 	{
 	public:
-		accountPropertyBag(LPMAPISESSION lpMAPISession);
+		accountPropertyBag(std::wstring lpwszProfile, LPOLKACCOUNT lpAccount);
 		virtual ~accountPropertyBag();
 		accountPropertyBag(const accountPropertyBag&) = delete;
 		accountPropertyBag& operator=(const accountPropertyBag&) = delete;
@@ -37,10 +37,7 @@ namespace propertybag
 		_Check_return_ HRESULT DeleteProp(ULONG) override { return E_NOTIMPL; };
 
 	private:
-		LPMAPISESSION m_lpMAPISession{};
-		LPOLKACCOUNTMANAGER m_lpAcctMgr{};
-		CAccountHelper* m_lpMyAcctHelper{};
-		LPOLKACCOUNTHELPER m_lpAcctHelper{};
 		std::wstring m_lpwszProfile;
+		LPOLKACCOUNT m_lpAccount;
 	};
 } // namespace propertybag

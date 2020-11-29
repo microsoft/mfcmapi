@@ -56,7 +56,7 @@ namespace dialog
 	{
 		TRACE_DESTRUCTOR(CLASS);
 		m_lpAccountsList.DestroyWindow();
-//		CWnd::DestroyWindow();
+		//		CWnd::DestroyWindow();
 
 		if (m_lpAcctHelper) m_lpAcctHelper->Release();
 		m_lpAcctHelper = nullptr;
@@ -110,15 +110,17 @@ namespace dialog
 
 		UpdateTitleBarText();
 
-		EC_H_S(
-			m_lpPropDisplay->SetDataSource(std::make_shared<propertybag::accountPropertyBag>(m_lpMAPISession), false));
-
 		if (m_lpFakeSplitter)
 		{
 			m_lpAccountsList.Create(&m_lpFakeSplitter, true);
 			m_lpFakeSplitter.SetPaneOne(m_lpAccountsList.GetSafeHwnd());
 			m_lpAccountsList.FreeNodeDataCallback = [&](auto lpAccount) {
 				if (lpAccount) reinterpret_cast<LPOLKACCOUNT>(lpAccount)->Release();
+			};
+			m_lpAccountsList.ItemSelectedCallback = [&](auto hItem) {
+				auto lpAccount = reinterpret_cast<LPOLKACCOUNT>(m_lpAccountsList.GetItemData(hItem));
+				EC_H_S(m_lpPropDisplay->SetDataSource(
+					std::make_shared<propertybag::accountPropertyBag>(m_lpwszProfile, lpAccount), false));
 			};
 
 			AddAccounts();
