@@ -1,6 +1,9 @@
 #pragma once
 #include <UI/Dialogs/BaseDialog.h>
 #include <UI/Controls/StyleTree/StyleTreeCtrl.h>
+#include <core/sortlistdata/sortListData.h>
+#include <core/mapi/account/actMgmt.h>
+#include <core/mapi/account/accountHelper.h>
 
 class CContentsTableListCtrl;
 
@@ -22,11 +25,17 @@ namespace dialog
 
 	private:
 		controls::StyleTreeCtrl m_lpAccountsList{};
-		LPMAPISESSION m_lpMAPISession;
+		LPMAPISESSION m_lpMAPISession{};
+		LPOLKACCOUNTMANAGER m_lpAcctMgr{};
+		CAccountHelper* m_lpMyAcctHelper{};
+		LPOLKACCOUNTHELPER m_lpAcctHelper{};
+		std::wstring m_lpwszProfile;
 
 		// Menu items
 		void OnRefreshView() override;
 
+		void InitAccountManager();
+		void AddAccounts();
 		DECLARE_MESSAGE_MAP()
 	};
 } // namespace dialog
