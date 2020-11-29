@@ -44,34 +44,13 @@ void IterateAllProps(LPOLKACCOUNT lpAccount)
 	if (!lpAccount) return;
 
 	wprintf(L"Iterating all properties\n");
-	auto hRes = S_OK;
-	ULONG i = 0;
-	ACCT_VARIANT pProp = {0};
 
-	for (i = 0; i < 0x8000; i++)
+	for (auto i = 0; i < 0x8000; i++)
 	{
-		memset(&pProp, 0, sizeof(ACCT_VARIANT));
-		hRes = lpAccount->GetProp(PROP_TAG(PT_LONG, i), &pProp);
-		if (SUCCEEDED(hRes))
-		{
-			wprintf(L"Prop = 0x%08lX, Type = PT_LONG, Value = 0x%08lX\n", PROP_TAG(PT_LONG, i), pProp.Val.dw);
-		}
-
-		hRes = lpAccount->GetProp(PROP_TAG(PT_UNICODE, i), &pProp);
-		if (SUCCEEDED(hRes))
-		{
-			wprintf(L"Prop = 0x%08lX, Type = PT_UNICODE, Value = %ws\n", PROP_TAG(PT_UNICODE, i), pProp.Val.pwsz);
-			(void) lpAccount->FreeMemory(reinterpret_cast<LPBYTE>(pProp.Val.pwsz));
-		}
-
-		hRes = lpAccount->GetProp(PROP_TAG(PT_BINARY, i), &pProp);
-		if (SUCCEEDED(hRes))
-		{
-			wprintf(L"Prop = 0x%08lX, Type = PT_BINARY, Value = ", PROP_TAG(PT_BINARY, i));
-			PrintBinary(pProp.Val.bin.cb, pProp.Val.bin.pb);
-			wprintf(L"\n");
-			(void) lpAccount->FreeMemory(pProp.Val.bin.pb);
-		}
+		auto pProp = ACCT_VARIANT{};
+		LogProp(lpAccount, PROP_TAG(PT_LONG, i));
+		LogProp(lpAccount, PROP_TAG(PT_UNICODE, i));
+		LogProp(lpAccount, PROP_TAG(PT_BINARY, i));
 	}
 
 	wprintf(L"Done iterating all properties\n");
