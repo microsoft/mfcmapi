@@ -19,6 +19,7 @@
     <ClInclude Include="MMNamedProps.h">
       <Filter>Source Files\MrMAPI</Filter>
     </ClInclude>
+    <ClInclude Include="MMAccounts.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MMAcls.cpp">
@@ -110,6 +111,9 @@
     </ClCompile>
     <ClCompile Include="MMNamedProps.cpp">
       <Filter>Source Files\MrMAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="MMAccounts.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

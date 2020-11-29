@@ -580,6 +580,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\StdAfx.h" />
+    <ClInclude Include="MMAccounts.h" />
     <ClInclude Include="mmcli.h" />
     <ClInclude Include="MMAcls.h" />
     <ClInclude Include="MMContents.h" />
@@ -602,6 +603,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="MMAccounts.cpp" />
     <ClCompile Include="mmcli.cpp" />
     <ClCompile Include="MMNamedProps.cpp" />
     <ClCompile Include="MrMAPI.cpp">

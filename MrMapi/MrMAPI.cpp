@@ -1,6 +1,7 @@
 #include <StdAfx.h>
 #include <MrMapi/MrMAPI.h>
 #include <MrMapi/mmcli.h>
+#include <MrMapi/MMAccounts.h>
 #include <MrMapi/MMAcls.h>
 #include <MrMapi/MMContents.h>
 #include <MrMapi/MMErr.h>
@@ -136,7 +137,7 @@ int wmain(_In_ int argc, _In_count_(argc) wchar_t* argv[])
 
 	// Enable unicode output through wprintf
 	// Don't use printf in this mode!
-	_setmode(_fileno(stdout), _O_U16TEXT);
+	static_cast<void>(_setmode(_fileno(stdout), _O_U16TEXT));
 
 	registry::doSmartView = true;
 	registry::useGetPropList = true;
@@ -297,6 +298,9 @@ int wmain(_In_ int argc, _In_count_(argc) wchar_t* argv[])
 			break;
 		case cli::cmdmodeSearchState:
 			DoSearchState(lpFolder);
+			break;
+		case cli::cmdmodeEnumAccounts:
+			DoAccounts(lpMAPISession);
 			break;
 		case cli::cmdmodeNamedProps:
 			DoNamedProps(lpMDB);

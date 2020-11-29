@@ -67,6 +67,9 @@ namespace cli
 	option switchReceiveFolder{L"ReceiveFolder", cmdmodeReceiveFolder, 0, 1, OPT_INITALL | OPT_NEEDSTORE | OPT_NEEDNUM};
 	option switchSkip{L"Skip", cmdmodeUnknown, 0, 0, OPT_NOOPT};
 	option switchSearchState{L"SearchState", cmdmodeSearchState, 0, 1, OPT_INITALL | OPT_NEEDFOLDER};
+	option switchAccounts{L"Accounts", cmdmodeEnumAccounts, 0, 0, OPT_INITALL | OPT_PROFILE};
+	option switchIterate{L"Iterate", cmdmodeEnumAccounts, 0, 0, OPT_NOOPT};
+	option switchWizard{L"Wizard", cmdmodeEnumAccounts, 0, 0, OPT_NOOPT};
 
 	// If we want to add aliases for any switches, add them here
 	option switchHelpAlias{L"Help", cmdmodeHelpFull, 0, 0, OPT_INITMFC};
@@ -123,6 +126,9 @@ namespace cli
 		&switchReceiveFolder,
 		&switchSkip,
 		&switchSearchState,
+		&switchAccounts,
+		&switchIterate,
+		&switchWizard,
 		// If we want to add aliases for any switches, add them here
 		&switchHelpAlias,
 	};
@@ -258,7 +264,18 @@ namespace cli
 			switchSearchState.name(),
 			switchFolder.name(),
 			switchProfile.name());
-		wprintf(L"   MrMAPI -%ws [-%ws <profile>]", switchNamedProps.name(), switchProfile.name());
+		wprintf(L"   MrMAPI -%ws [-%ws <profile>]\n", switchNamedProps.name(), switchProfile.name());
+		wprintf(
+			L"   MrMAPI -%ws [-%ws] [-%ws <profile>]\n",
+			switchAccounts.name(),
+			switchIterate.name(),
+			switchProfile.name());
+		wprintf(
+			L"   MrMAPI -%ws -%ws [-%ws <flags>] [-%ws <profile>]\n",
+			switchAccounts.name(),
+			switchWizard.name(),
+			switchFlag.name(),
+			switchProfile.name());
 
 		if (bFull)
 		{
@@ -348,7 +365,8 @@ namespace cli
 			wprintf(L"   -Ma  (or -%ws) Convert an EML file to MAPI format (MSG file).\n", switchMAPI.name());
 			wprintf(L"   -Mi  (or -%ws) Convert an MSG file to MIME format (EML file).\n", switchMIME.name());
 			wprintf(
-				L"   -I   (or -%ws) Indicates the input file for conversion, either a MIME-formatted EML file or an MSG "
+				L"   -I   (or -%ws) Indicates the input file for conversion, either a MIME-formatted EML file or an "
+				L"MSG "
 				"file.\n",
 				switchInput.name());
 			wprintf(L"   -O   (or -%ws) Indicates the output file for the conversion.\n", switchOutput.name());
@@ -515,9 +533,9 @@ namespace cli
 		// Having processed the command line, we may not have determined a mode.
 		// Some modes can be presumed by the switches we did see.
 
-		if (switchFlag.isSet())
+		if (switchFlag.isSet() && options.mode != cmdmodePropTag && options.mode != cmdmodeEnumAccounts)
 		{
-			if (!bSetMode(options.mode, switchFlag.hasULONG(0, 16) ? cmdmodePropTag : cmdmodeFlagSearch))
+			if (!bSetMode(options.mode, cmdmodeFlagSearch))
 			{
 				options.mode = cmdmodeHelp;
 			}

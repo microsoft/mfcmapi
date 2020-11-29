@@ -51,6 +51,10 @@ namespace cli
 	extern option switchReceiveFolder;
 	extern option switchSkip;
 	extern option switchSearchState;
+	extern option switchAccounts;
+	extern option switchIterate;
+	extern option switchWizard;
+
 	extern std::vector<option*> g_options;
 
 	enum CmdMode
@@ -75,6 +79,7 @@ namespace cli
 		cmdmodeReceiveFolder,
 		cmdmodeSearchState,
 		cmdmodeNamedProps,
+		cmdmodeEnumAccounts,
 	};
 
 	enum OPTIONFLAGS
