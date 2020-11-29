@@ -86,101 +86,85 @@ void IterateAllProps(LPOLKACCOUNT lpAccount)
 	wprintf(L"Done iterating all properties\n");
 }
 
-HRESULT EnumerateAccounts(LPMAPISESSION lpSession, LPCWSTR lpwszProfile, bool bIterateAllProps)
+void EnumerateAccounts(LPMAPISESSION lpSession, LPCWSTR lpwszProfile, bool bIterateAllProps)
 {
-	auto hRes = S_OK;
 	LPOLKACCOUNTMANAGER lpAcctMgr = nullptr;
 
-	hRes = EC_H(CoCreateInstance(
+	EC_H_S(CoCreateInstance(
 		CLSID_OlkAccountManager,
 		nullptr,
 		CLSCTX_INPROC_SERVER,
 		IID_IOlkAccountManager,
 		reinterpret_cast<LPVOID*>(&lpAcctMgr)));
-	if (SUCCEEDED(hRes) && lpAcctMgr)
+	if (lpAcctMgr)
 	{
-		auto pMyAcctHelper = new CAccountHelper(lpwszProfile, lpSession);
-		if (pMyAcctHelper)
+		auto lpAcctHelper = new CAccountHelper(lpwszProfile, lpSession);
+		if (lpAcctHelper)
 		{
-			LPOLKACCOUNTHELPER lpAcctHelper = nullptr;
-			hRes = EC_H(pMyAcctHelper->QueryInterface(IID_IOlkAccountHelper, reinterpret_cast<LPVOID*>(&lpAcctHelper)));
-			if (SUCCEEDED(hRes) && lpAcctHelper)
+			const auto hRes = EC_H(lpAcctMgr->Init(lpAcctHelper, ACCT_INIT_NOSYNCH_MAPI_ACCTS));
+			if (SUCCEEDED(hRes))
 			{
-				hRes = EC_H(lpAcctMgr->Init(lpAcctHelper, ACCT_INIT_NOSYNCH_MAPI_ACCTS));
-				if (SUCCEEDED(hRes))
+				LPOLKENUM lpAcctEnum = nullptr;
+
+				EC_H_S(lpAcctMgr->EnumerateAccounts(&CLSID_OlkMail, nullptr, OLK_ACCOUNT_NO_FLAGS, &lpAcctEnum));
+				if (lpAcctEnum)
 				{
-					LPOLKENUM lpAcctEnum = nullptr;
+					DWORD cAccounts = 0;
 
-					hRes =
-						EC_H(lpAcctMgr->EnumerateAccounts(&CLSID_OlkMail, nullptr, OLK_ACCOUNT_NO_FLAGS, &lpAcctEnum));
-					if (SUCCEEDED(hRes) && lpAcctEnum)
+					EC_H_S(lpAcctEnum->GetCount(&cAccounts));
+					if (cAccounts)
 					{
-						DWORD cAccounts = 0;
-
-						hRes = EC_H(lpAcctEnum->GetCount(&cAccounts));
-						if (SUCCEEDED(hRes) && cAccounts)
+						EC_H_S(lpAcctEnum->Reset());
+						for (DWORD i = 0; i < cAccounts; i++)
 						{
-							hRes = EC_H(lpAcctEnum->Reset());
-							if (SUCCEEDED(hRes))
+							if (i > 0) printf("\n");
+							wprintf(L"Account #%lu\n", i + 1);
+							LPUNKNOWN lpUnk = nullptr;
+
+							EC_H(lpAcctEnum->GetNext(&lpUnk));
+							if (lpUnk)
 							{
-								DWORD i = 0;
-								for (i = 0; i < cAccounts; i++)
+								auto lpAccount = mapi::safe_cast<LPOLKACCOUNT>(lpUnk);
+
+								if (lpAccount)
 								{
-									if (i > 0) printf("\n");
-									wprintf(L"Account #%lu\n", i + 1);
-									LPUNKNOWN lpUnk = nullptr;
+									LogProp(lpAccount, PROP_ACCT_NAME);
+									LogProp(lpAccount, PROP_ACCT_USER_DISPLAY_NAME);
+									LogProp(lpAccount, PROP_ACCT_USER_EMAIL_ADDR);
+									LogProp(lpAccount, PROP_ACCT_STAMP);
+									LogProp(lpAccount, PROP_ACCT_SEND_STAMP);
+									LogProp(lpAccount, PROP_ACCT_IS_EXCH);
+									LogProp(lpAccount, PROP_ACCT_ID);
+									LogProp(lpAccount, PROP_ACCT_DELIVERY_FOLDER);
+									LogProp(lpAccount, PROP_ACCT_DELIVERY_STORE);
+									LogProp(lpAccount, PROP_ACCT_SENTITEMS_EID);
+									LogProp(lpAccount, PR_NEXT_SEND_ACCT);
+									LogProp(lpAccount, PR_PRIMARY_SEND_ACCT);
+									LogProp(lpAccount, PROP_MAPI_IDENTITY_ENTRYID);
+									LogProp(lpAccount, PROP_MAPI_TRANSPORT_FLAGS);
 
-									hRes = EC_H(lpAcctEnum->GetNext(&lpUnk));
-									if (SUCCEEDED(hRes) && lpUnk)
-									{
-										LPOLKACCOUNT lpAccount = nullptr;
-
-										hRes = EC_H(lpUnk->QueryInterface(
-											IID_IOlkAccount, reinterpret_cast<LPVOID*>(&lpAccount)));
-										if (lpAccount)
-										{
-											LogProp(lpAccount, PROP_ACCT_NAME);
-											LogProp(lpAccount, PROP_ACCT_USER_DISPLAY_NAME);
-											LogProp(lpAccount, PROP_ACCT_USER_EMAIL_ADDR);
-											LogProp(lpAccount, PROP_ACCT_STAMP);
-											LogProp(lpAccount, PROP_ACCT_SEND_STAMP);
-											LogProp(lpAccount, PROP_ACCT_IS_EXCH);
-											LogProp(lpAccount, PROP_ACCT_ID);
-											LogProp(lpAccount, PROP_ACCT_DELIVERY_FOLDER);
-											LogProp(lpAccount, PROP_ACCT_DELIVERY_STORE);
-											LogProp(lpAccount, PROP_ACCT_SENTITEMS_EID);
-											LogProp(lpAccount, PR_NEXT_SEND_ACCT);
-											LogProp(lpAccount, PR_PRIMARY_SEND_ACCT);
-											LogProp(lpAccount, PROP_MAPI_IDENTITY_ENTRYID);
-											LogProp(lpAccount, PROP_MAPI_TRANSPORT_FLAGS);
-
-											if (bIterateAllProps) IterateAllProps(lpAccount);
-											lpAccount->Release();
-										}
-									}
-
-									if (lpUnk) lpUnk->Release();
-									lpUnk = nullptr;
+									if (bIterateAllProps) IterateAllProps(lpAccount);
+									lpAccount->Release();
 								}
 							}
+
+							if (lpUnk) lpUnk->Release();
+							lpUnk = nullptr;
 						}
 					}
-
-					if (lpAcctEnum) lpAcctEnum->Release();
 				}
-			}
 
-			if (lpAcctHelper) lpAcctHelper->Release();
-			pMyAcctHelper->Release();
+				if (lpAcctEnum) lpAcctEnum->Release();
+			}
 		}
+
+		if (lpAcctHelper) lpAcctHelper->Release();
 	}
 
 	if (lpAcctMgr) lpAcctMgr->Release();
-
-	return hRes;
 }
 
-HRESULT DisplayAccountList(LPMAPISESSION lpSession, LPCWSTR lpwszProfile, ULONG ulFlags)
+void DisplayAccountList(LPMAPISESSION lpSession, LPCWSTR lpwszProfile, ULONG ulFlags)
 {
 	auto hRes = S_OK;
 	LPOLKACCOUNTMANAGER lpAcctMgr = nullptr;
@@ -219,8 +203,6 @@ HRESULT DisplayAccountList(LPMAPISESSION lpSession, LPCWSTR lpwszProfile, ULONG 
 	}
 
 	if (lpAcctMgr) lpAcctMgr->Release();
-
-	return hRes;
 }
 
 void DoAccounts(_In_opt_ LPMAPISESSION lpMAPISession)
@@ -231,21 +213,16 @@ void DoAccounts(_In_opt_ LPMAPISESSION lpMAPISession)
 	auto profileName = mapi::GetProfileName(lpMAPISession);
 
 	wprintf(L"Enum Accounts\n");
-	wprintf(L"Options specified:\n");
-	wprintf(L"   Profile: %ws\n", profileName.c_str());
-	wprintf(L"   Flags: 0x%03X\n", flags);
-	wprintf(L"   Iterate: %ws\n", bIterate ? L"true" : L"false");
-	wprintf(L"   Wizard: %ws\n", bWizard ? L"true" : L"false");
 
 	if (!profileName.empty())
 	{
 		if (bWizard)
 		{
-			(void) DisplayAccountList(lpMAPISession, profileName.c_str(), flags);
+			DisplayAccountList(lpMAPISession, profileName.c_str(), flags);
 		}
 		else
 		{
-			(void) EnumerateAccounts(lpMAPISession, profileName.c_str(), bIterate);
+			EnumerateAccounts(lpMAPISession, profileName.c_str(), bIterate);
 		}
 	}
 }
