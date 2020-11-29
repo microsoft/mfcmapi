@@ -3,20 +3,13 @@
 #include <core/mapi/mapiFunctions.h>
 #include <core/mapi/mapiMemory.h>
 #include <core/mapi/account/actMgmt.h>
-#include <core/mapi/account/accountHelper.h>
 
 namespace propertybag
 {
 	accountPropertyBag::accountPropertyBag(std::wstring lpwszProfile, LPOLKACCOUNT lpAccount)
 	{
 		m_lpwszProfile = lpwszProfile;
-		if (lpAccount)
-		{
-			// TODO: Use this
-			//m_lpAccount = mapi::safe_cast<LPOLKACCOUNT>(lpAccount);
-			m_lpAccount = lpAccount;
-			if (m_lpAccount) m_lpAccount->AddRef();
-		}
+		m_lpAccount = mapi::safe_cast<LPOLKACCOUNT>(lpAccount);
 	}
 
 	accountPropertyBag ::~accountPropertyBag()

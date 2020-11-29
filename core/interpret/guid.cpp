@@ -38,6 +38,7 @@
 #define USES_IID_IProfSect
 #define USES_IID_IOlkAccountHelper
 #define USES_IID_IOlkAccountManager
+#define USES_IID_IOlkAccount
 #pragma endregion
 
 #include <initguid.h>

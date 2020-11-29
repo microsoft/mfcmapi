@@ -13,6 +13,7 @@
 #include <core/mapi/mapiProgress.h>
 #include <core/mapi/cache/namedProps.h>
 #include <core/mapi/mapiOutput.h>
+#include <core/mapi/account/actMgmt.h>
 
 namespace mapi
 {
@@ -50,6 +51,7 @@ namespace mapi
 		else if (std::is_same_v<T, LPMAPICLIENTSHUTDOWN>) iid = IID_IMAPIClientShutdown;
 		else if (std::is_same_v<T, LPPROFSECT>) iid = IID_IProfSect;
 		else if (std::is_same_v<T, LPATTACH>) iid = IID_IAttachment;
+		else if (std::is_same_v<T, LPOLKACCOUNT>) iid = IID_IOlkAccount;
 		else assert(false);
 		// clang-format on
 
@@ -88,6 +90,7 @@ namespace mapi
 	template LPMAPICLIENTSHUTDOWN safe_cast<LPMAPICLIENTSHUTDOWN>(IUnknown* src);
 	template LPPROFSECT safe_cast<LPPROFSECT>(IUnknown* src);
 	template LPATTACH safe_cast<LPATTACH>(IUnknown* src);
+	template LPOLKACCOUNT safe_cast<LPOLKACCOUNT>(IUnknown* src);
 
 	LPUNKNOWN CallOpenEntry(
 		_In_opt_ LPMDB lpMDB,

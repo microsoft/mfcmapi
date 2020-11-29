@@ -1,8 +1,6 @@
 #pragma once
 #include <core/propertyBag/propertyBag.h>
-#include <core/sortlistdata/sortListData.h>
 #include <core/mapi/account/actMgmt.h>
-#include <core/mapi/account/accountHelper.h>
 
 namespace propertybag
 {
