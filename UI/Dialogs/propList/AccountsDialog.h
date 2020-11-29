@@ -34,7 +34,7 @@ namespace dialog
 		void OnRefreshView() override;
 
 		void InitAccountManager();
-		void AddAccounts();
+		void EnumAccounts();
 		DECLARE_MESSAGE_MAP()
 	};
 } // namespace dialog

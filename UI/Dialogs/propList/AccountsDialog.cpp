@@ -113,7 +113,7 @@ namespace dialog
 					std::make_shared<propertybag::accountPropertyBag>(m_lpwszProfile, lpAccount), false));
 			};
 
-			AddAccounts();
+			EnumAccounts();
 
 			m_lpFakeSplitter.SetPercent(0.25);
 		}
@@ -121,7 +121,7 @@ namespace dialog
 		return bRet;
 	}
 
-	void AccountsDialog::AddAccounts()
+	void AccountsDialog::EnumAccounts()
 	{
 		LPOLKENUM lpAcctEnum = nullptr;
 
