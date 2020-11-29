@@ -35,6 +35,7 @@
 #include <core/mapi/mapiFunctions.h>
 #include <core/property/parseProperty.h>
 #include <core/mapi/processor/dumpStore.h>
+#include <UI/Dialogs/propList/AccountsDialog.h>
 
 namespace dialog
 {
@@ -1304,7 +1305,13 @@ namespace dialog
 	{
 		if (!m_lpParent || !m_lpMapiObjects) return;
 
-		DisplayAccountsDialog(m_lpParent, m_lpMapiObjects);
+		const auto lpMAPISession = m_lpMapiObjects->LogonGetSession(m_lpParent->GetSafeHwnd()); // do not release
+		if (lpMAPISession)
+		{
+			// Since we've opened a session, populate the store table in the UI
+			OnOpenMessageStoreTable();
+			new AccountsDialog(m_lpParent, m_lpMapiObjects, lpMAPISession);
+		}
 	}
 
 	void CMainDlg::OnDisplayMailboxTable()
