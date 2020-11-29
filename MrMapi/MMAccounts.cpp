@@ -175,7 +175,7 @@ void DoAccounts(_In_opt_ LPMAPISESSION lpMAPISession)
 	const auto flags = cli::switchFlag.atULONG(0, 16);
 	const auto bIterate = cli::switchIterate.isSet();
 	const auto bWizard = cli::switchWizard.isSet();
-	auto profileName = mapi::GetProfileName(lpMAPISession);
+	const auto profileName = mapi::GetProfileName(lpMAPISession);
 
 	wprintf(L"Enum Accounts\n");
 
