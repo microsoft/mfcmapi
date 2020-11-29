@@ -2,7 +2,6 @@
 #include <core/propertyBag/accountPropertyBag.h>
 #include <core/mapi/mapiFunctions.h>
 #include <core/mapi/mapiMemory.h>
-#include <core/mapi/account/actMgmt.h>
 
 namespace propertybag
 {

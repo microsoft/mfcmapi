@@ -1,7 +1,6 @@
 #include <StdAfx.h>
 #include <MrMapi/MMAccounts.h>
 #include <MrMapi/mmcli.h>
-#include <core/mapi/account/actMgmt.h>
 #include <core/mapi/account/accountHelper.h>
 #include <core/mapi/mapiFunctions.h>
 

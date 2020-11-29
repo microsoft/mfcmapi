@@ -2,7 +2,6 @@
 #include <UI/Dialogs/BaseDialog.h>
 #include <UI/Controls/StyleTree/StyleTreeCtrl.h>
 #include <core/sortlistdata/sortListData.h>
-#include <core/mapi/account/actMgmt.h>
 #include <core/mapi/account/accountHelper.h>
 
 class CContentsTableListCtrl;

@@ -1,5 +1,4 @@
 #include <core/stdafx.h>
-#include <core/mapi/account/actMgmt.h>
 #include <core/mapi/account/accountHelper.h>
 
 CAccountHelper::CAccountHelper(LPCWSTR lpwszProfName, LPMAPISESSION lpSession)

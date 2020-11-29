@@ -13,7 +13,6 @@
 #include <core/mapi/mapiProgress.h>
 #include <core/mapi/cache/namedProps.h>
 #include <core/mapi/mapiOutput.h>
-#include <core/mapi/account/actMgmt.h>
 
 namespace mapi
 {

@@ -1,6 +1,5 @@
 #pragma once
 #include <core/propertyBag/propertyBag.h>
-#include <core/mapi/account/actMgmt.h>
 
 namespace propertybag
 {

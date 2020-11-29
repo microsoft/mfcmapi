@@ -1,9 +1,5 @@
 #pragma once
 
-#include <MAPIX.h>
-#include <string>
-#include <core/mapi/account/actMgmt.h>
-
 class CAccountHelper : public IOlkAccountHelper
 {
 public:
