@@ -155,9 +155,9 @@ namespace dialog
 					lpUnk = nullptr;
 				}
 			}
-		}
 
-		if (lpAcctEnum) lpAcctEnum->Release();
+			lpAcctEnum->Release();
+		}
 	}
 
 	BEGIN_MESSAGE_MAP(AccountsDialog, CBaseDialog)
