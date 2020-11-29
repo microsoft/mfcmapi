@@ -28,7 +28,6 @@ namespace dialog
 		LPMAPISESSION m_lpMAPISession{};
 		LPOLKACCOUNTMANAGER m_lpAcctMgr{};
 		CAccountHelper* m_lpMyAcctHelper{};
-		LPOLKACCOUNTHELPER m_lpAcctHelper{};
 		std::wstring m_lpwszProfile;
 
 		// Menu items

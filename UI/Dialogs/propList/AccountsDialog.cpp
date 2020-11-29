@@ -56,9 +56,6 @@ namespace dialog
 		TRACE_DESTRUCTOR(CLASS);
 		m_lpAccountsList.DestroyWindow();
 
-		if (m_lpAcctHelper) m_lpAcctHelper->Release();
-		m_lpAcctHelper = nullptr;
-
 		if (m_lpMyAcctHelper) m_lpMyAcctHelper->Release();
 		m_lpMyAcctHelper = nullptr;
 
@@ -91,12 +88,7 @@ namespace dialog
 
 		if (m_lpMyAcctHelper)
 		{
-			EC_H_S(m_lpMyAcctHelper->QueryInterface(IID_IOlkAccountHelper, reinterpret_cast<LPVOID*>(&m_lpAcctHelper)));
-		}
-
-		if (m_lpAcctHelper)
-		{
-			EC_H_S(m_lpAcctMgr->Init(m_lpAcctHelper, ACCT_INIT_NOSYNCH_MAPI_ACCTS));
+			EC_H_S(m_lpAcctMgr->Init(m_lpMyAcctHelper, ACCT_INIT_NOSYNCH_MAPI_ACCTS));
 		}
 	}
 

@@ -4,7 +4,7 @@
 #include <string>
 #include <core/mapi/account/actMgmt.h>
 
-class CAccountHelper : IOlkAccountHelper
+class CAccountHelper : public IOlkAccountHelper
 {
 public:
 	CAccountHelper(LPCWSTR lpwszProfName, LPMAPISESSION lpSession);
