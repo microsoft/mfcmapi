@@ -6,34 +6,6 @@
 #include <core/interpret/proptags.h>
 #include <core/interpret/proptype.h>
 
-void PrintBinary(const DWORD cb, const BYTE* lpb)
-{
-	if (!cb || !lpb) return;
-	LPSTR lpszHex = nullptr;
-	ULONG i = 0;
-	ULONG iBinPos = 0;
-	lpszHex = new CHAR[1 + 2 * cb];
-	if (lpszHex)
-	{
-		for (i = 0; i < cb; i++)
-		{
-			const auto bLow = static_cast<BYTE>(lpb[i] & 0xf);
-			const auto bHigh = static_cast<BYTE>(lpb[i] >> 4 & 0xf);
-			const auto szLow = static_cast<CHAR>(bLow <= 0x9 ? '0' + bLow : 'A' + bLow - 0xa);
-			const auto szHigh = static_cast<CHAR>(bHigh <= 0x9 ? '0' + bHigh : 'A' + bHigh - 0xa);
-
-			lpszHex[iBinPos] = szHigh;
-			lpszHex[iBinPos + 1] = szLow;
-
-			iBinPos += 2;
-		}
-
-		lpszHex[iBinPos] = '\0';
-		wprintf(L"%hs", lpszHex);
-		delete[] lpszHex;
-	}
-}
-
 void LogProp(LPOLKACCOUNT lpAccount, ULONG ulPropTag)
 {
 	auto pProp = ACCT_VARIANT();
@@ -60,7 +32,7 @@ void LogProp(LPOLKACCOUNT lpAccount, ULONG ulPropTag)
 			wprintf(L"0x%08lX", pProp.Val.dw);
 			break;
 		case PT_BINARY:
-			PrintBinary(pProp.Val.bin.cb, pProp.Val.bin.pb);
+			wprintf(L"%ws", strings::BinToHexString(pProp.Val.bin.pb, pProp.Val.bin.cb, true).c_str());
 			(void) lpAccount->FreeMemory(pProp.Val.bin.pb);
 			break;
 		}
