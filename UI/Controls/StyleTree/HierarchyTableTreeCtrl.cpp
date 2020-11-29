@@ -57,7 +57,7 @@ namespace controls
 	void CHierarchyTableTreeCtrl::Create(
 		_In_ CWnd* pCreateParent,
 		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
-		_In_ dialog::CHierarchyTableDlg* lpHostDlg,
+		_In_ dialog::CBaseDialog* lpHostDlg,
 		const tableDisplayFlags displayFlags,
 		const UINT nIDContextMenu)
 	{
