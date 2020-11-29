@@ -28,10 +28,8 @@ namespace propertybag
 			LPSPropValue FAR* lppPropArray) override;
 		_Check_return_ HRESULT GetProp(ULONG ulPropTag, LPSPropValue FAR* lppProp) override;
 		void FreeBuffer(LPSPropValue lpsPropValue) override { MAPIFreeBuffer(lpsPropValue); }
-		// TODO: This is for paste, something we don't yet support for rows
 		_Check_return_ HRESULT SetProps(ULONG, LPSPropValue) override { return E_NOTIMPL; }
-		_Check_return_ HRESULT SetProp(LPSPropValue lpProp) override;
-		//TODO: Not supported yet
+		_Check_return_ HRESULT SetProp(LPSPropValue lpProp) override { return E_NOTIMPL; }
 		_Check_return_ HRESULT DeleteProp(ULONG) override { return E_NOTIMPL; };
 
 	private:

@@ -44,8 +44,7 @@ namespace propertybag
 	// Frees any memory associated with the ACCT_VARIANT
 	SPropValue accountPropertyBag::convertVarToMAPI(ULONG ulPropTag, ACCT_VARIANT var, _In_opt_ const VOID* pParent)
 	{
-		SPropValue sProp = {};
-		sProp.ulPropTag = ulPropTag;
+		auto sProp = SPropValue{ulPropTag, 0};
 		switch (PROP_TYPE(ulPropTag))
 		{
 		case PT_LONG:
@@ -53,12 +52,12 @@ namespace propertybag
 			break;
 		case PT_UNICODE:
 			sProp.Value.lpszW = mapi::CopyStringW(var.Val.pwsz, pParent);
-			(void) m_lpAccount->FreeMemory(reinterpret_cast<LPBYTE>(var.Val.pwsz));
+			WC_H_S(m_lpAccount->FreeMemory(reinterpret_cast<LPBYTE>(var.Val.pwsz)));
 			break;
 		case PT_BINARY:
 			auto bin = SBinary{var.Val.bin.cb, var.Val.bin.pb};
 			sProp.Value.bin = mapi::CopySBinary(bin, pParent);
-			(void) m_lpAccount->FreeMemory(reinterpret_cast<LPBYTE>(var.Val.bin.pb));
+			WC_H_S(m_lpAccount->FreeMemory(reinterpret_cast<LPBYTE>(var.Val.bin.pb)));
 			break;
 		}
 
@@ -76,12 +75,11 @@ namespace propertybag
 		}
 
 		auto hRes = S_OK;
-		ULONG i = 0;
 		std::vector<std::pair<ULONG, ACCT_VARIANT>> props = {};
 
-		for (i = 0; i < 0x8000; i++)
+		for (auto i = 0; i < 0x8000; i++)
 		{
-			ACCT_VARIANT pProp = {};
+			auto pProp = ACCT_VARIANT{};
 			hRes = m_lpAccount->GetProp(PROP_TAG(PT_LONG, i), &pProp);
 			if (SUCCEEDED(hRes))
 			{
@@ -109,8 +107,7 @@ namespace propertybag
 
 			for (const auto& prop : props)
 			{
-				(*lppPropArray)[iProp] = convertVarToMAPI(prop.first, prop.second, *lppPropArray);
-				iProp++;
+				(*lppPropArray)[iProp++] = convertVarToMAPI(prop.first, prop.second, *lppPropArray);
 			}
 		}
 
@@ -134,9 +131,9 @@ namespace propertybag
 		*lpcValues = lpPropTagArray->cValues;
 		*lppPropArray = mapi::allocate<LPSPropValue>(lpPropTagArray->cValues * sizeof(SPropValue));
 
-		for (ULONG iProp = 0; iProp < lpPropTagArray->cValues; iProp++)
+		for (auto iProp = 0; iProp < lpPropTagArray->cValues; iProp++)
 		{
-			ACCT_VARIANT pProp = {};
+			auto pProp = ACCT_VARIANT{};
 			const auto ulPropTag = lpPropTagArray->aulPropTag[iProp];
 			const auto hRes = m_lpAccount->GetProp(ulPropTag, &pProp);
 			if (SUCCEEDED(hRes))
@@ -172,6 +169,4 @@ namespace propertybag
 
 		return S_OK;
 	}
-
-	_Check_return_ HRESULT accountPropertyBag::SetProp(LPSPropValue lpProp) { return E_NOTIMPL; }
 } // namespace propertybag
