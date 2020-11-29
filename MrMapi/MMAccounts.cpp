@@ -152,57 +152,50 @@ void EnumerateAccounts(LPMAPISESSION lpSession, LPCWSTR lpwszProfile, bool bIter
 							lpUnk = nullptr;
 						}
 					}
-				}
 
-				if (lpAcctEnum) lpAcctEnum->Release();
+					lpAcctEnum->Release();
+				}
 			}
+
+			lpAcctHelper->Release();
 		}
 
-		if (lpAcctHelper) lpAcctHelper->Release();
+		lpAcctMgr->Release();
 	}
-
-	if (lpAcctMgr) lpAcctMgr->Release();
 }
 
 void DisplayAccountList(LPMAPISESSION lpSession, LPCWSTR lpwszProfile, ULONG ulFlags)
 {
-	auto hRes = S_OK;
 	LPOLKACCOUNTMANAGER lpAcctMgr = nullptr;
 
-	hRes = EC_H(CoCreateInstance(
+	EC_H_S(CoCreateInstance(
 		CLSID_OlkAccountManager,
 		nullptr,
 		CLSCTX_INPROC_SERVER,
 		IID_IOlkAccountManager,
 		reinterpret_cast<LPVOID*>(&lpAcctMgr)));
-	if (SUCCEEDED(hRes) && lpAcctMgr)
+	if (lpAcctMgr)
 	{
-		auto pMyAcctHelper = new CAccountHelper(lpwszProfile, lpSession);
-		if (pMyAcctHelper)
+		auto lpAcctHelper = new CAccountHelper(lpwszProfile, lpSession);
+		if (lpAcctHelper)
 		{
-			LPOLKACCOUNTHELPER lpAcctHelper = nullptr;
-			hRes = EC_H(pMyAcctHelper->QueryInterface(IID_IOlkAccountHelper, reinterpret_cast<LPVOID*>(&lpAcctHelper)));
-			if (SUCCEEDED(hRes) && lpAcctHelper)
+			const auto hRes = EC_H(lpAcctMgr->Init(lpAcctHelper, ACCT_INIT_NOSYNCH_MAPI_ACCTS));
+			if (SUCCEEDED(hRes))
 			{
-				hRes = EC_H(lpAcctMgr->Init(lpAcctHelper, ACCT_INIT_NOSYNCH_MAPI_ACCTS));
-				if (SUCCEEDED(hRes))
-				{
-					hRes = EC_H(lpAcctMgr->DisplayAccountList(
-						nullptr, // hwnd
-						ulFlags, // dwFlags
-						nullptr, // wszTitle
-						NULL, // cCategories
-						nullptr, // rgclsidCategories
-						nullptr)); // pclsidType
-				}
+				EC_H_S(lpAcctMgr->DisplayAccountList(
+					nullptr, // hwnd
+					ulFlags, // dwFlags
+					nullptr, // wszTitle
+					NULL, // cCategories
+					nullptr, // rgclsidCategories
+					nullptr)); // pclsidType
 			}
 
-			if (lpAcctHelper) lpAcctHelper->Release();
-			pMyAcctHelper->Release();
+			lpAcctHelper->Release();
 		}
-	}
 
-	if (lpAcctMgr) lpAcctMgr->Release();
+		lpAcctMgr->Release();
+	}
 }
 
 void DoAccounts(_In_opt_ LPMAPISESSION lpMAPISession)
