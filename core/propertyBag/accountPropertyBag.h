@@ -37,5 +37,7 @@ namespace propertybag
 	private:
 		std::wstring m_lpwszProfile;
 		LPOLKACCOUNT m_lpAccount;
+
+		SPropValue convertVarToMAPI(ULONG ulPropTag, ACCT_VARIANT var, _In_opt_ const VOID* pParent);
 	};
 } // namespace propertybag

@@ -40,6 +40,31 @@ namespace propertybag
 		return false;
 	}
 
+	// Convert an ACCT_VARIANT to SPropValue allocated off of pParent
+	// Frees any memory associated with the ACCT_VARIANT
+	SPropValue accountPropertyBag::convertVarToMAPI(ULONG ulPropTag, ACCT_VARIANT var, _In_opt_ const VOID* pParent)
+	{
+		SPropValue sProp = {};
+		sProp.ulPropTag = ulPropTag;
+		switch (PROP_TYPE(ulPropTag))
+		{
+		case PT_LONG:
+			sProp.Value.l = var.Val.dw;
+			break;
+		case PT_UNICODE:
+			sProp.Value.lpszW = mapi::CopyStringW(var.Val.pwsz, pParent);
+			(void) m_lpAccount->FreeMemory(reinterpret_cast<LPBYTE>(var.Val.pwsz));
+			break;
+		case PT_BINARY:
+			auto bin = SBinary{var.Val.bin.cb, var.Val.bin.pb};
+			sProp.Value.bin = mapi::CopySBinary(bin, pParent);
+			(void) m_lpAccount->FreeMemory(reinterpret_cast<LPBYTE>(var.Val.bin.pb));
+			break;
+		}
+
+		return sProp;
+	}
+
 	_Check_return_ HRESULT accountPropertyBag::GetAllProps(ULONG FAR* lpcValues, LPSPropValue FAR* lppPropArray)
 	{
 		if (!lpcValues || !lppPropArray) return MAPI_E_INVALID_PARAMETER;
@@ -85,23 +110,7 @@ namespace propertybag
 
 			for (const auto prop : props)
 			{
-				(*lppPropArray)[iProp].ulPropTag = prop.first;
-				switch (PROP_TYPE(prop.first))
-				{
-				case PT_LONG:
-					(*lppPropArray)[iProp].Value.l = prop.second.Val.dw;
-					break;
-				case PT_UNICODE:
-					(*lppPropArray)[iProp].Value.lpszW = mapi::CopyStringW(prop.second.Val.pwsz, *lppPropArray);
-					(void) m_lpAccount->FreeMemory(reinterpret_cast<LPBYTE>(prop.second.Val.pwsz));
-					break;
-				case PT_BINARY:
-					auto bin = SBinary{prop.second.Val.bin.cb, prop.second.Val.bin.pb};
-					(*lppPropArray)[iProp].Value.bin = mapi::CopySBinary(bin, *lppPropArray);
-					(void) m_lpAccount->FreeMemory(reinterpret_cast<LPBYTE>(prop.second.Val.bin.pb));
-					break;
-				}
-
+				(*lppPropArray)[iProp] = convertVarToMAPI(prop.first, prop.second, *lppPropArray);
 				iProp++;
 			}
 		}
@@ -125,27 +134,16 @@ namespace propertybag
 	{
 		if (!lppProp) return MAPI_E_INVALID_PARAMETER;
 
-		//*lppProp = PpropFindProp(m_lpProps, m_cValues, ulPropTag);
+		auto pProp = ACCT_VARIANT{};
+		const auto hRes = m_lpAccount->GetProp(ulPropTag, &pProp);
+		if (SUCCEEDED(hRes))
+		{
+			*lppProp = mapi::allocate<LPSPropValue>(sizeof(SPropValue));
+			(*lppProp)[0] = convertVarToMAPI(ulPropTag, pProp, *lppProp);
+		}
+
 		return S_OK;
 	}
 
-	_Check_return_ HRESULT accountPropertyBag::SetProp(LPSPropValue lpProp)
-	{
-		return E_NOTIMPL;
-		//ULONG ulNewArray = NULL;
-		//LPSPropValue lpNewArray = nullptr;
-
-		//const auto hRes = EC_H(ConcatLPSPropValue(1, lpProp, m_cValues, m_lpProps, &ulNewArray, &lpNewArray));
-		//if (SUCCEEDED(hRes))
-		//{
-		//	MAPIFreeBuffer(m_lpListData->lpSourceProps);
-		//	m_lpListData->cSourceProps = ulNewArray;
-		//	m_lpListData->lpSourceProps = lpNewArray;
-
-		//	m_cValues = ulNewArray;
-		//	m_lpProps = lpNewArray;
-		//	m_bRowModified = true;
-		//}
-		//return hRes;
-	}
+	_Check_return_ HRESULT accountPropertyBag::SetProp(LPSPropValue lpProp) { return E_NOTIMPL; }
 } // namespace propertybag
