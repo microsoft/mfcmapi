@@ -75,7 +75,6 @@ namespace propertybag
 			return S_OK;
 		}
 
-		// Just return what we have
 		auto hRes = S_OK;
 		ULONG i = 0;
 		std::vector<std::pair<ULONG, ACCT_VARIANT>> props = {};
@@ -108,7 +107,7 @@ namespace propertybag
 			*lppPropArray = mapi::allocate<LPSPropValue>(props.size() * sizeof(SPropValue));
 			auto iProp = 0;
 
-			for (const auto prop : props)
+			for (const auto& prop : props)
 			{
 				(*lppPropArray)[iProp] = convertVarToMAPI(prop.first, prop.second, *lppPropArray);
 				iProp++;
@@ -119,15 +118,39 @@ namespace propertybag
 	}
 
 	_Check_return_ HRESULT accountPropertyBag::GetProps(
-		LPSPropTagArray /*lpPropTagArray*/,
-		ULONG /*ulFlags*/,
-		ULONG FAR* /*lpcValues*/,
-		LPSPropValue FAR* /*lppPropArray*/)
+		LPSPropTagArray lpPropTagArray,
+		ULONG ulFlags,
+		ULONG FAR* lpcValues,
+		LPSPropValue FAR* lppPropArray)
 	{
-		// TODO: See if accounts could support this
-		// This is only called from the Extra Props code. We can't support Extra Props from a row
-		// so we don't need to implement this.
-		return E_NOTIMPL;
+		if (!lpcValues || !lppPropArray) return MAPI_E_INVALID_PARAMETER;
+		if (!m_lpAccount || !lpPropTagArray)
+		{
+			*lpcValues = 0;
+			*lppPropArray = nullptr;
+			return S_OK;
+		}
+
+		*lpcValues = lpPropTagArray->cValues;
+		*lppPropArray = mapi::allocate<LPSPropValue>(lpPropTagArray->cValues * sizeof(SPropValue));
+
+		for (ULONG iProp = 0; iProp < lpPropTagArray->cValues; iProp++)
+		{
+			ACCT_VARIANT pProp = {};
+			const auto ulPropTag = lpPropTagArray->aulPropTag[iProp];
+			const auto hRes = m_lpAccount->GetProp(ulPropTag, &pProp);
+			if (SUCCEEDED(hRes))
+			{
+				(*lppPropArray)[iProp] = convertVarToMAPI(ulPropTag, pProp, *lppPropArray);
+			}
+			else
+			{
+				(*lppPropArray)[iProp].ulPropTag = CHANGE_PROP_TYPE(ulPropTag, PT_ERROR);
+				(*lppPropArray)[iProp].Value.err = hRes;
+			}
+		}
+
+		return S_OK;
 	}
 
 	_Check_return_ HRESULT accountPropertyBag::GetProp(ULONG ulPropTag, LPSPropValue FAR* lppProp)
