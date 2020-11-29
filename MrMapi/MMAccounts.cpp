@@ -3,6 +3,7 @@
 #include <MrMapi/mmcli.h>
 #include <core/mapi/account/actMgmt.h>
 #include <core/mapi/account/accountHelper.h>
+#include <core/mapi/mapiFunctions.h>
 
 void IterateAllProps(LPOLKACCOUNT lpAccount);
 HRESULT EnumerateAccounts(LPMAPISESSION lpSession, LPCWSTR lpwszProfile, bool bIterateAllProps);
@@ -221,32 +222,6 @@ HRESULT DisplayAccountList(LPMAPISESSION lpSession, LPCWSTR lpwszProfile, ULONG 
 	return hRes;
 }
 
-std::wstring GetProfileName(LPMAPISESSION lpSession)
-{
-	LPPROFSECT lpProfSect = nullptr;
-	std::wstring profileName;
-
-	if (!lpSession) return profileName;
-
-	auto hRes = EC_H(lpSession->OpenProfileSection(LPMAPIUID(pbGlobalProfileSectionGuid), nullptr, 0, &lpProfSect));
-	if (SUCCEEDED(hRes) && lpProfSect)
-	{
-		LPSPropValue lpProfileName = nullptr;
-
-		hRes = EC_H(HrGetOneProp(lpProfSect, PR_PROFILE_NAME_W, &lpProfileName));
-		if (SUCCEEDED(hRes) && lpProfileName && lpProfileName->ulPropTag == PR_PROFILE_NAME_W)
-		{
-			profileName = std::wstring(lpProfileName->Value.lpszW);
-		}
-
-		MAPIFreeBuffer(lpProfileName);
-	}
-
-	if (lpProfSect) lpProfSect->Release();
-
-	return profileName;
-}
-
 void PrintBinary(const DWORD cb, const BYTE* lpb)
 {
 	if (!cb || !lpb) return;
@@ -280,7 +255,7 @@ void DoAccounts(_In_opt_ LPMAPISESSION lpMAPISession)
 	const auto flags = cli::switchFlag.atULONG(0, 16);
 	const auto bIterate = cli::switchIterate.isSet();
 	const auto bWizard = cli::switchWizard.isSet();
-	auto profileName = GetProfileName(lpMAPISession);
+	auto profileName = mapi::GetProfileName(lpMAPISession);
 
 	wprintf(L"Enum Accounts\n");
 	wprintf(L"Options specified:\n");

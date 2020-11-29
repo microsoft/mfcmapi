@@ -379,4 +379,6 @@ namespace mapi
 	{
 		return reinterpret_cast<LPENTRYID>(const_cast<BYTE*>(eid.data()));
 	}
+
+	std::wstring GetProfileName(LPMAPISESSION lpSession);
 } // namespace mapi

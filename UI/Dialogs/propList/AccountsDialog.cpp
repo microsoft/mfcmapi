@@ -11,32 +11,6 @@ namespace dialog
 {
 	static std::wstring CLASS = L"AccountsDialog";
 
-	std::wstring GetProfileName(LPMAPISESSION lpSession)
-	{
-		LPPROFSECT lpProfSect = nullptr;
-		std::wstring profileName;
-
-		if (!lpSession) return profileName;
-
-		EC_H_S(lpSession->OpenProfileSection(LPMAPIUID(pbGlobalProfileSectionGuid), nullptr, 0, &lpProfSect));
-		if (lpProfSect)
-		{
-			LPSPropValue lpProfileName = nullptr;
-
-			EC_H_S(HrGetOneProp(lpProfSect, PR_PROFILE_NAME_W, &lpProfileName));
-			if (lpProfileName && lpProfileName->ulPropTag == PR_PROFILE_NAME_W)
-			{
-				profileName = std::wstring(lpProfileName->Value.lpszW);
-			}
-
-			MAPIFreeBuffer(lpProfileName);
-		}
-
-		if (lpProfSect) lpProfSect->Release();
-
-		return profileName;
-	}
-
 	AccountsDialog::AccountsDialog(
 		_In_ ui::CParentWnd* pParentWnd,
 		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
@@ -70,7 +44,7 @@ namespace dialog
 	{
 		if (m_lpMAPISession)
 		{
-			m_lpwszProfile = GetProfileName(m_lpMAPISession);
+			m_lpwszProfile = mapi::GetProfileName(m_lpMAPISession);
 			m_szTitle = m_lpwszProfile;
 			m_lpMAPISession = mapi::safe_cast<LPMAPISESSION>(m_lpMAPISession);
 			EC_H_S(CoCreateInstance(

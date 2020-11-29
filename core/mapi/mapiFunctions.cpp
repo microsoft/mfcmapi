@@ -2833,4 +2833,30 @@ namespace mapi
 
 		return hRes;
 	}
+
+	std::wstring GetProfileName(LPMAPISESSION lpSession)
+	{
+		LPPROFSECT lpProfSect = nullptr;
+		std::wstring profileName;
+
+		if (!lpSession) return profileName;
+
+		EC_H_S(lpSession->OpenProfileSection(LPMAPIUID(pbGlobalProfileSectionGuid), nullptr, 0, &lpProfSect));
+		if (lpProfSect)
+		{
+			LPSPropValue lpProfileName = nullptr;
+
+			EC_H_S(HrGetOneProp(lpProfSect, PR_PROFILE_NAME_W, &lpProfileName));
+			if (lpProfileName && lpProfileName->ulPropTag == PR_PROFILE_NAME_W)
+			{
+				profileName = std::wstring(lpProfileName->Value.lpszW);
+			}
+
+			MAPIFreeBuffer(lpProfileName);
+		}
+
+		if (lpProfSect) lpProfSect->Release();
+
+		return profileName;
+	}
 } // namespace mapi
