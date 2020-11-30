@@ -1413,12 +1413,13 @@ namespace mapi
 		return nullptr;
 	}
 
-	const ULONG aulOneOffIDs[] = {dispidFormStorage,
-								  dispidPageDirStream,
-								  dispidFormPropStream,
-								  dispidScriptStream,
-								  dispidPropDefStream, // dispidPropDefStream must remain next to last in list
-								  dispidCustomFlag}; // dispidCustomFlag must remain last in list
+	const ULONG aulOneOffIDs[] = {
+		dispidFormStorage,
+		dispidPageDirStream,
+		dispidFormPropStream,
+		dispidScriptStream,
+		dispidPropDefStream, // dispidPropDefStream must remain next to last in list
+		dispidCustomFlag}; // dispidCustomFlag must remain last in list
 	constexpr ULONG ulNumOneOffIDs = _countof(aulOneOffIDs);
 
 	_Check_return_ HRESULT RemoveOneOff(_In_ LPMESSAGE lpMessage, bool bRemovePropDef)
@@ -2192,11 +2193,12 @@ namespace mapi
 			eSectionUid,
 			eMax
 		};
-		static const SizedSPropTagArray(eMax, tagaCols) = {eMax,
-														   {
-															   PR_ENTRYID,
-															   PR_EMSMDB_SECTION_UID,
-														   }};
+		static const SizedSPropTagArray(eMax, tagaCols) = {
+			eMax,
+			{
+				PR_ENTRYID,
+				PR_EMSMDB_SECTION_UID,
+			}};
 
 		auto hRes = EC_MAPI(pmsess->AdminServices(0, static_cast<LPSERVICEADMIN*>(&spSvcAdmin)));
 		if (spSvcAdmin)
@@ -2213,8 +2215,8 @@ namespace mapi
 					mres.res.resProperty.ulPropTag = PR_SERVICE_UID;
 					mres.res.resProperty.lpProp = &mval;
 					mval.ulPropTag = PR_SERVICE_UID;
-					mapi::setBin(mval) = {sizeof *puidService,
-										  reinterpret_cast<LPBYTE>(const_cast<MAPIUID*>(puidService))};
+					mapi::setBin(mval) = {
+						sizeof *puidService, reinterpret_cast<LPBYTE>(const_cast<MAPIUID*>(puidService))};
 
 					hRes = EC_MAPI(spmtab->Restrict(&mres, 0));
 				}
@@ -2835,7 +2837,7 @@ namespace mapi
 
 	std::wstring GetProfileName(LPMAPISESSION lpSession)
 	{
-		LPPROFSECT lpProfSect = nullptr;
+		LPPROFSECT lpProfSect{};
 		std::wstring profileName;
 
 		if (!lpSession) return profileName;
@@ -2843,7 +2845,7 @@ namespace mapi
 		EC_H_S(lpSession->OpenProfileSection(LPMAPIUID(pbGlobalProfileSectionGuid), nullptr, 0, &lpProfSect));
 		if (lpProfSect)
 		{
-			LPSPropValue lpProfileName = nullptr;
+			LPSPropValue lpProfileName{};
 
 			EC_H_S(HrGetOneProp(lpProfSect, PR_PROFILE_NAME_W, &lpProfileName));
 			if (lpProfileName && lpProfileName->ulPropTag == PR_PROFILE_NAME_W)
@@ -2852,9 +2854,9 @@ namespace mapi
 			}
 
 			MAPIFreeBuffer(lpProfileName);
-		}
 
-		if (lpProfSect) lpProfSect->Release();
+			lpProfSect->Release();
+		}
 
 		return profileName;
 	}
