@@ -100,22 +100,28 @@ void EnumerateAccounts(LPMAPISESSION lpSession, LPCWSTR lpwszProfile, bool bIter
 
 								if (lpAccount)
 								{
-									LogProp(lpAccount, PROP_ACCT_NAME);
-									LogProp(lpAccount, PROP_ACCT_USER_DISPLAY_NAME);
-									LogProp(lpAccount, PROP_ACCT_USER_EMAIL_ADDR);
-									LogProp(lpAccount, PROP_ACCT_STAMP);
-									LogProp(lpAccount, PROP_ACCT_SEND_STAMP);
-									LogProp(lpAccount, PROP_ACCT_IS_EXCH);
-									LogProp(lpAccount, PROP_ACCT_ID);
-									LogProp(lpAccount, PROP_ACCT_DELIVERY_FOLDER);
-									LogProp(lpAccount, PROP_ACCT_DELIVERY_STORE);
-									LogProp(lpAccount, PROP_ACCT_SENTITEMS_EID);
-									LogProp(lpAccount, PR_NEXT_SEND_ACCT);
-									LogProp(lpAccount, PR_PRIMARY_SEND_ACCT);
-									LogProp(lpAccount, PROP_MAPI_IDENTITY_ENTRYID);
-									LogProp(lpAccount, PROP_MAPI_TRANSPORT_FLAGS);
+									if (bIterateAllProps)
+									{
+										IterateAllProps(lpAccount);
+									}
+									else
+									{
+										LogProp(lpAccount, PROP_ACCT_NAME);
+										LogProp(lpAccount, PROP_ACCT_USER_DISPLAY_NAME);
+										LogProp(lpAccount, PROP_ACCT_USER_EMAIL_ADDR);
+										LogProp(lpAccount, PROP_ACCT_STAMP);
+										LogProp(lpAccount, PROP_ACCT_SEND_STAMP);
+										LogProp(lpAccount, PROP_ACCT_IS_EXCH);
+										LogProp(lpAccount, PROP_ACCT_ID);
+										LogProp(lpAccount, PROP_ACCT_DELIVERY_FOLDER);
+										LogProp(lpAccount, PROP_ACCT_DELIVERY_STORE);
+										LogProp(lpAccount, PROP_ACCT_SENTITEMS_EID);
+										LogProp(lpAccount, PR_NEXT_SEND_ACCT);
+										LogProp(lpAccount, PR_PRIMARY_SEND_ACCT);
+										LogProp(lpAccount, PROP_MAPI_IDENTITY_ENTRYID);
+										LogProp(lpAccount, PROP_MAPI_TRANSPORT_FLAGS);
+									}
 
-									if (bIterateAllProps) IterateAllProps(lpAccount);
 									lpAccount->Release();
 								}
 							}
