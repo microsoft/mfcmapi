@@ -16,10 +16,10 @@ public:
 
 	STDMETHODIMP GetIdentity(LPWSTR pwszIdentity, DWORD* pcch) noexcept override;
 	STDMETHODIMP GetMapiSession(LPUNKNOWN* ppmsess) override;
-	STDMETHODIMP HandsOffSession() noexcept override;
+	STDMETHODIMP HandsOffSession() noexcept override { return E_NOTIMPL; }
 
 private:
-	LONG m_cRef;
-	LPUNKNOWN m_lpUnkSession;
-	std::wstring m_lpwszProfile;
+	LONG m_cRef{};
+	LPMAPISESSION m_lpSession{};
+	std::wstring m_lpwszProfile{};
 };

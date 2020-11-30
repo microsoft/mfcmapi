@@ -1,21 +1,17 @@
 #include <core/stdafx.h>
 #include <core/mapi/account/accountHelper.h>
+#include <core/mapi/mapiFunctions.h>
 
 CAccountHelper::CAccountHelper(LPCWSTR lpwszProfName, LPMAPISESSION lpSession)
 {
 	m_cRef = 1;
-	m_lpUnkSession = nullptr;
+	m_lpSession = mapi::safe_cast<LPMAPISESSION>(lpSession);
 	m_lpwszProfile = lpwszProfName;
-
-	if (lpSession)
-	{
-		(void) lpSession->QueryInterface(IID_IUnknown, reinterpret_cast<LPVOID*>(&m_lpUnkSession));
-	}
 }
 
 CAccountHelper::~CAccountHelper()
 {
-	if (m_lpUnkSession) m_lpUnkSession->Release();
+	if (m_lpSession) m_lpSession->Release();
 }
 
 STDMETHODIMP CAccountHelper::QueryInterface(REFIID riid, LPVOID* ppvObj)
@@ -65,12 +61,6 @@ STDMETHODIMP CAccountHelper::GetMapiSession(LPUNKNOWN* ppmsess)
 {
 	if (!ppmsess) return E_INVALIDARG;
 
-	if (m_lpUnkSession)
-	{
-		return m_lpUnkSession->QueryInterface(IID_IMAPISession, reinterpret_cast<LPVOID*>(ppmsess));
-	}
-
-	return E_NOTIMPL;
+	*ppmsess = mapi::safe_cast<LPUNKNOWN>(m_lpSession);
+	return S_OK;
 }
-
-STDMETHODIMP CAccountHelper::HandsOffSession() noexcept { return E_NOTIMPL; }
