@@ -29,10 +29,20 @@ namespace propertybag
 		if (GetType() != lpPropBag->GetType()) return false;
 
 		// Two accounts are the same if their profile is the same
+		// And PROP_ACCT_MINI_UID is the same
 		const auto lpOther = std::dynamic_pointer_cast<accountPropertyBag>(lpPropBag);
 		if (lpOther)
 		{
 			if (m_lpwszProfile != lpOther->m_lpwszProfile) return false;
+			auto uidMe = ACCT_VARIANT{};
+			auto uidOther= ACCT_VARIANT{};
+			auto hRes = WC_H(m_lpAccount->GetProp(PROP_ACCT_MINI_UID, &uidMe));
+			if (FAILED(hRes)) return false;
+			hRes = WC_H(lpOther->m_lpAccount->GetProp(PROP_ACCT_MINI_UID, &uidOther));
+			if (FAILED(hRes)) return false;
+
+			if (uidMe.dwType != PT_LONG || uidOther.dwType != PT_LONG) return false;
+			if (uidMe.Val.dw != uidOther.Val.dw) return false;
 			return true;
 		}
 
