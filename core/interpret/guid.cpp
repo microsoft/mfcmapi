@@ -39,15 +39,13 @@
 #define USES_IID_IOlkAccountHelper
 #define USES_IID_IOlkAccountManager
 #define USES_IID_IOlkAccount
-#define USES_CLSID_OlkAccountHelper
-#define USES_CLSID_OlkAccountManager
-#define USES_CLSID_OlkMail
 
 #pragma endregion
 
 #include <initguid.h>
 #include <MAPIGuid.h>
 #include <MAPIAux.h>
+#include <actMgmt.h>
 
 #ifdef EDKGUID_INCLUDED
 #undef EDKGUID_INCLUDED
@@ -59,7 +57,6 @@
 
 #include <core/utility/strings.h>
 #include <core/addin/mfcmapi.h>
-#include <actMgmt.h>
 
 namespace guid
 {
