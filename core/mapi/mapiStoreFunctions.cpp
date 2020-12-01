@@ -27,7 +27,7 @@ namespace mapi::store
 		output::DebugPrint(output::dbgLevel::OpenItemProp, L"CallOpenMsgStore ulFlags = 0x%X\n", ulFlags);
 
 		LPMDB lpMDB = nullptr;
-		auto ignore = (ulFlags & MDB_ONLINE) ? MAPI_E_UNKNOWN_FLAGS : S_OK;
+		auto ignore = std::list<HRESULT>{(ulFlags & MDB_ONLINE) ? MAPI_E_UNKNOWN_FLAGS : S_OK};
 		const auto hRes = EC_H_IGNORE_RET(
 			ignore,
 			lpSession->OpenMsgStore(

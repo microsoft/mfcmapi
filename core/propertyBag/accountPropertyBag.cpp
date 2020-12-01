@@ -86,23 +86,23 @@ namespace propertybag
 
 		auto hRes = S_OK;
 		std::vector<std::pair<ULONG, ACCT_VARIANT>> props = {};
-
+		const auto _ignore = std::list<HRESULT>{static_cast<HRESULT>(E_ACCT_NOT_FOUND)};
 		for (auto i = 0; i < 0x8000; i++)
 		{
 			auto pProp = ACCT_VARIANT{};
-			hRes = WC_H(m_lpAccount->GetProp(PROP_TAG(PT_LONG, i), &pProp));
+			hRes = WC_H_IGNORE_RET(_ignore, m_lpAccount->GetProp(PROP_TAG(PT_LONG, i), &pProp));
 			if (SUCCEEDED(hRes))
 			{
 				props.emplace_back(PROP_TAG(PT_LONG, i), pProp);
 			}
 
-			hRes = WC_H(m_lpAccount->GetProp(PROP_TAG(PT_UNICODE, i), &pProp));
+			hRes = WC_H_IGNORE_RET(_ignore, m_lpAccount->GetProp(PROP_TAG(PT_UNICODE, i), &pProp));
 			if (SUCCEEDED(hRes))
 			{
 				props.emplace_back(PROP_TAG(PT_UNICODE, i), pProp);
 			}
 
-			hRes = WC_H(m_lpAccount->GetProp(PROP_TAG(PT_BINARY, i), &pProp));
+			hRes = WC_H_IGNORE_RET(_ignore, m_lpAccount->GetProp(PROP_TAG(PT_BINARY, i), &pProp));
 			if (SUCCEEDED(hRes))
 			{
 				props.emplace_back(PROP_TAG(PT_BINARY, i), pProp);

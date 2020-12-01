@@ -9,7 +9,8 @@
 void LogProp(LPOLKACCOUNT lpAccount, ULONG ulPropTag)
 {
 	auto pProp = ACCT_VARIANT();
-	const auto hRes = WC_H(lpAccount->GetProp(ulPropTag, &pProp));
+	const auto _ignore = std::list<HRESULT>{static_cast<HRESULT>(E_ACCT_NOT_FOUND)};
+	const auto hRes = WC_H_IGNORE_RET(_ignore, lpAccount->GetProp(ulPropTag, &pProp));
 	if (SUCCEEDED(hRes))
 	{
 		const auto name = proptags::PropTagToPropName(ulPropTag, false).bestGuess;
@@ -25,7 +26,7 @@ void LogProp(LPOLKACCOUNT lpAccount, ULONG ulPropTag)
 			if (pProp.Val.pwsz)
 			{
 				wprintf(L"\"%ws\"", pProp.Val.pwsz);
-				(void) lpAccount->FreeMemory(reinterpret_cast<LPBYTE>(pProp.Val.pwsz));
+				WC_H_S(lpAccount->FreeMemory(reinterpret_cast<LPBYTE>(pProp.Val.pwsz)));
 			}
 			break;
 		case PT_LONG:
@@ -33,7 +34,7 @@ void LogProp(LPOLKACCOUNT lpAccount, ULONG ulPropTag)
 			break;
 		case PT_BINARY:
 			wprintf(L"%ws", strings::BinToHexString(pProp.Val.bin.pb, pProp.Val.bin.cb, true).c_str());
-			(void) lpAccount->FreeMemory(pProp.Val.bin.pb);
+			WC_H_S(lpAccount->FreeMemory(pProp.Val.bin.pb));
 			break;
 		}
 
@@ -93,7 +94,7 @@ void EnumerateAccounts(LPMAPISESSION lpSession, LPCWSTR lpwszProfile, bool bIter
 							wprintf(L"Account #%lu\n", i + 1);
 							LPUNKNOWN lpUnk = nullptr;
 
-							EC_H(lpAcctEnum->GetNext(&lpUnk));
+							EC_H_S(lpAcctEnum->GetNext(&lpUnk));
 							if (lpUnk)
 							{
 								auto lpAccount = mapi::safe_cast<LPOLKACCOUNT>(lpUnk);

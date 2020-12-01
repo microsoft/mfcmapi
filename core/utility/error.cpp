@@ -12,7 +12,7 @@ namespace error
 
 	void LogFunctionCall(
 		HRESULT hRes,
-		HRESULT hrIgnore,
+		std::list<HRESULT> hrIgnore,
 		bool bShowDialog,
 		bool bMAPICall,
 		bool bSystemCall,
@@ -30,7 +30,7 @@ namespace error
 		}
 
 		// Check if we have no work to do
-		if (hRes == S_OK || hRes == hrIgnore) return;
+		if (hRes == S_OK || std::contains(hrIgnore, hRes)) return;
 		if (!(bShowDialog && displayError) && !fIsSet(output::dbgLevel::HRes)) return;
 
 		// Get our error message if we have one
@@ -63,7 +63,7 @@ namespace error
 	{
 		const auto dwErr = GetLastError();
 		const auto hRes = HRESULT_FROM_WIN32(dwErr);
-		LogFunctionCall(hRes, NULL, bDisplayDialog, false, true, dwErr, szFunction, szFile, iLine);
+		LogFunctionCall(hRes, {}, bDisplayDialog, false, true, dwErr, szFunction, szFile, iLine);
 		return hRes;
 	}
 
