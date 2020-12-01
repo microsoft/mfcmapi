@@ -185,7 +185,6 @@ namespace propertybag
 		if (!lpProp) return MAPI_E_INVALID_PARAMETER;
 
 		auto pProp = ACCT_VARIANT{PROP_TYPE(lpProp->ulPropTag), 0};
-		const auto dwProp = PROP_ID(lpProp->ulPropTag);
 
 		switch (pProp.dwType)
 		{
@@ -200,7 +199,7 @@ namespace propertybag
 			break;
 		}
 
-		auto hRes = WC_H(m_lpAccount->SetProp(dwProp, &pProp));
+		auto hRes = WC_H(m_lpAccount->SetProp(lpProp->ulPropTag, &pProp));
 		if (SUCCEEDED(hRes) && saveChanges)
 		{
 			hRes = WC_H(m_lpAccount->SaveChanges(OLK_ACCOUNT_NO_FLAGS));
