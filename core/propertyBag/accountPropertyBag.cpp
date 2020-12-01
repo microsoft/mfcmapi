@@ -200,10 +200,10 @@ namespace propertybag
 			break;
 		}
 
-		auto hRes = EC_H(m_lpAccount->SetProp(dwProp, &pProp));
+		auto hRes = WC_H(m_lpAccount->SetProp(dwProp, &pProp));
 		if (SUCCEEDED(hRes) && saveChanges)
 		{
-			hRes = EC_H(m_lpAccount->SaveChanges(OLK_ACCOUNT_NO_FLAGS));
+			hRes = WC_H(m_lpAccount->SaveChanges(OLK_ACCOUNT_NO_FLAGS));
 		}
 
 		return hRes;
@@ -219,7 +219,7 @@ namespace propertybag
 			if (FAILED(hRes)) return hRes;
 		}
 
-		return EC_H(m_lpAccount->SaveChanges(OLK_ACCOUNT_NO_FLAGS));
+		return WC_H(m_lpAccount->SaveChanges(OLK_ACCOUNT_NO_FLAGS));
 	}
 
 	_Check_return_ HRESULT accountPropertyBag::SetProp(LPSPropValue lpProp) { return SetProp(lpProp, true); }
