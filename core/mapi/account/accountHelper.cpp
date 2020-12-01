@@ -47,12 +47,12 @@ STDMETHODIMP CAccountHelper::GetIdentity(LPWSTR pwszIdentity, DWORD* pcch) noexc
 
 	if (m_lpwszProfile.length() > *pcch)
 	{
-		*pcch = DWORD{m_lpwszProfile.length()};
+		*pcch = static_cast<DWORD>(m_lpwszProfile.length());
 		return E_OUTOFMEMORY;
 	}
 
 	wcscpy_s(pwszIdentity, *pcch, m_lpwszProfile.c_str());
-	*pcch = DWORD{m_lpwszProfile.length()};
+	*pcch = static_cast<DWORD>(m_lpwszProfile.length());
 
 	return S_OK;
 }
