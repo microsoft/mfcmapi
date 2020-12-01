@@ -35,7 +35,7 @@ namespace propertybag
 		{
 			if (m_lpwszProfile != lpOther->m_lpwszProfile) return false;
 			auto uidMe = ACCT_VARIANT{};
-			auto uidOther= ACCT_VARIANT{};
+			auto uidOther = ACCT_VARIANT{};
 			auto hRes = WC_H(m_lpAccount->GetProp(PROP_ACCT_MINI_UID, &uidMe));
 			if (FAILED(hRes)) return false;
 			hRes = WC_H(lpOther->m_lpAccount->GetProp(PROP_ACCT_MINI_UID, &uidOther));
@@ -51,7 +51,8 @@ namespace propertybag
 
 	// Convert an ACCT_VARIANT to SPropValue allocated off of pParent
 	// Frees any memory associated with the ACCT_VARIANT
-	SPropValue accountPropertyBag::convertVarToMAPI(ULONG ulPropTag, ACCT_VARIANT var, _In_opt_ const VOID* pParent)
+	SPropValue
+	accountPropertyBag::convertVarToMAPI(ULONG ulPropTag, const ACCT_VARIANT& var, _In_opt_ const VOID* pParent)
 	{
 		auto sProp = SPropValue{ulPropTag, 0};
 		switch (var.dwType)
@@ -178,4 +179,50 @@ namespace propertybag
 
 		return S_OK;
 	}
+
+	_Check_return_ HRESULT accountPropertyBag::SetProp(LPSPropValue lpProp, bool saveChanges)
+	{
+		if (!lpProp) return MAPI_E_INVALID_PARAMETER;
+
+		auto pProp = ACCT_VARIANT{PROP_TYPE(lpProp->ulPropTag), 0};
+		const auto dwProp = PROP_ID(lpProp->ulPropTag);
+
+		switch (pProp.dwType)
+		{
+		case PT_LONG:
+			pProp.Val.dw = lpProp->Value.l;
+			break;
+		case PT_UNICODE:
+			pProp.Val.pwsz = lpProp->Value.lpszW;
+			break;
+		case PT_BINARY:
+			pProp.Val.bin = {lpProp->Value.bin.cb, lpProp->Value.bin.lpb};
+			break;
+		}
+
+		auto hRes = EC_H(m_lpAccount->SetProp(dwProp, &pProp));
+		if (SUCCEEDED(hRes) && saveChanges)
+		{
+			hRes = EC_H(m_lpAccount->SaveChanges(OLK_ACCOUNT_NO_FLAGS));
+		}
+
+		return hRes;
+	}
+
+	_Check_return_ HRESULT accountPropertyBag::SetProps(ULONG cValues, LPSPropValue lpPropArray)
+	{
+		if (!cValues || !lpPropArray) return MAPI_E_INVALID_PARAMETER;
+
+		for (ULONG i = 0; i < cValues; i++)
+		{
+			auto hRes = WC_H(SetProp(&lpPropArray[i], false));
+			if (FAILED(hRes)) return hRes;
+		}
+
+		return EC_H(m_lpAccount->SaveChanges(OLK_ACCOUNT_NO_FLAGS));
+	}
+
+	_Check_return_ HRESULT accountPropertyBag::SetProp(LPSPropValue lpProp) { return SetProp(lpProp, true); }
+
+	_Check_return_ HRESULT accountPropertyBag::DeleteProp(ULONG /*ulPropTag*/) { return E_NOTIMPL; };
 } // namespace propertybag

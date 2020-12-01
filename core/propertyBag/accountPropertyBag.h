@@ -27,14 +27,15 @@ namespace propertybag
 			LPSPropValue FAR* lppPropArray) override;
 		_Check_return_ HRESULT GetProp(ULONG ulPropTag, LPSPropValue FAR* lppProp) override;
 		void FreeBuffer(LPSPropValue lpsPropValue) override { MAPIFreeBuffer(lpsPropValue); }
-		_Check_return_ HRESULT SetProps(ULONG, LPSPropValue) override { return E_NOTIMPL; }
-		_Check_return_ HRESULT SetProp(LPSPropValue /*lpProp*/) override { return E_NOTIMPL; }
-		_Check_return_ HRESULT DeleteProp(ULONG) override { return E_NOTIMPL; };
+		_Check_return_ HRESULT SetProps(ULONG cValues, LPSPropValue lpPropArray) override;
+		_Check_return_ HRESULT SetProp(LPSPropValue lpProp) override;
+		_Check_return_ HRESULT DeleteProp(ULONG ulPropTag) override;
 
 	private:
 		std::wstring m_lpwszProfile;
 		LPOLKACCOUNT m_lpAccount;
 
-		SPropValue convertVarToMAPI(ULONG ulPropTag, ACCT_VARIANT var, _In_opt_ const VOID* pParent);
+		SPropValue convertVarToMAPI(ULONG ulPropTag, const ACCT_VARIANT& var, _In_opt_ const VOID* pParent);
+		_Check_return_ HRESULT SetProp(LPSPropValue lpProp, bool saveChanges);
 	};
 } // namespace propertybag
