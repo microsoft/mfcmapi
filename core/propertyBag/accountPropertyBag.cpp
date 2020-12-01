@@ -54,7 +54,7 @@ namespace propertybag
 	SPropValue accountPropertyBag::convertVarToMAPI(ULONG ulPropTag, ACCT_VARIANT var, _In_opt_ const VOID* pParent)
 	{
 		auto sProp = SPropValue{ulPropTag, 0};
-		switch (PROP_TYPE(ulPropTag))
+		switch (var.dwType)
 		{
 		case PT_LONG:
 			sProp.Value.l = var.Val.dw;
@@ -89,19 +89,19 @@ namespace propertybag
 		for (auto i = 0; i < 0x8000; i++)
 		{
 			auto pProp = ACCT_VARIANT{};
-			hRes = m_lpAccount->GetProp(PROP_TAG(PT_LONG, i), &pProp);
+			hRes = WC_H(m_lpAccount->GetProp(PROP_TAG(PT_LONG, i), &pProp));
 			if (SUCCEEDED(hRes))
 			{
 				props.emplace_back(PROP_TAG(PT_LONG, i), pProp);
 			}
 
-			hRes = m_lpAccount->GetProp(PROP_TAG(PT_UNICODE, i), &pProp);
+			hRes = WC_H(m_lpAccount->GetProp(PROP_TAG(PT_UNICODE, i), &pProp));
 			if (SUCCEEDED(hRes))
 			{
 				props.emplace_back(PROP_TAG(PT_UNICODE, i), pProp);
 			}
 
-			hRes = m_lpAccount->GetProp(PROP_TAG(PT_BINARY, i), &pProp);
+			hRes = WC_H(m_lpAccount->GetProp(PROP_TAG(PT_BINARY, i), &pProp));
 			if (SUCCEEDED(hRes))
 			{
 				props.emplace_back(PROP_TAG(PT_BINARY, i), pProp);
@@ -144,7 +144,7 @@ namespace propertybag
 		{
 			auto pProp = ACCT_VARIANT{};
 			const auto ulPropTag = lpPropTagArray->aulPropTag[iProp];
-			const auto hRes = m_lpAccount->GetProp(ulPropTag, &pProp);
+			const auto hRes = WC_H(m_lpAccount->GetProp(ulPropTag, &pProp));
 			if (SUCCEEDED(hRes))
 			{
 				(*lppPropArray)[iProp] = convertVarToMAPI(ulPropTag, pProp, *lppPropArray);
@@ -165,7 +165,7 @@ namespace propertybag
 
 		*lppProp = mapi::allocate<LPSPropValue>(sizeof(SPropValue));
 		auto pProp = ACCT_VARIANT{};
-		const auto hRes = m_lpAccount->GetProp(ulPropTag, &pProp);
+		const auto hRes = WC_H(m_lpAccount->GetProp(ulPropTag, &pProp));
 		if (SUCCEEDED(hRes))
 		{
 			(*lppProp)[0] = convertVarToMAPI(ulPropTag, pProp, *lppProp);

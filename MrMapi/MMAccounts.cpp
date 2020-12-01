@@ -9,7 +9,7 @@
 void LogProp(LPOLKACCOUNT lpAccount, ULONG ulPropTag)
 {
 	auto pProp = ACCT_VARIANT();
-	const auto hRes = lpAccount->GetProp(ulPropTag, &pProp);
+	const auto hRes = WC_H(lpAccount->GetProp(ulPropTag, &pProp));
 	if (SUCCEEDED(hRes))
 	{
 		const auto name = proptags::PropTagToPropName(ulPropTag, false).bestGuess;
@@ -19,7 +19,7 @@ void LogProp(LPOLKACCOUNT lpAccount, ULONG ulPropTag)
 			L"Prop = %ws, Type = %ws, ",
 			name.empty() ? strings::format(L"0x%08X", ulPropTag).c_str() : name.c_str(),
 			tag.c_str());
-		switch (PROP_TYPE(ulPropTag))
+		switch (pProp.dwType)
 		{
 		case PT_UNICODE:
 			if (pProp.Val.pwsz)
