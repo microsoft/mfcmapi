@@ -142,14 +142,5 @@ namespace dialog
 	}
 
 	BEGIN_MESSAGE_MAP(AccountsDialog, CBaseDialog)
-	ON_COMMAND(ID_REFRESHVIEW, OnRefreshView)
 	END_MESSAGE_MAP()
-
-	// Clear the current list and get a new one with whatever code we've got in LoadMAPIPropList
-	// TODO: This is probably wrong
-	void AccountsDialog::OnRefreshView()
-	{
-		if (!m_lpPropDisplay) return;
-		static_cast<void>(m_lpPropDisplay->RefreshMAPIPropList());
-	}
 } // namespace dialog

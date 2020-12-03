@@ -29,9 +29,6 @@ namespace dialog
 		CAccountHelper* m_lpMyAcctHelper{};
 		std::wstring m_lpwszProfile;
 
-		// Menu items
-		void OnRefreshView() override;
-
 		void InitAccountManager();
 		void EnumAccounts();
 		DECLARE_MESSAGE_MAP()
