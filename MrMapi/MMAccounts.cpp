@@ -50,7 +50,6 @@ void IterateAllProps(LPOLKACCOUNT lpAccount)
 
 	for (auto i = 0; i < 0x8000; i++)
 	{
-		auto pProp = ACCT_VARIANT{};
 		LogProp(lpAccount, PROP_TAG(PT_LONG, i));
 		LogProp(lpAccount, PROP_TAG(PT_UNICODE, i));
 		LogProp(lpAccount, PROP_TAG(PT_BINARY, i));
@@ -59,122 +58,76 @@ void IterateAllProps(LPOLKACCOUNT lpAccount)
 	wprintf(L"Done iterating all properties\n");
 }
 
-void EnumerateAccounts(LPMAPISESSION lpSession, LPCWSTR lpwszProfile, bool bIterateAllProps)
+void EnumerateAccounts(LPOLKACCOUNTMANAGER lpAcctMgr, bool bIterateAllProps)
 {
-	LPOLKACCOUNTMANAGER lpAcctMgr = nullptr;
+	LPOLKENUM lpAcctEnum = nullptr;
 
-	EC_H_S(CoCreateInstance(
-		CLSID_OlkAccountManager,
-		nullptr,
-		CLSCTX_INPROC_SERVER,
-		IID_IOlkAccountManager,
-		reinterpret_cast<LPVOID*>(&lpAcctMgr)));
-	if (lpAcctMgr)
+	EC_H_S(lpAcctMgr->EnumerateAccounts(&CLSID_OlkMail, nullptr, OLK_ACCOUNT_NO_FLAGS, &lpAcctEnum));
+	if (lpAcctEnum)
 	{
-		auto lpAcctHelper = new CAccountHelper(lpwszProfile, lpSession);
-		if (lpAcctHelper)
+		DWORD cAccounts = 0;
+
+		EC_H_S(lpAcctEnum->GetCount(&cAccounts));
+		if (cAccounts)
 		{
-			const auto hRes = EC_H(lpAcctMgr->Init(lpAcctHelper, ACCT_INIT_NOSYNCH_MAPI_ACCTS));
-			if (SUCCEEDED(hRes))
+			EC_H_S(lpAcctEnum->Reset());
+			for (DWORD i = 0; i < cAccounts; i++)
 			{
-				LPOLKENUM lpAcctEnum = nullptr;
+				if (i > 0) wprintf(L"\n");
+				wprintf(L"Account #%lu\n", i + 1);
+				LPUNKNOWN lpUnk = nullptr;
 
-				EC_H_S(lpAcctMgr->EnumerateAccounts(&CLSID_OlkMail, nullptr, OLK_ACCOUNT_NO_FLAGS, &lpAcctEnum));
-				if (lpAcctEnum)
+				EC_H_S(lpAcctEnum->GetNext(&lpUnk));
+				if (lpUnk)
 				{
-					DWORD cAccounts = 0;
+					auto lpAccount = mapi::safe_cast<LPOLKACCOUNT>(lpUnk);
 
-					EC_H_S(lpAcctEnum->GetCount(&cAccounts));
-					if (cAccounts)
+					if (lpAccount)
 					{
-						EC_H_S(lpAcctEnum->Reset());
-						for (DWORD i = 0; i < cAccounts; i++)
+						if (bIterateAllProps)
 						{
-							if (i > 0) printf("\n");
-							wprintf(L"Account #%lu\n", i + 1);
-							LPUNKNOWN lpUnk = nullptr;
-
-							EC_H_S(lpAcctEnum->GetNext(&lpUnk));
-							if (lpUnk)
-							{
-								auto lpAccount = mapi::safe_cast<LPOLKACCOUNT>(lpUnk);
-
-								if (lpAccount)
-								{
-									if (bIterateAllProps)
-									{
-										IterateAllProps(lpAccount);
-									}
-									else
-									{
-										LogProp(lpAccount, PROP_ACCT_NAME);
-										LogProp(lpAccount, PROP_ACCT_USER_DISPLAY_NAME);
-										LogProp(lpAccount, PROP_ACCT_USER_EMAIL_ADDR);
-										LogProp(lpAccount, PROP_ACCT_STAMP);
-										LogProp(lpAccount, PROP_ACCT_SEND_STAMP);
-										LogProp(lpAccount, PROP_ACCT_IS_EXCH);
-										LogProp(lpAccount, PROP_ACCT_ID);
-										LogProp(lpAccount, PROP_ACCT_DELIVERY_FOLDER);
-										LogProp(lpAccount, PROP_ACCT_DELIVERY_STORE);
-										LogProp(lpAccount, PROP_ACCT_SENTITEMS_EID);
-										LogProp(lpAccount, PR_NEXT_SEND_ACCT);
-										LogProp(lpAccount, PR_PRIMARY_SEND_ACCT);
-										LogProp(lpAccount, PROP_MAPI_IDENTITY_ENTRYID);
-										LogProp(lpAccount, PROP_MAPI_TRANSPORT_FLAGS);
-									}
-
-									lpAccount->Release();
-								}
-							}
-
-							if (lpUnk) lpUnk->Release();
-							lpUnk = nullptr;
+							IterateAllProps(lpAccount);
 						}
+						else
+						{
+							LogProp(lpAccount, PROP_ACCT_NAME);
+							LogProp(lpAccount, PROP_ACCT_USER_DISPLAY_NAME);
+							LogProp(lpAccount, PROP_ACCT_USER_EMAIL_ADDR);
+							LogProp(lpAccount, PROP_ACCT_STAMP);
+							LogProp(lpAccount, PROP_ACCT_SEND_STAMP);
+							LogProp(lpAccount, PROP_ACCT_IS_EXCH);
+							LogProp(lpAccount, PROP_ACCT_ID);
+							LogProp(lpAccount, PROP_ACCT_DELIVERY_FOLDER);
+							LogProp(lpAccount, PROP_ACCT_DELIVERY_STORE);
+							LogProp(lpAccount, PROP_ACCT_SENTITEMS_EID);
+							LogProp(lpAccount, PR_NEXT_SEND_ACCT);
+							LogProp(lpAccount, PR_PRIMARY_SEND_ACCT);
+							LogProp(lpAccount, PROP_MAPI_IDENTITY_ENTRYID);
+							LogProp(lpAccount, PROP_MAPI_TRANSPORT_FLAGS);
+						}
+
+						lpAccount->Release();
 					}
-
-					lpAcctEnum->Release();
 				}
-			}
 
-			lpAcctHelper->Release();
+				if (lpUnk) lpUnk->Release();
+				lpUnk = nullptr;
+			}
 		}
 
-		lpAcctMgr->Release();
+		lpAcctEnum->Release();
 	}
 }
 
-void DisplayAccountList(LPMAPISESSION lpSession, LPCWSTR lpwszProfile, ULONG ulFlags)
+void DisplayAccountList(LPOLKACCOUNTMANAGER lpAcctMgr, ULONG ulFlags)
 {
-	LPOLKACCOUNTMANAGER lpAcctMgr = nullptr;
-
-	EC_H_S(CoCreateInstance(
-		CLSID_OlkAccountManager,
-		nullptr,
-		CLSCTX_INPROC_SERVER,
-		IID_IOlkAccountManager,
-		reinterpret_cast<LPVOID*>(&lpAcctMgr)));
-	if (lpAcctMgr)
-	{
-		auto lpAcctHelper = new CAccountHelper(lpwszProfile, lpSession);
-		if (lpAcctHelper)
-		{
-			const auto hRes = EC_H(lpAcctMgr->Init(lpAcctHelper, ACCT_INIT_NOSYNCH_MAPI_ACCTS));
-			if (SUCCEEDED(hRes))
-			{
-				EC_H_S(lpAcctMgr->DisplayAccountList(
-					nullptr, // hwnd
-					ulFlags, // dwFlags
-					nullptr, // wszTitle
-					NULL, // cCategories
-					nullptr, // rgclsidCategories
-					nullptr)); // pclsidType
-			}
-
-			lpAcctHelper->Release();
-		}
-
-		lpAcctMgr->Release();
-	}
+	EC_H_S(lpAcctMgr->DisplayAccountList(
+		nullptr, // hwnd
+		ulFlags, // dwFlags
+		nullptr, // wszTitle
+		NULL, // cCategories
+		nullptr, // rgclsidCategories
+		nullptr)); // pclsidType
 }
 
 void DoAccounts(_In_opt_ LPMAPISESSION lpMAPISession)
@@ -188,13 +141,36 @@ void DoAccounts(_In_opt_ LPMAPISESSION lpMAPISession)
 
 	if (!profileName.empty())
 	{
-		if (bWizard)
+		LPOLKACCOUNTMANAGER lpAcctMgr = nullptr;
+
+		EC_H_S(CoCreateInstance(
+			CLSID_OlkAccountManager,
+			nullptr,
+			CLSCTX_INPROC_SERVER,
+			IID_IOlkAccountManager,
+			reinterpret_cast<LPVOID*>(&lpAcctMgr)));
+		if (lpAcctMgr)
 		{
-			DisplayAccountList(lpMAPISession, profileName.c_str(), flags);
-		}
-		else
-		{
-			EnumerateAccounts(lpMAPISession, profileName.c_str(), bIterate);
+			auto lpAcctHelper = new CAccountHelper(profileName.c_str(), lpMAPISession);
+			if (lpAcctHelper)
+			{
+				const auto hRes = EC_H(lpAcctMgr->Init(lpAcctHelper, ACCT_INIT_NOSYNCH_MAPI_ACCTS));
+				if (SUCCEEDED(hRes))
+				{
+					if (bWizard)
+					{
+						DisplayAccountList(lpAcctMgr, flags);
+					}
+					else
+					{
+						EnumerateAccounts(lpAcctMgr, bIterate);
+					}
+				}
+
+				lpAcctHelper->Release();
+			}
+
+			lpAcctMgr->Release();
 		}
 	}
 }
