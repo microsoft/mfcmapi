@@ -19,7 +19,6 @@ namespace dialog
 
 	protected:
 		// Overrides from base class
-		void CreateDialogAndMenu(UINT nIDMenuResource);
 		BOOL OnInitDialog() override;
 
 	private:
