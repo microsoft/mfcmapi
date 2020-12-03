@@ -63,6 +63,8 @@ void EnumerateAccounts(LPOLKACCOUNTMANAGER lpAcctMgr, bool bIterateAllProps)
 	LPOLKENUM lpAcctEnum = nullptr;
 
 	EC_H_S(lpAcctMgr->EnumerateAccounts(&CLSID_OlkMail, nullptr, OLK_ACCOUNT_NO_FLAGS, &lpAcctEnum));
+	// TODO: Other types!
+	//EC_H_S(lpAcctMgr->EnumerateAccounts(&CLSID_OlkAddressBook, nullptr, OLK_ACCOUNT_NO_FLAGS, &lpAcctEnum));
 	if (lpAcctEnum)
 	{
 		DWORD cAccounts = 0;
