@@ -292,8 +292,9 @@ namespace error
 // Execute a function, log and return the HRESULT
 // Does not log/display on error if it matches __ignore
 // Does not suppress __ignore as return value so caller can check it
+// Logs a MAPI call trace under output::dbgLevel::MAPIFunctions
 // Will display dialog on error
-#define EC_H_IGNORE_RET(__ignore, fnx) \
+#define EC_H_IGNORE_RET_MAPI(__ignore, fnx) \
 	error::CheckMe([&]() -> HRESULT { \
 		const auto __hRes = (fnx); \
 		error::LogFunctionCall(__hRes, __ignore, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
@@ -307,7 +308,7 @@ namespace error
 #define WC_H_IGNORE_RET(__ignore, fnx) \
 	error::CheckMe([&]() -> HRESULT { \
 		const auto __hRes = (fnx); \
-		error::LogFunctionCall(__hRes, __ignore, false, true, false, NULL, #fnx, __FILE__, __LINE__); \
+		error::LogFunctionCall(__hRes, __ignore, false, false, false, NULL, #fnx, __FILE__, __LINE__); \
 		return __hRes; \
 	}())
 
@@ -316,6 +317,7 @@ namespace error
 // This is annoying, so this macro tosses those warnings.
 // We have to check each prop before we use it anyway, so we don't lose anything here.
 // Using this macro, all we have to check is that we got a props array back
+// Logs a MAPI call trace under output::dbgLevel::MAPIFunctions
 // Will display dialog on error
 #define EC_H_IGNORE(__ignore, fnx) \
 	error::CheckMe([&]() -> HRESULT { \
@@ -330,6 +332,7 @@ namespace error
 // This is annoying, so this macro tosses those warnings.
 // We have to check each prop before we use it anyway, so we don't lose anything here.
 // Using this macro, all we have to check is that we got a props array back
+// Logs a MAPI call trace under output::dbgLevel::MAPIFunctions
 // Will display dialog on error
 #define EC_H_IGNORE_S(__ignore, fnx) \
 	[&]() -> void { \
@@ -343,6 +346,7 @@ namespace error
 // This is annoying, so this macro tosses those warnings.
 // We have to check each prop before we use it anyway, so we don't lose anything here.
 // Using this macro, all we have to check is that we got a props array back
+// Logs a MAPI call trace under output::dbgLevel::MAPIFunctions
 // Will not display an error dialog
 #define WC_H_IGNORE(__ignore, fnx) \
 	error::CheckMe([&]() -> HRESULT { \
@@ -357,6 +361,7 @@ namespace error
 // This is annoying, so this macro tosses those warnings.
 // We have to check each prop before we use it anyway, so we don't lose anything here.
 // Using this macro, all we have to check is that we got a props array back
+// Logs a MAPI call trace under output::dbgLevel::MAPIFunctions
 // Will not display an error dialog
 #define WC_H_IGNORE_S(__ignore, fnx) \
 	[&]() -> void { \
@@ -369,6 +374,7 @@ namespace error
 // Logs a MAPI call trace under output::dbgLevel::MAPIFunctions
 // Some MAPI functions allow MAPI_E_CANCEL or MAPI_E_USER_CANCEL.
 // I don't consider these to be errors.
+// Logs a MAPI call trace under output::dbgLevel::MAPIFunctions
 // Will display dialog on error
 #define EC_H_CANCEL(fnx) \
 	error::CheckMe([&]() -> HRESULT { \
@@ -387,6 +393,7 @@ namespace error
 // Logs a MAPI call trace under output::dbgLevel::MAPIFunctions
 // Some MAPI functions allow MAPI_E_CANCEL or MAPI_E_USER_CANCEL.
 // I don't consider these to be errors.
+// Logs a MAPI call trace under output::dbgLevel::MAPIFunctions
 // Will display dialog on error
 #define EC_H_CANCEL_S(fnx) \
 	[&]() -> void { \

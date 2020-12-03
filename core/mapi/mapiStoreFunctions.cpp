@@ -28,7 +28,7 @@ namespace mapi::store
 
 		LPMDB lpMDB = nullptr;
 		auto ignore = std::list<HRESULT>{(ulFlags & MDB_ONLINE) ? MAPI_E_UNKNOWN_FLAGS : S_OK};
-		const auto hRes = EC_H_IGNORE_RET(
+		const auto hRes = EC_H_IGNORE_RET_MAPI(
 			ignore,
 			lpSession->OpenMsgStore(
 				ulUIParam,
