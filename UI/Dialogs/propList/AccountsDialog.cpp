@@ -129,7 +129,7 @@ namespace dialog
 								WC_H_S(lpAccount->FreeMemory(reinterpret_cast<LPBYTE>(acctName.Val.pwsz)));
 							}
 
-							m_lpAccountsList.AddChildNode(nodeName, root, lpAccount, nullptr);
+							static_cast<void>(m_lpAccountsList.AddChildNode(nodeName, root, lpAccount, nullptr));
 						}
 					}
 
