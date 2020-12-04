@@ -1,8 +1,6 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/propList/AccountsDialog.h>
 #include <UI/Controls/SortList/SingleMAPIPropListCtrl.h>
-#include <UI/Dialogs/MFCUtilityFunctions.h>
-#include <core/utility/strings.h>
 #include <core/mapi/mapiFunctions.h>
 #include <core/utility/output.h>
 #include <core/propertyBag/accountPropertyBag.h>

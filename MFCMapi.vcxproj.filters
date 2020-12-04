@@ -104,6 +104,9 @@
     <ClInclude Include="UI\Dialogs\propList\AccountsDialog.h">
       <Filter>Source Files\UI\Dialogs\propList</Filter>
     </ClInclude>
+    <ClInclude Include="UI\Dialogs\propList\RegistryDialog.h">
+      <Filter>Source Files\UI\Dialogs\propList</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StdAfx.h">
@@ -163,6 +166,9 @@
       <Filter>Source Files\UI\file</Filter>
     </ClCompile>
     <ClCompile Include="UI\Dialogs\propList\AccountsDialog.cpp">
+      <Filter>Source Files\UI\Dialogs\propList</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Dialogs\propList\RegistryDialog.cpp">
       <Filter>Source Files\UI\Dialogs\propList</Filter>
     </ClCompile>
   </ItemGroup>

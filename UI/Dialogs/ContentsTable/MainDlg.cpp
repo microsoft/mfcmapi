@@ -36,6 +36,7 @@
 #include <core/property/parseProperty.h>
 #include <core/mapi/processor/dumpStore.h>
 #include <UI/Dialogs/propList/AccountsDialog.h>
+#include <UI/Dialogs/propList/RegistryDialog.h>
 
 namespace dialog
 {
@@ -71,6 +72,7 @@ namespace dialog
 	ON_COMMAND(ID_CLOSEADDRESSBOOK, OnCloseAddressBook)
 	ON_COMMAND(ID_COMPUTEGIVENSTOREHASH, OnComputeGivenStoreHash)
 	ON_COMMAND(ID_DISPLAYACCOUNTSDIALOG, OnDisplayAccountsDialog)
+	ON_COMMAND(ID_DISPLAYREGISTRYDIALOG, OnDisplayRegistryDialog)
 	ON_COMMAND(ID_DISPLAYMAILBOXTABLE, OnDisplayMailboxTable)
 	ON_COMMAND(ID_DISPLAYPUBLICFOLDERTABLE, OnDisplayPublicFolderTable)
 	ON_COMMAND(ID_DUMPSTORECONTENTS, OnDumpStoreContents)
@@ -1312,6 +1314,13 @@ namespace dialog
 			OnOpenMessageStoreTable();
 			new AccountsDialog(m_lpParent, m_lpMapiObjects, lpMAPISession);
 		}
+	}
+
+	void CMainDlg::OnDisplayRegistryDialog()
+	{
+		if (!m_lpParent || !m_lpMapiObjects) return;
+
+		new RegistryDialog(m_lpParent, m_lpMapiObjects);
 	}
 
 	void CMainDlg::OnDisplayMailboxTable()
