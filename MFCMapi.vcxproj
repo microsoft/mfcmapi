@@ -593,6 +593,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
   <ItemGroup>
     <ClInclude Include="UI\Controls\SortList\SortHeader.h" />
     <ClInclude Include="UI\Controls\SortList\SortListCtrl.h" />
+    <ClInclude Include="UI\Dialogs\propList\AccountsDialog.h" />
     <ClInclude Include="UI\enums.h" />
     <ClInclude Include="UI\CMAPIProgress.h" />
     <ClInclude Include="StdAfx.h" />
@@ -631,7 +632,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="UI\Dialogs\MFCUtilityFunctions.h" />
     <ClInclude Include="UI\Dialogs\Editors\QSSpecialFolders.h" />
     <ClInclude Include="UI\RichEditOleCallback.h" />
-    <ClInclude Include="UI\Dialogs\SingleRecipientDialog.h" />
+    <ClInclude Include="UI\Dialogs\propList\SingleRecipientDialog.h" />
     <ClInclude Include="UI\ViewPane\CheckPane.h" />
     <ClInclude Include="UI\ViewPane\CountedTextPane.h" />
     <ClInclude Include="UI\ViewPane\DropDownPane.h" />
@@ -656,7 +657,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="UI\Dialogs\ContentsTable\RecipientsDlg.h" />
     <ClInclude Include="UI\Dialogs\Editors\RestrictEditor.h" />
     <ClInclude Include="UI\Dialogs\ContentsTable\RulesDlg.h" />
-    <ClInclude Include="UI\Dialogs\SingleMessageDialog.h" />
+    <ClInclude Include="UI\Dialogs\propList\SingleMessageDialog.h" />
     <ClInclude Include="UI\Controls\SortList\SingleMAPIPropListCtrl.h" />
     <ClInclude Include="UI\Dialogs\Editors\StreamEditor.h" />
     <ClInclude Include="UI\Dialogs\Editors\TagArrayEditor.h" />
@@ -672,6 +673,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="UI\addinui.cpp" />
     <ClCompile Include="UI\Controls\SortList\SortHeader.cpp" />
     <ClCompile Include="UI\Controls\SortList\SortListCtrl.cpp" />
+    <ClCompile Include="UI\Dialogs\propList\AccountsDialog.cpp" />
     <ClCompile Include="UI\file\exporter.cpp" />
     <ClCompile Include="UI\file\FileDialogEx.cpp" />
     <ClCompile Include="UI\profile.cpp" />
@@ -724,8 +726,8 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="UI\RichEditOleCallback.cpp" />
     <ClCompile Include="UI\Dialogs\ContentsTable\RulesDlg.cpp" />
     <ClCompile Include="UI\Controls\SortList\SingleMAPIPropListCtrl.cpp" />
-    <ClCompile Include="UI\Dialogs\SingleMessageDialog.cpp" />
-    <ClCompile Include="UI\Dialogs\SingleRecipientDialog.cpp" />
+    <ClCompile Include="UI\Dialogs\propList\SingleMessageDialog.cpp" />
+    <ClCompile Include="UI\Dialogs\propList\SingleRecipientDialog.cpp" />
     <ClCompile Include="UI\Dialogs\Editors\StreamEditor.cpp" />
     <ClCompile Include="UI\Dialogs\Editors\TagArrayEditor.cpp" />
     <ClCompile Include="UI\UIFunctions.cpp" />

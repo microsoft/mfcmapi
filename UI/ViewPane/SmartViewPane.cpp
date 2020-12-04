@@ -220,7 +220,7 @@ namespace viewpane
 			// This loans pointers to our blocks to the visual tree without refcounting.
 			// Care must be taken to ensure we never release treeData without first clearing the UI.
 			root =
-				m_TreePane->m_Tree.AddChildNode(data->getText(), parent, reinterpret_cast<LPARAM>(data.get()), nullptr);
+				m_TreePane->m_Tree.AddChildNode(data->getText(), parent, data.get(), nullptr);
 		}
 
 		for (const auto& item : data->getChildren())

@@ -17,6 +17,10 @@
 namespace mapi
 {
 	// Safely cast across MAPI interfaces. Result is addrefed and must be released.
+	// Adding interfaces:
+	// 1 Add else if to safe_cast
+	// 2 Add template to list to link an instance of the desired template
+	// 3 Add USES_ statement to guid.cpp to ensure guid symbols is linked
 	template <class T> T safe_cast(IUnknown* src)
 	{
 		if (!src) return nullptr;
@@ -24,6 +28,7 @@ namespace mapi
 		auto iid = IID();
 		// clang-format off
 		if (std::is_same_v<T, LPUNKNOWN>) iid = IID_IUnknown;
+		else if (std::is_same_v<T, LPMAPISESSION>) iid = IID_IMAPISession;
 		else if (std::is_same_v<T, LPMAPIFOLDER>) iid = IID_IMAPIFolder;
 		else if (std::is_same_v<T, LPMAPICONTAINER>) iid = IID_IMAPIContainer;
 		else if (std::is_same_v<T, LPMAILUSER>) iid = IID_IMailUser;
@@ -45,6 +50,7 @@ namespace mapi
 		else if (std::is_same_v<T, LPMAPICLIENTSHUTDOWN>) iid = IID_IMAPIClientShutdown;
 		else if (std::is_same_v<T, LPPROFSECT>) iid = IID_IProfSect;
 		else if (std::is_same_v<T, LPATTACH>) iid = IID_IAttachment;
+		else if (std::is_same_v<T, LPOLKACCOUNT>) iid = IID_IOlkAccount;
 		else assert(false);
 		// clang-format on
 
@@ -61,6 +67,7 @@ namespace mapi
 	}
 
 	template LPUNKNOWN safe_cast<LPUNKNOWN>(IUnknown* src);
+	template LPMAPISESSION safe_cast<LPMAPISESSION>(IUnknown* src);
 	template LPMAPIFOLDER safe_cast<LPMAPIFOLDER>(IUnknown* src);
 	template LPMAPICONTAINER safe_cast<LPMAPICONTAINER>(IUnknown* src);
 	template LPMAILUSER safe_cast<LPMAILUSER>(IUnknown* src);
@@ -82,6 +89,7 @@ namespace mapi
 	template LPMAPICLIENTSHUTDOWN safe_cast<LPMAPICLIENTSHUTDOWN>(IUnknown* src);
 	template LPPROFSECT safe_cast<LPPROFSECT>(IUnknown* src);
 	template LPATTACH safe_cast<LPATTACH>(IUnknown* src);
+	template LPOLKACCOUNT safe_cast<LPOLKACCOUNT>(IUnknown* src);
 
 	LPUNKNOWN CallOpenEntry(
 		_In_opt_ LPMDB lpMDB,
@@ -471,7 +479,7 @@ namespace mapi
 		return MAPI_E_USER_CANCEL;
 	}
 
-	_Check_return_ SBinary CopySBinary(_In_ const _SBinary& src, _In_ const VOID* parent)
+	_Check_return_ SBinary CopySBinary(_In_ const _SBinary& src, _In_opt_ const VOID* parent)
 	{
 		const auto dst = SBinary{src.cb, mapi::allocate<LPBYTE>(src.cb, parent)};
 		if (src.cb) CopyMemory(dst.lpb, src.lpb, src.cb);
@@ -1405,12 +1413,13 @@ namespace mapi
 		return nullptr;
 	}
 
-	const ULONG aulOneOffIDs[] = {dispidFormStorage,
-								  dispidPageDirStream,
-								  dispidFormPropStream,
-								  dispidScriptStream,
-								  dispidPropDefStream, // dispidPropDefStream must remain next to last in list
-								  dispidCustomFlag}; // dispidCustomFlag must remain last in list
+	const ULONG aulOneOffIDs[] = {
+		dispidFormStorage,
+		dispidPageDirStream,
+		dispidFormPropStream,
+		dispidScriptStream,
+		dispidPropDefStream, // dispidPropDefStream must remain next to last in list
+		dispidCustomFlag}; // dispidCustomFlag must remain last in list
 	constexpr ULONG ulNumOneOffIDs = _countof(aulOneOffIDs);
 
 	_Check_return_ HRESULT RemoveOneOff(_In_ LPMESSAGE lpMessage, bool bRemovePropDef)
@@ -2184,11 +2193,12 @@ namespace mapi
 			eSectionUid,
 			eMax
 		};
-		static const SizedSPropTagArray(eMax, tagaCols) = {eMax,
-														   {
-															   PR_ENTRYID,
-															   PR_EMSMDB_SECTION_UID,
-														   }};
+		static const SizedSPropTagArray(eMax, tagaCols) = {
+			eMax,
+			{
+				PR_ENTRYID,
+				PR_EMSMDB_SECTION_UID,
+			}};
 
 		auto hRes = EC_MAPI(pmsess->AdminServices(0, static_cast<LPSERVICEADMIN*>(&spSvcAdmin)));
 		if (spSvcAdmin)
@@ -2205,8 +2215,8 @@ namespace mapi
 					mres.res.resProperty.ulPropTag = PR_SERVICE_UID;
 					mres.res.resProperty.lpProp = &mval;
 					mval.ulPropTag = PR_SERVICE_UID;
-					mapi::setBin(mval) = {sizeof *puidService,
-										  reinterpret_cast<LPBYTE>(const_cast<MAPIUID*>(puidService))};
+					mapi::setBin(mval) = {
+						sizeof *puidService, reinterpret_cast<LPBYTE>(const_cast<MAPIUID*>(puidService))};
 
 					hRes = EC_MAPI(spmtab->Restrict(&mres, 0));
 				}
@@ -2823,5 +2833,31 @@ namespace mapi
 		}
 
 		return hRes;
+	}
+
+	std::wstring GetProfileName(LPMAPISESSION lpSession)
+	{
+		LPPROFSECT lpProfSect{};
+		std::wstring profileName;
+
+		if (!lpSession) return profileName;
+
+		EC_H_S(lpSession->OpenProfileSection(LPMAPIUID(pbGlobalProfileSectionGuid), nullptr, 0, &lpProfSect));
+		if (lpProfSect)
+		{
+			LPSPropValue lpProfileName{};
+
+			EC_H_S(HrGetOneProp(lpProfSect, PR_PROFILE_NAME_W, &lpProfileName));
+			if (lpProfileName && lpProfileName->ulPropTag == PR_PROFILE_NAME_W)
+			{
+				profileName = std::wstring(lpProfileName->Value.lpszW);
+			}
+
+			MAPIFreeBuffer(lpProfileName);
+
+			lpProfSect->Release();
+		}
+
+		return profileName;
 	}
 } // namespace mapi

@@ -70,6 +70,7 @@ typedef ULONG(STDAPICALLTYPE FREEBUFFER)(LPVOID lpBuffer);
 #include <EdkGuid.h>
 #include <TNEF.h>
 #include <MAPIAux.h>
+#include <actMgmt.h>
 
 #include <AclUI.h>
 #include <Uxtheme.h>

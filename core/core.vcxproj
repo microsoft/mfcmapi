@@ -554,6 +554,8 @@
     <ClInclude Include="interpret\propTypeArray.h" />
     <ClInclude Include="interpret\sid.h" />
     <ClInclude Include="interpret\smartViewParsers.h" />
+    <ClInclude Include="mapi\account\accountHelper.h" />
+    <ClInclude Include="mapi\account\actMgmt.h" />
     <ClInclude Include="mapi\adviseSink.h" />
     <ClInclude Include="mapi\cache\namedPropCache.h" />
     <ClInclude Include="mapi\cache\globalCache.h" />
@@ -576,6 +578,7 @@
     <ClInclude Include="mapi\processor\mapiProcessor.h" />
     <ClInclude Include="addin\mfcmapi.h" />
     <ClInclude Include="mapi\version.h" />
+    <ClInclude Include="propertyBag\accountPropertyBag.h" />
     <ClInclude Include="propertyBag\mapiPropPropertyBag.h" />
     <ClInclude Include="propertyBag\propertyBag.h" />
     <ClInclude Include="propertyBag\rowPropertyBag.h" />
@@ -650,6 +653,7 @@
     <ClCompile Include="interpret\proptags.cpp" />
     <ClCompile Include="interpret\proptype.cpp" />
     <ClCompile Include="interpret\sid.cpp" />
+    <ClCompile Include="mapi\account\accountHelper.cpp" />
     <ClCompile Include="mapi\adviseSink.cpp" />
     <ClCompile Include="mapi\cache\namedPropCache.cpp" />
     <ClCompile Include="mapi\cache\globalCache.cpp" />
@@ -667,6 +671,7 @@
     <ClCompile Include="mapi\processor\dumpStore.cpp" />
     <ClCompile Include="mapi\processor\mapiProcessor.cpp" />
     <ClCompile Include="mapi\version.cpp" />
+    <ClCompile Include="propertyBag\accountPropertyBag.cpp" />
     <ClCompile Include="propertyBag\mapiPropPropertyBag.cpp" />
     <ClCompile Include="propertyBag\rowPropertyBag.cpp" />
     <ClCompile Include="property\attributes.cpp" />

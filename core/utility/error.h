@@ -36,13 +36,21 @@
 // EC_MAPIERR - logs and displays dialog for any errors in a LPMAPIERROR
 // EC_TNEFERR - logs and displays dialog for any errors in a LPSTnefProblemArray
 
+namespace std
+{
+	template <class _container, class _Ty> inline bool contains(_container _Cont, const _Ty& __t)
+	{
+		return std::find(_Cont.begin(), _Cont.end(), __t) != _Cont.end();
+	}
+}; // namespace std
+
 namespace error
 {
 	extern std::function<void(const std::wstring& errString)> displayError;
 
 	void LogFunctionCall(
 		HRESULT hRes,
-		HRESULT hrIgnore,
+		std::list<HRESULT> hrIgnore,
 		bool bShowDialog,
 		bool bMAPICall,
 		bool bSystemCall,
@@ -77,18 +85,18 @@ namespace error
 } // namespace error
 
 // Macros for debug output
-#define CHECKHRES(hRes) (error::LogFunctionCall((hRes), NULL, true, false, false, NULL, nullptr, __FILE__, __LINE__))
+#define CHECKHRES(hRes) (error::LogFunctionCall((hRes), {}, true, false, false, NULL, nullptr, __FILE__, __LINE__))
 #define CHECKHRESMSG(hRes, uidErrorMsg) \
-	(error::LogFunctionCall((hRes), NULL, true, false, false, (uidErrorMsg), nullptr, __FILE__, __LINE__))
+	(error::LogFunctionCall((hRes), {}, true, false, false, (uidErrorMsg), nullptr, __FILE__, __LINE__))
 #define WARNHRESMSG(hRes, uidErrorMsg) \
-	(error::LogFunctionCall((hRes), NULL, false, false, false, (uidErrorMsg), nullptr, __FILE__, __LINE__))
+	(error::LogFunctionCall((hRes), {}, false, false, false, (uidErrorMsg), nullptr, __FILE__, __LINE__))
 
 // Execute a function, log and return the HRESULT
 // Will display dialog on error
 #define EC_H(fnx) \
 	error::CheckMe([&]() -> HRESULT { \
 		const auto __hRes = (fnx); \
-		error::LogFunctionCall(__hRes, NULL, true, false, false, NULL, #fnx, __FILE__, __LINE__); \
+		error::LogFunctionCall(__hRes, {}, true, false, false, NULL, #fnx, __FILE__, __LINE__); \
 		return __hRes; \
 	}())
 
@@ -97,7 +105,7 @@ namespace error
 #define EC_H_S(fnx) \
 	[&]() -> void { \
 		const auto __hRes = (fnx); \
-		error::LogFunctionCall(__hRes, NULL, true, false, false, NULL, #fnx, __FILE__, __LINE__); \
+		error::LogFunctionCall(__hRes, {}, true, false, false, NULL, #fnx, __FILE__, __LINE__); \
 	}()
 
 // Execute a function, log and return the HRESULT
@@ -105,7 +113,7 @@ namespace error
 #define WC_H(fnx) \
 	error::CheckMe([&]() -> HRESULT { \
 		const auto __hRes = (fnx); \
-		error::LogFunctionCall(__hRes, NULL, false, false, false, NULL, #fnx, __FILE__, __LINE__); \
+		error::LogFunctionCall(__hRes, {}, false, false, false, NULL, #fnx, __FILE__, __LINE__); \
 		return __hRes; \
 	}())
 
@@ -114,7 +122,7 @@ namespace error
 #define WC_H_S(fnx) \
 	[&]() -> void { \
 		const auto __hRes = (fnx); \
-		error::LogFunctionCall(__hRes, NULL, false, false, false, NULL, #fnx, __FILE__, __LINE__); \
+		error::LogFunctionCall(__hRes, {}, false, false, false, NULL, #fnx, __FILE__, __LINE__); \
 	}()
 
 // Execute a function, log and return the HRESULT
@@ -123,7 +131,7 @@ namespace error
 #define EC_MAPI(fnx) \
 	error::CheckMe([&]() -> HRESULT { \
 		const auto __hRes = (fnx); \
-		error::LogFunctionCall(__hRes, NULL, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
+		error::LogFunctionCall(__hRes, {}, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
 		return __hRes; \
 	}())
 
@@ -133,7 +141,7 @@ namespace error
 #define EC_MAPI_S(fnx) \
 	[&]() -> void { \
 		const auto __hRes = (fnx); \
-		error::LogFunctionCall(__hRes, NULL, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
+		error::LogFunctionCall(__hRes, {}, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
 	}()
 
 // Execute a function, log and return the HRESULT
@@ -142,7 +150,7 @@ namespace error
 #define WC_MAPI(fnx) \
 	error::CheckMe([&]() -> HRESULT { \
 		const auto __hRes = (fnx); \
-		error::LogFunctionCall(__hRes, NULL, false, true, false, NULL, #fnx, __FILE__, __LINE__); \
+		error::LogFunctionCall(__hRes, {}, false, true, false, NULL, #fnx, __FILE__, __LINE__); \
 		return __hRes; \
 	}())
 
@@ -152,7 +160,7 @@ namespace error
 #define WC_MAPI_S(fnx) \
 	[&]() -> void { \
 		const auto __hRes = (fnx); \
-		error::LogFunctionCall(__hRes, NULL, false, true, false, NULL, #fnx, __FILE__, __LINE__); \
+		error::LogFunctionCall(__hRes, {}, false, true, false, NULL, #fnx, __FILE__, __LINE__); \
 	}()
 
 // Execute a function, log error with uidErrorMessage, and return the HRESULT
@@ -160,7 +168,7 @@ namespace error
 #define EC_H_MSG(uidErrorMsg, fnx) \
 	error::CheckMe([&]() -> HRESULT { \
 		const auto __hRes = (fnx); \
-		error::LogFunctionCall(__hRes, NULL, true, false, false, uidErrorMsg, #fnx, __FILE__, __LINE__); \
+		error::LogFunctionCall(__hRes, {}, true, false, false, uidErrorMsg, #fnx, __FILE__, __LINE__); \
 		return __hRes; \
 	}())
 
@@ -169,7 +177,7 @@ namespace error
 #define WC_H_MSG(uidErrorMsg, fnx) \
 	error::CheckMe([&]() -> HRESULT { \
 		const auto __hRes = (fnx); \
-		error::LogFunctionCall(__hRes, NULL, false, false, false, uidErrorMsg, #fnx, __FILE__, __LINE__); \
+		error::LogFunctionCall(__hRes, {}, false, false, false, uidErrorMsg, #fnx, __FILE__, __LINE__); \
 		return __hRes; \
 	}())
 
@@ -178,7 +186,7 @@ namespace error
 #define WC_H_MSG_S(uidErrorMsg, fnx) \
 	[&]() -> void { \
 		const auto __hRes = (fnx); \
-		error::LogFunctionCall(__hRes, NULL, false, false, false, uidErrorMsg, #fnx, __FILE__, __LINE__); \
+		error::LogFunctionCall(__hRes, {}, false, false, false, uidErrorMsg, #fnx, __FILE__, __LINE__); \
 	}()
 
 // Execute a W32 function which returns ERROR_SUCCESS on success, log error, and return HRESULT_FROM_WIN32
@@ -186,7 +194,7 @@ namespace error
 #define EC_W32(fnx) \
 	error::CheckMe([&]() -> HRESULT { \
 		const auto __hRes = HRESULT_FROM_WIN32(fnx); \
-		error::LogFunctionCall(__hRes, NULL, true, false, false, NULL, #fnx, __FILE__, __LINE__); \
+		error::LogFunctionCall(__hRes, {}, true, false, false, NULL, #fnx, __FILE__, __LINE__); \
 		return __hRes; \
 	}())
 
@@ -195,7 +203,7 @@ namespace error
 #define EC_W32_S(fnx) \
 	[&]() -> void { \
 		const auto __hRes = HRESULT_FROM_WIN32(fnx); \
-		error::LogFunctionCall(__hRes, NULL, true, false, false, NULL, #fnx, __FILE__, __LINE__); \
+		error::LogFunctionCall(__hRes, {}, true, false, false, NULL, #fnx, __FILE__, __LINE__); \
 	}()
 
 // Execute a W32 function which returns ERROR_SUCCESS on success, log error, and return HRESULT_FROM_WIN32
@@ -203,7 +211,7 @@ namespace error
 #define WC_W32(fnx) \
 	error::CheckMe([&]() -> HRESULT { \
 		const auto __hRes = HRESULT_FROM_WIN32(fnx); \
-		error::LogFunctionCall(__hRes, NULL, false, false, false, NULL, #fnx, __FILE__, __LINE__); \
+		error::LogFunctionCall(__hRes, {}, false, false, false, NULL, #fnx, __FILE__, __LINE__); \
 		return __hRes; \
 	}())
 
@@ -212,7 +220,7 @@ namespace error
 #define WC_W32_S(fnx) \
 	[&]() -> void { \
 		const auto __hRes = HRESULT_FROM_WIN32(fnx); \
-		error::LogFunctionCall(__hRes, NULL, false, false, false, NULL, #fnx, __FILE__, __LINE__); \
+		error::LogFunctionCall(__hRes, {}, false, false, false, NULL, #fnx, __FILE__, __LINE__); \
 	}()
 
 // Execute a bool/BOOL function, log error, and return CheckWin32Error(HRESULT)
@@ -284,11 +292,23 @@ namespace error
 // Execute a function, log and return the HRESULT
 // Does not log/display on error if it matches __ignore
 // Does not suppress __ignore as return value so caller can check it
+// Logs a MAPI call trace under output::dbgLevel::MAPIFunctions
 // Will display dialog on error
-#define EC_H_IGNORE_RET(__ignore, fnx) \
+#define EC_H_IGNORE_RET_MAPI(__ignore, fnx) \
 	error::CheckMe([&]() -> HRESULT { \
 		const auto __hRes = (fnx); \
 		error::LogFunctionCall(__hRes, __ignore, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
+		return __hRes; \
+	}())
+
+// Execute a function, log and return the HRESULT
+// Does not log/display on error if it matches __ignore
+// Does not suppress __ignore as return value so caller can check it
+// Will not display an error dialog
+#define WC_H_IGNORE_RET(__ignore, fnx) \
+	error::CheckMe([&]() -> HRESULT { \
+		const auto __hRes = (fnx); \
+		error::LogFunctionCall(__hRes, __ignore, false, false, false, NULL, #fnx, __FILE__, __LINE__); \
 		return __hRes; \
 	}())
 
@@ -297,70 +317,75 @@ namespace error
 // This is annoying, so this macro tosses those warnings.
 // We have to check each prop before we use it anyway, so we don't lose anything here.
 // Using this macro, all we have to check is that we got a props array back
+// Logs a MAPI call trace under output::dbgLevel::MAPIFunctions
 // Will display dialog on error
 #define EC_H_IGNORE(__ignore, fnx) \
 	error::CheckMe([&]() -> HRESULT { \
 		const auto __hRes = (fnx); \
 		error::LogFunctionCall(__hRes, __ignore, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
-		return __hRes == (__ignore) ? S_OK : __hRes; \
+		return std::contains(__ignore, __hRes) ? S_OK : __hRes; \
 	}())
-#define EC_H_GETPROPS(fnx) EC_H_IGNORE(MAPI_W_ERRORS_RETURNED, fnx)
+#define EC_H_GETPROPS(fnx) EC_H_IGNORE(std::list<HRESULT> MAPI_W_ERRORS_RETURNED, fnx)
 
 // Execute a function, log and swallow the HRESULT
 // MAPI's GetProps call will return MAPI_W_ERRORS_RETURNED if even one prop fails
 // This is annoying, so this macro tosses those warnings.
 // We have to check each prop before we use it anyway, so we don't lose anything here.
 // Using this macro, all we have to check is that we got a props array back
+// Logs a MAPI call trace under output::dbgLevel::MAPIFunctions
 // Will display dialog on error
 #define EC_H_IGNORE_S(__ignore, fnx) \
 	[&]() -> void { \
 		const auto __hRes = (fnx); \
 		error::LogFunctionCall(__hRes, __ignore, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
 	}()
-#define EC_H_GETPROPS_S(fnx) EC_H_IGNORE_S(MAPI_W_ERRORS_RETURNED, fnx)
+#define EC_H_GETPROPS_S(fnx) EC_H_IGNORE_S(std::list<HRESULT>{MAPI_W_ERRORS_RETURNED}, fnx)
 
 // Execute a function, log and return the HRESULT
 // MAPI's GetProps call will return MAPI_W_ERRORS_RETURNED if even one prop fails
 // This is annoying, so this macro tosses those warnings.
 // We have to check each prop before we use it anyway, so we don't lose anything here.
 // Using this macro, all we have to check is that we got a props array back
+// Logs a MAPI call trace under output::dbgLevel::MAPIFunctions
 // Will not display an error dialog
 #define WC_H_IGNORE(__ignore, fnx) \
 	error::CheckMe([&]() -> HRESULT { \
 		const auto __hRes = (fnx); \
 		error::LogFunctionCall(__hRes, __ignore, false, true, false, NULL, #fnx, __FILE__, __LINE__); \
-		return __hRes == (__ignore) ? S_OK : __hRes; \
+		return std::contains(__ignore, __hRes) ? S_OK : __hRes; \
 	}())
-#define WC_H_GETPROPS(fnx) WC_H_IGNORE(MAPI_W_ERRORS_RETURNED, fnx)
+#define WC_H_GETPROPS(fnx) WC_H_IGNORE(std::list<HRESULT>{MAPI_W_ERRORS_RETURNED}, fnx)
 
 // Execute a function, log and swallow the HRESULT
 // MAPI's GetProps call will return MAPI_W_ERRORS_RETURNED if even one prop fails
 // This is annoying, so this macro tosses those warnings.
 // We have to check each prop before we use it anyway, so we don't lose anything here.
 // Using this macro, all we have to check is that we got a props array back
+// Logs a MAPI call trace under output::dbgLevel::MAPIFunctions
 // Will not display an error dialog
 #define WC_H_IGNORE_S(__ignore, fnx) \
 	[&]() -> void { \
 		const auto __hRes = (fnx); \
 		error::LogFunctionCall(__hRes, __ignore, false, true, false, NULL, #fnx, __FILE__, __LINE__); \
 	}()
-#define WC_H_GETPROPS_S(fnx) WC_H_IGNORE_S(MAPI_W_ERRORS_RETURNED, fnx)
+#define WC_H_GETPROPS_S(fnx) WC_H_IGNORE_S(std::list<HRESULT>{MAPI_W_ERRORS_RETURNED}, fnx)
 
 // Execute a function, log and return the HRESULT
 // Logs a MAPI call trace under output::dbgLevel::MAPIFunctions
 // Some MAPI functions allow MAPI_E_CANCEL or MAPI_E_USER_CANCEL.
 // I don't consider these to be errors.
+// Logs a MAPI call trace under output::dbgLevel::MAPIFunctions
 // Will display dialog on error
 #define EC_H_CANCEL(fnx) \
 	error::CheckMe([&]() -> HRESULT { \
 		const auto __hRes = (fnx); \
 		if (__hRes == MAPI_E_USER_CANCEL || __hRes == MAPI_E_CANCEL) \
 		{ \
-			error::LogFunctionCall(__hRes, NULL, false, true, false, IDS_USERCANCELLED, #fnx, __FILE__, __LINE__); \
+			error::LogFunctionCall(__hRes, {}, false, true, false, IDS_USERCANCELLED, #fnx, __FILE__, __LINE__); \
 			return S_OK; \
 		} \
 		else \
-			error::LogFunctionCall(__hRes, NULL, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
+			error::LogFunctionCall(__hRes, {}, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
 		return __hRes; \
 	}())
 
@@ -368,14 +393,15 @@ namespace error
 // Logs a MAPI call trace under output::dbgLevel::MAPIFunctions
 // Some MAPI functions allow MAPI_E_CANCEL or MAPI_E_USER_CANCEL.
 // I don't consider these to be errors.
+// Logs a MAPI call trace under output::dbgLevel::MAPIFunctions
 // Will display dialog on error
 #define EC_H_CANCEL_S(fnx) \
 	[&]() -> void { \
 		const auto __hRes = (fnx); \
 		if (__hRes == MAPI_E_USER_CANCEL || __hRes == MAPI_E_CANCEL) \
-			error::LogFunctionCall(__hRes, NULL, false, true, false, IDS_USERCANCELLED, #fnx, __FILE__, __LINE__); \
+			error::LogFunctionCall(__hRes, {}, false, true, false, IDS_USERCANCELLED, #fnx, __FILE__, __LINE__); \
 		else \
-			error::LogFunctionCall(__hRes, NULL, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
+			error::LogFunctionCall(__hRes, {}, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
 	}()
 
 // Execute a function, log and return the command ID

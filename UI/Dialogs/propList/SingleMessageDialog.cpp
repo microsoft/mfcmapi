@@ -1,5 +1,5 @@
 #include <StdAfx.h>
-#include <UI/Dialogs/SingleMessageDialog.h>
+#include <UI/Dialogs/propList/SingleMessageDialog.h>
 #include <UI/Controls/SortList/SingleMAPIPropListCtrl.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>

@@ -96,7 +96,7 @@ namespace sid
 			if (dwErr != ERROR_NONE_MAPPED && dwErr != ERROR_INSUFFICIENT_BUFFER)
 			{
 				error::LogFunctionCall(
-					HRESULT_FROM_WIN32(dwErr), NULL, false, false, true, dwErr, "LookupAccountSid", __FILE__, __LINE__);
+					HRESULT_FROM_WIN32(dwErr), {}, false, false, true, dwErr, "LookupAccountSid", __FILE__, __LINE__);
 			}
 		}
 

@@ -44,6 +44,7 @@
 #include <EdkGuid.h>
 #include <TNEF.h>
 #include <MAPIAux.h>
+#include <actMgmt.h>
 
 // For import procs
 #include <AclUI.h>

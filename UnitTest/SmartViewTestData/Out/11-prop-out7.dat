@@ -29,8 +29,8 @@ Property[7]
 	PropTag = 0x82E12F2B (0x0f2b | MV_INSTANCE)
 Property[8]
 	PropTag = 0x00000001 (PT_NULL)
-		Name: PR_ACKNOWLEDGEMENT_MODE
-		Other Matches: PidTagAcknowledgementMode, PR_CERT_PROP_VERSION, PR_EMS_TEMPLATE_BLOB, PidTagTemplateData
+		Name: PROP_ACCT_ID
+		Other Matches: PR_ACKNOWLEDGEMENT_MODE, PidTagAcknowledgementMode, PR_CERT_PROP_VERSION, PR_EMS_TEMPLATE_BLOB, PidTagTemplateData
 Property[9]
 	PropTag = 0x00000000 (PT_UNSPECIFIED)
 Property[10]

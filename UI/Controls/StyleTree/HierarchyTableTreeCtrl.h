@@ -2,6 +2,7 @@
 #include <UI/enums.h>
 #include <core/sortlistdata/sortListData.h>
 #include <UI/Controls/StyleTree/StyleTreeCtrl.h>
+#include <UI/Dialogs/BaseDialog.h>
 
 namespace cache
 {
@@ -24,7 +25,7 @@ namespace controls
 		void Create(
 			_In_ CWnd* pCreateParent,
 			_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
-			_In_ dialog::CHierarchyTableDlg* lpHostDlg,
+			_In_ dialog::CBaseDialog* lpHostDlg,
 			tableDisplayFlags displayFlags,
 			UINT nIDContextMenu);
 		void LoadHierarchyTable(_In_ LPMAPICONTAINER lpMAPIContainer);
@@ -61,7 +62,9 @@ namespace controls
 
 		// Node management
 		void AddRootNode() const;
-		void AddNode(_In_ LPSRow lpsRow, HTREEITEM hParent, const std::function<void(HTREEITEM hItem)>& callback) const;
+		void
+		AddNode(_In_ LPSRow lpsRow, HTREEITEM hParent, const std::function<void(HTREEITEM hItem)>& itemAddedCallback)
+			const;
 
 		// Custom messages
 		_Check_return_ LRESULT msgOnAddItem(WPARAM wParam, LPARAM lParam);
@@ -69,7 +72,7 @@ namespace controls
 		_Check_return_ LRESULT msgOnModifyItem(WPARAM wParam, LPARAM lParam);
 		_Check_return_ LRESULT msgOnRefreshTable(WPARAM wParam, LPARAM lParam);
 
-		dialog::CHierarchyTableDlg* m_lpHostDlg{};
+		dialog::CBaseDialog* m_lpHostDlg{};
 		std::shared_ptr<cache::CMapiObjects> m_lpMapiObjects{};
 		LPMAPICONTAINER m_lpContainer{};
 		ULONG m_ulContainerType{};

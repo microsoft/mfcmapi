@@ -35,6 +35,9 @@
     <Filter Include="Source Files\UI\file">
       <UniqueIdentifier>{11d1d58d-bd1e-4378-aee8-c09e38056240}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\UI\Dialogs\propList">
+      <UniqueIdentifier>{2db12437-1a22-4930-897a-00f4855cc456}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />
@@ -98,6 +101,9 @@
     <ClInclude Include="UI\file\exporter.h">
       <Filter>Source Files\UI\file</Filter>
     </ClInclude>
+    <ClInclude Include="UI\Dialogs\propList\AccountsDialog.h">
+      <Filter>Source Files\UI\Dialogs\propList</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StdAfx.h">
@@ -155,6 +161,9 @@
     </ClCompile>
     <ClCompile Include="UI\file\exporter.cpp">
       <Filter>Source Files\UI\file</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Dialogs\propList\AccountsDialog.cpp">
+      <Filter>Source Files\UI\Dialogs\propList</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -232,17 +241,17 @@
     <ClInclude Include="UI\Dialogs\Dialog.h">
       <Filter>Source Files\UI\Dialogs</Filter>
     </ClInclude>
-    <ClCompile Include="UI\Dialogs\SingleMessageDialog.cpp">
-      <Filter>Source Files\UI\Dialogs</Filter>
+    <ClCompile Include="UI\Dialogs\propList\SingleMessageDialog.cpp">
+      <Filter>Source Files\UI\Dialogs\propList</Filter>
     </ClCompile>
-    <ClInclude Include="UI\Dialogs\SingleMessageDialog.h">
-      <Filter>Source Files\UI\Dialogs</Filter>
+    <ClInclude Include="UI\Dialogs\propList\SingleMessageDialog.h">
+      <Filter>Source Files\UI\Dialogs\propList</Filter>
     </ClInclude>
-    <ClCompile Include="UI\Dialogs\SingleRecipientDialog.cpp">
-      <Filter>Source Files\UI\Dialogs</Filter>
+    <ClCompile Include="UI\Dialogs\propList\SingleRecipientDialog.cpp">
+      <Filter>Source Files\UI\Dialogs\propList</Filter>
     </ClCompile>
-    <ClInclude Include="UI\Dialogs\SingleRecipientDialog.h">
-      <Filter>Source Files\UI\Dialogs</Filter>
+    <ClInclude Include="UI\Dialogs\propList\SingleRecipientDialog.h">
+      <Filter>Source Files\UI\Dialogs\propList</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

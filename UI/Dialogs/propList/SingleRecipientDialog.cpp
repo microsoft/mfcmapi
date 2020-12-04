@@ -1,5 +1,5 @@
 #include <StdAfx.h>
-#include <UI/Dialogs/SingleRecipientDialog.h>
+#include <UI/Dialogs/propList/SingleRecipientDialog.h>
 #include <UI/Controls/SortList/SingleMAPIPropListCtrl.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <core/utility/strings.h>

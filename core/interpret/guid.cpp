@@ -2,6 +2,7 @@
 
 #pragma region "USES_IID definitions"
 #define INITGUID
+#define USES_IID_IMAPISession
 #define USES_IID_IMsgStore
 #define USES_IID_IMAPIProgress
 #define USES_IID_IMAPIAdviseSink
@@ -35,11 +36,16 @@
 #define USES_IID_IMsgServiceAdmin2
 #define USES_IID_IMessageRaw
 #define USES_IID_IProfSect
+#define USES_IID_IOlkAccountHelper
+#define USES_IID_IOlkAccountManager
+#define USES_IID_IOlkAccount
+
 #pragma endregion
 
 #include <initguid.h>
 #include <MAPIGuid.h>
 #include <MAPIAux.h>
+#include <actMgmt.h>
 
 #ifdef EDKGUID_INCLUDED
 #undef EDKGUID_INCLUDED

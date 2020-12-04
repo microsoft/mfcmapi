@@ -35,6 +35,7 @@
 #include <core/mapi/mapiFunctions.h>
 #include <core/property/parseProperty.h>
 #include <core/mapi/processor/dumpStore.h>
+#include <UI/Dialogs/propList/AccountsDialog.h>
 
 namespace dialog
 {
@@ -69,6 +70,7 @@ namespace dialog
 	BEGIN_MESSAGE_MAP(CMainDlg, CContentsTableDlg)
 	ON_COMMAND(ID_CLOSEADDRESSBOOK, OnCloseAddressBook)
 	ON_COMMAND(ID_COMPUTEGIVENSTOREHASH, OnComputeGivenStoreHash)
+	ON_COMMAND(ID_DISPLAYACCOUNTSDIALOG, OnDisplayAccountsDialog)
 	ON_COMMAND(ID_DISPLAYMAILBOXTABLE, OnDisplayMailboxTable)
 	ON_COMMAND(ID_DISPLAYPUBLICFOLDERTABLE, OnDisplayPublicFolderTable)
 	ON_COMMAND(ID_DUMPSTORECONTENTS, OnDumpStoreContents)
@@ -1297,6 +1299,19 @@ namespace dialog
 	{
 		// This is an example of how to override the default OnDisplayItem
 		CContentsTableDlg::OnDisplayItem();
+	}
+
+	void CMainDlg::OnDisplayAccountsDialog()
+	{
+		if (!m_lpParent || !m_lpMapiObjects) return;
+
+		const auto lpMAPISession = m_lpMapiObjects->LogonGetSession(m_lpParent->GetSafeHwnd()); // do not release
+		if (lpMAPISession)
+		{
+			// Since we've opened a session, populate the store table in the UI
+			OnOpenMessageStoreTable();
+			new AccountsDialog(m_lpParent, m_lpMapiObjects, lpMAPISession);
+		}
 	}
 
 	void CMainDlg::OnDisplayMailboxTable()
