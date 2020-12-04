@@ -29,7 +29,8 @@ namespace dialog
 		std::wstring m_lpwszProfile;
 
 		void InitAccountManager();
-		void EnumAccounts();
+		void EnumAccounts(const std::wstring& szCat, const CLSID* pclsidCategory);
+		void EnumCategories();
 		DECLARE_MESSAGE_MAP()
 	};
 } // namespace dialog

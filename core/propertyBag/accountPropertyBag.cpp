@@ -34,6 +34,8 @@ namespace propertybag
 		if (lpOther)
 		{
 			if (m_lpwszProfile != lpOther->m_lpwszProfile) return false;
+			if (!lpOther->m_lpAccount && !m_lpAccount) return true; // If neither has an account they're the same
+			if (!lpOther->m_lpAccount || !m_lpAccount) return false; // If just one has an account they're different
 			auto uidMe = ACCT_VARIANT{};
 			auto uidOther = ACCT_VARIANT{};
 			auto hRes = WC_H(m_lpAccount->GetProp(PROP_ACCT_MINI_UID, &uidMe));

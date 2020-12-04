@@ -87,7 +87,7 @@ namespace dialog
 					std::make_shared<propertybag::accountPropertyBag>(m_lpwszProfile, lpAccount), false));
 			};
 
-			EnumAccounts();
+			EnumCategories();
 
 			m_lpFakeSplitter.SetPercent(0.25);
 		}
@@ -95,11 +95,12 @@ namespace dialog
 		return bRet;
 	}
 
-	void AccountsDialog::EnumAccounts()
+	void AccountsDialog::EnumAccounts(const std::wstring& szCat, const CLSID* pclsidCategory)
 	{
+		const auto root = m_lpAccountsList.AddChildNode(szCat.c_str(), TVI_ROOT, nullptr, nullptr);
 		LPOLKENUM lpAcctEnum = nullptr;
 
-		EC_H_S(m_lpAcctMgr->EnumerateAccounts(&CLSID_OlkMail, nullptr, OLK_ACCOUNT_NO_FLAGS, &lpAcctEnum));
+		EC_H_S(m_lpAcctMgr->EnumerateAccounts(pclsidCategory, nullptr, OLK_ACCOUNT_NO_FLAGS, &lpAcctEnum));
 		if (lpAcctEnum)
 		{
 			DWORD cAccounts = 0;
@@ -128,7 +129,7 @@ namespace dialog
 								WC_H_S(lpAccount->FreeMemory(reinterpret_cast<LPBYTE>(acctName.Val.pwsz)));
 							}
 
-							m_lpAccountsList.AddChildNode(nodeName, TVI_ROOT, lpAccount, nullptr);
+							m_lpAccountsList.AddChildNode(nodeName, root, lpAccount, nullptr);
 						}
 					}
 
@@ -139,6 +140,13 @@ namespace dialog
 
 			lpAcctEnum->Release();
 		}
+	}
+
+	void AccountsDialog::EnumCategories()
+	{
+		EnumAccounts(L"Mail", &CLSID_OlkMail);
+		EnumAccounts(L"Address Book", &CLSID_OlkAddressBook);
+		EnumAccounts(L"Store", &CLSID_OlkStore);
 	}
 
 	BEGIN_MESSAGE_MAP(AccountsDialog, CBaseDialog)
