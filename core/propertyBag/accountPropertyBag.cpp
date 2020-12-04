@@ -19,7 +19,7 @@ namespace propertybag
 
 	propBagFlags accountPropertyBag::GetFlags() const
 	{
-		auto ulFlags = propBagFlags::None;
+		const auto ulFlags = propBagFlags::None;
 		return ulFlags;
 	}
 
@@ -216,7 +216,7 @@ namespace propertybag
 
 		for (ULONG i = 0; i < cValues; i++)
 		{
-			auto hRes = WC_H(SetProp(&lpPropArray[i], false));
+			const auto hRes = WC_H(SetProp(&lpPropArray[i], false));
 			if (FAILED(hRes)) return hRes;
 		}
 
@@ -224,6 +224,4 @@ namespace propertybag
 	}
 
 	_Check_return_ HRESULT accountPropertyBag::SetProp(LPSPropValue lpProp) { return SetProp(lpProp, true); }
-
-	_Check_return_ HRESULT accountPropertyBag::DeleteProp(ULONG /*ulPropTag*/) { return E_NOTIMPL; };
 } // namespace propertybag

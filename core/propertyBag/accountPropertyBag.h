@@ -29,7 +29,7 @@ namespace propertybag
 		void FreeBuffer(LPSPropValue lpsPropValue) override { MAPIFreeBuffer(lpsPropValue); }
 		_Check_return_ HRESULT SetProps(ULONG cValues, LPSPropValue lpPropArray) override;
 		_Check_return_ HRESULT SetProp(LPSPropValue lpProp) override;
-		_Check_return_ HRESULT DeleteProp(ULONG ulPropTag) override;
+		_Check_return_ HRESULT DeleteProp(ULONG /*ulPropTag*/) noexcept override { return E_NOTIMPL; };
 
 	private:
 		std::wstring m_lpwszProfile;

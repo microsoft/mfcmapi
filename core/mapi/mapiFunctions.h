@@ -170,7 +170,7 @@ namespace mapi
 		bool bIsAB,
 		bool bAllowUI);
 
-	_Check_return_ SBinary CopySBinary(_In_ const _SBinary& src, _In_ const VOID* parent = nullptr);
+	_Check_return_ SBinary CopySBinary(_In_ const _SBinary& src, _In_opt_ const VOID* parent = nullptr);
 	_Check_return_ LPSBinary CopySBinary(_In_ const _SBinary* src);
 
 	_Check_return_ LPSTR CopyStringA(_In_z_ LPCSTR src, _In_opt_ const VOID* parent);

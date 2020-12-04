@@ -479,7 +479,7 @@ namespace mapi
 		return MAPI_E_USER_CANCEL;
 	}
 
-	_Check_return_ SBinary CopySBinary(_In_ const _SBinary& src, _In_ const VOID* parent)
+	_Check_return_ SBinary CopySBinary(_In_ const _SBinary& src, _In_opt_ const VOID* parent)
 	{
 		const auto dst = SBinary{src.cb, mapi::allocate<LPBYTE>(src.cb, parent)};
 		if (src.cb) CopyMemory(dst.lpb, src.lpb, src.cb);
