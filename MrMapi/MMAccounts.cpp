@@ -58,13 +58,16 @@ void IterateAllProps(LPOLKACCOUNT lpAccount)
 	wprintf(L"Done iterating all properties\n");
 }
 
-void EnumerateAccounts(LPOLKACCOUNTMANAGER lpAcctMgr, bool bIterateAllProps)
+void EnumerateAccounts(
+	LPOLKACCOUNTMANAGER lpAcctMgr,
+	const std::wstring& szCat,
+	const CLSID* pclsidCategory,
+	bool bIterateAllProps)
 {
 	LPOLKENUM lpAcctEnum = nullptr;
 
-	EC_H_S(lpAcctMgr->EnumerateAccounts(&CLSID_OlkMail, nullptr, OLK_ACCOUNT_NO_FLAGS, &lpAcctEnum));
-	// TODO: Other types!
-	//EC_H_S(lpAcctMgr->EnumerateAccounts(&CLSID_OlkAddressBook, nullptr, OLK_ACCOUNT_NO_FLAGS, &lpAcctEnum));
+	wprintf(L"Category: %ws\n", szCat.c_str());
+	EC_H_S(lpAcctMgr->EnumerateAccounts(pclsidCategory, nullptr, OLK_ACCOUNT_NO_FLAGS, &lpAcctEnum));
 	if (lpAcctEnum)
 	{
 		DWORD cAccounts = 0;
@@ -121,6 +124,13 @@ void EnumerateAccounts(LPOLKACCOUNTMANAGER lpAcctMgr, bool bIterateAllProps)
 	}
 }
 
+void EnumerateCategories(LPOLKACCOUNTMANAGER lpAcctMgr, bool bIterateAllProps)
+{
+	EnumerateAccounts(lpAcctMgr, L"Mail", &CLSID_OlkMail, bIterateAllProps);
+	EnumerateAccounts(lpAcctMgr, L"Address Book", &CLSID_OlkAddressBook, bIterateAllProps);
+	EnumerateAccounts(lpAcctMgr, L"Store", &CLSID_OlkStore, bIterateAllProps);
+}
+
 void DisplayAccountList(LPOLKACCOUNTMANAGER lpAcctMgr, ULONG ulFlags)
 {
 	EC_H_S(lpAcctMgr->DisplayAccountList(
@@ -165,7 +175,7 @@ void DoAccounts(_In_opt_ LPMAPISESSION lpMAPISession)
 					}
 					else
 					{
-						EnumerateAccounts(lpAcctMgr, bIterate);
+						EnumerateCategories(lpAcctMgr, bIterate);
 					}
 				}
 
