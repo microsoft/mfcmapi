@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/propList/RegistryDialog.h>
-//#include <UI/Controls/SortList/SingleMAPIPropListCtrl.h>
+#include <UI/Controls/SortList/SingleMAPIPropListCtrl.h>
 //#include <UI/Dialogs/MFCUtilityFunctions.h>
 //#include <core/utility/strings.h>
 #include <core/mapi/mapiFunctions.h>
@@ -37,10 +37,9 @@ namespace dialog
 			m_lpRegKeyTree.FreeNodeDataCallback = [&](auto hKey) {
 				if (hKey) WC_W32_S(RegCloseKey(reinterpret_cast<HKEY>(hKey)));
 			};
-			m_lpRegKeyTree.ItemSelectedCallback = [&](auto /*hItem*/) {
-				//auto hKey = reinterpret_cast<LPOLKACCOUNT>(m_lpRegKeyList.GetItemData(hItem));
-				//EC_H_S(m_lpPropDisplay->SetDataSource(
-				//	std::make_shared<propertybag::registryPropertyBag>(m_lpwszProfile, lpAccount), false));
+			m_lpRegKeyTree.ItemSelectedCallback = [&](auto hItem) {
+				auto hKey = reinterpret_cast<HKEY>(m_lpRegKeyTree.GetItemData(hItem));
+				EC_H_S(m_lpPropDisplay->SetDataSource(std::make_shared<propertybag::registryPropertyBag>(hKey), false));
 			};
 
 			EnumRegistry();

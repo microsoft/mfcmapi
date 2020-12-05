@@ -6,7 +6,7 @@ namespace propertybag
 	class registryPropertyBag : public IMAPIPropertyBag
 	{
 	public:
-		registryPropertyBag(std::wstring lpwszProfile, LPOLKACCOUNT lpAccount);
+		registryPropertyBag(HKEY hKey);
 		virtual ~registryPropertyBag();
 		registryPropertyBag(const registryPropertyBag&) = delete;
 		registryPropertyBag& operator=(const registryPropertyBag&) = delete;
@@ -32,5 +32,6 @@ namespace propertybag
 		_Check_return_ HRESULT DeleteProp(ULONG /*ulPropTag*/) noexcept override { return E_NOTIMPL; };
 
 	private:
+		HKEY m_hKey{};
 	};
 } // namespace propertybag
