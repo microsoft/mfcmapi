@@ -32,13 +32,13 @@ namespace dialog
 
 		if (m_lpFakeSplitter)
 		{
-			m_lpRegKeyList.Create(&m_lpFakeSplitter, true);
-			m_lpFakeSplitter.SetPaneOne(m_lpRegKeyList.GetSafeHwnd());
-			//m_lpRegKeyList.FreeNodeDataCallback = [&](auto lpAccount) {
-			//	if (lpAccount) reinterpret_cast<LPOLKACCOUNT>(lpAccount)->Release();
-			//};
-			m_lpRegKeyList.ItemSelectedCallback = [&](auto /*hItem*/) {
-				//auto lpAccount = reinterpret_cast<LPOLKACCOUNT>(m_lpRegKeyList.GetItemData(hItem));
+			m_lpRegKeyTree.Create(&m_lpFakeSplitter, true);
+			m_lpFakeSplitter.SetPaneOne(m_lpRegKeyTree.GetSafeHwnd());
+			m_lpRegKeyTree.FreeNodeDataCallback = [&](auto hKey) {
+				if (hKey) WC_W32_S(RegCloseKey(reinterpret_cast<HKEY>(hKey)));
+			};
+			m_lpRegKeyTree.ItemSelectedCallback = [&](auto /*hItem*/) {
+				//auto hKey = reinterpret_cast<LPOLKACCOUNT>(m_lpRegKeyList.GetItemData(hItem));
 				//EC_H_S(m_lpPropDisplay->SetDataSource(
 				//	std::make_shared<propertybag::registryPropertyBag>(m_lpwszProfile, lpAccount), false));
 			};
@@ -51,58 +51,64 @@ namespace dialog
 		return bRet;
 	}
 
-	//void RegistryDialog::EnumRegistry(const std::wstring& szCat, const CLSID* pclsidCategory)
-	//{
-	//	const auto root = m_lpAccountsList.AddChildNode(szCat.c_str(), TVI_ROOT, nullptr, nullptr);
-	//	LPOLKENUM lpAcctEnum = nullptr;
-
-	//	EC_H_S(m_lpAcctMgr->EnumerateAccounts(pclsidCategory, nullptr, OLK_ACCOUNT_NO_FLAGS, &lpAcctEnum));
-	//	if (lpAcctEnum)
-	//	{
-	//		DWORD cAccounts = 0;
-
-	//		EC_H_S(lpAcctEnum->GetCount(&cAccounts));
-	//		if (cAccounts)
-	//		{
-	//			EC_H_S(lpAcctEnum->Reset());
-	//			DWORD iAcct = 0;
-	//			for (iAcct = 0; iAcct < cAccounts; iAcct++)
-	//			{
-	//				LPUNKNOWN lpUnk = nullptr;
-
-	//				EC_H_S(lpAcctEnum->GetNext(&lpUnk));
-	//				if (lpUnk)
-	//				{
-	//					auto lpAccount = mapi::safe_cast<LPOLKACCOUNT>(lpUnk);
-	//					if (lpAccount)
-	//					{
-	//						auto acctName = ACCT_VARIANT{};
-	//						auto nodeName = strings::format(L"Account %i", iAcct);
-	//						const auto hRes = WC_H(lpAccount->GetProp(PROP_ACCT_NAME, &acctName));
-	//						if (SUCCEEDED(hRes))
-	//						{
-	//							nodeName = acctName.Val.pwsz;
-	//							WC_H_S(lpAccount->FreeMemory(reinterpret_cast<LPBYTE>(acctName.Val.pwsz)));
-	//						}
-
-	//						static_cast<void>(m_lpAccountsList.AddChildNode(nodeName, root, lpAccount, nullptr));
-	//					}
-	//				}
-
-	//				if (lpUnk) lpUnk->Release();
-	//				lpUnk = nullptr;
-	//			}
-	//		}
-
-	//		lpAcctEnum->Release();
-	//	}
-	//}
-
+	static const wchar_t* profileWMS =
+		L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Windows Messaging Subsystem\\Profiles";
+	static const wchar_t* profile15 = L"SOFTWARE\\Microsoft\\Office\\15.0\\Outlook\\Profiles";
+	static const wchar_t* profile16 = L"SOFTWARE\\Microsoft\\Office\\16.0\\Outlook\\Profiles";
 	void RegistryDialog::EnumRegistry()
 	{
-		//EnumAccounts(L"Mail", &CLSID_OlkMail);
-		//EnumAccounts(L"Address Book", &CLSID_OlkAddressBook);
-		//EnumAccounts(L"Store", &CLSID_OlkStore);
+		AddProfileRoot(L"WMS", profileWMS);
+		AddProfileRoot(L"15", profile15);
+		AddProfileRoot(L"16", profile16);
+	}
+
+	void RegistryDialog::AddProfileRoot(const std::wstring& szName, const std::wstring& szRoot)
+	{
+		HKEY hRootKey = nullptr;
+		auto hRes = WC_W32(RegOpenKeyExW(HKEY_CURRENT_USER, szRoot.c_str(), NULL, KEY_READ, &hRootKey));
+
+		if (SUCCEEDED(hRes))
+		{
+			const auto rootNode = m_lpRegKeyTree.AddChildNode(szName.c_str(), TVI_ROOT, hRootKey, nullptr);
+			AddChildren(rootNode, hRootKey);
+		}
+	}
+
+	void RegistryDialog::AddChildren(const HTREEITEM hParent, const HKEY hRootKey)
+	{
+		auto cchMaxSubKeyLen = DWORD{}; // Param in RegQueryInfoKeyW is misnamed
+		auto cSubKeys = DWORD{};
+		auto hRes = WC_W32(RegQueryInfoKeyW(
+			hRootKey,
+			nullptr, // lpClass
+			nullptr, // lpcchClass
+			nullptr, // lpReserved
+			&cSubKeys, // lpcSubKeys
+			&cchMaxSubKeyLen, // lpcbMaxSubKeyLen
+			nullptr, // lpcbMaxClassLen
+			nullptr, // lpcValues
+			nullptr, // lpcbMaxValueNameLen
+			nullptr, // lpcbMaxValueLen
+			nullptr, // lpcbSecurityDescriptor
+			nullptr)); // lpftLastWriteTime
+
+		if (cSubKeys && cchMaxSubKeyLen)
+		{
+			cchMaxSubKeyLen++; // For null terminator
+			auto szBuf = std::wstring(cchMaxSubKeyLen, '\0');
+			for (DWORD dwIndex = 0; dwIndex < cSubKeys; dwIndex++)
+			{
+				szBuf.clear();
+				hRes = WC_W32(RegEnumKeyW(hRootKey, dwIndex, const_cast<wchar_t*>(szBuf.c_str()), cchMaxSubKeyLen));
+				if (hRes == S_OK)
+				{
+					HKEY hSubKey = nullptr;
+					hRes = WC_W32(RegOpenKeyExW(hRootKey, szBuf.c_str(), NULL, KEY_READ, &hSubKey));
+					const auto node = m_lpRegKeyTree.AddChildNode(szBuf.c_str(), hParent, hSubKey, nullptr);
+					AddChildren(node, hSubKey);
+				}
+			}
+		}
 	}
 
 	BEGIN_MESSAGE_MAP(RegistryDialog, CBaseDialog)

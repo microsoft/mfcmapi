@@ -16,8 +16,10 @@ namespace dialog
 		BOOL OnInitDialog() override;
 
 	private:
-		controls::StyleTreeCtrl m_lpRegKeyList{};
+		controls::StyleTreeCtrl m_lpRegKeyTree{};
 
+		void AddProfileRoot(const std::wstring& szName, const std::wstring& szRoot);
+		void AddChildren(const HTREEITEM hParent, const HKEY hRootKey);
 		void EnumRegistry();
 		DECLARE_MESSAGE_MAP()
 	};
