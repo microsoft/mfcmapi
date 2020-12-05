@@ -48,7 +48,7 @@ namespace dialog
 
 		UpdateTitleBarText();
 
-		EC_H_S(m_lpPropDisplay->SetDataSource(m_lpMessage, NULL, false));
+		m_lpPropDisplay->SetDataSource(m_lpMessage, NULL, false);
 
 		return bRet;
 	}

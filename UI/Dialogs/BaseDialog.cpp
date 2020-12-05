@@ -414,7 +414,7 @@ namespace dialog
 
 		if (!bResetColumns && bNeedPropRefresh)
 		{
-			if (m_lpPropDisplay) WC_H_S(m_lpPropDisplay->RefreshMAPIPropList());
+			if (m_lpPropDisplay) m_lpPropDisplay->RefreshMAPIPropList();
 		}
 	}
 
@@ -462,7 +462,7 @@ namespace dialog
 
 		if (m_lpPropDisplay)
 		{
-			WC_H_S(m_lpPropDisplay->SetDataSource(lpMAPIProp, lpListData, m_bIsAB));
+			m_lpPropDisplay->SetDataSource(lpMAPIProp, lpListData, m_bIsAB);
 		}
 	}
 

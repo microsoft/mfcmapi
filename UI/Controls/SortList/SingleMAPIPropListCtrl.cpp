@@ -324,20 +324,19 @@ namespace controls::sortlistctrl
 	// Call GetProps with NULL to get a list of (almost) all properties.
 	// Parse this list and render them in the control.
 	// Add any extra props we've asked for through the UI
-	_Check_return_ HRESULT CSingleMAPIPropListCtrl::LoadMAPIPropList()
+	void CSingleMAPIPropListCtrl::LoadMAPIPropList()
 	{
-		auto hRes = S_OK;
 		ULONG ulCurListBoxRow = 0;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 		ULONG ulProps = 0;
 		LPSPropValue lpPropsToAdd = nullptr;
 		LPSPropValue lpMappingSig = nullptr;
 
-		if (!m_lpPropBag) return MAPI_E_INVALID_PARAMETER;
+		if (!m_lpPropBag) return;
 
 		if (!registry::onlyAdditionalProperties)
 		{
-			hRes = WC_H(m_lpPropBag->GetAllProps(&ulProps, &lpPropsToAdd));
+			WC_H_S(m_lpPropBag->GetAllProps(&ulProps, &lpPropsToAdd));
 
 			// If this is an AB object, make sure we interpret it as such
 			if (IsABPropSet(ulProps, lpPropsToAdd))
@@ -480,7 +479,8 @@ namespace controls::sortlistctrl
 
 				// Let's add some extra properties
 				// Don't need to report since we're gonna put show the error in the UI
-				WC_H_S(m_lpPropBag->GetProps(&pNewTag, fMapiUnicode, &cExtraProps, &pExtraProps));
+				const auto hRes = WC_H(
+					m_lpPropBag->GetProps(&pNewTag, fMapiUnicode, &cExtraProps, &pExtraProps)); // TODO: Use GetProp
 
 				if (pExtraProps)
 				{
@@ -527,12 +527,9 @@ namespace controls::sortlistctrl
 			output::dbgLevel::Generic, CLASS, L"LoadMAPIPropList", L"added %u properties\n", ulCurListBoxRow);
 
 		SortClickedColumn();
-
-		// Don't report any errors from here - don't care at this point
-		return S_OK;
 	}
 
-	_Check_return_ HRESULT CSingleMAPIPropListCtrl::RefreshMAPIPropList()
+	void CSingleMAPIPropListCtrl::RefreshMAPIPropList()
 	{
 		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"RefreshMAPIPropList", L"\n");
 
@@ -542,11 +539,11 @@ namespace controls::sortlistctrl
 
 		const auto iSelectedItem = GetNextSelectedItem(MyPos);
 
-		auto hRes = EC_B(DeleteAllItems());
+		EC_B_S(DeleteAllItems());
 
-		if (SUCCEEDED(hRes) && m_lpPropBag)
+		if (m_lpPropBag)
 		{
-			hRes = EC_H(LoadMAPIPropList());
+			LoadMAPIPropList();
 		}
 
 		SetItemState(iSelectedItem, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);
@@ -557,8 +554,6 @@ namespace controls::sortlistctrl
 		MySetRedraw(true);
 
 		if (m_lpHostDlg) m_lpHostDlg->UpdateStatusBarText(statusPane::data2, IDS_STATUSTEXTNUMPROPS, GetItemCount());
-
-		return hRes;
 	}
 
 	void CSingleMAPIPropListCtrl::AddPropToExtraProps(ULONG ulPropTag, bool bRefresh)
@@ -586,7 +581,7 @@ namespace controls::sortlistctrl
 
 		if (bRefresh)
 		{
-			WC_H_S(RefreshMAPIPropList());
+			RefreshMAPIPropList();
 		}
 	}
 
@@ -711,7 +706,7 @@ namespace controls::sortlistctrl
 		return propertybag::propBagFlags::Modified == (m_lpPropBag->GetFlags() & propertybag::propBagFlags::Modified);
 	}
 
-	_Check_return_ HRESULT CSingleMAPIPropListCtrl::SetDataSource(
+	void CSingleMAPIPropListCtrl::SetDataSource(
 		_In_opt_ LPMAPIPROP lpMAPIProp,
 		_In_opt_ sortlistdata::sortListData* lpListData,
 		bool bIsAB)
@@ -734,7 +729,7 @@ namespace controls::sortlistctrl
 	// Load a new list from the IMAPIProp or lpSourceProps object passed in
 	// Most calls to this will come through CBaseDialog::OnUpdateSingleMAPIPropListCtrl, which will preserve the current bIsAB
 	// Exceptions will be where we need to set a specific bIsAB
-	_Check_return_ HRESULT
+	void
 	CSingleMAPIPropListCtrl::SetDataSource(const std::shared_ptr<propertybag::IMAPIPropertyBag> lpPropBag, bool bIsAB)
 	{
 		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"SetDataSource", L"setting new data source\n");
@@ -742,7 +737,7 @@ namespace controls::sortlistctrl
 		// if nothing to do...do nothing
 		if (lpPropBag && lpPropBag->IsEqual(m_lpPropBag))
 		{
-			return S_OK;
+			return;
 		}
 
 		m_lpPropBag = lpPropBag;
@@ -751,10 +746,10 @@ namespace controls::sortlistctrl
 		// Turn off redraw while we work on the window
 		MySetRedraw(false);
 
-		const auto hRes = WC_H(RefreshMAPIPropList());
+		RefreshMAPIPropList();
 
 		// Reset our header widths if weren't showing anything before and are now
-		if (hRes == S_OK && !m_bHaveEverDisplayedSomething && m_lpPropBag && GetItemCount())
+		if (!m_bHaveEverDisplayedSomething && m_lpPropBag && GetItemCount())
 		{
 			m_bHaveEverDisplayedSomething = true;
 
@@ -776,7 +771,6 @@ namespace controls::sortlistctrl
 
 		// Turn redraw back on to update our view
 		MySetRedraw(true);
-		return hRes;
 	}
 
 	std::wstring binPropToXML(UINT uidTag, const std::wstring str, int iIndent)
@@ -972,7 +966,7 @@ namespace controls::sortlistctrl
 			}
 			else if (VK_F5 == nChar)
 			{
-				WC_H_S(RefreshMAPIPropList());
+				RefreshMAPIPropList();
 			}
 			else if (VK_RETURN == nChar)
 			{
@@ -1023,7 +1017,7 @@ namespace controls::sortlistctrl
 			}
 
 			// Refresh the display
-			WC_H_S(RefreshMAPIPropList());
+			RefreshMAPIPropList();
 		}
 	}
 
@@ -1098,7 +1092,7 @@ namespace controls::sortlistctrl
 			if (SUCCEEDED(hRes))
 			{
 				// Refresh the display
-				WC_H_S(RefreshMAPIPropList());
+				RefreshMAPIPropList();
 			}
 		}
 	}
@@ -1171,7 +1165,7 @@ namespace controls::sortlistctrl
 
 				ResProp.Value.lpszA = reinterpret_cast<LPSTR>(lpModRes);
 
-				auto hRes = EC_H(lpPropBag->SetProp(&ResProp));
+				const auto hRes = EC_H(lpPropBag->SetProp(&ResProp));
 
 				// Remember, we had no alloc parent - this is safe to free
 				MAPIFreeBuffer(lpModRes);
@@ -1179,7 +1173,7 @@ namespace controls::sortlistctrl
 				if (SUCCEEDED(hRes))
 				{
 					// refresh
-					hRes = WC_H(RefreshMAPIPropList());
+					RefreshMAPIPropList();
 				}
 			}
 		}
@@ -1254,7 +1248,7 @@ namespace controls::sortlistctrl
 
 			if (MyEditor.DisplayDialog())
 			{
-				WC_H_S(RefreshMAPIPropList());
+				RefreshMAPIPropList();
 			}
 		}
 		else
@@ -1272,7 +1266,7 @@ namespace controls::sortlistctrl
 					EC_H_S(lpPropBag->SetProp(lpModProp));
 				}
 
-				WC_H_S(RefreshMAPIPropList());
+				RefreshMAPIPropList();
 				MAPIFreeBuffer(lpModProp);
 			}
 		}
@@ -1364,7 +1358,7 @@ namespace controls::sortlistctrl
 
 		if (MyEditor.DisplayDialog())
 		{
-			WC_H_S(RefreshMAPIPropList());
+			RefreshMAPIPropList();
 		}
 	}
 
@@ -1469,7 +1463,7 @@ namespace controls::sortlistctrl
 			if (SUCCEEDED(hRes))
 			{
 				// refresh
-				WC_H_S(RefreshMAPIPropList());
+				RefreshMAPIPropList();
 			}
 		}
 
@@ -1491,7 +1485,7 @@ namespace controls::sortlistctrl
 			EC_H_S(m_lpPropBag->Commit());
 
 			// refresh
-			WC_H_S(RefreshMAPIPropList());
+			RefreshMAPIPropList();
 		}
 
 		lpSourcePropObj->Release();
@@ -1579,7 +1573,7 @@ namespace controls::sortlistctrl
 			m_sptExtraProps = lpNewTagArray;
 		}
 
-		WC_H_S(RefreshMAPIPropList());
+		RefreshMAPIPropList();
 	}
 
 	void CSingleMAPIPropListCtrl::OnEditGivenProperty()
@@ -1687,7 +1681,7 @@ namespace controls::sortlistctrl
 
 				if (SUCCEEDED(hRes))
 				{
-					WC_H_S(RefreshMAPIPropList());
+					RefreshMAPIPropList();
 				}
 
 				lpSource->Release();

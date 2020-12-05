@@ -25,11 +25,9 @@ namespace controls::sortlistctrl
 		~CSingleMAPIPropListCtrl();
 
 		// Initialization
-		_Check_return_ HRESULT
-		SetDataSource(_In_opt_ LPMAPIPROP lpMAPIProp, _In_opt_ sortlistdata::sortListData* lpListData, bool bIsAB);
-		_Check_return_ HRESULT
-		SetDataSource(const std::shared_ptr<propertybag::IMAPIPropertyBag> lpPropBag, bool bIsAB);
-		_Check_return_ HRESULT RefreshMAPIPropList();
+		void SetDataSource(_In_opt_ LPMAPIPROP lpMAPIProp, _In_opt_ sortlistdata::sortListData* lpListData, bool bIsAB);
+		void SetDataSource(const std::shared_ptr<propertybag::IMAPIPropertyBag> lpPropBag, bool bIsAB);
+		void RefreshMAPIPropList();
 
 		// Selected item accessors
 		_Check_return_ HRESULT GetDisplayedProps(ULONG FAR* lpcValues, LPSPropValue FAR* lppPropArray) const;
@@ -47,7 +45,7 @@ namespace controls::sortlistctrl
 		void AddPropsToExtraProps(_In_ LPSPropTagArray lpPropsToAdd, bool bRefresh);
 		void FindAllNamedProps();
 		void CountNamedProps();
-		_Check_return_ HRESULT LoadMAPIPropList();
+		void LoadMAPIPropList();
 
 		void AddPropToListBox(
 			int iRow,
