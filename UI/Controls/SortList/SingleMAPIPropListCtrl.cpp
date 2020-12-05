@@ -177,7 +177,6 @@ namespace controls::sortlistctrl
 
 			pMenu->EnableMenuItem(ID_COPY_PROPERTY, DIM(bHasSource));
 
-			pMenu->EnableMenuItem(ID_DELETEPROPERTY, DIM(bHasSource && bPropSelected));
 			pMenu->EnableMenuItem(
 				ID_DISPLAYPROPERTYASSECURITYDESCRIPTORPROPSHEET,
 				DIM(bHasSource && bPropSelected && import::pfnEditSecurity));
@@ -205,10 +204,9 @@ namespace controls::sortlistctrl
 				}
 			}
 
-			if (!m_lpPropBag || m_lpPropBag->GetType() == propertybag::propBagType::Row)
-			{
-				pMenu->EnableMenuItem(ID_DELETEPROPERTY, DIM(false));
-			}
+			const bool bCanDelete =
+				bPropSelected && m_lpPropBag && m_lpPropBag->GetType() != propertybag::propBagType::Row;
+			pMenu->EnableMenuItem(ID_DELETEPROPERTY, DIM(bCanDelete));
 		}
 	}
 
