@@ -80,6 +80,13 @@ namespace propertybag
 					prop->ulPropTag = PROP_TAG(PT_UNICODE, dwIndex);
 					const auto szVal = strings::format(L"%ws", szBuf.c_str());
 					prop->Value.lpszW = mapi::CopyStringW(szVal.c_str(), *lppPropArray);
+
+					// TODO: Identify prop tags in the value name
+					// Use type from tag to determine how to read data
+					// Also use lpType
+					// Convert data read to a MAPI prop Value
+					// Figure out way to deal with S props
+					// Figure out way to deal with named props
 				}
 			}
 		}
