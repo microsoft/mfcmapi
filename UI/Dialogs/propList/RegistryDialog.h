@@ -18,7 +18,6 @@ namespace dialog
 	private:
 		controls::StyleTreeCtrl m_lpRegKeyList{};
 
-		void EnumAccounts(const std::wstring& szCat, const CLSID* pclsidCategory);
 		void EnumRegistry();
 		DECLARE_MESSAGE_MAP()
 	};

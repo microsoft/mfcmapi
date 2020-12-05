@@ -5,6 +5,7 @@
 //#include <core/utility/strings.h>
 #include <core/mapi/mapiFunctions.h>
 #include <core/utility/output.h>
+#include <core/propertyBag/registryPropertyBag.h>
 
 namespace dialog
 {
@@ -23,10 +24,6 @@ namespace dialog
 
 	RegistryDialog::~RegistryDialog() { TRACE_DESTRUCTOR(CLASS); }
 
-	//void RegistryDialog::InitAccountManager()
-	//{
-	//}
-
 	BOOL RegistryDialog::OnInitDialog()
 	{
 		const auto bRet = CBaseDialog::OnInitDialog();
@@ -43,7 +40,7 @@ namespace dialog
 			m_lpRegKeyList.ItemSelectedCallback = [&](auto /*hItem*/) {
 				//auto lpAccount = reinterpret_cast<LPOLKACCOUNT>(m_lpRegKeyList.GetItemData(hItem));
 				//EC_H_S(m_lpPropDisplay->SetDataSource(
-				//	std::make_shared<propertybag::accountPropertyBag>(m_lpwszProfile, lpAccount), false));
+				//	std::make_shared<propertybag::registryPropertyBag>(m_lpwszProfile, lpAccount), false));
 			};
 
 			EnumRegistry();

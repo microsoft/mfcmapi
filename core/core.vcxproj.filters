@@ -327,6 +327,9 @@
     <ClInclude Include="propertyBag\accountPropertyBag.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="propertyBag\registryPropertyBag.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="utility\strings.cpp">
@@ -570,6 +573,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="propertyBag\accountPropertyBag.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="propertyBag\registryPropertyBag.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
