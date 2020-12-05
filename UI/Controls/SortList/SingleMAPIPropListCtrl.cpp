@@ -160,10 +160,9 @@ namespace controls::sortlistctrl
 	{
 		if (pMenu)
 		{
-			ULONG ulPropTag = NULL;
 			const auto bHasSource = m_lpPropBag != nullptr;
 
-			GetSelectedPropTag(&ulPropTag);
+			const auto ulPropTag = GetSelectedPropTag();
 			const auto bPropSelected = NULL != ulPropTag;
 
 			const auto ulStatus = cache::CGlobalCache::getInstance().GetBufferStatus();
@@ -278,10 +277,8 @@ namespace controls::sortlistctrl
 		return HandleAddInMenu(wMenuSelect);
 	}
 
-	void CSingleMAPIPropListCtrl::GetSelectedPropTag(_Out_ ULONG* lpPropTag) const
+	ULONG CSingleMAPIPropListCtrl::GetSelectedPropTag() const
 	{
-		if (lpPropTag) *lpPropTag = NULL;
-
 		const auto iItem = GetNextItem(-1, LVNI_FOCUSED | LVNI_SELECTED);
 
 		if (-1 != iItem)
@@ -290,18 +287,20 @@ namespace controls::sortlistctrl
 			if (lpListData)
 			{
 				const auto prop = lpListData->cast<sortlistdata::propListData>();
-				if (prop && lpPropTag)
+				if (prop)
 				{
-					*lpPropTag = prop->m_ulPropTag;
+					output::DebugPrintEx(
+						output::dbgLevel::Generic,
+						CLASS,
+						L"GetSelectedPropTag",
+						L"returning lpPropTag = 0x%X\n",
+						prop->m_ulPropTag);
+					return prop->m_ulPropTag;
 				}
 			}
 		}
 
-		if (lpPropTag)
-		{
-			output::DebugPrintEx(
-				output::dbgLevel::Generic, CLASS, L"GetSelectedPropTag", L"returning lpPropTag = 0x%X\n", *lpPropTag);
-		}
+		return 0;
 	}
 
 	bool IsABPropSet(ULONG ulProps, LPSPropValue lpProps) noexcept
@@ -1082,12 +1081,10 @@ namespace controls::sortlistctrl
 	// Delete the selected property
 	void CSingleMAPIPropListCtrl::OnDeleteProperty()
 	{
-		ULONG ulPropTag = NULL;
-
 		if (!m_lpPropBag || m_lpPropBag->GetType() == propertybag::propBagType::Row) return;
 		auto lpPropBag = m_lpPropBag; // Hold the prop bag so it doesn't get deleted under us
 
-		GetSelectedPropTag(&ulPropTag);
+		const ULONG ulPropTag = GetSelectedPropTag();
 		if (!ulPropTag) return;
 
 		dialog::editor::CEditor Query(
@@ -1111,8 +1108,7 @@ namespace controls::sortlistctrl
 	{
 		if (!m_lpPropBag || !import::pfnEditSecurity) return;
 
-		ULONG ulPropTag = NULL;
-		GetSelectedPropTag(&ulPropTag);
+		const auto ulPropTag = GetSelectedPropTag();
 		if (!ulPropTag) return;
 
 		output::DebugPrintEx(
@@ -1129,14 +1125,8 @@ namespace controls::sortlistctrl
 
 	void CSingleMAPIPropListCtrl::OnEditProp()
 	{
-		ULONG ulPropTag = NULL;
-
 		if (!m_lpPropBag) return;
-
-		GetSelectedPropTag(&ulPropTag);
-		if (!ulPropTag) return;
-
-		OnEditGivenProp(ulPropTag);
+		OnEditGivenProp(GetSelectedPropTag());
 	}
 
 	void CSingleMAPIPropListCtrl::OnEditPropAsRestriction(ULONG ulPropTag)
@@ -1293,12 +1283,10 @@ namespace controls::sortlistctrl
 	// Display the selected property as a stream using CStreamEditor
 	void CSingleMAPIPropListCtrl::OnEditPropAsStream(ULONG ulType, bool bEditAsRTF)
 	{
-		ULONG ulPropTag = NULL;
-
 		if (!m_lpPropBag) return;
 		auto lpPropBag = m_lpPropBag; // Hold the prop bag so it doesn't get deleted under us
 
-		GetSelectedPropTag(&ulPropTag);
+		auto ulPropTag = GetSelectedPropTag();
 		if (!ulPropTag) return;
 
 		// Explicit check since TagToString is expensive
@@ -1384,11 +1372,7 @@ namespace controls::sortlistctrl
 	{
 		// for now, we only copy from objects - copying from rows would be difficult to generalize
 		if (!m_lpPropBag) return;
-
-		ULONG ulPropTag = NULL;
-		GetSelectedPropTag(&ulPropTag);
-
-		cache::CGlobalCache::getInstance().SetPropertyToCopy(ulPropTag, m_lpPropBag->GetMAPIProp());
+		cache::CGlobalCache::getInstance().SetPropertyToCopy(GetSelectedPropTag(), m_lpPropBag->GetMAPIProp());
 	}
 
 	void CSingleMAPIPropListCtrl::OnPasteProperty()
@@ -1516,11 +1500,10 @@ namespace controls::sortlistctrl
 	void CSingleMAPIPropListCtrl::OnOpenProperty() const
 	{
 		auto hRes = S_OK;
-		ULONG ulPropTag = NULL;
 
 		if (!m_lpHostDlg) return;
 
-		GetSelectedPropTag(&ulPropTag);
+		const auto ulPropTag = GetSelectedPropTag();
 		if (!ulPropTag) return;
 
 		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"OnOpenProperty", L"asked to open 0x%X\n", ulPropTag);
@@ -1740,7 +1723,7 @@ namespace controls::sortlistctrl
 			MyAddInMenuParams.ulCurrentFlags |= MENU_FLAGS_ROW;
 		}
 
-		GetSelectedPropTag(&MyAddInMenuParams.ulPropTag);
+		MyAddInMenuParams.ulPropTag = GetSelectedPropTag();
 
 		ui::addinui::InvokeAddInMenu(&MyAddInMenuParams);
 		return true;

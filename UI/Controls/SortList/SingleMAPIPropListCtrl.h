@@ -33,7 +33,7 @@ namespace controls::sortlistctrl
 
 		// Selected item accessors
 		_Check_return_ HRESULT GetDisplayedProps(ULONG FAR* lpcValues, LPSPropValue FAR* lppPropArray) const;
-		void GetSelectedPropTag(_Out_ ULONG* lpPropTag) const;
+		ULONG GetSelectedPropTag() const;
 		_Check_return_ bool IsModifiedPropVals() const;
 
 		_Check_return_ bool HandleMenu(WORD wMenuSelect);
