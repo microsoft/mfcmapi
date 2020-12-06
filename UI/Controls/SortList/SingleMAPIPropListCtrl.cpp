@@ -443,55 +443,47 @@ namespace controls::sortlistctrl
 		// Now check if the user has given us any other properties to add and get them one at a time
 		if (m_sptExtraProps)
 		{
-			// Let's get each extra property one at a time
-			ULONG cExtraProps = 0;
-			LPSPropValue pExtraProps = nullptr;
-			SPropValue extraPropForList = {};
-
 			for (ULONG iCurExtraProp = 0; iCurExtraProp < m_sptExtraProps->cValues; iCurExtraProp++)
 			{
-				SPropTagArray pNewTag = {1, mapi::getTag(m_sptExtraProps, iCurExtraProp)};
+				// Let's get each extra property one at a time
+				LPSPropValue pExtraProp = nullptr;
+				SPropValue extraPropForList = {};
+				auto ulPropTag = mapi::getTag(m_sptExtraProps, iCurExtraProp);
 
 				// Let's add some extra properties
 				// Don't need to report since we're gonna put show the error in the UI
-				const auto hRes = WC_H(
-					m_lpPropBag->GetProps(&pNewTag, fMapiUnicode, &cExtraProps, &pExtraProps)); // TODO: Use GetProp
+				const auto hRes = WC_H(m_lpPropBag->GetProp(ulPropTag, &pExtraProp));
 
-				if (pExtraProps)
+				if (pExtraProp)
 				{
-					extraPropForList.dwAlignPad = pExtraProps[0].dwAlignPad;
-
-					if (PROP_TYPE(mapi::getTag(pNewTag, 0)) == NULL)
+					if (PROP_TYPE(ulPropTag) == NULL)
 					{
 						// In this case, we started with a NULL tag, but we got a property back - let's 'fix' our tag for the UI
-						mapi::setTag(pNewTag, 0) =
-							CHANGE_PROP_TYPE(mapi::getTag(pNewTag, 0), PROP_TYPE(pExtraProps[0].ulPropTag));
+						ulPropTag = CHANGE_PROP_TYPE(ulPropTag, PROP_TYPE(pExtraProp->ulPropTag));
 					}
 
 					// We want to give our parser the tag that came back from GetProps
-					extraPropForList.ulPropTag = pExtraProps[0].ulPropTag;
-
-					extraPropForList.Value = pExtraProps[0].Value;
+					extraPropForList.ulPropTag = ulPropTag;
+					extraPropForList.Value = pExtraProp->Value;
 				}
 				else
 				{
-					extraPropForList.dwAlignPad = NULL;
-					extraPropForList.ulPropTag = CHANGE_PROP_TYPE(mapi::getTag(pNewTag, 0), PT_ERROR);
+					extraPropForList.ulPropTag = CHANGE_PROP_TYPE(ulPropTag, PT_ERROR);
 					extraPropForList.Value.err = hRes;
 				}
 
 				// Add the property to the list
 				AddPropToListBox(
 					ulCurListBoxRow,
-					mapi::getTag(pNewTag, 0), // Tag to use in the UI
+					ulPropTag, // Tag to use in the UI
 					nullptr, // Let AddPropToListBox look up any named prop information it needs
 					lpMappingSig ? &mapi::getBin(lpMappingSig) : nullptr,
 					&extraPropForList); // Tag + Value to parse - may differ in case of errors or NULL type.
 
 				ulCurListBoxRow++;
 
-				MAPIFreeBuffer(pExtraProps);
-				pExtraProps = nullptr;
+				MAPIFreeBuffer(pExtraProp);
+				pExtraProp = nullptr;
 			}
 		}
 
