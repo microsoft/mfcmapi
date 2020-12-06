@@ -90,17 +90,6 @@ namespace propertybag
 		return hRes;
 	}
 
-	_Check_return_ HRESULT mapiPropPropertyBag::GetProps(
-		LPSPropTagArray lpPropTagArray,
-		ULONG ulFlags,
-		ULONG FAR* lpcValues,
-		LPSPropValue FAR* lppPropArray)
-	{
-		if (nullptr == m_lpProp) return S_OK;
-
-		return WC_H(m_lpProp->GetProps(lpPropTagArray, ulFlags, lpcValues, lppPropArray));
-	}
-
 	_Check_return_ HRESULT mapiPropPropertyBag::GetProp(ULONG ulPropTag, LPSPropValue FAR* lppProp)
 	{
 		if (nullptr == m_lpProp) return S_OK;

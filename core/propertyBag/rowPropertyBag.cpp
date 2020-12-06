@@ -52,17 +52,6 @@ namespace propertybag
 		return S_OK;
 	}
 
-	_Check_return_ HRESULT rowPropertyBag::GetProps(
-		LPSPropTagArray /*lpPropTagArray*/,
-		ULONG /*ulFlags*/,
-		ULONG FAR* /*lpcValues*/,
-		LPSPropValue FAR* /*lppPropArray*/)
-	{
-		// This is only called from the Extra Props code. We can't support Extra Props from a row
-		// so we don't need to implement this.
-		return E_NOTIMPL;
-	}
-
 	_Check_return_ HRESULT rowPropertyBag::GetProp(ULONG ulPropTag, LPSPropValue FAR* lppProp)
 	{
 		if (!lppProp) return MAPI_E_INVALID_PARAMETER;

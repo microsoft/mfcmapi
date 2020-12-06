@@ -21,11 +21,6 @@ namespace propertybag
 
 		_Check_return_ HRESULT Commit() override { return E_NOTIMPL; }
 		_Check_return_ HRESULT GetAllProps(ULONG FAR* lpcValues, LPSPropValue FAR* lppPropArray) override;
-		_Check_return_ HRESULT GetProps(
-			LPSPropTagArray lpPropTagArray,
-			ULONG ulFlags,
-			ULONG FAR* lpcValues,
-			LPSPropValue FAR* lppPropArray) override;
 		_Check_return_ HRESULT GetProp(ULONG ulPropTag, LPSPropValue FAR* lppProp) override;
 		// None of our GetProps allocate anything, so nothing to do here
 		void FreeBuffer(LPSPropValue) override { return; }

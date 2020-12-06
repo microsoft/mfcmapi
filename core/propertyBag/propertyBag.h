@@ -33,11 +33,6 @@ namespace propertybag
 		// TODO: Should Commit take flags?
 		virtual _Check_return_ HRESULT Commit() = 0;
 		virtual _Check_return_ HRESULT GetAllProps(ULONG FAR* lpcValues, LPSPropValue FAR* lppPropArray) = 0;
-		virtual _Check_return_ HRESULT GetProps(
-			LPSPropTagArray lpPropTagArray,
-			ULONG ulFlags,
-			ULONG FAR* lpcValues,
-			LPSPropValue FAR* lppPropArray) = 0;
 		virtual _Check_return_ HRESULT GetProp(ULONG ulPropTag, LPSPropValue FAR* lppProp) = 0;
 		virtual void FreeBuffer(LPSPropValue lpProp) = 0;
 		virtual _Check_return_ HRESULT SetProps(ULONG cValues, LPSPropValue lpPropArray) = 0;
