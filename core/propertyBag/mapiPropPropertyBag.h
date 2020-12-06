@@ -7,7 +7,7 @@ namespace propertybag
 	class mapiPropPropertyBag : public IMAPIPropertyBag
 	{
 	public:
-		mapiPropPropertyBag(LPMAPIPROP lpProp, sortlistdata::sortListData* lpListData);
+		mapiPropPropertyBag(LPMAPIPROP lpProp, sortlistdata::sortListData* lpListData, bool bIsAB);
 		~mapiPropPropertyBag();
 		mapiPropPropertyBag(const mapiPropPropertyBag&) = delete;
 		mapiPropPropertyBag& operator=(const mapiPropPropertyBag&) = delete;
@@ -36,5 +36,6 @@ namespace propertybag
 		sortlistdata::sortListData* m_lpListData{};
 		LPMAPIPROP m_lpProp{};
 		bool m_bGetPropsSucceeded{};
+		bool m_bIsAB{};
 	};
 } // namespace propertybag

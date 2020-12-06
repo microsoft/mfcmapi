@@ -7,6 +7,7 @@ namespace propertybag
 		None = 0x0000, // None
 		Modified = 0x0001, // The property bag has been modified
 		BackedByGetProps = 0x0002, // The property bag is rendering from a GetProps call
+		AB = 0x0004, // The property bag represents an Address Book object
 	};
 	DEFINE_ENUM_FLAG_OPERATORS(propBagFlags)
 
@@ -42,5 +43,6 @@ namespace propertybag
 		virtual _Check_return_ HRESULT SetProps(ULONG cValues, LPSPropValue lpPropArray) = 0;
 		virtual _Check_return_ HRESULT SetProp(LPSPropValue lpProp) = 0;
 		virtual _Check_return_ HRESULT DeleteProp(ULONG ulPropTag) = 0;
+		bool IsAB() { return (GetFlags() & propBagFlags::AB) == propBagFlags::AB; }
 	};
 } // namespace propertybag

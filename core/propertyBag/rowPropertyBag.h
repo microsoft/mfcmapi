@@ -7,7 +7,7 @@ namespace propertybag
 	class rowPropertyBag : public IMAPIPropertyBag
 	{
 	public:
-		rowPropertyBag(sortlistdata::sortListData* lpListData);
+		rowPropertyBag(sortlistdata::sortListData* lpListData, bool bIsAB);
 		virtual ~rowPropertyBag() = default;
 		rowPropertyBag(const rowPropertyBag&) = delete;
 		rowPropertyBag& operator=(const rowPropertyBag&) = delete;
@@ -41,5 +41,6 @@ namespace propertybag
 		ULONG m_cValues{};
 		LPSPropValue m_lpProps{};
 		bool m_bRowModified{};
+		bool m_bIsAB{};
 	};
 } // namespace propertybag

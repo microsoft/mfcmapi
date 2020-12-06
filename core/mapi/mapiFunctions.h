@@ -381,4 +381,7 @@ namespace mapi
 	}
 
 	std::wstring GetProfileName(LPMAPISESSION lpSession);
+
+	bool IsABObject(_In_opt_ LPMAPIPROP lpProp);
+	bool IsABObject(ULONG ulProps, LPSPropValue lpProps) noexcept;
 } // namespace mapi

@@ -20,13 +20,12 @@ namespace controls::sortlistctrl
 		CSingleMAPIPropListCtrl(
 			_In_ CWnd* pCreateParent,
 			_In_ dialog::CBaseDialog* lpHostDlg,
-			_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
-			bool bIsAB);
+			_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects);
 		~CSingleMAPIPropListCtrl();
 
 		// Initialization
 		void SetDataSource(_In_opt_ LPMAPIPROP lpMAPIProp, _In_opt_ sortlistdata::sortListData* lpListData, bool bIsAB);
-		void SetDataSource(const std::shared_ptr<propertybag::IMAPIPropertyBag> lpPropBag, bool bIsAB);
+		void SetDataSource(const std::shared_ptr<propertybag::IMAPIPropertyBag> lpPropBag);
 		void RefreshMAPIPropList();
 
 		// Selected item accessors
@@ -78,7 +77,6 @@ namespace controls::sortlistctrl
 
 		dialog::CBaseDialog* m_lpHostDlg{};
 		bool m_bHaveEverDisplayedSomething{};
-		bool m_bIsAB{};
 		std::shared_ptr<cache::CMapiObjects> m_lpMapiObjects{};
 
 		std::shared_ptr<propertybag::IMAPIPropertyBag> m_lpPropBag{};

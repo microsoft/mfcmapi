@@ -8,11 +8,12 @@
 
 namespace propertybag
 {
-	mapiPropPropertyBag::mapiPropPropertyBag(LPMAPIPROP lpProp, sortlistdata::sortListData* lpListData)
+	mapiPropPropertyBag::mapiPropPropertyBag(LPMAPIPROP lpProp, sortlistdata::sortListData* lpListData, bool bIsAB)
+		: m_lpProp(lpProp), m_lpListData(lpListData), m_bIsAB(bIsAB)
 	{
-		m_lpListData = lpListData;
-		m_lpProp = lpProp;
 		if (m_lpProp) m_lpProp->AddRef();
+
+		if (mapi::IsABObject(m_lpProp)) m_bIsAB = true;
 	}
 
 	mapiPropPropertyBag::~mapiPropPropertyBag()
@@ -23,6 +24,7 @@ namespace propertybag
 	propBagFlags mapiPropPropertyBag::GetFlags() const
 	{
 		auto ulFlags = propBagFlags::None;
+		if (m_bIsAB) ulFlags |= propBagFlags::AB;
 		if (m_bGetPropsSucceeded) ulFlags |= propBagFlags::BackedByGetProps;
 		return ulFlags;
 	}

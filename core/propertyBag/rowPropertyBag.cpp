@@ -5,19 +5,22 @@
 
 namespace propertybag
 {
-	rowPropertyBag::rowPropertyBag(sortlistdata::sortListData* lpListData)
+	rowPropertyBag::rowPropertyBag(sortlistdata::sortListData* lpListData, bool bIsAB)
+		: m_lpListData(lpListData), m_bIsAB(bIsAB)
 	{
-		m_lpListData = lpListData;
 		if (lpListData)
 		{
 			m_cValues = lpListData->cSourceProps;
 			m_lpProps = lpListData->lpSourceProps;
 		}
+
+		if (mapi::IsABObject(m_cValues, m_lpProps)) m_bIsAB = true;
 	}
 
 	propBagFlags rowPropertyBag::GetFlags() const
 	{
 		auto ulFlags = propBagFlags::None;
+		if (m_bIsAB) ulFlags |= propBagFlags::AB;
 		if (m_bRowModified) ulFlags |= propBagFlags::Modified;
 		return ulFlags;
 	}

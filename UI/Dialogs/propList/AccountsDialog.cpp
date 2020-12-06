@@ -84,7 +84,7 @@ namespace dialog
 			m_lpAccountsList.ItemSelectedCallback = [&](auto hItem) {
 				auto lpAccount = reinterpret_cast<LPOLKACCOUNT>(m_lpAccountsList.GetItemData(hItem));
 				m_lpPropDisplay->SetDataSource(
-					std::make_shared<propertybag::accountPropertyBag>(m_lpwszProfile, lpAccount), false);
+					std::make_shared<propertybag::accountPropertyBag>(m_lpwszProfile, lpAccount));
 			};
 
 			EnumCategories();
