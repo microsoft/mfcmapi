@@ -21,7 +21,7 @@ namespace propertybag
 
 		_Check_return_ HRESULT Commit() override;
 		_Check_return_ HRESULT GetAllProps(ULONG FAR* lpcValues, LPSPropValue FAR* lppPropArray) override;
-		_Check_return_ HRESULT GetProp(ULONG ulPropTag, LPSPropValue FAR* lppProp) override;
+		_Check_return_ LPSPropValue GetOneProp(ULONG ulPropTag) override;
 		void FreeBuffer(LPSPropValue lpProp) override;
 		_Check_return_ HRESULT SetProps(ULONG cValues, LPSPropValue lpPropArray) override;
 		_Check_return_ HRESULT SetProp(LPSPropValue lpProp) override;

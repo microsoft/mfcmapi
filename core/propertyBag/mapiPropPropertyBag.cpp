@@ -5,6 +5,7 @@
 #include <core/utility/output.h>
 #include <core/mapi/mapiFunctions.h>
 #include <core/utility/error.h>
+#include <core/mapi/mapiMemory.h>
 
 namespace propertybag
 {
@@ -90,11 +91,11 @@ namespace propertybag
 		return hRes;
 	}
 
-	_Check_return_ HRESULT mapiPropPropertyBag::GetProp(ULONG ulPropTag, LPSPropValue FAR* lppProp)
+	// Always returns a propval, even in errors, unless we fail allocating memory
+	_Check_return_ LPSPropValue mapiPropPropertyBag::GetOneProp(ULONG ulPropTag)
 	{
-		if (nullptr == m_lpProp) return S_OK;
-
-		auto hRes = WC_MAPI(mapi::HrGetOnePropEx(m_lpProp, ulPropTag, fMapiUnicode, lppProp));
+		auto lpPropRet = LPSPropValue{};
+		auto hRes = WC_MAPI(mapi::HrGetOnePropEx(m_lpProp, ulPropTag, fMapiUnicode, &lpPropRet));
 
 		// Special case for profile sections and row properties - we may have a property which was in our row that isn't available on the object
 		// In that case, we'll get MAPI_E_NOT_FOUND, but the property will be present in m_lpListData->lpSourceProps
@@ -105,11 +106,22 @@ namespace propertybag
 			const auto lpProp = PpropFindProp(m_lpListData->lpSourceProps, m_lpListData->cSourceProps, ulPropTag);
 			if (lpProp)
 			{
-				hRes = WC_MAPI(ScDupPropset(1, lpProp, MAPIAllocateBuffer, lppProp));
+				hRes = WC_MAPI(ScDupPropset(1, lpProp, MAPIAllocateBuffer, &lpPropRet));
 			}
 		}
 
-		return hRes;
+		// If we still don't have a prop, build an error prop
+		if (!lpPropRet)
+		{
+			lpPropRet = mapi::allocate<LPSPropValue>(sizeof(SPropValue));
+			if (lpPropRet)
+			{
+				lpPropRet->ulPropTag = CHANGE_PROP_TYPE(ulPropTag, PT_ERROR);
+				lpPropRet->Value.err = (hRes == S_OK) ? MAPI_E_NOT_FOUND : hRes;
+			}
+		}
+
+		return lpPropRet;
 	}
 
 	void mapiPropPropertyBag::FreeBuffer(LPSPropValue lpProp)

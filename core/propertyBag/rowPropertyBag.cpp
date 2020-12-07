@@ -52,12 +52,14 @@ namespace propertybag
 		return S_OK;
 	}
 
-	_Check_return_ HRESULT rowPropertyBag::GetProp(ULONG ulPropTag, LPSPropValue FAR* lppProp)
+	// Always returns a propval, even in errors
+	_Check_return_ LPSPropValue rowPropertyBag::GetOneProp(ULONG ulPropTag)
 	{
-		if (!lppProp) return MAPI_E_INVALID_PARAMETER;
-
-		*lppProp = PpropFindProp(m_lpProps, m_cValues, ulPropTag);
-		return S_OK;
+		const auto prop = PpropFindProp(m_lpProps, m_cValues, ulPropTag);
+		if (prop) return prop;
+		m_missingProp.ulPropTag = CHANGE_PROP_TYPE(ulPropTag, PT_ERROR);
+		m_missingProp.Value.err = MAPI_E_NOT_FOUND;
+		return &m_missingProp;
 	}
 
 	// Concatenate two property arrays without duplicates

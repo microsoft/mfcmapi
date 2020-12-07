@@ -446,13 +446,12 @@ namespace controls::sortlistctrl
 			for (ULONG iCurExtraProp = 0; iCurExtraProp < m_sptExtraProps->cValues; iCurExtraProp++)
 			{
 				// Let's get each extra property one at a time
-				LPSPropValue pExtraProp = nullptr;
 				SPropValue extraPropForList = {};
 				auto ulPropTag = mapi::getTag(m_sptExtraProps, iCurExtraProp);
 
 				// Let's add some extra properties
 				// Don't need to report since we're gonna put show the error in the UI
-				const auto hRes = WC_H(m_lpPropBag->GetProp(ulPropTag, &pExtraProp));
+				auto pExtraProp = m_lpPropBag->GetOneProp(ulPropTag);
 
 				if (pExtraProp)
 				{
@@ -469,7 +468,7 @@ namespace controls::sortlistctrl
 				else
 				{
 					extraPropForList.ulPropTag = CHANGE_PROP_TYPE(ulPropTag, PT_ERROR);
-					extraPropForList.Value.err = hRes;
+					extraPropForList.Value.err = MAPI_E_NOT_FOUND;
 				}
 
 				// Add the property to the list
@@ -1093,8 +1092,7 @@ namespace controls::sortlistctrl
 		if (!m_lpPropBag || !ulPropTag || PT_SRESTRICTION != PROP_TYPE(ulPropTag)) return;
 		auto lpPropBag = m_lpPropBag; // Hold the prop bag so it doesn't get deleted under us
 
-		LPSPropValue lpEditProp = nullptr;
-		WC_H_S(lpPropBag->GetProp(ulPropTag, &lpEditProp));
+		auto lpEditProp = lpPropBag->GetOneProp(ulPropTag);
 
 		LPSRestriction lpResIn = nullptr;
 		if (lpEditProp)
@@ -1190,7 +1188,7 @@ namespace controls::sortlistctrl
 		}
 		else
 		{
-			hRes = WC_H(lpPropBag->GetProp(ulPropTag, &lpEditProp));
+			lpEditProp = lpPropBag->GetOneProp(ulPropTag);
 		}
 
 		if (hRes == MAPI_E_NOT_ENOUGH_MEMORY) bUseStream = true;
@@ -1280,9 +1278,7 @@ namespace controls::sortlistctrl
 			if (MyPrompt.GetCheck(0))
 			{
 				bUseWrapEx = true;
-				LPSPropValue lpProp = nullptr;
-
-				WC_H_S(lpPropBag->GetProp(PR_INTERNET_CPID, &lpProp));
+				const auto lpProp = lpPropBag->GetOneProp(PR_INTERNET_CPID);
 				if (lpProp && PT_LONG == PROP_TYPE(lpProp[0].ulPropTag))
 				{
 					ulInCodePage = lpProp[0].Value.l;
@@ -1476,7 +1472,7 @@ namespace controls::sortlistctrl
 		auto lpPropBag = m_lpPropBag; // Hold the prop bag so it doesn't get deleted under us
 		if (lpPropBag)
 		{
-			hRes = EC_H(lpPropBag->GetProp(ulPropTag, &lpProp));
+			lpProp = lpPropBag->GetOneProp(ulPropTag);
 		}
 
 		if (SUCCEEDED(hRes) && lpProp)

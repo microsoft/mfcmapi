@@ -21,7 +21,7 @@ namespace propertybag
 
 		_Check_return_ HRESULT Commit() override { return E_NOTIMPL; }
 		_Check_return_ HRESULT GetAllProps(ULONG FAR* lpcValues, LPSPropValue FAR* lppPropArray) override;
-		_Check_return_ HRESULT GetProp(ULONG ulPropTag, LPSPropValue FAR* lppProp) override;
+		_Check_return_ LPSPropValue GetOneProp(ULONG ulPropTag) override;
 		// None of our GetProps allocate anything, so nothing to do here
 		void FreeBuffer(LPSPropValue) override { return; }
 		// TODO: This is for paste, something we don't yet support for rows
@@ -37,5 +37,7 @@ namespace propertybag
 		LPSPropValue m_lpProps{};
 		bool m_bRowModified{};
 		bool m_bIsAB{};
+		// For failure case in GetOneProp
+		SPropValue m_missingProp{};
 	};
 } // namespace propertybag

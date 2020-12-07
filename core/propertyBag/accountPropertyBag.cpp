@@ -126,24 +126,26 @@ namespace propertybag
 		return S_OK;
 	}
 
-	_Check_return_ HRESULT accountPropertyBag::GetProp(ULONG ulPropTag, LPSPropValue FAR* lppProp)
+	// Always returns a propval, even in errors, unless we fail allocating memory
+	_Check_return_ LPSPropValue accountPropertyBag::GetOneProp(ULONG ulPropTag)
 	{
-		if (!lppProp) return MAPI_E_INVALID_PARAMETER;
-
-		*lppProp = mapi::allocate<LPSPropValue>(sizeof(SPropValue));
-		auto pProp = ACCT_VARIANT{};
-		const auto hRes = WC_H(m_lpAccount->GetProp(ulPropTag, &pProp));
-		if (SUCCEEDED(hRes))
+		LPSPropValue lpPropVal = mapi::allocate<LPSPropValue>(sizeof(SPropValue));
+		if (lpPropVal)
 		{
-			(*lppProp)[0] = convertVarToMAPI(ulPropTag, pProp, *lppProp);
-		}
-		else
-		{
-			(*lppProp)->ulPropTag = CHANGE_PROP_TYPE(ulPropTag, PT_ERROR);
-			(*lppProp)->Value.err = hRes;
+			auto pProp = ACCT_VARIANT{};
+			const auto hRes = WC_H(m_lpAccount->GetProp(ulPropTag, &pProp));
+			if (SUCCEEDED(hRes))
+			{
+				*lpPropVal = convertVarToMAPI(ulPropTag, pProp, lpPropVal);
+			}
+			else
+			{
+				lpPropVal->ulPropTag = CHANGE_PROP_TYPE(ulPropTag, PT_ERROR);
+				lpPropVal->Value.err = hRes;
+			}
 		}
 
-		return S_OK;
+		return lpPropVal;
 	}
 
 	_Check_return_ HRESULT accountPropertyBag::SetProp(LPSPropValue lpProp, bool saveChanges)
