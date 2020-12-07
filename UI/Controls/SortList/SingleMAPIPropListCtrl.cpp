@@ -664,6 +664,7 @@ namespace controls::sortlistctrl
 	{
 		if (!m_lpPropBag) return MAPI_E_INVALID_PARAMETER;
 
+		// TODO: Chase down how this memory is tracked/freed
 		return m_lpPropBag->GetAllProps(lpcValues, lppPropArray);
 	}
 
