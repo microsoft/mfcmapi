@@ -1213,7 +1213,7 @@ namespace controls::sortlistctrl
 		}
 		else
 		{
-			if (lpEditProp) ulPropTag = lpEditProp->ulPropTag;
+			if (PROP_TYPE(ulPropTag) == PT_UNSPECIFIED && lpEditProp) ulPropTag = lpEditProp->ulPropTag;
 
 			const auto lpModProp = dialog::editor::DisplayPropertyEditor(
 				this, IDS_PROPEDITOR, lpPropBag->IsAB(), nullptr, lpSourceObj, ulPropTag, false, lpEditProp);
