@@ -29,7 +29,7 @@ namespace controls::sortlistctrl
 		void RefreshMAPIPropList();
 
 		// Selected item accessors
-		_Check_return_ HRESULT GetDisplayedProps(ULONG FAR* lpcValues, LPSPropValue FAR* lppPropArray) const;
+		const std::shared_ptr<propertybag::IMAPIPropertyBag> GetDataSource();
 		ULONG GetSelectedPropTag() const;
 		_Check_return_ bool IsModifiedPropVals() const;
 

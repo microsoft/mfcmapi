@@ -167,7 +167,8 @@ namespace dialog
 
 		ULONG cProps = 0;
 		LPSPropValue lpProps = nullptr;
-		EC_H_S(m_lpPropDisplay->GetDisplayedProps(&cProps, &lpProps));
+		const auto lpPropBag = m_lpPropDisplay->GetDataSource();
+		EC_H_S(lpPropBag->GetAllProps(&cProps, &lpProps));
 		if (lpProps)
 		{
 			ADRLIST adrList = {};
@@ -199,6 +200,7 @@ namespace dialog
 			}
 
 			MAPIFreeBuffer(adrList.aEntries[0].rgPropVals);
+			lpPropBag->FreeBuffer(lpProps);
 
 			OnRefreshView();
 		}
@@ -214,8 +216,8 @@ namespace dialog
 
 		ULONG cProps = 0;
 		LPSPropValue lpProps = nullptr;
-		auto hRes = EC_H(m_lpPropDisplay->GetDisplayedProps(&cProps, &lpProps));
-
+		const auto lpPropBag = m_lpPropDisplay->GetDataSource();
+		auto hRes = EC_H(lpPropBag->GetAllProps(&cProps, &lpProps));
 		if (lpProps)
 		{
 			auto lpAB = m_lpMapiObjects->GetAddrBook(true); // do not release
@@ -265,6 +267,8 @@ namespace dialog
 					OnRefreshView();
 				}
 			}
+
+			lpPropBag->FreeBuffer(lpProps);
 		}
 	}
 

@@ -659,15 +659,6 @@ namespace controls::sortlistctrl
 		if (!namePropNames.guid.empty()) SetItemText(iRow, columns::pcPROPNAMEDGUID, namePropNames.guid);
 	}
 
-	_Check_return_ HRESULT
-	CSingleMAPIPropListCtrl::GetDisplayedProps(ULONG FAR* lpcValues, LPSPropValue FAR* lppPropArray) const
-	{
-		if (!m_lpPropBag) return MAPI_E_INVALID_PARAMETER;
-
-		// TODO: Chase down how this memory is tracked/freed
-		return m_lpPropBag->GetAllProps(lpcValues, lppPropArray);
-	}
-
 	_Check_return_ bool CSingleMAPIPropListCtrl::IsModifiedPropVals() const
 	{
 		return propertybag::propBagFlags::Modified == (m_lpPropBag->GetFlags() & propertybag::propBagFlags::Modified);
@@ -736,6 +727,11 @@ namespace controls::sortlistctrl
 
 		// Turn redraw back on to update our view
 		MySetRedraw(true);
+	}
+
+	const std::shared_ptr<propertybag::IMAPIPropertyBag> CSingleMAPIPropListCtrl::GetDataSource()
+	{
+		return m_lpPropBag;
 	}
 
 	std::wstring binPropToXML(UINT uidTag, const std::wstring str, int iIndent)
