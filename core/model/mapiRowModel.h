@@ -22,6 +22,7 @@ namespace model
 	// and having smarts, like named prop mapping
 	// Some obvious ideas:
 	// Setting ulPropTag could set name/otherName
+	// should we hold address book status for prop lookup?
 	class mapiRowModel
 	{
 	public:
