@@ -307,12 +307,11 @@ namespace controls::sortlistctrl
 	// Add any extra props we've asked for through the UI
 	void CSingleMAPIPropListCtrl::LoadMAPIPropList()
 	{
+		if (!m_lpPropBag) return;
+
 		ULONG ulCurListBoxRow = 0;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 		LPSPropValue lpPropsToAdd = nullptr;
-		LPSPropValue lpMappingSig = nullptr;
-
-		if (!m_lpPropBag) return;
 
 		if (!registry::onlyAdditionalProperties)
 		{
@@ -344,7 +343,7 @@ namespace controls::sortlistctrl
 				// get each property in turn and add it to the list
 				for (const auto model : models)
 				{
-					AddPropToListBoxNew(ulCurListBoxRow, model);
+					AddPropToListBox(ulCurListBoxRow, model);
 					ulCurListBoxRow++;
 				}
 			}
@@ -355,44 +354,9 @@ namespace controls::sortlistctrl
 		{
 			for (ULONG iCurExtraProp = 0; iCurExtraProp < m_sptExtraProps->cValues; iCurExtraProp++)
 			{
-				// Let's get each extra property one at a time
-				SPropValue extraPropForList = {};
-				auto ulPropTag = mapi::getTag(m_sptExtraProps, iCurExtraProp);
-
-				// Let's add some extra properties
-				// Don't need to report since we're gonna put show the error in the UI
-				auto pExtraProp = m_lpPropBag->GetOneProp(ulPropTag);
-
-				if (pExtraProp)
-				{
-					if (PROP_TYPE(ulPropTag) == NULL)
-					{
-						// In this case, we started with a NULL tag, but we got a property back - let's 'fix' our tag for the UI
-						ulPropTag = CHANGE_PROP_TYPE(ulPropTag, PROP_TYPE(pExtraProp->ulPropTag));
-					}
-
-					// We want to give our parser the tag that came back from GetProps
-					extraPropForList.ulPropTag = ulPropTag;
-					extraPropForList.Value = pExtraProp->Value;
-				}
-				else
-				{
-					extraPropForList.ulPropTag = CHANGE_PROP_TYPE(ulPropTag, PT_ERROR);
-					extraPropForList.Value.err = MAPI_E_NOT_FOUND;
-				}
-
-				// Add the property to the list
-				AddPropToListBoxOld(
-					ulCurListBoxRow,
-					ulPropTag, // Tag to use in the UI
-					nullptr, // Let AddPropToListBox look up any named prop information it needs
-					lpMappingSig ? &mapi::getBin(lpMappingSig) : nullptr,
-					&extraPropForList); // Tag + Value to parse - may differ in case of errors or NULL type.
-
-				ulCurListBoxRow++;
-
-				MAPIFreeBuffer(pExtraProp);
-				pExtraProp = nullptr;
+				const auto ulPropTag = mapi::getTag(m_sptExtraProps, iCurExtraProp);
+				const auto pExtraProp = m_lpPropBag->GetOneModel(ulPropTag);
+				AddPropToListBox(ulCurListBoxRow++, pExtraProp);
 			}
 		}
 
@@ -495,82 +459,8 @@ namespace controls::sortlistctrl
 		{PT_ACTIONS, sortIcon::actions},
 	};
 
-	// Crack open the given SPropValue and render it to the given row in the list.
-	void CSingleMAPIPropListCtrl::AddPropToListBoxOld(
-		int iRow,
-		ULONG ulPropTag,
-		_In_opt_ const MAPINAMEID* lpNameID,
-		_In_opt_ const SBinary* lpMappingSignature, // optional mapping signature for object to speed named prop lookups
-		_In_ LPSPropValue lpsPropToAdd)
-	{
-		auto image = sortIcon::siDefault;
-		if (lpsPropToAdd)
-		{
-			for (const auto& _PropTypeIcon : _PropTypeIcons)
-			{
-				if (_PropTypeIcon.objType == PROP_TYPE(lpsPropToAdd->ulPropTag))
-				{
-					image = _PropTypeIcon.image;
-					break;
-				}
-			}
-		}
-
-		auto lpData = InsertRow(iRow, L"", 0, image);
-		// Data used to refer to specific property tags. See GetSelectedPropTag.
-		if (lpData)
-		{
-			sortlistdata::propListData::init(lpData, ulPropTag);
-		}
-
-		const auto PropTag = strings::format(L"0x%08X", ulPropTag);
-		std::wstring PropString;
-		std::wstring AltPropString;
-
-		const auto namePropNames = cache::NameIDToStrings(
-			ulPropTag, m_lpPropBag->GetMAPIProp(), lpNameID, lpMappingSignature, m_lpPropBag->IsAB());
-		const auto propTagNames = proptags::PropTagToPropName(ulPropTag, m_lpPropBag->IsAB());
-
-		if (!propTagNames.bestGuess.empty())
-		{
-			SetItemText(iRow, columns::pcPROPBESTGUESS, propTagNames.bestGuess);
-		}
-		else if (!namePropNames.bestPidLid.empty())
-		{
-			SetItemText(iRow, columns::pcPROPBESTGUESS, namePropNames.bestPidLid);
-		}
-		else if (!namePropNames.name.empty())
-		{
-			SetItemText(iRow, columns::pcPROPBESTGUESS, namePropNames.name);
-		}
-		else
-		{
-			SetItemText(iRow, columns::pcPROPBESTGUESS, PropTag);
-		}
-
-		SetItemText(iRow, columns::pcPROPOTHERNAMES, propTagNames.otherMatches);
-
-		SetItemText(iRow, columns::pcPROPTAG, PropTag);
-		SetItemText(iRow, columns::pcPROPTYPE, proptype::TypeToString(ulPropTag));
-
-		property::parseProperty(lpsPropToAdd, &PropString, &AltPropString);
-		SetItemText(iRow, columns::pcPROPVAL, PropString);
-		SetItemText(iRow, columns::pcPROPVALALT, AltPropString);
-
-		auto szSmartView = smartview::parsePropertySmartView(
-			lpsPropToAdd,
-			m_lpPropBag->GetMAPIProp(),
-			lpNameID,
-			lpMappingSignature,
-			m_lpPropBag->IsAB(),
-			false); // Built from lpProp & lpMAPIProp
-		if (!szSmartView.empty()) SetItemText(iRow, columns::pcPROPSMARTVIEW, szSmartView);
-		if (!namePropNames.name.empty()) SetItemText(iRow, columns::pcPROPNAMEDNAME, namePropNames.name);
-		if (!namePropNames.guid.empty()) SetItemText(iRow, columns::pcPROPNAMEDGUID, namePropNames.guid);
-	}
-
-	// Crack open the given SPropValue and render it to the given row in the list.
-	void CSingleMAPIPropListCtrl::AddPropToListBoxNew(int iRow, std::shared_ptr<model::mapiRowModel> model)
+	// Render the row model in the list.
+	void CSingleMAPIPropListCtrl::AddPropToListBox(int iRow, std::shared_ptr<model::mapiRowModel> model)
 	{
 		auto ulPropTag = model->ulPropTag();
 		auto image = sortIcon::siDefault;
