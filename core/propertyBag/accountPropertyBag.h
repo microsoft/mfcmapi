@@ -26,10 +26,14 @@ namespace propertybag
 		_Check_return_ HRESULT SetProp(LPSPropValue lpProp) override;
 		_Check_return_ HRESULT DeleteProp(ULONG /*ulPropTag*/) noexcept override { return E_NOTIMPL; };
 
+		_Check_return_ std::vector<std::shared_ptr<model::mapiRowModel>> GetAllModels() override;
+		_Check_return_ std::shared_ptr<model::mapiRowModel> GetOneModel(ULONG ulPropTag) override;
+
 	private:
 		std::wstring m_lpwszProfile;
 		LPOLKACCOUNT m_lpAccount;
 
+		_Check_return_ std::shared_ptr<model::mapiRowModel> convertVarToModel(const ACCT_VARIANT& var, ULONG ulPropTag);
 		SPropValue convertVarToMAPI(ULONG ulPropTag, const ACCT_VARIANT& var, _In_opt_ const VOID* pParent);
 		_Check_return_ HRESULT SetProp(LPSPropValue lpProp, bool saveChanges);
 	};

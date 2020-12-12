@@ -19,7 +19,7 @@ namespace propertybag
 
 	propBagFlags accountPropertyBag::GetFlags() const
 	{
-		const auto ulFlags = propBagFlags::None;
+		const auto ulFlags = propBagFlags::None | propBagFlags::Model;
 		return ulFlags;
 	}
 
@@ -190,4 +190,97 @@ namespace propertybag
 	}
 
 	_Check_return_ HRESULT accountPropertyBag::SetProp(LPSPropValue lpProp) { return SetProp(lpProp, true); }
+
+	_Check_return_ std::vector<std::shared_ptr<model::mapiRowModel>> accountPropertyBag::GetAllModels()
+	{
+		if (!m_lpAccount)
+		{
+			return {};
+		}
+
+		auto hRes = S_OK;
+		std::vector<std::pair<ULONG, ACCT_VARIANT>> props = {};
+		const auto _ignore = std::list<HRESULT>{static_cast<HRESULT>(E_ACCT_NOT_FOUND)};
+		for (auto i = 0; i < 0x8000; i++)
+		{
+			auto pProp = ACCT_VARIANT{};
+			hRes = WC_H_IGNORE_RET(_ignore, m_lpAccount->GetProp(PROP_TAG(PT_LONG, i), &pProp));
+			if (SUCCEEDED(hRes))
+			{
+				props.emplace_back(PROP_TAG(PT_LONG, i), pProp);
+			}
+
+			hRes = WC_H_IGNORE_RET(_ignore, m_lpAccount->GetProp(PROP_TAG(PT_UNICODE, i), &pProp));
+			if (SUCCEEDED(hRes))
+			{
+				props.emplace_back(PROP_TAG(PT_UNICODE, i), pProp);
+			}
+
+			hRes = WC_H_IGNORE_RET(_ignore, m_lpAccount->GetProp(PROP_TAG(PT_BINARY, i), &pProp));
+			if (SUCCEEDED(hRes))
+			{
+				props.emplace_back(PROP_TAG(PT_BINARY, i), pProp);
+			}
+		}
+
+		if (props.size() > 0)
+		{
+			auto models = std::vector<std::shared_ptr<model::mapiRowModel>>{};
+
+			for (const auto& prop : props)
+			{
+				models.push_back(convertVarToModel(prop.second, prop.first));
+			}
+
+			return models;
+		}
+
+		return {};
+	}
+
+	_Check_return_ std::shared_ptr<model::mapiRowModel> accountPropertyBag::GetOneModel(ULONG ulPropTag)
+	{
+		auto pProp = ACCT_VARIANT{};
+		const auto hRes = WC_H(m_lpAccount->GetProp(ulPropTag, &pProp));
+		if (SUCCEEDED(hRes))
+		{
+			return convertVarToModel(pProp, ulPropTag);
+		}
+		else
+		{
+			auto propVal = SPropValue{CHANGE_PROP_TYPE(ulPropTag, PT_ERROR), 0};
+			propVal.Value.err = hRes;
+			return model::propToModel(&propVal, ulPropTag, nullptr, false);
+		}
+	}
+
+	_Check_return_ std::shared_ptr<model::mapiRowModel>
+	accountPropertyBag::convertVarToModel(const ACCT_VARIANT& var, ULONG ulPropTag)
+	{
+		auto sProp = SPropValue{ulPropTag, 0};
+		switch (var.dwType)
+		{
+		case PT_LONG:
+			sProp.Value.l = var.Val.dw;
+			break;
+		case PT_UNICODE:
+			sProp.Value.lpszW = var.Val.pwsz;
+			break;
+		case PT_BINARY:
+			sProp.Value.bin = SBinary{var.Val.bin.cb, var.Val.bin.pb};
+			break;
+		}
+
+		const auto model = model::propToModel(&sProp, ulPropTag, nullptr, false);
+		if (var.dwType == PT_UNICODE)
+		{
+			WC_H_S(m_lpAccount->FreeMemory(reinterpret_cast<LPBYTE>(var.Val.pwsz)));
+		}
+		else if (var.dwType == PT_BINARY)
+		{
+			WC_H_S(m_lpAccount->FreeMemory(reinterpret_cast<LPBYTE>(var.Val.bin.pb)));
+		}
+
+		return model;
+	}
 } // namespace propertybag
