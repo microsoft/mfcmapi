@@ -177,7 +177,7 @@ namespace propertybag
 	std::shared_ptr<model::mapiRowModel>
 	mapiPropPropertyBag::propToModel(const ULONG ulPropTag, const SPropValue* lpProp)
 	{
-		auto ret = std::shared_ptr<model::mapiRowModel>{};
+		auto ret = std::make_shared<model::mapiRowModel>();
 		ret->ulPropTag(ulPropTag);
 
 		const auto PropTag = strings::format(L"0x%08X", ulPropTag);

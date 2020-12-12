@@ -1,6 +1,7 @@
 #pragma once
 #include <UI/Controls/SortList/SortListCtrl.h>
 #include <core/PropertyBag/PropertyBag.h>
+#include <core/model/mapiRowModel.h>
 
 namespace cache
 {
@@ -55,13 +56,7 @@ namespace controls::sortlistctrl
 			_In_opt_ const SBinary*
 				lpMappingSignature, // optional mapping signature for object to speed named prop lookups
 			_In_ LPSPropValue lpsPropToAdd);
-		void AddPropToListBoxNew(
-			int iRow,
-			ULONG ulPropTag,
-			_In_opt_ const MAPINAMEID* lpNameID,
-			_In_opt_ const SBinary*
-				lpMappingSignature, // optional mapping signature for object to speed named prop lookups
-			_In_ LPSPropValue lpsPropToAdd);
+		void AddPropToListBoxNew(int iRow, std::shared_ptr<model::mapiRowModel> model);
 
 		_Check_return_ bool HandleAddInMenu(WORD wMenuSelect) const;
 		void OnContextMenu(_In_ CWnd* pWnd, CPoint pos);
