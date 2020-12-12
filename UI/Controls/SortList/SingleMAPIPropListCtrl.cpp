@@ -309,62 +309,52 @@ namespace controls::sortlistctrl
 	{
 		if (!m_lpPropBag) return;
 
-		ULONG ulCurListBoxRow = 0;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
-		LPSPropValue lpPropsToAdd = nullptr;
-
+		auto models = std::vector<std::shared_ptr<model::mapiRowModel>>{};
 		if (!registry::onlyAdditionalProperties)
 		{
-			auto models = m_lpPropBag->GetAllModels();
-
-			if (m_lpHostDlg)
-			{
-				// This flag may be set by a GetProps call, so we make this check AFTER we get our props
-				if ((m_lpPropBag->GetFlags() & propertybag::propBagFlags::BackedByGetProps) ==
-					propertybag::propBagFlags::BackedByGetProps)
-				{
-					m_lpHostDlg->UpdateStatusBarText(statusPane::infoText, IDS_PROPSFROMGETPROPS);
-				}
-				else
-				{
-					m_lpHostDlg->UpdateStatusBarText(statusPane::infoText, IDS_PROPSFROMROW);
-				}
-			}
-
-			// Add our props to the view
-			if (!models.empty())
-			{
-				// Is this worth it?
-				// Set the item count to speed up the addition of items
-				auto ulTotalRowCount = models.size();
-				if (m_lpPropBag && m_sptExtraProps) ulTotalRowCount += m_sptExtraProps->cValues;
-				SetItemCount(ulTotalRowCount);
-
-				// get each property in turn and add it to the list
-				for (const auto model : models)
-				{
-					AddPropToListBox(ulCurListBoxRow, model);
-					ulCurListBoxRow++;
-				}
-			}
+			models = m_lpPropBag->GetAllModels();
 		}
 
 		// Now check if the user has given us any other properties to add and get them one at a time
 		if (m_sptExtraProps)
 		{
-			for (ULONG iCurExtraProp = 0; iCurExtraProp < m_sptExtraProps->cValues; iCurExtraProp++)
+			for (ULONG i = 0; i < m_sptExtraProps->cValues; i++)
 			{
-				const auto ulPropTag = mapi::getTag(m_sptExtraProps, iCurExtraProp);
-				const auto pExtraProp = m_lpPropBag->GetOneModel(ulPropTag);
-				AddPropToListBox(ulCurListBoxRow++, pExtraProp);
+				models.emplace_back(m_lpPropBag->GetOneModel(mapi::getTag(m_sptExtraProps, i)));
 			}
 		}
 
-		// lpMappingSig might come from lpPropsToAdd, so don't free this until here
-		m_lpPropBag->FreeBuffer(lpPropsToAdd);
+		// Add our props to the view
+		if (!models.empty())
+		{
+			// Set the item count to speed up the addition of items
+			SetItemCount(models.size());
+
+			// get each model in turn and add it to the list
+			ULONG ulCurListBoxRow = 0;
+			for (const auto model : models)
+			{
+				AddPropToListBox(ulCurListBoxRow++, model);
+			}
+		}
+
+		if (m_lpHostDlg)
+		{
+			// This flag may be set by a GetProps call, so we make this check AFTER we get our props
+			if ((m_lpPropBag->GetFlags() & propertybag::propBagFlags::BackedByGetProps) ==
+				propertybag::propBagFlags::BackedByGetProps)
+			{
+				m_lpHostDlg->UpdateStatusBarText(statusPane::infoText, IDS_PROPSFROMGETPROPS);
+			}
+			else
+			{
+				m_lpHostDlg->UpdateStatusBarText(statusPane::infoText, IDS_PROPSFROMROW);
+			}
+		}
 
 		output::DebugPrintEx(
-			output::dbgLevel::Generic, CLASS, L"LoadMAPIPropList", L"added %u properties\n", ulCurListBoxRow);
+			output::dbgLevel::Generic, CLASS, L"LoadMAPIPropList", L"added %u properties\n", models.size());
 
 		SortClickedColumn();
 	}
