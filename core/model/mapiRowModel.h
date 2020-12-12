@@ -1,4 +1,5 @@
 #pragma once
+#include <core/utility/strings.h>
 
 namespace model
 {
@@ -18,6 +19,18 @@ namespace model
 	InsertRow returns a sortListData object, which we store ulPropTag in
 	*/
 
+	/*
+		pcPROPBESTGUESS,
+		pcPROPOTHERNAMES,
+		pcPROPTAG,
+		pcPROPTYPE,
+		pcPROPVAL,
+		pcPROPVALALT,
+		pcPROPSMARTVIEW,
+		pcPROPNAMEDNAME,
+		pcPROPNAMEDGUID,
+	*/
+
 	// TODO: Find right balance between this being a dumb "just data" class
 	// and having smarts, like named prop mapping
 	// Some obvious ideas:
@@ -26,32 +39,34 @@ namespace model
 	class mapiRowModel
 	{
 	public:
-		const std::wstring name() { return _name; }
-		void name(std::wstring& v) { _name = v; }
+		// Name logic:
+		// _name - either a proptag or named prop name
+		// ulPropTag as string
+		const std::wstring name() { return _name.empty() ? tag() : _name; }
+		void name(const std::wstring& v) { _name = v; }
 
 		const std::wstring otherName() { return _otherName; }
-		void otherName(std::wstring& v) { _otherName = v; }
+		void otherName(const std::wstring& v) { _otherName = v; }
 
-		const std::wstring tag() { return _tag; }
-		void tag(std::wstring& v) { _tag = v; }
+		const std::wstring tag() { return strings::format(L"0x%08X", _ulPropTag); }
 
 		const std::wstring value() { return _value; }
-		void value(std::wstring& v) { _value = v; }
+		void value(const std::wstring& v) { _value = v; }
 
 		const std::wstring altValue() { return _altValue; }
-		void altValue(std::wstring& v) { _altValue = v; }
+		void altValue(const std::wstring& v) { _altValue = v; }
 
 		const std::wstring smartView() { return _smartView; }
-		void smartView(std::wstring& v) { _smartView = v; }
+		void smartView(const std::wstring& v) { _smartView = v; }
 
 		const std::wstring namedPropName() { return _namedPropName; }
-		void namedPropName(std::wstring& v) { _namedPropName = v; }
+		void namedPropName(const std::wstring& v) { _namedPropName = v; }
 
 		const std::wstring namedPropGuid() { return _namedPropGuid; }
-		void namedPropGuid(std::wstring& v) { _namedPropGuid = v; }
+		void namedPropGuid(const std::wstring& v) { _namedPropGuid = v; }
 
 		const ULONG ulPropTag() { return _ulPropTag; }
-		void ulPropTag(ULONG v) { _ulPropTag = v; }
+		void ulPropTag(const ULONG v) { _ulPropTag = v; }
 
 		const ULONG propType() { return PROP_TYPE(_ulPropTag); }
 

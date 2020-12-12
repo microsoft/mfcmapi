@@ -302,10 +302,216 @@ namespace controls::sortlistctrl
 		return 0;
 	}
 
+	void CSingleMAPIPropListCtrl::LoadMAPIPropList()
+	{
+		if ((m_lpPropBag->GetFlags() & propertybag::propBagFlags::Model) == propertybag::propBagFlags::Model)
+		{
+			LoadMAPIPropListNew();
+		}
+		else
+		{
+			LoadMAPIPropListOld();
+		}
+	}
+
 	// Call GetProps with NULL to get a list of (almost) all properties.
 	// Parse this list and render them in the control.
 	// Add any extra props we've asked for through the UI
-	void CSingleMAPIPropListCtrl::LoadMAPIPropList()
+	void CSingleMAPIPropListCtrl::LoadMAPIPropListOld()
+	{
+		ULONG ulCurListBoxRow = 0;
+		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
+		ULONG ulProps = 0;
+		LPSPropValue lpPropsToAdd = nullptr;
+		LPSPropValue lpMappingSig = nullptr;
+
+		if (!m_lpPropBag) return;
+
+		if (!registry::onlyAdditionalProperties)
+		{
+			WC_H_S(m_lpPropBag->GetAllProps(&ulProps, &lpPropsToAdd));
+
+			if (m_lpHostDlg)
+			{
+				// This flag may be set by a GetProps call, so we make this check AFTER we get our props
+				if ((m_lpPropBag->GetFlags() & propertybag::propBagFlags::BackedByGetProps) ==
+					propertybag::propBagFlags::BackedByGetProps)
+				{
+					m_lpHostDlg->UpdateStatusBarText(statusPane::infoText, IDS_PROPSFROMGETPROPS);
+				}
+				else
+				{
+					m_lpHostDlg->UpdateStatusBarText(statusPane::infoText, IDS_PROPSFROMROW);
+				}
+			}
+
+			// If we got some properties and PR_MAPPING_SIGNATURE is among them, grab it now
+			lpMappingSig = PpropFindProp(lpPropsToAdd, ulProps, PR_MAPPING_SIGNATURE);
+
+			// Add our props to the view
+			if (lpPropsToAdd)
+			{
+				std::vector<std::shared_ptr<cache::namedPropCacheEntry>> names{};
+				ULONG ulCurTag = 0;
+				if (!m_lpPropBag->IsAB() && registry::parseNamedProps)
+				{
+					// If we don't pass named property information to AddPropToListBox, it will look it up for us
+					// But this costs a GetNamesFromIDs call for each property we add
+					// As a speed up, we put together a single GetNamesFromIDs call here and pass its results to AddPropToListBox
+					// The speed up in non-cached mode is enormous
+					if (m_lpPropBag->GetMAPIProp())
+					{
+						ULONG ulNamedProps = 0;
+
+						// First, count how many props to look up
+						if (registry::getPropNamesOnAllProps)
+						{
+							ulNamedProps = ulProps;
+						}
+						else
+						{
+							for (ULONG ulCurPropRow = 0; ulCurPropRow < ulProps; ulCurPropRow++)
+							{
+								if (PROP_ID(lpPropsToAdd[ulCurPropRow].ulPropTag) >= 0x8000) ulNamedProps++;
+							}
+						}
+
+						if (ulNamedProps)
+						{
+							// Allocate our tag array
+							auto lpTag = mapi::allocate<LPSPropTagArray>(CbNewSPropTagArray(ulNamedProps));
+							if (lpTag)
+							{
+								// Populate the array
+								lpTag->cValues = ulNamedProps;
+								if (registry::getPropNamesOnAllProps)
+								{
+									for (ULONG ulCurPropRow = 0; ulCurPropRow < ulProps; ulCurPropRow++)
+									{
+										mapi::setTag(lpTag, ulCurPropRow) = lpPropsToAdd[ulCurPropRow].ulPropTag;
+									}
+								}
+								else
+								{
+									for (ULONG ulCurPropRow = 0; ulCurPropRow < ulProps; ulCurPropRow++)
+									{
+										if (PROP_ID(lpPropsToAdd[ulCurPropRow].ulPropTag) >= 0x8000)
+										{
+											mapi::setTag(lpTag, ulCurTag) = lpPropsToAdd[ulCurPropRow].ulPropTag;
+											ulCurTag++;
+										}
+									}
+								}
+
+								// Get the names
+								if (lpMappingSig)
+								{
+									names = cache::GetNamesFromIDs(
+										m_lpPropBag->GetMAPIProp(), &mapi::getBin(lpMappingSig), &lpTag, NULL);
+								}
+								else
+								{
+									names = cache::GetNamesFromIDs(m_lpPropBag->GetMAPIProp(), &lpTag, NULL);
+								}
+
+								MAPIFreeBuffer(lpTag);
+							}
+						}
+					}
+				}
+
+				// Is this worth it?
+				// Set the item count to speed up the addition of items
+				auto ulTotalRowCount = ulProps;
+				if (m_lpPropBag && m_sptExtraProps) ulTotalRowCount += m_sptExtraProps->cValues;
+				SetItemCount(ulTotalRowCount);
+
+				// get each property in turn and add it to the list
+				ulCurTag = 0;
+				for (ULONG ulCurPropRow = 0; ulCurPropRow < ulProps; ulCurPropRow++)
+				{
+					const MAPINAMEID* lpNameIDInfo = nullptr;
+					// We shouldn't need to check ulCurTag < names.size(), but I fear bad GetNamesFromIDs implementations
+					if (!names.empty() && ulCurTag < names.size())
+					{
+						if (registry::getPropNamesOnAllProps || PROP_ID(lpPropsToAdd[ulCurPropRow].ulPropTag) >= 0x8000)
+						{
+							lpNameIDInfo = names[ulCurTag]->getMapiNameId();
+							ulCurTag++;
+						}
+					}
+
+					AddPropToListBoxOld(
+						ulCurListBoxRow,
+						lpPropsToAdd[ulCurPropRow].ulPropTag,
+						lpNameIDInfo,
+						lpMappingSig ? &mapi::getBin(lpMappingSig) : nullptr,
+						&lpPropsToAdd[ulCurPropRow]);
+
+					ulCurListBoxRow++;
+				}
+			}
+		}
+
+		// Now check if the user has given us any other properties to add and get them one at a time
+		if (m_sptExtraProps)
+		{
+			for (ULONG iCurExtraProp = 0; iCurExtraProp < m_sptExtraProps->cValues; iCurExtraProp++)
+			{
+				// Let's get each extra property one at a time
+				SPropValue extraPropForList = {};
+				auto ulPropTag = mapi::getTag(m_sptExtraProps, iCurExtraProp);
+
+				// Let's add some extra properties
+				// Don't need to report since we're gonna put show the error in the UI
+				auto pExtraProp = m_lpPropBag->GetOneProp(ulPropTag);
+
+				if (pExtraProp)
+				{
+					if (PROP_TYPE(ulPropTag) == NULL)
+					{
+						// In this case, we started with a NULL tag, but we got a property back - let's 'fix' our tag for the UI
+						ulPropTag = CHANGE_PROP_TYPE(ulPropTag, PROP_TYPE(pExtraProp->ulPropTag));
+					}
+
+					// We want to give our parser the tag that came back from GetProps
+					extraPropForList.ulPropTag = ulPropTag;
+					extraPropForList.Value = pExtraProp->Value;
+				}
+				else
+				{
+					extraPropForList.ulPropTag = CHANGE_PROP_TYPE(ulPropTag, PT_ERROR);
+					extraPropForList.Value.err = MAPI_E_NOT_FOUND;
+				}
+
+				// Add the property to the list
+				AddPropToListBoxOld(
+					ulCurListBoxRow,
+					ulPropTag, // Tag to use in the UI
+					nullptr, // Let AddPropToListBox look up any named prop information it needs
+					lpMappingSig ? &mapi::getBin(lpMappingSig) : nullptr,
+					&extraPropForList); // Tag + Value to parse - may differ in case of errors or NULL type.
+
+				ulCurListBoxRow++;
+
+				MAPIFreeBuffer(pExtraProp);
+				pExtraProp = nullptr;
+			}
+		}
+
+		// lpMappingSig might come from lpPropsToAdd, so don't free this until here
+		m_lpPropBag->FreeBuffer(lpPropsToAdd);
+
+		output::DebugPrintEx(
+			output::dbgLevel::Generic, CLASS, L"LoadMAPIPropList", L"added %u properties\n", ulCurListBoxRow);
+
+		SortClickedColumn();
+	}
+
+	// Call GetProps with NULL to get a list of (almost) all properties.
+	// Parse this list and render them in the control.
+	// Add any extra props we've asked for through the UI
+	void CSingleMAPIPropListCtrl::LoadMAPIPropListNew()
 	{
 		ULONG ulCurListBoxRow = 0;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
@@ -428,7 +634,7 @@ namespace controls::sortlistctrl
 						}
 					}
 
-					AddPropToListBox(
+					AddPropToListBoxNew(
 						ulCurListBoxRow,
 						lpPropsToAdd[ulCurPropRow].ulPropTag,
 						lpNameIDInfo,
@@ -472,7 +678,7 @@ namespace controls::sortlistctrl
 				}
 
 				// Add the property to the list
-				AddPropToListBox(
+				AddPropToListBoxNew(
 					ulCurListBoxRow,
 					ulPropTag, // Tag to use in the UI
 					nullptr, // Let AddPropToListBox look up any named prop information it needs
@@ -586,7 +792,81 @@ namespace controls::sortlistctrl
 	};
 
 	// Crack open the given SPropValue and render it to the given row in the list.
-	void CSingleMAPIPropListCtrl::AddPropToListBox(
+	void CSingleMAPIPropListCtrl::AddPropToListBoxOld(
+		int iRow,
+		ULONG ulPropTag,
+		_In_opt_ const MAPINAMEID* lpNameID,
+		_In_opt_ const SBinary* lpMappingSignature, // optional mapping signature for object to speed named prop lookups
+		_In_ LPSPropValue lpsPropToAdd)
+	{
+		auto image = sortIcon::siDefault;
+		if (lpsPropToAdd)
+		{
+			for (const auto& _PropTypeIcon : _PropTypeIcons)
+			{
+				if (_PropTypeIcon.objType == PROP_TYPE(lpsPropToAdd->ulPropTag))
+				{
+					image = _PropTypeIcon.image;
+					break;
+				}
+			}
+		}
+
+		auto lpData = InsertRow(iRow, L"", 0, image);
+		// Data used to refer to specific property tags. See GetSelectedPropTag.
+		if (lpData)
+		{
+			sortlistdata::propListData::init(lpData, ulPropTag);
+		}
+
+		const auto PropTag = strings::format(L"0x%08X", ulPropTag);
+		std::wstring PropString;
+		std::wstring AltPropString;
+
+		const auto namePropNames = cache::NameIDToStrings(
+			ulPropTag, m_lpPropBag->GetMAPIProp(), lpNameID, lpMappingSignature, m_lpPropBag->IsAB());
+		const auto propTagNames = proptags::PropTagToPropName(ulPropTag, m_lpPropBag->IsAB());
+
+		if (!propTagNames.bestGuess.empty())
+		{
+			SetItemText(iRow, columns::pcPROPBESTGUESS, propTagNames.bestGuess);
+		}
+		else if (!namePropNames.bestPidLid.empty())
+		{
+			SetItemText(iRow, columns::pcPROPBESTGUESS, namePropNames.bestPidLid);
+		}
+		else if (!namePropNames.name.empty())
+		{
+			SetItemText(iRow, columns::pcPROPBESTGUESS, namePropNames.name);
+		}
+		else
+		{
+			SetItemText(iRow, columns::pcPROPBESTGUESS, PropTag);
+		}
+
+		SetItemText(iRow, columns::pcPROPOTHERNAMES, propTagNames.otherMatches);
+
+		SetItemText(iRow, columns::pcPROPTAG, PropTag);
+		SetItemText(iRow, columns::pcPROPTYPE, proptype::TypeToString(ulPropTag));
+
+		property::parseProperty(lpsPropToAdd, &PropString, &AltPropString);
+		SetItemText(iRow, columns::pcPROPVAL, PropString);
+		SetItemText(iRow, columns::pcPROPVALALT, AltPropString);
+
+		auto szSmartView = smartview::parsePropertySmartView(
+			lpsPropToAdd,
+			m_lpPropBag->GetMAPIProp(),
+			lpNameID,
+			lpMappingSignature,
+			m_lpPropBag->IsAB(),
+			false); // Built from lpProp & lpMAPIProp
+		if (!szSmartView.empty()) SetItemText(iRow, columns::pcPROPSMARTVIEW, szSmartView);
+		if (!namePropNames.name.empty()) SetItemText(iRow, columns::pcPROPNAMEDNAME, namePropNames.name);
+		if (!namePropNames.guid.empty()) SetItemText(iRow, columns::pcPROPNAMEDGUID, namePropNames.guid);
+	}
+
+	// Crack open the given SPropValue and render it to the given row in the list.
+	void CSingleMAPIPropListCtrl::AddPropToListBoxNew(
 		int iRow,
 		ULONG ulPropTag,
 		_In_opt_ const MAPINAMEID* lpNameID,

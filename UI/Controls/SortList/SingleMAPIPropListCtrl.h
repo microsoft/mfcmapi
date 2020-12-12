@@ -45,8 +45,17 @@ namespace controls::sortlistctrl
 		void FindAllNamedProps();
 		void CountNamedProps();
 		void LoadMAPIPropList();
+		void LoadMAPIPropListOld();
+		void LoadMAPIPropListNew();
 
-		void AddPropToListBox(
+		void AddPropToListBoxOld(
+			int iRow,
+			ULONG ulPropTag,
+			_In_opt_ const MAPINAMEID* lpNameID,
+			_In_opt_ const SBinary*
+				lpMappingSignature, // optional mapping signature for object to speed named prop lookups
+			_In_ LPSPropValue lpsPropToAdd);
+		void AddPropToListBoxNew(
 			int iRow,
 			ULONG ulPropTag,
 			_In_opt_ const MAPINAMEID* lpNameID,

@@ -1,4 +1,5 @@
 #pragma once
+#include <core/model/mapiRowModel.h>
 
 namespace propertybag
 {
@@ -8,6 +9,7 @@ namespace propertybag
 		Modified = 0x0001, // The property bag has been modified
 		BackedByGetProps = 0x0002, // The property bag is rendering from a GetProps call
 		AB = 0x0004, // The property bag represents an Address Book object
+		Model = 0x0008, // The property bag supports models (can remove this when models fully implemented)
 	};
 	DEFINE_ENUM_FLAG_OPERATORS(propBagFlags)
 
@@ -39,5 +41,10 @@ namespace propertybag
 		virtual _Check_return_ HRESULT SetProp(LPSPropValue lpProp) = 0;
 		virtual _Check_return_ HRESULT DeleteProp(ULONG ulPropTag) = 0;
 		bool IsAB() { return (GetFlags() & propBagFlags::AB) == propBagFlags::AB; }
+
+		// Model implementation
+		// TODO: make this pure virtual after implemented by existing rows
+		virtual _Check_return_ std::vector<std::shared_ptr<model::mapiRowModel>> GetAllModels() { return {}; }
+		virtual _Check_return_ std::shared_ptr<model::mapiRowModel> GetOneModel(ULONG /*ulPropTag*/) { return {}; }
 	};
 } // namespace propertybag

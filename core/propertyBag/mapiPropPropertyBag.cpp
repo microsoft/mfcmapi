@@ -6,6 +6,11 @@
 #include <core/mapi/mapiFunctions.h>
 #include <core/utility/error.h>
 #include <core/mapi/mapiMemory.h>
+#include <core/model/mapiRowModel.h>
+#include <core/interpret/proptags.h>
+#include <core/property/parseProperty.h>
+#include <core/smartview/SmartView.h>
+#include <core/mapi/cache/namedProps.h>
 
 namespace propertybag
 {
@@ -24,7 +29,7 @@ namespace propertybag
 
 	propBagFlags mapiPropPropertyBag::GetFlags() const
 	{
-		auto ulFlags = propBagFlags::None;
+		auto ulFlags = propBagFlags::None | propBagFlags::Model;
 		if (m_bIsAB) ulFlags |= propBagFlags::AB;
 		if (m_bGetPropsSucceeded) ulFlags |= propBagFlags::BackedByGetProps;
 		return ulFlags;
@@ -168,4 +173,137 @@ namespace propertybag
 
 		return hRes;
 	};
+
+	std::shared_ptr<model::mapiRowModel>
+	mapiPropPropertyBag::propToModel(const ULONG ulPropTag, const SPropValue* lpProp)
+	{
+		auto ret = std::shared_ptr<model::mapiRowModel>{};
+		ret->ulPropTag(ulPropTag);
+
+		const auto PropTag = strings::format(L"0x%08X", ulPropTag);
+		std::wstring PropString;
+		std::wstring AltPropString;
+
+		// TODO: nameid and mapping signature
+		//const auto namePropNames = cache::NameIDToStrings(ulPropTag, m_lpProp, lpNameID, lpMappingSignature, m_bIsAB);
+		const auto namePropNames = cache::NameIDToStrings(ulPropTag, m_lpProp, nullptr, nullptr, m_bIsAB);
+		const auto propTagNames = proptags::PropTagToPropName(ulPropTag, m_bIsAB);
+
+		if (!propTagNames.bestGuess.empty())
+		{
+			ret->name(propTagNames.bestGuess);
+		}
+		else if (!namePropNames.bestPidLid.empty())
+		{
+			ret->name(namePropNames.bestPidLid);
+		}
+		else if (!namePropNames.name.empty())
+		{
+			ret->name(namePropNames.name);
+		}
+
+		ret->otherName(propTagNames.otherMatches);
+
+		property::parseProperty(lpProp, &PropString, &AltPropString);
+		ret->value(PropString);
+		ret->altValue(AltPropString);
+
+		auto szSmartView = smartview::parsePropertySmartView(
+			lpProp,
+			m_lpProp,
+			nullptr, // lpNameID,
+			nullptr, // lpMappingSignature,
+			m_bIsAB,
+			false); // Built from lpProp & lpMAPIProp
+		if (!szSmartView.empty()) ret->smartView(szSmartView);
+		if (!namePropNames.name.empty()) ret->namedPropName(namePropNames.name);
+		if (!namePropNames.guid.empty()) ret->namedPropGuid(namePropNames.guid);
+
+		return ret;
+	}
+
+	_Check_return_ std::vector<std::shared_ptr<model::mapiRowModel>> mapiPropPropertyBag::GetAllModels()
+	{
+		if (nullptr == m_lpProp) return {};
+		auto hRes = S_OK;
+		m_bGetPropsSucceeded = false;
+
+		if (!registry::useRowDataForSinglePropList)
+		{
+			const auto unicodeFlag = registry::preferUnicodeProps ? MAPI_UNICODE : fMapiUnicode;
+
+			ULONG cValues{};
+			LPSPropValue lpPropArray{};
+
+			hRes = mapi::GetPropsNULL(m_lpProp, unicodeFlag, &cValues, &lpPropArray);
+			if (SUCCEEDED(hRes))
+			{
+				m_bGetPropsSucceeded = true;
+			}
+			if (hRes == MAPI_E_CALL_FAILED)
+			{
+				// Some stores, like public folders, don't support properties on the root folder
+				output::DebugPrint(output::dbgLevel::Generic, L"Failed to get call GetProps on this object!\n");
+			}
+			else if (FAILED(hRes)) // only report errors, not warnings
+			{
+				CHECKHRESMSG(hRes, IDS_GETPROPSNULLFAILED);
+			}
+
+			auto models = std::vector<std::shared_ptr<model::mapiRowModel>>{};
+			for (ULONG i = 0; i < cValues; i++)
+			{
+				auto prop = lpPropArray[i];
+				models.push_back(propToModel(prop.ulPropTag, &prop));
+			}
+
+			MAPIFreeBuffer(lpPropArray);
+			return models;
+		}
+
+		if (!m_bGetPropsSucceeded && m_lpListData)
+		{
+			m_lpListData->cSourceProps;
+			m_lpListData->lpSourceProps;
+			auto models = std::vector<std::shared_ptr<model::mapiRowModel>>{};
+			for (ULONG i = 0; i < m_lpListData->cSourceProps; i++)
+			{
+				auto prop = m_lpListData->lpSourceProps[i];
+				models.push_back(propToModel(prop.ulPropTag, &prop));
+			}
+
+			return models;
+		}
+
+		return {};
+	}
+	_Check_return_ std::shared_ptr<model::mapiRowModel> mapiPropPropertyBag::GetOneModel(ULONG ulPropTag)
+	{
+		auto lpProp = LPSPropValue{};
+		auto hRes = WC_MAPI(mapi::HrGetOnePropEx(m_lpProp, ulPropTag, fMapiUnicode, &lpProp));
+		if (SUCCEEDED(hRes) && lpProp)
+		{
+			const auto model = propToModel(ulPropTag, lpProp);
+			MAPIFreeBuffer(lpProp);
+			return model;
+		}
+
+		if (lpProp) MAPIFreeBuffer(lpProp);
+		lpProp = nullptr;
+
+		// Special case for profile sections and row properties - we may have a property which was in our row that isn't available on the object
+		// In that case, we'll get MAPI_E_NOT_FOUND, but the property will be present in m_lpListData->lpSourceProps
+		// So we fetch it from there instead
+		if (hRes == MAPI_E_NOT_FOUND && m_lpListData)
+		{
+			lpProp = PpropFindProp(m_lpListData->lpSourceProps, m_lpListData->cSourceProps, ulPropTag);
+			return propToModel(ulPropTag, lpProp);
+		}
+
+		// If we still don't have a prop, build an error prop
+		SPropValue prop = {CHANGE_PROP_TYPE(ulPropTag, PT_ERROR), 0};
+		prop.Value.err = (hRes == S_OK) ? MAPI_E_NOT_FOUND : hRes;
+
+		return propToModel(ulPropTag, &prop);
+	}
 } // namespace propertybag
