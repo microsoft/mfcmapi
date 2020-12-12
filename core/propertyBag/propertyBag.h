@@ -9,7 +9,6 @@ namespace propertybag
 		Modified = 0x0001, // The property bag has been modified
 		BackedByGetProps = 0x0002, // The property bag is rendering from a GetProps call
 		AB = 0x0004, // The property bag represents an Address Book object
-		Model = 0x0008, // The property bag supports models (can remove this when models fully implemented)
 	};
 	DEFINE_ENUM_FLAG_OPERATORS(propBagFlags)
 

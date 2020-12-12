@@ -19,7 +19,7 @@ namespace propertybag
 
 	propBagFlags rowPropertyBag::GetFlags() const
 	{
-		auto ulFlags = propBagFlags::None | propBagFlags::Model;
+		auto ulFlags = propBagFlags::None;
 		if (m_bIsAB) ulFlags |= propBagFlags::AB;
 		if (m_bRowModified) ulFlags |= propBagFlags::Modified;
 		return ulFlags;

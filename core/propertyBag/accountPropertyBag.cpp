@@ -19,7 +19,7 @@ namespace propertybag
 
 	propBagFlags accountPropertyBag::GetFlags() const
 	{
-		const auto ulFlags = propBagFlags::None | propBagFlags::Model;
+		const auto ulFlags = propBagFlags::None;
 		return ulFlags;
 	}
 

@@ -46,8 +46,6 @@ namespace controls::sortlistctrl
 		void FindAllNamedProps();
 		void CountNamedProps();
 		void LoadMAPIPropList();
-		void LoadMAPIPropListOld();
-		void LoadMAPIPropListNew();
 
 		void AddPropToListBoxOld(
 			int iRow,
