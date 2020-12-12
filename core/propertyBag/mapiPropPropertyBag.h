@@ -31,7 +31,6 @@ namespace propertybag
 		_Check_return_ std::shared_ptr<model::mapiRowModel> GetOneModel(ULONG ulPropTag) override;
 
 	private:
-		std::shared_ptr<model::mapiRowModel> propToModel(const ULONG ulPropTag, const SPropValue* lpProp);
 		sortlistdata::sortListData* m_lpListData{};
 		LPMAPIPROP m_lpProp{};
 		bool m_bGetPropsSucceeded{};

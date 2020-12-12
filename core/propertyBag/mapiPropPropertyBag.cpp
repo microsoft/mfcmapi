@@ -7,10 +7,6 @@
 #include <core/utility/error.h>
 #include <core/mapi/mapiMemory.h>
 #include <core/model/mapiRowModel.h>
-#include <core/interpret/proptags.h>
-#include <core/property/parseProperty.h>
-#include <core/smartview/SmartView.h>
-#include <core/mapi/cache/namedProps.h>
 
 namespace propertybag
 {
@@ -174,54 +170,6 @@ namespace propertybag
 		return hRes;
 	};
 
-	std::shared_ptr<model::mapiRowModel>
-	mapiPropPropertyBag::propToModel(const ULONG ulPropTag, const SPropValue* lpProp)
-	{
-		auto ret = std::make_shared<model::mapiRowModel>();
-		ret->ulPropTag(ulPropTag);
-
-		const auto PropTag = strings::format(L"0x%08X", ulPropTag);
-		std::wstring PropString;
-		std::wstring AltPropString;
-
-		// TODO: nameid and mapping signature
-		//const auto namePropNames = cache::NameIDToStrings(ulPropTag, m_lpProp, lpNameID, lpMappingSignature, m_bIsAB);
-		const auto namePropNames = cache::NameIDToStrings(ulPropTag, m_lpProp, nullptr, nullptr, m_bIsAB);
-		const auto propTagNames = proptags::PropTagToPropName(ulPropTag, m_bIsAB);
-
-		if (!propTagNames.bestGuess.empty())
-		{
-			ret->name(propTagNames.bestGuess);
-		}
-		else if (!namePropNames.bestPidLid.empty())
-		{
-			ret->name(namePropNames.bestPidLid);
-		}
-		else if (!namePropNames.name.empty())
-		{
-			ret->name(namePropNames.name);
-		}
-
-		ret->otherName(propTagNames.otherMatches);
-
-		property::parseProperty(lpProp, &PropString, &AltPropString);
-		ret->value(PropString);
-		ret->altValue(AltPropString);
-
-		auto szSmartView = smartview::parsePropertySmartView(
-			lpProp,
-			m_lpProp,
-			nullptr, // lpNameID,
-			nullptr, // lpMappingSignature,
-			m_bIsAB,
-			false); // Built from lpProp & lpMAPIProp
-		if (!szSmartView.empty()) ret->smartView(szSmartView);
-		if (!namePropNames.name.empty()) ret->namedPropName(namePropNames.name);
-		if (!namePropNames.guid.empty()) ret->namedPropGuid(namePropNames.guid);
-
-		return ret;
-	}
-
 	_Check_return_ std::vector<std::shared_ptr<model::mapiRowModel>> mapiPropPropertyBag::GetAllModels()
 	{
 		if (nullptr == m_lpProp) return {};
@@ -254,7 +202,7 @@ namespace propertybag
 			for (ULONG i = 0; i < cValues; i++)
 			{
 				auto prop = lpPropArray[i];
-				models.push_back(propToModel(prop.ulPropTag, &prop));
+				models.push_back(model::propToModel(&prop, prop.ulPropTag, m_lpProp, m_bIsAB));
 			}
 
 			MAPIFreeBuffer(lpPropArray);
@@ -269,7 +217,7 @@ namespace propertybag
 			for (ULONG i = 0; i < m_lpListData->cSourceProps; i++)
 			{
 				auto prop = m_lpListData->lpSourceProps[i];
-				models.push_back(propToModel(prop.ulPropTag, &prop));
+				models.push_back(model::propToModel(&prop, prop.ulPropTag, m_lpProp, m_bIsAB));
 			}
 
 			return models;
@@ -279,31 +227,31 @@ namespace propertybag
 	}
 	_Check_return_ std::shared_ptr<model::mapiRowModel> mapiPropPropertyBag::GetOneModel(ULONG ulPropTag)
 	{
-		auto lpProp = LPSPropValue{};
-		auto hRes = WC_MAPI(mapi::HrGetOnePropEx(m_lpProp, ulPropTag, fMapiUnicode, &lpProp));
-		if (SUCCEEDED(hRes) && lpProp)
+		auto lpPropVal = LPSPropValue{};
+		auto hRes = WC_MAPI(mapi::HrGetOnePropEx(m_lpProp, ulPropTag, fMapiUnicode, &lpPropVal));
+		if (SUCCEEDED(hRes) && lpPropVal)
 		{
-			const auto model = propToModel(ulPropTag, lpProp);
-			MAPIFreeBuffer(lpProp);
+			const auto model = model::propToModel(lpPropVal, ulPropTag, m_lpProp, m_bIsAB);
+			MAPIFreeBuffer(lpPropVal);
 			return model;
 		}
 
-		if (lpProp) MAPIFreeBuffer(lpProp);
-		lpProp = nullptr;
+		if (lpPropVal) MAPIFreeBuffer(lpPropVal);
+		lpPropVal = nullptr;
 
 		// Special case for profile sections and row properties - we may have a property which was in our row that isn't available on the object
 		// In that case, we'll get MAPI_E_NOT_FOUND, but the property will be present in m_lpListData->lpSourceProps
 		// So we fetch it from there instead
 		if (hRes == MAPI_E_NOT_FOUND && m_lpListData)
 		{
-			lpProp = PpropFindProp(m_lpListData->lpSourceProps, m_lpListData->cSourceProps, ulPropTag);
-			return propToModel(ulPropTag, lpProp);
+			lpPropVal = PpropFindProp(m_lpListData->lpSourceProps, m_lpListData->cSourceProps, ulPropTag);
+			return model::propToModel(lpPropVal, ulPropTag, m_lpProp, m_bIsAB);
 		}
 
 		// If we still don't have a prop, build an error prop
-		SPropValue prop = {CHANGE_PROP_TYPE(ulPropTag, PT_ERROR), 0};
-		prop.Value.err = (hRes == S_OK) ? MAPI_E_NOT_FOUND : hRes;
+		SPropValue propVal = {CHANGE_PROP_TYPE(ulPropTag, PT_ERROR), 0};
+		propVal.Value.err = (hRes == S_OK) ? MAPI_E_NOT_FOUND : hRes;
 
-		return propToModel(ulPropTag, &prop);
+		return model::propToModel(&propVal, ulPropTag, m_lpProp, m_bIsAB);
 	}
 } // namespace propertybag

@@ -81,4 +81,9 @@ namespace model
 		std::wstring _namedPropGuid;
 		ULONG _ulPropTag;
 	};
+
+	_Check_return_ std::vector<std::shared_ptr<model::mapiRowModel>>
+	propsToModels(ULONG cValues, const SPropValue* lpPropVals, const LPMAPIPROP lpProp, const bool bIsAB);
+	_Check_return_ std::shared_ptr<model::mapiRowModel>
+	propToModel(const SPropValue* lpPropVal, const ULONG ulPropTag, const LPMAPIPROP lpProp, const bool bIsAB);
 } // namespace model

@@ -19,7 +19,7 @@ namespace propertybag
 
 	propBagFlags rowPropertyBag::GetFlags() const
 	{
-		auto ulFlags = propBagFlags::None;
+		auto ulFlags = propBagFlags::None | propBagFlags::Model;
 		if (m_bIsAB) ulFlags |= propBagFlags::AB;
 		if (m_bRowModified) ulFlags |= propBagFlags::Modified;
 		return ulFlags;
@@ -190,6 +190,22 @@ namespace propertybag
 			m_lpProps = lpNewArray;
 			m_bRowModified = true;
 		}
+
 		return hRes;
+	}
+
+	_Check_return_ std::vector<std::shared_ptr<model::mapiRowModel>> rowPropertyBag::GetAllModels()
+	{
+		return model::propsToModels(m_cValues, m_lpProps, nullptr, m_bIsAB);
+	}
+
+	_Check_return_ std::shared_ptr<model::mapiRowModel> rowPropertyBag::GetOneModel(ULONG ulPropTag)
+	{
+		const SPropValue* lpPropVal = PpropFindProp(m_lpProps, m_cValues, ulPropTag);
+		if (lpPropVal) return model::propToModel(lpPropVal, ulPropTag, nullptr, m_bIsAB);
+
+		auto propVal = SPropValue{CHANGE_PROP_TYPE(ulPropTag, PT_ERROR), 0};
+		propVal.Value.err = MAPI_E_NOT_FOUND;
+		return model::propToModel(&propVal, ulPropTag, nullptr, m_bIsAB);
 	}
 } // namespace propertybag

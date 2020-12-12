@@ -1,6 +1,7 @@
 #pragma once
 #include <core/propertyBag/propertyBag.h>
 #include <core/sortlistdata/sortListData.h>
+#include <core/model/mapiRowModel.h>
 
 namespace propertybag
 {
@@ -29,6 +30,8 @@ namespace propertybag
 		_Check_return_ HRESULT SetProp(LPSPropValue lpProp) override;
 		//TODO: Not supported yet
 		_Check_return_ HRESULT DeleteProp(ULONG) override { return E_NOTIMPL; };
+		_Check_return_ std::vector<std::shared_ptr<model::mapiRowModel>> GetAllModels() override;
+		_Check_return_ std::shared_ptr<model::mapiRowModel> GetOneModel(ULONG ulPropTag) override;
 
 	private:
 		sortlistdata::sortListData* m_lpListData{};
