@@ -1010,7 +1010,10 @@ namespace controls::sortlistctrl
 			lpEditProp = lpPropBag->GetOneProp(ulPropTag);
 		}
 
-		if (hRes == MAPI_E_NOT_ENOUGH_MEMORY) bUseStream = true;
+		if (lpEditProp && PROP_TYPE(lpEditProp->ulPropTag) == PT_ERROR && lpEditProp->Value.err == MAPI_E_NOT_ENOUGH_MEMORY)
+		{
+			bUseStream = true;
+		}
 
 		if (bUseStream)
 		{
@@ -1277,6 +1280,7 @@ namespace controls::sortlistctrl
 		lpSourcePropObj->Release();
 	}
 
+	// Open a binary property as an entry ID
 	void CSingleMAPIPropListCtrl::OnOpenProperty() const
 	{
 		auto hRes = S_OK;
