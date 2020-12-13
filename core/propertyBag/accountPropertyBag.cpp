@@ -76,56 +76,6 @@ namespace propertybag
 		return sProp;
 	}
 
-	_Check_return_ HRESULT accountPropertyBag::GetAllProps(ULONG FAR* lpcValues, LPSPropValue FAR* lppPropArray)
-	{
-		if (!lpcValues || !lppPropArray) return MAPI_E_INVALID_PARAMETER;
-		if (!m_lpAccount)
-		{
-			*lpcValues = 0;
-			*lppPropArray = nullptr;
-			return S_OK;
-		}
-
-		auto hRes = S_OK;
-		std::vector<std::pair<ULONG, ACCT_VARIANT>> props = {};
-		const auto _ignore = std::list<HRESULT>{static_cast<HRESULT>(E_ACCT_NOT_FOUND)};
-		for (auto i = 0; i < 0x8000; i++)
-		{
-			auto pProp = ACCT_VARIANT{};
-			hRes = WC_H_IGNORE_RET(_ignore, m_lpAccount->GetProp(PROP_TAG(PT_LONG, i), &pProp));
-			if (SUCCEEDED(hRes))
-			{
-				props.emplace_back(PROP_TAG(PT_LONG, i), pProp);
-			}
-
-			hRes = WC_H_IGNORE_RET(_ignore, m_lpAccount->GetProp(PROP_TAG(PT_UNICODE, i), &pProp));
-			if (SUCCEEDED(hRes))
-			{
-				props.emplace_back(PROP_TAG(PT_UNICODE, i), pProp);
-			}
-
-			hRes = WC_H_IGNORE_RET(_ignore, m_lpAccount->GetProp(PROP_TAG(PT_BINARY, i), &pProp));
-			if (SUCCEEDED(hRes))
-			{
-				props.emplace_back(PROP_TAG(PT_BINARY, i), pProp);
-			}
-		}
-
-		if (props.size() > 0)
-		{
-			*lpcValues = props.size();
-			*lppPropArray = mapi::allocate<LPSPropValue>(props.size() * sizeof(SPropValue));
-			auto iProp = 0;
-
-			for (const auto& prop : props)
-			{
-				(*lppPropArray)[iProp++] = convertVarToMAPI(prop.first, prop.second, *lppPropArray);
-			}
-		}
-
-		return S_OK;
-	}
-
 	// Always returns a propval, even in errors, unless we fail allocating memory
 	_Check_return_ LPSPropValue accountPropertyBag::GetOneProp(ULONG ulPropTag)
 	{

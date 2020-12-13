@@ -54,44 +54,6 @@ namespace propertybag
 		return WC_H(m_lpProp->SaveChanges(KEEP_OPEN_READWRITE));
 	}
 
-	_Check_return_ HRESULT mapiPropPropertyBag::GetAllProps(ULONG FAR* lpcValues, LPSPropValue FAR* lppPropArray)
-	{
-		if (nullptr == m_lpProp) return S_OK;
-		auto hRes = S_OK;
-		m_bGetPropsSucceeded = false;
-
-		if (!registry::useRowDataForSinglePropList)
-		{
-			const auto unicodeFlag = registry::preferUnicodeProps ? MAPI_UNICODE : fMapiUnicode;
-
-			hRes = mapi::GetPropsNULL(m_lpProp, unicodeFlag, lpcValues, lppPropArray);
-			if (SUCCEEDED(hRes))
-			{
-				m_bGetPropsSucceeded = true;
-			}
-			if (hRes == MAPI_E_CALL_FAILED)
-			{
-				// Some stores, like public folders, don't support properties on the root folder
-				output::DebugPrint(output::dbgLevel::Generic, L"Failed to get call GetProps on this object!\n");
-			}
-			else if (FAILED(hRes)) // only report errors, not warnings
-			{
-				CHECKHRESMSG(hRes, IDS_GETPROPSNULLFAILED);
-			}
-
-			return hRes;
-		}
-
-		if (!m_bGetPropsSucceeded && m_lpListData)
-		{
-			*lpcValues = m_lpListData->cSourceProps;
-			*lppPropArray = m_lpListData->lpSourceProps;
-			hRes = S_OK;
-		}
-
-		return hRes;
-	}
-
 	// Always returns a propval, even in errors, unless we fail allocating memory
 	_Check_return_ LPSPropValue mapiPropPropertyBag::GetOneProp(ULONG ulPropTag)
 	{

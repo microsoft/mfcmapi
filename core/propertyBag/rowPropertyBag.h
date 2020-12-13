@@ -21,7 +21,6 @@ namespace propertybag
 		_Check_return_ LPMAPIPROP GetMAPIProp() const override { return nullptr; }
 
 		_Check_return_ HRESULT Commit() override { return E_NOTIMPL; }
-		_Check_return_ HRESULT GetAllProps(ULONG FAR* lpcValues, LPSPropValue FAR* lppPropArray) override;
 		_Check_return_ LPSPropValue GetOneProp(ULONG ulPropTag) override;
 		// None of our GetProps allocate anything, so nothing to do here
 		void FreeBuffer(LPSPropValue) override { return; }
@@ -32,6 +31,8 @@ namespace propertybag
 		_Check_return_ HRESULT DeleteProp(ULONG) override { return E_NOTIMPL; };
 		_Check_return_ std::vector<std::shared_ptr<model::mapiRowModel>> GetAllModels() override;
 		_Check_return_ std::shared_ptr<model::mapiRowModel> GetOneModel(ULONG ulPropTag) override;
+
+		_Check_return_ HRESULT GetAllProps(ULONG FAR* lpcValues, LPSPropValue FAR* lppPropArray);
 
 	private:
 		sortlistdata::sortListData* m_lpListData{};
