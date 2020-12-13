@@ -10,6 +10,7 @@
 #include <core/utility/output.h>
 #include <core/mapi/mapiFunctions.h>
 #include <core/property/parseProperty.h>
+#include <core/propertyBag/rowPropertyBag.h>
 
 namespace dialog
 {
@@ -167,42 +168,46 @@ namespace dialog
 
 		ULONG cProps = 0;
 		LPSPropValue lpProps = nullptr;
-		const auto lpPropBag = m_lpPropDisplay->GetDataSource();
-		EC_H_S(lpPropBag->GetAllProps(&cProps, &lpProps));
-		if (lpProps)
+		const auto lpRowPropBag = std::dynamic_pointer_cast<propertybag::rowPropertyBag>(m_lpPropDisplay->GetDataSource());
+
+		if (lpRowPropBag)
 		{
-			ADRLIST adrList = {};
-			adrList.cEntries = 1;
-			adrList.aEntries[0].ulReserved1 = 0;
-			adrList.aEntries[0].cValues = cProps;
-
-			ULONG ulSizeProps = NULL;
-			auto hRes = EC_MAPI(ScCountProps(adrList.aEntries[0].cValues, lpProps, &ulSizeProps));
-
-			if (SUCCEEDED(hRes))
+			EC_H_S(lpRowPropBag->GetAllProps(&cProps, &lpProps));
+			if (lpProps)
 			{
-				adrList.aEntries[0].rgPropVals = mapi::allocate<LPSPropValue>(ulSizeProps);
-				if (adrList.aEntries[0].rgPropVals)
+				ADRLIST adrList = {};
+				adrList.cEntries = 1;
+				adrList.aEntries[0].ulReserved1 = 0;
+				adrList.aEntries[0].cValues = cProps;
+
+				ULONG ulSizeProps = NULL;
+				auto hRes = EC_MAPI(ScCountProps(adrList.aEntries[0].cValues, lpProps, &ulSizeProps));
+
+				if (SUCCEEDED(hRes))
 				{
-					hRes = EC_MAPI(ScCopyProps(
-						adrList.aEntries[0].cValues, lpProps, adrList.aEntries[0].rgPropVals, &ulSizeProps));
+					adrList.aEntries[0].rgPropVals = mapi::allocate<LPSPropValue>(ulSizeProps);
+					if (adrList.aEntries[0].rgPropVals)
+					{
+						hRes = EC_MAPI(ScCopyProps(
+							adrList.aEntries[0].cValues, lpProps, adrList.aEntries[0].rgPropVals, &ulSizeProps));
+					}
 				}
+
+				if (SUCCEEDED(hRes))
+				{
+					output::DebugPrintEx(
+						output::dbgLevel::Generic,
+						CLASS,
+						L"OnModifyRecipients",
+						L"Committing changes for current selection\n");
+					EC_MAPI_S(m_lpMessage->ModifyRecipients(MODRECIP_MODIFY, &adrList));
+				}
+
+				MAPIFreeBuffer(adrList.aEntries[0].rgPropVals);
+				lpRowPropBag->FreeBuffer(lpProps); // TODO: Needed?
+
+				OnRefreshView();
 			}
-
-			if (SUCCEEDED(hRes))
-			{
-				output::DebugPrintEx(
-					output::dbgLevel::Generic,
-					CLASS,
-					L"OnModifyRecipients",
-					L"Committing changes for current selection\n");
-				EC_MAPI_S(m_lpMessage->ModifyRecipients(MODRECIP_MODIFY, &adrList));
-			}
-
-			MAPIFreeBuffer(adrList.aEntries[0].rgPropVals);
-			lpPropBag->FreeBuffer(lpProps);
-
-			OnRefreshView();
 		}
 	}
 
@@ -216,59 +221,64 @@ namespace dialog
 
 		ULONG cProps = 0;
 		LPSPropValue lpProps = nullptr;
-		const auto lpPropBag = m_lpPropDisplay->GetDataSource();
-		auto hRes = EC_H(lpPropBag->GetAllProps(&cProps, &lpProps));
-		if (lpProps)
+		const auto lpRowPropBag =
+			std::dynamic_pointer_cast<propertybag::rowPropertyBag>(m_lpPropDisplay->GetDataSource());
+		if (lpRowPropBag)
 		{
-			auto lpAB = m_lpMapiObjects->GetAddrBook(true); // do not release
-			if (lpAB)
+			auto hRes = EC_H(lpRowPropBag->GetAllProps(&cProps, &lpProps));
+			if (lpProps)
 			{
-				ADRENTRY adrEntry = {};
-				adrEntry.ulReserved1 = 0;
-				adrEntry.cValues = cProps;
-				adrEntry.rgPropVals = lpProps;
-				output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"OnRecipOptions", L"Calling RecipOptions\n");
-
-				hRes = EC_MAPI(lpAB->RecipOptions(reinterpret_cast<ULONG_PTR>(m_hWnd), NULL, &adrEntry));
-
-				if (hRes == MAPI_W_ERRORS_RETURNED)
+				auto lpAB = m_lpMapiObjects->GetAddrBook(true); // do not release
+				if (lpAB)
 				{
-					LPMAPIERROR lpErr = nullptr;
-					hRes = WC_MAPI(lpAB->GetLastError(hRes, fMapiUnicode, &lpErr));
-					if (lpErr)
-					{
-						EC_MAPIERR(fMapiUnicode, lpErr);
-						MAPIFreeBuffer(lpErr);
-					}
-					else
-						CHECKHRES(hRes);
-				}
-				else if (SUCCEEDED(hRes))
-				{
-					ADRLIST adrList = {};
-					adrList.cEntries = 1;
-					adrList.aEntries[0].ulReserved1 = 0;
-					adrList.aEntries[0].cValues = adrEntry.cValues;
-					adrList.aEntries[0].rgPropVals = adrEntry.rgPropVals;
-
-					const auto szAdrList = property::AdrListToString(adrList);
-
+					ADRENTRY adrEntry = {};
+					adrEntry.ulReserved1 = 0;
+					adrEntry.cValues = cProps;
+					adrEntry.rgPropVals = lpProps;
 					output::DebugPrintEx(
-						output::dbgLevel::Generic,
-						CLASS,
-						L"OnRecipOptions",
-						L"RecipOptions returned the following ADRLIST:\n");
-					// Note - debug output may be truncated due to limitations of OutputDebugString,
-					// but output to file is complete
-					output::Output(output::dbgLevel::Generic, nullptr, false, szAdrList);
+						output::dbgLevel::Generic, CLASS, L"OnRecipOptions", L"Calling RecipOptions\n");
 
-					EC_MAPI_S(m_lpMessage->ModifyRecipients(MODRECIP_MODIFY, &adrList));
+					hRes = EC_MAPI(lpAB->RecipOptions(reinterpret_cast<ULONG_PTR>(m_hWnd), NULL, &adrEntry));
 
-					OnRefreshView();
+					if (hRes == MAPI_W_ERRORS_RETURNED)
+					{
+						LPMAPIERROR lpErr = nullptr;
+						hRes = WC_MAPI(lpAB->GetLastError(hRes, fMapiUnicode, &lpErr));
+						if (lpErr)
+						{
+							EC_MAPIERR(fMapiUnicode, lpErr);
+							MAPIFreeBuffer(lpErr);
+						}
+						else
+							CHECKHRES(hRes);
+					}
+					else if (SUCCEEDED(hRes))
+					{
+						ADRLIST adrList = {};
+						adrList.cEntries = 1;
+						adrList.aEntries[0].ulReserved1 = 0;
+						adrList.aEntries[0].cValues = adrEntry.cValues;
+						adrList.aEntries[0].rgPropVals = adrEntry.rgPropVals;
+
+						const auto szAdrList = property::AdrListToString(adrList);
+
+						output::DebugPrintEx(
+							output::dbgLevel::Generic,
+							CLASS,
+							L"OnRecipOptions",
+							L"RecipOptions returned the following ADRLIST:\n");
+						// Note - debug output may be truncated due to limitations of OutputDebugString,
+						// but output to file is complete
+						output::Output(output::dbgLevel::Generic, nullptr, false, szAdrList);
+
+						EC_MAPI_S(m_lpMessage->ModifyRecipients(MODRECIP_MODIFY, &adrList));
+
+						OnRefreshView();
+					}
 				}
-			}
 
-			lpPropBag->FreeBuffer(lpProps);
+				lpRowPropBag->FreeBuffer(lpProps); //  TODO: Needed?
+			}
 		}
 	}
 

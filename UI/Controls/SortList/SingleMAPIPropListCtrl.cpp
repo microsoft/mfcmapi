@@ -1494,13 +1494,16 @@ namespace controls::sortlistctrl
 			MyAddInMenuParams.lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 			MyAddInMenuParams.lpAdrBook = m_lpMapiObjects->GetAddrBook(false); // do not release
 		}
-
-		if (m_lpPropBag && propertybag::propBagType::Row == m_lpPropBag->GetType())
+		if (m_lpPropBag)
 		{
-			SRow MyRow = {0};
-			static_cast<void>(m_lpPropBag->GetAllProps(&MyRow.cValues, &MyRow.lpProps));
-			MyAddInMenuParams.lpRow = &MyRow;
-			MyAddInMenuParams.ulCurrentFlags |= MENU_FLAGS_ROW;
+			const auto lpRowPropBag = std::dynamic_pointer_cast<propertybag::rowPropertyBag>(m_lpPropBag);
+			if (lpRowPropBag)
+			{
+				SRow MyRow = {0};
+				static_cast<void>(lpRowPropBag->GetAllProps(&MyRow.cValues, &MyRow.lpProps));
+				MyAddInMenuParams.lpRow = &MyRow;
+				MyAddInMenuParams.ulCurrentFlags |= MENU_FLAGS_ROW;
+			}
 		}
 
 		MyAddInMenuParams.ulPropTag = GetSelectedPropTag();
