@@ -13,7 +13,6 @@ namespace propertybag
 		rowPropertyBag(const rowPropertyBag&) = delete;
 		rowPropertyBag& operator=(const rowPropertyBag&) = delete;
 
-		propBagFlags GetFlags() const override;
 		propBagType GetType() const override { return propBagType::Row; }
 		bool IsEqual(const std::shared_ptr<IMAPIPropertyBag> lpPropBag) const override;
 
@@ -33,6 +32,9 @@ namespace propertybag
 		_Check_return_ std::shared_ptr<model::mapiRowModel> GetOneModel(ULONG ulPropTag) override;
 
 		_Check_return_ HRESULT GetAllProps(ULONG FAR* lpcValues, LPSPropValue FAR* lppPropArray);
+
+	protected:
+		propBagFlags GetFlags() const override;
 
 	private:
 		sortlistdata::sortListData* m_lpListData{};

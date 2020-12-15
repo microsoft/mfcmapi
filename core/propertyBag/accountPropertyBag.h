@@ -11,7 +11,6 @@ namespace propertybag
 		accountPropertyBag(const accountPropertyBag&) = delete;
 		accountPropertyBag& operator=(const accountPropertyBag&) = delete;
 
-		propBagFlags GetFlags() const override;
 		propBagType GetType() const override { return propBagType::Account; }
 		bool IsEqual(const std::shared_ptr<IMAPIPropertyBag> lpPropBag) const override;
 
@@ -27,6 +26,9 @@ namespace propertybag
 
 		_Check_return_ std::vector<std::shared_ptr<model::mapiRowModel>> GetAllModels() override;
 		_Check_return_ std::shared_ptr<model::mapiRowModel> GetOneModel(ULONG ulPropTag) override;
+
+	protected:
+		propBagFlags GetFlags() const override;
 
 	private:
 		std::wstring m_lpwszProfile;

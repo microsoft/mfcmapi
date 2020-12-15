@@ -25,7 +25,6 @@ namespace propertybag
 	public:
 		virtual ~IMAPIPropertyBag() = default;
 
-		virtual propBagFlags GetFlags() const = 0;
 		virtual propBagType GetType() const = 0;
 		virtual bool IsEqual(const std::shared_ptr<IMAPIPropertyBag> lpPropBag) const = 0;
 
@@ -48,5 +47,8 @@ namespace propertybag
 		// Model implementation
 		virtual _Check_return_ std::vector<std::shared_ptr<model::mapiRowModel>> GetAllModels() = 0;
 		virtual _Check_return_ std::shared_ptr<model::mapiRowModel> GetOneModel(ULONG ulPropTag) = 0;
+
+	protected:
+		virtual propBagFlags GetFlags() const = 0;
 	};
 } // namespace propertybag
