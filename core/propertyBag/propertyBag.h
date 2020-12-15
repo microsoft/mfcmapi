@@ -41,8 +41,7 @@ namespace propertybag
 		bool IsAB() { return (GetFlags() & propBagFlags::AB) == propBagFlags::AB; }
 
 		// Model implementation
-		// TODO: make this pure virtual after implemented by existing rows
-		virtual _Check_return_ std::vector<std::shared_ptr<model::mapiRowModel>> GetAllModels() { return {}; }
-		virtual _Check_return_ std::shared_ptr<model::mapiRowModel> GetOneModel(ULONG /*ulPropTag*/) { return {}; }
+		virtual _Check_return_ std::vector<std::shared_ptr<model::mapiRowModel>> GetAllModels() = 0;
+		virtual _Check_return_ std::shared_ptr<model::mapiRowModel> GetOneModel(ULONG ulPropTag) = 0;
 	};
 } // namespace propertybag
