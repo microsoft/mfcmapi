@@ -965,7 +965,6 @@ namespace controls::sortlistctrl
 
 	void CSingleMAPIPropListCtrl::OnEditGivenProp(ULONG ulPropTag)
 	{
-		auto hRes = S_OK;
 		LPSPropValue lpEditProp = nullptr;
 
 		if (!m_lpPropBag) return;
