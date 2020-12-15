@@ -1504,7 +1504,7 @@ namespace controls::sortlistctrl
 			if (lpRowPropBag)
 			{
 				SRow MyRow = {0};
-				static_cast<void>(lpRowPropBag->GetAllProps(&MyRow.cValues, &MyRow.lpProps));
+				static_cast<void>(lpRowPropBag->GetAllProps(&MyRow.cValues, &MyRow.lpProps)); // No need to free
 				MyAddInMenuParams.lpRow = &MyRow;
 				MyAddInMenuParams.ulCurrentFlags |= MENU_FLAGS_ROW;
 			}

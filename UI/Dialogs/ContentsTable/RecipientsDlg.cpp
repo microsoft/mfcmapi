@@ -168,11 +168,12 @@ namespace dialog
 
 		ULONG cProps = 0;
 		LPSPropValue lpProps = nullptr;
-		const auto lpRowPropBag = std::dynamic_pointer_cast<propertybag::rowPropertyBag>(m_lpPropDisplay->GetDataSource());
+		const auto lpRowPropBag =
+			std::dynamic_pointer_cast<propertybag::rowPropertyBag>(m_lpPropDisplay->GetDataSource());
 
 		if (lpRowPropBag)
 		{
-			EC_H_S(lpRowPropBag->GetAllProps(&cProps, &lpProps));
+			EC_H_S(lpRowPropBag->GetAllProps(&cProps, &lpProps)); // No need to free
 			if (lpProps)
 			{
 				ADRLIST adrList = {};
@@ -204,7 +205,6 @@ namespace dialog
 				}
 
 				MAPIFreeBuffer(adrList.aEntries[0].rgPropVals);
-				lpRowPropBag->FreeBuffer(lpProps); // TODO: Needed?
 
 				OnRefreshView();
 			}
@@ -225,7 +225,7 @@ namespace dialog
 			std::dynamic_pointer_cast<propertybag::rowPropertyBag>(m_lpPropDisplay->GetDataSource());
 		if (lpRowPropBag)
 		{
-			auto hRes = EC_H(lpRowPropBag->GetAllProps(&cProps, &lpProps));
+			auto hRes = EC_H(lpRowPropBag->GetAllProps(&cProps, &lpProps)); // No need to free
 			if (lpProps)
 			{
 				auto lpAB = m_lpMapiObjects->GetAddrBook(true); // do not release
@@ -276,8 +276,6 @@ namespace dialog
 						OnRefreshView();
 					}
 				}
-
-				lpRowPropBag->FreeBuffer(lpProps); //  TODO: Needed?
 			}
 		}
 	}
