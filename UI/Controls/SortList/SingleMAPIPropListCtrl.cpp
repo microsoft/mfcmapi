@@ -342,8 +342,7 @@ namespace controls::sortlistctrl
 		if (m_lpHostDlg)
 		{
 			// This flag may be set by a GetProps call, so we make this check AFTER we get our props
-			if ((m_lpPropBag->GetFlags() & propertybag::propBagFlags::BackedByGetProps) ==
-				propertybag::propBagFlags::BackedByGetProps)
+			if (m_lpPropBag->IsBackedByGetProps())
 			{
 				m_lpHostDlg->UpdateStatusBarText(statusPane::infoText, IDS_PROPSFROMGETPROPS);
 			}
