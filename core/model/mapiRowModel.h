@@ -1,5 +1,6 @@
 #pragma once
 #include <core/utility/strings.h>
+#include <core/interpret/proptype.h>
 
 namespace model
 {
@@ -68,7 +69,7 @@ namespace model
 		const ULONG ulPropTag() { return _ulPropTag; }
 		void ulPropTag(const ULONG v) { _ulPropTag = v; }
 
-		const ULONG propType() { return PROP_TYPE(_ulPropTag); }
+		const std::wstring propType() { return proptype::TypeToString(PROP_TYPE(_ulPropTag)); }
 
 	private:
 		std::wstring _name;

@@ -473,7 +473,7 @@ namespace controls::sortlistctrl
 		SetItemText(iRow, columns::pcPROPBESTGUESS, model->name());
 		SetItemText(iRow, columns::pcPROPOTHERNAMES, model->otherName());
 		SetItemText(iRow, columns::pcPROPTAG, model->tag());
-		SetItemText(iRow, columns::pcPROPTYPE, proptype::TypeToString(ulPropTag)); // TODO: move this back into model
+		SetItemText(iRow, columns::pcPROPTYPE, model->propType());
 		SetItemText(iRow, columns::pcPROPVAL, model->value());
 		SetItemText(iRow, columns::pcPROPVALALT, model->altValue());
 		SetItemText(iRow, columns::pcPROPSMARTVIEW, model->smartView());
@@ -1009,7 +1009,8 @@ namespace controls::sortlistctrl
 			lpEditProp = lpPropBag->GetOneProp(ulPropTag);
 		}
 
-		if (lpEditProp && PROP_TYPE(lpEditProp->ulPropTag) == PT_ERROR && lpEditProp->Value.err == MAPI_E_NOT_ENOUGH_MEMORY)
+		if (lpEditProp && PROP_TYPE(lpEditProp->ulPropTag) == PT_ERROR &&
+			lpEditProp->Value.err == MAPI_E_NOT_ENOUGH_MEMORY)
 		{
 			bUseStream = true;
 		}
