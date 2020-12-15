@@ -39,6 +39,7 @@ namespace propertybag
 		virtual _Check_return_ HRESULT SetProp(LPSPropValue lpProp) = 0;
 		virtual _Check_return_ HRESULT DeleteProp(ULONG ulPropTag) = 0;
 		bool IsAB() { return (GetFlags() & propBagFlags::AB) == propBagFlags::AB; }
+		bool IsModified() { return (GetFlags() & propBagFlags::Modified) == propBagFlags::Modified; }
 
 		// Model implementation
 		virtual _Check_return_ std::vector<std::shared_ptr<model::mapiRowModel>> GetAllModels() = 0;

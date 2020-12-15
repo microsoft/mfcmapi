@@ -483,7 +483,7 @@ namespace controls::sortlistctrl
 
 	_Check_return_ bool CSingleMAPIPropListCtrl::IsModifiedPropVals() const
 	{
-		return propertybag::propBagFlags::Modified == (m_lpPropBag->GetFlags() & propertybag::propBagFlags::Modified);
+		return m_lpPropBag && m_lpPropBag->IsModified();
 	}
 
 	void CSingleMAPIPropListCtrl::SetDataSource(
