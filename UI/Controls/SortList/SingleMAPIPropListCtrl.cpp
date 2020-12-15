@@ -202,8 +202,7 @@ namespace controls::sortlistctrl
 				}
 			}
 
-			const bool bCanDelete =
-				bPropSelected && m_lpPropBag && m_lpPropBag->GetType() != propertybag::propBagType::Row;
+			const bool bCanDelete = bPropSelected && m_lpPropBag && m_lpPropBag->CanDelete();
 			pMenu->EnableMenuItem(ID_DELETEPROPERTY, DIM(bCanDelete));
 		}
 	}

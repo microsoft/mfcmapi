@@ -9,6 +9,7 @@ namespace propertybag
 		Modified = 0x0001, // The property bag has been modified
 		BackedByGetProps = 0x0002, // The property bag is rendering from a GetProps call
 		AB = 0x0004, // The property bag represents an Address Book object
+		CanDelete = 0x0008, // The property bag supports deletion
 	};
 	DEFINE_ENUM_FLAG_OPERATORS(propBagFlags)
 
@@ -43,6 +44,7 @@ namespace propertybag
 		{
 			return (GetFlags() & propBagFlags::BackedByGetProps) == propBagFlags::BackedByGetProps;
 		}
+		bool CanDelete() { return (GetFlags() & propBagFlags::CanDelete) == propBagFlags::CanDelete; }
 
 		// Model implementation
 		virtual _Check_return_ std::vector<std::shared_ptr<model::mapiRowModel>> GetAllModels() = 0;

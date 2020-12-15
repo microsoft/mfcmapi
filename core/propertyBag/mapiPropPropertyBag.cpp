@@ -25,7 +25,7 @@ namespace propertybag
 
 	propBagFlags mapiPropPropertyBag::GetFlags() const
 	{
-		auto ulFlags = propBagFlags::None;
+		auto ulFlags = propBagFlags::None | propBagFlags::CanDelete;
 		if (m_bIsAB) ulFlags |= propBagFlags::AB;
 		if (m_bGetPropsSucceeded) ulFlags |= propBagFlags::BackedByGetProps;
 		return ulFlags;
