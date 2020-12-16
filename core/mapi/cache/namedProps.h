@@ -76,8 +76,8 @@ namespace cache
 		bool bStringsCached{}; // We have cached strings
 	};
 
-	const ULONG __LOWERBOUND = 0x8000;
-	const ULONG __UPPERBOUND = 0xFFFF;
+	constexpr ULONG __LOWERBOUND = 0x8000;
+	constexpr ULONG __UPPERBOUND = 0xFFFF;
 
 	_Check_return_ std::shared_ptr<namedPropCacheEntry>
 	GetNameFromID(_In_ LPMAPIPROP lpMAPIProp, _In_opt_ const SBinary* sig, _In_ ULONG ulPropTag, ULONG ulFlags);

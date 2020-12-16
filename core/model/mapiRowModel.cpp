@@ -13,9 +13,9 @@ namespace model
 {
 	_Check_return_ std::shared_ptr<model::mapiRowModel> propToModelInternal(
 		_In_opt_ const SPropValue* lpPropVal,
-		const ULONG ulPropTag,
+		_In_ const ULONG ulPropTag,
 		_In_opt_ const LPMAPIPROP lpProp,
-		const bool bIsAB,
+		_In_ const bool bIsAB,
 		_In_opt_ const SBinary* sig,
 		_In_opt_ const MAPINAMEID* lpNameID)
 	{
@@ -55,8 +55,11 @@ namespace model
 		return ret;
 	}
 
-	_Check_return_ std::vector<std::shared_ptr<model::mapiRowModel>>
-	propsToModels(ULONG cValues, const SPropValue* lpPropVals, const LPMAPIPROP lpProp, const bool bIsAB)
+	_Check_return_ std::vector<std::shared_ptr<model::mapiRowModel>> propsToModels(
+		_In_ ULONG cValues,
+		_In_ const SPropValue* lpPropVals,
+		_In_ const LPMAPIPROP lpProp,
+		_In_ const bool bIsAB)
 	{
 		if (!cValues || !lpPropVals) return {};
 		const SBinary* lpSigBin = nullptr; // Will be borrowed. Do not free.
@@ -86,12 +89,12 @@ namespace model
 					}
 
 					// Second get a mapping signature
-					const auto lpMappingSig = mapi::FindProp(lpPropVals, cValues, PR_MAPPING_SIGNATURE);
+					const SPropValue* lpMappingSig = mapi::FindProp(lpPropVals, cValues, PR_MAPPING_SIGNATURE);
 					if (lpMappingSig && lpMappingSig->ulPropTag == PR_MAPPING_SIGNATURE)
 						lpSigBin = &mapi::getBin(lpMappingSig);
 					if (!lpSigBin && lpProp)
 					{
-						WC_H(HrGetOneProp(lpProp, PR_MAPPING_SIGNATURE, &lpMappingSigFromObject));
+						WC_H_S(HrGetOneProp(lpProp, PR_MAPPING_SIGNATURE, &lpMappingSigFromObject));
 						if (lpMappingSigFromObject && lpMappingSigFromObject->ulPropTag == PR_MAPPING_SIGNATURE)
 							lpSigBin = &mapi::getBin(lpMappingSigFromObject);
 					}
@@ -116,8 +119,11 @@ namespace model
 		return models;
 	}
 
-	_Check_return_ std::shared_ptr<model::mapiRowModel>
-	propToModel(const SPropValue* lpPropVal, const ULONG ulPropTag, const LPMAPIPROP lpProp, const bool bIsAB)
+	_Check_return_ std::shared_ptr<model::mapiRowModel> propToModel(
+		_In_ const SPropValue* lpPropVal,
+		_In_ const ULONG ulPropTag,
+		_In_ const LPMAPIPROP lpProp,
+		_In_ const bool bIsAB)
 	{
 		return propToModelInternal(lpPropVal, ulPropTag, lpProp, bIsAB, nullptr, nullptr);
 	}
