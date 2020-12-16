@@ -27,7 +27,7 @@ namespace propertybag
 		virtual ~IMAPIPropertyBag() = default;
 
 		virtual propBagType GetType() const = 0;
-		virtual bool IsEqual(const std::shared_ptr<IMAPIPropertyBag> lpPropBag) const = 0;
+		virtual bool IsEqual(_In_ const std::shared_ptr<IMAPIPropertyBag> lpPropBag) const = 0;
 
 		virtual _Check_return_ LPMAPIPROP GetMAPIProp() const = 0;
 
@@ -35,9 +35,9 @@ namespace propertybag
 		virtual _Check_return_ HRESULT Commit() = 0;
 		virtual _Check_return_ LPSPropValue GetOneProp(ULONG ulPropTag) = 0;
 		virtual void FreeBuffer(LPSPropValue lpProp) = 0;
-		virtual _Check_return_ HRESULT SetProps(ULONG cValues, LPSPropValue lpPropArray) = 0;
-		virtual _Check_return_ HRESULT SetProp(LPSPropValue lpProp) = 0;
-		virtual _Check_return_ HRESULT DeleteProp(ULONG ulPropTag) = 0;
+		virtual _Check_return_ HRESULT SetProps(_In_ ULONG cValues, _In_ LPSPropValue lpPropArray) = 0;
+		virtual _Check_return_ HRESULT SetProp(_In_ LPSPropValue lpProp) = 0;
+		virtual _Check_return_ HRESULT DeleteProp(_In_ ULONG ulPropTag) = 0;
 		bool IsAB() { return (GetFlags() & propBagFlags::AB) == propBagFlags::AB; }
 		bool IsModified() { return (GetFlags() & propBagFlags::Modified) == propBagFlags::Modified; }
 		bool IsBackedByGetProps()
@@ -48,7 +48,7 @@ namespace propertybag
 
 		// Model implementation
 		virtual _Check_return_ std::vector<std::shared_ptr<model::mapiRowModel>> GetAllModels() = 0;
-		virtual _Check_return_ std::shared_ptr<model::mapiRowModel> GetOneModel(ULONG ulPropTag) = 0;
+		virtual _Check_return_ std::shared_ptr<model::mapiRowModel> GetOneModel(_In_ ULONG ulPropTag) = 0;
 
 	protected:
 		virtual propBagFlags GetFlags() const = 0;

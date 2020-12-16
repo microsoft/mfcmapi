@@ -5,7 +5,7 @@
 
 namespace propertybag
 {
-	rowPropertyBag::rowPropertyBag(sortlistdata::sortListData* lpListData, bool bIsAB)
+	rowPropertyBag::rowPropertyBag(_In_ sortlistdata::sortListData* lpListData, _In_ bool bIsAB)
 		: m_lpListData(lpListData), m_bIsAB(bIsAB)
 	{
 		if (lpListData)
@@ -25,7 +25,7 @@ namespace propertybag
 		return ulFlags;
 	}
 
-	bool rowPropertyBag::IsEqual(const std::shared_ptr<IMAPIPropertyBag> lpPropBag) const
+	bool rowPropertyBag::IsEqual(_In_ const std::shared_ptr<IMAPIPropertyBag> lpPropBag) const
 	{
 		if (!lpPropBag) return false;
 		if (GetType() != lpPropBag->GetType()) return false;
@@ -42,7 +42,7 @@ namespace propertybag
 		return false;
 	}
 
-	_Check_return_ HRESULT rowPropertyBag::GetAllProps(ULONG FAR* lpcValues, LPSPropValue FAR* lppPropArray)
+	_Check_return_ HRESULT rowPropertyBag::GetAllProps(_In_ ULONG FAR* lpcValues, _In_ LPSPropValue FAR* lppPropArray)
 	{
 		if (!lpcValues || !lppPropArray) return MAPI_E_INVALID_PARAMETER;
 
@@ -53,7 +53,7 @@ namespace propertybag
 	}
 
 	// Always returns a propval, even in errors
-	_Check_return_ LPSPropValue rowPropertyBag::GetOneProp(ULONG ulPropTag)
+	_Check_return_ LPSPropValue rowPropertyBag::GetOneProp(_In_ ULONG ulPropTag)
 	{
 		const auto prop = PpropFindProp(m_lpProps, m_cValues, ulPropTag);
 		if (prop) return prop;
@@ -174,7 +174,7 @@ namespace propertybag
 		return hRes;
 	}
 
-	_Check_return_ HRESULT rowPropertyBag::SetProp(LPSPropValue lpProp)
+	_Check_return_ HRESULT rowPropertyBag::SetProp(_In_ LPSPropValue lpProp)
 	{
 		ULONG ulNewArray = NULL;
 		LPSPropValue lpNewArray = nullptr;
@@ -199,7 +199,7 @@ namespace propertybag
 		return model::propsToModels(m_cValues, m_lpProps, nullptr, m_bIsAB);
 	}
 
-	_Check_return_ std::shared_ptr<model::mapiRowModel> rowPropertyBag::GetOneModel(ULONG ulPropTag)
+	_Check_return_ std::shared_ptr<model::mapiRowModel> rowPropertyBag::GetOneModel(_In_ ULONG ulPropTag)
 	{
 		const SPropValue* lpPropVal = PpropFindProp(m_lpProps, m_cValues, ulPropTag);
 		if (lpPropVal) return model::propToModel(lpPropVal, ulPropTag, nullptr, m_bIsAB);

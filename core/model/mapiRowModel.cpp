@@ -57,8 +57,8 @@ namespace model
 
 	_Check_return_ std::vector<std::shared_ptr<model::mapiRowModel>> propsToModels(
 		_In_ ULONG cValues,
-		_In_ const SPropValue* lpPropVals,
-		_In_ const LPMAPIPROP lpProp,
+		_In_opt_ const SPropValue* lpPropVals,
+		_In_opt_ const LPMAPIPROP lpProp,
 		_In_ const bool bIsAB)
 	{
 		if (!cValues || !lpPropVals) return {};
@@ -122,7 +122,7 @@ namespace model
 	_Check_return_ std::shared_ptr<model::mapiRowModel> propToModel(
 		_In_ const SPropValue* lpPropVal,
 		_In_ const ULONG ulPropTag,
-		_In_ const LPMAPIPROP lpProp,
+		_In_opt_ const LPMAPIPROP lpProp,
 		_In_ const bool bIsAB)
 	{
 		return propToModelInternal(lpPropVal, ulPropTag, lpProp, bIsAB, nullptr, nullptr);

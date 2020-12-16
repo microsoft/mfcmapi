@@ -71,7 +71,7 @@ namespace cache
 		// Returns a vector of NamedPropCacheEntry for the input tags
 		// Sourced directly from MAPI
 		_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>>
-		GetNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp, _In_ LPSPropTagArray* lppPropTags, ULONG ulFlags)
+		GetNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp, _In_opt_ LPSPropTagArray* lppPropTags, ULONG ulFlags)
 		{
 			if (!lpMAPIProp) return {};
 
@@ -320,8 +320,8 @@ namespace cache
 	// If signature is empty then do not use a signature
 	_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>> namedPropCache::GetNamesFromIDs(
 		_In_ LPMAPIPROP lpMAPIProp,
-		const std::vector<BYTE>& sig,
-		_In_ LPSPropTagArray* lppPropTags)
+		_In_ const std::vector<BYTE>& sig,
+		_In_opt_ LPSPropTagArray* lppPropTags)
 	{
 		if (!lpMAPIProp) return {};
 

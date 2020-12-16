@@ -10,7 +10,10 @@
 
 namespace propertybag
 {
-	mapiPropPropertyBag::mapiPropPropertyBag(LPMAPIPROP lpProp, sortlistdata::sortListData* lpListData, bool bIsAB)
+	mapiPropPropertyBag::mapiPropPropertyBag(
+		_In_ LPMAPIPROP lpProp,
+		_In_ sortlistdata::sortListData* lpListData,
+		_In_ bool bIsAB)
 		: m_lpProp(lpProp), m_lpListData(lpListData), m_bIsAB(bIsAB)
 	{
 		if (m_lpProp) m_lpProp->AddRef();
@@ -31,7 +34,7 @@ namespace propertybag
 		return ulFlags;
 	}
 
-	bool mapiPropPropertyBag::IsEqual(const std::shared_ptr<IMAPIPropertyBag> lpPropBag) const
+	bool mapiPropPropertyBag::IsEqual(_In_ const std::shared_ptr<IMAPIPropertyBag> lpPropBag) const
 	{
 		if (!lpPropBag) return false;
 		if (GetType() != lpPropBag->GetType()) return false;
@@ -55,7 +58,7 @@ namespace propertybag
 	}
 
 	// Always returns a propval, even in errors, unless we fail allocating memory
-	_Check_return_ LPSPropValue mapiPropPropertyBag::GetOneProp(ULONG ulPropTag)
+	_Check_return_ LPSPropValue mapiPropPropertyBag::GetOneProp(_In_ ULONG ulPropTag)
 	{
 		auto lpPropRet = LPSPropValue{};
 		auto hRes = WC_MAPI(mapi::HrGetOnePropEx(m_lpProp, ulPropTag, fMapiUnicode, &lpPropRet));
@@ -87,7 +90,7 @@ namespace propertybag
 		return lpPropRet;
 	}
 
-	void mapiPropPropertyBag::FreeBuffer(LPSPropValue lpProp)
+	void mapiPropPropertyBag::FreeBuffer(_In_ LPSPropValue lpProp)
 	{
 		// m_lpListData->lpSourceProps is the only data we might hand out that we didn't allocate
 		// Don't delete it!!!
@@ -96,7 +99,7 @@ namespace propertybag
 		if (lpProp) MAPIFreeBuffer(lpProp);
 	}
 
-	_Check_return_ HRESULT mapiPropPropertyBag::SetProps(ULONG cValues, LPSPropValue lpPropArray)
+	_Check_return_ HRESULT mapiPropPropertyBag::SetProps(_In_ ULONG cValues, _In_ LPSPropValue lpPropArray)
 	{
 		if (nullptr == m_lpProp) return S_OK;
 
@@ -107,14 +110,14 @@ namespace propertybag
 		return hRes;
 	}
 
-	_Check_return_ HRESULT mapiPropPropertyBag::SetProp(LPSPropValue lpProp)
+	_Check_return_ HRESULT mapiPropPropertyBag::SetProp(_In_ LPSPropValue lpProp)
 	{
 		if (nullptr == m_lpProp) return S_OK;
 
 		return WC_H(HrSetOneProp(m_lpProp, lpProp));
 	}
 
-	_Check_return_ HRESULT mapiPropPropertyBag::DeleteProp(ULONG ulPropTag)
+	_Check_return_ HRESULT mapiPropPropertyBag::DeleteProp(_In_ ULONG ulPropTag)
 	{
 		if (nullptr == m_lpProp) return S_OK;
 
@@ -181,7 +184,7 @@ namespace propertybag
 
 		return {};
 	}
-	_Check_return_ std::shared_ptr<model::mapiRowModel> mapiPropPropertyBag::GetOneModel(ULONG ulPropTag)
+	_Check_return_ std::shared_ptr<model::mapiRowModel> mapiPropPropertyBag::GetOneModel(_In_ ULONG ulPropTag)
 	{
 		auto lpPropVal = LPSPropValue{};
 		auto hRes = WC_MAPI(mapi::HrGetOnePropEx(m_lpProp, ulPropTag, fMapiUnicode, &lpPropVal));

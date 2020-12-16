@@ -178,7 +178,7 @@ namespace cache
 
 	// No signature form: look up and use signature if possible
 	_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>>
-	GetNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp, _In_ LPSPropTagArray* lppPropTags, ULONG ulFlags)
+	GetNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp, _In_opt_ LPSPropTagArray* lppPropTags, ULONG ulFlags)
 	{
 		SBinary sig = {};
 		LPSPropValue lpProp = nullptr;
@@ -198,7 +198,7 @@ namespace cache
 	_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>> GetNamesFromIDs(
 		_In_ LPMAPIPROP lpMAPIProp,
 		_In_opt_ const SBinary* sig,
-		_In_ LPSPropTagArray* lppPropTags,
+		_In_opt_ LPSPropTagArray* lppPropTags,
 		ULONG ulFlags)
 	{
 		if (!lpMAPIProp) return {};
@@ -402,7 +402,7 @@ namespace cache
 	}
 
 	// Returns string built from NameIDArray
-	std::vector<std::wstring> NameIDToPropNames(_In_ const MAPINAMEID* lpNameID)
+	std::vector<std::wstring> NameIDToPropNames(_In_opt_ const MAPINAMEID* lpNameID)
 	{
 		std::vector<std::wstring> results;
 		if (!lpNameID) return {};
