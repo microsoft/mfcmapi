@@ -4,39 +4,6 @@
 
 namespace model
 {
-	/*
-	Name: Single prop tag, named prop name, reg key name - string
-	Other Names: multiple prop names - string
-	Tag: 8 digit hex prop tag / ulPropTag - number
-	Type: PT_* type of the property - number as string
-	Value: string representation of value - string
-	Value (Alternate): alternate string representation - string
-	Smart view: smart view as string - string
-	Named prop name: named prop name - either a string or id: * - string
-	Named prop GUID: guid string
-	Object should expose these strings/numbers (maybe all strings?)
-		Only data stored in a row is ulPropTag
-		maybe a prop type for icon selection?
-	InsertRow returns a sortListData object, which we store ulPropTag in
-	*/
-
-	/*
-		pcPROPBESTGUESS,
-		pcPROPOTHERNAMES,
-		pcPROPTAG,
-		pcPROPTYPE,
-		pcPROPVAL,
-		pcPROPVALALT,
-		pcPROPSMARTVIEW,
-		pcPROPNAMEDNAME,
-		pcPROPNAMEDGUID,
-	*/
-
-	// TODO: Find right balance between this being a dumb "just data" class
-	// and having smarts, like named prop mapping
-	// Some obvious ideas:
-	// Setting ulPropTag could set name/otherName
-	// should we hold address book status for prop lookup?
 	class mapiRowModel
 	{
 	public:
