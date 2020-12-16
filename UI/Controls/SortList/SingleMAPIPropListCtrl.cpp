@@ -328,7 +328,7 @@ namespace controls::sortlistctrl
 		if (!models.empty())
 		{
 			// Set the item count to speed up the addition of items
-			SetItemCount(models.size());
+			SetItemCount(static_cast<int>(models.size()));
 
 			// get each model in turn and add it to the list
 			ULONG ulCurListBoxRow = 0;

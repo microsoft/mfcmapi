@@ -78,7 +78,7 @@ namespace model
 
 			if (!tags.empty())
 			{
-				auto lpTags = mapi::allocate<LPSPropTagArray>(CbNewSPropTagArray(tags.size()));
+				auto lpTags = mapi::allocate<LPSPropTagArray>(CbNewSPropTagArray(static_cast<ULONG>(tags.size())));
 				if (lpTags)
 				{
 					lpTags->cValues = tags.size();
