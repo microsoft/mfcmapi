@@ -2892,4 +2892,8 @@ namespace mapi
 		return false;
 	}
 
+	LPSPropValue FindProp(const SPropValue* lpPropArray, ULONG cValues, ULONG ulPropTag)
+	{
+		return PpropFindProp(const_cast<SPropValue*>(lpPropArray), cValues, ulPropTag);
+	}
 } // namespace mapi

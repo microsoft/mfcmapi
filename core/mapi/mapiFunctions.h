@@ -384,4 +384,6 @@ namespace mapi
 
 	bool IsABObject(_In_opt_ LPMAPIPROP lpProp);
 	bool IsABObject(ULONG ulProps, LPSPropValue lpProps) noexcept;
+
+	LPSPropValue FindProp(const SPropValue* lpPropArray, ULONG cValues, ULONG ulPropTag);
 } // namespace mapi

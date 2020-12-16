@@ -160,13 +160,7 @@ namespace propertybag
 				CHECKHRESMSG(hRes, IDS_GETPROPSNULLFAILED);
 			}
 
-			auto models = std::vector<std::shared_ptr<model::mapiRowModel>>{};
-			for (ULONG i = 0; i < cValues; i++)
-			{
-				auto prop = lpPropArray[i];
-				models.push_back(model::propToModel(&prop, prop.ulPropTag, m_lpProp, m_bIsAB));
-			}
-
+			const auto models = model::propsToModels(cValues, lpPropArray, m_lpProp, m_bIsAB);
 			MAPIFreeBuffer(lpPropArray);
 			return models;
 		}
