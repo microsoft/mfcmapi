@@ -43,9 +43,8 @@ namespace controls::sortlistctrl
 	CSingleMAPIPropListCtrl::CSingleMAPIPropListCtrl(
 		_In_ CWnd* pCreateParent,
 		_In_ dialog::CBaseDialog* lpHostDlg,
-		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
-		bool bIsAB)
-		: m_lpMapiObjects(lpMapiObjects), m_lpHostDlg(lpHostDlg), m_bIsAB(bIsAB)
+		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects)
+		: m_lpMapiObjects(lpMapiObjects), m_lpHostDlg(lpHostDlg)
 
 	{
 		TRACE_CONSTRUCTOR(CLASS);
@@ -160,10 +159,9 @@ namespace controls::sortlistctrl
 	{
 		if (pMenu)
 		{
-			ULONG ulPropTag = NULL;
 			const auto bHasSource = m_lpPropBag != nullptr;
 
-			GetSelectedPropTag(&ulPropTag);
+			const auto ulPropTag = GetSelectedPropTag();
 			const auto bPropSelected = NULL != ulPropTag;
 
 			const auto ulStatus = cache::CGlobalCache::getInstance().GetBufferStatus();
@@ -177,7 +175,6 @@ namespace controls::sortlistctrl
 
 			pMenu->EnableMenuItem(ID_COPY_PROPERTY, DIM(bHasSource));
 
-			pMenu->EnableMenuItem(ID_DELETEPROPERTY, DIM(bHasSource && bPropSelected));
 			pMenu->EnableMenuItem(
 				ID_DISPLAYPROPERTYASSECURITYDESCRIPTORPROPSHEET,
 				DIM(bHasSource && bPropSelected && import::pfnEditSecurity));
@@ -205,10 +202,8 @@ namespace controls::sortlistctrl
 				}
 			}
 
-			if (!m_lpPropBag || m_lpPropBag->GetType() == propertybag::propBagType::Row)
-			{
-				pMenu->EnableMenuItem(ID_DELETEPROPERTY, DIM(false));
-			}
+			const bool bCanDelete = bPropSelected && m_lpPropBag && m_lpPropBag->CanDelete();
+			pMenu->EnableMenuItem(ID_DELETEPROPERTY, DIM(bCanDelete));
 		}
 	}
 
@@ -280,10 +275,8 @@ namespace controls::sortlistctrl
 		return HandleAddInMenu(wMenuSelect);
 	}
 
-	void CSingleMAPIPropListCtrl::GetSelectedPropTag(_Out_ ULONG* lpPropTag) const
+	ULONG CSingleMAPIPropListCtrl::GetSelectedPropTag() const
 	{
-		if (lpPropTag) *lpPropTag = NULL;
-
 		const auto iItem = GetNextItem(-1, LVNI_FOCUSED | LVNI_SELECTED);
 
 		if (-1 != iItem)
@@ -292,250 +285,79 @@ namespace controls::sortlistctrl
 			if (lpListData)
 			{
 				const auto prop = lpListData->cast<sortlistdata::propListData>();
-				if (prop && lpPropTag)
+				if (prop)
 				{
-					*lpPropTag = prop->m_ulPropTag;
+					output::DebugPrintEx(
+						output::dbgLevel::Generic,
+						CLASS,
+						L"GetSelectedPropTag",
+						L"returning lpPropTag = 0x%X\n",
+						prop->m_ulPropTag);
+					return prop->m_ulPropTag;
 				}
 			}
 		}
 
-		if (lpPropTag)
-		{
-			output::DebugPrintEx(
-				output::dbgLevel::Generic, CLASS, L"GetSelectedPropTag", L"returning lpPropTag = 0x%X\n", *lpPropTag);
-		}
-	}
-
-	bool IsABPropSet(ULONG ulProps, LPSPropValue lpProps) noexcept
-	{
-		const auto lpObjectType = PpropFindProp(lpProps, ulProps, PR_OBJECT_TYPE);
-
-		if (lpObjectType && PR_OBJECT_TYPE == lpObjectType->ulPropTag)
-		{
-			switch (lpObjectType->Value.l)
-			{
-			case MAPI_ADDRBOOK:
-			case MAPI_ABCONT:
-			case MAPI_MAILUSER:
-			case MAPI_DISTLIST:
-				return true;
-			}
-		}
-		return false;
+		return 0;
 	}
 
 	// Call GetProps with NULL to get a list of (almost) all properties.
 	// Parse this list and render them in the control.
 	// Add any extra props we've asked for through the UI
-	_Check_return_ HRESULT CSingleMAPIPropListCtrl::LoadMAPIPropList()
+	void CSingleMAPIPropListCtrl::LoadMAPIPropList()
 	{
-		auto hRes = S_OK;
-		ULONG ulCurListBoxRow = 0;
+		if (!m_lpPropBag) return;
+
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
-		ULONG ulProps = 0;
-		LPSPropValue lpPropsToAdd = nullptr;
-		LPSPropValue lpMappingSig = nullptr;
-
-		if (!m_lpPropBag) return MAPI_E_INVALID_PARAMETER;
-
+		auto models = std::vector<std::shared_ptr<model::mapiRowModel>>{};
 		if (!registry::onlyAdditionalProperties)
 		{
-			hRes = WC_H(m_lpPropBag->GetAllProps(&ulProps, &lpPropsToAdd));
-
-			// If this is an AB object, make sure we interpret it as such
-			if (IsABPropSet(ulProps, lpPropsToAdd))
-			{
-				m_bIsAB = true;
-			}
-
-			if (m_lpHostDlg)
-			{
-				// This flag may be set by a GetProps call, so we make this check AFTER we get our props
-				if (propertybag::propBagFlags::BackedByGetProps == m_lpPropBag->GetFlags())
-				{
-					m_lpHostDlg->UpdateStatusBarText(statusPane::infoText, IDS_PROPSFROMGETPROPS);
-				}
-				else
-				{
-					m_lpHostDlg->UpdateStatusBarText(statusPane::infoText, IDS_PROPSFROMROW);
-				}
-			}
-
-			// If we got some properties and PR_MAPPING_SIGNATURE is among them, grab it now
-			lpMappingSig = PpropFindProp(lpPropsToAdd, ulProps, PR_MAPPING_SIGNATURE);
-
-			// Add our props to the view
-			if (lpPropsToAdd)
-			{
-				std::vector<std::shared_ptr<cache::namedPropCacheEntry>> names{};
-				ULONG ulCurTag = 0;
-				if (!m_bIsAB && registry::parseNamedProps)
-				{
-					// If we don't pass named property information to AddPropToListBox, it will look it up for us
-					// But this costs a GetNamesFromIDs call for each property we add
-					// As a speed up, we put together a single GetNamesFromIDs call here and pass its results to AddPropToListBox
-					// The speed up in non-cached mode is enormous
-					if (m_lpPropBag->GetMAPIProp())
-					{
-						ULONG ulNamedProps = 0;
-
-						// First, count how many props to look up
-						if (registry::getPropNamesOnAllProps)
-						{
-							ulNamedProps = ulProps;
-						}
-						else
-						{
-							for (ULONG ulCurPropRow = 0; ulCurPropRow < ulProps; ulCurPropRow++)
-							{
-								if (PROP_ID(lpPropsToAdd[ulCurPropRow].ulPropTag) >= 0x8000) ulNamedProps++;
-							}
-						}
-
-						if (ulNamedProps)
-						{
-							// Allocate our tag array
-							auto lpTag = mapi::allocate<LPSPropTagArray>(CbNewSPropTagArray(ulNamedProps));
-							if (lpTag)
-							{
-								// Populate the array
-								lpTag->cValues = ulNamedProps;
-								if (registry::getPropNamesOnAllProps)
-								{
-									for (ULONG ulCurPropRow = 0; ulCurPropRow < ulProps; ulCurPropRow++)
-									{
-										mapi::setTag(lpTag, ulCurPropRow) = lpPropsToAdd[ulCurPropRow].ulPropTag;
-									}
-								}
-								else
-								{
-									for (ULONG ulCurPropRow = 0; ulCurPropRow < ulProps; ulCurPropRow++)
-									{
-										if (PROP_ID(lpPropsToAdd[ulCurPropRow].ulPropTag) >= 0x8000)
-										{
-											mapi::setTag(lpTag, ulCurTag) = lpPropsToAdd[ulCurPropRow].ulPropTag;
-											ulCurTag++;
-										}
-									}
-								}
-
-								// Get the names
-								if (lpMappingSig)
-								{
-									names = cache::GetNamesFromIDs(
-										m_lpPropBag->GetMAPIProp(), &mapi::getBin(lpMappingSig), &lpTag, NULL);
-								}
-								else
-								{
-									names = cache::GetNamesFromIDs(m_lpPropBag->GetMAPIProp(), &lpTag, NULL);
-								}
-
-								MAPIFreeBuffer(lpTag);
-							}
-						}
-					}
-				}
-
-				// Is this worth it?
-				// Set the item count to speed up the addition of items
-				auto ulTotalRowCount = ulProps;
-				if (m_lpPropBag && m_sptExtraProps) ulTotalRowCount += m_sptExtraProps->cValues;
-				SetItemCount(ulTotalRowCount);
-
-				// get each property in turn and add it to the list
-				ulCurTag = 0;
-				for (ULONG ulCurPropRow = 0; ulCurPropRow < ulProps; ulCurPropRow++)
-				{
-					const MAPINAMEID* lpNameIDInfo = nullptr;
-					// We shouldn't need to check ulCurTag < names.size(), but I fear bad GetNamesFromIDs implementations
-					if (!names.empty() && ulCurTag < names.size())
-					{
-						if (registry::getPropNamesOnAllProps || PROP_ID(lpPropsToAdd[ulCurPropRow].ulPropTag) >= 0x8000)
-						{
-							lpNameIDInfo = names[ulCurTag]->getMapiNameId();
-							ulCurTag++;
-						}
-					}
-
-					AddPropToListBox(
-						ulCurListBoxRow,
-						lpPropsToAdd[ulCurPropRow].ulPropTag,
-						lpNameIDInfo,
-						lpMappingSig ? &mapi::getBin(lpMappingSig) : nullptr,
-						&lpPropsToAdd[ulCurPropRow]);
-
-					ulCurListBoxRow++;
-				}
-			}
+			models = m_lpPropBag->GetAllModels();
 		}
 
 		// Now check if the user has given us any other properties to add and get them one at a time
 		if (m_sptExtraProps)
 		{
-			// Let's get each extra property one at a time
-			ULONG cExtraProps = 0;
-			LPSPropValue pExtraProps = nullptr;
-			SPropValue extraPropForList = {};
-
-			for (ULONG iCurExtraProp = 0; iCurExtraProp < m_sptExtraProps->cValues; iCurExtraProp++)
+			for (ULONG i = 0; i < m_sptExtraProps->cValues; i++)
 			{
-				SPropTagArray pNewTag = {1, mapi::getTag(m_sptExtraProps, iCurExtraProp)};
-
-				// Let's add some extra properties
-				// Don't need to report since we're gonna put show the error in the UI
-				WC_H_S(m_lpPropBag->GetProps(&pNewTag, fMapiUnicode, &cExtraProps, &pExtraProps));
-
-				if (pExtraProps)
-				{
-					extraPropForList.dwAlignPad = pExtraProps[0].dwAlignPad;
-
-					if (PROP_TYPE(mapi::getTag(pNewTag, 0)) == NULL)
-					{
-						// In this case, we started with a NULL tag, but we got a property back - let's 'fix' our tag for the UI
-						mapi::setTag(pNewTag, 0) =
-							CHANGE_PROP_TYPE(mapi::getTag(pNewTag, 0), PROP_TYPE(pExtraProps[0].ulPropTag));
-					}
-
-					// We want to give our parser the tag that came back from GetProps
-					extraPropForList.ulPropTag = pExtraProps[0].ulPropTag;
-
-					extraPropForList.Value = pExtraProps[0].Value;
-				}
-				else
-				{
-					extraPropForList.dwAlignPad = NULL;
-					extraPropForList.ulPropTag = CHANGE_PROP_TYPE(mapi::getTag(pNewTag, 0), PT_ERROR);
-					extraPropForList.Value.err = hRes;
-				}
-
-				// Add the property to the list
-				AddPropToListBox(
-					ulCurListBoxRow,
-					mapi::getTag(pNewTag, 0), // Tag to use in the UI
-					nullptr, // Let AddPropToListBox look up any named prop information it needs
-					lpMappingSig ? &mapi::getBin(lpMappingSig) : nullptr,
-					&extraPropForList); // Tag + Value to parse - may differ in case of errors or NULL type.
-
-				ulCurListBoxRow++;
-
-				MAPIFreeBuffer(pExtraProps);
-				pExtraProps = nullptr;
+				models.emplace_back(m_lpPropBag->GetOneModel(mapi::getTag(m_sptExtraProps, i)));
 			}
 		}
 
-		// lpMappingSig might come from lpPropsToAdd, so don't free this until here
-		m_lpPropBag->FreeBuffer(lpPropsToAdd);
+		// Add our props to the view
+		if (!models.empty())
+		{
+			// Set the item count to speed up the addition of items
+			SetItemCount(static_cast<int>(models.size()));
+
+			// get each model in turn and add it to the list
+			ULONG ulCurListBoxRow = 0;
+			for (const auto model : models)
+			{
+				AddPropToListBox(ulCurListBoxRow++, model);
+			}
+		}
+
+		if (m_lpHostDlg)
+		{
+			// This flag may be set by a GetProps call, so we make this check AFTER we get our props
+			if (m_lpPropBag->IsBackedByGetProps())
+			{
+				m_lpHostDlg->UpdateStatusBarText(statusPane::infoText, IDS_PROPSFROMGETPROPS);
+			}
+			else
+			{
+				m_lpHostDlg->UpdateStatusBarText(statusPane::infoText, IDS_PROPSFROMROW);
+			}
+		}
 
 		output::DebugPrintEx(
-			output::dbgLevel::Generic, CLASS, L"LoadMAPIPropList", L"added %u properties\n", ulCurListBoxRow);
+			output::dbgLevel::Generic, CLASS, L"LoadMAPIPropList", L"added %u properties\n", models.size());
 
 		SortClickedColumn();
-
-		// Don't report any errors from here - don't care at this point
-		return S_OK;
 	}
 
-	_Check_return_ HRESULT CSingleMAPIPropListCtrl::RefreshMAPIPropList()
+	void CSingleMAPIPropListCtrl::RefreshMAPIPropList()
 	{
 		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"RefreshMAPIPropList", L"\n");
 
@@ -545,11 +367,11 @@ namespace controls::sortlistctrl
 
 		const auto iSelectedItem = GetNextSelectedItem(MyPos);
 
-		auto hRes = EC_B(DeleteAllItems());
+		EC_B_S(DeleteAllItems());
 
-		if (SUCCEEDED(hRes) && m_lpPropBag)
+		if (m_lpPropBag)
 		{
-			hRes = EC_H(LoadMAPIPropList());
+			LoadMAPIPropList();
 		}
 
 		SetItemState(iSelectedItem, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);
@@ -560,8 +382,6 @@ namespace controls::sortlistctrl
 		MySetRedraw(true);
 
 		if (m_lpHostDlg) m_lpHostDlg->UpdateStatusBarText(statusPane::data2, IDS_STATUSTEXTNUMPROPS, GetItemCount());
-
-		return hRes;
 	}
 
 	void CSingleMAPIPropListCtrl::AddPropToExtraProps(ULONG ulPropTag, bool bRefresh)
@@ -589,7 +409,7 @@ namespace controls::sortlistctrl
 
 		if (bRefresh)
 		{
-			WC_H_S(RefreshMAPIPropList());
+			RefreshMAPIPropList();
 		}
 	}
 
@@ -627,24 +447,17 @@ namespace controls::sortlistctrl
 		{PT_ACTIONS, sortIcon::actions},
 	};
 
-	// Crack open the given SPropValue and render it to the given row in the list.
-	void CSingleMAPIPropListCtrl::AddPropToListBox(
-		int iRow,
-		ULONG ulPropTag,
-		_In_opt_ const MAPINAMEID* lpNameID,
-		_In_opt_ const SBinary* lpMappingSignature, // optional mapping signature for object to speed named prop lookups
-		_In_ LPSPropValue lpsPropToAdd)
+	// Render the row model in the list.
+	void CSingleMAPIPropListCtrl::AddPropToListBox(int iRow, std::shared_ptr<model::mapiRowModel> model)
 	{
+		auto ulPropTag = model->ulPropTag();
 		auto image = sortIcon::siDefault;
-		if (lpsPropToAdd)
+		for (const auto& _PropTypeIcon : _PropTypeIcons)
 		{
-			for (const auto& _PropTypeIcon : _PropTypeIcons)
+			if (_PropTypeIcon.objType == PROP_TYPE(ulPropTag))
 			{
-				if (_PropTypeIcon.objType == PROP_TYPE(lpsPropToAdd->ulPropTag))
-				{
-					image = _PropTypeIcon.image;
-					break;
-				}
+				image = _PropTypeIcon.image;
+				break;
 			}
 		}
 
@@ -655,66 +468,23 @@ namespace controls::sortlistctrl
 			sortlistdata::propListData::init(lpData, ulPropTag);
 		}
 
-		const auto PropTag = strings::format(L"0x%08X", ulPropTag);
-		std::wstring PropString;
-		std::wstring AltPropString;
-
-		const auto namePropNames =
-			cache::NameIDToStrings(ulPropTag, m_lpPropBag->GetMAPIProp(), lpNameID, lpMappingSignature, m_bIsAB);
-		const auto propTagNames = proptags::PropTagToPropName(ulPropTag, m_bIsAB);
-
-		if (!propTagNames.bestGuess.empty())
-		{
-			SetItemText(iRow, columns::pcPROPBESTGUESS, propTagNames.bestGuess);
-		}
-		else if (!namePropNames.bestPidLid.empty())
-		{
-			SetItemText(iRow, columns::pcPROPBESTGUESS, namePropNames.bestPidLid);
-		}
-		else if (!namePropNames.name.empty())
-		{
-			SetItemText(iRow, columns::pcPROPBESTGUESS, namePropNames.name);
-		}
-		else
-		{
-			SetItemText(iRow, columns::pcPROPBESTGUESS, PropTag);
-		}
-
-		SetItemText(iRow, columns::pcPROPOTHERNAMES, propTagNames.otherMatches);
-
-		SetItemText(iRow, columns::pcPROPTAG, PropTag);
-		SetItemText(iRow, columns::pcPROPTYPE, proptype::TypeToString(ulPropTag));
-
-		property::parseProperty(lpsPropToAdd, &PropString, &AltPropString);
-		SetItemText(iRow, columns::pcPROPVAL, PropString);
-		SetItemText(iRow, columns::pcPROPVALALT, AltPropString);
-
-		auto szSmartView = smartview::parsePropertySmartView(
-			lpsPropToAdd,
-			m_lpPropBag->GetMAPIProp(),
-			lpNameID,
-			lpMappingSignature,
-			m_bIsAB,
-			false); // Built from lpProp & lpMAPIProp
-		if (!szSmartView.empty()) SetItemText(iRow, columns::pcPROPSMARTVIEW, szSmartView);
-		if (!namePropNames.name.empty()) SetItemText(iRow, columns::pcPROPNAMEDNAME, namePropNames.name);
-		if (!namePropNames.guid.empty()) SetItemText(iRow, columns::pcPROPNAMEDGUID, namePropNames.guid);
-	}
-
-	_Check_return_ HRESULT
-	CSingleMAPIPropListCtrl::GetDisplayedProps(ULONG FAR* lpcValues, LPSPropValue FAR* lppPropArray) const
-	{
-		if (!m_lpPropBag) return MAPI_E_INVALID_PARAMETER;
-
-		return m_lpPropBag->GetAllProps(lpcValues, lppPropArray);
+		SetItemText(iRow, columns::pcPROPBESTGUESS, model->name());
+		SetItemText(iRow, columns::pcPROPOTHERNAMES, model->otherName());
+		SetItemText(iRow, columns::pcPROPTAG, model->tag());
+		SetItemText(iRow, columns::pcPROPTYPE, model->propType());
+		SetItemText(iRow, columns::pcPROPVAL, model->value());
+		SetItemText(iRow, columns::pcPROPVALALT, model->altValue());
+		SetItemText(iRow, columns::pcPROPSMARTVIEW, model->smartView());
+		SetItemText(iRow, columns::pcPROPNAMEDNAME, model->namedPropName());
+		SetItemText(iRow, columns::pcPROPNAMEDGUID, model->namedPropGuid());
 	}
 
 	_Check_return_ bool CSingleMAPIPropListCtrl::IsModifiedPropVals() const
 	{
-		return propertybag::propBagFlags::Modified == (m_lpPropBag->GetFlags() & propertybag::propBagFlags::Modified);
+		return m_lpPropBag && m_lpPropBag->IsModified();
 	}
 
-	_Check_return_ HRESULT CSingleMAPIPropListCtrl::SetDataSource(
+	void CSingleMAPIPropListCtrl::SetDataSource(
 		_In_opt_ LPMAPIPROP lpMAPIProp,
 		_In_opt_ sortlistdata::sortListData* lpListData,
 		bool bIsAB)
@@ -723,41 +493,39 @@ namespace controls::sortlistctrl
 
 		if (lpMAPIProp)
 		{
-			return SetDataSource(std::make_shared<propertybag::mapiPropPropertyBag>(lpMAPIProp, lpListData), bIsAB);
+			return SetDataSource(std::make_shared<propertybag::mapiPropPropertyBag>(lpMAPIProp, lpListData, bIsAB));
 		}
 		else if (lpListData)
 		{
-			return SetDataSource(std::make_shared<propertybag::rowPropertyBag>(lpListData), bIsAB);
+			return SetDataSource(std::make_shared<propertybag::rowPropertyBag>(lpListData, bIsAB));
 		}
 
-		return SetDataSource(nullptr, bIsAB);
+		return SetDataSource(nullptr);
 	}
 
 	// Clear the current property list from the control.
 	// Load a new list from the IMAPIProp or lpSourceProps object passed in
 	// Most calls to this will come through CBaseDialog::OnUpdateSingleMAPIPropListCtrl, which will preserve the current bIsAB
 	// Exceptions will be where we need to set a specific bIsAB
-	_Check_return_ HRESULT
-	CSingleMAPIPropListCtrl::SetDataSource(const std::shared_ptr<propertybag::IMAPIPropertyBag> lpPropBag, bool bIsAB)
+	void CSingleMAPIPropListCtrl::SetDataSource(const std::shared_ptr<propertybag::IMAPIPropertyBag> lpPropBag)
 	{
 		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"SetDataSource", L"setting new data source\n");
 
 		// if nothing to do...do nothing
 		if (lpPropBag && lpPropBag->IsEqual(m_lpPropBag))
 		{
-			return S_OK;
+			return;
 		}
 
 		m_lpPropBag = lpPropBag;
-		m_bIsAB = bIsAB;
 
 		// Turn off redraw while we work on the window
 		MySetRedraw(false);
 
-		const auto hRes = WC_H(RefreshMAPIPropList());
+		RefreshMAPIPropList();
 
 		// Reset our header widths if weren't showing anything before and are now
-		if (hRes == S_OK && !m_bHaveEverDisplayedSomething && m_lpPropBag && GetItemCount())
+		if (!m_bHaveEverDisplayedSomething && m_lpPropBag && GetItemCount())
 		{
 			m_bHaveEverDisplayedSomething = true;
 
@@ -779,7 +547,11 @@ namespace controls::sortlistctrl
 
 		// Turn redraw back on to update our view
 		MySetRedraw(true);
-		return hRes;
+	}
+
+	const std::shared_ptr<propertybag::IMAPIPropertyBag> CSingleMAPIPropListCtrl::GetDataSource()
+	{
+		return m_lpPropBag;
 	}
 
 	std::wstring binPropToXML(UINT uidTag, const std::wstring str, int iIndent)
@@ -975,7 +747,7 @@ namespace controls::sortlistctrl
 			}
 			else if (VK_F5 == nChar)
 			{
-				WC_H_S(RefreshMAPIPropList());
+				RefreshMAPIPropList();
 			}
 			else if (VK_RETURN == nChar)
 			{
@@ -1026,7 +798,7 @@ namespace controls::sortlistctrl
 			}
 
 			// Refresh the display
-			WC_H_S(RefreshMAPIPropList());
+			RefreshMAPIPropList();
 		}
 	}
 
@@ -1084,12 +856,10 @@ namespace controls::sortlistctrl
 	// Delete the selected property
 	void CSingleMAPIPropListCtrl::OnDeleteProperty()
 	{
-		ULONG ulPropTag = NULL;
-
 		if (!m_lpPropBag || m_lpPropBag->GetType() == propertybag::propBagType::Row) return;
 		auto lpPropBag = m_lpPropBag; // Hold the prop bag so it doesn't get deleted under us
 
-		GetSelectedPropTag(&ulPropTag);
+		const ULONG ulPropTag = GetSelectedPropTag();
 		if (!ulPropTag) return;
 
 		dialog::editor::CEditor Query(
@@ -1103,7 +873,7 @@ namespace controls::sortlistctrl
 			if (SUCCEEDED(hRes))
 			{
 				// Refresh the display
-				WC_H_S(RefreshMAPIPropList());
+				RefreshMAPIPropList();
 			}
 		}
 	}
@@ -1113,8 +883,7 @@ namespace controls::sortlistctrl
 	{
 		if (!m_lpPropBag || !import::pfnEditSecurity) return;
 
-		ULONG ulPropTag = NULL;
-		GetSelectedPropTag(&ulPropTag);
+		const auto ulPropTag = GetSelectedPropTag();
 		if (!ulPropTag) return;
 
 		output::DebugPrintEx(
@@ -1131,14 +900,8 @@ namespace controls::sortlistctrl
 
 	void CSingleMAPIPropListCtrl::OnEditProp()
 	{
-		ULONG ulPropTag = NULL;
-
 		if (!m_lpPropBag) return;
-
-		GetSelectedPropTag(&ulPropTag);
-		if (!ulPropTag) return;
-
-		OnEditGivenProp(ulPropTag);
+		OnEditGivenProp(GetSelectedPropTag());
 	}
 
 	void CSingleMAPIPropListCtrl::OnEditPropAsRestriction(ULONG ulPropTag)
@@ -1146,8 +909,7 @@ namespace controls::sortlistctrl
 		if (!m_lpPropBag || !ulPropTag || PT_SRESTRICTION != PROP_TYPE(ulPropTag)) return;
 		auto lpPropBag = m_lpPropBag; // Hold the prop bag so it doesn't get deleted under us
 
-		LPSPropValue lpEditProp = nullptr;
-		WC_H_S(lpPropBag->GetProp(ulPropTag, &lpEditProp));
+		auto lpEditProp = lpPropBag->GetOneProp(ulPropTag);
 
 		LPSRestriction lpResIn = nullptr;
 		if (lpEditProp)
@@ -1183,7 +945,7 @@ namespace controls::sortlistctrl
 
 				ResProp.Value.lpszA = reinterpret_cast<LPSTR>(lpModRes);
 
-				auto hRes = EC_H(lpPropBag->SetProp(&ResProp));
+				const auto hRes = EC_H(lpPropBag->SetProp(&ResProp));
 
 				// Remember, we had no alloc parent - this is safe to free
 				MAPIFreeBuffer(lpModRes);
@@ -1191,7 +953,7 @@ namespace controls::sortlistctrl
 				if (SUCCEEDED(hRes))
 				{
 					// refresh
-					hRes = WC_H(RefreshMAPIPropList());
+					RefreshMAPIPropList();
 				}
 			}
 		}
@@ -1201,7 +963,6 @@ namespace controls::sortlistctrl
 
 	void CSingleMAPIPropListCtrl::OnEditGivenProp(ULONG ulPropTag)
 	{
-		auto hRes = S_OK;
 		LPSPropValue lpEditProp = nullptr;
 
 		if (!m_lpPropBag) return;
@@ -1216,7 +977,7 @@ namespace controls::sortlistctrl
 				L"OnEditGivenProp",
 				L"editing property 0x%X (= %ws)\n",
 				ulPropTag,
-				proptags::TagToString(ulPropTag, lpPropBag->GetMAPIProp(), m_bIsAB, true).c_str());
+				proptags::TagToString(ulPropTag, lpPropBag->GetMAPIProp(), lpPropBag->IsAB(), true).c_str());
 		}
 
 		ulPropTag = PT_ERROR == PROP_TYPE(ulPropTag) ? CHANGE_PROP_TYPE(ulPropTag, PT_UNSPECIFIED) : ulPropTag;
@@ -1243,10 +1004,14 @@ namespace controls::sortlistctrl
 		}
 		else
 		{
-			hRes = WC_H(lpPropBag->GetProp(ulPropTag, &lpEditProp));
+			lpEditProp = lpPropBag->GetOneProp(ulPropTag);
 		}
 
-		if (hRes == MAPI_E_NOT_ENOUGH_MEMORY) bUseStream = true;
+		if (lpEditProp && PROP_TYPE(lpEditProp->ulPropTag) == PT_ERROR &&
+			lpEditProp->Value.err == MAPI_E_NOT_ENOUGH_MEMORY)
+		{
+			bUseStream = true;
+		}
 
 		if (bUseStream)
 		{
@@ -1257,7 +1022,7 @@ namespace controls::sortlistctrl
 				lpSourceObj,
 				ulPropTag,
 				true, // Guess the type of stream to use
-				m_bIsAB,
+				lpPropBag->IsAB(),
 				false,
 				false,
 				NULL,
@@ -1266,15 +1031,15 @@ namespace controls::sortlistctrl
 
 			if (MyEditor.DisplayDialog())
 			{
-				WC_H_S(RefreshMAPIPropList());
+				RefreshMAPIPropList();
 			}
 		}
 		else
 		{
-			if (lpEditProp) ulPropTag = lpEditProp->ulPropTag;
+			if (PROP_TYPE(ulPropTag) == PT_UNSPECIFIED && lpEditProp) ulPropTag = lpEditProp->ulPropTag;
 
 			const auto lpModProp = dialog::editor::DisplayPropertyEditor(
-				this, IDS_PROPEDITOR, m_bIsAB, nullptr, lpSourceObj, ulPropTag, false, lpEditProp);
+				this, IDS_PROPEDITOR, lpPropBag->IsAB(), nullptr, lpSourceObj, ulPropTag, false, lpEditProp);
 			if (lpModProp)
 			{
 				// If we didn't have a source object, we need to shove our results back in to the property bag
@@ -1284,7 +1049,7 @@ namespace controls::sortlistctrl
 					EC_H_S(lpPropBag->SetProp(lpModProp));
 				}
 
-				WC_H_S(RefreshMAPIPropList());
+				RefreshMAPIPropList();
 				MAPIFreeBuffer(lpModProp);
 			}
 		}
@@ -1295,12 +1060,10 @@ namespace controls::sortlistctrl
 	// Display the selected property as a stream using CStreamEditor
 	void CSingleMAPIPropListCtrl::OnEditPropAsStream(ULONG ulType, bool bEditAsRTF)
 	{
-		ULONG ulPropTag = NULL;
-
 		if (!m_lpPropBag) return;
 		auto lpPropBag = m_lpPropBag; // Hold the prop bag so it doesn't get deleted under us
 
-		GetSelectedPropTag(&ulPropTag);
+		auto ulPropTag = GetSelectedPropTag();
 		if (!ulPropTag) return;
 
 		// Explicit check since TagToString is expensive
@@ -1312,7 +1075,7 @@ namespace controls::sortlistctrl
 				L"OnEditPropAsStream",
 				L"editing property 0x%X (= %ws) as stream, ulType = 0x%08X, bEditAsRTF = 0x%X\n",
 				ulPropTag,
-				proptags::TagToString(ulPropTag, lpPropBag->GetMAPIProp(), m_bIsAB, true).c_str(),
+				proptags::TagToString(ulPropTag, lpPropBag->GetMAPIProp(), lpPropBag->IsAB(), true).c_str(),
 				ulType,
 				bEditAsRTF);
 		}
@@ -1335,9 +1098,7 @@ namespace controls::sortlistctrl
 			if (MyPrompt.GetCheck(0))
 			{
 				bUseWrapEx = true;
-				LPSPropValue lpProp = nullptr;
-
-				WC_H_S(lpPropBag->GetProp(PR_INTERNET_CPID, &lpProp));
+				const auto lpProp = lpPropBag->GetOneProp(PR_INTERNET_CPID);
 				if (lpProp && PT_LONG == PROP_TYPE(lpProp[0].ulPropTag))
 				{
 					ulInCodePage = lpProp[0].Value.l;
@@ -1369,7 +1130,7 @@ namespace controls::sortlistctrl
 			lpPropBag->GetMAPIProp(),
 			ulPropTag,
 			false, // No stream guessing
-			m_bIsAB,
+			lpPropBag->IsAB(),
 			bEditAsRTF,
 			bUseWrapEx,
 			ulRTFFlags,
@@ -1378,7 +1139,7 @@ namespace controls::sortlistctrl
 
 		if (MyEditor.DisplayDialog())
 		{
-			WC_H_S(RefreshMAPIPropList());
+			RefreshMAPIPropList();
 		}
 	}
 
@@ -1386,11 +1147,7 @@ namespace controls::sortlistctrl
 	{
 		// for now, we only copy from objects - copying from rows would be difficult to generalize
 		if (!m_lpPropBag) return;
-
-		ULONG ulPropTag = NULL;
-		GetSelectedPropTag(&ulPropTag);
-
-		cache::CGlobalCache::getInstance().SetPropertyToCopy(ulPropTag, m_lpPropBag->GetMAPIProp());
+		cache::CGlobalCache::getInstance().SetPropertyToCopy(GetSelectedPropTag(), m_lpPropBag->GetMAPIProp());
 	}
 
 	void CSingleMAPIPropListCtrl::OnPasteProperty()
@@ -1487,7 +1244,7 @@ namespace controls::sortlistctrl
 			if (SUCCEEDED(hRes))
 			{
 				// refresh
-				WC_H_S(RefreshMAPIPropList());
+				RefreshMAPIPropList();
 			}
 		}
 
@@ -1503,26 +1260,32 @@ namespace controls::sortlistctrl
 		if (!lpSourcePropObj) return;
 
 		const auto hRes = EC_H(mapi::CopyTo(
-			m_lpHostDlg->m_hWnd, lpSourcePropObj, m_lpPropBag->GetMAPIProp(), &IID_IMAPIProp, nullptr, m_bIsAB, true));
+			m_lpHostDlg->m_hWnd,
+			lpSourcePropObj,
+			m_lpPropBag->GetMAPIProp(),
+			&IID_IMAPIProp,
+			nullptr,
+			m_lpPropBag->IsAB(),
+			true));
 		if (SUCCEEDED(hRes))
 		{
 			EC_H_S(m_lpPropBag->Commit());
 
 			// refresh
-			WC_H_S(RefreshMAPIPropList());
+			RefreshMAPIPropList();
 		}
 
 		lpSourcePropObj->Release();
 	}
 
+	// Open a binary property as an entry ID
 	void CSingleMAPIPropListCtrl::OnOpenProperty() const
 	{
 		auto hRes = S_OK;
-		ULONG ulPropTag = NULL;
 
 		if (!m_lpHostDlg) return;
 
-		GetSelectedPropTag(&ulPropTag);
+		const auto ulPropTag = GetSelectedPropTag();
 		if (!ulPropTag) return;
 
 		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"OnOpenProperty", L"asked to open 0x%X\n", ulPropTag);
@@ -1530,7 +1293,7 @@ namespace controls::sortlistctrl
 		auto lpPropBag = m_lpPropBag; // Hold the prop bag so it doesn't get deleted under us
 		if (lpPropBag)
 		{
-			hRes = EC_H(lpPropBag->GetProp(ulPropTag, &lpProp));
+			lpProp = lpPropBag->GetOneProp(ulPropTag);
 		}
 
 		if (SUCCEEDED(hRes) && lpProp)
@@ -1586,7 +1349,7 @@ namespace controls::sortlistctrl
 			NULL,
 			nullptr,
 			m_sptExtraProps,
-			m_bIsAB,
+			m_lpPropBag->IsAB(),
 			m_lpPropBag ? m_lpPropBag->GetMAPIProp() : nullptr);
 
 		if (!MyTagArrayEditor.DisplayDialog()) return;
@@ -1598,7 +1361,7 @@ namespace controls::sortlistctrl
 			m_sptExtraProps = lpNewTagArray;
 		}
 
-		WC_H_S(RefreshMAPIPropList());
+		RefreshMAPIPropList();
 	}
 
 	void CSingleMAPIPropListCtrl::OnEditGivenProperty()
@@ -1610,7 +1373,7 @@ namespace controls::sortlistctrl
 			IDS_EDITGIVENPROP,
 			NULL, // prompt
 			NULL,
-			m_bIsAB,
+			m_lpPropBag->IsAB(),
 			m_lpPropBag->GetMAPIProp(),
 			this);
 
@@ -1630,7 +1393,7 @@ namespace controls::sortlistctrl
 			IDS_OPENPROPASTABLE,
 			NULL, // prompt
 			NULL,
-			m_bIsAB,
+			lpPropBag->IsAB(),
 			lpPropBag->GetMAPIProp(),
 			this);
 		if (!MyPropertyTag.DisplayDialog()) return;
@@ -1706,7 +1469,7 @@ namespace controls::sortlistctrl
 
 				if (SUCCEEDED(hRes))
 				{
-					WC_H_S(RefreshMAPIPropList());
+					RefreshMAPIPropList();
 				}
 
 				lpSource->Release();
@@ -1733,16 +1496,19 @@ namespace controls::sortlistctrl
 			MyAddInMenuParams.lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 			MyAddInMenuParams.lpAdrBook = m_lpMapiObjects->GetAddrBook(false); // do not release
 		}
-
-		if (m_lpPropBag && propertybag::propBagType::Row == m_lpPropBag->GetType())
+		if (m_lpPropBag)
 		{
-			SRow MyRow = {0};
-			static_cast<void>(m_lpPropBag->GetAllProps(&MyRow.cValues, &MyRow.lpProps));
-			MyAddInMenuParams.lpRow = &MyRow;
-			MyAddInMenuParams.ulCurrentFlags |= MENU_FLAGS_ROW;
+			const auto lpRowPropBag = std::dynamic_pointer_cast<propertybag::rowPropertyBag>(m_lpPropBag);
+			if (lpRowPropBag)
+			{
+				SRow MyRow = {0};
+				static_cast<void>(lpRowPropBag->GetAllProps(&MyRow.cValues, &MyRow.lpProps)); // No need to free
+				MyAddInMenuParams.lpRow = &MyRow;
+				MyAddInMenuParams.ulCurrentFlags |= MENU_FLAGS_ROW;
+			}
 		}
 
-		GetSelectedPropTag(&MyAddInMenuParams.ulPropTag);
+		MyAddInMenuParams.ulPropTag = GetSelectedPropTag();
 
 		ui::addinui::InvokeAddInMenu(&MyAddInMenuParams);
 		return true;

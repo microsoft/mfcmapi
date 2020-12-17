@@ -141,8 +141,7 @@ namespace dialog
 		SetIcon(m_hIcon, false); // Set small icon - large icon isn't used
 
 		m_lpFakeSplitter.Init(m_hWnd);
-		m_lpPropDisplay =
-			new controls::sortlistctrl::CSingleMAPIPropListCtrl(&m_lpFakeSplitter, this, m_lpMapiObjects, m_bIsAB);
+		m_lpPropDisplay = new controls::sortlistctrl::CSingleMAPIPropListCtrl(&m_lpFakeSplitter, this, m_lpMapiObjects);
 
 		if (m_lpPropDisplay) m_lpFakeSplitter.SetPaneTwo(m_lpPropDisplay->GetSafeHwnd());
 
@@ -414,7 +413,7 @@ namespace dialog
 
 		if (!bResetColumns && bNeedPropRefresh)
 		{
-			if (m_lpPropDisplay) WC_H_S(m_lpPropDisplay->RefreshMAPIPropList());
+			if (m_lpPropDisplay) m_lpPropDisplay->RefreshMAPIPropList();
 		}
 	}
 
@@ -462,7 +461,7 @@ namespace dialog
 
 		if (m_lpPropDisplay)
 		{
-			WC_H_S(m_lpPropDisplay->SetDataSource(lpMAPIProp, lpListData, m_bIsAB));
+			m_lpPropDisplay->SetDataSource(lpMAPIProp, lpListData, m_bIsAB);
 		}
 	}
 

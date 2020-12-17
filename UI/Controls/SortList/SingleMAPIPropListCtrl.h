@@ -1,6 +1,7 @@
 #pragma once
 #include <UI/Controls/SortList/SortListCtrl.h>
 #include <core/PropertyBag/PropertyBag.h>
+#include <core/model/mapiRowModel.h>
 
 namespace cache
 {
@@ -20,20 +21,17 @@ namespace controls::sortlistctrl
 		CSingleMAPIPropListCtrl(
 			_In_ CWnd* pCreateParent,
 			_In_ dialog::CBaseDialog* lpHostDlg,
-			_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
-			bool bIsAB);
+			_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects);
 		~CSingleMAPIPropListCtrl();
 
 		// Initialization
-		_Check_return_ HRESULT
-		SetDataSource(_In_opt_ LPMAPIPROP lpMAPIProp, _In_opt_ sortlistdata::sortListData* lpListData, bool bIsAB);
-		_Check_return_ HRESULT
-		SetDataSource(const std::shared_ptr<propertybag::IMAPIPropertyBag> lpPropBag, bool bIsAB);
-		_Check_return_ HRESULT RefreshMAPIPropList();
+		void SetDataSource(_In_opt_ LPMAPIPROP lpMAPIProp, _In_opt_ sortlistdata::sortListData* lpListData, bool bIsAB);
+		void SetDataSource(const std::shared_ptr<propertybag::IMAPIPropertyBag> lpPropBag);
+		void RefreshMAPIPropList();
 
 		// Selected item accessors
-		_Check_return_ HRESULT GetDisplayedProps(ULONG FAR* lpcValues, LPSPropValue FAR* lppPropArray) const;
-		void GetSelectedPropTag(_Out_ ULONG* lpPropTag) const;
+		const std::shared_ptr<propertybag::IMAPIPropertyBag> GetDataSource();
+		ULONG GetSelectedPropTag() const;
 		_Check_return_ bool IsModifiedPropVals() const;
 
 		_Check_return_ bool HandleMenu(WORD wMenuSelect);
@@ -47,15 +45,9 @@ namespace controls::sortlistctrl
 		void AddPropsToExtraProps(_In_ LPSPropTagArray lpPropsToAdd, bool bRefresh);
 		void FindAllNamedProps();
 		void CountNamedProps();
-		_Check_return_ HRESULT LoadMAPIPropList();
+		void LoadMAPIPropList();
 
-		void AddPropToListBox(
-			int iRow,
-			ULONG ulPropTag,
-			_In_opt_ const MAPINAMEID* lpNameID,
-			_In_opt_ const SBinary*
-				lpMappingSignature, // optional mapping signature for object to speed named prop lookups
-			_In_ LPSPropValue lpsPropToAdd);
+		void AddPropToListBox(int iRow, std::shared_ptr<model::mapiRowModel> model);
 
 		_Check_return_ bool HandleAddInMenu(WORD wMenuSelect) const;
 		void OnContextMenu(_In_ CWnd* pWnd, CPoint pos);
@@ -80,7 +72,6 @@ namespace controls::sortlistctrl
 
 		dialog::CBaseDialog* m_lpHostDlg{};
 		bool m_bHaveEverDisplayedSomething{};
-		bool m_bIsAB{};
 		std::shared_ptr<cache::CMapiObjects> m_lpMapiObjects{};
 
 		std::shared_ptr<propertybag::IMAPIPropertyBag> m_lpPropBag{};

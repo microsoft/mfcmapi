@@ -2860,4 +2860,40 @@ namespace mapi
 
 		return profileName;
 	}
+
+	bool IsABObject(_In_opt_ LPMAPIPROP lpProp)
+	{
+		if (!lpProp) return false;
+
+		auto lpPropVal = LPSPropValue{};
+		WC_H(HrGetOneProp(lpProp, PR_OBJECT_TYPE, &lpPropVal));
+
+		const auto ret = IsABObject(1, lpPropVal);
+		MAPIFreeBuffer(lpPropVal);
+		return ret;
+	}
+
+	bool IsABObject(ULONG ulProps, LPSPropValue lpProps) noexcept
+	{
+		const auto lpObjectType = PpropFindProp(lpProps, ulProps, PR_OBJECT_TYPE);
+
+		if (lpObjectType && PR_OBJECT_TYPE == lpObjectType->ulPropTag)
+		{
+			switch (lpObjectType->Value.l)
+			{
+			case MAPI_ADDRBOOK:
+			case MAPI_ABCONT:
+			case MAPI_MAILUSER:
+			case MAPI_DISTLIST:
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	LPSPropValue FindProp(const SPropValue* lpPropArray, ULONG cValues, ULONG ulPropTag)
+	{
+		return PpropFindProp(const_cast<SPropValue*>(lpPropArray), cValues, ulPropTag);
+	}
 } // namespace mapi

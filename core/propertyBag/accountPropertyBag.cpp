@@ -5,7 +5,7 @@
 
 namespace propertybag
 {
-	accountPropertyBag::accountPropertyBag(std::wstring lpwszProfile, LPOLKACCOUNT lpAccount)
+	accountPropertyBag::accountPropertyBag(_In_ std::wstring lpwszProfile, _In_ LPOLKACCOUNT lpAccount)
 	{
 		m_lpwszProfile = lpwszProfile;
 		m_lpAccount = mapi::safe_cast<LPOLKACCOUNT>(lpAccount);
@@ -23,7 +23,7 @@ namespace propertybag
 		return ulFlags;
 	}
 
-	bool accountPropertyBag::IsEqual(const std::shared_ptr<IMAPIPropertyBag> lpPropBag) const
+	bool accountPropertyBag::IsEqual(_In_ const std::shared_ptr<IMAPIPropertyBag> lpPropBag) const
 	{
 		if (!lpPropBag) return false;
 		if (GetType() != lpPropBag->GetType()) return false;
@@ -53,8 +53,10 @@ namespace propertybag
 
 	// Convert an ACCT_VARIANT to SPropValue allocated off of pParent
 	// Frees any memory associated with the ACCT_VARIANT
-	SPropValue
-	accountPropertyBag::convertVarToMAPI(ULONG ulPropTag, const ACCT_VARIANT& var, _In_opt_ const VOID* pParent)
+	SPropValue accountPropertyBag::convertVarToMAPI(
+		_In_ ULONG ulPropTag,
+		_In_ const ACCT_VARIANT& var,
+		_In_opt_ const VOID* pParent)
 	{
 		auto sProp = SPropValue{ulPropTag, 0};
 		switch (var.dwType)
@@ -76,14 +78,76 @@ namespace propertybag
 		return sProp;
 	}
 
-	_Check_return_ HRESULT accountPropertyBag::GetAllProps(ULONG FAR* lpcValues, LPSPropValue FAR* lppPropArray)
+	// Always returns a propval, even in errors, unless we fail allocating memory
+	_Check_return_ LPSPropValue accountPropertyBag::GetOneProp(_In_ ULONG ulPropTag)
 	{
-		if (!lpcValues || !lppPropArray) return MAPI_E_INVALID_PARAMETER;
+		LPSPropValue lpPropVal = mapi::allocate<LPSPropValue>(sizeof(SPropValue));
+		if (lpPropVal)
+		{
+			auto pProp = ACCT_VARIANT{};
+			const auto hRes = WC_H(m_lpAccount->GetProp(ulPropTag, &pProp));
+			if (SUCCEEDED(hRes))
+			{
+				*lpPropVal = convertVarToMAPI(ulPropTag, pProp, lpPropVal);
+			}
+			else
+			{
+				lpPropVal->ulPropTag = CHANGE_PROP_TYPE(ulPropTag, PT_ERROR);
+				lpPropVal->Value.err = hRes;
+			}
+		}
+
+		return lpPropVal;
+	}
+
+	_Check_return_ HRESULT accountPropertyBag::SetProp(_In_ LPSPropValue lpProp, _In_ bool saveChanges)
+	{
+		if (!lpProp) return MAPI_E_INVALID_PARAMETER;
+
+		auto pProp = ACCT_VARIANT{PROP_TYPE(lpProp->ulPropTag), 0};
+
+		switch (pProp.dwType)
+		{
+		case PT_LONG:
+			pProp.Val.dw = lpProp->Value.l;
+			break;
+		case PT_UNICODE:
+			pProp.Val.pwsz = lpProp->Value.lpszW;
+			break;
+		case PT_BINARY:
+			pProp.Val.bin = {lpProp->Value.bin.cb, lpProp->Value.bin.lpb};
+			break;
+		}
+
+		auto hRes = WC_H(m_lpAccount->SetProp(lpProp->ulPropTag, &pProp));
+		if (SUCCEEDED(hRes) && saveChanges)
+		{
+			hRes = WC_H(m_lpAccount->SaveChanges(OLK_ACCOUNT_NO_FLAGS));
+		}
+
+		return hRes;
+	}
+
+	_Check_return_ HRESULT accountPropertyBag::SetProps(_In_ ULONG cValues, _In_ LPSPropValue lpPropArray)
+	{
+		if (!cValues || !lpPropArray) return MAPI_E_INVALID_PARAMETER;
+
+		for (ULONG i = 0; i < cValues; i++)
+		{
+			const auto hRes = WC_H(SetProp(&lpPropArray[i], false));
+			if (FAILED(hRes)) return hRes;
+		}
+
+		return WC_H(m_lpAccount->SaveChanges(OLK_ACCOUNT_NO_FLAGS));
+	}
+
+	_Check_return_ HRESULT accountPropertyBag::SetProp(_In_ LPSPropValue lpProp) { return SetProp(lpProp, true); }
+
+	_Check_return_ std::vector<std::shared_ptr<model::mapiRowModel>> accountPropertyBag::GetAllModels()
+	{
 		if (!m_lpAccount)
 		{
-			*lpcValues = 0;
-			*lppPropArray = nullptr;
-			return S_OK;
+			return {};
 		}
 
 		auto hRes = S_OK;
@@ -113,115 +177,62 @@ namespace propertybag
 
 		if (props.size() > 0)
 		{
-			*lpcValues = props.size();
-			*lppPropArray = mapi::allocate<LPSPropValue>(props.size() * sizeof(SPropValue));
-			auto iProp = 0;
+			auto models = std::vector<std::shared_ptr<model::mapiRowModel>>{};
 
 			for (const auto& prop : props)
 			{
-				(*lppPropArray)[iProp++] = convertVarToMAPI(prop.first, prop.second, *lppPropArray);
+				models.push_back(convertVarToModel(prop.second, prop.first));
 			}
+
+			return models;
 		}
 
-		return S_OK;
+		return {};
 	}
 
-	_Check_return_ HRESULT accountPropertyBag::GetProps(
-		LPSPropTagArray lpPropTagArray,
-		ULONG /*ulFlags*/,
-		ULONG FAR* lpcValues,
-		LPSPropValue FAR* lppPropArray)
+	_Check_return_ std::shared_ptr<model::mapiRowModel> accountPropertyBag::GetOneModel(_In_ ULONG ulPropTag)
 	{
-		if (!lpcValues || !lppPropArray) return MAPI_E_INVALID_PARAMETER;
-		if (!m_lpAccount || !lpPropTagArray)
-		{
-			*lpcValues = 0;
-			*lppPropArray = nullptr;
-			return S_OK;
-		}
-
-		*lpcValues = lpPropTagArray->cValues;
-		*lppPropArray = mapi::allocate<LPSPropValue>(lpPropTagArray->cValues * sizeof(SPropValue));
-
-		for (ULONG iProp = 0; iProp < lpPropTagArray->cValues; iProp++)
-		{
-			auto pProp = ACCT_VARIANT{};
-			const auto ulPropTag = lpPropTagArray->aulPropTag[iProp];
-			const auto hRes = WC_H(m_lpAccount->GetProp(ulPropTag, &pProp));
-			if (SUCCEEDED(hRes))
-			{
-				(*lppPropArray)[iProp] = convertVarToMAPI(ulPropTag, pProp, *lppPropArray);
-			}
-			else
-			{
-				(*lppPropArray)[iProp].ulPropTag = CHANGE_PROP_TYPE(ulPropTag, PT_ERROR);
-				(*lppPropArray)[iProp].Value.err = hRes;
-			}
-		}
-
-		return S_OK;
-	}
-
-	_Check_return_ HRESULT accountPropertyBag::GetProp(ULONG ulPropTag, LPSPropValue FAR* lppProp)
-	{
-		if (!lppProp) return MAPI_E_INVALID_PARAMETER;
-
-		*lppProp = mapi::allocate<LPSPropValue>(sizeof(SPropValue));
 		auto pProp = ACCT_VARIANT{};
 		const auto hRes = WC_H(m_lpAccount->GetProp(ulPropTag, &pProp));
 		if (SUCCEEDED(hRes))
 		{
-			(*lppProp)[0] = convertVarToMAPI(ulPropTag, pProp, *lppProp);
+			return convertVarToModel(pProp, ulPropTag);
 		}
 		else
 		{
-			(*lppProp)->ulPropTag = CHANGE_PROP_TYPE(ulPropTag, PT_ERROR);
-			(*lppProp)->Value.err = hRes;
+			auto propVal = SPropValue{CHANGE_PROP_TYPE(ulPropTag, PT_ERROR), 0};
+			propVal.Value.err = hRes;
+			return model::propToModel(&propVal, ulPropTag, nullptr, false);
 		}
-
-		return S_OK;
 	}
 
-	_Check_return_ HRESULT accountPropertyBag::SetProp(LPSPropValue lpProp, bool saveChanges)
+	_Check_return_ std::shared_ptr<model::mapiRowModel>
+	accountPropertyBag::convertVarToModel(_In_ const ACCT_VARIANT& var, _In_ ULONG ulPropTag)
 	{
-		if (!lpProp) return MAPI_E_INVALID_PARAMETER;
-
-		auto pProp = ACCT_VARIANT{PROP_TYPE(lpProp->ulPropTag), 0};
-
-		switch (pProp.dwType)
+		auto sProp = SPropValue{ulPropTag, 0};
+		switch (var.dwType)
 		{
 		case PT_LONG:
-			pProp.Val.dw = lpProp->Value.l;
+			sProp.Value.l = var.Val.dw;
 			break;
 		case PT_UNICODE:
-			pProp.Val.pwsz = lpProp->Value.lpszW;
+			sProp.Value.lpszW = var.Val.pwsz;
 			break;
 		case PT_BINARY:
-			pProp.Val.bin = {lpProp->Value.bin.cb, lpProp->Value.bin.lpb};
+			sProp.Value.bin = SBinary{var.Val.bin.cb, var.Val.bin.pb};
 			break;
 		}
 
-		auto hRes = WC_H(m_lpAccount->SetProp(lpProp->ulPropTag, &pProp));
-		if (SUCCEEDED(hRes) && saveChanges)
+		const auto model = model::propToModel(&sProp, ulPropTag, nullptr, false);
+		if (var.dwType == PT_UNICODE)
 		{
-			hRes = WC_H(m_lpAccount->SaveChanges(OLK_ACCOUNT_NO_FLAGS));
+			WC_H_S(m_lpAccount->FreeMemory(reinterpret_cast<LPBYTE>(var.Val.pwsz)));
+		}
+		else if (var.dwType == PT_BINARY)
+		{
+			WC_H_S(m_lpAccount->FreeMemory(reinterpret_cast<LPBYTE>(var.Val.bin.pb)));
 		}
 
-		return hRes;
+		return model;
 	}
-
-	_Check_return_ HRESULT accountPropertyBag::SetProps(ULONG cValues, LPSPropValue lpPropArray)
-	{
-		if (!cValues || !lpPropArray) return MAPI_E_INVALID_PARAMETER;
-
-		for (ULONG i = 0; i < cValues; i++)
-		{
-			const auto hRes = WC_H(SetProp(&lpPropArray[i], false));
-			if (FAILED(hRes)) return hRes;
-		}
-
-		return WC_H(m_lpAccount->SaveChanges(OLK_ACCOUNT_NO_FLAGS));
-	}
-
-	_Check_return_ HRESULT accountPropertyBag::SetProp(LPSPropValue lpProp) { return SetProp(lpProp, true); }
 } // namespace propertybag

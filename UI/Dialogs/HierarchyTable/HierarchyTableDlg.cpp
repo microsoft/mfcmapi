@@ -267,7 +267,7 @@ namespace dialog
 
 		if (m_lpPropDisplay)
 		{
-			m_lpPropDisplay->GetSelectedPropTag(&MyAddInMenuParams.ulPropTag);
+			MyAddInMenuParams.ulPropTag = m_lpPropDisplay->GetSelectedPropTag();
 		}
 
 		// MENU_FLAGS_SINGLESELECT and MENU_FLAGS_MULTISELECT can't both be set, so we can ignore this case

@@ -279,7 +279,7 @@ namespace dialog
 
 		if (SUCCEEDED(hRes) && m_lpPropDisplay)
 		{
-			EC_H_S(m_lpPropDisplay->SetDataSource(lpAddrBook, nullptr, true));
+			m_lpPropDisplay->SetDataSource(lpAddrBook, nullptr, true);
 		}
 
 		if (lpAddrBook) lpAddrBook->Release();
@@ -507,7 +507,7 @@ namespace dialog
 			{
 				if (MyEID.GetCheck(3))
 				{
-					if (m_lpPropDisplay) EC_H_S(m_lpPropDisplay->SetDataSource(lpMDB, nullptr, true));
+					if (m_lpPropDisplay) m_lpPropDisplay->SetDataSource(lpMDB, nullptr, true);
 				}
 				else
 				{
@@ -812,7 +812,7 @@ namespace dialog
 		auto lpMAPIFormInfo = ResolveMessageClass(m_lpMapiObjects, nullptr);
 		if (lpMAPIFormInfo)
 		{
-			EC_H_S(m_lpPropDisplay->SetDataSource(lpMAPIFormInfo, nullptr, false));
+			m_lpPropDisplay->SetDataSource(lpMAPIFormInfo, nullptr, false);
 			lpMAPIFormInfo->Release();
 		}
 	}
@@ -825,7 +825,7 @@ namespace dialog
 		if (lpMAPIFormInfo)
 		{
 			// TODO: Put some code in here which works with the returned Form Info pointer
-			EC_H_S(m_lpPropDisplay->SetDataSource(lpMAPIFormInfo, nullptr, false));
+			m_lpPropDisplay->SetDataSource(lpMAPIFormInfo, nullptr, false);
 			lpMAPIFormInfo->Release();
 		}
 	}
@@ -1163,7 +1163,7 @@ namespace dialog
 						nullptr, nullptr, nullptr, lpMAPISession, cbEntryID, lpEntryID, nullptr, NULL, nullptr);
 					if (lpIdentity)
 					{
-						EC_H_S(m_lpPropDisplay->SetDataSource(lpIdentity, nullptr, true));
+						m_lpPropDisplay->SetDataSource(lpIdentity, nullptr, true);
 
 						lpIdentity->Release();
 					}

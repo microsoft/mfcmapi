@@ -771,7 +771,7 @@ namespace dialog
 						lpNewMessage = file::LoadMSGToMessage(lpszPath);
 						if (lpNewMessage)
 						{
-							EC_H_S(m_lpPropDisplay->SetDataSource(lpNewMessage, nullptr, false));
+							m_lpPropDisplay->SetDataSource(lpNewMessage, nullptr, false);
 						}
 					}
 

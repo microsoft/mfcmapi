@@ -5,24 +5,27 @@
 
 namespace propertybag
 {
-	rowPropertyBag::rowPropertyBag(sortlistdata::sortListData* lpListData)
+	rowPropertyBag::rowPropertyBag(_In_ sortlistdata::sortListData* lpListData, _In_ bool bIsAB)
+		: m_lpListData(lpListData), m_bIsAB(bIsAB)
 	{
-		m_lpListData = lpListData;
 		if (lpListData)
 		{
 			m_cValues = lpListData->cSourceProps;
 			m_lpProps = lpListData->lpSourceProps;
 		}
+
+		if (mapi::IsABObject(m_cValues, m_lpProps)) m_bIsAB = true;
 	}
 
 	propBagFlags rowPropertyBag::GetFlags() const
 	{
 		auto ulFlags = propBagFlags::None;
+		if (m_bIsAB) ulFlags |= propBagFlags::AB;
 		if (m_bRowModified) ulFlags |= propBagFlags::Modified;
 		return ulFlags;
 	}
 
-	bool rowPropertyBag::IsEqual(const std::shared_ptr<IMAPIPropertyBag> lpPropBag) const
+	bool rowPropertyBag::IsEqual(_In_ const std::shared_ptr<IMAPIPropertyBag> lpPropBag) const
 	{
 		if (!lpPropBag) return false;
 		if (GetType() != lpPropBag->GetType()) return false;
@@ -39,7 +42,7 @@ namespace propertybag
 		return false;
 	}
 
-	_Check_return_ HRESULT rowPropertyBag::GetAllProps(ULONG FAR* lpcValues, LPSPropValue FAR* lppPropArray)
+	_Check_return_ HRESULT rowPropertyBag::GetAllProps(_In_ ULONG FAR* lpcValues, _In_ LPSPropValue FAR* lppPropArray)
 	{
 		if (!lpcValues || !lppPropArray) return MAPI_E_INVALID_PARAMETER;
 
@@ -49,23 +52,14 @@ namespace propertybag
 		return S_OK;
 	}
 
-	_Check_return_ HRESULT rowPropertyBag::GetProps(
-		LPSPropTagArray /*lpPropTagArray*/,
-		ULONG /*ulFlags*/,
-		ULONG FAR* /*lpcValues*/,
-		LPSPropValue FAR* /*lppPropArray*/)
+	// Always returns a propval, even in errors
+	_Check_return_ LPSPropValue rowPropertyBag::GetOneProp(_In_ ULONG ulPropTag)
 	{
-		// This is only called from the Extra Props code. We can't support Extra Props from a row
-		// so we don't need to implement this.
-		return E_NOTIMPL;
-	}
-
-	_Check_return_ HRESULT rowPropertyBag::GetProp(ULONG ulPropTag, LPSPropValue FAR* lppProp)
-	{
-		if (!lppProp) return MAPI_E_INVALID_PARAMETER;
-
-		*lppProp = PpropFindProp(m_lpProps, m_cValues, ulPropTag);
-		return S_OK;
+		const auto prop = PpropFindProp(m_lpProps, m_cValues, ulPropTag);
+		if (prop) return prop;
+		m_missingProp.ulPropTag = CHANGE_PROP_TYPE(ulPropTag, PT_ERROR);
+		m_missingProp.Value.err = MAPI_E_NOT_FOUND;
+		return &m_missingProp;
 	}
 
 	// Concatenate two property arrays without duplicates
@@ -180,7 +174,7 @@ namespace propertybag
 		return hRes;
 	}
 
-	_Check_return_ HRESULT rowPropertyBag::SetProp(LPSPropValue lpProp)
+	_Check_return_ HRESULT rowPropertyBag::SetProp(_In_ LPSPropValue lpProp)
 	{
 		ULONG ulNewArray = NULL;
 		LPSPropValue lpNewArray = nullptr;
@@ -196,6 +190,22 @@ namespace propertybag
 			m_lpProps = lpNewArray;
 			m_bRowModified = true;
 		}
+
 		return hRes;
+	}
+
+	_Check_return_ std::vector<std::shared_ptr<model::mapiRowModel>> rowPropertyBag::GetAllModels()
+	{
+		return model::propsToModels(m_cValues, m_lpProps, nullptr, m_bIsAB);
+	}
+
+	_Check_return_ std::shared_ptr<model::mapiRowModel> rowPropertyBag::GetOneModel(_In_ ULONG ulPropTag)
+	{
+		const SPropValue* lpPropVal = PpropFindProp(m_lpProps, m_cValues, ulPropTag);
+		if (lpPropVal) return model::propToModel(lpPropVal, ulPropTag, nullptr, m_bIsAB);
+
+		auto propVal = SPropValue{CHANGE_PROP_TYPE(ulPropTag, PT_ERROR), 0};
+		propVal.Value.err = MAPI_E_NOT_FOUND;
+		return model::propToModel(&propVal, ulPropTag, nullptr, m_bIsAB);
 	}
 } // namespace propertybag
