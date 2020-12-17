@@ -1,9 +1,10 @@
 #include <core/stdafx.h>
 #include <core/propertyBag/registryPropertyBag.h>
 #include <core/mapi/mapiFunctions.h>
-#include <core/mapi/mapiMemory.h>
 #include <core/utility/strings.h>
 #include <core/utility/registry.h>
+#include <core/utility/error.h>
+#include <core/interpret/proptags.h>
 
 namespace propertybag
 {
@@ -117,6 +118,19 @@ namespace propertybag
 
 	_Check_return_ HRESULT registryPropertyBag::SetProp(LPSPropValue lpProp) { return E_NOTIMPL; }
 
+	ULONG nameToULONG(_In_ const std::wstring& name)
+	{
+		if (name.size() != 8) return 0;
+		ULONG num{};
+		if (strings::tryWstringToUlong(num, name, 16, false))
+		{
+			// abuse some macros to swap the order of the tag
+			return PROP_TAG(PROP_ID(num), PROP_TYPE(num));
+		}
+
+		return 0;
+	}
+
 	// TODO: Identify prop tags in the value name
 	// Use type from tag to determine how to read data
 	// Also use lpType
@@ -131,9 +145,27 @@ namespace propertybag
 		_In_ const std::vector<BYTE>& binVal)
 	{
 		auto ret = std::make_shared<model::mapiRowModel>();
-		//ret->ulPropTag(1234);
-		ret->name(name);
-		ret->otherName(strings::format(L"%d", dwType)); // Just shoving in model to see it
+		const auto ulPropTag = nameToULONG(name);
+		if (ulPropTag != 0)
+		{
+			ret->ulPropTag(ulPropTag);
+			const auto propTagNames = proptags::PropTagToPropName(ulPropTag, false);
+			if (!propTagNames.bestGuess.empty())
+			{
+				ret->name(propTagNames.bestGuess);
+			}
+
+			if (!propTagNames.otherMatches.empty())
+			{
+				ret->otherName(propTagNames.otherMatches);
+			}
+		}
+		else
+		{
+			ret->name(name);
+			ret->otherName(strings::format(L"%d", dwType)); // Just shoving in model to see it
+		}
+
 		switch (dwType)
 		{
 		case REG_BINARY:
@@ -162,8 +194,6 @@ namespace propertybag
 		//{
 		//	ret->name(namePropNames.name);
 		//}
-
-		//ret->otherName(propTagNames.otherMatches);
 
 		//std::wstring PropString;
 		//std::wstring AltPropString;
