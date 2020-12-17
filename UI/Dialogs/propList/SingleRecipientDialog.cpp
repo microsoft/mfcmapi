@@ -43,7 +43,7 @@ namespace dialog
 
 		UpdateTitleBarText();
 
-		EC_H_S(m_lpPropDisplay->SetDataSource(m_lpMailUser, NULL, true));
+		m_lpPropDisplay->SetDataSource(m_lpMailUser, NULL, true);
 
 		return bRet;
 	}

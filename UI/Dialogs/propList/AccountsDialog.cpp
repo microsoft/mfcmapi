@@ -81,8 +81,8 @@ namespace dialog
 			};
 			m_lpAccountsList.ItemSelectedCallback = [&](auto hItem) {
 				auto lpAccount = reinterpret_cast<LPOLKACCOUNT>(m_lpAccountsList.GetItemData(hItem));
-				EC_H_S(m_lpPropDisplay->SetDataSource(
-					std::make_shared<propertybag::accountPropertyBag>(m_lpwszProfile, lpAccount), false));
+				m_lpPropDisplay->SetDataSource(
+					std::make_shared<propertybag::accountPropertyBag>(m_lpwszProfile, lpAccount));
 			};
 
 			EnumCategories();

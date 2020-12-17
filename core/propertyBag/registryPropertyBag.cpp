@@ -32,12 +32,9 @@ namespace propertybag
 		return false;
 	}
 
-	_Check_return_ HRESULT registryPropertyBag::GetAllProps(ULONG FAR* lpcValues, LPSPropValue FAR* lppPropArray)
+	_Check_return_ std::vector<std::shared_ptr<model::mapiRowModel>> registryPropertyBag::GetAllModels()
 	{
-		if (!lpcValues || !lppPropArray) return MAPI_E_INVALID_PARAMETER;
-		*lpcValues = 0;
-		*lppPropArray = nullptr;
-
+		auto models = std::vector<std::shared_ptr<model::mapiRowModel>>{};
 		auto cchMaxValueNameLen = DWORD{}; // Param in RegQueryInfoKeyW is misnamed
 		auto cValues = DWORD{};
 		auto hRes = WC_W32(RegQueryInfoKeyW(
@@ -56,13 +53,10 @@ namespace propertybag
 
 		if (cValues && cchMaxValueNameLen)
 		{
-			*lpcValues = cValues;
-			*lppPropArray = mapi::allocate<LPSPropValue>(cValues * sizeof(SPropValue));
-
 			cchMaxValueNameLen++; // For null terminator
-			auto szBuf = std::wstring(cchMaxValueNameLen, '\0');
 			for (DWORD dwIndex = 0; dwIndex < cValues; dwIndex++)
 			{
+				auto szBuf = std::wstring(cchMaxValueNameLen, L'\0');
 				auto cchValLen = cchMaxValueNameLen;
 				szBuf.clear();
 				hRes = WC_W32(RegEnumValueW(
@@ -76,40 +70,24 @@ namespace propertybag
 					nullptr)); // lpcbData
 				if (hRes == S_OK)
 				{
-					auto prop = &(*lppPropArray)[dwIndex];
-					prop->ulPropTag = PROP_TAG(PT_UNICODE, dwIndex);
-					const auto szVal = strings::format(L"%ws", szBuf.c_str());
-					prop->Value.lpszW = mapi::CopyStringW(szVal.c_str(), *lppPropArray);
-
-					// TODO: Identify prop tags in the value name
-					// Use type from tag to determine how to read data
-					// Also use lpType
-					// Convert data read to a MAPI prop Value
-					// Figure out way to deal with S props
-					// Figure out way to deal with named props
+					models.push_back(regToModel(szBuf));
 				}
 			}
 		}
 
-		return E_NOTIMPL;
+		return models;
 	}
 
-	_Check_return_ HRESULT registryPropertyBag::GetProps(
-		LPSPropTagArray lpPropTagArray,
-		ULONG /*ulFlags*/,
-		ULONG FAR* lpcValues,
-		LPSPropValue FAR* lppPropArray)
+	_Check_return_ std::shared_ptr<model::mapiRowModel> registryPropertyBag::GetOneModel(_In_ ULONG ulPropTag)
 	{
-		if (!lpcValues || !lppPropArray) return MAPI_E_INVALID_PARAMETER;
-
-		return E_NOTIMPL;
+		// TODO Implement
+		return {};
 	}
 
-	_Check_return_ HRESULT registryPropertyBag::GetProp(ULONG ulPropTag, LPSPropValue FAR* lppProp)
+	_Check_return_ LPSPropValue registryPropertyBag::GetOneProp(ULONG ulPropTag)
 	{
-		if (!lppProp) return MAPI_E_INVALID_PARAMETER;
-
-		return E_NOTIMPL;
+		// TODO: Implement
+		return nullptr;
 	}
 
 	_Check_return_ HRESULT registryPropertyBag::SetProps(ULONG cValues, LPSPropValue lpPropArray)
@@ -120,4 +98,52 @@ namespace propertybag
 	}
 
 	_Check_return_ HRESULT registryPropertyBag::SetProp(LPSPropValue lpProp) { return E_NOTIMPL; }
+
+	// TODO: Identify prop tags in the value name
+	// Use type from tag to determine how to read data
+	// Also use lpType
+	// Convert data read to a MAPI prop Value
+	// Figure out way to deal with S props
+	// Figure out way to deal with named props
+	_Check_return_ std::shared_ptr<model::mapiRowModel> registryPropertyBag::regToModel(_In_ const std::wstring val)
+	{
+		auto ret = std::make_shared<model::mapiRowModel>();
+		ret->ulPropTag(1234);
+		ret->name(val);
+		ret->value(val);
+		ret->altValue(L"foo");
+
+		//ret->ulPropTag(ulPropTag);
+
+		//const auto propTagNames = proptags::PropTagToPropName(ulPropTag, bIsAB);
+		//const auto namePropNames = cache::NameIDToStrings(ulPropTag, lpProp, nullptr, sig, bIsAB);
+		//if (!propTagNames.bestGuess.empty())
+		//{
+		//	ret->name(propTagNames.bestGuess);
+		//}
+		//else if (!namePropNames.bestPidLid.empty())
+		//{
+		//	ret->name(namePropNames.bestPidLid);
+		//}
+		//else if (!namePropNames.name.empty())
+		//{
+		//	ret->name(namePropNames.name);
+		//}
+
+		//ret->otherName(propTagNames.otherMatches);
+
+		//std::wstring PropString;
+		//std::wstring AltPropString;
+		//property::parseProperty(lpPropVal, &PropString, &AltPropString);
+		//ret->value(PropString);
+		//ret->altValue(AltPropString);
+
+		//if (!namePropNames.name.empty()) ret->namedPropName(namePropNames.name);
+		//if (!namePropNames.guid.empty()) ret->namedPropGuid(namePropNames.guid);
+
+		//const auto szSmartView = smartview::parsePropertySmartView(lpPropVal, lpProp, lpNameID, sig, bIsAB, false);
+		//if (!szSmartView.empty()) ret->smartView(szSmartView);
+
+		return ret;
+	}
 } // namespace propertybag

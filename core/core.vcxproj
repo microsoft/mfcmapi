@@ -578,6 +578,7 @@
     <ClInclude Include="mapi\processor\mapiProcessor.h" />
     <ClInclude Include="addin\mfcmapi.h" />
     <ClInclude Include="mapi\version.h" />
+    <ClInclude Include="model\mapiRowModel.h" />
     <ClInclude Include="propertyBag\accountPropertyBag.h" />
     <ClInclude Include="propertyBag\mapiPropPropertyBag.h" />
     <ClInclude Include="propertyBag\propertyBag.h" />
@@ -672,6 +673,7 @@
     <ClCompile Include="mapi\processor\dumpStore.cpp" />
     <ClCompile Include="mapi\processor\mapiProcessor.cpp" />
     <ClCompile Include="mapi\version.cpp" />
+    <ClCompile Include="model\mapiRowModel.cpp" />
     <ClCompile Include="propertyBag\accountPropertyBag.cpp" />
     <ClCompile Include="propertyBag\mapiPropPropertyBag.cpp" />
     <ClCompile Include="propertyBag\registryPropertyBag.cpp" />

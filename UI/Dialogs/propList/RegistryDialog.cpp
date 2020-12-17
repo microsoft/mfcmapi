@@ -39,7 +39,7 @@ namespace dialog
 			};
 			m_lpRegKeyTree.ItemSelectedCallback = [&](auto hItem) {
 				auto hKey = reinterpret_cast<HKEY>(m_lpRegKeyTree.GetItemData(hItem));
-				EC_H_S(m_lpPropDisplay->SetDataSource(std::make_shared<propertybag::registryPropertyBag>(hKey), false));
+				m_lpPropDisplay->SetDataSource(std::make_shared<propertybag::registryPropertyBag>(hKey));
 			};
 
 			EnumRegistry();

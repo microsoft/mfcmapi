@@ -240,7 +240,7 @@ namespace dialog
 			auto lpMAPIFormInfo = ResolveMessageClass(m_lpMapiObjects, lpMAPIFolder);
 			if (lpMAPIFormInfo)
 			{
-				EC_H_S(m_lpPropDisplay->SetDataSource(lpMAPIFormInfo, NULL, false));
+				m_lpPropDisplay->SetDataSource(lpMAPIFormInfo, NULL, false);
 				lpMAPIFormInfo->Release();
 			}
 
@@ -258,7 +258,7 @@ namespace dialog
 			auto lpMAPIFormInfo = SelectForm(m_hWnd, m_lpMapiObjects, lpMAPIFolder);
 			if (lpMAPIFormInfo)
 			{
-				EC_H_S(m_lpPropDisplay->SetDataSource(lpMAPIFormInfo, NULL, false));
+				m_lpPropDisplay->SetDataSource(lpMAPIFormInfo, NULL, false);
 				lpMAPIFormInfo->Release();
 			}
 
