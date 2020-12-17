@@ -30,7 +30,12 @@ namespace propertybag
 		propBagFlags GetFlags() const override;
 
 	private:
-		_Check_return_ std::shared_ptr<model::mapiRowModel> regToModel(_In_ const std::wstring val);
+		_Check_return_ std::shared_ptr<model::mapiRowModel> regToModel(
+			_In_ const std::wstring& name,
+			DWORD dwType,
+			DWORD dwVal,
+			_In_ const std::wstring& szVal,
+			_In_ const std::vector<BYTE>& binVal);
 
 		HKEY m_hKey{};
 	};

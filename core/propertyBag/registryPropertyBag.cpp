@@ -3,6 +3,7 @@
 #include <core/mapi/mapiFunctions.h>
 #include <core/mapi/mapiMemory.h>
 #include <core/utility/strings.h>
+#include <core/utility/registry.h>
 
 namespace propertybag
 {
@@ -53,10 +54,11 @@ namespace propertybag
 
 		if (cValues && cchMaxValueNameLen)
 		{
+			auto szBuf = std::wstring(cchMaxValueNameLen, L'\0');
 			cchMaxValueNameLen++; // For null terminator
 			for (DWORD dwIndex = 0; dwIndex < cValues; dwIndex++)
 			{
-				auto szBuf = std::wstring(cchMaxValueNameLen, L'\0');
+				auto dwType = DWORD{};
 				auto cchValLen = cchMaxValueNameLen;
 				szBuf.clear();
 				hRes = WC_W32(RegEnumValueW(
@@ -65,12 +67,28 @@ namespace propertybag
 					const_cast<wchar_t*>(szBuf.c_str()),
 					&cchValLen,
 					nullptr, // lpReserved
-					nullptr, // lpType
+					&dwType, // lpType
 					nullptr, // lpData
 					nullptr)); // lpcbData
 				if (hRes == S_OK)
 				{
-					models.push_back(regToModel(szBuf));
+					auto valName = std::wstring(szBuf.c_str()); // szBuf.size() is 0, so make a copy with a proper size
+					auto dwVal = DWORD{};
+					auto szVal = std::wstring{};
+					auto binVal = std::vector<BYTE>{};
+					switch (dwType)
+					{
+					case REG_BINARY:
+						binVal = registry::ReadBinFromRegistry(m_hKey, valName);
+						break;
+					case REG_DWORD:
+						dwVal = registry::ReadDWORDFromRegistry(m_hKey, valName);
+						break;
+					case REG_SZ:
+						szVal = registry::ReadStringFromRegistry(m_hKey, valName);
+						break;
+					}
+					models.push_back(regToModel(valName, dwType, dwVal, szVal, binVal));
 				}
 			}
 		}
@@ -105,15 +123,30 @@ namespace propertybag
 	// Convert data read to a MAPI prop Value
 	// Figure out way to deal with S props
 	// Figure out way to deal with named props
-	_Check_return_ std::shared_ptr<model::mapiRowModel> registryPropertyBag::regToModel(_In_ const std::wstring val)
+	_Check_return_ std::shared_ptr<model::mapiRowModel> registryPropertyBag::regToModel(
+		_In_ const std::wstring& name,
+		DWORD dwType,
+		DWORD dwVal,
+		_In_ const std::wstring& szVal,
+		_In_ const std::vector<BYTE>& binVal)
 	{
 		auto ret = std::make_shared<model::mapiRowModel>();
-		ret->ulPropTag(1234);
-		ret->name(val);
-		ret->value(val);
-		ret->altValue(L"foo");
-
-		//ret->ulPropTag(ulPropTag);
+		//ret->ulPropTag(1234);
+		ret->name(name);
+		ret->otherName(strings::format(L"%d", dwType)); // Just shoving in model to see it
+		switch (dwType)
+		{
+		case REG_BINARY:
+			ret->value(strings::BinToHexString(binVal, true));
+			ret->altValue(strings::BinToTextString(binVal, true));
+			break;
+		case REG_DWORD:
+			ret->value(strings::format(L"0x%08X", dwVal));
+			break;
+		case REG_SZ:
+			ret->value(szVal);
+			break;
+		}
 
 		//const auto propTagNames = proptags::PropTagToPropName(ulPropTag, bIsAB);
 		//const auto namePropNames = cache::NameIDToStrings(ulPropTag, lpProp, nullptr, sig, bIsAB);

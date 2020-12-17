@@ -14,17 +14,19 @@ namespace registry
 	// 4 - If the setting should show in options, ensure it has a unique options prompt value
 	// Note: Accessor objects can be used in code as their underlying type, though some care may be needed with casting
 #ifdef _DEBUG
-	dwordRegKey debugTag{L"DebugTag",
-						 regOptionType::stringHex,
-						 static_cast<DWORD>(output::dbgLevel::All),
-						 false,
-						 IDS_REGKEY_DEBUG_TAG};
+	dwordRegKey debugTag{
+		L"DebugTag",
+		regOptionType::stringHex,
+		static_cast<DWORD>(output::dbgLevel::All),
+		false,
+		IDS_REGKEY_DEBUG_TAG};
 #else
-	dwordRegKey debugTag{L"DebugTag",
-						 regOptionType::stringHex,
-						 static_cast<DWORD>(output::dbgLevel::NoDebug),
-						 false,
-						 IDS_REGKEY_DEBUG_TAG};
+	dwordRegKey debugTag{
+		L"DebugTag",
+		regOptionType::stringHex,
+		static_cast<DWORD>(output::dbgLevel::NoDebug),
+		false,
+		IDS_REGKEY_DEBUG_TAG};
 #endif
 	boolRegKey debugToFile{L"DebugToFile", false, false, IDS_REGKEY_DEBUG_TO_FILE};
 	wstringRegKey debugFileName{L"DebugFileName", L"c:\\mfcmapi.log", false, IDS_REGKEY_DEBUG_FILE_NAME};
@@ -35,10 +37,11 @@ namespace registry
 	boolRegKey hierRootNotifs{L"HierRootNotifs", false, false, IDS_REGKEY_HIER_ROOT_NOTIFS};
 	boolRegKey doSmartView{L"DoSmartView", true, true, IDS_REGKEY_DO_SMART_VIEW};
 	boolRegKey onlyAdditionalProperties{L"OnlyAdditionalProperties", false, true, IDS_REGKEY_ONLYADDITIONALPROPERTIES};
-	boolRegKey useRowDataForSinglePropList{L"UseRowDataForSinglePropList",
-										   false,
-										   true,
-										   IDS_REGKEY_USE_ROW_DATA_FOR_SINGLEPROPLIST};
+	boolRegKey useRowDataForSinglePropList{
+		L"UseRowDataForSinglePropList",
+		false,
+		true,
+		IDS_REGKEY_USE_ROW_DATA_FOR_SINGLEPROPLIST};
 	boolRegKey useGetPropList{L"UseGetPropList", true, true, IDS_REGKEY_USE_GETPROPLIST};
 	boolRegKey preferUnicodeProps{L"PreferUnicodeProps", true, true, IDS_REGKEY_PREFER_UNICODE_PROPS};
 	boolRegKey cacheNamedProps{L"CacheNamedProps", true, false, IDS_REGKEY_CACHE_NAMED_PROPS};
@@ -51,10 +54,11 @@ namespace registry
 	boolRegKey useIMAPIProgress{L"UseIMAPIProgress", false, false, IDS_REGKEY_USE_IMAPIPROGRESS};
 	boolRegKey useMessageRaw{L"UseMessageRaw", false, false, IDS_REGKEY_USE_MESSAGERAW};
 	boolRegKey suppressNotFound{L"SuppressNotFound", true, false, IDS_REGKEY_SUPPRESS_NOTFOUND};
-	boolRegKey heapEnableTerminationOnCorruption{L"HeapEnableTerminationOnCorruption",
-												 true,
-												 false,
-												 IDS_REGKEY_HEAPENABLETERMINATIONONCORRUPTION};
+	boolRegKey heapEnableTerminationOnCorruption{
+		L"HeapEnableTerminationOnCorruption",
+		true,
+		false,
+		IDS_REGKEY_HEAPENABLETERMINATIONONCORRUPTION};
 	boolRegKey loadAddIns{L"LoadAddIns", true, false, IDS_REGKEY_LOADADDINS};
 	boolRegKey forceOutlookMAPI{L"ForceOutlookMAPI", false, false, IDS_REGKEY_FORCEOUTLOOKMAPI};
 	boolRegKey forceSystemMAPI{L"ForceSystemMAPI", false, false, IDS_REGKEY_FORCESYSTEMMAPI};
@@ -94,8 +98,7 @@ namespace registry
 		&hexDialogDiag,
 		&displayAboutDialog,
 		&propertyColumnOrder,
-		&namedPropBatchSize
-	};
+		&namedPropBatchSize};
 
 	// If the value is not set in the registry, return the default value
 	DWORD ReadDWORDFromRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValue, _In_ const DWORD dwDefaultVal)
@@ -153,6 +156,32 @@ namespace registry
 		}
 
 		return szDefault;
+	}
+
+	std::vector<BYTE>
+	ReadBinFromRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValue, _In_ const std::vector<BYTE>& binDefault)
+	{
+		if (szValue.empty()) return binDefault;
+		output::DebugPrint(output::dbgLevel::Generic, L"ReadStringFromRegistry(%ws)\n", szValue.c_str());
+
+		// Get its size
+		DWORD cb{};
+		DWORD dwKeyType{};
+		auto hRes = WC_W32(RegQueryValueExW(hKey, szValue.c_str(), nullptr, &dwKeyType, nullptr, &cb));
+
+		if (hRes == S_OK && cb && dwKeyType == REG_BINARY)
+		{
+			auto bin = std::vector<BYTE>(cb);
+			// Get the current value
+			hRes = EC_W32(
+				RegQueryValueExW(hKey, szValue.c_str(), nullptr, &dwKeyType, const_cast<LPBYTE>(bin.data()), &cb));
+			if (hRes == S_OK && cb && !(cb % 2) && dwKeyType == REG_BINARY)
+			{
+				return bin;
+			}
+		}
+
+		return binDefault;
 	}
 
 	void ReadFromRegistry()

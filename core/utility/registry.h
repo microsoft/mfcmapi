@@ -144,9 +144,13 @@ namespace registry
 
 	_Check_return_ HKEY CreateRootKey();
 
-	DWORD ReadDWORDFromRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValue, _In_ DWORD dwDefaultVal = 0);
+	DWORD ReadDWORDFromRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValue, _In_ DWORD dwDefaultVal = {});
 	std::wstring
-	ReadStringFromRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValue, _In_ const std::wstring& szDefault = L"");
+	ReadStringFromRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValue, _In_ const std::wstring& szDefault = {});
+	std::vector<BYTE> ReadBinFromRegistry(
+		_In_ HKEY hKey,
+		_In_ const std::wstring& szValue,
+		_In_ const std::vector<BYTE>& binDefault = {});
 
 	void WriteStringToRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValueName, _In_ const std::wstring& szValue);
 
