@@ -6,6 +6,7 @@
 #include <core/utility/error.h>
 #include <core/interpret/proptags.h>
 #include <core/property/parseProperty.h>
+#include <core/smartview/SmartView.h>
 
 namespace propertybag
 {
@@ -170,101 +171,97 @@ namespace propertybag
 			ret->otherName(strings::format(L"%d", dwType)); // Just shoving in model to see it
 		}
 
-		switch (dwType)
+		auto bParseMAPI = false;
+		auto prop = SPropValue{ulPropTag};
+		if (dwType == REG_BINARY)
 		{
-		case REG_BINARY:
-		{
-			auto bSkipParse = false;
-			auto prop = SPropValue{};
-			prop.ulPropTag = ulPropTag;
-			switch (PROP_TYPE(ulPropTag))
+			if (ulPropTag)
 			{
-			case PT_CLSID:
-				if (binVal.size() == 16)
+				bParseMAPI = true;
+				switch (PROP_TYPE(ulPropTag))
 				{
-					prop.Value.lpguid = reinterpret_cast<LPGUID>(const_cast<LPBYTE>(binVal.data()));
+				case PT_CLSID:
+					if (binVal.size() == 16)
+					{
+						prop.Value.lpguid = reinterpret_cast<LPGUID>(const_cast<LPBYTE>(binVal.data()));
+					}
+					break;
+				case PT_SYSTIME:
+					if (binVal.size() == 8)
+					{
+						prop.Value.ft = *reinterpret_cast<LPFILETIME>(const_cast<LPBYTE>(binVal.data()));
+					}
+					break;
+				case PT_I8:
+					if (binVal.size() == 8)
+					{
+						prop.Value.li.QuadPart = static_cast<LONGLONG>(*binVal.data());
+					}
+					break;
+				case PT_LONG:
+					if (binVal.size() == 4)
+					{
+						prop.Value.l = static_cast<DWORD>(*binVal.data());
+					}
+					break;
+				case PT_BOOLEAN:
+					if (binVal.size() == 2)
+					{
+						prop.Value.b = static_cast<WORD>(*binVal.data());
+					}
+					break;
+				case PT_BINARY:
+					prop.Value.bin.cb = binVal.size();
+					prop.Value.bin.lpb = const_cast<LPBYTE>(binVal.data());
+					break;
+				case PT_UNICODE:
+					prop.Value.lpszW = reinterpret_cast<LPWSTR>(const_cast<LPBYTE>(binVal.data()));
+					break;
+				default:
+					bParseMAPI = false;
+					break;
 				}
-				break;
-			case PT_SYSTIME:
-				if (binVal.size() == 8)
-				{
-					prop.Value.ft = *reinterpret_cast<LPFILETIME>(const_cast<LPBYTE>(binVal.data()));
-				}
-				break;
-			case PT_I8:
-				if (binVal.size() == 8)
-				{
-					prop.Value.li.QuadPart = static_cast<LONGLONG>(*binVal.data());
-				}
-				break;
-			case PT_LONG:
-				if (binVal.size() == 4)
-				{
-					prop.Value.l = static_cast<DWORD>(*binVal.data());
-				}
-				break;
-			case PT_BOOLEAN:
-				if (binVal.size() == 2)
-				{
-					prop.Value.b = static_cast<WORD>(*binVal.data());
-				}
-				break;
-			case PT_BINARY:
-				prop.Value.bin.cb = binVal.size();
-				prop.Value.bin.lpb = const_cast<LPBYTE>(binVal.data());
-				break;
-			case PT_UNICODE:
-				prop.Value.lpszW = reinterpret_cast<LPWSTR>(const_cast<LPBYTE>(binVal.data()));
-				break;
-			default:
-				bSkipParse = true;
-				ret->value(strings::BinToHexString(binVal, true));
-				ret->altValue(strings::BinToTextString(binVal, true));
-				break;
 			}
 
-			if (!bSkipParse)
+			if (!bParseMAPI)
 			{
-				std::wstring PropString;
-				std::wstring AltPropString;
-				property::parseProperty(&prop, &PropString, &AltPropString);
-				ret->value(PropString);
-				ret->altValue(AltPropString);
+				ret->value(strings::BinToHexString(binVal, true));
+				ret->altValue(strings::BinToTextString(binVal, true));
 			}
 		}
-		break;
-		case REG_DWORD:
-			ret->value(strings::format(L"0x%08X", dwVal));
-			break;
-		case REG_SZ:
+		else if (dwType == REG_DWORD)
+		{
+			if (ulPropTag)
+			{
+				bParseMAPI = true;
+				prop.Value.l = dwVal;
+			}
+			else
+			{
+				ret->value(strings::format(L"%d", dwVal));
+				ret->altValue(strings::format(L"0x%08X", dwVal));
+			}
+		}
+		else if (dwType == REG_SZ)
+		{
 			ret->value(szVal);
-			break;
+		}
+
+		if (bParseMAPI)
+		{
+			std::wstring PropString;
+			std::wstring AltPropString;
+			property::parseProperty(&prop, &PropString, &AltPropString);
+			ret->value(PropString);
+			ret->altValue(AltPropString);
+
+			const auto szSmartView = smartview::parsePropertySmartView(&prop, nullptr, nullptr, nullptr, false, false);
+			if (!szSmartView.empty()) ret->smartView(szSmartView);
 		}
 
 		// For debugging purposes right now
 		ret->namedPropName(strings::BinToHexString(binVal, true));
 		ret->namedPropGuid(strings::BinToTextString(binVal, true));
-
-		//const auto propTagNames = proptags::PropTagToPropName(ulPropTag, bIsAB);
-		//const auto namePropNames = cache::NameIDToStrings(ulPropTag, lpProp, nullptr, sig, bIsAB);
-		//if (!propTagNames.bestGuess.empty())
-		//{
-		//	ret->name(propTagNames.bestGuess);
-		//}
-		//else if (!namePropNames.bestPidLid.empty())
-		//{
-		//	ret->name(namePropNames.bestPidLid);
-		//}
-		//else if (!namePropNames.name.empty())
-		//{
-		//	ret->name(namePropNames.name);
-		//}
-
-		//if (!namePropNames.name.empty()) ret->namedPropName(namePropNames.name);
-		//if (!namePropNames.guid.empty()) ret->namedPropGuid(namePropNames.guid);
-
-		//const auto szSmartView = smartview::parsePropertySmartView(lpPropVal, lpProp, lpNameID, sig, bIsAB, false);
-		//if (!szSmartView.empty()) ret->smartView(szSmartView);
 
 		return ret;
 	}
