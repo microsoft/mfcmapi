@@ -32,6 +32,7 @@ namespace propertybag
 	private:
 		_Check_return_ std::shared_ptr<model::mapiRowModel> regToModel(
 			_In_ const std::wstring& name,
+			ULONG ulPropTag,
 			DWORD dwType,
 			DWORD dwVal,
 			_In_ const std::wstring& szVal,

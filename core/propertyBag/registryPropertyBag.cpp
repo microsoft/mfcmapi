@@ -5,6 +5,7 @@
 #include <core/utility/registry.h>
 #include <core/utility/error.h>
 #include <core/interpret/proptags.h>
+#include <core/property/parseProperty.h>
 
 namespace propertybag
 {
@@ -32,6 +33,19 @@ namespace propertybag
 		}
 
 		return false;
+	}
+
+	ULONG nameToPropTag(_In_ const std::wstring& name)
+	{
+		if (name.size() != 8) return 0;
+		ULONG num{};
+		if (strings::tryWstringToUlong(num, name, 16, false))
+		{
+			// abuse some macros to swap the order of the tag
+			return PROP_TAG(PROP_ID(num), PROP_TYPE(num));
+		}
+
+		return 0;
 	}
 
 	_Check_return_ std::vector<std::shared_ptr<model::mapiRowModel>> registryPropertyBag::GetAllModels()
@@ -73,8 +87,11 @@ namespace propertybag
 					nullptr)); // lpcbData
 				if (hRes == S_OK)
 				{
-					auto valName = std::wstring(szBuf.c_str()); // szBuf.size() is 0, so make a copy with a proper size
+					const auto valName =
+						std::wstring(szBuf.c_str()); // szBuf.size() is 0, so make a copy with a proper size
+					const auto ulPropTag = nameToPropTag(valName);
 					auto dwVal = DWORD{};
+					auto bVal = bool{};
 					auto szVal = std::wstring{};
 					auto binVal = std::vector<BYTE>{};
 					switch (dwType)
@@ -89,7 +106,7 @@ namespace propertybag
 						szVal = registry::ReadStringFromRegistry(m_hKey, valName);
 						break;
 					}
-					models.push_back(regToModel(valName, dwType, dwVal, szVal, binVal));
+					models.push_back(regToModel(valName, ulPropTag, dwType, dwVal, szVal, binVal));
 				}
 			}
 		}
@@ -118,19 +135,6 @@ namespace propertybag
 
 	_Check_return_ HRESULT registryPropertyBag::SetProp(LPSPropValue lpProp) { return E_NOTIMPL; }
 
-	ULONG nameToULONG(_In_ const std::wstring& name)
-	{
-		if (name.size() != 8) return 0;
-		ULONG num{};
-		if (strings::tryWstringToUlong(num, name, 16, false))
-		{
-			// abuse some macros to swap the order of the tag
-			return PROP_TAG(PROP_ID(num), PROP_TYPE(num));
-		}
-
-		return 0;
-	}
-
 	// TODO: Identify prop tags in the value name
 	// Use type from tag to determine how to read data
 	// Also use lpType
@@ -139,13 +143,13 @@ namespace propertybag
 	// Figure out way to deal with named props
 	_Check_return_ std::shared_ptr<model::mapiRowModel> registryPropertyBag::regToModel(
 		_In_ const std::wstring& name,
+		ULONG ulPropTag,
 		DWORD dwType,
 		DWORD dwVal,
 		_In_ const std::wstring& szVal,
 		_In_ const std::vector<BYTE>& binVal)
 	{
 		auto ret = std::make_shared<model::mapiRowModel>();
-		const auto ulPropTag = nameToULONG(name);
 		if (ulPropTag != 0)
 		{
 			ret->ulPropTag(ulPropTag);
@@ -169,9 +173,66 @@ namespace propertybag
 		switch (dwType)
 		{
 		case REG_BINARY:
-			ret->value(strings::BinToHexString(binVal, true));
-			ret->altValue(strings::BinToTextString(binVal, true));
-			break;
+		{
+			auto bSkipParse = false;
+			auto prop = SPropValue{};
+			prop.ulPropTag = ulPropTag;
+			switch (PROP_TYPE(ulPropTag))
+			{
+			case PT_CLSID:
+				if (binVal.size() == 16)
+				{
+					prop.Value.lpguid = reinterpret_cast<LPGUID>(const_cast<LPBYTE>(binVal.data()));
+				}
+				break;
+			case PT_SYSTIME:
+				if (binVal.size() == 8)
+				{
+					prop.Value.ft = *reinterpret_cast<LPFILETIME>(const_cast<LPBYTE>(binVal.data()));
+				}
+				break;
+			case PT_I8:
+				if (binVal.size() == 8)
+				{
+					prop.Value.li.QuadPart = static_cast<LONGLONG>(*binVal.data());
+				}
+				break;
+			case PT_LONG:
+				if (binVal.size() == 4)
+				{
+					prop.Value.l = static_cast<DWORD>(*binVal.data());
+				}
+				break;
+			case PT_BOOLEAN:
+				if (binVal.size() == 2)
+				{
+					prop.Value.b = static_cast<WORD>(*binVal.data());
+				}
+				break;
+			case PT_BINARY:
+				prop.Value.bin.cb = binVal.size();
+				prop.Value.bin.lpb = const_cast<LPBYTE>(binVal.data());
+				break;
+			case PT_UNICODE:
+				prop.Value.lpszW = reinterpret_cast<LPWSTR>(const_cast<LPBYTE>(binVal.data()));
+				break;
+			default:
+				bSkipParse = true;
+				ret->value(strings::BinToHexString(binVal, true));
+				ret->altValue(strings::BinToTextString(binVal, true));
+				break;
+			}
+
+			if (!bSkipParse)
+			{
+				std::wstring PropString;
+				std::wstring AltPropString;
+				property::parseProperty(&prop, &PropString, &AltPropString);
+				ret->value(PropString);
+				ret->altValue(AltPropString);
+			}
+		}
+		break;
 		case REG_DWORD:
 			ret->value(strings::format(L"0x%08X", dwVal));
 			break;
@@ -179,6 +240,10 @@ namespace propertybag
 			ret->value(szVal);
 			break;
 		}
+
+		// For debugging purposes right now
+		ret->namedPropName(strings::BinToHexString(binVal, true));
+		ret->namedPropGuid(strings::BinToTextString(binVal, true));
 
 		//const auto propTagNames = proptags::PropTagToPropName(ulPropTag, bIsAB);
 		//const auto namePropNames = cache::NameIDToStrings(ulPropTag, lpProp, nullptr, sig, bIsAB);
@@ -194,12 +259,6 @@ namespace propertybag
 		//{
 		//	ret->name(namePropNames.name);
 		//}
-
-		//std::wstring PropString;
-		//std::wstring AltPropString;
-		//property::parseProperty(lpPropVal, &PropString, &AltPropString);
-		//ret->value(PropString);
-		//ret->altValue(AltPropString);
 
 		//if (!namePropNames.name.empty()) ret->namedPropName(namePropNames.name);
 		//if (!namePropNames.guid.empty()) ret->namedPropGuid(namePropNames.guid);
