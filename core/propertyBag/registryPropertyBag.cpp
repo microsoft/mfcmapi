@@ -136,12 +136,6 @@ namespace propertybag
 
 	_Check_return_ HRESULT registryPropertyBag::SetProp(LPSPropValue lpProp) { return E_NOTIMPL; }
 
-	// TODO: Identify prop tags in the value name
-	// Use type from tag to determine how to read data
-	// Also use lpType
-	// Convert data read to a MAPI prop Value
-	// Figure out way to deal with S props
-	// Figure out way to deal with named props
 	_Check_return_ std::shared_ptr<model::mapiRowModel> registryPropertyBag::regToModel(
 		_In_ const std::wstring& name,
 		ULONG ulPropTag,
