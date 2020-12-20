@@ -12,7 +12,7 @@ namespace sortlistdata
 
 		binaryData(_In_opt_ LPSBinary lpOldBin) noexcept;
 
-		_Check_return_ inline LPSBinary getCurrentBin()
+		_Check_return_ LPSBinary getCurrentBin()
 		{
 			if (m_NewBin.lpb)
 			{

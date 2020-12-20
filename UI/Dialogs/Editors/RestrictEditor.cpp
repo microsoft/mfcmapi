@@ -731,7 +731,7 @@ namespace dialog::editor
 		const auto comment = lpData->cast<sortlistdata::commentData>();
 		if (!comment) return false;
 
-		auto lpSourceProp = comment->m_lpNewProp ? comment->m_lpNewProp : comment->m_lpOldProp;
+		auto lpSourceProp = comment->getCurrentProp();
 
 		auto sProp = SPropValue{};
 
@@ -746,17 +746,17 @@ namespace dialog::editor
 			lpSourceProp = &sProp;
 		}
 
-		comment->m_lpNewProp =
+		auto prop =
 			DisplayPropertyEditor(this, IDS_PROPEDITOR, false, m_lpAllocParent, NULL, NULL, false, lpSourceProp);
 
 		// Since lpData->data.Comment.lpNewProp was owned by an m_lpAllocParent, we don't free it directly
-		if (comment->m_lpNewProp)
+		if (prop)
 		{
+			comment->setCurrentProp(prop);
 			std::wstring szTmp;
 			std::wstring szAltTmp;
-			SetListString(
-				ulListNum, iItem, 1, proptags::TagToString(comment->m_lpNewProp->ulPropTag, nullptr, false, true));
-			property::parseProperty(comment->m_lpNewProp, &szTmp, &szAltTmp);
+			SetListString(ulListNum, iItem, 1, proptags::TagToString(prop->ulPropTag, nullptr, false, true));
+			property::parseProperty(prop, &szTmp, &szAltTmp);
 			SetListString(ulListNum, iItem, 2, szTmp);
 			SetListString(ulListNum, iItem, 3, szAltTmp);
 			return true;
@@ -785,22 +785,11 @@ namespace dialog::editor
 						const auto comment = lpData->cast<sortlistdata::commentData>();
 						if (comment)
 						{
-							if (comment->m_lpNewProp)
-							{
-								EC_H_S(mapi::MyPropCopyMore(
-									&lpNewCommentProp[paneID],
-									comment->m_lpNewProp,
-									MAPIAllocateMore,
-									m_lpAllocParent));
-							}
-							else
-							{
-								EC_H_S(mapi::MyPropCopyMore(
-									&lpNewCommentProp[paneID],
-									comment->m_lpOldProp,
-									MAPIAllocateMore,
-									m_lpAllocParent));
-							}
+							EC_H_S(mapi::MyPropCopyMore(
+								&lpNewCommentProp[paneID],
+								comment->getCurrentProp(),
+								MAPIAllocateMore,
+								m_lpAllocParent));
 						}
 					}
 				}
