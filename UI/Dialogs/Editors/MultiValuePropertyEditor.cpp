@@ -119,7 +119,7 @@ namespace dialog::editor
 				const auto mvprop = lpData->cast<sortlistdata::mvPropData>();
 				if (mvprop)
 				{
-					sProp.Value = mvprop->m_val;
+					sProp.Value = mvprop->getVal();
 				}
 
 				UpdateListRow(&sProp, iMVCount);
@@ -233,45 +233,45 @@ namespace dialog::editor
 						switch (PROP_TYPE(m_lpsOutputValue->ulPropTag))
 						{
 						case PT_MV_I2:
-							m_lpsOutputValue->Value.MVi.lpi[iMVCount] = mvprop->m_val.i;
+							m_lpsOutputValue->Value.MVi.lpi[iMVCount] = mvprop->getVal().i;
 							break;
 						case PT_MV_LONG:
-							m_lpsOutputValue->Value.MVl.lpl[iMVCount] = mvprop->m_val.l;
+							m_lpsOutputValue->Value.MVl.lpl[iMVCount] = mvprop->getVal().l;
 							break;
 						case PT_MV_DOUBLE:
-							m_lpsOutputValue->Value.MVdbl.lpdbl[iMVCount] = mvprop->m_val.dbl;
+							m_lpsOutputValue->Value.MVdbl.lpdbl[iMVCount] = mvprop->getVal().dbl;
 							break;
 						case PT_MV_CURRENCY:
-							m_lpsOutputValue->Value.MVcur.lpcur[iMVCount] = mvprop->m_val.cur;
+							m_lpsOutputValue->Value.MVcur.lpcur[iMVCount] = mvprop->getVal().cur;
 							break;
 						case PT_MV_APPTIME:
-							m_lpsOutputValue->Value.MVat.lpat[iMVCount] = mvprop->m_val.at;
+							m_lpsOutputValue->Value.MVat.lpat[iMVCount] = mvprop->getVal().at;
 							break;
 						case PT_MV_SYSTIME:
-							m_lpsOutputValue->Value.MVft.lpft[iMVCount] = mvprop->m_val.ft;
+							m_lpsOutputValue->Value.MVft.lpft[iMVCount] = mvprop->getVal().ft;
 							break;
 						case PT_MV_I8:
-							m_lpsOutputValue->Value.MVli.lpli[iMVCount] = mvprop->m_val.li;
+							m_lpsOutputValue->Value.MVli.lpli[iMVCount] = mvprop->getVal().li;
 							break;
 						case PT_MV_R4:
-							m_lpsOutputValue->Value.MVflt.lpflt[iMVCount] = mvprop->m_val.flt;
+							m_lpsOutputValue->Value.MVflt.lpflt[iMVCount] = mvprop->getVal().flt;
 							break;
 						case PT_MV_STRING8:
 							m_lpsOutputValue->Value.MVszA.lppszA[iMVCount] =
-								mapi::CopyStringA(mvprop->m_val.lpszA, m_lpAllocParent);
+								mapi::CopyStringA(mvprop->getVal().lpszA, m_lpAllocParent);
 							break;
 						case PT_MV_UNICODE:
 							m_lpsOutputValue->Value.MVszW.lppszW[iMVCount] =
-								mapi::CopyStringW(mvprop->m_val.lpszW, m_lpAllocParent);
+								mapi::CopyStringW(mvprop->getVal().lpszW, m_lpAllocParent);
 							break;
 						case PT_MV_BINARY:
 							m_lpsOutputValue->Value.MVbin.lpbin[iMVCount] =
-								mapi::CopySBinary(mvprop->m_val.bin, m_lpAllocParent);
+								mapi::CopySBinary(mvprop->getVal().bin, m_lpAllocParent);
 							break;
 						case PT_MV_CLSID:
-							if (mvprop->m_val.lpguid)
+							if (mvprop->getVal().lpguid)
 							{
-								m_lpsOutputValue->Value.MVguid.lpguid[iMVCount] = *mvprop->m_val.lpguid;
+								m_lpsOutputValue->Value.MVguid.lpguid[iMVCount] = *mvprop->getVal().lpguid;
 							}
 
 							break;
@@ -319,7 +319,7 @@ namespace dialog::editor
 		SPropValue tmpPropVal = {};
 		// Strip off MV_FLAG since we're displaying only a row
 		tmpPropVal.ulPropTag = m_ulPropTag & ~MV_FLAG;
-		tmpPropVal.Value = mvprop->m_val;
+		tmpPropVal.Value = mvprop->getVal();
 
 		const auto lpNewValue = DisplayPropertyEditor(
 			this,
@@ -371,7 +371,7 @@ namespace dialog::editor
 		{
 			const auto lpData = GetListRowData(0, i);
 			const auto mvprop = lpData->cast<sortlistdata::mvPropData>();
-			ret.push_back(mvprop ? mvprop->m_val.l : LONG{});
+			ret.push_back(mvprop ? mvprop->getVal().l : LONG{});
 		}
 
 		return ret;
@@ -387,7 +387,7 @@ namespace dialog::editor
 		{
 			const auto lpData = GetListRowData(0, i);
 			const auto mvprop = lpData->cast<sortlistdata::mvPropData>();
-			const auto bin = mvprop ? mvprop->m_val.bin : SBinary{};
+			const auto bin = mvprop ? mvprop->getVal().bin : SBinary{};
 			ret.push_back(std::vector<BYTE>(bin.lpb, bin.lpb + bin.cb));
 		}
 
