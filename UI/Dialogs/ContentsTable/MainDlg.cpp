@@ -1503,9 +1503,9 @@ namespace dialog
 				{
 					SBinary serviceUID = {};
 					SBinary providerUID = {};
-					auto lpProp = PpropFindProp(lpListData->lpSourceProps, lpListData->cSourceProps, PR_SERVICE_UID);
+					auto lpProp = lpListData->GetOneProp(PR_SERVICE_UID);
 					if (lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag)) serviceUID = mapi::getBin(lpProp);
-					lpProp = PpropFindProp(lpListData->lpSourceProps, lpListData->cSourceProps, PR_MDB_PROVIDER);
+					lpProp = lpListData->GetOneProp(PR_MDB_PROVIDER);
 					if (lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag)) providerUID = mapi::getBin(lpProp);
 
 					MAPIUID emsmdbUID = {0};

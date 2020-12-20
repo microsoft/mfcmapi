@@ -1319,7 +1319,7 @@ namespace dialog::editor
 				SetListString(ulListNum, iRow, 1, std::to_wstring(lpEntryList->lpbin[iRow].cb));
 				SetListString(ulListNum, iRow, 2, strings::BinToHexString(&lpEntryList->lpbin[iRow], false));
 				SetListString(ulListNum, iRow, 3, strings::BinToTextString(&lpEntryList->lpbin[iRow], true));
-				if (lpData) lpData->bItemFullyLoaded = true;
+				if (lpData) lpData->setFullyLoaded(true);
 			}
 		}
 

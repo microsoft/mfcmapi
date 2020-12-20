@@ -277,15 +277,12 @@ namespace dialog
 		}
 		else
 		{
-			SRow MyRow = {0};
-
 			// If we have a row to give, give it - it's free
 			const auto lpData = m_lpHierarchyTableTreeCtrl.GetSelectedItemData();
 			if (lpData)
 			{
-				MyRow.cValues = lpData->cSourceProps;
-				MyRow.lpProps = lpData->lpSourceProps;
-				MyAddInMenuParams.lpRow = &MyRow;
+				auto row = lpData->getRow();
+				MyAddInMenuParams.lpRow = &row;
 				MyAddInMenuParams.ulCurrentFlags |= MENU_FLAGS_ROW;
 			}
 

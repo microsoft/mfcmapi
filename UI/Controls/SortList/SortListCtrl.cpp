@@ -342,8 +342,8 @@ namespace controls::sortlistctrl
 		if (!lpData2) return sort1First; // sort null items to the end - this makes lParam1>lParam2
 
 		// Don't sort items which aren't fully loaded
-		if (!lpData1->bItemFullyLoaded) return sort2First;
-		if (!lpData2->bItemFullyLoaded) return sort1First;
+		if (!lpData1->getFullyLoaded()) return sort2First;
+		if (!lpData2->getFullyLoaded()) return sort1First;
 
 		switch (lpSortInfo->sortstyle)
 		{
@@ -480,13 +480,13 @@ namespace controls::sortlistctrl
 				auto lpData = reinterpret_cast<sortlistdata::sortListData*>(GetItemData(i));
 				if (lpData)
 				{
+					auto row = lpData->getRow();
 					lpData->clearSortValues();
-					if (ulSourceCol < lpData->cSourceProps &&
-						PROP_TYPE(lpData->lpSourceProps[ulSourceCol].ulPropTag) == PT_SYSTIME)
+					if (ulSourceCol < row.cValues && PROP_TYPE(row.lpProps[ulSourceCol].ulPropTag) == PT_SYSTIME)
 					{
 						lpData->setSortValue(
-							{lpData->lpSourceProps[ulSourceCol].Value.ft.dwLowDateTime,
-							 lpData->lpSourceProps[ulSourceCol].Value.ft.dwHighDateTime});
+							{row.lpProps[ulSourceCol].Value.ft.dwLowDateTime,
+							 row.lpProps[ulSourceCol].Value.ft.dwHighDateTime});
 					}
 				}
 			}

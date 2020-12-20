@@ -898,7 +898,7 @@ namespace controls::sortlistctrl
 
 			SetRowStrings(iRow, lpsRowData);
 			// Do this last so that our row can't get sorted before we're done!
-			lpData->bItemFullyLoaded = true;
+			lpData->setFullyLoaded(true);
 		}
 	}
 
@@ -1212,12 +1212,10 @@ namespace controls::sortlistctrl
 			{
 				// go get the original row for display in the prop list control
 				lpData = GetSortListData(pNMListView->iItem);
-				ULONG cValues = 0;
-				LPSPropValue lpProps = nullptr;
+				auto row = SRow{};
 				if (lpData)
 				{
-					cValues = lpData->cSourceProps;
-					lpProps = lpData->lpSourceProps;
+					row = lpData->getRow();
 				}
 
 				lpMAPIProp = m_lpHostDlg->OpenItemProp(pNMListView->iItem, modifyType::REQUEST_MODIFY);
@@ -1225,15 +1223,15 @@ namespace controls::sortlistctrl
 				szTitle = strings::loadstring(IDS_DISPLAYNAMENOTFOUND);
 
 				// try to use our rowset first
-				if (NODISPLAYNAME != m_ulDisplayNameColumn && lpProps && m_ulDisplayNameColumn < cValues)
+				if (NODISPLAYNAME != m_ulDisplayNameColumn && row.lpProps && m_ulDisplayNameColumn < row.cValues)
 				{
-					if (strings::CheckStringProp(&lpProps[m_ulDisplayNameColumn], PT_STRING8))
+					if (strings::CheckStringProp(&row.lpProps[m_ulDisplayNameColumn], PT_STRING8))
 					{
-						szTitle = strings::stringTowstring(lpProps[m_ulDisplayNameColumn].Value.lpszA);
+						szTitle = strings::stringTowstring(row.lpProps[m_ulDisplayNameColumn].Value.lpszA);
 					}
-					else if (strings::CheckStringProp(&lpProps[m_ulDisplayNameColumn], PT_UNICODE))
+					else if (strings::CheckStringProp(&row.lpProps[m_ulDisplayNameColumn], PT_UNICODE))
 					{
-						szTitle = lpProps[m_ulDisplayNameColumn].Value.lpszW;
+						szTitle = row.lpProps[m_ulDisplayNameColumn].Value.lpszW;
 					}
 					else
 					{
@@ -1430,15 +1428,13 @@ namespace controls::sortlistctrl
 			hRes = EC_B(SetItem(&lvItem)); // Set new image for the row
 
 			// Save the row type (header/leaf) into lpData
-			const auto lpProp = PpropFindProp(lpData->lpSourceProps, lpData->cSourceProps, PR_ROW_TYPE);
+			const auto lpProp = lpData->GetOneProp(PR_ROW_TYPE);
 			if (lpProp && PR_ROW_TYPE == lpProp->ulPropTag)
 			{
 				lpProp->Value.l = contents->m_ulRowType;
 			}
 
-			SRow sRowData = {};
-			sRowData.cValues = lpData->cSourceProps;
-			sRowData.lpProps = lpData->lpSourceProps;
+			auto sRowData = lpData->getRow();
 			SetRowStrings(iItem, &sRowData);
 		}
 

@@ -124,7 +124,7 @@ namespace dialog::editor
 
 				UpdateListRow(&sProp, iMVCount);
 
-				lpData->bItemFullyLoaded = true;
+				lpData->setFullyLoaded(true);
 			}
 		}
 	}

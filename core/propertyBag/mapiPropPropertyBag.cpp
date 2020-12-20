@@ -69,10 +69,10 @@ namespace propertybag
 		// The caller will assume the memory was allocated from them, so copy before handing it back
 		if (hRes == MAPI_E_NOT_FOUND && m_lpListData)
 		{
-			const auto lpProp = PpropFindProp(m_lpListData->lpSourceProps, m_lpListData->cSourceProps, ulPropTag);
+			const auto lpProp = m_lpListData->GetOneProp(ulPropTag);
 			if (lpProp)
 			{
-				hRes = WC_MAPI(ScDupPropset(1, lpProp, MAPIAllocateBuffer, &lpPropRet));
+				hRes = WC_H(mapi::DupeProps(1, lpProp, MAPIAllocateBuffer, &lpPropRet));
 			}
 		}
 
@@ -94,7 +94,7 @@ namespace propertybag
 	{
 		// m_lpListData->lpSourceProps is the only data we might hand out that we didn't allocate
 		// Don't delete it!!!
-		if (m_lpListData && m_lpListData->lpSourceProps == lpProp) return;
+		if (m_lpListData && m_lpListData->getRow().lpProps == lpProp) return;
 
 		if (lpProp) MAPIFreeBuffer(lpProp);
 	}
@@ -170,12 +170,11 @@ namespace propertybag
 
 		if (!m_bGetPropsSucceeded && m_lpListData)
 		{
-			m_lpListData->cSourceProps;
-			m_lpListData->lpSourceProps;
 			auto models = std::vector<std::shared_ptr<model::mapiRowModel>>{};
-			for (ULONG i = 0; i < m_lpListData->cSourceProps; i++)
+			const auto row = m_lpListData->getRow();
+			for (ULONG i = 0; i < row.cValues; i++)
 			{
-				auto prop = m_lpListData->lpSourceProps[i];
+				const auto prop = row.lpProps[i];
 				models.push_back(model::propToModel(&prop, prop.ulPropTag, m_lpProp, m_bIsAB));
 			}
 
@@ -187,7 +186,7 @@ namespace propertybag
 	_Check_return_ std::shared_ptr<model::mapiRowModel> mapiPropPropertyBag::GetOneModel(_In_ ULONG ulPropTag)
 	{
 		auto lpPropVal = LPSPropValue{};
-		auto hRes = WC_MAPI(mapi::HrGetOnePropEx(m_lpProp, ulPropTag, fMapiUnicode, &lpPropVal));
+		const auto hRes = WC_MAPI(mapi::HrGetOnePropEx(m_lpProp, ulPropTag, fMapiUnicode, &lpPropVal));
 		if (SUCCEEDED(hRes) && lpPropVal)
 		{
 			const auto model = model::propToModel(lpPropVal, ulPropTag, m_lpProp, m_bIsAB);
@@ -203,8 +202,7 @@ namespace propertybag
 		// So we fetch it from there instead
 		if (hRes == MAPI_E_NOT_FOUND && m_lpListData)
 		{
-			lpPropVal = PpropFindProp(m_lpListData->lpSourceProps, m_lpListData->cSourceProps, ulPropTag);
-			return model::propToModel(lpPropVal, ulPropTag, m_lpProp, m_bIsAB);
+			return model::propToModel(m_lpListData->GetOneProp(ulPropTag), ulPropTag, m_lpProp, m_bIsAB);
 		}
 
 		// If we still don't have a prop, build an error prop

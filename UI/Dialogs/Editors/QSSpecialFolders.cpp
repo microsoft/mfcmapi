@@ -184,7 +184,7 @@ namespace dialog::editor
 				}
 
 				MAPIFreeBuffer(defaultEid);
-				lpData->bItemFullyLoaded = true;
+				lpData->setFullyLoaded(true);
 			}
 		}
 

@@ -10,8 +10,9 @@ namespace propertybag
 	{
 		if (lpListData)
 		{
-			m_cValues = lpListData->cSourceProps;
-			m_lpProps = lpListData->lpSourceProps;
+			auto row = lpListData->getRow();
+			m_cValues = row.cValues;
+			m_lpProps = row.lpProps;
 		}
 
 		if (mapi::IsABObject(m_cValues, m_lpProps)) m_bIsAB = true;
@@ -182,9 +183,7 @@ namespace propertybag
 		const auto hRes = EC_H(ConcatLPSPropValue(1, lpProp, m_cValues, m_lpProps, &ulNewArray, &lpNewArray));
 		if (SUCCEEDED(hRes))
 		{
-			MAPIFreeBuffer(m_lpListData->lpSourceProps);
-			m_lpListData->cSourceProps = ulNewArray;
-			m_lpListData->lpSourceProps = lpNewArray;
+			m_lpListData->setRow(ulNewArray, lpNewArray);
 
 			m_cValues = ulNewArray;
 			m_lpProps = lpNewArray;

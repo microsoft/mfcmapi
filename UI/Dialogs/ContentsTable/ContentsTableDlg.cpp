@@ -575,8 +575,7 @@ namespace dialog
 				// If we have a row to give, give it - it's free
 				if (lpData)
 				{
-					MyRow.cValues = lpData->cSourceProps;
-					MyRow.lpProps = lpData->lpSourceProps;
+					MyRow = lpData->getRow();
 					MyAddInMenuParams.lpRow = &MyRow;
 					MyAddInMenuParams.ulCurrentFlags |= MENU_FLAGS_ROW;
 				}

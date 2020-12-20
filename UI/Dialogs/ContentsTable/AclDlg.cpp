@@ -141,8 +141,8 @@ namespace dialog
 				const auto bin = MyData.GetBinary(0, false);
 
 				lpNewItem->aEntries[0].rgPropVals[0].ulPropTag = PR_MEMBER_ENTRYID;
-				mapi::setBin(lpNewItem->aEntries[0].rgPropVals[0]) = {static_cast<ULONG>(bin.size()),
-																	  const_cast<BYTE*>(bin.data())};
+				mapi::setBin(lpNewItem->aEntries[0].rgPropVals[0]) = {
+					static_cast<ULONG>(bin.size()), const_cast<BYTE*>(bin.data())};
 				lpNewItem->aEntries[0].rgPropVals[1].ulPropTag = PR_MEMBER_RIGHTS;
 				lpNewItem->aEntries[0].rgPropVals[1].Value.ul = MyData.GetHex(1);
 
@@ -219,13 +219,12 @@ namespace dialog
 								mapi::allocate<LPSPropValue>(2 * sizeof(SPropValue), lpTempList);
 							lpTempList->aEntries[iArrayPos].cValues = 2;
 
-							auto lpSPropValue =
-								PpropFindProp(lpData->lpSourceProps, lpData->cSourceProps, PR_MEMBER_ID);
+							auto lpSPropValue = lpData->GetOneProp(PR_MEMBER_ID);
 
 							lpTempList->aEntries[iArrayPos].rgPropVals[0].ulPropTag = lpSPropValue->ulPropTag;
 							lpTempList->aEntries[iArrayPos].rgPropVals[0].Value = lpSPropValue->Value;
 
-							lpSPropValue = PpropFindProp(lpData->lpSourceProps, lpData->cSourceProps, PR_MEMBER_RIGHTS);
+							lpSPropValue = lpData->GetOneProp(PR_MEMBER_RIGHTS);
 
 							lpTempList->aEntries[iArrayPos].rgPropVals[1].ulPropTag = lpSPropValue->ulPropTag;
 							lpTempList->aEntries[iArrayPos].rgPropVals[1].Value = lpSPropValue->Value;
@@ -233,8 +232,7 @@ namespace dialog
 						else if (ulFlags & ACL_INCLUDE_ID)
 						{
 							lpTempList->aEntries[iArrayPos].cValues = 1;
-							lpTempList->aEntries[iArrayPos].rgPropVals =
-								PpropFindProp(lpData->lpSourceProps, lpData->cSourceProps, PR_MEMBER_ID);
+							lpTempList->aEntries[iArrayPos].rgPropVals = lpData->GetOneProp(PR_MEMBER_ID);
 						}
 					}
 				}
