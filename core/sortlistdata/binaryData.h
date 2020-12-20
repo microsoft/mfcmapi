@@ -16,11 +16,11 @@ namespace sortlistdata
 		{
 			if (m_NewBin.lpb)
 			{
-				return &m_OldBin;
+				return &m_NewBin;
 			}
 			else
 			{
-				return &m_NewBin;
+				return &m_OldBin;
 			}
 		}
 		void setCurrentBin(_In_ const SBinary& bin) { m_NewBin = bin; }

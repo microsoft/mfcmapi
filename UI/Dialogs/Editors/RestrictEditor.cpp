@@ -535,14 +535,15 @@ namespace dialog::editor
 		const auto res = lpData->cast<sortlistdata::resData>();
 		if (!res) return false;
 
-		const auto lpSourceRes = res->m_lpNewRes ? res->m_lpNewRes : res->m_lpOldRes;
+		const auto lpSourceRes = res->getCurrentRes();
 
 		CRestrictEditor MyResEditor(this, m_lpAllocParent,
 									lpSourceRes); // pass source res into editor
 		if (!MyResEditor.DisplayDialog()) return false;
 		// Since lpData->data.Res.lpNewRes was owned by an m_lpAllocParent, we don't free it directly
-		res->m_lpNewRes = MyResEditor.DetachModifiedSRestriction();
-		SetListString(ulListNum, iItem, 1, property::RestrictionToString(res->m_lpNewRes, nullptr));
+		const auto newRes = MyResEditor.DetachModifiedSRestriction();
+		res->setCurrentRes(newRes);
+		SetListString(ulListNum, iItem, 1, property::RestrictionToString(newRes, nullptr));
 		return true;
 	}
 
@@ -565,16 +566,7 @@ namespace dialog::editor
 					const auto res = lpData->cast<sortlistdata::resData>();
 					if (res)
 					{
-						if (res->m_lpNewRes)
-						{
-							memcpy(&lpNewResArray[paneID], res->m_lpNewRes, sizeof(SRestriction));
-							memset(res->m_lpNewRes, 0, sizeof(SRestriction));
-						}
-						else
-						{
-							EC_H_S(mapi::HrCopyRestrictionArray(
-								res->m_lpOldRes, m_lpAllocParent, 1, &lpNewResArray[paneID]));
-						}
+						lpNewResArray[paneID] = res->detachRes(m_lpAllocParent);
 					}
 				}
 			}
