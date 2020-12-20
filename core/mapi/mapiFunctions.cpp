@@ -1917,10 +1917,7 @@ namespace mapi
 
 		if (lpNewMessage)
 		{
-			SPropValue sProp;
-
-			sProp.dwAlignPad = 0;
-			sProp.ulPropTag = PR_DELETE_AFTER_SUBMIT;
+			auto sProp = SPropValue{PR_DELETE_AFTER_SUBMIT};
 			sProp.Value.b = true;
 
 			output::DebugPrint(output::dbgLevel::Generic, L"Setting PR_DELETE_AFTER_SUBMIT to true.\n");

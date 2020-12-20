@@ -1359,15 +1359,7 @@ namespace dialog::editor
 
 		CEditor BinEdit(this, IDS_EIDEDITOR, IDS_EIDEDITORPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		auto lpSourcebin = LPSBinary{};
-		if (binary->m_OldBin.lpb)
-		{
-			lpSourcebin = &binary->m_OldBin;
-		}
-		else
-		{
-			lpSourcebin = &binary->m_NewBin;
-		}
+		auto lpSourcebin = binary->getCurrentBin();
 
 		BinEdit.AddPane(
 			viewpane::TextPane::CreateSingleLinePane(0, IDS_EID, strings::BinToHexString(lpSourcebin, false), false));
@@ -1375,14 +1367,16 @@ namespace dialog::editor
 		if (BinEdit.DisplayDialog())
 		{
 			auto bin = strings::HexStringToBin(BinEdit.GetStringW(0));
-			binary->m_NewBin.lpb = mapi::ByteVectorToMAPI(bin, m_lpNewEntryList);
-			if (binary->m_NewBin.lpb)
+			auto newBin = SBinary{};
+			newBin.lpb = mapi::ByteVectorToMAPI(bin, m_lpNewEntryList);
+			if (newBin.lpb)
 			{
-				binary->m_NewBin.cb = static_cast<ULONG>(bin.size());
-				const auto szTmp = std::to_wstring(binary->m_NewBin.cb);
+				newBin.cb = static_cast<ULONG>(bin.size());
+				binary->setCurrentBin(newBin);
+				const auto szTmp = std::to_wstring(newBin.cb);
 				SetListString(ulListNum, iItem, 1, szTmp);
-				SetListString(ulListNum, iItem, 2, strings::BinToHexString(&binary->m_NewBin, false));
-				SetListString(ulListNum, iItem, 3, strings::BinToTextString(&binary->m_NewBin, true));
+				SetListString(ulListNum, iItem, 2, strings::BinToHexString(&newBin, false));
+				SetListString(ulListNum, iItem, 3, strings::BinToTextString(&newBin, true));
 				return true;
 			}
 		}
@@ -1409,24 +1403,7 @@ namespace dialog::editor
 					const auto binary = lpData->cast<sortlistdata::binaryData>();
 					if (binary)
 					{
-						if (binary->m_NewBin.lpb)
-						{
-							m_lpNewEntryList->lpbin[paneID].cb = binary->m_NewBin.cb;
-							m_lpNewEntryList->lpbin[paneID].lpb = binary->m_NewBin.lpb;
-							// clean out the source
-							binary->m_OldBin.lpb = nullptr;
-						}
-						else
-						{
-							m_lpNewEntryList->lpbin[paneID].cb = binary->m_OldBin.cb;
-							m_lpNewEntryList->lpbin[paneID].lpb =
-								mapi::allocate<LPBYTE>(m_lpNewEntryList->lpbin[paneID].cb, m_lpNewEntryList);
-
-							memcpy(
-								m_lpNewEntryList->lpbin[paneID].lpb,
-								binary->m_OldBin.lpb,
-								m_lpNewEntryList->lpbin[paneID].cb);
-						}
+						m_lpNewEntryList->lpbin[paneID] = binary->detachBin(m_lpNewEntryList);
 					}
 				}
 			}

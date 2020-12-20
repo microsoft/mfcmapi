@@ -14,8 +14,19 @@ namespace sortlistdata
 	{
 		if (lpOldBin)
 		{
-			m_OldBin.cb = lpOldBin->cb;
-			m_OldBin.lpb = lpOldBin->lpb;
+			m_OldBin = *lpOldBin;
+		}
+	}
+
+	_Check_return_ SBinary binaryData::detachBin(_In_opt_ const VOID* parent)
+	{
+		if (m_NewBin.lpb)
+		{
+			return m_NewBin;
+		}
+		else
+		{
+			return mapi::CopySBinary(m_OldBin, parent);
 		}
 	}
 } // namespace sortlistdata
