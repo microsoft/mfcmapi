@@ -90,7 +90,7 @@ namespace dialog::editor
 		const auto prop = lpData->cast<sortlistdata::propListData>();
 		if (!prop) return false;
 
-		const auto ulOrigPropTag = prop->m_ulPropTag;
+		const auto ulOrigPropTag = prop->getPropTag();
 
 		CPropertyTagEditor MyPropertyTag(
 			NULL, // title
@@ -105,7 +105,7 @@ namespace dialog::editor
 
 		if (ulNewPropTag != ulOrigPropTag)
 		{
-			prop->m_ulPropTag = ulNewPropTag;
+			prop->setPropTag(ulNewPropTag);
 
 			const auto namePropNames = cache::NameIDToStrings(ulNewPropTag, m_lpMAPIProp, nullptr, nullptr, m_bIsAB);
 
@@ -185,7 +185,7 @@ namespace dialog::editor
 					const auto prop = lpData->cast<sortlistdata::propListData>();
 					if (prop)
 					{
-						mapi::setTag(m_lpOutputTagArray, iTagCount) = prop->m_ulPropTag;
+						mapi::setTag(m_lpOutputTagArray, iTagCount) = prop->getPropTag();
 					}
 				}
 			}

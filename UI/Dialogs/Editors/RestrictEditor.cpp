@@ -535,14 +535,15 @@ namespace dialog::editor
 		const auto res = lpData->cast<sortlistdata::resData>();
 		if (!res) return false;
 
-		const auto lpSourceRes = res->m_lpNewRes ? res->m_lpNewRes : res->m_lpOldRes;
+		const auto lpSourceRes = res->getCurrentRes();
 
 		CRestrictEditor MyResEditor(this, m_lpAllocParent,
 									lpSourceRes); // pass source res into editor
 		if (!MyResEditor.DisplayDialog()) return false;
 		// Since lpData->data.Res.lpNewRes was owned by an m_lpAllocParent, we don't free it directly
-		res->m_lpNewRes = MyResEditor.DetachModifiedSRestriction();
-		SetListString(ulListNum, iItem, 1, property::RestrictionToString(res->m_lpNewRes, nullptr));
+		const auto newRes = MyResEditor.DetachModifiedSRestriction();
+		res->setCurrentRes(newRes);
+		SetListString(ulListNum, iItem, 1, property::RestrictionToString(newRes, nullptr));
 		return true;
 	}
 
@@ -565,16 +566,7 @@ namespace dialog::editor
 					const auto res = lpData->cast<sortlistdata::resData>();
 					if (res)
 					{
-						if (res->m_lpNewRes)
-						{
-							memcpy(&lpNewResArray[paneID], res->m_lpNewRes, sizeof(SRestriction));
-							memset(res->m_lpNewRes, 0, sizeof(SRestriction));
-						}
-						else
-						{
-							EC_H_S(mapi::HrCopyRestrictionArray(
-								res->m_lpOldRes, m_lpAllocParent, 1, &lpNewResArray[paneID]));
-						}
+						lpNewResArray[paneID] = res->detachRes(m_lpAllocParent);
 					}
 				}
 			}
@@ -731,7 +723,7 @@ namespace dialog::editor
 		const auto comment = lpData->cast<sortlistdata::commentData>();
 		if (!comment) return false;
 
-		auto lpSourceProp = comment->m_lpNewProp ? comment->m_lpNewProp : comment->m_lpOldProp;
+		auto lpSourceProp = comment->getCurrentProp();
 
 		auto sProp = SPropValue{};
 
@@ -746,17 +738,17 @@ namespace dialog::editor
 			lpSourceProp = &sProp;
 		}
 
-		comment->m_lpNewProp =
+		auto prop =
 			DisplayPropertyEditor(this, IDS_PROPEDITOR, false, m_lpAllocParent, NULL, NULL, false, lpSourceProp);
 
 		// Since lpData->data.Comment.lpNewProp was owned by an m_lpAllocParent, we don't free it directly
-		if (comment->m_lpNewProp)
+		if (prop)
 		{
+			comment->setCurrentProp(prop);
 			std::wstring szTmp;
 			std::wstring szAltTmp;
-			SetListString(
-				ulListNum, iItem, 1, proptags::TagToString(comment->m_lpNewProp->ulPropTag, nullptr, false, true));
-			property::parseProperty(comment->m_lpNewProp, &szTmp, &szAltTmp);
+			SetListString(ulListNum, iItem, 1, proptags::TagToString(prop->ulPropTag, nullptr, false, true));
+			property::parseProperty(prop, &szTmp, &szAltTmp);
 			SetListString(ulListNum, iItem, 2, szTmp);
 			SetListString(ulListNum, iItem, 3, szAltTmp);
 			return true;
@@ -785,22 +777,11 @@ namespace dialog::editor
 						const auto comment = lpData->cast<sortlistdata::commentData>();
 						if (comment)
 						{
-							if (comment->m_lpNewProp)
-							{
-								EC_H_S(mapi::MyPropCopyMore(
-									&lpNewCommentProp[paneID],
-									comment->m_lpNewProp,
-									MAPIAllocateMore,
-									m_lpAllocParent));
-							}
-							else
-							{
-								EC_H_S(mapi::MyPropCopyMore(
-									&lpNewCommentProp[paneID],
-									comment->m_lpOldProp,
-									MAPIAllocateMore,
-									m_lpAllocParent));
-							}
+							EC_H_S(mapi::MyPropCopyMore(
+								&lpNewCommentProp[paneID],
+								comment->getCurrentProp(),
+								MAPIAllocateMore,
+								m_lpAllocParent));
 						}
 					}
 				}
@@ -1319,7 +1300,7 @@ namespace dialog::editor
 				SetListString(ulListNum, iRow, 1, std::to_wstring(lpEntryList->lpbin[iRow].cb));
 				SetListString(ulListNum, iRow, 2, strings::BinToHexString(&lpEntryList->lpbin[iRow], false));
 				SetListString(ulListNum, iRow, 3, strings::BinToTextString(&lpEntryList->lpbin[iRow], true));
-				if (lpData) lpData->bItemFullyLoaded = true;
+				if (lpData) lpData->setFullyLoaded(true);
 			}
 		}
 
@@ -1359,15 +1340,7 @@ namespace dialog::editor
 
 		CEditor BinEdit(this, IDS_EIDEDITOR, IDS_EIDEDITORPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		auto lpSourcebin = LPSBinary{};
-		if (binary->m_OldBin.lpb)
-		{
-			lpSourcebin = &binary->m_OldBin;
-		}
-		else
-		{
-			lpSourcebin = &binary->m_NewBin;
-		}
+		auto lpSourcebin = binary->getCurrentBin();
 
 		BinEdit.AddPane(
 			viewpane::TextPane::CreateSingleLinePane(0, IDS_EID, strings::BinToHexString(lpSourcebin, false), false));
@@ -1375,14 +1348,16 @@ namespace dialog::editor
 		if (BinEdit.DisplayDialog())
 		{
 			auto bin = strings::HexStringToBin(BinEdit.GetStringW(0));
-			binary->m_NewBin.lpb = mapi::ByteVectorToMAPI(bin, m_lpNewEntryList);
-			if (binary->m_NewBin.lpb)
+			auto newBin = SBinary{};
+			newBin.lpb = mapi::ByteVectorToMAPI(bin, m_lpNewEntryList);
+			if (newBin.lpb)
 			{
-				binary->m_NewBin.cb = static_cast<ULONG>(bin.size());
-				const auto szTmp = std::to_wstring(binary->m_NewBin.cb);
+				newBin.cb = static_cast<ULONG>(bin.size());
+				binary->setCurrentBin(newBin);
+				const auto szTmp = std::to_wstring(newBin.cb);
 				SetListString(ulListNum, iItem, 1, szTmp);
-				SetListString(ulListNum, iItem, 2, strings::BinToHexString(&binary->m_NewBin, false));
-				SetListString(ulListNum, iItem, 3, strings::BinToTextString(&binary->m_NewBin, true));
+				SetListString(ulListNum, iItem, 2, strings::BinToHexString(&newBin, false));
+				SetListString(ulListNum, iItem, 3, strings::BinToTextString(&newBin, true));
 				return true;
 			}
 		}
@@ -1409,24 +1384,7 @@ namespace dialog::editor
 					const auto binary = lpData->cast<sortlistdata::binaryData>();
 					if (binary)
 					{
-						if (binary->m_NewBin.lpb)
-						{
-							m_lpNewEntryList->lpbin[paneID].cb = binary->m_NewBin.cb;
-							m_lpNewEntryList->lpbin[paneID].lpb = binary->m_NewBin.lpb;
-							// clean out the source
-							binary->m_OldBin.lpb = nullptr;
-						}
-						else
-						{
-							m_lpNewEntryList->lpbin[paneID].cb = binary->m_OldBin.cb;
-							m_lpNewEntryList->lpbin[paneID].lpb =
-								mapi::allocate<LPBYTE>(m_lpNewEntryList->lpbin[paneID].cb, m_lpNewEntryList);
-
-							memcpy(
-								m_lpNewEntryList->lpbin[paneID].lpb,
-								binary->m_OldBin.lpb,
-								m_lpNewEntryList->lpbin[paneID].cb);
-						}
+						m_lpNewEntryList->lpbin[paneID] = binary->detachBin(m_lpNewEntryList);
 					}
 				}
 			}

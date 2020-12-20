@@ -385,5 +385,18 @@ namespace mapi
 	bool IsABObject(_In_opt_ LPMAPIPROP lpProp);
 	bool IsABObject(ULONG ulProps, LPSPropValue lpProps) noexcept;
 
-	LPSPropValue FindProp(const SPropValue* lpPropArray, ULONG cValues, ULONG ulPropTag);
+	inline _Check_return_ LPSPropValue
+	FindProp(_In_ const SPropValue* lpPropArray, _In_ const ULONG cValues, _In_ const ULONG ulPropTag)
+	{
+		return PpropFindProp(const_cast<SPropValue*>(lpPropArray), cValues, ulPropTag);
+	}
+
+	inline _Check_return_ HRESULT DupeProps(
+		_In_ const int cValues,
+		_In_ const SPropValue* lpPropArray,
+		_In_ const LPALLOCATEBUFFER lpAllocateBuffer,
+		_Out_ LPSPropValue* lppPropArray)
+	{
+		return ScDupPropset(cValues, const_cast<LPSPropValue>(lpPropArray), lpAllocateBuffer, lppPropArray);
+	}
 } // namespace mapi

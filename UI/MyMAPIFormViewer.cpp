@@ -703,7 +703,7 @@ namespace mapi::mapiui
 				const auto contents = lpData->cast<sortlistdata::contentsData>();
 				if (contents)
 				{
-					const auto lpEID = contents->m_lpEntryID;
+					const auto lpEID = contents->getEntryID();
 					if (lpEID)
 					{
 						*ppMessage = mapi::CallOpenEntry<LPMESSAGE>(

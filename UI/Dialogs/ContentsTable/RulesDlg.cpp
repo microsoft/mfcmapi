@@ -152,18 +152,19 @@ namespace dialog
 					const auto lpData = m_lpContentsTableListCtrl->GetSortListData(iSelectedItem);
 					if (lpData)
 					{
+						auto row = lpData->getRow();
 						if (ulFlags & RULE_INCLUDE_ID && ulFlags & RULE_INCLUDE_OTHER)
 						{
 							lpTempList->aEntries[iArrayPos].rgPropVals =
-								mapi::allocate<LPSPropValue>(lpData->cSourceProps * sizeof(SPropValue), lpTempList);
+								mapi::allocate<LPSPropValue>(row.cValues * sizeof(SPropValue), lpTempList);
 							if (lpTempList->aEntries[iArrayPos].rgPropVals)
 							{
 								ULONG ulDst = 0;
-								for (ULONG ulSrc = 0; ulSrc < lpData->cSourceProps; ulSrc++)
+								for (ULONG ulSrc = 0; ulSrc < row.cValues; ulSrc++)
 								{
-									if (lpData->lpSourceProps[ulSrc].ulPropTag == PR_RULE_PROVIDER_DATA)
+									if (row.lpProps[ulSrc].ulPropTag == PR_RULE_PROVIDER_DATA)
 									{
-										const auto bin = mapi::getBin(lpData->lpSourceProps[ulSrc]);
+										const auto bin = mapi::getBin(row.lpProps[ulSrc]);
 										if (!bin.cb || !bin.lpb)
 										{
 											// PR_RULE_PROVIDER_DATA was NULL - we don't want this
@@ -173,7 +174,7 @@ namespace dialog
 
 									hRes = EC_H(mapi::MyPropCopyMore(
 										&lpTempList->aEntries[iArrayPos].rgPropVals[ulDst],
-										&lpData->lpSourceProps[ulSrc],
+										&row.lpProps[ulSrc],
 										MAPIAllocateMore,
 										lpTempList));
 									ulDst++;
@@ -185,8 +186,7 @@ namespace dialog
 						else if (ulFlags & RULE_INCLUDE_ID)
 						{
 							lpTempList->aEntries[iArrayPos].cValues = 1;
-							lpTempList->aEntries[iArrayPos].rgPropVals =
-								PpropFindProp(lpData->lpSourceProps, lpData->cSourceProps, PR_RULE_ID);
+							lpTempList->aEntries[iArrayPos].rgPropVals = lpData->GetOneProp(PR_RULE_ID);
 						}
 					}
 				}

@@ -138,7 +138,7 @@ namespace dialog
 				const auto contents = lpListData->cast<sortlistdata::contentsData>();
 				if (contents)
 				{
-					const auto lpServiceUID = contents->m_lpServiceUID;
+					const auto lpServiceUID = contents->getServiceUID();
 					if (lpServiceUID)
 					{
 						EC_MAPI_S(m_lpServiceAdmin->AdminProviders(
@@ -182,7 +182,7 @@ namespace dialog
 				const auto contents = lpListData->cast<sortlistdata::contentsData>();
 				if (contents)
 				{
-					const auto lpServiceUID = contents->m_lpServiceUID;
+					const auto lpServiceUID = contents->getServiceUID();
 					if (lpServiceUID)
 					{
 						EC_H_CANCEL_S(m_lpServiceAdmin->ConfigureMsgService(
@@ -211,7 +211,7 @@ namespace dialog
 			const auto contents = lpListData->cast<sortlistdata::contentsData>();
 			if (contents)
 			{
-				const auto lpServiceUID = contents->m_lpServiceUID;
+				const auto lpServiceUID = contents->getServiceUID();
 				if (lpServiceUID)
 				{
 					lpProfSect = mapi::profile::OpenProfileSection(m_lpServiceAdmin, lpServiceUID);
@@ -270,9 +270,9 @@ namespace dialog
 				CLASS,
 				L"OnDeleteSelectedItem",
 				L"Deleting service from \"%hs\"\n",
-				contents->m_szProfileDisplayName.c_str());
+				contents->getProfileDisplayName().c_str());
 
-			const auto lpServiceUID = contents->m_lpServiceUID;
+			const auto lpServiceUID = contents->getServiceUID();
 			if (lpServiceUID)
 			{
 				WC_MAPI_S(m_lpServiceAdmin->DeleteMsgService(reinterpret_cast<LPMAPIUID>(lpServiceUID->lpb)));

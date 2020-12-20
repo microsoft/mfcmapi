@@ -292,8 +292,8 @@ namespace controls::sortlistctrl
 						CLASS,
 						L"GetSelectedPropTag",
 						L"returning lpPropTag = 0x%X\n",
-						prop->m_ulPropTag);
-					return prop->m_ulPropTag;
+						prop->getPropTag());
+					return prop->getPropTag();
 				}
 			}
 		}
@@ -651,7 +651,7 @@ namespace controls::sortlistctrl
 						const auto prop = lpListData->cast<sortlistdata::propListData>();
 						if (prop)
 						{
-							ulPropType = PROP_TYPE(prop->m_ulPropTag);
+							ulPropType = PROP_TYPE(prop->getPropTag());
 						}
 					}
 

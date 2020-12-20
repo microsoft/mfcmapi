@@ -155,10 +155,8 @@ namespace dialog
 		const auto lpListData = m_lpContentsTableListCtrl->GetSortListData(iSelectedItem);
 		if (lpListData)
 		{
-			const auto lpProp = PpropFindProp(
-				lpListData->lpSourceProps,
-				lpListData->cSourceProps,
-				PR_MESSAGE_CLASS_A); // ResolveMessageClass requires an ANSI string
+			const auto lpProp =
+				lpListData->GetOneProp(PR_MESSAGE_CLASS_A); // ResolveMessageClass requires an ANSI string
 			if (strings::CheckStringProp(lpProp, PT_STRING8))
 			{
 				const auto hRes = EC_MAPI(
@@ -184,10 +182,7 @@ namespace dialog
 			// Find the highlighted item AttachNum
 			if (!lpListData) break;
 
-			const auto lpProp = PpropFindProp(
-				lpListData->lpSourceProps,
-				lpListData->cSourceProps,
-				PR_MESSAGE_CLASS_A); // RemoveForm requires an ANSI string
+			const auto lpProp = lpListData->GetOneProp(PR_MESSAGE_CLASS_A); // RemoveForm requires an ANSI string
 			if (strings::CheckStringProp(lpProp, PT_STRING8))
 			{
 				output::DebugPrintEx(

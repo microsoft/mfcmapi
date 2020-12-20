@@ -347,8 +347,9 @@ namespace controls
 				}
 
 				LPCTSTR szName = nullptr;
-				if (PROP_TYPE(lpData->lpSourceProps[0].ulPropTag) == PT_TSTRING)
-					szName = lpData->lpSourceProps[0].Value.LPSZ;
+				auto row = lpData->getRow();
+				if (row.cValues > 0 && PROP_TYPE(row.lpProps[0].ulPropTag) == PT_TSTRING)
+					szName = row.lpProps[0].Value.LPSZ;
 				output::DebugPrintEx(
 					output::dbgLevel::Hierarchy,
 					CLASS,
@@ -473,8 +474,7 @@ namespace controls
 		auto lpMAPIContainer = GetContainer(hItem, modifyType::REQUEST_MODIFY);
 		if (!lpMAPIContainer) return;
 
-		SPropValue sDisplayName;
-		sDisplayName.ulPropTag = PR_DISPLAY_NAME;
+		auto sDisplayName = SPropValue{PR_DISPLAY_NAME, 0};
 		sDisplayName.Value.LPSZ = szText;
 
 		EC_MAPI_S(HrSetOneProp(lpMAPIContainer, &sDisplayName));

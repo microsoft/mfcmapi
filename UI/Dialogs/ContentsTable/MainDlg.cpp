@@ -381,7 +381,7 @@ namespace dialog
 			const auto contents = lpListData->cast<sortlistdata::contentsData>();
 			if (contents)
 			{
-				const auto lpEntryID = contents->m_lpEntryID;
+				const auto lpEntryID = contents->getEntryID();
 				if (lpEntryID)
 				{
 					ULONG ulFlags = NULL;
@@ -653,7 +653,7 @@ namespace dialog
 				const auto contents = lpListData->cast<sortlistdata::contentsData>();
 				if (contents)
 				{
-					const auto lpItemEID = contents->m_lpEntryID;
+					const auto lpItemEID = contents->getEntryID();
 					if (lpItemEID)
 					{
 						auto lpMDB = mapi::store::CallOpenMsgStore(
@@ -686,7 +686,7 @@ namespace dialog
 				const auto contents = lpListData->cast<sortlistdata::contentsData>();
 				if (contents)
 				{
-					const auto lpItemEID = contents->m_lpEntryID;
+					const auto lpItemEID = contents->getEntryID();
 					if (lpItemEID)
 					{
 						auto lpMDB = mapi::store::CallOpenMsgStore(
@@ -1187,7 +1187,7 @@ namespace dialog
 			const auto contents = lpListData->cast<sortlistdata::contentsData>();
 			if (contents)
 			{
-				const auto lpItemEID = contents->m_lpEntryID;
+				const auto lpItemEID = contents->getEntryID();
 				if (lpItemEID)
 				{
 					editor::CEditor MyData(
@@ -1497,15 +1497,14 @@ namespace dialog
 			const auto contents = lpListData->cast<sortlistdata::contentsData>();
 			if (contents)
 			{
-				const auto lpItemEID = contents->m_lpEntryID;
-
+				const auto lpItemEID = contents->getEntryID();
 				if (lpItemEID)
 				{
 					SBinary serviceUID = {};
 					SBinary providerUID = {};
-					auto lpProp = PpropFindProp(lpListData->lpSourceProps, lpListData->cSourceProps, PR_SERVICE_UID);
+					auto lpProp = lpListData->GetOneProp(PR_SERVICE_UID);
 					if (lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag)) serviceUID = mapi::getBin(lpProp);
-					lpProp = PpropFindProp(lpListData->lpSourceProps, lpListData->cSourceProps, PR_MDB_PROVIDER);
+					lpProp = lpListData->GetOneProp(PR_MDB_PROVIDER);
 					if (lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag)) providerUID = mapi::getBin(lpProp);
 
 					MAPIUID emsmdbUID = {0};

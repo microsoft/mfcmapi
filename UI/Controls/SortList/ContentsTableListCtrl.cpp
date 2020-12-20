@@ -898,7 +898,7 @@ namespace controls::sortlistctrl
 
 			SetRowStrings(iRow, lpsRowData);
 			// Do this last so that our row can't get sorted before we're done!
-			lpData->bItemFullyLoaded = true;
+			lpData->setFullyLoaded(true);
 		}
 	}
 
@@ -966,18 +966,9 @@ namespace controls::sortlistctrl
 						if (lpData)
 						{
 							const auto contents = lpData->cast<sortlistdata::contentsData>();
-							if (contents && contents->m_lpEntryID)
+							if (contents && contents->getEntryID())
 							{
-								lpTempList->lpbin[iArrayPos].cb = contents->m_lpEntryID->cb;
-								lpTempList->lpbin[iArrayPos].lpb =
-									mapi::allocate<LPBYTE>(contents->m_lpEntryID->cb, lpTempList);
-								if (lpTempList->lpbin[iArrayPos].lpb)
-								{
-									CopyMemory(
-										lpTempList->lpbin[iArrayPos].lpb,
-										contents->m_lpEntryID->lpb,
-										contents->m_lpEntryID->cb);
-								}
+								lpTempList->lpbin[iArrayPos] = mapi::CopySBinary(*contents->getEntryID(), lpTempList);
 							}
 						}
 					}
@@ -1099,7 +1090,7 @@ namespace controls::sortlistctrl
 		const auto contents = lpListData->cast<sortlistdata::contentsData>();
 		if (!contents) return nullptr;
 
-		const auto lpEID = contents->m_lpEntryID;
+		const auto lpEID = contents->getEntryID();
 		if (!lpEID || lpEID->cb == 0) return nullptr;
 
 		output::DebugPrint(output::dbgLevel::Generic, L"Item being opened:\n");
@@ -1212,12 +1203,10 @@ namespace controls::sortlistctrl
 			{
 				// go get the original row for display in the prop list control
 				lpData = GetSortListData(pNMListView->iItem);
-				ULONG cValues = 0;
-				LPSPropValue lpProps = nullptr;
+				auto row = SRow{};
 				if (lpData)
 				{
-					cValues = lpData->cSourceProps;
-					lpProps = lpData->lpSourceProps;
+					row = lpData->getRow();
 				}
 
 				lpMAPIProp = m_lpHostDlg->OpenItemProp(pNMListView->iItem, modifyType::REQUEST_MODIFY);
@@ -1225,15 +1214,15 @@ namespace controls::sortlistctrl
 				szTitle = strings::loadstring(IDS_DISPLAYNAMENOTFOUND);
 
 				// try to use our rowset first
-				if (NODISPLAYNAME != m_ulDisplayNameColumn && lpProps && m_ulDisplayNameColumn < cValues)
+				if (NODISPLAYNAME != m_ulDisplayNameColumn && row.lpProps && m_ulDisplayNameColumn < row.cValues)
 				{
-					if (strings::CheckStringProp(&lpProps[m_ulDisplayNameColumn], PT_STRING8))
+					if (strings::CheckStringProp(&row.lpProps[m_ulDisplayNameColumn], PT_STRING8))
 					{
-						szTitle = strings::stringTowstring(lpProps[m_ulDisplayNameColumn].Value.lpszA);
+						szTitle = strings::stringTowstring(row.lpProps[m_ulDisplayNameColumn].Value.lpszA);
 					}
-					else if (strings::CheckStringProp(&lpProps[m_ulDisplayNameColumn], PT_UNICODE))
+					else if (strings::CheckStringProp(&row.lpProps[m_ulDisplayNameColumn], PT_UNICODE))
 					{
-						szTitle = lpProps[m_ulDisplayNameColumn].Value.lpszW;
+						szTitle = row.lpProps[m_ulDisplayNameColumn].Value.lpszW;
 					}
 					else
 					{
@@ -1358,7 +1347,7 @@ namespace controls::sortlistctrl
 		// No lpData or wrong type of row - no work done
 		if (!lpData) return S_FALSE;
 		const auto contents = lpData->cast<sortlistdata::contentsData>();
-		if (!contents || contents->m_ulRowType == TBL_LEAF_ROW || contents->m_ulRowType == TBL_EMPTY_CATEGORY)
+		if (!contents || contents->getRowType() == TBL_LEAF_ROW || contents->getRowType() == TBL_EMPTY_CATEGORY)
 			return S_FALSE;
 
 		auto bDidWork = false;
@@ -1366,19 +1355,20 @@ namespace controls::sortlistctrl
 		lvItem.iItem = iItem;
 		lvItem.iSubItem = 0;
 		lvItem.mask = LVIF_IMAGE;
-		switch (contents->m_ulRowType)
+		switch (contents->getRowType())
 		{
 		default:
 			break;
 		case TBL_COLLAPSED_CATEGORY:
 		{
-			if (contents->m_lpInstanceKey)
+			if (contents->getInstanceKey())
 			{
+				auto instanceKey = contents->getInstanceKey();
 				LPSRowSet lpRowSet = nullptr;
 				ULONG ulRowsAdded = 0;
 
 				hRes = EC_MAPI(m_lpContentsTable->ExpandRow(
-					contents->m_lpInstanceKey->cb, contents->m_lpInstanceKey->lpb, 256, NULL, &lpRowSet, &ulRowsAdded));
+					instanceKey->cb, instanceKey->lpb, 256, NULL, &lpRowSet, &ulRowsAdded));
 				if (hRes == S_OK && lpRowSet)
 				{
 					for (ULONG i = 0; i < lpRowSet->cRows; i++)
@@ -1392,7 +1382,7 @@ namespace controls::sortlistctrl
 				}
 
 				FreeProws(lpRowSet);
-				contents->m_ulRowType = TBL_EXPANDED_CATEGORY;
+				contents->setRowType(TBL_EXPANDED_CATEGORY);
 				lvItem.iImage = static_cast<int>(sortIcon::nodeExpanded);
 				bDidWork = true;
 			}
@@ -1400,12 +1390,12 @@ namespace controls::sortlistctrl
 
 		break;
 		case TBL_EXPANDED_CATEGORY:
-			if (contents->m_lpInstanceKey)
+			if (contents->getInstanceKey())
 			{
+				auto instanceKey = contents->getInstanceKey();
 				ULONG ulRowsRemoved = 0;
 
-				hRes = EC_MAPI(m_lpContentsTable->CollapseRow(
-					contents->m_lpInstanceKey->cb, contents->m_lpInstanceKey->lpb, NULL, &ulRowsRemoved));
+				hRes = EC_MAPI(m_lpContentsTable->CollapseRow(instanceKey->cb, instanceKey->lpb, NULL, &ulRowsRemoved));
 				if (hRes == S_OK && ulRowsRemoved)
 				{
 					for (int i = iItem + ulRowsRemoved; i > iItem; i--)
@@ -1417,7 +1407,7 @@ namespace controls::sortlistctrl
 					}
 				}
 
-				contents->m_ulRowType = TBL_COLLAPSED_CATEGORY;
+				contents->setRowType(TBL_COLLAPSED_CATEGORY);
 				lvItem.iImage = static_cast<int>(sortIcon::nodeCollapsed);
 				bDidWork = true;
 			}
@@ -1430,15 +1420,13 @@ namespace controls::sortlistctrl
 			hRes = EC_B(SetItem(&lvItem)); // Set new image for the row
 
 			// Save the row type (header/leaf) into lpData
-			const auto lpProp = PpropFindProp(lpData->lpSourceProps, lpData->cSourceProps, PR_ROW_TYPE);
+			const auto lpProp = lpData->GetOneProp(PR_ROW_TYPE);
 			if (lpProp && PR_ROW_TYPE == lpProp->ulPropTag)
 			{
-				lpProp->Value.l = contents->m_ulRowType;
+				lpProp->Value.l = contents->getRowType();
 			}
 
-			SRow sRowData = {};
-			sRowData.cValues = lpData->cSourceProps;
-			sRowData.lpProps = lpData->lpSourceProps;
+			auto sRowData = lpData->getRow();
 			SetRowStrings(iItem, &sRowData);
 		}
 
@@ -1602,7 +1590,7 @@ namespace controls::sortlistctrl
 				const auto contents = lpListData->cast<sortlistdata::contentsData>();
 				if (contents)
 				{
-					const auto lpCurInstance = contents->m_lpInstanceKey;
+					const auto lpCurInstance = contents->getInstanceKey();
 					if (lpCurInstance)
 					{
 						if (!memcmp(lpCurInstance->lpb, instance.lpb, instance.cb))

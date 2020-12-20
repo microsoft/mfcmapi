@@ -71,7 +71,7 @@ namespace dialog::editor
 			const auto prop = lpListData->cast<sortlistdata::propListData>();
 			if (prop)
 			{
-				m_ulPropTag = prop->m_ulPropTag;
+				m_ulPropTag = prop->getPropTag();
 			}
 		}
 

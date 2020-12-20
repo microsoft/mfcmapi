@@ -14,9 +14,10 @@ namespace sortlistdata
 		mvPropData(_In_opt_ const _SPropValue* lpProp, ULONG iProp);
 		mvPropData(_In_opt_ const _SPropValue* lpProp);
 
-		_PV m_val{};
+		_Check_return_ _PV getVal() { return m_val; }
 
 	private:
+		_PV m_val{};
 		std::string m_lpszA{};
 		std::wstring m_lpszW{};
 		std::vector<BYTE> m_lpBin{};

@@ -67,7 +67,7 @@ namespace dialog
 			const auto contents = lpListData->cast<sortlistdata::contentsData>();
 			if (contents)
 			{
-				const auto lpProviderUID = contents->m_lpProviderUID;
+				const auto lpProviderUID = contents->getProviderUID();
 				if (lpProviderUID)
 				{
 					lpProfSect = mapi::profile::OpenProfileSection(m_lpProviderAdmin, lpProviderUID);
