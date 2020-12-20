@@ -1347,7 +1347,7 @@ namespace controls::sortlistctrl
 		// No lpData or wrong type of row - no work done
 		if (!lpData) return S_FALSE;
 		const auto contents = lpData->cast<sortlistdata::contentsData>();
-		if (!contents || contents->m_ulRowType == TBL_LEAF_ROW || contents->m_ulRowType == TBL_EMPTY_CATEGORY)
+		if (!contents || contents->getRowType() == TBL_LEAF_ROW || contents->getRowType() == TBL_EMPTY_CATEGORY)
 			return S_FALSE;
 
 		auto bDidWork = false;
@@ -1355,19 +1355,20 @@ namespace controls::sortlistctrl
 		lvItem.iItem = iItem;
 		lvItem.iSubItem = 0;
 		lvItem.mask = LVIF_IMAGE;
-		switch (contents->m_ulRowType)
+		switch (contents->getRowType())
 		{
 		default:
 			break;
 		case TBL_COLLAPSED_CATEGORY:
 		{
-			if (contents->m_lpInstanceKey)
+			if (contents->getInstanceKey())
 			{
+				auto instanceKey = contents->getInstanceKey();
 				LPSRowSet lpRowSet = nullptr;
 				ULONG ulRowsAdded = 0;
 
 				hRes = EC_MAPI(m_lpContentsTable->ExpandRow(
-					contents->m_lpInstanceKey->cb, contents->m_lpInstanceKey->lpb, 256, NULL, &lpRowSet, &ulRowsAdded));
+					instanceKey->cb, instanceKey->lpb, 256, NULL, &lpRowSet, &ulRowsAdded));
 				if (hRes == S_OK && lpRowSet)
 				{
 					for (ULONG i = 0; i < lpRowSet->cRows; i++)
@@ -1381,7 +1382,7 @@ namespace controls::sortlistctrl
 				}
 
 				FreeProws(lpRowSet);
-				contents->m_ulRowType = TBL_EXPANDED_CATEGORY;
+				contents->setRowType(TBL_EXPANDED_CATEGORY);
 				lvItem.iImage = static_cast<int>(sortIcon::nodeExpanded);
 				bDidWork = true;
 			}
@@ -1389,12 +1390,12 @@ namespace controls::sortlistctrl
 
 		break;
 		case TBL_EXPANDED_CATEGORY:
-			if (contents->m_lpInstanceKey)
+			if (contents->getInstanceKey())
 			{
+				auto instanceKey = contents->getInstanceKey();
 				ULONG ulRowsRemoved = 0;
 
-				hRes = EC_MAPI(m_lpContentsTable->CollapseRow(
-					contents->m_lpInstanceKey->cb, contents->m_lpInstanceKey->lpb, NULL, &ulRowsRemoved));
+				hRes = EC_MAPI(m_lpContentsTable->CollapseRow(instanceKey->cb, instanceKey->lpb, NULL, &ulRowsRemoved));
 				if (hRes == S_OK && ulRowsRemoved)
 				{
 					for (int i = iItem + ulRowsRemoved; i > iItem; i--)
@@ -1406,7 +1407,7 @@ namespace controls::sortlistctrl
 					}
 				}
 
-				contents->m_ulRowType = TBL_COLLAPSED_CATEGORY;
+				contents->setRowType(TBL_COLLAPSED_CATEGORY);
 				lvItem.iImage = static_cast<int>(sortIcon::nodeCollapsed);
 				bDidWork = true;
 			}
@@ -1422,7 +1423,7 @@ namespace controls::sortlistctrl
 			const auto lpProp = lpData->GetOneProp(PR_ROW_TYPE);
 			if (lpProp && PR_ROW_TYPE == lpProp->ulPropTag)
 			{
-				lpProp->Value.l = contents->m_ulRowType;
+				lpProp->Value.l = contents->getRowType();
 			}
 
 			auto sRowData = lpData->getRow();
@@ -1589,7 +1590,7 @@ namespace controls::sortlistctrl
 				const auto contents = lpListData->cast<sortlistdata::contentsData>();
 				if (contents)
 				{
-					const auto lpCurInstance = contents->m_lpInstanceKey;
+					const auto lpCurInstance = contents->getInstanceKey();
 					if (lpCurInstance)
 					{
 						if (!memcmp(lpCurInstance->lpb, instance.lpb, instance.cb))

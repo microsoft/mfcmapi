@@ -102,7 +102,7 @@ namespace dialog
 		if (lpListData)
 		{
 			const auto contents = lpListData->cast<sortlistdata::contentsData>();
-			if (contents && ATTACH_EMBEDDED_MSG == contents->m_ulAttachMethod)
+			if (contents && contents->getAttachMethod() == ATTACH_EMBEDDED_MSG)
 			{
 				auto lpMessage = OpenEmbeddedMessage();
 				if (lpMessage)
@@ -170,8 +170,8 @@ namespace dialog
 			const auto contents = lpListData->cast<sortlistdata::contentsData>();
 			if (contents)
 			{
-				const auto ulAttachNum = contents->m_ulAttachNum;
-				const auto ulAttachMethod = contents->m_ulAttachMethod;
+				const auto ulAttachNum = contents->getAttachNum();
+				const auto ulAttachMethod = contents->getAttachMethod();
 
 				// Check for matching cached attachment to avoid reopen
 				if (ulAttachNum != m_ulAttachNum || !m_lpAttach)
@@ -226,7 +226,7 @@ namespace dialog
 					const auto contents = lpListData->cast<sortlistdata::contentsData>();
 					if (contents)
 					{
-						lpAttNumList.push_back(contents->m_ulAttachNum);
+						lpAttNumList.push_back(contents->getAttachNum());
 					}
 				}
 			}
@@ -324,7 +324,7 @@ namespace dialog
 				const auto contents = lpListData->cast<sortlistdata::contentsData>();
 				if (contents)
 				{
-					attachnums.push_back(contents->m_ulAttachNum);
+					attachnums.push_back(contents->getAttachNum());
 				}
 			}
 		}
@@ -390,7 +390,7 @@ namespace dialog
 				const auto contents = lpListData->cast<sortlistdata::contentsData>();
 				if (contents)
 				{
-					const auto ulAttachNum = contents->m_ulAttachNum;
+					const auto ulAttachNum = contents->getAttachNum();
 
 					EC_MAPI_S(m_lpMessage->OpenAttach(
 						ulAttachNum, nullptr, MAPI_BEST_ACCESS, static_cast<LPATTACH*>(&lpAttach)));

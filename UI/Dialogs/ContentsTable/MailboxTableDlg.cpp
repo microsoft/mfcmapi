@@ -95,13 +95,13 @@ namespace dialog
 					const auto contents = lpListData->cast<sortlistdata::contentsData>();
 					if (contents)
 					{
-						if (!contents->m_szDN.empty())
+						if (!contents->getDN().empty())
 						{
 							auto lpNewMDB = mapi::store::OpenOtherUsersMailbox(
 								lpMAPISession,
 								lpSourceMDB,
 								m_lpszServerName,
-								contents->m_szDN,
+								contents->getDN(),
 								strings::emptystring,
 								ulFlags,
 								false);

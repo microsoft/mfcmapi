@@ -699,7 +699,7 @@ namespace dialog
 			const auto contents = lpListData->cast<sortlistdata::contentsData>();
 			if (contents)
 			{
-				const auto lpMessageEID = contents->m_lpLongtermID;
+				const auto lpMessageEID = contents->getLongTermID();
 				if (lpMessageEID)
 				{
 					LPMAPIPROP lpMAPIProp = nullptr;

@@ -132,9 +132,9 @@ namespace dialog
 			const auto contents = lpListData->cast<sortlistdata::contentsData>();
 			if (!contents) break;
 
-			if (!contents->m_szProfileDisplayName.empty())
+			if (!contents->getProfileDisplayName().empty())
 			{
-				new CMsgServiceTableDlg(m_lpParent, m_lpMapiObjects, contents->m_szProfileDisplayName);
+				new CMsgServiceTableDlg(m_lpParent, m_lpMapiObjects, contents->getProfileDisplayName());
 			}
 		}
 	}
@@ -184,6 +184,7 @@ namespace dialog
 				const auto contents = lpListData->cast<sortlistdata::contentsData>();
 				if (!contents) break;
 
+				const auto displayName = contents->getProfileDisplayName();
 				output::DebugPrintEx(
 					output::dbgLevel::Generic,
 					CLASS,
@@ -191,10 +192,10 @@ namespace dialog
 					L"Adding Server \"%ws\" and Mailbox \"%ws\" to profile \"%ws\"\n", // STRING_OK
 					szServer.c_str(),
 					szMailbox.c_str(),
-					contents->m_szProfileDisplayName.c_str());
+					displayName.c_str());
 
 				EC_H_S(mapi::profile::HrAddExchangeToProfile(
-					reinterpret_cast<ULONG_PTR>(m_hWnd), szServer, szMailbox, contents->m_szProfileDisplayName));
+					reinterpret_cast<ULONG_PTR>(m_hWnd), szServer, szMailbox, displayName));
 			}
 		}
 	}
@@ -228,6 +229,7 @@ namespace dialog
 					auto szPath = MyFile.GetStringW(0);
 					const auto bPasswordSet = MyFile.GetCheck(1);
 					auto szPwd = MyFile.GetStringW(2);
+					const auto displayName = contents->getProfileDisplayName();
 
 					output::DebugPrintEx(
 						output::dbgLevel::Generic,
@@ -236,19 +238,14 @@ namespace dialog
 						L"Adding PST \"%ws\" to profile \"%ws\", bUnicodePST = 0x%X\n, bPasswordSet = 0x%X, password = "
 						L"\"%ws\"\n",
 						szPath.c_str(),
-						contents->m_szProfileDisplayName.c_str(),
+						displayName.c_str(),
 						bUnicodePST,
 						bPasswordSet,
 						szPwd.c_str());
 
 					CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 					EC_H_S(mapi::profile::HrAddPSTToProfile(
-						reinterpret_cast<ULONG_PTR>(m_hWnd),
-						bUnicodePST,
-						szPath,
-						contents->m_szProfileDisplayName,
-						bPasswordSet,
-						szPwd));
+						reinterpret_cast<ULONG_PTR>(m_hWnd), bUnicodePST, szPath, displayName, bPasswordSet, szPwd));
 				}
 			}
 		}
@@ -277,13 +274,14 @@ namespace dialog
 			const auto contents = lpListData->cast<sortlistdata::contentsData>();
 			if (!contents) break;
 
+			const auto displayName = contents->getProfileDisplayName();
 			output::DebugPrintEx(
 				output::dbgLevel::Generic,
 				CLASS,
 				L"OnAddServiceToProfile",
 				L"Adding service \"%ws\" to profile \"%ws\"\n",
 				szService.c_str(),
-				contents->m_szProfileDisplayName.c_str());
+				displayName.c_str());
 
 			EC_H_S(mapi::profile::HrAddServiceToProfile(
 				szService,
@@ -291,7 +289,7 @@ namespace dialog
 				MyData.GetCheck(1) ? SERVICE_UI_ALWAYS : 0,
 				0,
 				nullptr,
-				contents->m_szProfileDisplayName));
+				displayName));
 		}
 	}
 
@@ -332,14 +330,15 @@ namespace dialog
 			const auto contents = lpListData->cast<sortlistdata::contentsData>();
 			if (!contents) break;
 
+			const auto displayName = contents->getProfileDisplayName();
 			output::DebugPrintEx(
 				output::dbgLevel::DeleteSelectedItem,
 				CLASS,
 				L"OnDeleteSelectedItem",
 				L"Deleting profile \"%ws\"\n",
-				contents->m_szProfileDisplayName.c_str());
+				displayName.c_str());
 
-			EC_H_S(mapi::profile::HrRemoveProfile(contents->m_szProfileDisplayName));
+			EC_H_S(mapi::profile::HrRemoveProfile(displayName));
 		}
 
 		OnRefreshView(); // Update the view since we don't have notifications here.
@@ -359,12 +358,13 @@ namespace dialog
 			const auto contents = lpListData->cast<sortlistdata::contentsData>();
 			if (!contents) break;
 
+			const auto displayName = contents->getProfileDisplayName();
 			output::DebugPrintEx(
 				output::dbgLevel::DeleteSelectedItem,
 				CLASS,
 				L"OnGetProfileServiceVersion",
 				L"Getting profile service version for \"%ws\"\n",
-				contents->m_szProfileDisplayName.c_str());
+				displayName.c_str());
 
 			ULONG ulServerVersion = 0;
 			mapi::profile::EXCHANGE_STORE_VERSION_NUM storeVersion = {0};
@@ -372,11 +372,7 @@ namespace dialog
 			auto bFoundServerFullVersion = false;
 
 			WC_H_S(GetProfileServiceVersion(
-				contents->m_szProfileDisplayName,
-				&ulServerVersion,
-				&storeVersion,
-				&bFoundServerVersion,
-				&bFoundServerFullVersion));
+				displayName, &ulServerVersion, &storeVersion, &bFoundServerVersion, &bFoundServerFullVersion));
 
 			editor::CEditor MyData(
 				this, IDS_PROFILESERVERVERSIONTITLE, IDS_PROFILESERVERVERSIONPROMPT, CEDITOR_BUTTON_OK);
@@ -441,14 +437,15 @@ namespace dialog
 			const auto contents = lpListData->cast<sortlistdata::contentsData>();
 			if (contents)
 			{
+				const auto displayName = contents->getProfileDisplayName();
 				output::DebugPrintEx(
 					output::dbgLevel::Generic,
 					CLASS,
 					L"OnSetDefaultProfile",
 					L"Setting profile \"%ws\" as default\n",
-					contents->m_szProfileDisplayName.c_str());
+					displayName.c_str());
 
-				EC_H_S(mapi::profile::HrSetDefaultProfile(contents->m_szProfileDisplayName));
+				EC_H_S(mapi::profile::HrSetDefaultProfile(displayName));
 
 				OnRefreshView(); // Update the view since we don't have notifications here.
 			}
@@ -484,7 +481,7 @@ namespace dialog
 			const auto contents = lpListData->cast<sortlistdata::contentsData>();
 			if (contents)
 			{
-				cache::CGlobalCache::getInstance().SetProfileToCopy(contents->m_szProfileDisplayName);
+				cache::CGlobalCache::getInstance().SetProfileToCopy(contents->getProfileDisplayName());
 			}
 		}
 	}
@@ -529,15 +526,16 @@ namespace dialog
 			const auto contents = lpListData->cast<sortlistdata::contentsData>();
 			if (contents)
 			{
+				const auto displayName = contents->getProfileDisplayName();
 				auto file = file::CFileDialogExW::SaveAs(
 					L"xml", // STRING_OK
-					contents->m_szProfileDisplayName + L".xml",
+					displayName + L".xml",
 					OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
 					strings::loadstring(IDS_XMLFILES),
 					this);
 				if (!file.empty())
 				{
-					output::ExportProfile(contents->m_szProfileDisplayName, strings::emptystring, false, file);
+					output::ExportProfile(displayName, strings::emptystring, false, file);
 				}
 			}
 		}

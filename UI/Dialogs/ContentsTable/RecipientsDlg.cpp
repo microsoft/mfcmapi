@@ -131,7 +131,7 @@ namespace dialog
 							const auto contents = lpListData->cast<sortlistdata::contentsData>();
 							if (contents)
 							{
-								lpProp->Value.l = contents->m_ulRowID;
+								lpProp->Value.l = contents->getRowID();
 							}
 							else
 							{
