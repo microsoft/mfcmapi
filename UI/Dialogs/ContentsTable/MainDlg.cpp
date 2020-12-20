@@ -381,7 +381,7 @@ namespace dialog
 			const auto contents = lpListData->cast<sortlistdata::contentsData>();
 			if (contents)
 			{
-				const auto lpEntryID = contents->m_lpEntryID;
+				const auto lpEntryID = contents->getEntryID();
 				if (lpEntryID)
 				{
 					ULONG ulFlags = NULL;
@@ -653,7 +653,7 @@ namespace dialog
 				const auto contents = lpListData->cast<sortlistdata::contentsData>();
 				if (contents)
 				{
-					const auto lpItemEID = contents->m_lpEntryID;
+					const auto lpItemEID = contents->getEntryID();
 					if (lpItemEID)
 					{
 						auto lpMDB = mapi::store::CallOpenMsgStore(
@@ -686,7 +686,7 @@ namespace dialog
 				const auto contents = lpListData->cast<sortlistdata::contentsData>();
 				if (contents)
 				{
-					const auto lpItemEID = contents->m_lpEntryID;
+					const auto lpItemEID = contents->getEntryID();
 					if (lpItemEID)
 					{
 						auto lpMDB = mapi::store::CallOpenMsgStore(
@@ -1187,7 +1187,7 @@ namespace dialog
 			const auto contents = lpListData->cast<sortlistdata::contentsData>();
 			if (contents)
 			{
-				const auto lpItemEID = contents->m_lpEntryID;
+				const auto lpItemEID = contents->getEntryID();
 				if (lpItemEID)
 				{
 					editor::CEditor MyData(
@@ -1497,8 +1497,7 @@ namespace dialog
 			const auto contents = lpListData->cast<sortlistdata::contentsData>();
 			if (contents)
 			{
-				const auto lpItemEID = contents->m_lpEntryID;
-
+				const auto lpItemEID = contents->getEntryID();
 				if (lpItemEID)
 				{
 					SBinary serviceUID = {};

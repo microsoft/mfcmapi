@@ -13,7 +13,11 @@ namespace sortlistdata
 		contentsData(_In_ LPSRow lpsRowData);
 		~contentsData();
 
+		_Check_return_ LPSBinary getEntryID() { return m_lpEntryID; }
+
+	private:
 		LPSBinary m_lpEntryID{}; // Allocated with MAPIAllocateBuffer
+	public:
 		LPSBinary m_lpLongtermID{}; // Allocated with MAPIAllocateBuffer
 		LPSBinary m_lpInstanceKey{}; // Allocated with MAPIAllocateBuffer
 		LPSBinary m_lpServiceUID{}; // Allocated with MAPIAllocateBuffer

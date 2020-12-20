@@ -966,18 +966,9 @@ namespace controls::sortlistctrl
 						if (lpData)
 						{
 							const auto contents = lpData->cast<sortlistdata::contentsData>();
-							if (contents && contents->m_lpEntryID)
+							if (contents && contents->getEntryID())
 							{
-								lpTempList->lpbin[iArrayPos].cb = contents->m_lpEntryID->cb;
-								lpTempList->lpbin[iArrayPos].lpb =
-									mapi::allocate<LPBYTE>(contents->m_lpEntryID->cb, lpTempList);
-								if (lpTempList->lpbin[iArrayPos].lpb)
-								{
-									CopyMemory(
-										lpTempList->lpbin[iArrayPos].lpb,
-										contents->m_lpEntryID->lpb,
-										contents->m_lpEntryID->cb);
-								}
+								lpTempList->lpbin[iArrayPos] = mapi::CopySBinary(*contents->getEntryID(), lpTempList);
 							}
 						}
 					}
@@ -1099,7 +1090,7 @@ namespace controls::sortlistctrl
 		const auto contents = lpListData->cast<sortlistdata::contentsData>();
 		if (!contents) return nullptr;
 
-		const auto lpEID = contents->m_lpEntryID;
+		const auto lpEID = contents->getEntryID();
 		if (!lpEID || lpEID->cb == 0) return nullptr;
 
 		output::DebugPrint(output::dbgLevel::Generic, L"Item being opened:\n");

@@ -1150,9 +1150,9 @@ namespace dialog
 		const auto contents = lpData->cast<sortlistdata::contentsData>();
 		if (!contents || !m_lpFolder) return MAPI_E_INVALID_PARAMETER;
 
-		if (contents->m_lpEntryID)
+		if (contents->getEntryID())
 		{
-			hRes = EC_H(mapi::ResendSingleMessage(m_lpFolder, contents->m_lpEntryID, m_hWnd));
+			hRes = EC_H(mapi::ResendSingleMessage(m_lpFolder, contents->getEntryID(), m_hWnd));
 		}
 
 		return hRes;
@@ -1738,7 +1738,7 @@ namespace dialog
 
 		ULONG ulMessageStatus = NULL;
 
-		const auto lpMessageEID = contents->m_lpEntryID;
+		const auto lpMessageEID = contents->getEntryID();
 		if (lpMessageEID)
 		{
 			const auto hRes = EC_MAPI(m_lpFolder->GetMessageStatus(
@@ -1785,8 +1785,7 @@ namespace dialog
 					const auto contents = lpListData->cast<sortlistdata::contentsData>();
 					if (contents)
 					{
-						const auto lpMessageEID = contents->m_lpEntryID;
-
+						const auto lpMessageEID = contents->getEntryID();
 						if (lpMessageEID)
 						{
 							ULONG ulOldStatus = NULL;
@@ -1845,7 +1844,7 @@ namespace dialog
 		if (!contents) return MAPI_E_INVALID_PARAMETER;
 
 		auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
-		const auto lpMessageEID = contents->m_lpEntryID;
+		const auto lpMessageEID = contents->getEntryID();
 		if (lpMDB && lpMessageEID)
 		{
 			hRes = EC_MAPI(lpMDB->AbortSubmit(lpMessageEID->cb, reinterpret_cast<LPENTRYID>(lpMessageEID->lpb), NULL));
