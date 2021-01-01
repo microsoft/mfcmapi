@@ -219,6 +219,7 @@ namespace propertybag
 
 			if (!bParseMAPI)
 			{
+				ret->ulPropTag(PROP_TAG(PT_BINARY, PROP_ID_NULL));
 				ret->value(strings::BinToHexString(binVal, true));
 				ret->altValue(strings::BinToTextString(binVal, true));
 			}
@@ -232,12 +233,14 @@ namespace propertybag
 			}
 			else
 			{
+				ret->ulPropTag(PROP_TAG(PT_LONG, PROP_ID_NULL));
 				ret->value(strings::format(L"%d", dwVal));
 				ret->altValue(strings::format(L"0x%08X", dwVal));
 			}
 		}
 		else if (dwType == REG_SZ)
 		{
+			ret->ulPropTag(PROP_TAG(PT_UNICODE, PROP_ID_NULL));
 			ret->value(szVal);
 		}
 
