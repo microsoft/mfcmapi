@@ -219,7 +219,7 @@ namespace propertybag
 
 			if (!bParseMAPI)
 			{
-				ret->ulPropTag(PROP_TAG(PT_BINARY, PROP_ID_NULL));
+				if (!ret->ulPropTag()) ret->ulPropTag(PROP_TAG(PT_BINARY, PROP_ID_NULL));
 				ret->value(strings::BinToHexString(binVal, true));
 				ret->altValue(strings::BinToTextString(binVal, true));
 			}
