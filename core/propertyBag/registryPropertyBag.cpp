@@ -240,7 +240,7 @@ namespace propertybag
 		}
 		else if (dwType == REG_SZ)
 		{
-			ret->ulPropTag(PROP_TAG(PT_UNICODE, PROP_ID_NULL));
+			if (!ret->ulPropTag()) ret->ulPropTag(PROP_TAG(PT_UNICODE, PROP_ID_NULL));
 			ret->value(szVal);
 		}
 
