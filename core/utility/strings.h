@@ -58,6 +58,7 @@ namespace strings
 	std::wstring BinToHexString(const std::vector<BYTE>& lpByte, bool bPrependCB);
 	std::wstring BinToHexString(_In_opt_count_(cb) const BYTE* lpb, size_t cb, bool bPrependCB);
 	std::wstring BinToHexString(_In_opt_ const SBinary* lpBin, bool bPrependCB);
+	bool stripPrefix(std::wstring& str, const std::wstring& prefix);
 	std::vector<BYTE> HexStringToBin(_In_ const std::wstring& input, size_t cbTarget = 0);
 	LPBYTE ByteVectorToLPBYTE(const std::vector<BYTE>& bin) noexcept;
 

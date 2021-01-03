@@ -36,10 +36,20 @@ namespace propertybag
 		return false;
 	}
 
-	ULONG nameToPropTag(_In_ const std::wstring& name)
+	ULONG nameToPropTag(_In_ const std::wstring& name, _Inout_ bool& secure)
 	{
-		if (name.size() != 8) return 0;
+		secure = false;
+		if (name.size() != 8 && name.size() != 9) return 0;
 		ULONG num{};
+		// If we're not a simple prop tag, perhaps we have a prefix
+		auto str = name;
+		if (strings::stripPrefix(str, L"S") && strings::tryWstringToUlong(num, str, 16, false))
+		{
+			secure = true;
+			// abuse some macros to swap the order of the tag
+			return PROP_TAG(PROP_ID(num), PROP_TYPE(num));
+		}
+
 		if (strings::tryWstringToUlong(num, name, 16, false))
 		{
 			// abuse some macros to swap the order of the tag
@@ -90,7 +100,6 @@ namespace propertybag
 				{
 					const auto valName =
 						std::wstring(szBuf.c_str()); // szBuf.size() is 0, so make a copy with a proper size
-					const auto ulPropTag = nameToPropTag(valName);
 					auto dwVal = DWORD{};
 					auto bVal = bool{};
 					auto szVal = std::wstring{};
@@ -107,7 +116,7 @@ namespace propertybag
 						szVal = registry::ReadStringFromRegistry(m_hKey, valName);
 						break;
 					}
-					models.push_back(regToModel(valName, ulPropTag, dwType, dwVal, szVal, binVal));
+					models.push_back(regToModel(valName, dwType, dwVal, szVal, binVal));
 				}
 			}
 		}
@@ -138,12 +147,13 @@ namespace propertybag
 
 	_Check_return_ std::shared_ptr<model::mapiRowModel> registryPropertyBag::regToModel(
 		_In_ const std::wstring& name,
-		ULONG ulPropTag,
 		DWORD dwType,
 		DWORD dwVal,
 		_In_ const std::wstring& szVal,
 		_In_ const std::vector<BYTE>& binVal)
 	{
+		auto secure{false};
+		const auto ulPropTag = nameToPropTag(name, secure);
 		auto ret = std::make_shared<model::mapiRowModel>();
 		if (ulPropTag != 0)
 		{
@@ -165,8 +175,11 @@ namespace propertybag
 			ret->otherName(strings::format(L"%d", dwType)); // Just shoving in model to see it
 		}
 
+		if (secure) ret->name(ret->name() + L" (secure)");
+
 		auto bParseMAPI = false;
 		auto prop = SPropValue{ulPropTag};
+		auto unicodeVal = std::vector<BYTE>{}; // in case we need to modify the bin to aid parsing
 		if (dwType == REG_BINARY)
 		{
 			if (ulPropTag)
@@ -209,7 +222,10 @@ namespace propertybag
 					prop.Value.bin.lpb = const_cast<LPBYTE>(binVal.data());
 					break;
 				case PT_UNICODE:
-					prop.Value.lpszW = reinterpret_cast<LPWSTR>(const_cast<LPBYTE>(binVal.data()));
+					unicodeVal = binVal;
+					unicodeVal.push_back(0); // Add some null terminators just in case
+					unicodeVal.push_back(0);
+					prop.Value.lpszW = reinterpret_cast<LPWSTR>(const_cast<LPBYTE>(unicodeVal.data()));
 					break;
 				default:
 					bParseMAPI = false;
