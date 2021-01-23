@@ -50,6 +50,7 @@ namespace propertybag
 
 	_Check_return_ std::shared_ptr<model::mapiRowModel> registryProperty::toModel()
 	{
+		m_prop = {m_ulPropTag};
 		auto ret = std::make_shared<model::mapiRowModel>();
 		if (m_ulPropTag != 0)
 		{
@@ -74,8 +75,6 @@ namespace propertybag
 		if (m_secure) ret->name(ret->name() + L" (secure)");
 
 		auto bParseMAPI = false;
-		auto prop = SPropValue{m_ulPropTag};
-		auto unicodeVal = std::vector<BYTE>{}; // in case we need to modify the bin to aid parsing
 		if (m_dwType == REG_BINARY)
 		{
 			if (m_ulPropTag)
@@ -86,42 +85,42 @@ namespace propertybag
 				case PT_CLSID:
 					if (m_binVal.size() == 16)
 					{
-						prop.Value.lpguid = reinterpret_cast<LPGUID>(const_cast<LPBYTE>(m_binVal.data()));
+						m_prop.Value.lpguid = reinterpret_cast<LPGUID>(const_cast<LPBYTE>(m_binVal.data()));
 					}
 					break;
 				case PT_SYSTIME:
 					if (m_binVal.size() == 8)
 					{
-						prop.Value.ft = *reinterpret_cast<LPFILETIME>(const_cast<LPBYTE>(m_binVal.data()));
+						m_prop.Value.ft = *reinterpret_cast<LPFILETIME>(const_cast<LPBYTE>(m_binVal.data()));
 					}
 					break;
 				case PT_I8:
 					if (m_binVal.size() == 8)
 					{
-						prop.Value.li.QuadPart = static_cast<LONGLONG>(*m_binVal.data());
+						m_prop.Value.li.QuadPart = static_cast<LONGLONG>(*m_binVal.data());
 					}
 					break;
 				case PT_LONG:
 					if (m_binVal.size() == 4)
 					{
-						prop.Value.l = static_cast<DWORD>(*m_binVal.data());
+						m_prop.Value.l = static_cast<DWORD>(*m_binVal.data());
 					}
 					break;
 				case PT_BOOLEAN:
 					if (m_binVal.size() == 2)
 					{
-						prop.Value.b = static_cast<WORD>(*m_binVal.data());
+						m_prop.Value.b = static_cast<WORD>(*m_binVal.data());
 					}
 					break;
 				case PT_BINARY:
-					prop.Value.bin.cb = m_binVal.size();
-					prop.Value.bin.lpb = const_cast<LPBYTE>(m_binVal.data());
+					m_prop.Value.bin.cb = m_binVal.size();
+					m_prop.Value.bin.lpb = const_cast<LPBYTE>(m_binVal.data());
 					break;
 				case PT_UNICODE:
-					unicodeVal = m_binVal;
-					unicodeVal.push_back(0); // Add some null terminators just in case
-					unicodeVal.push_back(0);
-					prop.Value.lpszW = reinterpret_cast<LPWSTR>(const_cast<LPBYTE>(unicodeVal.data()));
+					m_unicodeVal = m_binVal;
+					m_unicodeVal.push_back(0); // Add some null terminators just in case
+					m_unicodeVal.push_back(0);
+					m_prop.Value.lpszW = reinterpret_cast<LPWSTR>(const_cast<LPBYTE>(m_unicodeVal.data()));
 					break;
 				default:
 					bParseMAPI = false;
@@ -141,7 +140,7 @@ namespace propertybag
 			if (m_ulPropTag)
 			{
 				bParseMAPI = true;
-				prop.Value.l = m_dwVal;
+				m_prop.Value.l = m_dwVal;
 			}
 			else
 			{
@@ -160,11 +159,12 @@ namespace propertybag
 		{
 			std::wstring PropString;
 			std::wstring AltPropString;
-			property::parseProperty(&prop, &PropString, &AltPropString);
+			property::parseProperty(&m_prop, &PropString, &AltPropString);
 			ret->value(PropString);
 			ret->altValue(AltPropString);
 
-			const auto szSmartView = smartview::parsePropertySmartView(&prop, nullptr, nullptr, nullptr, false, false);
+			const auto szSmartView =
+				smartview::parsePropertySmartView(&m_prop, nullptr, nullptr, nullptr, false, false);
 			if (!szSmartView.empty()) ret->smartView(szSmartView);
 		}
 
