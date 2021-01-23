@@ -17,6 +17,7 @@ namespace propertybag
 		ULONG m_ulPropTag{};
 		SPropValue m_prop{};
 		bool m_secure{};
+		bool m_canParseMAPI{};
 		DWORD m_dwType{};
 		DWORD m_dwVal{};
 		std::wstring m_szVal{};

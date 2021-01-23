@@ -51,6 +51,7 @@ namespace propertybag
 	_Check_return_ std::shared_ptr<model::mapiRowModel> registryProperty::toModel()
 	{
 		m_prop = {m_ulPropTag};
+		m_canParseMAPI = false;
 		auto ret = std::make_shared<model::mapiRowModel>();
 		if (m_ulPropTag != 0)
 		{
@@ -74,12 +75,11 @@ namespace propertybag
 
 		if (m_secure) ret->name(ret->name() + L" (secure)");
 
-		auto bParseMAPI = false;
 		if (m_dwType == REG_BINARY)
 		{
 			if (m_ulPropTag)
 			{
-				bParseMAPI = true;
+				m_canParseMAPI = true;
 				switch (PROP_TYPE(m_ulPropTag))
 				{
 				case PT_CLSID:
@@ -123,12 +123,12 @@ namespace propertybag
 					m_prop.Value.lpszW = reinterpret_cast<LPWSTR>(const_cast<LPBYTE>(m_unicodeVal.data()));
 					break;
 				default:
-					bParseMAPI = false;
+					m_canParseMAPI = false;
 					break;
 				}
 			}
 
-			if (!bParseMAPI)
+			if (!m_canParseMAPI)
 			{
 				if (!ret->ulPropTag()) ret->ulPropTag(PROP_TAG(PT_BINARY, PROP_ID_NULL));
 				ret->value(strings::BinToHexString(m_binVal, true));
@@ -139,7 +139,7 @@ namespace propertybag
 		{
 			if (m_ulPropTag)
 			{
-				bParseMAPI = true;
+				m_canParseMAPI = true;
 				m_prop.Value.l = m_dwVal;
 			}
 			else
@@ -155,7 +155,7 @@ namespace propertybag
 			ret->value(m_szVal);
 		}
 
-		if (bParseMAPI)
+		if (m_canParseMAPI)
 		{
 			std::wstring PropString;
 			std::wstring AltPropString;
