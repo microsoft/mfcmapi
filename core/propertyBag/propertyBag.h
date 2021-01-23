@@ -34,6 +34,8 @@ namespace propertybag
 
 		// TODO: Should Commit take flags?
 		virtual _Check_return_ HRESULT Commit() = 0;
+		// MAPI Style property getter
+		// Data will be freed (if needed) via FreeBuffer
 		virtual _Check_return_ LPSPropValue GetOneProp(ULONG ulPropTag) = 0;
 		virtual void FreeBuffer(LPSPropValue lpProp) = 0;
 		virtual _Check_return_ HRESULT SetProps(_In_ ULONG cValues, _In_ LPSPropValue lpPropArray) = 0;
