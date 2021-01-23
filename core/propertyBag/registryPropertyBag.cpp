@@ -78,24 +78,8 @@ namespace propertybag
 				{
 					const auto valName =
 						std::wstring(szBuf.c_str()); // szBuf.size() is 0, so make a copy with a proper size
-					auto dwVal = DWORD{};
-					auto bVal = bool{};
-					auto szVal = std::wstring{};
-					auto binVal = std::vector<BYTE>{};
-					switch (dwType)
-					{
-					case REG_BINARY:
-						binVal = registry::ReadBinFromRegistry(m_hKey, valName);
-						break;
-					case REG_DWORD:
-						dwVal = registry::ReadDWORDFromRegistry(m_hKey, valName);
-						break;
-					case REG_SZ:
-						szVal = registry::ReadStringFromRegistry(m_hKey, valName);
-						break;
-					}
 
-					auto prop = registryProperty(valName, dwType, dwVal, szVal, binVal);
+					auto prop = registryProperty(m_hKey, valName, dwType);
 					models.push_back(prop.toModel());
 				}
 			}

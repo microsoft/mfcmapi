@@ -6,16 +6,7 @@ namespace propertybag
 	class registryProperty
 	{
 	public:
-		registryProperty(
-			_In_ const std::wstring& name,
-			DWORD dwType,
-			DWORD dwVal,
-			_In_ const std::wstring& szVal,
-			_In_ const std::vector<BYTE>& binVal)
-			: m_name(name), m_dwType(dwType), m_dwVal(dwVal), m_szVal(szVal), m_binVal(binVal)
-		{
-		}
-
+		registryProperty(HKEY hKey, _In_ const std::wstring& name, DWORD dwType);
 		registryProperty(const registryProperty&) = delete;
 		registryProperty& operator=(const registryProperty&) = delete;
 
@@ -23,6 +14,8 @@ namespace propertybag
 
 	private:
 		std::wstring m_name{};
+		ULONG m_ulPropTag{};
+		bool m_secure{};
 		DWORD m_dwType{};
 		DWORD m_dwVal{};
 		std::wstring m_szVal{};
