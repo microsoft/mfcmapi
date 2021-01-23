@@ -48,32 +48,11 @@ namespace propertybag
 		}
 	}
 
-	_Check_return_ std::shared_ptr<model::mapiRowModel> registryProperty::toModel()
+	void registryProperty::ensureSPropValue()
 	{
+		if (m_prop.ulPropTag != 0) return;
 		m_prop = {m_ulPropTag};
 		m_canParseMAPI = false;
-		auto ret = std::make_shared<model::mapiRowModel>();
-		if (m_ulPropTag != 0)
-		{
-			ret->ulPropTag(m_ulPropTag);
-			const auto propTagNames = proptags::PropTagToPropName(m_ulPropTag, false);
-			if (!propTagNames.bestGuess.empty())
-			{
-				ret->name(propTagNames.bestGuess);
-			}
-
-			if (!propTagNames.otherMatches.empty())
-			{
-				ret->otherName(propTagNames.otherMatches);
-			}
-		}
-		else
-		{
-			ret->name(m_name);
-			ret->otherName(strings::format(L"%d", m_dwType)); // Just shoving in model to see it
-		}
-
-		if (m_secure) ret->name(ret->name() + L" (secure)");
 
 		if (m_dwType == REG_BINARY)
 		{
@@ -127,13 +106,6 @@ namespace propertybag
 					break;
 				}
 			}
-
-			if (!m_canParseMAPI)
-			{
-				if (!ret->ulPropTag()) ret->ulPropTag(PROP_TAG(PT_BINARY, PROP_ID_NULL));
-				ret->value(strings::BinToHexString(m_binVal, true));
-				ret->altValue(strings::BinToTextString(m_binVal, true));
-			}
 		}
 		else if (m_dwType == REG_DWORD)
 		{
@@ -142,17 +114,58 @@ namespace propertybag
 				m_canParseMAPI = true;
 				m_prop.Value.l = m_dwVal;
 			}
-			else
+		}
+	}
+
+	void registryProperty::ensureModel()
+	{
+		if (m_model) return;
+		ensureSPropValue();
+		m_model = std::make_shared<model::mapiRowModel>();
+		if (m_ulPropTag != 0)
+		{
+			m_model->ulPropTag(m_ulPropTag);
+			const auto propTagNames = proptags::PropTagToPropName(m_ulPropTag, false);
+			if (!propTagNames.bestGuess.empty())
 			{
-				ret->ulPropTag(PROP_TAG(PT_LONG, PROP_ID_NULL));
-				ret->value(strings::format(L"%d", m_dwVal));
-				ret->altValue(strings::format(L"0x%08X", m_dwVal));
+				m_model->name(propTagNames.bestGuess);
+			}
+
+			if (!propTagNames.otherMatches.empty())
+			{
+				m_model->otherName(propTagNames.otherMatches);
+			}
+		}
+		else
+		{
+			m_model->name(m_name);
+			m_model->otherName(strings::format(L"%d", m_dwType)); // Just shoving in model to see it
+		}
+
+		if (m_secure) m_model->name(m_model->name() + L" (secure)");
+
+		if (m_dwType == REG_BINARY)
+		{
+			if (!m_canParseMAPI)
+			{
+				if (!m_model->ulPropTag()) m_model->ulPropTag(PROP_TAG(PT_BINARY, PROP_ID_NULL));
+				m_model->value(strings::BinToHexString(m_binVal, true));
+				m_model->altValue(strings::BinToTextString(m_binVal, true));
+			}
+		}
+		else if (m_dwType == REG_DWORD)
+		{
+			if (!m_ulPropTag)
+			{
+				m_model->ulPropTag(PROP_TAG(PT_LONG, PROP_ID_NULL));
+				m_model->value(strings::format(L"%d", m_dwVal));
+				m_model->altValue(strings::format(L"0x%08X", m_dwVal));
 			}
 		}
 		else if (m_dwType == REG_SZ)
 		{
-			if (!ret->ulPropTag()) ret->ulPropTag(PROP_TAG(PT_UNICODE, PROP_ID_NULL));
-			ret->value(m_szVal);
+			if (!m_model->ulPropTag()) m_model->ulPropTag(PROP_TAG(PT_UNICODE, PROP_ID_NULL));
+			m_model->value(m_szVal);
 		}
 
 		if (m_canParseMAPI)
@@ -160,18 +173,16 @@ namespace propertybag
 			std::wstring PropString;
 			std::wstring AltPropString;
 			property::parseProperty(&m_prop, &PropString, &AltPropString);
-			ret->value(PropString);
-			ret->altValue(AltPropString);
+			m_model->value(PropString);
+			m_model->altValue(AltPropString);
 
 			const auto szSmartView =
 				smartview::parsePropertySmartView(&m_prop, nullptr, nullptr, nullptr, false, false);
-			if (!szSmartView.empty()) ret->smartView(szSmartView);
+			if (!szSmartView.empty()) m_model->smartView(szSmartView);
 		}
 
 		// For debugging purposes right now
-		ret->namedPropName(strings::BinToHexString(m_binVal, true));
-		ret->namedPropGuid(strings::BinToTextString(m_binVal, true));
-
-		return ret;
+		m_model->namedPropName(strings::BinToHexString(m_binVal, true));
+		m_model->namedPropGuid(strings::BinToTextString(m_binVal, true));
 	}
 } // namespace propertybag

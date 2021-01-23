@@ -10,12 +10,26 @@ namespace propertybag
 		registryProperty(const registryProperty&) = delete;
 		registryProperty& operator=(const registryProperty&) = delete;
 
-		_Check_return_ std::shared_ptr<model::mapiRowModel> toModel();
+		_Check_return_ LPSPropValue toSPropValue()
+		{
+			ensureSPropValue();
+			return &m_prop;
+		}
+
+		_Check_return_ std::shared_ptr<model::mapiRowModel> toModel()
+		{
+			ensureModel();
+			return m_model;
+		}
 
 	private:
+		void ensureSPropValue();
+		void ensureModel();
+
 		std::wstring m_name{};
 		ULONG m_ulPropTag{};
 		SPropValue m_prop{};
+		std::shared_ptr<model::mapiRowModel> m_model;
 		bool m_secure{};
 		bool m_canParseMAPI{};
 		DWORD m_dwType{};
