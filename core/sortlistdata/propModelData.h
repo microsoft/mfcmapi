@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <core/sortlistdata/data.h>
+#include <core/model/mapiRowModel.h>
 
 namespace sortlistdata
 {
@@ -8,12 +9,12 @@ namespace sortlistdata
 	class propModelData : public IData
 	{
 	public:
-		static void init(sortListData* data, _In_ ULONG ulPropTag);
+		static void init(sortListData* data, _In_ std::shared_ptr<model::mapiRowModel> model);
 
-		propModelData(_In_ ULONG ulPropTag) noexcept;
-		_Check_return_ ULONG getPropTag() { return m_ulPropTag; }
+		propModelData(_In_ std::shared_ptr<model::mapiRowModel> model) noexcept;
+		_Check_return_ ULONG getPropTag() { return m_model->ulPropTag(); }
 
 	private:
-		ULONG m_ulPropTag{};
+		std::shared_ptr<model::mapiRowModel> m_model;
 	};
 } // namespace sortlistdata

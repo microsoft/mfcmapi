@@ -452,7 +452,7 @@ namespace controls::sortlistctrl
 		// Data used to refer to specific property tags. See GetSelectedPropTag.
 		if (lpData)
 		{
-			sortlistdata::propModelData::init(lpData, ulPropTag);
+			sortlistdata::propModelData::init(lpData, model);
 		}
 
 		SetItemText(iRow, columns::pcPROPBESTGUESS, model->name());
