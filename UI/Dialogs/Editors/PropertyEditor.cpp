@@ -62,9 +62,14 @@ namespace dialog::editor
 
 			lpsPropValue = sourceProp;
 		}
-		else if (lpsPropValue && !ulPropTag)
+		else if (lpsPropValue)
 		{
-			ulPropTag = lpsPropValue->ulPropTag;
+			// If either we don't have a ulPropTag or the prop tag in lpsPropValue exists and is different
+			// We want to use the one from lpsPropValue
+			if (!ulPropTag || PROP_TYPE(lpsPropValue->ulPropTag) != 0)
+			{
+				ulPropTag = lpsPropValue->ulPropTag;
+			}
 		}
 
 		// Check for the multivalue prop case
@@ -510,8 +515,8 @@ namespace dialog::editor
 			case PT_BINARY:
 				// remember we already read szTmpString and ulStrLen and found ulStrLen was even
 				bin = strings::HexStringToBin(GetStringW(0));
-				mapi::setBin(m_lpsOutputValue) = {static_cast<ULONG>(bin.size()),
-												  mapi::ByteVectorToMAPI(bin, m_lpAllocParent)};
+				mapi::setBin(m_lpsOutputValue) = {
+					static_cast<ULONG>(bin.size()), mapi::ByteVectorToMAPI(bin, m_lpAllocParent)};
 				break;
 			default:
 				// We shouldn't ever get here unless some new prop type shows up

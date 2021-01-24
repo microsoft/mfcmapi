@@ -111,7 +111,10 @@ namespace propertybag
 		{
 			for (const auto& prop : m_props)
 			{
-				if (prop->toModel()->name() == name) return prop->toSPropValue();
+				if (prop->toModel()->name() == name)
+				{
+					return prop->toSPropValue();
+				}
 			}
 		}
 

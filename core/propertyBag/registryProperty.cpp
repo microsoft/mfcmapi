@@ -102,17 +102,30 @@ namespace propertybag
 					m_prop.Value.lpszW = reinterpret_cast<LPWSTR>(const_cast<LPBYTE>(m_unicodeVal.data()));
 					break;
 				default:
+					m_prop.ulPropTag = PROP_TAG(PT_BINARY, PROP_ID(m_ulPropTag));
+					m_prop.Value.bin.cb = m_binVal.size();
+					m_prop.Value.bin.lpb = const_cast<LPBYTE>(m_binVal.data());
 					m_canParseMAPI = false;
 					break;
 				}
 			}
+			else
+			{
+				m_prop.ulPropTag = PROP_TAG(PT_BINARY, PROP_ID_NULL);
+				m_prop.Value.bin.cb = m_binVal.size();
+				m_prop.Value.bin.lpb = const_cast<LPBYTE>(m_binVal.data());
+			}
 		}
 		else if (m_dwType == REG_DWORD)
 		{
+			m_prop.Value.l = m_dwVal;
 			if (m_ulPropTag)
 			{
 				m_canParseMAPI = true;
-				m_prop.Value.l = m_dwVal;
+			}
+			else
+			{
+				m_prop.ulPropTag = PROP_TAG(PT_LONG, PROP_ID_NULL);
 			}
 		}
 	}
