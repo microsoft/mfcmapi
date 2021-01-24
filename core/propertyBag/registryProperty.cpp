@@ -20,14 +20,13 @@ namespace propertybag
 			ULONG num{};
 			// If we're not a simple prop tag, perhaps we have a prefix
 			auto str = name;
-			if (strings::stripPrefix(str, L"S") && strings::tryWstringToUlong(num, str, 16, false))
+			if (strings::stripPrefix(str, L"S")  && strings::tryWstringToUlong(num, str, 16, false))
 			{
 				m_secure = true;
 				// abuse some macros to swap the order of the tag
 				m_ulPropTag = PROP_TAG(PROP_ID(num), PROP_TYPE(num));
 			}
-
-			if (strings::tryWstringToUlong(num, name, 16, false))
+			else if (strings::tryWstringToUlong(num, name, 16, false))
 			{
 				// abuse some macros to swap the order of the tag
 				m_ulPropTag = PROP_TAG(PROP_ID(num), PROP_TYPE(num));
@@ -96,10 +95,19 @@ namespace propertybag
 					m_prop.Value.bin.lpb = const_cast<LPBYTE>(m_binVal.data());
 					break;
 				case PT_UNICODE:
-					m_unicodeVal = m_binVal;
-					m_unicodeVal.push_back(0); // Add some null terminators just in case
-					m_unicodeVal.push_back(0);
-					m_prop.Value.lpszW = reinterpret_cast<LPWSTR>(const_cast<LPBYTE>(m_unicodeVal.data()));
+					if (m_secure)
+					{
+						m_prop.ulPropTag = PROP_TAG(PT_BINARY, PROP_ID(m_ulPropTag));
+						m_prop.Value.bin.cb = m_binVal.size();
+						m_prop.Value.bin.lpb = const_cast<LPBYTE>(m_binVal.data());
+					}
+					else
+					{
+						m_unicodeVal = m_binVal;
+						m_unicodeVal.push_back(0); // Add some null terminators just in case
+						m_unicodeVal.push_back(0);
+						m_prop.Value.lpszW = reinterpret_cast<LPWSTR>(const_cast<LPBYTE>(m_unicodeVal.data()));
+					}
 					break;
 				default:
 					m_prop.ulPropTag = PROP_TAG(PT_BINARY, PROP_ID(m_ulPropTag));
