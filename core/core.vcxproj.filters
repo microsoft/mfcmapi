@@ -336,6 +336,9 @@
     <ClInclude Include="propertyBag\registryProperty.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="sortlistdata\propModelData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="utility\strings.cpp">
@@ -588,6 +591,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="propertyBag\registryProperty.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sortlistdata\propModelData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

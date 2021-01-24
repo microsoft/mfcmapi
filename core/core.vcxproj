@@ -582,6 +582,7 @@
     <ClInclude Include="propertyBag\accountPropertyBag.h" />
     <ClInclude Include="propertyBag\mapiPropPropertyBag.h" />
     <ClInclude Include="propertyBag\propertyBag.h" />
+    <ClInclude Include="sortlistdata\propModelData.h" />
     <ClInclude Include="propertyBag\registryPropertyBag.h" />
     <ClInclude Include="propertyBag\rowPropertyBag.h" />
     <ClInclude Include="property\attributes.h" />
@@ -677,6 +678,7 @@
     <ClCompile Include="model\mapiRowModel.cpp" />
     <ClCompile Include="propertyBag\accountPropertyBag.cpp" />
     <ClCompile Include="propertyBag\mapiPropPropertyBag.cpp" />
+    <ClCompile Include="sortlistdata\propModelData.cpp" />
     <ClCompile Include="propertyBag\registryPropertyBag.cpp" />
     <ClCompile Include="propertyBag\rowPropertyBag.cpp" />
     <ClCompile Include="property\attributes.cpp" />

@@ -554,10 +554,10 @@ namespace dialog
 
 		if (m_lpPropDisplay)
 		{
-			const auto propListData = m_lpPropDisplay->GetSelectedPropListData();
-			if (propListData)
+			const auto propModelData = m_lpPropDisplay->GetSelectedPropModelData();
+			if (propModelData)
 			{
-				MyAddInMenuParams.ulPropTag = propListData->getPropTag();
+				MyAddInMenuParams.ulPropTag = propModelData->getPropTag();
 			}
 		}
 
