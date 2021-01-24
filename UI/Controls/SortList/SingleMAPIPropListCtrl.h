@@ -48,7 +48,7 @@ namespace controls::sortlistctrl
 		void CountNamedProps();
 		void LoadMAPIPropList();
 
-		void AddPropToListBox(int iRow, std::shared_ptr<model::mapiRowModel> model);
+		void AddPropToListBox(int iRow, const std::shared_ptr<model::mapiRowModel>& model);
 
 		_Check_return_ bool HandleAddInMenu(WORD wMenuSelect) const;
 		void OnContextMenu(_In_ CWnd* pWnd, CPoint pos);
@@ -57,7 +57,7 @@ namespace controls::sortlistctrl
 		void OnCopyTo();
 		void OnDeleteProperty();
 		void OnDisplayPropertyAsSecurityDescriptorPropSheet() const;
-		void OnEditGivenProp(ULONG ulPropTag);
+		void OnEditGivenProp(ULONG ulPropTag, const std::wstring& name);
 		void OnEditGivenProperty();
 		void OnEditProp();
 		void OnEditPropAsRestriction(ULONG ulPropTag);

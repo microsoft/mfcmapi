@@ -11,7 +11,11 @@
 
 namespace propertybag
 {
-	registryPropertyBag::registryPropertyBag(HKEY hKey) { m_hKey = hKey; }
+	registryPropertyBag::registryPropertyBag(HKEY hKey)
+	{
+		m_hKey = hKey;
+		GetAllProps();
+	}
 
 	registryPropertyBag ::~registryPropertyBag() {}
 
@@ -37,9 +41,8 @@ namespace propertybag
 		return false;
 	}
 
-	_Check_return_ std::vector<std::shared_ptr<model::mapiRowModel>> registryPropertyBag::GetAllModels()
+	void registryPropertyBag::GetAllProps()
 	{
-		auto models = std::vector<std::shared_ptr<model::mapiRowModel>>{};
 		auto cchMaxValueNameLen = DWORD{}; // Param in RegQueryInfoKeyW is misnamed
 		auto cValues = DWORD{};
 		auto hRes = WC_W32(RegQueryInfoKeyW(
@@ -79,25 +82,38 @@ namespace propertybag
 					const auto valName =
 						std::wstring(szBuf.c_str()); // szBuf.size() is 0, so make a copy with a proper size
 
-					auto prop = registryProperty(m_hKey, valName, dwType);
-					models.push_back(prop.toModel());
+					m_props.push_back(std::make_shared<registryProperty>(m_hKey, valName, dwType));
 				}
 			}
+		}
+	}
+
+	_Check_return_ std::vector<std::shared_ptr<model::mapiRowModel>> registryPropertyBag::GetAllModels()
+	{
+		auto models = std::vector<std::shared_ptr<model::mapiRowModel>>{};
+		for (const auto& prop : m_props)
+		{
+			models.push_back(prop->toModel());
 		}
 
 		return models;
 	}
 
-	_Check_return_ std::shared_ptr<model::mapiRowModel> registryPropertyBag::GetOneModel(_In_ ULONG ulPropTag)
+	_Check_return_ std::shared_ptr<model::mapiRowModel> registryPropertyBag::GetOneModel(_In_ ULONG /*ulPropTag*/)
 	{
-		// TODO Implement
 		return {};
 	}
 
-	_Check_return_ LPSPropValue registryPropertyBag::GetOneProp(ULONG ulPropTag)
+	_Check_return_ LPSPropValue registryPropertyBag::GetOneProp(ULONG /*ulPropTag*/) { return nullptr; }
+	_Check_return_ LPSPropValue registryPropertyBag::GetOneProp(const std::wstring& name)
 	{
-		// TODO: Implement
-		return nullptr;
+		auto models = std::vector<std::shared_ptr<model::mapiRowModel>>{};
+		for (const auto& prop : m_props)
+		{
+			if (prop->toModel()->name() == name) return prop->toSPropValue();
+		}
+
+		return {};
 	}
 
 	_Check_return_ HRESULT registryPropertyBag::SetProps(ULONG cValues, LPSPropValue lpPropArray)
@@ -107,5 +123,5 @@ namespace propertybag
 		return E_NOTIMPL;
 	}
 
-	_Check_return_ HRESULT registryPropertyBag::SetProp(LPSPropValue lpProp) { return E_NOTIMPL; }
+	_Check_return_ HRESULT registryPropertyBag::SetProp(LPSPropValue /*lpProp*/) { return E_NOTIMPL; }
 } // namespace propertybag

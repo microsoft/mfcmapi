@@ -272,7 +272,8 @@ namespace controls::sortlistctrl
 		return HandleAddInMenu(wMenuSelect);
 	}
 
-	_Check_return_ std::shared_ptr<sortlistdata::propModelData> CSingleMAPIPropListCtrl::GetSelectedPropModelData() const
+	_Check_return_ std::shared_ptr<sortlistdata::propModelData>
+	CSingleMAPIPropListCtrl::GetSelectedPropModelData() const
 	{
 		const auto iItem = GetNextItem(-1, LVNI_FOCUSED | LVNI_SELECTED);
 
@@ -435,7 +436,7 @@ namespace controls::sortlistctrl
 	};
 
 	// Render the row model in the list.
-	void CSingleMAPIPropListCtrl::AddPropToListBox(int iRow, std::shared_ptr<model::mapiRowModel> model)
+	void CSingleMAPIPropListCtrl::AddPropToListBox(int iRow, const std::shared_ptr<model::mapiRowModel>& model)
 	{
 		auto ulPropTag = model->ulPropTag();
 		auto image = sortIcon::siDefault;
@@ -895,7 +896,7 @@ namespace controls::sortlistctrl
 		if (!m_lpPropBag) return;
 		const auto propModelData = GetSelectedPropModelData();
 		if (!propModelData) return;
-		OnEditGivenProp(propModelData->getPropTag());
+		OnEditGivenProp(propModelData->getPropTag(), propModelData->getName());
 	}
 
 	void CSingleMAPIPropListCtrl::OnEditPropAsRestriction(ULONG ulPropTag)
@@ -955,7 +956,7 @@ namespace controls::sortlistctrl
 		lpPropBag->FreeBuffer(lpEditProp);
 	}
 
-	void CSingleMAPIPropListCtrl::OnEditGivenProp(ULONG ulPropTag)
+	void CSingleMAPIPropListCtrl::OnEditGivenProp(ULONG ulPropTag, const std::wstring& name)
 	{
 		LPSPropValue lpEditProp = nullptr;
 
@@ -999,6 +1000,10 @@ namespace controls::sortlistctrl
 		else
 		{
 			lpEditProp = lpPropBag->GetOneProp(ulPropTag);
+			if (!lpEditProp)
+			{
+				lpEditProp = lpPropBag->GetOneProp(name);
+			}
 		}
 
 		if (lpEditProp && PROP_TYPE(lpEditProp->ulPropTag) == PT_ERROR &&
@@ -1378,7 +1383,7 @@ namespace controls::sortlistctrl
 
 		if (MyPropertyTag.DisplayDialog())
 		{
-			OnEditGivenProp(MyPropertyTag.GetPropertyTag());
+			OnEditGivenProp(MyPropertyTag.GetPropertyTag(), {});
 		}
 	}
 

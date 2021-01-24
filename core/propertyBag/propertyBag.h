@@ -37,6 +37,7 @@ namespace propertybag
 		// MAPI Style property getter
 		// Data will be freed (if needed) via FreeBuffer
 		virtual _Check_return_ LPSPropValue GetOneProp(ULONG ulPropTag) = 0;
+		virtual _Check_return_ LPSPropValue GetOneProp(const std::wstring& /*name*/) { return nullptr; }
 		virtual void FreeBuffer(LPSPropValue lpProp) = 0;
 		virtual _Check_return_ HRESULT SetProps(_In_ ULONG cValues, _In_ LPSPropValue lpPropArray) = 0;
 		virtual _Check_return_ HRESULT SetProp(_In_ LPSPropValue lpProp) = 0;

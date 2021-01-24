@@ -1,5 +1,6 @@
 #pragma once
 #include <core/propertyBag/propertyBag.h>
+#include <core/propertyBag/registryProperty.h>
 
 namespace propertybag
 {
@@ -19,6 +20,7 @@ namespace propertybag
 
 		_Check_return_ HRESULT Commit() override { return E_NOTIMPL; }
 		_Check_return_ LPSPropValue GetOneProp(ULONG ulPropTag) override;
+		_Check_return_ LPSPropValue GetOneProp(const std::wstring& name) override;
 		void FreeBuffer(LPSPropValue lpsPropValue) override { MAPIFreeBuffer(lpsPropValue); }
 		_Check_return_ HRESULT SetProps(ULONG cValues, LPSPropValue lpPropArray) override;
 		_Check_return_ HRESULT SetProp(LPSPropValue lpProp) override;
@@ -28,8 +30,10 @@ namespace propertybag
 
 	protected:
 		propBagFlags GetFlags() const override;
+		void GetAllProps();
 
 	private:
 		HKEY m_hKey{};
+		std::vector<std::shared_ptr<registryProperty>> m_props{};
 	};
 } // namespace propertybag
