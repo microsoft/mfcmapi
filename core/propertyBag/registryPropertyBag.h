@@ -29,9 +29,9 @@ namespace propertybag
 
 	protected:
 		propBagFlags GetFlags() const override;
-		void GetAllProps();
 
 	private:
+		void GetAllProps();
 		HKEY m_hKey{};
 		std::vector<std::shared_ptr<registryProperty>> m_props{};
 	};
