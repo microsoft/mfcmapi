@@ -106,6 +106,7 @@ namespace propertybag
 
 	_Check_return_ LPSPropValue registryPropertyBag::GetOneProp(ULONG ulPropTag, const std::wstring& name)
 	{
+		// TODO: go look for a prop if we don't have one cached
 		if (!name.empty())
 		{
 			for (const auto& prop : m_props)
