@@ -128,6 +128,20 @@ namespace propertybag
 				m_prop.ulPropTag = PROP_TAG(PT_LONG, PROP_ID_NULL);
 			}
 		}
+		else if (m_dwType == REG_SZ)
+		{
+			if (!m_prop.ulPropTag) m_prop.ulPropTag = PROP_TAG(PT_UNICODE, PROP_ID_NULL);
+			switch (PROP_TYPE(m_prop.ulPropTag))
+			{
+			case PT_UNICODE:
+				m_prop.Value.lpszW = m_szVal.data();
+				break;
+			case PT_STRING8:
+				m_ansiVal = strings::wstringTostring(m_szVal);
+				m_prop.Value.lpszA = m_ansiVal.data();
+				break;
+			}
+		}
 	}
 
 	void registryProperty::ensureModel()

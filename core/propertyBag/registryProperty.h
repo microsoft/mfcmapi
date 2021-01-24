@@ -37,5 +37,6 @@ namespace propertybag
 		std::wstring m_szVal{};
 		std::vector<BYTE> m_binVal{};
 		std::vector<BYTE> m_unicodeVal{}; // in case we need to modify the bin to aid parsing
+		std::string m_ansiVal{}; // For PT_STRING* in REG_SZ
 	};
 } // namespace propertybag
