@@ -20,7 +20,7 @@ namespace propertybag
 		_Check_return_ LPMAPIPROP GetMAPIProp() const override { return nullptr; }
 
 		_Check_return_ HRESULT Commit() override { return E_NOTIMPL; }
-		_Check_return_ LPSPropValue GetOneProp(_In_ ULONG ulPropTag) override;
+		_Check_return_ LPSPropValue GetOneProp(_In_ ULONG ulPropTag, const std::wstring& name) override;
 		// None of our GetProps allocate anything, so nothing to do here
 		void FreeBuffer(LPSPropValue) override { return; }
 		// TODO: This is for paste, something we don't yet support for rows

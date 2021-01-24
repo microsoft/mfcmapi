@@ -104,13 +104,19 @@ namespace propertybag
 		return {};
 	}
 
-	_Check_return_ LPSPropValue registryPropertyBag::GetOneProp(ULONG /*ulPropTag*/) { return nullptr; }
-	_Check_return_ LPSPropValue registryPropertyBag::GetOneProp(const std::wstring& name)
+	_Check_return_ LPSPropValue registryPropertyBag::GetOneProp(ULONG ulPropTag, const std::wstring& name)
 	{
-		auto models = std::vector<std::shared_ptr<model::mapiRowModel>>{};
+		if (!name.empty())
+		{
+			for (const auto& prop : m_props)
+			{
+				if (prop->toModel()->name() == name) return prop->toSPropValue();
+			}
+		}
+
 		for (const auto& prop : m_props)
 		{
-			if (prop->toModel()->name() == name) return prop->toSPropValue();
+			if (prop->toModel()->ulPropTag() == ulPropTag) return prop->toSPropValue();
 		}
 
 		return {};

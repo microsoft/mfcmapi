@@ -904,7 +904,7 @@ namespace controls::sortlistctrl
 		if (!m_lpPropBag || !ulPropTag || PT_SRESTRICTION != PROP_TYPE(ulPropTag)) return;
 		auto lpPropBag = m_lpPropBag; // Hold the prop bag so it doesn't get deleted under us
 
-		auto lpEditProp = lpPropBag->GetOneProp(ulPropTag);
+		auto lpEditProp = lpPropBag->GetOneProp(ulPropTag, {}); // TODO: Should I have a name here?
 
 		LPSRestriction lpResIn = nullptr;
 		if (lpEditProp)
@@ -999,11 +999,7 @@ namespace controls::sortlistctrl
 		}
 		else
 		{
-			lpEditProp = lpPropBag->GetOneProp(ulPropTag);
-			if (!lpEditProp)
-			{
-				lpEditProp = lpPropBag->GetOneProp(name);
-			}
+			lpEditProp = lpPropBag->GetOneProp(ulPropTag, name);
 		}
 
 		if (lpEditProp && PROP_TYPE(lpEditProp->ulPropTag) == PT_ERROR &&
@@ -1098,7 +1094,7 @@ namespace controls::sortlistctrl
 			if (MyPrompt.GetCheck(0))
 			{
 				bUseWrapEx = true;
-				const auto lpProp = lpPropBag->GetOneProp(PR_INTERNET_CPID);
+				const auto lpProp = lpPropBag->GetOneProp(PR_INTERNET_CPID, {});
 				if (lpProp && PT_LONG == PROP_TYPE(lpProp[0].ulPropTag))
 				{
 					ulInCodePage = lpProp[0].Value.l;
@@ -1297,7 +1293,7 @@ namespace controls::sortlistctrl
 		auto lpPropBag = m_lpPropBag; // Hold the prop bag so it doesn't get deleted under us
 		if (lpPropBag)
 		{
-			lpProp = lpPropBag->GetOneProp(ulPropTag);
+			lpProp = lpPropBag->GetOneProp(ulPropTag, {}); // TODO: Should I have a name here
 		}
 
 		if (SUCCEEDED(hRes) && lpProp)

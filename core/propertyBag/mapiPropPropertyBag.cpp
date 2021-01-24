@@ -58,7 +58,7 @@ namespace propertybag
 	}
 
 	// Always returns a propval, even in errors, unless we fail allocating memory
-	_Check_return_ LPSPropValue mapiPropPropertyBag::GetOneProp(_In_ ULONG ulPropTag)
+	_Check_return_ LPSPropValue mapiPropPropertyBag::GetOneProp(_In_ ULONG ulPropTag, const std::wstring& /*name*/)
 	{
 		auto lpPropRet = LPSPropValue{};
 		auto hRes = WC_MAPI(mapi::HrGetOnePropEx(m_lpProp, ulPropTag, fMapiUnicode, &lpPropRet));

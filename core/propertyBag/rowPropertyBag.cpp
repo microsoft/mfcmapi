@@ -54,7 +54,7 @@ namespace propertybag
 	}
 
 	// Always returns a propval, even in errors
-	_Check_return_ LPSPropValue rowPropertyBag::GetOneProp(_In_ ULONG ulPropTag)
+	_Check_return_ LPSPropValue rowPropertyBag::GetOneProp(_In_ ULONG ulPropTag, const std::wstring& /*name*/)
 	{
 		const auto prop = PpropFindProp(m_lpProps, m_cValues, ulPropTag);
 		if (prop) return prop;

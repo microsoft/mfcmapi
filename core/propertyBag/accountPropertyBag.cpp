@@ -79,7 +79,7 @@ namespace propertybag
 	}
 
 	// Always returns a propval, even in errors, unless we fail allocating memory
-	_Check_return_ LPSPropValue accountPropertyBag::GetOneProp(_In_ ULONG ulPropTag)
+	_Check_return_ LPSPropValue accountPropertyBag::GetOneProp(_In_ ULONG ulPropTag, const std::wstring& /*name*/)
 	{
 		LPSPropValue lpPropVal = mapi::allocate<LPSPropValue>(sizeof(SPropValue));
 		if (lpPropVal)
