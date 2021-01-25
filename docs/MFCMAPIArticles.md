@@ -12,7 +12,7 @@
 [Useful tools while troubleshooting Outlook issues (3) - MFCMAPI](http://web.archive.org/web/20101016004633/http://blogs.technet.com/b/outlooking/archive/2010/05/14/useful-tools-while-troubleshooting-outlook-issues-3-mfcmapi.aspx)<br/>
 [Developer Tools for Microsoft Outlook](http://www.slipstick.com/addins/dev.asp)<br/>
 [Microsoft Exchange Server MAPI Editor](http://technet.microsoft.com/en-us/library/bb508857(EXCHG.65).aspx)<br/>
-<strike>[Using MFCMAPI to Troubusleshoot](http://www.postini.com/webdocs/gapps_connector/trouble_mfcmapi.html)</strike><br/>
+<strike>[Using MFCMAPI to Troubleshoot](http://www.postini.com/webdocs/gapps_connector/trouble_mfcmapi.html)</strike><br/>
 <strike>[MFCMapi (MAPI Editor)](http://itpro.fi/asiantuntijaryhmat/viestinta/Lists/Posts/Post.aspx?ID=9)</strike><br/>
 <strike>[MFCMAPI](https://www.ohloh.net/p/MFCMAPI)</strike><br/>
 [Microsoft Exchange MAPI Editor (früher MFCMAPI)](http://web.archive.org/web/20160317082823/http://www.msxfaq.de/tools/mfcmapi.htm)<br/>
