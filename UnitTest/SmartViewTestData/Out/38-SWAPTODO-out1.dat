@@ -1,0 +1,9 @@
+Swapped ToDo Data
+	ulVersion = 0x00000001
+	dwFlags = 0xF9 = TDP_ITEM_FLAGS | TDP_START_DATE | TDP_DUE_DATE | TDP_TITLE | TDP_REMINDER_FLAG | TDP_REMINDER_TIME
+	dwToDoItem = 0x00000001
+	wszFlagTo = Follow up......................................................................................................................................................................................................................................................
+	rtmStartDate = 0x0D2B6580 = 12:00:00.000 AM 2/4/2021
+	rtmDueDate = 0x0D2B6580 = 12:00:00.000 AM 2/4/2021
+	rtmReminder = 0x0D2B6AA8 = 10:00:00.000 PM 2/4/2021
+	fReminderSet: true

@@ -43,6 +43,7 @@
 #include <core/smartview/decodeEntryID.h>
 #include <core/smartview/encodeEntryID.h>
 #include <core/smartview/addinParser.h>
+#include <core/smartview/swappedToDo.h>
 
 namespace smartview
 {
@@ -139,6 +140,8 @@ namespace smartview
 			return std::make_shared<SDBin>(lpMAPIProp, true);
 		case parserType::XID:
 			return std::make_shared<XID>();
+		case parserType::SWAPPEDTODO:
+			return std::make_shared<swappedToDo>();
 		default:
 			// Any other case is either handled by an add-in or not at all
 			return std::make_shared<addinParser>(type);
