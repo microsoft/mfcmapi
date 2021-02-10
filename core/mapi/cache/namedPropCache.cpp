@@ -34,8 +34,9 @@ namespace cache
 					mapi::setTag(lpTag, i) = PROP_TAG(PT_NULL, tag);
 				}
 
-				return GetNamesFromIDs(lpMAPIProp, &lpTag, NULL, names);
+				const HRESULT hRes = WC_H(GetNamesFromIDs(lpMAPIProp, &lpTag, NULL, names));
 				MAPIFreeBuffer(lpTag);
+				return hRes;
 			}
 
 			return MAPI_E_NOT_ENOUGH_MEMORY;
@@ -84,6 +85,11 @@ namespace cache
 					lpMAPIFolder = newFolder;
 					batchSize /= 2;
 					continue;
+				}
+				else if (FAILED(hRes))
+				{
+					// Other errors are unexpected
+					break;
 				}
 
 				for (const auto& name : range)
@@ -199,8 +205,7 @@ namespace cache
 				return MAPI_E_INVALID_PARAMETER;
 			}
 
-			ULONG countTags = tags.size();
-			auto ids = std::vector<std::shared_ptr<namedPropCacheEntry>>{};
+			auto countTags = ULONG(tags.size());
 			auto ulPropTags = mapi::allocate<LPSPropTagArray>(CbNewSPropTagArray(countTags));
 			if (ulPropTags)
 			{
@@ -211,7 +216,7 @@ namespace cache
 					mapi::setTag(ulPropTags, i++) = tag;
 				}
 
-				HRESULT hRes = GetNamesFromIDs(lpMAPIProp, &ulPropTags, ulFlags, ids);
+				return WC_H(GetNamesFromIDs(lpMAPIProp, &ulPropTags, ulFlags, names));
 			}
 
 			MAPIFreeBuffer(ulPropTags);
@@ -420,7 +425,7 @@ namespace cache
 			LPSPropTagArray pProps = nullptr;
 
 			std::vector<std::shared_ptr<namedPropCacheEntry>> names;
-			WC_H(directMapi::GetNamesFromIDs(lpMAPIProp, &pProps, NULL, names));
+			WC_H_S(directMapi::GetNamesFromIDs(lpMAPIProp, &pProps, NULL, names));
 
 			// Cache the results
 			add(names, sig);
@@ -458,7 +463,7 @@ namespace cache
 				output::dbgLevel::NamedPropCache, L"GetNamesFromIDs: Add %d misses to cache\n", misses.size());
 			std::vector<std::shared_ptr<namedPropCacheEntry>> missed;
 			missed.reserve(misses.size());
-			WC_H(directMapi::GetNamesFromIDs(lpMAPIProp, misses, NULL, missed));
+			WC_H_S(directMapi::GetNamesFromIDs(lpMAPIProp, misses, NULL, missed));
 
 			// Cache the results
 			add(missed, sig);
