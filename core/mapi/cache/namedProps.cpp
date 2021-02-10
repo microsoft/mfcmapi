@@ -208,7 +208,9 @@ namespace cache
 			// None of my code uses these flags, but bypass the cache if we see them
 			ulFlags)
 		{
-			return directMapi::GetNamesFromIDs(lpMAPIProp, lppPropTags, ulFlags);
+			std::vector<std::shared_ptr<namedPropCacheEntry>> names;
+			WC_H(directMapi::GetNamesFromIDs(lpMAPIProp, lppPropTags, ulFlags, names));
+			return names;
 		}
 
 		auto sigv = std::vector<BYTE>{};

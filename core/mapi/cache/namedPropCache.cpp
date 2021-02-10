@@ -15,8 +15,11 @@ namespace cache
 {
 	namespace directMapi
 	{
-		_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>>
-		GetRange(_In_ LPMAPIPROP lpMAPIProp, ULONG start, ULONG end)
+		_Check_return_ HRESULT GetRange(
+			_In_ LPMAPIPROP lpMAPIProp,
+			ULONG start,
+			ULONG end,
+			std::vector<std::shared_ptr<namedPropCacheEntry>> &names)
 		{
 			if (start > end) return {};
 			// Allocate our tag array
@@ -31,31 +34,58 @@ namespace cache
 					mapi::setTag(lpTag, i) = PROP_TAG(PT_NULL, tag);
 				}
 
-				auto names = GetNamesFromIDs(lpMAPIProp, &lpTag, NULL);
+				return GetNamesFromIDs(lpMAPIProp, &lpTag, NULL, names);
 				MAPIFreeBuffer(lpTag);
-				return names;
 			}
 
-			return {};
+			return MAPI_E_NOT_ENOUGH_MEMORY;
 		}
 
-		_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>> GetAllNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp)
+		_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>> GetAllNamesFromIDs(_In_ LPMAPIFOLDER lpMAPIFolder)
 		{
 			auto names = std::vector<std::shared_ptr<namedPropCacheEntry>>{};
 
 			// We didn't get any names - try manual
-			const auto ulLowerBound = __LOWERBOUND;
-			const auto ulUpperBound = FindHighestNamedProp(lpMAPIProp);
-			const ULONG batchSize = registry::namedPropBatchSize;
+			constexpr auto ulLowerBound = __LOWERBOUND;
+			const auto ulUpperBound = FindHighestNamedProp(lpMAPIFolder);
+			ULONG batchSize = registry::namedPropBatchSize;
 
 			output::DebugPrint(
 				output::dbgLevel::NamedProp,
 				L"GetAllNamesFromIDs: Walking through all IDs from 0x%X to 0x%X, looking for mappings to names\n",
 				ulLowerBound,
 				ulUpperBound);
-			for (auto iTag = ulLowerBound; iTag <= ulUpperBound && iTag < __UPPERBOUND; iTag += batchSize - 1)
+
+			auto iTag = ulLowerBound;
+			while (iTag <= ulUpperBound && iTag < __UPPERBOUND)
 			{
-				const auto range = GetRange(lpMAPIProp, iTag, min(iTag + batchSize - 1, ulUpperBound));
+				auto end = min(iTag + batchSize - 1, ulUpperBound);
+				std::vector<std::shared_ptr<namedPropCacheEntry>> range;
+				range.reserve(batchSize);
+
+				// Trying to get a range of these props can fail with MAPI_E_CALL_FAILED if it's too big for the buffer
+				// In this scenario, reopen the object, lower the batch size, and try again
+				HRESULT hRes = WC_H(GetRange(lpMAPIFolder, iTag, end, range));
+				if (hRes == MAPI_E_CALL_FAILED)
+				{
+					LPMAPIFOLDER newFolder = nullptr;
+					ULONG objt = 0;
+					hRes = WC_H(lpMAPIFolder->OpenEntry(
+						0, nullptr, &IID_IMAPIFolder, 0, &objt, reinterpret_cast<LPUNKNOWN*>(&newFolder)));
+
+					// If we can't re-open the root folder, something is bad - just break out
+					if (FAILED(hRes))
+					{
+						break;
+					}
+
+					// Swap the folder, lower the batch size, and try again
+					lpMAPIFolder->Release();
+					lpMAPIFolder = newFolder;
+					batchSize /= 2;
+					continue;
+				}
+
 				for (const auto& name : range)
 				{
 					if (name->getMapiNameId()->lpguid != nullptr)
@@ -63,17 +93,50 @@ namespace cache
 						names.push_back(name);
 					}
 				}
+
+				// Go to the next batch
+				iTag += batchSize - 1;
 			}
 
+			lpMAPIFolder->Release();
 			return names;
+		}
+
+		_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>>
+		GetAllNamesFromIDsFromContainer(LPMAPICONTAINER lpMAPIContainer)
+		{
+			LPMAPIFOLDER lpRootFolder = nullptr;
+			if (FAILED(GetRootFolder(lpMAPIContainer, &lpRootFolder)))
+			{
+				return {};
+			}
+
+			return GetAllNamesFromIDs(lpRootFolder);
+		}
+
+		_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>> GetAllNamesFromIDsFromMdb(LPMDB lpMdb)
+		{
+			LPMAPIFOLDER lpRootFolder = nullptr;
+			if (FAILED(GetRootFolder(lpMdb, &lpRootFolder)))
+			{
+				return {};
+			}
+
+			return GetAllNamesFromIDs(lpRootFolder);
 		}
 
 		// Returns a vector of NamedPropCacheEntry for the input tags
 		// Sourced directly from MAPI
-		_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>>
-		GetNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp, _In_opt_ LPSPropTagArray* lppPropTags, ULONG ulFlags)
+		_Check_return_ HRESULT GetNamesFromIDs(
+			_In_ LPMAPIPROP lpMAPIProp,
+			_In_opt_ LPSPropTagArray* lppPropTags,
+			ULONG ulFlags,
+			std::vector<std::shared_ptr<namedPropCacheEntry>> &names)
 		{
-			if (!lpMAPIProp) return {};
+			if (!lpMAPIProp)
+			{
+				return MAPI_E_INVALID_PARAMETER;
+			}
 
 			LPMAPINAMEID* lppPropNames = nullptr;
 			auto ulPropNames = ULONG{};
@@ -85,10 +148,29 @@ namespace cache
 			// If we failed and we were doing an all props lookup, try it manually instead
 			if (hRes == MAPI_E_CALL_FAILED && (!*lppPropTags))
 			{
-				return GetAllNamesFromIDs(lpMAPIProp);
-			}
+				LPMAPICONTAINER lpContainer = nullptr;
+				HRESULT hRes2 = WC_H(lpMAPIProp->QueryInterface(IID_IMAPIContainer, reinterpret_cast<LPVOID*>(&lpContainer)));
+				if (SUCCEEDED(hRes2))
+				{
+					names = GetAllNamesFromIDsFromContainer(lpContainer);
+					// REVIEW: Doesn't QueryInterface effectively AddRef?
+					lpContainer->Release();
+					return S_OK;
+				}
 
-			auto ids = std::vector<std::shared_ptr<namedPropCacheEntry>>{};
+				LPMDB lpMdb = nullptr;
+				hRes2 = WC_H(lpMAPIProp->QueryInterface(IID_IMsgStore, reinterpret_cast<LPVOID*>(&lpMdb)));
+				if (SUCCEEDED(hRes2))
+				{
+					names = GetAllNamesFromIDsFromMdb(lpMdb);
+					// REVIEW: Doesn't QueryInterface effectively AddRef?
+					lpMdb->Release();
+					return S_OK;
+				}
+
+				// Can't do the get all props special route because object wasn't IID_IMAPIContainer
+				return hRes;
+			}
 
 			if (ulPropNames && lppPropNames)
 			{
@@ -96,22 +178,28 @@ namespace cache
 				{
 					auto ulPropID = ULONG{};
 					if (*lppPropTags) ulPropID = PROP_ID(mapi::getTag(*lppPropTags, i));
-					ids.emplace_back(namedPropCacheEntry::make(lppPropNames[i], ulPropID));
+					names.emplace_back(namedPropCacheEntry::make(lppPropNames[i], ulPropID));
 				}
 			}
 
 			MAPIFreeBuffer(lppPropNames);
-			return ids;
+			return hRes;
 		}
 
 		// Returns a vector of NamedPropCacheEntry for the input tags
 		// Sourced directly from MAPI
-		_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>>
-		GetNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp, _In_ const std::vector<ULONG> tags, ULONG ulFlags)
+		_Check_return_ HRESULT GetNamesFromIDs(
+			_In_ LPMAPIPROP lpMAPIProp,
+			_In_ const std::vector<ULONG> tags,
+			ULONG ulFlags,
+			std::vector<std::shared_ptr<namedPropCacheEntry>> &names)
 		{
-			if (!lpMAPIProp) return {};
+			if (!lpMAPIProp)
+			{
+				return MAPI_E_INVALID_PARAMETER;
+			}
 
-			auto countTags = ULONG(tags.size());
+			ULONG countTags = tags.size();
 			auto ids = std::vector<std::shared_ptr<namedPropCacheEntry>>{};
 			auto ulPropTags = mapi::allocate<LPSPropTagArray>(CbNewSPropTagArray(countTags));
 			if (ulPropTags)
@@ -123,12 +211,12 @@ namespace cache
 					mapi::setTag(ulPropTags, i++) = tag;
 				}
 
-				ids = GetNamesFromIDs(lpMAPIProp, &ulPropTags, ulFlags);
+				HRESULT hRes = GetNamesFromIDs(lpMAPIProp, &ulPropTags, ulFlags, ids);
 			}
 
 			MAPIFreeBuffer(ulPropTags);
 
-			return ids;
+			return MAPI_E_NOT_ENOUGH_MEMORY;
 		}
 
 		// Returns a vector of tags for the input names
@@ -330,9 +418,13 @@ namespace cache
 		{
 			output::DebugPrint(output::dbgLevel::NamedPropCache, L"GetNamesFromIDs: making direct all for all props\n");
 			LPSPropTagArray pProps = nullptr;
-			const auto names = directMapi::GetNamesFromIDs(lpMAPIProp, &pProps, NULL);
+
+			std::vector<std::shared_ptr<namedPropCacheEntry>> names;
+			WC_H(directMapi::GetNamesFromIDs(lpMAPIProp, &pProps, NULL, names));
+
 			// Cache the results
 			add(names, sig);
+			
 			return names;
 		}
 
@@ -364,7 +456,10 @@ namespace cache
 		{
 			output::DebugPrint(
 				output::dbgLevel::NamedPropCache, L"GetNamesFromIDs: Add %d misses to cache\n", misses.size());
-			auto missed = directMapi::GetNamesFromIDs(lpMAPIProp, misses, NULL);
+			std::vector<std::shared_ptr<namedPropCacheEntry>> missed;
+			missed.reserve(misses.size());
+			WC_H(directMapi::GetNamesFromIDs(lpMAPIProp, misses, NULL, missed));
+
 			// Cache the results
 			add(missed, sig);
 		}
