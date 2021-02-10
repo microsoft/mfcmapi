@@ -159,7 +159,6 @@ namespace cache
 				if (SUCCEEDED(hRes2))
 				{
 					names = GetAllNamesFromIDsFromContainer(lpContainer);
-					// REVIEW: Doesn't QueryInterface effectively AddRef?
 					lpContainer->Release();
 					return S_OK;
 				}
@@ -169,7 +168,6 @@ namespace cache
 				if (SUCCEEDED(hRes2))
 				{
 					names = GetAllNamesFromIDsFromMdb(lpMdb);
-					// REVIEW: Doesn't QueryInterface effectively AddRef?
 					lpMdb->Release();
 					return S_OK;
 				}
