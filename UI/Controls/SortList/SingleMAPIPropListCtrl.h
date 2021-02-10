@@ -2,6 +2,7 @@
 #include <UI/Controls/SortList/SortListCtrl.h>
 #include <core/PropertyBag/PropertyBag.h>
 #include <core/model/mapiRowModel.h>
+#include <core/sortlistdata/propListData.h>
 
 namespace cache
 {
@@ -31,7 +32,7 @@ namespace controls::sortlistctrl
 
 		// Selected item accessors
 		const std::shared_ptr<propertybag::IMAPIPropertyBag> GetDataSource();
-		ULONG GetSelectedPropTag() const;
+		_Check_return_ std::shared_ptr<sortlistdata::propListData> GetSelectedPropListData() const;
 		_Check_return_ bool IsModifiedPropVals() const;
 
 		_Check_return_ bool HandleMenu(WORD wMenuSelect);

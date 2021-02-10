@@ -160,9 +160,7 @@ namespace controls::sortlistctrl
 		if (pMenu)
 		{
 			const auto bHasSource = m_lpPropBag != nullptr;
-
-			const auto ulPropTag = GetSelectedPropTag();
-			const auto bPropSelected = NULL != ulPropTag;
+			const auto bPropSelected = GetSelectedPropListData() != nullptr;
 
 			const auto ulStatus = cache::CGlobalCache::getInstance().GetBufferStatus();
 			const auto lpEIDsToCopy = cache::CGlobalCache::getInstance().GetMessagesToCopy();
@@ -275,7 +273,7 @@ namespace controls::sortlistctrl
 		return HandleAddInMenu(wMenuSelect);
 	}
 
-	ULONG CSingleMAPIPropListCtrl::GetSelectedPropTag() const
+	_Check_return_ std::shared_ptr<sortlistdata::propListData> CSingleMAPIPropListCtrl::GetSelectedPropListData() const
 	{
 		const auto iItem = GetNextItem(-1, LVNI_FOCUSED | LVNI_SELECTED);
 
@@ -284,21 +282,11 @@ namespace controls::sortlistctrl
 			const auto lpListData = reinterpret_cast<sortlistdata::sortListData*>(GetItemData(iItem));
 			if (lpListData)
 			{
-				const auto prop = lpListData->cast<sortlistdata::propListData>();
-				if (prop)
-				{
-					output::DebugPrintEx(
-						output::dbgLevel::Generic,
-						CLASS,
-						L"GetSelectedPropTag",
-						L"returning lpPropTag = 0x%X\n",
-						prop->getPropTag());
-					return prop->getPropTag();
-				}
+				return lpListData->cast<sortlistdata::propListData>();
 			}
 		}
 
-		return 0;
+		return {};
 	}
 
 	// Call GetProps with NULL to get a list of (almost) all properties.
@@ -859,17 +847,21 @@ namespace controls::sortlistctrl
 		if (!m_lpPropBag || m_lpPropBag->GetType() == propertybag::propBagType::Row) return;
 		auto lpPropBag = m_lpPropBag; // Hold the prop bag so it doesn't get deleted under us
 
-		const ULONG ulPropTag = GetSelectedPropTag();
-		if (!ulPropTag) return;
+		const auto propListData = GetSelectedPropListData();
+		if (!propListData) return;
 
 		dialog::editor::CEditor Query(
 			this, IDS_DELETEPROPERTY, IDS_DELETEPROPERTYPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		if (Query.DisplayDialog())
 		{
 			output::DebugPrintEx(
-				output::dbgLevel::Generic, CLASS, L"OnDeleteProperty", L"deleting property 0x%08X\n", ulPropTag);
+				output::dbgLevel::Generic,
+				CLASS,
+				L"OnDeleteProperty",
+				L"deleting property 0x%08X\n",
+				propListData->getPropTag());
 
-			const auto hRes = EC_H(lpPropBag->DeleteProp(ulPropTag));
+			const auto hRes = EC_H(lpPropBag->DeleteProp(propListData->getPropTag()));
 			if (SUCCEEDED(hRes))
 			{
 				// Refresh the display
@@ -883,17 +875,18 @@ namespace controls::sortlistctrl
 	{
 		if (!m_lpPropBag || !import::pfnEditSecurity) return;
 
-		const auto ulPropTag = GetSelectedPropTag();
-		if (!ulPropTag) return;
+		const auto propListData = GetSelectedPropListData();
+		if (!propListData) return;
 
 		output::DebugPrintEx(
 			output::dbgLevel::Generic,
 			CLASS,
 			L"OnDisplayPropertyAsSecurityDescriptorPropSheet",
 			L"interpreting 0x%X as Security Descriptor\n",
-			ulPropTag);
+			propListData->getPropTag());
 
-		const auto mySecInfo = std::make_shared<mapi::mapiui::CMySecInfo>(m_lpPropBag->GetMAPIProp(), ulPropTag);
+		const auto mySecInfo =
+			std::make_shared<mapi::mapiui::CMySecInfo>(m_lpPropBag->GetMAPIProp(), propListData->getPropTag());
 
 		EC_B_S(import::pfnEditSecurity(m_hWnd, mySecInfo.get()));
 	}
@@ -901,7 +894,9 @@ namespace controls::sortlistctrl
 	void CSingleMAPIPropListCtrl::OnEditProp()
 	{
 		if (!m_lpPropBag) return;
-		OnEditGivenProp(GetSelectedPropTag());
+		const auto propListData = GetSelectedPropListData();
+		if (!propListData) return;
+		OnEditGivenProp(propListData->getPropTag());
 	}
 
 	void CSingleMAPIPropListCtrl::OnEditPropAsRestriction(ULONG ulPropTag)
@@ -1063,8 +1058,9 @@ namespace controls::sortlistctrl
 		if (!m_lpPropBag) return;
 		auto lpPropBag = m_lpPropBag; // Hold the prop bag so it doesn't get deleted under us
 
-		auto ulPropTag = GetSelectedPropTag();
-		if (!ulPropTag) return;
+		const auto propListData = GetSelectedPropListData();
+		if (!propListData) return;
+		auto ulPropTag = propListData->getPropTag();
 
 		// Explicit check since TagToString is expensive
 		if (fIsSet(output::dbgLevel::Generic))
@@ -1147,7 +1143,10 @@ namespace controls::sortlistctrl
 	{
 		// for now, we only copy from objects - copying from rows would be difficult to generalize
 		if (!m_lpPropBag) return;
-		cache::CGlobalCache::getInstance().SetPropertyToCopy(GetSelectedPropTag(), m_lpPropBag->GetMAPIProp());
+		const auto propListData = GetSelectedPropListData();
+		if (!propListData) return;
+		const auto ulPropTag = propListData->getPropTag();
+		cache::CGlobalCache::getInstance().SetPropertyToCopy(ulPropTag, m_lpPropBag->GetMAPIProp());
 	}
 
 	void CSingleMAPIPropListCtrl::OnPasteProperty()
@@ -1285,8 +1284,9 @@ namespace controls::sortlistctrl
 
 		if (!m_lpHostDlg) return;
 
-		const auto ulPropTag = GetSelectedPropTag();
-		if (!ulPropTag) return;
+		const auto propListData = GetSelectedPropListData();
+		if (!propListData) return;
+		const auto ulPropTag = propListData->getPropTag();
 
 		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"OnOpenProperty", L"asked to open 0x%X\n", ulPropTag);
 		LPSPropValue lpProp = nullptr;
@@ -1508,7 +1508,11 @@ namespace controls::sortlistctrl
 			}
 		}
 
-		MyAddInMenuParams.ulPropTag = GetSelectedPropTag();
+		const auto propListData = GetSelectedPropListData();
+		if (propListData)
+		{
+			MyAddInMenuParams.ulPropTag = propListData->getPropTag();
+		}
 
 		ui::addinui::InvokeAddInMenu(&MyAddInMenuParams);
 		return true;

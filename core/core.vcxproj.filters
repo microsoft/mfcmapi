@@ -330,6 +330,9 @@
     <ClInclude Include="model\mapiRowModel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="smartview\swappedToDo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="utility\strings.cpp">
@@ -576,6 +579,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="model\mapiRowModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\swappedToDo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
