@@ -52,7 +52,7 @@ namespace smartview
 
 	void ExtendedFlag::parseBlocks()
 	{
-		auto szFlags = flags::InterpretFlags(flagExtendedFolderFlagType, *Id);
+		const auto szFlags = flags::InterpretFlags(flagExtendedFolderFlagType, *Id);
 		addChild(Id, L"Id = 0x%1!02X! = %2!ws!", Id->getData(), szFlags.c_str());
 		Id->addChild(Cb, L"Cb = 0x%1!02X! = %1!d!", Cb->getData());
 

@@ -148,6 +148,7 @@ enum class parserType
 	LONGRTIME,
 	PTI8,
 	SFIDMID,
+	SWAPPEDTODO,
 	END // This must be the end of the enum
 };
 
