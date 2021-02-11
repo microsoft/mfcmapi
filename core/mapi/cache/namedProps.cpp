@@ -151,8 +151,7 @@ namespace cache
 	GetNameFromID(_In_ LPMAPIPROP lpMAPIProp, _In_ ULONG ulPropTag, ULONG ulFlags)
 	{
 		auto tag = SPropTagArray{1, ulPropTag};
-		auto lptag = &tag;
-		const auto names = GetNamesFromIDs(lpMAPIProp, &lptag, ulFlags);
+		const auto names = GetNamesFromIDs(lpMAPIProp, &tag, ulFlags);
 		if (names.size() == 1) return names[0];
 		return {};
 	}
@@ -165,11 +164,11 @@ namespace cache
 		auto names = std::vector<std::shared_ptr<namedPropCacheEntry>>{};
 		if (sig)
 		{
-			names = GetNamesFromIDs(lpMAPIProp, sig, &lptag, ulFlags);
+			names = GetNamesFromIDs(lpMAPIProp, sig, lptag, ulFlags);
 		}
 		else
 		{
-			names = GetNamesFromIDs(lpMAPIProp, &lptag, ulFlags);
+			names = GetNamesFromIDs(lpMAPIProp, lptag, ulFlags);
 		}
 
 		if (names.size() == 1) return names[0];
@@ -178,7 +177,7 @@ namespace cache
 
 	// No signature form: look up and use signature if possible
 	_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>>
-	GetNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp, _In_opt_ LPSPropTagArray* lppPropTags, ULONG ulFlags)
+	GetNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp, _In_opt_ LPSPropTagArray lpPropTags, ULONG ulFlags)
 	{
 		SBinary sig = {};
 		LPSPropValue lpProp = nullptr;
@@ -189,7 +188,7 @@ namespace cache
 			sig = mapi::getBin(lpProp);
 		}
 
-		const auto names = GetNamesFromIDs(lpMAPIProp, &sig, lppPropTags, ulFlags);
+		const auto names = GetNamesFromIDs(lpMAPIProp, &sig, lpPropTags, ulFlags);
 		MAPIFreeBuffer(lpProp);
 		return names;
 	}
@@ -198,7 +197,7 @@ namespace cache
 	_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>> GetNamesFromIDs(
 		_In_ LPMAPIPROP lpMAPIProp,
 		_In_opt_ const SBinary* sig,
-		_In_opt_ LPSPropTagArray* lppPropTags,
+		_In_opt_ LPSPropTagArray lpPropTags,
 		ULONG ulFlags)
 	{
 		if (!lpMAPIProp) return {};
@@ -209,13 +208,13 @@ namespace cache
 			ulFlags)
 		{
 			std::vector<std::shared_ptr<namedPropCacheEntry>> names;
-			WC_H(directMapi::GetNamesFromIDs(lpMAPIProp, lppPropTags, ulFlags, names));
+			WC_H_S(directMapi::GetNamesFromIDs(lpMAPIProp, lpPropTags, ulFlags, names));
 			return names;
 		}
 
 		auto sigv = std::vector<BYTE>{};
 		if (sig && sig->lpb && sig->cb) sigv = {sig->lpb, sig->lpb + sig->cb};
-		return namedPropCache::GetNamesFromIDs(lpMAPIProp, sigv, lppPropTags);
+		return namedPropCache::GetNamesFromIDs(lpMAPIProp, sigv, lpPropTags);
 	}
 
 	_Check_return_ LPSPropTagArray
@@ -239,7 +238,7 @@ namespace cache
 
 		if (lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag))
 		{
-			const auto bin = mapi::getBin(lpProp);
+			const auto &bin = mapi::getBin(lpProp);
 			sig = {bin.lpb, bin.lpb + bin.cb};
 		}
 
