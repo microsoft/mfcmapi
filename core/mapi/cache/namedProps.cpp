@@ -148,7 +148,7 @@ namespace cache
 	}
 
 	_Check_return_ std::shared_ptr<namedPropCacheEntry>
-	GetNameFromID(_In_ LPMAPIPROP lpMAPIProp, _In_ ULONG ulPropTag, ULONG ulFlags)
+	GetNameFromID(_In_ const LPMAPIPROP lpMAPIProp, _In_ ULONG ulPropTag, ULONG ulFlags)
 	{
 		auto tag = SPropTagArray{1, ulPropTag};
 		const auto names = GetNamesFromIDs(lpMAPIProp, &tag, ulFlags);
@@ -157,7 +157,7 @@ namespace cache
 	}
 
 	_Check_return_ std::shared_ptr<namedPropCacheEntry>
-	GetNameFromID(_In_ LPMAPIPROP lpMAPIProp, _In_opt_ const SBinary* sig, _In_ ULONG ulPropTag, ULONG ulFlags)
+	GetNameFromID(_In_ const LPMAPIPROP lpMAPIProp, _In_opt_ const SBinary* sig, _In_ ULONG ulPropTag, ULONG ulFlags)
 	{
 		auto tag = SPropTagArray{1, ulPropTag};
 		auto lptag = &tag;
@@ -177,7 +177,7 @@ namespace cache
 
 	// No signature form: look up and use signature if possible
 	_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>>
-	GetNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp, _In_opt_ LPSPropTagArray lpPropTags, ULONG ulFlags)
+	GetNamesFromIDs(_In_ const LPMAPIPROP lpMAPIProp, _In_opt_ LPSPropTagArray lpPropTags, ULONG ulFlags)
 	{
 		SBinary sig = {};
 		LPSPropValue lpProp = nullptr;
@@ -195,7 +195,7 @@ namespace cache
 
 	// Signature form: if signature is empty then do not use a signature
 	_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>> GetNamesFromIDs(
-		_In_ LPMAPIPROP lpMAPIProp,
+		_In_ const LPMAPIPROP lpMAPIProp,
 		_In_opt_ const SBinary* sig,
 		_In_opt_ LPSPropTagArray lpPropTags,
 		ULONG ulFlags)
@@ -218,7 +218,7 @@ namespace cache
 	}
 
 	_Check_return_ LPSPropTagArray
-	GetIDsFromNames(_In_ LPMAPIPROP lpMAPIProp, _In_ std::vector<MAPINAMEID> nameIDs, _In_ ULONG ulFlags)
+	GetIDsFromNames(_In_ const LPMAPIPROP lpMAPIProp, _In_ std::vector<MAPINAMEID> nameIDs, _In_ ULONG ulFlags)
 	{
 		if (!lpMAPIProp) return {};
 
@@ -438,7 +438,7 @@ namespace cache
 		return results;
 	}
 
-	ULONG FindHighestNamedProp(_In_ LPMAPIPROP lpMAPIProp)
+	ULONG FindHighestNamedProp(_In_ const LPMAPIPROP lpMAPIProp)
 	{
 		output::DebugPrint(
 			output::dbgLevel::NamedProp, L"FindHighestNamedProp: Searching for the highest named prop mapping\n");

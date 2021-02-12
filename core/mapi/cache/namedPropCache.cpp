@@ -39,7 +39,7 @@ namespace cache
 				return hRes;
 			}
 
-			return MAPI_E_NOT_ENOUGH_MEMORY;
+			return E_OUTOFMEMORY;
 		}
 
 		_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>> GetAllNamesFromIDs(_In_ LPMAPIFOLDER lpMAPIFolder)
@@ -70,9 +70,7 @@ namespace cache
 				if (hRes == MAPI_E_CALL_FAILED)
 				{
 					LPMAPIFOLDER newFolder = nullptr;
-					ULONG objt = 0;
-					hRes = WC_H(lpMAPIFolder->OpenEntry(
-						0, nullptr, &IID_IMAPIFolder, 0, &objt, reinterpret_cast<LPUNKNOWN*>(&newFolder)));
+					hRes = WC_H(GetRootFolder(lpMAPIFolder, &newFolder));
 
 					// If we can't re-open the root folder, something is bad - just break out
 					if (FAILED(hRes))
@@ -141,7 +139,7 @@ namespace cache
 		{
 			if (!lpMAPIProp)
 			{
-				return MAPI_E_INVALID_PARAMETER;
+				return E_INVALIDARG;
 			}
 
 			LPMAPINAMEID* lppPropNames = nullptr;
@@ -206,7 +204,7 @@ namespace cache
 		{
 			if (!lpMAPIProp)
 			{
-				return MAPI_E_INVALID_PARAMETER;
+				return E_INVALIDARG;
 			}
 
 			const auto countTags = ULONG(tags.size());
@@ -225,7 +223,7 @@ namespace cache
 
 			MAPIFreeBuffer(ulPropTags);
 
-			return MAPI_E_NOT_ENOUGH_MEMORY;
+			return E_OUTOFMEMORY;
 		}
 
 		// Returns a vector of tags for the input names

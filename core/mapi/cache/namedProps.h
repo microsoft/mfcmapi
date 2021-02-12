@@ -80,22 +80,22 @@ namespace cache
 	constexpr ULONG __UPPERBOUND = 0xFFFF;
 
 	_Check_return_ std::shared_ptr<namedPropCacheEntry>
-	GetNameFromID(_In_ LPMAPIPROP lpMAPIProp, _In_opt_ const SBinary* sig, _In_ ULONG ulPropTag, ULONG ulFlags);
+	GetNameFromID(_In_ const LPMAPIPROP lpMAPIProp, _In_opt_ const SBinary* sig, _In_ ULONG ulPropTag, ULONG ulFlags);
 	_Check_return_ std::shared_ptr<namedPropCacheEntry>
-	GetNameFromID(_In_ LPMAPIPROP lpMAPIProp, _In_ ULONG ulPropTag, ULONG ulFlags);
+	GetNameFromID(_In_ const LPMAPIPROP lpMAPIProp, _In_ ULONG ulPropTag, ULONG ulFlags);
 
 	// No signature form: look up and use signature if possible
 	_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>>
-	GetNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp, _In_opt_ LPSPropTagArray lpPropTags, ULONG ulFlags);
+	GetNamesFromIDs(_In_ const LPMAPIPROP lpMAPIProp, _In_opt_ LPSPropTagArray lpPropTags, ULONG ulFlags);
 	// Signature form: if signature not passed then do not use a signature
 	_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>> GetNamesFromIDs(
-		_In_ LPMAPIPROP lpMAPIProp,
+		_In_ const LPMAPIPROP lpMAPIProp,
 		_In_opt_ const SBinary* sig,
 		_In_opt_ LPSPropTagArray lpPropTags,
 		ULONG ulFlags);
 
 	_Check_return_ LPSPropTagArray
-	GetIDsFromNames(_In_ LPMAPIPROP lpMAPIProp, _In_ std::vector<MAPINAMEID> nameIDs, _In_ ULONG ulFlags);
+	GetIDsFromNames(_In_ const LPMAPIPROP lpMAPIProp, _In_ std::vector<MAPINAMEID> nameIDs, _In_ ULONG ulFlags);
 
 	NamePropNames NameIDToStrings(
 		ULONG ulPropTag, // optional 'original' prop tag

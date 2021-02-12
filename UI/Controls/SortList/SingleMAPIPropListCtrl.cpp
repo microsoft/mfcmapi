@@ -777,7 +777,6 @@ namespace controls::sortlistctrl
 
 		output::DebugPrintEx(
 			output::dbgLevel::NamedProp, CLASS, L"FindAllNamedProps", L"Calling GetNamesFromIDs with a NULL\n");
-
 		const auto names = cache::GetNamesFromIDs(m_lpPropBag->GetMAPIProp(), nullptr, 0);
 		if (names.size() > 0)
 		{
