@@ -66,6 +66,7 @@ enum __NonPropFlag
 	flagIet,
 	flagEidMagic,
 	flagEidVersion,
+	flagToDoSwapFlag,
 };
 
 #define PR_FREEBUSY_NT_SECURITY_DESCRIPTOR (PROP_TAG(PT_BINARY, 0x0F00))
@@ -1201,3 +1202,14 @@ STDAPI STDAPICALLTYPE LaunchWizard(
 #define FWD_AS_SMS_ALERT 8
 
 #define PR_BODY_HTML_W CHANGE_PROP_TYPE(PR_BODY_HTML, PT_UNICODE)
+
+// https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxprops/951b479a-dcdb-46fb-a293-9177baa0a4b9
+#define PR_SWAPPED_TODO_DATA PROP_TAG(PT_BINARY, 0x0E2D)
+
+#define TDP_NONE 0x00000000
+#define TDP_ITEM_FLAGS 0x00000001
+#define TDP_START_DATE 0x00000008
+#define TDP_DUE_DATE 0x00000010
+#define TDP_TITLE 0x00000020
+#define TDP_REMINDER_FLAG 0x00000040
+#define TDP_REMINDER_TIME 0x00000080

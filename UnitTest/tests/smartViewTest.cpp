@@ -66,7 +66,7 @@ namespace SmartViewTest
 				std::wstring(L"SmartViewAddInTest1"),
 				parserType::END,
 				std::vector<BYTE>{1, 2, 3, 4},
-				std::wstring(L"Unknown Parser 38\r\n"
+				std::wstring(L"Unknown Parser 39\r\n"
 							 L"\tcb: 4 lpb: 01020304"));
 		}
 
@@ -251,5 +251,8 @@ namespace SmartViewTest
 		TEST(EXTENDEDRULEACTION, 34EXRULEACTION, 1) // OP_MOVE, OP_TAG
 		TEST(EXTENDEDRULEACTION, 34EXRULEACTION, 2) // OP_DEFER_ACTION
 		TEST(EXTENDEDRULEACTION, 34EXRULEACTION, 3) // OP_TAG, OP_MARK_AS_READ, OP_FORWARD, OP_COPY
+
+		TEST(SWAPPEDTODO, 38SWAPTODO, 1)
+		TEST(SWAPPEDTODO, 38SWAPTODO, 2)
 	};
 } // namespace SmartViewTest

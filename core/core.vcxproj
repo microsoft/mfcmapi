@@ -592,6 +592,7 @@
     <ClInclude Include="smartview\addinParser.h" />
     <ClInclude Include="smartview\AdditionalRenEntryIDs.h" />
     <ClInclude Include="smartview\AppointmentRecurrencePattern.h" />
+    <ClInclude Include="smartview\swappedToDo.h" />
     <ClInclude Include="smartview\block\scratchBlock.h" />
     <ClInclude Include="smartview\block\binaryParser.h" />
     <ClInclude Include="smartview\block\block.h" />
@@ -687,6 +688,7 @@
     <ClCompile Include="smartview\addinParser.cpp" />
     <ClCompile Include="smartview\AdditionalRenEntryIDs.cpp" />
     <ClCompile Include="smartview\AppointmentRecurrencePattern.cpp" />
+    <ClCompile Include="smartview\swappedToDo.cpp" />
     <ClCompile Include="smartview\decodeEntryID.cpp" />
     <ClCompile Include="smartview\encodeEntryID.cpp" />
     <ClCompile Include="smartview\RuleAction.cpp" />
