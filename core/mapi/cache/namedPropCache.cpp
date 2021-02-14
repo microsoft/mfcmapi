@@ -19,7 +19,7 @@ namespace cache
 			_In_ LPMAPIPROP lpMAPIProp,
 			ULONG start,
 			ULONG end,
-			std::vector<std::shared_ptr<namedPropCacheEntry>> &names)
+			std::vector<std::shared_ptr<namedPropCacheEntry>>& names)
 		{
 			if (start > end) return {};
 			// Allocate our tag array
@@ -42,7 +42,8 @@ namespace cache
 			return E_OUTOFMEMORY;
 		}
 
-		_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>> GetAllNamesFromIDs(_In_ LPMAPIFOLDER lpMAPIFolder)
+		_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>>
+		GetAllNamesFromIDs(_In_ LPMAPIFOLDER lpMAPIFolder)
 		{
 			auto names = std::vector<std::shared_ptr<namedPropCacheEntry>>{};
 
@@ -135,7 +136,7 @@ namespace cache
 			_In_ LPMAPIPROP lpMAPIProp,
 			_In_opt_ LPSPropTagArray lpPropTags,
 			ULONG ulFlags,
-			std::vector<std::shared_ptr<namedPropCacheEntry>> &names)
+			std::vector<std::shared_ptr<namedPropCacheEntry>>& names)
 		{
 			if (!lpMAPIProp)
 			{
@@ -153,18 +154,16 @@ namespace cache
 			// If we failed and we were doing an all props lookup, try it manually instead
 			if (hRes == MAPI_E_CALL_FAILED && !lpPropTags)
 			{
-				LPMAPICONTAINER lpContainer = nullptr;
-				HRESULT hRes2 = WC_H(lpMAPIProp->QueryInterface(IID_IMAPIContainer, reinterpret_cast<LPVOID*>(&lpContainer)));
-				if (SUCCEEDED(hRes2))
+				auto lpContainer = mapi::safe_cast<LPMAPICONTAINER>(lpMAPIProp);
+				if (lpContainer)
 				{
 					names = GetAllNamesFromIDsFromContainer(lpContainer);
 					lpContainer->Release();
 					return S_OK;
 				}
 
-				LPMDB lpMdb = nullptr;
-				hRes2 = WC_H(lpMAPIProp->QueryInterface(IID_IMsgStore, reinterpret_cast<LPVOID*>(&lpMdb)));
-				if (SUCCEEDED(hRes2))
+				auto lpMdb = mapi::safe_cast<LPMDB>(lpMAPIProp);
+				if (lpMdb)
 				{
 					names = GetAllNamesFromIDsFromMdb(lpMdb);
 					lpMdb->Release();
@@ -200,7 +199,7 @@ namespace cache
 			_In_ LPMAPIPROP lpMAPIProp,
 			_In_ const std::vector<ULONG> tags,
 			ULONG ulFlags,
-			std::vector<std::shared_ptr<namedPropCacheEntry>> &names)
+			std::vector<std::shared_ptr<namedPropCacheEntry>>& names)
 		{
 			if (!lpMAPIProp)
 			{
@@ -430,7 +429,7 @@ namespace cache
 
 			// Cache the results
 			add(names, sig);
-			
+
 			return names;
 		}
 
