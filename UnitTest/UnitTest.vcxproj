@@ -554,7 +554,7 @@
     <ClCompile Include="tests\clitest.cpp" />
     <ClCompile Include="tests\guidtest.cpp" />
     <ClCompile Include="tests\namedproptest.cpp" />
-    <ClCompile Include="tests\property.cpp" />
+    <ClCompile Include="tests\propertytest.cpp" />
     <ClCompile Include="tests\sidtest.cpp" />
     <ClCompile Include="tests\smartViewTest.cpp" />
     <ClCompile Include="tests\stringtest.cpp" />
