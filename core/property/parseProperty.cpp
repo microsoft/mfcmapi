@@ -47,7 +47,7 @@ namespace property
 	wstring* tmpAltPropString: Alternative string representation
 	***************************************************************************/
 	void parseProperty(
-		_In_ const _SPropValue* lpProp,
+		_In_opt_ const _SPropValue* lpProp,
 		_In_opt_ std::wstring* PropString,
 		_In_opt_ std::wstring* AltPropString)
 	{
