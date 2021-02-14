@@ -326,7 +326,7 @@ namespace cache
 		if (!lpMAPIProp) return {};
 
 		// If this is a get all names call, we have to go direct to MAPI since we cannot trust the cache is full.
-		if (!*lppPropTags)
+		if (!lppPropTags || !*lppPropTags)
 		{
 			output::DebugPrint(output::dbgLevel::NamedPropCache, L"GetNamesFromIDs: making direct all for all props\n");
 			LPSPropTagArray pProps = nullptr;

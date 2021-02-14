@@ -438,6 +438,7 @@ namespace controls::sortlistctrl
 	// Render the row model in the list.
 	void CSingleMAPIPropListCtrl::AddPropToListBox(int iRow, const std::shared_ptr<model::mapiRowModel>& model)
 	{
+		if (!model) return;
 		auto ulPropTag = model->ulPropTag();
 		auto image = sortIcon::siDefault;
 		for (const auto& _PropTypeIcon : _PropTypeIcons)
