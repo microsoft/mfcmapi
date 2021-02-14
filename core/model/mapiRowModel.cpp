@@ -19,7 +19,6 @@ namespace model
 		_In_opt_ const SBinary* sig,
 		_In_opt_ const MAPINAMEID* lpNameID)
 	{
-		if (!lpPropVal) return {};
 		auto ret = std::make_shared<model::mapiRowModel>();
 		ret->ulPropTag(ulPropTag);
 
@@ -40,17 +39,20 @@ namespace model
 
 		ret->otherName(propTagNames.otherMatches);
 
-		std::wstring PropString;
-		std::wstring AltPropString;
-		property::parseProperty(lpPropVal, &PropString, &AltPropString);
-		ret->value(PropString);
-		ret->altValue(AltPropString);
-
 		if (!namePropNames.name.empty()) ret->namedPropName(namePropNames.name);
 		if (!namePropNames.guid.empty()) ret->namedPropGuid(namePropNames.guid);
 
-		const auto szSmartView = smartview::parsePropertySmartView(lpPropVal, lpProp, lpNameID, sig, bIsAB, false);
-		if (!szSmartView.empty()) ret->smartView(szSmartView);
+		if (lpPropVal)
+		{
+			std::wstring PropString;
+			std::wstring AltPropString;
+			property::parseProperty(lpPropVal, &PropString, &AltPropString);
+			ret->value(PropString);
+			ret->altValue(AltPropString);
+
+			const auto szSmartView = smartview::parsePropertySmartView(lpPropVal, lpProp, lpNameID, sig, bIsAB, false);
+			if (!szSmartView.empty()) ret->smartView(szSmartView);
+		}
 
 		return ret;
 	}
