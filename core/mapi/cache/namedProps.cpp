@@ -178,8 +178,9 @@ namespace cache
 
 	// No signature form: look up and use signature if possible
 	_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>>
-	GetNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp, _In_opt_ LPSPropTagArray* lppPropTags, ULONG ulFlags)
+	GetNamesFromIDs(_In_opt_ LPMAPIPROP lpMAPIProp, _In_opt_ LPSPropTagArray* lppPropTags, ULONG ulFlags)
 	{
+		if (!lpMAPIProp) return {};
 		SBinary sig = {};
 		LPSPropValue lpProp = nullptr;
 		// This error is too chatty to log - ignore it.
@@ -196,7 +197,7 @@ namespace cache
 
 	// Signature form: if signature is empty then do not use a signature
 	_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>> GetNamesFromIDs(
-		_In_ LPMAPIPROP lpMAPIProp,
+		_In_opt_ LPMAPIPROP lpMAPIProp,
 		_In_opt_ const SBinary* sig,
 		_In_opt_ LPSPropTagArray* lppPropTags,
 		ULONG ulFlags)

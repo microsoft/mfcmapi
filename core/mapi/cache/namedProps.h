@@ -86,10 +86,10 @@ namespace cache
 
 	// No signature form: look up and use signature if possible
 	_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>>
-	GetNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp, _In_opt_ LPSPropTagArray* lppPropTags, ULONG ulFlags);
+	GetNamesFromIDs(_In_opt_ LPMAPIPROP lpMAPIProp, _In_opt_ LPSPropTagArray* lppPropTags, ULONG ulFlags);
 	// Signature form: if signature not passed then do not use a signature
 	_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>> GetNamesFromIDs(
-		_In_ LPMAPIPROP lpMAPIProp,
+		_In_opt_ LPMAPIPROP lpMAPIProp,
 		_In_opt_ const SBinary* sig,
 		_In_opt_ LPSPropTagArray* lppPropTags,
 		ULONG ulFlags);
