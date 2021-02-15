@@ -32,8 +32,11 @@ namespace dialog::editor
 		ULONG m_ulPropTag{};
 		bool m_bIsAB{}; // whether the tag is from the AB or not
 		const _SPropValue* m_lpsInputValue{};
-		LPSPropValue m_lpsOutputValue{}; // TODO - eliminate this
 		bool m_bDirty{};
 		bool m_bMVRow{}; // whether this row came from a multivalued property. Used for smart view parsing.
+
+		SPropValue m_sOutputValue{};
+		std::vector<BYTE> m_bin; // Temp storage for m_sOutputValue
+		GUID m_guid{}; // Temp storage for m_sOutputValue
 	};
 } // namespace dialog::editor
