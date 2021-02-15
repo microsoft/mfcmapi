@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/Editors/RestrictEditor.h>
-#include <UI/Dialogs/Editors/PropertyEditor.h>
+#include <UI/Dialogs/Editors/propeditor/ipropeditor.h>
 #include <core/mapi/mapiFunctions.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/sortlistdata/resData.h>

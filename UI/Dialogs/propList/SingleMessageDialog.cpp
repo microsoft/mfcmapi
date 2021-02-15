@@ -3,7 +3,7 @@
 #include <UI/Controls/SortList/SingleMAPIPropListCtrl.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>
-#include <UI/Dialogs/Editors/StreamEditor.h>
+#include <UI/Dialogs/Editors/propeditor/StreamEditor.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>

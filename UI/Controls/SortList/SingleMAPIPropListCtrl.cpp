@@ -18,9 +18,9 @@
 #include <core/mapi/cache/globalCache.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/Editors/RestrictEditor.h>
-#include <UI/Dialogs/Editors/StreamEditor.h>
+#include <UI/Dialogs/Editors/propeditor/StreamEditor.h>
 #include <UI/Dialogs/Editors/TagArrayEditor.h>
-#include <UI/Dialogs/Editors/PropertyEditor.h>
+#include <UI/Dialogs/Editors/propeditor/ipropeditor.h>
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
 #include <core/mapi/cache/mapiObjects.h>
 #include <core/mapi/mapiMemory.h>

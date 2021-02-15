@@ -1,8 +1,8 @@
 #include <StdAfx.h>
-#include <UI/Dialogs/Editors/MultiValuePropertyEditor.h>
+#include <UI/Dialogs/Editors/propeditor/MultiValuePropertyEditor.h>
+#include <UI/ViewPane/SmartViewPane.h>
 #include <core/smartview/SmartView.h>
 #include <core/sortlistdata/mvPropData.h>
-#include <UI/Dialogs/Editors/PropertyEditor.h>
 #include <core/mapi/mapiMemory.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>

@@ -1,36 +1,30 @@
 #pragma once
-#include <UI/Dialogs/Editors/Editor.h>
-#include <UI/Dialogs/Editors/PropertyEditor.h>
+#include <UI/Dialogs/Editors/propeditor/ipropeditor.h>
 
 namespace dialog::editor
 {
-	class CMultiValuePropertyEditor : public IPropEditor
+	class CPropertyEditor : public IPropEditor
 	{
 	public:
-		CMultiValuePropertyEditor(
+		CPropertyEditor(
 			_In_ CWnd* pParentWnd,
 			UINT uidTitle,
 			bool bIsAB,
+			bool bMVRow,
 			_In_opt_ LPVOID lpAllocParent,
 			_In_opt_ LPMAPIPROP lpMAPIProp,
 			ULONG ulPropTag,
 			_In_opt_ const _SPropValue* lpsPropValue);
-		~CMultiValuePropertyEditor();
+		~CPropertyEditor();
 
 		// Get values after we've done the DisplayDialog
 		_Check_return_ LPSPropValue getValue() noexcept;
-		_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ sortlistdata::sortListData* lpData) override;
 
 	private:
 		BOOL OnInitDialog() override;
 		void InitPropertyControls();
-		void ReadMultiValueStringsFromProperty() const;
+		void WriteStringsToSPropValue();
 		void WriteSPropValueToObject() const;
-		void WriteMultiValueStringsToSPropValue();
-		void UpdateListRow(_In_ LPSPropValue lpProp, ULONG iMVCount) const;
-		std::vector<LONG> GetLongArray() const;
-		std::vector<std::vector<BYTE>> GetBinaryArray() const;
-		void UpdateSmartView() const;
 		_Check_return_ ULONG HandleChange(UINT nID) override;
 		void OnOK() override;
 
@@ -40,6 +34,8 @@ namespace dialog::editor
 		bool m_bIsAB{}; // whether the tag is from the AB or not
 		const _SPropValue* m_lpsInputValue{};
 		LPSPropValue m_lpsOutputValue{};
+		bool m_bDirty{};
+		bool m_bMVRow{}; // whether this row came from a multivalued property. Used for smart view parsing.
 
 		// all calls to MAPIAllocateMore will use m_lpAllocParent
 		// this is not something to be freed

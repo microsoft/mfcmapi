@@ -1,5 +1,5 @@
 #include <StdAfx.h>
-#include <UI/Dialogs/Editors/StreamEditor.h>
+#include <UI/Dialogs/Editors/propeditor/StreamEditor.h>
 #include <core/mapi/mapiFunctions.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/smartview/SmartView.h>

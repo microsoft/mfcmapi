@@ -593,6 +593,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
   <ItemGroup>
     <ClInclude Include="UI\Controls\SortList\SortHeader.h" />
     <ClInclude Include="UI\Controls\SortList\SortListCtrl.h" />
+    <ClInclude Include="UI\Dialogs\Editors\propeditor\ipropeditor.h" />
     <ClInclude Include="UI\Dialogs\propList\AccountsDialog.h" />
     <ClInclude Include="UI\enums.h" />
     <ClInclude Include="UI\CMAPIProgress.h" />
@@ -603,7 +604,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="UI\Dialogs\ContentsTable\ABDlg.h" />
     <ClInclude Include="UI\Dialogs\AboutDlg.h" />
     <ClInclude Include="UI\Dialogs\ContentsTable\AclDlg.h" />
-    <ClInclude Include="UI\Dialogs\Editors\MultiValuePropertyEditor.h" />
+    <ClInclude Include="UI\Dialogs\Editors\propeditor\MultiValuePropertyEditor.h" />
     <ClInclude Include="UI\Dialogs\Editors\PropertySelector.h" />
     <ClInclude Include="UI\Dialogs\Editors\SearchEditor.h" />
     <ClInclude Include="UI\Dialogs\ContentsTable\AttachmentsDlg.h" />
@@ -649,7 +650,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="UI\Dialogs\Editors\Options.h" />
     <ClInclude Include="UI\ParentWnd.h" />
     <ClInclude Include="UI\Dialogs\ContentsTable\ProfileListDlg.h" />
-    <ClInclude Include="UI\Dialogs\Editors\PropertyEditor.h" />
+    <ClInclude Include="UI\Dialogs\Editors\propeditor\PropertyEditor.h" />
     <ClInclude Include="UI\Dialogs\Editors\PropertyTagEditor.h" />
     <ClInclude Include="UI\Dialogs\ContentsTable\ProviderTableDlg.h" />
     <ClInclude Include="UI\Dialogs\ContentsTable\PublicFolderTableDlg.h" />
@@ -659,7 +660,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="UI\Dialogs\ContentsTable\RulesDlg.h" />
     <ClInclude Include="UI\Dialogs\propList\SingleMessageDialog.h" />
     <ClInclude Include="UI\Controls\SortList\SingleMAPIPropListCtrl.h" />
-    <ClInclude Include="UI\Dialogs\Editors\StreamEditor.h" />
+    <ClInclude Include="UI\Dialogs\Editors\propeditor\StreamEditor.h" />
     <ClInclude Include="UI\Dialogs\Editors\TagArrayEditor.h" />
     <ClInclude Include="UI\UIFunctions.h" />
     <ClInclude Include="UI\mapiui.h" />
@@ -673,6 +674,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="UI\addinui.cpp" />
     <ClCompile Include="UI\Controls\SortList\SortHeader.cpp" />
     <ClCompile Include="UI\Controls\SortList\SortListCtrl.cpp" />
+    <ClCompile Include="UI\Dialogs\Editors\propeditor\ipropeditor.cpp" />
     <ClCompile Include="UI\Dialogs\propList\AccountsDialog.cpp" />
     <ClCompile Include="UI\file\exporter.cpp" />
     <ClCompile Include="UI\file\FileDialogEx.cpp" />
@@ -689,7 +691,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="UI\Dialogs\AboutDlg.cpp" />
     <ClCompile Include="UI\Dialogs\ContentsTable\AclDlg.cpp" />
     <ClCompile Include="UI\Dialogs\ContentsTable\AttachmentsDlg.cpp" />
-    <ClCompile Include="UI\Dialogs\Editors\MultiValuePropertyEditor.cpp" />
+    <ClCompile Include="UI\Dialogs\Editors\propeditor\MultiValuePropertyEditor.cpp" />
     <ClCompile Include="UI\Dialogs\Editors\PropertySelector.cpp" />
     <ClCompile Include="UI\Dialogs\Editors\SearchEditor.cpp" />
     <ClCompile Include="UI\Dialogs\BaseDialog.cpp" />
@@ -715,7 +717,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="UI\MyWinApp.cpp" />
     <ClCompile Include="UI\Dialogs\Editors\Options.cpp" />
     <ClCompile Include="UI\Dialogs\ContentsTable\ProfileListDlg.cpp" />
-    <ClCompile Include="UI\Dialogs\Editors\PropertyEditor.cpp" />
+    <ClCompile Include="UI\Dialogs\Editors\propeditor\PropertyEditor.cpp" />
     <ClCompile Include="UI\Dialogs\Editors\PropertyTagEditor.cpp" />
     <ClCompile Include="UI\Dialogs\ContentsTable\ProviderTableDlg.cpp" />
     <ClCompile Include="UI\Dialogs\ContentsTable\PublicFolderTableDlg.cpp" />
@@ -728,7 +730,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="UI\Controls\SortList\SingleMAPIPropListCtrl.cpp" />
     <ClCompile Include="UI\Dialogs\propList\SingleMessageDialog.cpp" />
     <ClCompile Include="UI\Dialogs\propList\SingleRecipientDialog.cpp" />
-    <ClCompile Include="UI\Dialogs\Editors\StreamEditor.cpp" />
+    <ClCompile Include="UI\Dialogs\Editors\propeditor\StreamEditor.cpp" />
     <ClCompile Include="UI\Dialogs\Editors\TagArrayEditor.cpp" />
     <ClCompile Include="UI\UIFunctions.cpp" />
     <ClCompile Include="UI\ViewPane\CheckPane.cpp" />
