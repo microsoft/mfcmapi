@@ -10,7 +10,6 @@ namespace dialog::editor
 			_In_ CWnd* pParentWnd,
 			UINT uidTitle,
 			bool bIsAB,
-			_In_opt_ LPVOID lpAllocParent,
 			_In_opt_ LPMAPIPROP lpMAPIProp,
 			ULONG ulPropTag,
 			_In_opt_ const _SPropValue* lpsPropValue);
@@ -38,10 +37,6 @@ namespace dialog::editor
 		ULONG m_ulPropTag{};
 		bool m_bIsAB{}; // whether the tag is from the AB or not
 		const _SPropValue* m_lpsInputValue{};
-		LPSPropValue m_lpsOutputValue{};
-
-		// all calls to MAPIAllocateMore will use m_lpAllocParent
-		// this is not something to be freed
-		LPVOID m_lpAllocParent{};
+		LPSPropValue m_lpsOutputValue{}; // TODO: Eliminate this
 	};
 } // namespace dialog::editor

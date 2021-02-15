@@ -20,13 +20,11 @@ namespace dialog::editor
 		_In_ CWnd* pParentWnd,
 		UINT uidTitle,
 		bool bIsAB,
-		_In_opt_ LPVOID lpAllocParent,
 		_In_opt_ LPMAPIPROP lpMAPIProp,
 		ULONG ulPropTag,
 		_In_opt_ const _SPropValue* lpsPropValue)
 		: IPropEditor(pParentWnd, uidTitle, NULL, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL), m_bIsAB(bIsAB),
-		  m_lpAllocParent(lpAllocParent), m_lpMAPIProp(lpMAPIProp), m_ulPropTag(ulPropTag),
-		  m_lpsInputValue(lpsPropValue)
+		  m_lpMAPIProp(lpMAPIProp), m_ulPropTag(ulPropTag), m_lpsInputValue(lpsPropValue)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
 
@@ -40,6 +38,7 @@ namespace dialog::editor
 	CMultiValuePropertyEditor::~CMultiValuePropertyEditor()
 	{
 		TRACE_DESTRUCTOR(CLASS);
+		if (m_lpsOutputValue) MAPIFreeBuffer(m_lpsOutputValue);
 		if (m_lpMAPIProp) m_lpMAPIProp->Release();
 	}
 
@@ -140,11 +139,7 @@ namespace dialog::editor
 		// Take care of allocations first
 		if (!m_lpsOutputValue)
 		{
-			m_lpsOutputValue = mapi::allocate<LPSPropValue>(sizeof(SPropValue), m_lpAllocParent);
-			if (!m_lpAllocParent)
-			{
-				m_lpAllocParent = m_lpsOutputValue;
-			}
+			m_lpsOutputValue = mapi::allocate<LPSPropValue>(sizeof(SPropValue));
 		}
 
 		if (m_lpsOutputValue)
@@ -158,61 +153,61 @@ namespace dialog::editor
 			{
 			case PT_MV_I2:
 				m_lpsOutputValue->Value.MVi.lpi =
-					mapi::allocate<short int*>(sizeof(short int) * ulNumVals, m_lpAllocParent);
+					mapi::allocate<short int*>(sizeof(short int) * ulNumVals, m_lpsOutputValue);
 				m_lpsOutputValue->Value.MVi.cValues = ulNumVals;
 				break;
 			case PT_MV_LONG:
-				m_lpsOutputValue->Value.MVl.lpl = mapi::allocate<LONG*>(sizeof(LONG) * ulNumVals, m_lpAllocParent);
+				m_lpsOutputValue->Value.MVl.lpl = mapi::allocate<LONG*>(sizeof(LONG) * ulNumVals, m_lpsOutputValue);
 				m_lpsOutputValue->Value.MVl.cValues = ulNumVals;
 				break;
 			case PT_MV_DOUBLE:
 				m_lpsOutputValue->Value.MVdbl.lpdbl =
-					mapi::allocate<double*>(sizeof(double) * ulNumVals, m_lpAllocParent);
+					mapi::allocate<double*>(sizeof(double) * ulNumVals, m_lpsOutputValue);
 				m_lpsOutputValue->Value.MVdbl.cValues = ulNumVals;
 				break;
 			case PT_MV_CURRENCY:
 				m_lpsOutputValue->Value.MVcur.lpcur =
-					mapi::allocate<CURRENCY*>(sizeof(CURRENCY) * ulNumVals, m_lpAllocParent);
+					mapi::allocate<CURRENCY*>(sizeof(CURRENCY) * ulNumVals, m_lpsOutputValue);
 				m_lpsOutputValue->Value.MVcur.cValues = ulNumVals;
 				break;
 			case PT_MV_APPTIME:
 				m_lpsOutputValue->Value.MVat.lpat =
-					mapi::allocate<double*>(sizeof(double) * ulNumVals, m_lpAllocParent);
+					mapi::allocate<double*>(sizeof(double) * ulNumVals, m_lpsOutputValue);
 				m_lpsOutputValue->Value.MVat.cValues = ulNumVals;
 				break;
 			case PT_MV_SYSTIME:
 				m_lpsOutputValue->Value.MVft.lpft =
-					mapi::allocate<FILETIME*>(sizeof(FILETIME) * ulNumVals, m_lpAllocParent);
+					mapi::allocate<FILETIME*>(sizeof(FILETIME) * ulNumVals, m_lpsOutputValue);
 				m_lpsOutputValue->Value.MVft.cValues = ulNumVals;
 				break;
 			case PT_MV_I8:
 				m_lpsOutputValue->Value.MVli.lpli =
-					mapi::allocate<LARGE_INTEGER*>(sizeof(LARGE_INTEGER) * ulNumVals, m_lpAllocParent);
+					mapi::allocate<LARGE_INTEGER*>(sizeof(LARGE_INTEGER) * ulNumVals, m_lpsOutputValue);
 				m_lpsOutputValue->Value.MVli.cValues = ulNumVals;
 				break;
 			case PT_MV_R4:
 				m_lpsOutputValue->Value.MVflt.lpflt =
-					mapi::allocate<float*>(sizeof(float) * ulNumVals, m_lpAllocParent);
+					mapi::allocate<float*>(sizeof(float) * ulNumVals, m_lpsOutputValue);
 				m_lpsOutputValue->Value.MVflt.cValues = ulNumVals;
 				break;
 			case PT_MV_STRING8:
 				m_lpsOutputValue->Value.MVszA.lppszA =
-					mapi::allocate<LPSTR*>(sizeof(LPSTR) * ulNumVals, m_lpAllocParent);
+					mapi::allocate<LPSTR*>(sizeof(LPSTR) * ulNumVals, m_lpsOutputValue);
 				m_lpsOutputValue->Value.MVszA.cValues = ulNumVals;
 				break;
 			case PT_MV_UNICODE:
 				m_lpsOutputValue->Value.MVszW.lppszW =
-					mapi::allocate<LPWSTR*>(sizeof(LPWSTR) * ulNumVals, m_lpAllocParent);
+					mapi::allocate<LPWSTR*>(sizeof(LPWSTR) * ulNumVals, m_lpsOutputValue);
 				m_lpsOutputValue->Value.MVszW.cValues = ulNumVals;
 				break;
 			case PT_MV_BINARY:
 				m_lpsOutputValue->Value.MVbin.lpbin =
-					mapi::allocate<SBinary*>(sizeof(SBinary) * ulNumVals, m_lpAllocParent);
+					mapi::allocate<SBinary*>(sizeof(SBinary) * ulNumVals, m_lpsOutputValue);
 				m_lpsOutputValue->Value.MVbin.cValues = ulNumVals;
 				break;
 			case PT_MV_CLSID:
 				m_lpsOutputValue->Value.MVguid.lpguid =
-					mapi::allocate<GUID*>(sizeof(GUID) * ulNumVals, m_lpAllocParent);
+					mapi::allocate<GUID*>(sizeof(GUID) * ulNumVals, m_lpsOutputValue);
 				m_lpsOutputValue->Value.MVguid.cValues = ulNumVals;
 				break;
 			default:
@@ -258,15 +253,15 @@ namespace dialog::editor
 							break;
 						case PT_MV_STRING8:
 							m_lpsOutputValue->Value.MVszA.lppszA[iMVCount] =
-								mapi::CopyStringA(mvprop->getVal().lpszA, m_lpAllocParent);
+								mapi::CopyStringA(mvprop->getVal().lpszA, m_lpsOutputValue);
 							break;
 						case PT_MV_UNICODE:
 							m_lpsOutputValue->Value.MVszW.lppszW[iMVCount] =
-								mapi::CopyStringW(mvprop->getVal().lpszW, m_lpAllocParent);
+								mapi::CopyStringW(mvprop->getVal().lpszW, m_lpsOutputValue);
 							break;
 						case PT_MV_BINARY:
 							m_lpsOutputValue->Value.MVbin.lpbin[iMVCount] =
-								mapi::CopySBinary(mvprop->getVal().bin, m_lpAllocParent);
+								mapi::CopySBinary(mvprop->getVal().bin, m_lpsOutputValue);
 							break;
 						case PT_MV_CLSID:
 							if (mvprop->getVal().lpguid)
@@ -325,7 +320,6 @@ namespace dialog::editor
 			this,
 			IDS_EDITROW,
 			m_bIsAB,
-			NULL, // not passing an allocation parent because we know we're gonna free the result
 			m_lpMAPIProp,
 			NULL,
 			true, // This is a row from a multivalued property. Only case we pass true here.
@@ -340,7 +334,6 @@ namespace dialog::editor
 				// update the UI
 				UpdateListRow(lpNewValue, iItem);
 				UpdateSmartView();
-				MAPIFreeBuffer(lpNewValue);
 			}
 
 			return true;

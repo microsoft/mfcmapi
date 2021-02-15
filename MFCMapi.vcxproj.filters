@@ -116,7 +116,9 @@
     <ClInclude Include="UI\Dialogs\Editors\propeditor\MultiValuePropertyEditor.h">
       <Filter>Source Files\UI\Dialogs\Editors\propeditor</Filter>
     </ClInclude>
-    <ClInclude Include="UI\Dialogs\Editors\propeditor\ipropeditor.h" />
+    <ClInclude Include="UI\Dialogs\Editors\propeditor\ipropeditor.h">
+      <Filter>Source Files\UI\Dialogs\Editors\propeditor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StdAfx.h">
@@ -188,7 +190,7 @@
       <Filter>Source Files\UI\Dialogs\Editors\propeditor</Filter>
     </ClCompile>
     <ClCompile Include="UI\Dialogs\Editors\propeditor\ipropeditor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\UI\Dialogs\Editors\propeditor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

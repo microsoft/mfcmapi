@@ -1035,7 +1035,7 @@ namespace controls::sortlistctrl
 			if (PROP_TYPE(ulPropTag) == PT_UNSPECIFIED && lpEditProp) ulPropTag = lpEditProp->ulPropTag;
 
 			const auto propEditor = dialog::editor::DisplayPropertyEditor(
-				this, IDS_PROPEDITOR, lpPropBag->IsAB(), nullptr, lpSourceObj, ulPropTag, false, lpEditProp);
+				this, IDS_PROPEDITOR, lpPropBag->IsAB(), lpSourceObj, ulPropTag, false, lpEditProp);
 			if (propEditor)
 			{
 				const auto lpModProp = propEditor->getValue();
@@ -1049,7 +1049,6 @@ namespace controls::sortlistctrl
 					}
 
 					RefreshMAPIPropList();
-					MAPIFreeBuffer(lpModProp);
 				}
 			}
 		}

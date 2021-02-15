@@ -9,7 +9,6 @@ namespace dialog::editor
 		_In_ CWnd* pParentWnd,
 		UINT uidTitle,
 		bool bIsAB,
-		_In_opt_ LPVOID lpAllocParent,
 		_In_opt_ LPMAPIPROP lpMAPIProp,
 		ULONG ulPropTag,
 		bool bMVRow,
@@ -61,13 +60,13 @@ namespace dialog::editor
 		if (PROP_TYPE(ulPropTag) & MV_FLAG)
 		{
 			MyPropertyEditor = std::make_shared<CMultiValuePropertyEditor>(
-				pParentWnd, uidTitle, bIsAB, lpAllocParent, lpMAPIProp, ulPropTag, lpsPropValue);
+				pParentWnd, uidTitle, bIsAB, lpMAPIProp, ulPropTag, lpsPropValue);
 		}
 		// Or the single value prop case
 		else
 		{
 			MyPropertyEditor = std::make_shared<CPropertyEditor>(
-				pParentWnd, uidTitle, bIsAB, bMVRow, lpAllocParent, lpMAPIProp, ulPropTag, lpsPropValue);
+				pParentWnd, uidTitle, bIsAB, bMVRow, lpMAPIProp, ulPropTag, lpsPropValue);
 		}
 
 		if (MyPropertyEditor && !MyPropertyEditor->DisplayDialog())

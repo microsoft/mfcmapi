@@ -24,13 +24,11 @@ namespace dialog::editor
 		UINT uidTitle,
 		bool bIsAB,
 		bool bMVRow,
-		_In_opt_ LPVOID lpAllocParent,
 		_In_opt_ LPMAPIPROP lpMAPIProp,
 		ULONG ulPropTag,
 		_In_opt_ const _SPropValue* lpsPropValue)
 		: IPropEditor(pParentWnd, uidTitle, NULL, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL), m_bIsAB(bIsAB),
-		  m_bMVRow(bMVRow), m_lpAllocParent(lpAllocParent), m_lpMAPIProp(lpMAPIProp), m_ulPropTag(ulPropTag),
-		  m_lpsInputValue(lpsPropValue)
+		  m_bMVRow(bMVRow), m_lpMAPIProp(lpMAPIProp), m_ulPropTag(ulPropTag), m_lpsInputValue(lpsPropValue)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
 
@@ -49,6 +47,7 @@ namespace dialog::editor
 	CPropertyEditor::~CPropertyEditor()
 	{
 		TRACE_DESTRUCTOR(CLASS);
+		if (m_lpsOutputValue) MAPIFreeBuffer(m_lpsOutputValue);
 		if (m_lpMAPIProp) m_lpMAPIProp->Release();
 	}
 
@@ -362,11 +361,7 @@ namespace dialog::editor
 
 		if (!m_lpsOutputValue)
 		{
-			m_lpsOutputValue = mapi::allocate<LPSPropValue>(sizeof(SPropValue), m_lpAllocParent);
-			if (!m_lpAllocParent)
-			{
-				m_lpAllocParent = m_lpsOutputValue;
-			}
+			m_lpsOutputValue = mapi::allocate<LPSPropValue>(sizeof(SPropValue));
 		}
 
 		if (m_lpsOutputValue)
@@ -410,20 +405,20 @@ namespace dialog::editor
 				// We read strings out of the hex control in order to preserve any hex level tweaks the user
 				// may have done. The RichEdit control likes throwing them away.
 				bin = strings::HexStringToBin(GetStringW(1));
-				m_lpsOutputValue->Value.lpszA = reinterpret_cast<LPSTR>(mapi::ByteVectorToMAPI(bin, m_lpAllocParent));
+				m_lpsOutputValue->Value.lpszA = reinterpret_cast<LPSTR>(mapi::ByteVectorToMAPI(bin, m_lpsOutputValue));
 				break;
 			case PT_UNICODE:
 				// We read strings out of the hex control in order to preserve any hex level tweaks the user
 				// may have done. The RichEdit control likes throwing them away.
 				bin = strings::HexStringToBin(GetStringW(1));
-				m_lpsOutputValue->Value.lpszW = reinterpret_cast<LPWSTR>(mapi::ByteVectorToMAPI(bin, m_lpAllocParent));
+				m_lpsOutputValue->Value.lpszW = reinterpret_cast<LPWSTR>(mapi::ByteVectorToMAPI(bin, m_lpsOutputValue));
 				break;
 			case PT_SYSTIME:
 				m_lpsOutputValue->Value.ft.dwLowDateTime = strings::wstringToUlong(GetStringW(0), 16);
 				m_lpsOutputValue->Value.ft.dwHighDateTime = strings::wstringToUlong(GetStringW(1), 16);
 				break;
 			case PT_CLSID:
-				m_lpsOutputValue->Value.lpguid = mapi::allocate<GUID*>(sizeof(GUID), m_lpAllocParent);
+				m_lpsOutputValue->Value.lpguid = mapi::allocate<GUID*>(sizeof(GUID), m_lpsOutputValue);
 				if (m_lpsOutputValue->Value.lpguid)
 				{
 					*m_lpsOutputValue->Value.lpguid = guid::StringToGUID(GetStringW(0));
@@ -434,21 +429,12 @@ namespace dialog::editor
 				// remember we already read szTmpString and ulStrLen and found ulStrLen was even
 				bin = strings::HexStringToBin(GetStringW(0));
 				mapi::setBin(m_lpsOutputValue) = {
-					static_cast<ULONG>(bin.size()), mapi::ByteVectorToMAPI(bin, m_lpAllocParent)};
+					static_cast<ULONG>(bin.size()), mapi::ByteVectorToMAPI(bin, m_lpsOutputValue)};
 				break;
 			default:
-				// We shouldn't ever get here unless some new prop type shows up
-				// If we don't have a parent or we are the parent, then we can free here
-				if (!m_lpAllocParent || m_lpAllocParent == m_lpsOutputValue)
+				if (m_lpsOutputValue)
 				{
 					MAPIFreeBuffer(m_lpsOutputValue);
-					m_lpsOutputValue = nullptr;
-					m_lpAllocParent = nullptr;
-				}
-				else
-				{
-					// If m_lpsOutputValue was allocated off a parent, we can't free it here
-					// Just drop the reference and m_lpAllocParent's free will clean it up
 					m_lpsOutputValue = nullptr;
 				}
 				break;

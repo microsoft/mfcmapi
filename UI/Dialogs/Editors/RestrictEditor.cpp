@@ -205,12 +205,12 @@ namespace dialog::editor
 		if (m_lpNewProp) lpEditProp = m_lpNewProp;
 
 		const auto propEditor =
-			DisplayPropertyEditor(this, IDS_PROPEDITOR, false, m_lpAllocParent, NULL, GetPropTag(4), false, lpEditProp);
+			DisplayPropertyEditor(this, IDS_PROPEDITOR, false, NULL, GetPropTag(4), false, lpEditProp);
 
 		// Since m_lpNewProp was owned by an m_lpAllocParent, we don't free it directly
 		if (propEditor)
 		{
-			m_lpNewProp = propEditor->getValue(); // TODO: This is dangerous for our no allocation plan
+			EC_H_S(mapi::MyPropCopyMore(m_lpNewProp, propEditor->getValue(), MAPIAllocateMore, m_lpAllocParent));
 
 			std::wstring szProp;
 			std::wstring szAltProp;
@@ -738,24 +738,21 @@ namespace dialog::editor
 			lpSourceProp = &sProp;
 		}
 
-		const auto propEditor =
-			DisplayPropertyEditor(this, IDS_PROPEDITOR, false, m_lpAllocParent, NULL, NULL, false, lpSourceProp);
+		const auto propEditor = DisplayPropertyEditor(this, IDS_PROPEDITOR, false, NULL, NULL, false, lpSourceProp);
 
 		// Since lpData->data.Comment.lpNewProp was owned by an m_lpAllocParent, we don't free it directly
 		if (propEditor)
 		{
-			const auto prop = propEditor->getValue();
-			if (prop)
-			{
-				comment->setCurrentProp(prop);
-				std::wstring szTmp;
-				std::wstring szAltTmp;
-				SetListString(ulListNum, iItem, 1, proptags::TagToString(prop->ulPropTag, nullptr, false, true));
-				property::parseProperty(prop, &szTmp, &szAltTmp);
-				SetListString(ulListNum, iItem, 2, szTmp);
-				SetListString(ulListNum, iItem, 3, szAltTmp);
-				return true;
-			}
+			const LPSPropValue prop = nullptr;
+			EC_H_S(mapi::MyPropCopyMore(prop, propEditor->getValue(), MAPIAllocateMore, m_lpAllocParent));
+			comment->setCurrentProp(prop);
+			std::wstring szTmp;
+			std::wstring szAltTmp;
+			SetListString(ulListNum, iItem, 1, proptags::TagToString(prop->ulPropTag, nullptr, false, true));
+			property::parseProperty(prop, &szTmp, &szAltTmp);
+			SetListString(ulListNum, iItem, 2, szTmp);
+			SetListString(ulListNum, iItem, 3, szAltTmp);
+			return true;
 		}
 
 		return false;
