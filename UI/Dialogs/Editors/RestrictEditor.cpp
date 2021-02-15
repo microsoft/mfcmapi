@@ -204,16 +204,16 @@ namespace dialog::editor
 		auto lpEditProp = m_lpOldProp;
 		if (m_lpNewProp) lpEditProp = m_lpNewProp;
 
-		const auto lpOutProp =
+		const auto propEditor =
 			DisplayPropertyEditor(this, IDS_PROPEDITOR, false, m_lpAllocParent, NULL, GetPropTag(4), false, lpEditProp);
 
 		// Since m_lpNewProp was owned by an m_lpAllocParent, we don't free it directly
-		if (lpOutProp)
+		if (propEditor)
 		{
-			m_lpNewProp = lpOutProp;
+			m_lpNewProp = propEditor->getValue(); // TODO: This is dangerous for our no allocation plan
+
 			std::wstring szProp;
 			std::wstring szAltProp;
-
 			property::parseProperty(m_lpNewProp, &szProp, &szAltProp);
 			SetStringW(6, szProp);
 			SetStringW(7, szAltProp);
@@ -738,20 +738,24 @@ namespace dialog::editor
 			lpSourceProp = &sProp;
 		}
 
-		auto prop =
+		const auto propEditor =
 			DisplayPropertyEditor(this, IDS_PROPEDITOR, false, m_lpAllocParent, NULL, NULL, false, lpSourceProp);
 
 		// Since lpData->data.Comment.lpNewProp was owned by an m_lpAllocParent, we don't free it directly
-		if (prop)
+		if (propEditor)
 		{
-			comment->setCurrentProp(prop);
-			std::wstring szTmp;
-			std::wstring szAltTmp;
-			SetListString(ulListNum, iItem, 1, proptags::TagToString(prop->ulPropTag, nullptr, false, true));
-			property::parseProperty(prop, &szTmp, &szAltTmp);
-			SetListString(ulListNum, iItem, 2, szTmp);
-			SetListString(ulListNum, iItem, 3, szAltTmp);
-			return true;
+			const auto prop = propEditor->getValue();
+			if (prop)
+			{
+				comment->setCurrentProp(prop);
+				std::wstring szTmp;
+				std::wstring szAltTmp;
+				SetListString(ulListNum, iItem, 1, proptags::TagToString(prop->ulPropTag, nullptr, false, true));
+				property::parseProperty(prop, &szTmp, &szAltTmp);
+				SetListString(ulListNum, iItem, 2, szTmp);
+				SetListString(ulListNum, iItem, 3, szAltTmp);
+				return true;
+			}
 		}
 
 		return false;

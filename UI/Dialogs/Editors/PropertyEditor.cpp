@@ -15,7 +15,7 @@
 
 namespace dialog::editor
 {
-	_Check_return_ LPSPropValue DisplayPropertyEditor(
+	_Check_return_ std::shared_ptr<IPropEditor> DisplayPropertyEditor(
 		_In_ CWnd* pParentWnd,
 		UINT uidTitle,
 		bool bIsAB,
@@ -25,8 +25,8 @@ namespace dialog::editor
 		bool bMVRow,
 		_In_opt_ const _SPropValue* lpsPropValue)
 	{
+		auto MyPropertyEditor = std::shared_ptr<IPropEditor>{};
 		auto hRes = S_OK;
-		LPSPropValue lpNewValue{};
 
 		_SPropValue* sourceProp = nullptr;
 		// We got a MAPI prop object and no input value, go look one up
@@ -70,27 +70,24 @@ namespace dialog::editor
 		// Check for the multivalue prop case
 		if (PROP_TYPE(ulPropTag) & MV_FLAG)
 		{
-			CMultiValuePropertyEditor MyPropertyEditor(
+			MyPropertyEditor = std::make_shared<CMultiValuePropertyEditor>(
 				pParentWnd, uidTitle, bIsAB, lpAllocParent, lpMAPIProp, ulPropTag, lpsPropValue);
-			if (MyPropertyEditor.DisplayDialog())
-			{
-				lpNewValue = MyPropertyEditor.getValue();
-			}
 		}
 		// Or the single value prop case
 		else
 		{
-			CPropertyEditor MyPropertyEditor(
+			MyPropertyEditor = std::make_shared<CPropertyEditor>(
 				pParentWnd, uidTitle, bIsAB, bMVRow, lpAllocParent, lpMAPIProp, ulPropTag, lpsPropValue);
-			if (MyPropertyEditor.DisplayDialog())
-			{
-				lpNewValue = MyPropertyEditor.getValue();
-			}
+		}
+
+		if (MyPropertyEditor && !MyPropertyEditor->DisplayDialog())
+		{
+			MyPropertyEditor = {};
 		}
 
 		MAPIFreeBuffer(sourceProp);
 
-		return lpNewValue;
+		return MyPropertyEditor;
 	}
 
 	static std::wstring CLASS = L"CPropertyEditor"; // STRING_OK
@@ -105,7 +102,7 @@ namespace dialog::editor
 		_In_opt_ LPMAPIPROP lpMAPIProp,
 		ULONG ulPropTag,
 		_In_opt_ const _SPropValue* lpsPropValue)
-		: CEditor(pParentWnd, uidTitle, NULL, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL), m_bIsAB(bIsAB),
+		: IPropEditor(pParentWnd, uidTitle, NULL, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL), m_bIsAB(bIsAB),
 		  m_bMVRow(bMVRow), m_lpAllocParent(lpAllocParent), m_lpMAPIProp(lpMAPIProp), m_ulPropTag(ulPropTag),
 		  m_lpsInputValue(lpsPropValue)
 	{
@@ -510,8 +507,8 @@ namespace dialog::editor
 			case PT_BINARY:
 				// remember we already read szTmpString and ulStrLen and found ulStrLen was even
 				bin = strings::HexStringToBin(GetStringW(0));
-				mapi::setBin(m_lpsOutputValue) = {static_cast<ULONG>(bin.size()),
-												  mapi::ByteVectorToMAPI(bin, m_lpAllocParent)};
+				mapi::setBin(m_lpsOutputValue) = {
+					static_cast<ULONG>(bin.size()), mapi::ByteVectorToMAPI(bin, m_lpAllocParent)};
 				break;
 			default:
 				// We shouldn't ever get here unless some new prop type shows up

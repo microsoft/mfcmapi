@@ -24,7 +24,7 @@ namespace dialog::editor
 		_In_opt_ LPMAPIPROP lpMAPIProp,
 		ULONG ulPropTag,
 		_In_opt_ const _SPropValue* lpsPropValue)
-		: CEditor(pParentWnd, uidTitle, NULL, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL), m_bIsAB(bIsAB),
+		: IPropEditor(pParentWnd, uidTitle, NULL, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL), m_bIsAB(bIsAB),
 		  m_lpAllocParent(lpAllocParent), m_lpMAPIProp(lpMAPIProp), m_ulPropTag(ulPropTag),
 		  m_lpsInputValue(lpsPropValue)
 	{
@@ -45,7 +45,7 @@ namespace dialog::editor
 
 	BOOL CMultiValuePropertyEditor::OnInitDialog()
 	{
-		const auto bRet = CEditor::OnInitDialog();
+		const auto bRet = IPropEditor::OnInitDialog();
 
 		ReadMultiValueStringsFromProperty();
 		ResizeList(0, false);
@@ -321,7 +321,7 @@ namespace dialog::editor
 		tmpPropVal.ulPropTag = m_ulPropTag & ~MV_FLAG;
 		tmpPropVal.Value = mvprop->getVal();
 
-		const auto lpNewValue = DisplayPropertyEditor(
+		const auto propEditor = DisplayPropertyEditor(
 			this,
 			IDS_EDITROW,
 			m_bIsAB,
@@ -330,14 +330,19 @@ namespace dialog::editor
 			NULL,
 			true, // This is a row from a multivalued property. Only case we pass true here.
 			&tmpPropVal);
-		if (lpNewValue)
+		if (propEditor)
 		{
-			sortlistdata::mvPropData::init(lpData, lpNewValue);
+			const auto lpNewValue = propEditor->getValue();
+			if (lpNewValue)
+			{
+				sortlistdata::mvPropData::init(lpData, lpNewValue);
 
-			// update the UI
-			UpdateListRow(lpNewValue, iItem);
-			UpdateSmartView();
-			MAPIFreeBuffer(lpNewValue);
+				// update the UI
+				UpdateListRow(lpNewValue, iItem);
+				UpdateSmartView();
+				MAPIFreeBuffer(lpNewValue);
+			}
+
 			return true;
 		}
 

@@ -1,9 +1,10 @@
 #pragma once
 #include <UI/Dialogs/Editors/Editor.h>
+#include <UI/Dialogs/Editors/PropertyEditor.h>
 
 namespace dialog::editor
 {
-	class CMultiValuePropertyEditor : public CEditor
+	class CMultiValuePropertyEditor : public IPropEditor
 	{
 	public:
 		CMultiValuePropertyEditor(

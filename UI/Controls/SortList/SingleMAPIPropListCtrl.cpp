@@ -1034,19 +1034,23 @@ namespace controls::sortlistctrl
 		{
 			if (PROP_TYPE(ulPropTag) == PT_UNSPECIFIED && lpEditProp) ulPropTag = lpEditProp->ulPropTag;
 
-			const auto lpModProp = dialog::editor::DisplayPropertyEditor(
+			const auto propEditor = dialog::editor::DisplayPropertyEditor(
 				this, IDS_PROPEDITOR, lpPropBag->IsAB(), nullptr, lpSourceObj, ulPropTag, false, lpEditProp);
-			if (lpModProp)
+			if (propEditor)
 			{
-				// If we didn't have a source object, we need to shove our results back in to the property bag
-				if (!lpSourceObj)
+				const auto lpModProp = propEditor->getValue();
+				if (lpModProp)
 				{
-					// SetProp does not take ownership of memory
-					EC_H_S(lpPropBag->SetProp(lpModProp));
-				}
+					// If we didn't have a source object, we need to shove our results back in to the property bag
+					if (!lpSourceObj)
+					{
+						// SetProp does not take ownership of memory
+						EC_H_S(lpPropBag->SetProp(lpModProp));
+					}
 
-				RefreshMAPIPropList();
-				MAPIFreeBuffer(lpModProp);
+					RefreshMAPIPropList();
+					MAPIFreeBuffer(lpModProp);
+				}
 			}
 		}
 
