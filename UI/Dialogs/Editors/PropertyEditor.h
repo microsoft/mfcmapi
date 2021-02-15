@@ -4,6 +4,7 @@
 
 namespace dialog::editor
 {
+	// TODO: Factor to own file
 	class IPropEditor : public CEditor
 	{
 	public:
@@ -11,6 +12,10 @@ namespace dialog::editor
 			: CEditor(pParentWnd, uidTitle, uidPrompt, ulButtonFlags)
 		{
 		}
+		// TODO: Impleentations of getValue should return data owned completly by the object
+		// so there is nothing to free
+		// Callers CANNOT hold on to this data
+		// If they need it, they can use mapi::MyPropCopyMore
 		virtual _Check_return_ LPSPropValue getValue() = 0;
 	};
 
