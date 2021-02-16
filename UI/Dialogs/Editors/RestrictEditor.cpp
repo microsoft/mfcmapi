@@ -207,10 +207,10 @@ namespace dialog::editor
 		const auto propEditor =
 			DisplayPropertyEditor(this, IDS_PROPEDITOR, false, NULL, GetPropTag(4), false, lpEditProp);
 
-		// Since m_lpNewProp was owned by an m_lpAllocParent, we don't free it directly
 		if (propEditor)
 		{
-			WC_MAPI_S(mapi::HrDupPropset(1, propEditor->getValue(), const_cast<LPVOID>(m_lpAllocParent), &m_lpNewProp));
+			// Populate m_lpNewProp with ownership by m_lpAllocParent
+			WC_MAPI_S(mapi::HrDupPropset(1, propEditor->getValue(), m_lpAllocParent, &m_lpNewProp));
 
 			std::wstring szProp;
 			std::wstring szAltProp;
@@ -740,11 +740,12 @@ namespace dialog::editor
 
 		const auto propEditor = DisplayPropertyEditor(this, IDS_PROPEDITOR, false, NULL, NULL, false, lpSourceProp);
 
-		// Since lpData->data.Comment.lpNewProp was owned by an m_lpAllocParent, we don't free it directly
 		if (propEditor)
 		{
 			LPSPropValue prop = nullptr;
-			WC_MAPI_S(mapi::HrDupPropset(1, propEditor->getValue(), const_cast<LPVOID>(m_lpAllocParent), &prop));
+			// Populate prop with ownership by m_lpAllocParent
+			WC_MAPI_S(mapi::HrDupPropset(1, propEditor->getValue(), m_lpAllocParent, &prop));
+			// Now give prop to comment to hold
 			comment->setCurrentProp(prop);
 			std::wstring szTmp;
 			std::wstring szAltTmp;
