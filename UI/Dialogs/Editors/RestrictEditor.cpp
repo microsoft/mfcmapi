@@ -210,7 +210,7 @@ namespace dialog::editor
 		// Since m_lpNewProp was owned by an m_lpAllocParent, we don't free it directly
 		if (propEditor)
 		{
-			EC_H_S(mapi::MyPropCopyMore(m_lpNewProp, propEditor->getValue(), MAPIAllocateMore, m_lpAllocParent));
+			WC_MAPI_S(mapi::HrDupPropset(1, propEditor->getValue(), const_cast<LPVOID>(m_lpAllocParent), &m_lpNewProp));
 
 			std::wstring szProp;
 			std::wstring szAltProp;
@@ -743,8 +743,8 @@ namespace dialog::editor
 		// Since lpData->data.Comment.lpNewProp was owned by an m_lpAllocParent, we don't free it directly
 		if (propEditor)
 		{
-			const LPSPropValue prop = nullptr;
-			EC_H_S(mapi::MyPropCopyMore(prop, propEditor->getValue(), MAPIAllocateMore, m_lpAllocParent));
+			LPSPropValue prop = nullptr;
+			WC_MAPI_S(mapi::HrDupPropset(1, propEditor->getValue(), const_cast<LPVOID>(m_lpAllocParent), &prop));
 			comment->setCurrentProp(prop);
 			std::wstring szTmp;
 			std::wstring szAltTmp;
