@@ -37,6 +37,12 @@ namespace dialog::editor
 		ULONG m_ulPropTag{};
 		bool m_bIsAB{}; // whether the tag is from the AB or not
 		const _SPropValue* m_lpsInputValue{};
-		LPSPropValue m_lpsOutputValue{}; // TODO: Eliminate this
+
+		SPropValue m_sOutputValue{};
+		std::vector<BYTE> m_bin; // Temp storage for m_sOutputValue
+		std::vector<std::string> m_mvA; // Temp storage for m_sOutputValue array
+		std::vector<std::wstring> m_mvW; // Temp storage for m_sOutputValue array
+		std::vector<std::vector<BYTE>> m_mvBin; // Temp storage for m_sOutputValue array
+		std::vector<GUID> m_mvGuid; // Temp storage for m_sOutputValue array
 	};
 } // namespace dialog::editor

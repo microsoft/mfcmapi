@@ -38,7 +38,6 @@ namespace dialog::editor
 	CMultiValuePropertyEditor::~CMultiValuePropertyEditor()
 	{
 		TRACE_DESTRUCTOR(CLASS);
-		if (m_lpsOutputValue) MAPIFreeBuffer(m_lpsOutputValue);
 		if (m_lpMAPIProp) m_lpMAPIProp->Release();
 	}
 
@@ -136,143 +135,141 @@ namespace dialog::editor
 		// So we're implicitly dirty.
 		if (!IsDirty(0) && m_lpsInputValue) return;
 
-		// Take care of allocations first
-		if (!m_lpsOutputValue)
+		const auto ulNumVals = GetListCount(0);
+
+		m_sOutputValue.ulPropTag = m_ulPropTag;
+
+		switch (PROP_TYPE(m_sOutputValue.ulPropTag))
 		{
-			m_lpsOutputValue = mapi::allocate<LPSPropValue>(sizeof(SPropValue));
+		case PT_MV_I2:
+			m_bin = std::vector<BYTE>(sizeof(short int) * ulNumVals);
+			m_sOutputValue.Value.MVi.lpi = reinterpret_cast<short int*>(m_bin.data());
+			m_sOutputValue.Value.MVi.cValues = ulNumVals;
+			break;
+		case PT_MV_LONG:
+			m_bin = std::vector<BYTE>(sizeof(LONG) * ulNumVals);
+			m_sOutputValue.Value.MVl.lpl = reinterpret_cast<LONG*>(m_bin.data());
+			m_sOutputValue.Value.MVl.cValues = ulNumVals;
+			break;
+		case PT_MV_DOUBLE:
+			m_bin = std::vector<BYTE>(sizeof(double) * ulNumVals);
+			m_sOutputValue.Value.MVdbl.lpdbl = reinterpret_cast<double*>(m_bin.data());
+			m_sOutputValue.Value.MVdbl.cValues = ulNumVals;
+			break;
+		case PT_MV_CURRENCY:
+			m_bin = std::vector<BYTE>(sizeof(CURRENCY) * ulNumVals);
+			m_sOutputValue.Value.MVcur.lpcur = reinterpret_cast<CURRENCY*>(m_bin.data());
+			m_sOutputValue.Value.MVcur.cValues = ulNumVals;
+			break;
+		case PT_MV_APPTIME:
+			m_bin = std::vector<BYTE>(sizeof(double) * ulNumVals);
+			m_sOutputValue.Value.MVat.lpat = reinterpret_cast<double*>(m_bin.data());
+			m_sOutputValue.Value.MVat.cValues = ulNumVals;
+			break;
+		case PT_MV_SYSTIME:
+			m_bin = std::vector<BYTE>(sizeof(FILETIME) * ulNumVals);
+			m_sOutputValue.Value.MVft.lpft = reinterpret_cast<FILETIME*>(m_bin.data());
+			m_sOutputValue.Value.MVft.cValues = ulNumVals;
+			break;
+		case PT_MV_I8:
+			m_bin = std::vector<BYTE>(sizeof(LARGE_INTEGER) * ulNumVals);
+			m_sOutputValue.Value.MVli.lpli = reinterpret_cast<LARGE_INTEGER*>(m_bin.data());
+			m_sOutputValue.Value.MVli.cValues = ulNumVals;
+			break;
+		case PT_MV_R4:
+			m_bin = std::vector<BYTE>(sizeof(float) * ulNumVals);
+			m_sOutputValue.Value.MVflt.lpflt = reinterpret_cast<float*>(m_bin.data());
+			m_sOutputValue.Value.MVflt.cValues = ulNumVals;
+			break;
+		case PT_MV_STRING8:
+			m_bin = std::vector<BYTE>(sizeof(LPSTR) * ulNumVals);
+			m_mvA = std::vector<std::string>(ulNumVals);
+			m_sOutputValue.Value.MVszA.lppszA = reinterpret_cast<LPSTR*>(m_bin.data());
+			m_sOutputValue.Value.MVszA.cValues = ulNumVals;
+			break;
+		case PT_MV_UNICODE:
+			m_bin = std::vector<BYTE>(sizeof(LPWSTR) * ulNumVals);
+			m_mvW = std::vector<std::wstring>(ulNumVals);
+			m_sOutputValue.Value.MVszW.lppszW = reinterpret_cast<LPWSTR*>(m_bin.data());
+			m_sOutputValue.Value.MVszW.cValues = ulNumVals;
+			break;
+		case PT_MV_BINARY:
+			m_bin = std::vector<BYTE>(sizeof(SBinary) * ulNumVals);
+			m_mvBin = std::vector<std::vector<BYTE>>(ulNumVals);
+			m_sOutputValue.Value.MVbin.lpbin = reinterpret_cast<SBinary*>(m_bin.data());
+			m_sOutputValue.Value.MVbin.cValues = ulNumVals;
+			break;
+		case PT_MV_CLSID:
+			m_bin = std::vector<BYTE>(sizeof(GUID) * ulNumVals);
+			m_mvGuid = std::vector<GUID>(ulNumVals);
+			m_sOutputValue.Value.MVguid.lpguid = reinterpret_cast<GUID*>(m_bin.data());
+			m_sOutputValue.Value.MVguid.cValues = ulNumVals;
+			break;
+		default:
+			break;
 		}
+		// Allocation is now done
 
-		if (m_lpsOutputValue)
+		// Now write our data into the space we allocated
+		for (ULONG iMVCount = 0; iMVCount < ulNumVals; iMVCount++)
 		{
-			const auto ulNumVals = GetListCount(0);
+			const auto lpData = GetListRowData(0, iMVCount);
 
-			m_lpsOutputValue->ulPropTag = m_ulPropTag;
-			m_lpsOutputValue->dwAlignPad = NULL;
-
-			switch (PROP_TYPE(m_lpsOutputValue->ulPropTag))
+			if (lpData)
 			{
-			case PT_MV_I2:
-				m_lpsOutputValue->Value.MVi.lpi =
-					mapi::allocate<short int*>(sizeof(short int) * ulNumVals, m_lpsOutputValue);
-				m_lpsOutputValue->Value.MVi.cValues = ulNumVals;
-				break;
-			case PT_MV_LONG:
-				m_lpsOutputValue->Value.MVl.lpl = mapi::allocate<LONG*>(sizeof(LONG) * ulNumVals, m_lpsOutputValue);
-				m_lpsOutputValue->Value.MVl.cValues = ulNumVals;
-				break;
-			case PT_MV_DOUBLE:
-				m_lpsOutputValue->Value.MVdbl.lpdbl =
-					mapi::allocate<double*>(sizeof(double) * ulNumVals, m_lpsOutputValue);
-				m_lpsOutputValue->Value.MVdbl.cValues = ulNumVals;
-				break;
-			case PT_MV_CURRENCY:
-				m_lpsOutputValue->Value.MVcur.lpcur =
-					mapi::allocate<CURRENCY*>(sizeof(CURRENCY) * ulNumVals, m_lpsOutputValue);
-				m_lpsOutputValue->Value.MVcur.cValues = ulNumVals;
-				break;
-			case PT_MV_APPTIME:
-				m_lpsOutputValue->Value.MVat.lpat =
-					mapi::allocate<double*>(sizeof(double) * ulNumVals, m_lpsOutputValue);
-				m_lpsOutputValue->Value.MVat.cValues = ulNumVals;
-				break;
-			case PT_MV_SYSTIME:
-				m_lpsOutputValue->Value.MVft.lpft =
-					mapi::allocate<FILETIME*>(sizeof(FILETIME) * ulNumVals, m_lpsOutputValue);
-				m_lpsOutputValue->Value.MVft.cValues = ulNumVals;
-				break;
-			case PT_MV_I8:
-				m_lpsOutputValue->Value.MVli.lpli =
-					mapi::allocate<LARGE_INTEGER*>(sizeof(LARGE_INTEGER) * ulNumVals, m_lpsOutputValue);
-				m_lpsOutputValue->Value.MVli.cValues = ulNumVals;
-				break;
-			case PT_MV_R4:
-				m_lpsOutputValue->Value.MVflt.lpflt =
-					mapi::allocate<float*>(sizeof(float) * ulNumVals, m_lpsOutputValue);
-				m_lpsOutputValue->Value.MVflt.cValues = ulNumVals;
-				break;
-			case PT_MV_STRING8:
-				m_lpsOutputValue->Value.MVszA.lppszA =
-					mapi::allocate<LPSTR*>(sizeof(LPSTR) * ulNumVals, m_lpsOutputValue);
-				m_lpsOutputValue->Value.MVszA.cValues = ulNumVals;
-				break;
-			case PT_MV_UNICODE:
-				m_lpsOutputValue->Value.MVszW.lppszW =
-					mapi::allocate<LPWSTR*>(sizeof(LPWSTR) * ulNumVals, m_lpsOutputValue);
-				m_lpsOutputValue->Value.MVszW.cValues = ulNumVals;
-				break;
-			case PT_MV_BINARY:
-				m_lpsOutputValue->Value.MVbin.lpbin =
-					mapi::allocate<SBinary*>(sizeof(SBinary) * ulNumVals, m_lpsOutputValue);
-				m_lpsOutputValue->Value.MVbin.cValues = ulNumVals;
-				break;
-			case PT_MV_CLSID:
-				m_lpsOutputValue->Value.MVguid.lpguid =
-					mapi::allocate<GUID*>(sizeof(GUID) * ulNumVals, m_lpsOutputValue);
-				m_lpsOutputValue->Value.MVguid.cValues = ulNumVals;
-				break;
-			default:
-				break;
-			}
-			// Allocation is now done
-
-			// Now write our data into the space we allocated
-			for (ULONG iMVCount = 0; iMVCount < ulNumVals; iMVCount++)
-			{
-				const auto lpData = GetListRowData(0, iMVCount);
-
-				if (lpData)
+				const auto mvprop = lpData->cast<sortlistdata::mvPropData>();
+				if (mvprop)
 				{
-					const auto mvprop = lpData->cast<sortlistdata::mvPropData>();
-					if (mvprop)
+					switch (PROP_TYPE(m_sOutputValue.ulPropTag))
 					{
-						switch (PROP_TYPE(m_lpsOutputValue->ulPropTag))
+					case PT_MV_I2:
+						m_sOutputValue.Value.MVi.lpi[iMVCount] = mvprop->getVal().i;
+						break;
+					case PT_MV_LONG:
+						m_sOutputValue.Value.MVl.lpl[iMVCount] = mvprop->getVal().l;
+						break;
+					case PT_MV_DOUBLE:
+						m_sOutputValue.Value.MVdbl.lpdbl[iMVCount] = mvprop->getVal().dbl;
+						break;
+					case PT_MV_CURRENCY:
+						m_sOutputValue.Value.MVcur.lpcur[iMVCount] = mvprop->getVal().cur;
+						break;
+					case PT_MV_APPTIME:
+						m_sOutputValue.Value.MVat.lpat[iMVCount] = mvprop->getVal().at;
+						break;
+					case PT_MV_SYSTIME:
+						m_sOutputValue.Value.MVft.lpft[iMVCount] = mvprop->getVal().ft;
+						break;
+					case PT_MV_I8:
+						m_sOutputValue.Value.MVli.lpli[iMVCount] = mvprop->getVal().li;
+						break;
+					case PT_MV_R4:
+						m_sOutputValue.Value.MVflt.lpflt[iMVCount] = mvprop->getVal().flt;
+						break;
+					case PT_MV_STRING8:
+						m_mvA[iMVCount] = mvprop->getVal().lpszA;
+						m_sOutputValue.Value.MVszA.lppszA[iMVCount] = m_mvA[iMVCount].data();
+						break;
+					case PT_MV_UNICODE:
+						m_mvW[iMVCount] = mvprop->getVal().lpszW;
+						m_sOutputValue.Value.MVszW.lppszW[iMVCount] = m_mvW[iMVCount].data();
+						break;
+					case PT_MV_BINARY:
+						m_mvBin[iMVCount].assign(
+							mvprop->getVal().bin.lpb, mvprop->getVal().bin.lpb + mvprop->getVal().bin.cb);
+						m_sOutputValue.Value.MVbin.lpbin[iMVCount].cb = m_mvBin[iMVCount].size();
+						m_sOutputValue.Value.MVbin.lpbin[iMVCount].lpb = m_mvBin[iMVCount].data();
+						break;
+					case PT_MV_CLSID:
+						if (mvprop->getVal().lpguid)
 						{
-						case PT_MV_I2:
-							m_lpsOutputValue->Value.MVi.lpi[iMVCount] = mvprop->getVal().i;
-							break;
-						case PT_MV_LONG:
-							m_lpsOutputValue->Value.MVl.lpl[iMVCount] = mvprop->getVal().l;
-							break;
-						case PT_MV_DOUBLE:
-							m_lpsOutputValue->Value.MVdbl.lpdbl[iMVCount] = mvprop->getVal().dbl;
-							break;
-						case PT_MV_CURRENCY:
-							m_lpsOutputValue->Value.MVcur.lpcur[iMVCount] = mvprop->getVal().cur;
-							break;
-						case PT_MV_APPTIME:
-							m_lpsOutputValue->Value.MVat.lpat[iMVCount] = mvprop->getVal().at;
-							break;
-						case PT_MV_SYSTIME:
-							m_lpsOutputValue->Value.MVft.lpft[iMVCount] = mvprop->getVal().ft;
-							break;
-						case PT_MV_I8:
-							m_lpsOutputValue->Value.MVli.lpli[iMVCount] = mvprop->getVal().li;
-							break;
-						case PT_MV_R4:
-							m_lpsOutputValue->Value.MVflt.lpflt[iMVCount] = mvprop->getVal().flt;
-							break;
-						case PT_MV_STRING8:
-							m_lpsOutputValue->Value.MVszA.lppszA[iMVCount] =
-								mapi::CopyStringA(mvprop->getVal().lpszA, m_lpsOutputValue);
-							break;
-						case PT_MV_UNICODE:
-							m_lpsOutputValue->Value.MVszW.lppszW[iMVCount] =
-								mapi::CopyStringW(mvprop->getVal().lpszW, m_lpsOutputValue);
-							break;
-						case PT_MV_BINARY:
-							m_lpsOutputValue->Value.MVbin.lpbin[iMVCount] =
-								mapi::CopySBinary(mvprop->getVal().bin, m_lpsOutputValue);
-							break;
-						case PT_MV_CLSID:
-							if (mvprop->getVal().lpguid)
-							{
-								m_lpsOutputValue->Value.MVguid.lpguid[iMVCount] = *mvprop->getVal().lpguid;
-							}
-
-							break;
-						default:
-							break;
+							m_mvGuid[iMVCount] = *mvprop->getVal().lpguid;
+							m_sOutputValue.Value.MVguid.lpguid[iMVCount] = m_mvGuid[iMVCount];
 						}
+
+						break;
+					default:
+						break;
 					}
 				}
 			}
@@ -281,11 +278,12 @@ namespace dialog::editor
 
 	void CMultiValuePropertyEditor::WriteSPropValueToObject() const
 	{
-		if (!m_lpsOutputValue || !m_lpMAPIProp) return;
+		if (!m_lpMAPIProp || !m_sOutputValue.ulPropTag) return;
 
 		LPSPropProblemArray lpProblemArray = nullptr;
 
-		const auto hRes = EC_MAPI(m_lpMAPIProp->SetProps(1, m_lpsOutputValue, &lpProblemArray));
+		const auto hRes =
+			EC_MAPI(m_lpMAPIProp->SetProps(1, const_cast<LPSPropValue>(&m_sOutputValue), &lpProblemArray));
 
 		EC_PROBLEMARRAY(lpProblemArray);
 		MAPIFreeBuffer(lpProblemArray);
@@ -297,7 +295,7 @@ namespace dialog::editor
 	}
 
 	// Returns the modified prop value - caller is responsible for freeing
-	_Check_return_ LPSPropValue CMultiValuePropertyEditor::getValue() noexcept { return m_lpsOutputValue; }
+	_Check_return_ LPSPropValue CMultiValuePropertyEditor::getValue() noexcept { return &m_sOutputValue; }
 
 	_Check_return_ bool
 	CMultiValuePropertyEditor::DoListEdit(ULONG /*ulListNum*/, int iItem, _In_ sortlistdata::sortListData* lpData)
