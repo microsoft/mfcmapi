@@ -68,7 +68,6 @@ namespace dialog::editor
 	{
 		// This is where we write our changes back
 		WriteMultiValueStringsToSPropValue();
-		WriteSPropValueToObject();
 		CMyDialog::OnOK(); // don't need to call CEditor::OnOK
 	}
 
@@ -273,24 +272,6 @@ namespace dialog::editor
 					}
 				}
 			}
-		}
-	}
-
-	void CMultiValuePropertyEditor::WriteSPropValueToObject() const
-	{
-		if (!m_lpMAPIProp || !m_sOutputValue.ulPropTag) return;
-
-		LPSPropProblemArray lpProblemArray = nullptr;
-
-		const auto hRes =
-			EC_MAPI(m_lpMAPIProp->SetProps(1, const_cast<LPSPropValue>(&m_sOutputValue), &lpProblemArray));
-
-		EC_PROBLEMARRAY(lpProblemArray);
-		MAPIFreeBuffer(lpProblemArray);
-
-		if (SUCCEEDED(hRes))
-		{
-			EC_MAPI_S(m_lpMAPIProp->SaveChanges(KEEP_OPEN_READWRITE));
 		}
 	}
 

@@ -23,7 +23,6 @@ namespace dialog::editor
 		BOOL OnInitDialog() override;
 		void InitPropertyControls();
 		void ReadMultiValueStringsFromProperty() const;
-		void WriteSPropValueToObject() const;
 		void WriteMultiValueStringsToSPropValue();
 		void UpdateListRow(_In_ LPSPropValue lpProp, ULONG iMVCount) const;
 		std::vector<LONG> GetLongArray() const;

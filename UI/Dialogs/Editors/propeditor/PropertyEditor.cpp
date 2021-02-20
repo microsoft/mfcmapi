@@ -56,9 +56,6 @@ namespace dialog::editor
 	{
 		// This is where we write our changes back
 		WriteStringsToSPropValue();
-
-		// Write the property to the object if we're not editing a row of a MV property
-		if (!m_bMVRow) WriteSPropValueToObject();
 		CMyDialog::OnOK(); // don't need to call CEditor::OnOK
 	}
 
@@ -422,24 +419,6 @@ namespace dialog::editor
 		default:
 			m_sOutputValue = {};
 			break;
-		}
-	}
-
-	void CPropertyEditor::WriteSPropValueToObject() const
-	{
-		if (!m_lpMAPIProp || !m_sOutputValue.ulPropTag) return;
-
-		LPSPropProblemArray lpProblemArray = nullptr;
-
-		const auto hRes =
-			EC_MAPI(m_lpMAPIProp->SetProps(1, const_cast<LPSPropValue>(&m_sOutputValue), &lpProblemArray));
-
-		EC_PROBLEMARRAY(lpProblemArray);
-		MAPIFreeBuffer(lpProblemArray);
-
-		if (SUCCEEDED(hRes))
-		{
-			EC_MAPI_S(m_lpMAPIProp->SaveChanges(KEEP_OPEN_READWRITE));
 		}
 	}
 

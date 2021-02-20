@@ -2,9 +2,28 @@
 #include <UI/Dialogs/Editors/propeditor/ipropeditor.h>
 #include <UI/Dialogs/Editors/propeditor/PropertyEditor.h>
 #include <UI/Dialogs/Editors/propeditor/MultiValuePropertyEditor.h>
+#include <core/utility/output.h>
+#include <core/utility/error.h>
 
 namespace dialog::editor
 {
+	void WriteSPropValueToObject(_In_opt_ LPMAPIPROP lpMAPIProp, _In_opt_ const _SPropValue* lpNewValue)
+	{
+		if (!lpMAPIProp || !lpNewValue || !lpNewValue->ulPropTag) return;
+
+		LPSPropProblemArray lpProblemArray = nullptr;
+
+		const auto hRes = EC_MAPI(lpMAPIProp->SetProps(1, const_cast<LPSPropValue>(lpNewValue), &lpProblemArray));
+
+		EC_PROBLEMARRAY(lpProblemArray);
+		MAPIFreeBuffer(lpProblemArray);
+
+		if (SUCCEEDED(hRes))
+		{
+			EC_MAPI_S(lpMAPIProp->SaveChanges(KEEP_OPEN_READWRITE));
+		}
+	}
+
 	_Check_return_ std::shared_ptr<IPropEditor> DisplayPropertyEditor(
 		_In_ CWnd* pParentWnd,
 		UINT uidTitle,
@@ -53,28 +72,35 @@ namespace dialog::editor
 			ulPropTag = lpsPropValue->ulPropTag;
 		}
 
-		auto MyPropertyEditor = std::shared_ptr<IPropEditor>{};
+		auto propertyEditor = std::shared_ptr<IPropEditor>{};
 
 		// Check for the multivalue prop case
 		if (PROP_TYPE(ulPropTag) & MV_FLAG)
 		{
-			MyPropertyEditor = std::make_shared<CMultiValuePropertyEditor>(
+			propertyEditor = std::make_shared<CMultiValuePropertyEditor>(
 				pParentWnd, uidTitle, bIsAB, lpMAPIProp, ulPropTag, lpsPropValue);
 		}
 		// Or the single value prop case
 		else
 		{
-			MyPropertyEditor = std::make_shared<CPropertyEditor>(
+			propertyEditor = std::make_shared<CPropertyEditor>(
 				pParentWnd, uidTitle, bIsAB, bMVRow, lpMAPIProp, ulPropTag, lpsPropValue);
 		}
 
-		if (MyPropertyEditor && !MyPropertyEditor->DisplayDialog())
+		if (propertyEditor)
 		{
-			MyPropertyEditor = {};
+			if (propertyEditor->DisplayDialog())
+			{
+				if (!bMVRow) WriteSPropValueToObject(lpMAPIProp, propertyEditor->getValue());
+			}
+			else
+			{
+				propertyEditor = {};
+			}
 		}
 
 		MAPIFreeBuffer(sourceProp);
 
-		return MyPropertyEditor;
+		return propertyEditor;
 	}
 } // namespace dialog::editor
