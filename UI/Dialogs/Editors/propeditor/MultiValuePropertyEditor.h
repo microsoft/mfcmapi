@@ -32,7 +32,7 @@ namespace dialog::editor
 		void OnOK() override;
 
 		// source variables
-		LPMAPIPROP m_lpMAPIProp{};
+		LPMAPIPROP m_lpMAPIProp{}; // Used only for parsing
 		ULONG m_ulPropTag{};
 		bool m_bIsAB{}; // whether the tag is from the AB or not
 		const _SPropValue* m_lpsInputValue{};
