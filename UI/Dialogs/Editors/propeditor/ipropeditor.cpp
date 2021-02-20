@@ -14,9 +14,6 @@ namespace dialog::editor
 		bool bMVRow,
 		_In_opt_ const _SPropValue* lpsPropValue)
 	{
-		auto MyPropertyEditor = std::shared_ptr<IPropEditor>{};
-		auto hRes = S_OK;
-
 		_SPropValue* sourceProp = nullptr;
 		// We got a MAPI prop object and no input value, go look one up
 		if (lpMAPIProp && !lpsPropValue)
@@ -25,7 +22,7 @@ namespace dialog::editor
 				1, PROP_TYPE(ulPropTag) == PT_ERROR ? CHANGE_PROP_TYPE(ulPropTag, PT_UNSPECIFIED) : ulPropTag};
 			ULONG ulValues = NULL;
 
-			hRes = WC_MAPI(lpMAPIProp->GetProps(&sTag, NULL, &ulValues, &sourceProp));
+			auto hRes = WC_MAPI(lpMAPIProp->GetProps(&sTag, NULL, &ulValues, &sourceProp));
 
 			// Suppress MAPI_E_NOT_FOUND error when the source type is non error
 			if (sourceProp && PROP_TYPE(sourceProp->ulPropTag) == PT_ERROR &&
@@ -55,6 +52,8 @@ namespace dialog::editor
 		{
 			ulPropTag = lpsPropValue->ulPropTag;
 		}
+
+		auto MyPropertyEditor = std::shared_ptr<IPropEditor>{};
 
 		// Check for the multivalue prop case
 		if (PROP_TYPE(ulPropTag) & MV_FLAG)

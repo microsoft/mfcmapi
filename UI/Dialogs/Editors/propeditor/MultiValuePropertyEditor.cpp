@@ -257,7 +257,7 @@ namespace dialog::editor
 					case PT_MV_BINARY:
 						m_mvBin[iMVCount].assign(
 							mvprop->getVal().bin.lpb, mvprop->getVal().bin.lpb + mvprop->getVal().bin.cb);
-						m_sOutputValue.Value.MVbin.lpbin[iMVCount].cb = m_mvBin[iMVCount].size();
+						m_sOutputValue.Value.MVbin.lpbin[iMVCount].cb = ULONG(m_mvBin[iMVCount].size());
 						m_sOutputValue.Value.MVbin.lpbin[iMVCount].lpb = m_mvBin[iMVCount].data();
 						break;
 					case PT_MV_CLSID:
