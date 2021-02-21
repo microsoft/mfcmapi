@@ -62,6 +62,7 @@ namespace cache
 			while (iTag <= ulUpperBound && iTag < __UPPERBOUND)
 			{
 				auto end = min(iTag + batchSize - 1, ulUpperBound);
+
 				std::vector<std::shared_ptr<namedPropCacheEntry>> range;
 				range.reserve(batchSize);
 
@@ -83,6 +84,13 @@ namespace cache
 					lpMAPIFolder->Release();
 					lpMAPIFolder = newFolder;
 					batchSize /= 2;
+
+					// If batch size drops to 0, it's not going to work
+					if (batchSize == 0)
+					{
+						break;
+					}
+
 					continue;
 				}
 				else if (FAILED(hRes))
@@ -100,7 +108,7 @@ namespace cache
 				}
 
 				// Go to the next batch
-				iTag += batchSize - 1;
+				iTag += batchSize;
 			}
 
 			lpMAPIFolder->Release();
