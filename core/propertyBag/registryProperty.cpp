@@ -237,32 +237,16 @@ namespace propertybag
 					registry::WriteBinToRegistry(m_hKey, m_name, 2, LPBYTE(&newValue->Value.b));
 					break;
 				case PT_BINARY:
+					registry::WriteBinToRegistry(m_hKey, m_name, newValue->Value.bin.cb, newValue->Value.bin.lpb);
+					break;
+				case PT_UNICODE:
+					// Include null terminator
 					registry::WriteBinToRegistry(
 						m_hKey,
 						m_name,
-						std::vector<BYTE>(newValue->Value.bin.lpb, newValue->Value.bin.lpb + newValue->Value.bin.cb));
+						(std::wstring(newValue->Value.lpszW).length() + 1) * sizeof(wchar_t),
+						LPBYTE(newValue->Value.lpszW));
 					break;
-					//case PT_UNICODE:
-					//	if (m_secure)
-					//	{
-					//		m_prop.ulPropTag = PROP_TAG(PT_BINARY, PROP_ID(m_ulPropTag));
-					//		m_prop.Value.bin.cb = m_binVal.size();
-					//		m_prop.Value.bin.lpb = const_cast<LPBYTE>(m_binVal.data());
-					//	}
-					//	else
-					//	{
-					//		m_unicodeVal = m_binVal;
-					//		m_unicodeVal.push_back(0); // Add some null terminators just in case
-					//		m_unicodeVal.push_back(0);
-					//		m_prop.Value.lpszW = reinterpret_cast<LPWSTR>(const_cast<LPBYTE>(m_unicodeVal.data()));
-					//	}
-					//	break;
-					//default:
-					//	m_prop.ulPropTag = PROP_TAG(PT_BINARY, PROP_ID(m_ulPropTag));
-					//	m_prop.Value.bin.cb = m_binVal.size();
-					//	m_prop.Value.bin.lpb = const_cast<LPBYTE>(m_binVal.data());
-					//	m_canParseMAPI = false;
-					//	break;
 				}
 			}
 			else
