@@ -148,28 +148,27 @@ namespace cache
 	}
 
 	_Check_return_ std::shared_ptr<namedPropCacheEntry>
-	GetNameFromID(_In_ LPMAPIPROP lpMAPIProp, _In_ ULONG ulPropTag, ULONG ulFlags)
+	GetNameFromID(_In_ const LPMAPIPROP lpMAPIProp, _In_ ULONG ulPropTag, ULONG ulFlags)
 	{
 		auto tag = SPropTagArray{1, ulPropTag};
-		auto lptag = &tag;
-		const auto names = GetNamesFromIDs(lpMAPIProp, &lptag, ulFlags);
+		const auto names = GetNamesFromIDs(lpMAPIProp, &tag, ulFlags);
 		if (names.size() == 1) return names[0];
 		return {};
 	}
 
 	_Check_return_ std::shared_ptr<namedPropCacheEntry>
-	GetNameFromID(_In_ LPMAPIPROP lpMAPIProp, _In_opt_ const SBinary* sig, _In_ ULONG ulPropTag, ULONG ulFlags)
+	GetNameFromID(_In_ const LPMAPIPROP lpMAPIProp, _In_opt_ const SBinary* sig, _In_ ULONG ulPropTag, ULONG ulFlags)
 	{
 		auto tag = SPropTagArray{1, ulPropTag};
 		auto lptag = &tag;
 		auto names = std::vector<std::shared_ptr<namedPropCacheEntry>>{};
 		if (sig)
 		{
-			names = GetNamesFromIDs(lpMAPIProp, sig, &lptag, ulFlags);
+			names = GetNamesFromIDs(lpMAPIProp, sig, lptag, ulFlags);
 		}
 		else
 		{
-			names = GetNamesFromIDs(lpMAPIProp, &lptag, ulFlags);
+			names = GetNamesFromIDs(lpMAPIProp, lptag, ulFlags);
 		}
 
 		if (names.size() == 1) return names[0];
@@ -178,7 +177,7 @@ namespace cache
 
 	// No signature form: look up and use signature if possible
 	_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>>
-	GetNamesFromIDs(_In_opt_ LPMAPIPROP lpMAPIProp, _In_opt_ LPSPropTagArray* lppPropTags, ULONG ulFlags)
+	GetNamesFromIDs(_In_opt_ const LPMAPIPROP lpMAPIProp, _In_opt_ LPSPropTagArray lpPropTags, ULONG ulFlags)
 	{
 		if (!lpMAPIProp) return {};
 		SBinary sig = {};
@@ -190,16 +189,16 @@ namespace cache
 			sig = mapi::getBin(lpProp);
 		}
 
-		const auto names = GetNamesFromIDs(lpMAPIProp, &sig, lppPropTags, ulFlags);
+		const auto names = GetNamesFromIDs(lpMAPIProp, &sig, lpPropTags, ulFlags);
 		MAPIFreeBuffer(lpProp);
 		return names;
 	}
 
 	// Signature form: if signature is empty then do not use a signature
 	_Check_return_ std::vector<std::shared_ptr<namedPropCacheEntry>> GetNamesFromIDs(
-		_In_opt_ LPMAPIPROP lpMAPIProp,
+		_In_opt_ const LPMAPIPROP lpMAPIProp,
 		_In_opt_ const SBinary* sig,
-		_In_opt_ LPSPropTagArray* lppPropTags,
+		_In_opt_ LPSPropTagArray lpPropTags,
 		ULONG ulFlags)
 	{
 		if (!lpMAPIProp) return {};
@@ -209,16 +208,18 @@ namespace cache
 			// None of my code uses these flags, but bypass the cache if we see them
 			ulFlags)
 		{
-			return directMapi::GetNamesFromIDs(lpMAPIProp, lppPropTags, ulFlags);
+			std::vector<std::shared_ptr<namedPropCacheEntry>> names;
+			WC_H_S(directMapi::GetNamesFromIDs(lpMAPIProp, lpPropTags, ulFlags, names));
+			return names;
 		}
 
 		auto sigv = std::vector<BYTE>{};
 		if (sig && sig->lpb && sig->cb) sigv = {sig->lpb, sig->lpb + sig->cb};
-		return namedPropCache::GetNamesFromIDs(lpMAPIProp, sigv, lppPropTags);
+		return namedPropCache::GetNamesFromIDs(lpMAPIProp, sigv, lpPropTags);
 	}
 
 	_Check_return_ LPSPropTagArray
-	GetIDsFromNames(_In_ LPMAPIPROP lpMAPIProp, _In_ std::vector<MAPINAMEID> nameIDs, _In_ ULONG ulFlags)
+	GetIDsFromNames(_In_ const LPMAPIPROP lpMAPIProp, _In_ std::vector<MAPINAMEID> nameIDs, _In_ ULONG ulFlags)
 	{
 		if (!lpMAPIProp) return {};
 
@@ -238,7 +239,7 @@ namespace cache
 
 		if (lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag))
 		{
-			const auto bin = mapi::getBin(lpProp);
+			const auto &bin = mapi::getBin(lpProp);
 			sig = {bin.lpb, bin.lpb + bin.cb};
 		}
 
@@ -438,7 +439,7 @@ namespace cache
 		return results;
 	}
 
-	ULONG FindHighestNamedProp(_In_ LPMAPIPROP lpMAPIProp)
+	ULONG FindHighestNamedProp(_In_ const LPMAPIPROP lpMAPIProp)
 	{
 		output::DebugPrint(
 			output::dbgLevel::NamedProp, L"FindHighestNamedProp: Searching for the highest named prop mapping\n");

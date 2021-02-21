@@ -2068,7 +2068,7 @@ namespace mapi
 		const auto hRes = WC_MAPI(lpSource->GetPropList(0, &lpAllProps));
 		if (hRes == S_OK && lpAllProps)
 		{
-			const auto names = cache::GetNamesFromIDs(lpSource, &lpAllProps, 0);
+			const auto names = cache::GetNamesFromIDs(lpSource, lpAllProps, 0);
 			if (!names.empty())
 			{
 				ULONG ulNumProps = 0; // count of props that match our guid
