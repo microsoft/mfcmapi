@@ -38,6 +38,9 @@
     <Filter Include="Source Files\UI\Dialogs\propList">
       <UniqueIdentifier>{2db12437-1a22-4930-897a-00f4855cc456}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\UI\Dialogs\Editors\propeditor">
+      <UniqueIdentifier>{90fe9cb7-8963-4e00-803b-9acecdbdcde0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />
@@ -104,6 +107,18 @@
     <ClInclude Include="UI\Dialogs\propList\AccountsDialog.h">
       <Filter>Source Files\UI\Dialogs\propList</Filter>
     </ClInclude>
+    <ClInclude Include="UI\Dialogs\Editors\propeditor\PropertyEditor.h">
+      <Filter>Source Files\UI\Dialogs\Editors\propeditor</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Dialogs\Editors\propeditor\MultiValuePropertyEditor.h">
+      <Filter>Source Files\UI\Dialogs\Editors\propeditor</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Dialogs\Editors\propeditor\ipropeditor.h">
+      <Filter>Source Files\UI\Dialogs\Editors\propeditor</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Dialogs\Editors\StreamEditor.h">
+      <Filter>Source Files\UI\Dialogs\Editors</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StdAfx.h">
@@ -164,6 +179,18 @@
     </ClCompile>
     <ClCompile Include="UI\Dialogs\propList\AccountsDialog.cpp">
       <Filter>Source Files\UI\Dialogs\propList</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Dialogs\Editors\propeditor\PropertyEditor.cpp">
+      <Filter>Source Files\UI\Dialogs\Editors\propeditor</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Dialogs\Editors\propeditor\MultiValuePropertyEditor.cpp">
+      <Filter>Source Files\UI\Dialogs\Editors\propeditor</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Dialogs\Editors\propeditor\ipropeditor.cpp">
+      <Filter>Source Files\UI\Dialogs\Editors\propeditor</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Dialogs\Editors\StreamEditor.cpp">
+      <Filter>Source Files\UI\Dialogs\Editors</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -359,22 +386,10 @@
     <ClInclude Include="UI\Dialogs\Editors\HexEditor.h">
       <Filter>Source Files\UI\Dialogs\Editors</Filter>
     </ClInclude>
-    <ClCompile Include="UI\Dialogs\Editors\MultiValuePropertyEditor.cpp">
-      <Filter>Source Files\UI\Dialogs\Editors</Filter>
-    </ClCompile>
-    <ClInclude Include="UI\Dialogs\Editors\MultiValuePropertyEditor.h">
-      <Filter>Source Files\UI\Dialogs\Editors</Filter>
-    </ClInclude>
     <ClCompile Include="UI\Dialogs\Editors\Options.cpp">
       <Filter>Source Files\UI\Dialogs\Editors</Filter>
     </ClCompile>
     <ClInclude Include="UI\Dialogs\Editors\Options.h">
-      <Filter>Source Files\UI\Dialogs\Editors</Filter>
-    </ClInclude>
-    <ClCompile Include="UI\Dialogs\Editors\PropertyEditor.cpp">
-      <Filter>Source Files\UI\Dialogs\Editors</Filter>
-    </ClCompile>
-    <ClInclude Include="UI\Dialogs\Editors\PropertyEditor.h">
       <Filter>Source Files\UI\Dialogs\Editors</Filter>
     </ClInclude>
     <ClCompile Include="UI\Dialogs\Editors\PropertySelector.cpp">
@@ -405,12 +420,6 @@
       <Filter>Source Files\UI\Dialogs\Editors</Filter>
     </ClCompile>
     <ClInclude Include="UI\Dialogs\Editors\SearchEditor.h">
-      <Filter>Source Files\UI\Dialogs\Editors</Filter>
-    </ClInclude>
-    <ClCompile Include="UI\Dialogs\Editors\StreamEditor.cpp">
-      <Filter>Source Files\UI\Dialogs\Editors</Filter>
-    </ClCompile>
-    <ClInclude Include="UI\Dialogs\Editors\StreamEditor.h">
       <Filter>Source Files\UI\Dialogs\Editors</Filter>
     </ClInclude>
     <ClCompile Include="UI\Dialogs\Editors\TagArrayEditor.cpp">

@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/Editors/RestrictEditor.h>
-#include <UI/Dialogs/Editors/PropertyEditor.h>
+#include <UI/Dialogs/Editors/propeditor/ipropeditor.h>
 #include <core/mapi/mapiFunctions.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/sortlistdata/resData.h>
@@ -204,16 +204,16 @@ namespace dialog::editor
 		auto lpEditProp = m_lpOldProp;
 		if (m_lpNewProp) lpEditProp = m_lpNewProp;
 
-		const auto lpOutProp =
-			DisplayPropertyEditor(this, IDS_PROPEDITOR, false, m_lpAllocParent, NULL, GetPropTag(4), false, lpEditProp);
+		const auto propEditor =
+			DisplayPropertyEditor(this, IDS_PROPEDITOR, false, nullptr, GetPropTag(4), false, lpEditProp);
 
-		// Since m_lpNewProp was owned by an m_lpAllocParent, we don't free it directly
-		if (lpOutProp)
+		if (propEditor)
 		{
-			m_lpNewProp = lpOutProp;
+			// Populate m_lpNewProp with ownership by m_lpAllocParent
+			WC_MAPI_S(mapi::HrDupPropset(1, propEditor->getValue(), m_lpAllocParent, &m_lpNewProp));
+
 			std::wstring szProp;
 			std::wstring szAltProp;
-
 			property::parseProperty(m_lpNewProp, &szProp, &szAltProp);
 			SetStringW(6, szProp);
 			SetStringW(7, szAltProp);
@@ -738,12 +738,14 @@ namespace dialog::editor
 			lpSourceProp = &sProp;
 		}
 
-		auto prop =
-			DisplayPropertyEditor(this, IDS_PROPEDITOR, false, m_lpAllocParent, NULL, NULL, false, lpSourceProp);
+		const auto propEditor = DisplayPropertyEditor(this, IDS_PROPEDITOR, false, nullptr, NULL, false, lpSourceProp);
 
-		// Since lpData->data.Comment.lpNewProp was owned by an m_lpAllocParent, we don't free it directly
-		if (prop)
+		if (propEditor)
 		{
+			LPSPropValue prop = nullptr;
+			// Populate prop with ownership by m_lpAllocParent
+			WC_MAPI_S(mapi::HrDupPropset(1, propEditor->getValue(), m_lpAllocParent, &prop));
+			// Now give prop to comment to hold
 			comment->setCurrentProp(prop);
 			std::wstring szTmp;
 			std::wstring szAltTmp;

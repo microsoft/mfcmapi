@@ -1,11 +1,12 @@
 #include <StdAfx.h>
-#include <UI/Dialogs/Editors/PropertyEditor.h>
+#include <UI/Dialogs/Editors/propeditor/PropertyEditor.h>
+#include <UI/Dialogs/Editors/propeditor/MultiValuePropertyEditor.h>
+#include <UI/ViewPane/SmartViewPane.h>
 #include <core/interpret/guid.h>
 #include <core/mapi/mapiFunctions.h>
 #include <core/smartview/SmartView.h>
 #include <core/sortlistdata/mvPropData.h>
 #include <UI/ViewPane/CountedTextPane.h>
-#include <UI/Dialogs/Editors/MultiValuePropertyEditor.h>
 #include <core/mapi/mapiMemory.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
@@ -15,84 +16,6 @@
 
 namespace dialog::editor
 {
-	_Check_return_ LPSPropValue DisplayPropertyEditor(
-		_In_ CWnd* pParentWnd,
-		UINT uidTitle,
-		bool bIsAB,
-		_In_opt_ LPVOID lpAllocParent,
-		_In_opt_ LPMAPIPROP lpMAPIProp,
-		ULONG ulPropTag,
-		bool bMVRow,
-		_In_opt_ const _SPropValue* lpsPropValue)
-	{
-		auto hRes = S_OK;
-		LPSPropValue lpNewValue{};
-
-		_SPropValue* sourceProp = nullptr;
-		// We got a MAPI prop object and no input value, go look one up
-		if (lpMAPIProp && !lpsPropValue)
-		{
-			auto sTag = SPropTagArray{
-				1, PROP_TYPE(ulPropTag) == PT_ERROR ? CHANGE_PROP_TYPE(ulPropTag, PT_UNSPECIFIED) : ulPropTag};
-			ULONG ulValues = NULL;
-
-			hRes = WC_MAPI(lpMAPIProp->GetProps(&sTag, NULL, &ulValues, &sourceProp));
-
-			// Suppress MAPI_E_NOT_FOUND error when the source type is non error
-			if (sourceProp && PROP_TYPE(sourceProp->ulPropTag) == PT_ERROR &&
-				sourceProp->Value.err == MAPI_E_NOT_FOUND && PROP_TYPE(ulPropTag) != PT_ERROR)
-			{
-				MAPIFreeBuffer(sourceProp);
-				sourceProp = nullptr;
-			}
-
-			if (hRes == MAPI_E_CALL_FAILED)
-			{
-				// Just suppress this - let the user edit anyway
-				hRes = S_OK;
-			}
-
-			// In all cases where we got a value back, we need to reset our property tag to the value we got
-			// This will address when the source is PT_UNSPECIFIED, when the returned value is PT_ERROR,
-			// or any other case where the returned value has a different type than requested
-			if (SUCCEEDED(hRes) && sourceProp)
-			{
-				ulPropTag = sourceProp->ulPropTag;
-			}
-
-			lpsPropValue = sourceProp;
-		}
-		else if (lpsPropValue && !ulPropTag)
-		{
-			ulPropTag = lpsPropValue->ulPropTag;
-		}
-
-		// Check for the multivalue prop case
-		if (PROP_TYPE(ulPropTag) & MV_FLAG)
-		{
-			CMultiValuePropertyEditor MyPropertyEditor(
-				pParentWnd, uidTitle, bIsAB, lpAllocParent, lpMAPIProp, ulPropTag, lpsPropValue);
-			if (MyPropertyEditor.DisplayDialog())
-			{
-				lpNewValue = MyPropertyEditor.getValue();
-			}
-		}
-		// Or the single value prop case
-		else
-		{
-			CPropertyEditor MyPropertyEditor(
-				pParentWnd, uidTitle, bIsAB, bMVRow, lpAllocParent, lpMAPIProp, ulPropTag, lpsPropValue);
-			if (MyPropertyEditor.DisplayDialog())
-			{
-				lpNewValue = MyPropertyEditor.getValue();
-			}
-		}
-
-		MAPIFreeBuffer(sourceProp);
-
-		return lpNewValue;
-	}
-
 	static std::wstring CLASS = L"CPropertyEditor"; // STRING_OK
 
 	// Create an editor for a MAPI property
@@ -101,13 +24,11 @@ namespace dialog::editor
 		UINT uidTitle,
 		bool bIsAB,
 		bool bMVRow,
-		_In_opt_ LPVOID lpAllocParent,
 		_In_opt_ LPMAPIPROP lpMAPIProp,
 		ULONG ulPropTag,
 		_In_opt_ const _SPropValue* lpsPropValue)
-		: CEditor(pParentWnd, uidTitle, NULL, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL), m_bIsAB(bIsAB),
-		  m_bMVRow(bMVRow), m_lpAllocParent(lpAllocParent), m_lpMAPIProp(lpMAPIProp), m_ulPropTag(ulPropTag),
-		  m_lpsInputValue(lpsPropValue)
+		: IPropEditor(pParentWnd, uidTitle, NULL, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL), m_bIsAB(bIsAB),
+		  m_bMVRow(bMVRow), m_lpMAPIProp(lpMAPIProp), m_ulPropTag(ulPropTag), m_lpsInputValue(lpsPropValue)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
 
@@ -135,9 +56,6 @@ namespace dialog::editor
 	{
 		// This is where we write our changes back
 		WriteStringsToSPropValue();
-
-		// Write the property to the object if we're not editing a row of a MV property
-		if (!m_bMVRow) WriteSPropValueToObject();
 		CMyDialog::OnOK(); // don't need to call CEditor::OnOK
 	}
 
@@ -437,121 +355,75 @@ namespace dialog::editor
 		// If nothing has changed, we're done.
 		if (!m_bDirty) return;
 
-		if (!m_lpsOutputValue)
+		m_sOutputValue.ulPropTag = m_ulPropTag;
+
+		switch (PROP_TYPE(m_ulPropTag))
 		{
-			m_lpsOutputValue = mapi::allocate<LPSPropValue>(sizeof(SPropValue), m_lpAllocParent);
-			if (!m_lpAllocParent)
-			{
-				m_lpAllocParent = m_lpsOutputValue;
-			}
-		}
-
-		if (m_lpsOutputValue)
-		{
-			m_lpsOutputValue->ulPropTag = m_ulPropTag;
-			m_lpsOutputValue->dwAlignPad = NULL;
-			std::vector<BYTE> bin;
-
-			switch (PROP_TYPE(m_ulPropTag))
-			{
-			case PT_I2: // treat as signed long
-				m_lpsOutputValue->Value.i = static_cast<short int>(strings::wstringToLong(GetStringW(0), 10));
-				break;
-			case PT_LONG: // treat as unsigned long
-				m_lpsOutputValue->Value.l = static_cast<LONG>(strings::wstringToUlong(GetStringW(0), 10));
-				break;
-			case PT_R4:
-				m_lpsOutputValue->Value.flt = static_cast<float>(strings::wstringToDouble(GetStringW(0)));
-				break;
-			case PT_DOUBLE:
-				m_lpsOutputValue->Value.dbl = strings::wstringToDouble(GetStringW(0));
-				break;
-			case PT_CURRENCY:
-				m_lpsOutputValue->Value.cur.Hi = strings::wstringToUlong(GetStringW(0), 16);
-				m_lpsOutputValue->Value.cur.Lo = strings::wstringToUlong(GetStringW(1), 16);
-				break;
-			case PT_APPTIME:
-				m_lpsOutputValue->Value.at = strings::wstringToDouble(GetStringW(0));
-				break;
-			case PT_ERROR: // unsigned
-				m_lpsOutputValue->Value.err = static_cast<SCODE>(strings::wstringToUlong(GetStringW(0), 16));
-				break;
-			case PT_BOOLEAN:
-				m_lpsOutputValue->Value.b = static_cast<unsigned short>(GetCheck(0));
-				break;
-			case PT_I8:
-				m_lpsOutputValue->Value.li.HighPart = static_cast<long>(strings::wstringToUlong(GetStringW(0), 16));
-				m_lpsOutputValue->Value.li.LowPart = static_cast<long>(strings::wstringToUlong(GetStringW(1), 16));
-				break;
-			case PT_STRING8:
-				// We read strings out of the hex control in order to preserve any hex level tweaks the user
-				// may have done. The RichEdit control likes throwing them away.
-				bin = strings::HexStringToBin(GetStringW(1));
-				m_lpsOutputValue->Value.lpszA = reinterpret_cast<LPSTR>(mapi::ByteVectorToMAPI(bin, m_lpAllocParent));
-				break;
-			case PT_UNICODE:
-				// We read strings out of the hex control in order to preserve any hex level tweaks the user
-				// may have done. The RichEdit control likes throwing them away.
-				bin = strings::HexStringToBin(GetStringW(1));
-				m_lpsOutputValue->Value.lpszW = reinterpret_cast<LPWSTR>(mapi::ByteVectorToMAPI(bin, m_lpAllocParent));
-				break;
-			case PT_SYSTIME:
-				m_lpsOutputValue->Value.ft.dwLowDateTime = strings::wstringToUlong(GetStringW(0), 16);
-				m_lpsOutputValue->Value.ft.dwHighDateTime = strings::wstringToUlong(GetStringW(1), 16);
-				break;
-			case PT_CLSID:
-				m_lpsOutputValue->Value.lpguid = mapi::allocate<GUID*>(sizeof(GUID), m_lpAllocParent);
-				if (m_lpsOutputValue->Value.lpguid)
-				{
-					*m_lpsOutputValue->Value.lpguid = guid::StringToGUID(GetStringW(0));
-				}
-
-				break;
-			case PT_BINARY:
-				// remember we already read szTmpString and ulStrLen and found ulStrLen was even
-				bin = strings::HexStringToBin(GetStringW(0));
-				mapi::setBin(m_lpsOutputValue) = {static_cast<ULONG>(bin.size()),
-												  mapi::ByteVectorToMAPI(bin, m_lpAllocParent)};
-				break;
-			default:
-				// We shouldn't ever get here unless some new prop type shows up
-				// If we don't have a parent or we are the parent, then we can free here
-				if (!m_lpAllocParent || m_lpAllocParent == m_lpsOutputValue)
-				{
-					MAPIFreeBuffer(m_lpsOutputValue);
-					m_lpsOutputValue = nullptr;
-					m_lpAllocParent = nullptr;
-				}
-				else
-				{
-					// If m_lpsOutputValue was allocated off a parent, we can't free it here
-					// Just drop the reference and m_lpAllocParent's free will clean it up
-					m_lpsOutputValue = nullptr;
-				}
-				break;
-			}
-		}
-	}
-
-	void CPropertyEditor::WriteSPropValueToObject() const
-	{
-		if (!m_lpsOutputValue || !m_lpMAPIProp) return;
-
-		LPSPropProblemArray lpProblemArray = nullptr;
-
-		const auto hRes = EC_MAPI(m_lpMAPIProp->SetProps(1, m_lpsOutputValue, &lpProblemArray));
-
-		EC_PROBLEMARRAY(lpProblemArray);
-		MAPIFreeBuffer(lpProblemArray);
-
-		if (SUCCEEDED(hRes))
-		{
-			EC_MAPI_S(m_lpMAPIProp->SaveChanges(KEEP_OPEN_READWRITE));
+		case PT_I2: // treat as signed long
+			m_sOutputValue.Value.i = static_cast<short int>(strings::wstringToLong(GetStringW(0), 10));
+			break;
+		case PT_LONG: // treat as unsigned long
+			m_sOutputValue.Value.l = static_cast<LONG>(strings::wstringToUlong(GetStringW(0), 10));
+			break;
+		case PT_R4:
+			m_sOutputValue.Value.flt = static_cast<float>(strings::wstringToDouble(GetStringW(0)));
+			break;
+		case PT_DOUBLE:
+			m_sOutputValue.Value.dbl = strings::wstringToDouble(GetStringW(0));
+			break;
+		case PT_CURRENCY:
+			m_sOutputValue.Value.cur.Hi = strings::wstringToUlong(GetStringW(0), 16);
+			m_sOutputValue.Value.cur.Lo = strings::wstringToUlong(GetStringW(1), 16);
+			break;
+		case PT_APPTIME:
+			m_sOutputValue.Value.at = strings::wstringToDouble(GetStringW(0));
+			break;
+		case PT_ERROR: // unsigned
+			m_sOutputValue.Value.err = static_cast<SCODE>(strings::wstringToUlong(GetStringW(0), 16));
+			break;
+		case PT_BOOLEAN:
+			m_sOutputValue.Value.b = static_cast<unsigned short>(GetCheck(0));
+			break;
+		case PT_I8:
+			m_sOutputValue.Value.li.HighPart = static_cast<long>(strings::wstringToUlong(GetStringW(0), 16));
+			m_sOutputValue.Value.li.LowPart = static_cast<long>(strings::wstringToUlong(GetStringW(1), 16));
+			break;
+		case PT_STRING8:
+			// We read strings out of the hex control in order to preserve any hex level tweaks the user
+			// may have done. The RichEdit control likes throwing them away.
+			m_bin = strings::HexStringToBin(GetStringW(1));
+			m_bin.push_back(0); // Add null terminator
+			m_sOutputValue.Value.lpszA = reinterpret_cast<LPSTR>(m_bin.data());
+			break;
+		case PT_UNICODE:
+			// We read strings out of the hex control in order to preserve any hex level tweaks the user
+			// may have done. The RichEdit control likes throwing them away.
+			m_bin = strings::HexStringToBin(GetStringW(1));
+			m_bin.push_back(0); // Add null terminator
+			m_bin.push_back(0); // Add null terminator
+			m_sOutputValue.Value.lpszW = reinterpret_cast<LPWSTR>(m_bin.data());
+			break;
+		case PT_SYSTIME:
+			m_sOutputValue.Value.ft.dwLowDateTime = strings::wstringToUlong(GetStringW(0), 16);
+			m_sOutputValue.Value.ft.dwHighDateTime = strings::wstringToUlong(GetStringW(1), 16);
+			break;
+		case PT_CLSID:
+			m_guid = guid::StringToGUID(GetStringW(0));
+			m_sOutputValue.Value.lpguid = &m_guid;
+			break;
+		case PT_BINARY:
+			// remember we already read szTmpString and ulStrLen and found ulStrLen was even
+			m_bin = strings::HexStringToBin(GetStringW(0));
+			mapi::setBin(&m_sOutputValue) = {static_cast<ULONG>(m_bin.size()), m_bin.data()};
+			break;
+		default:
+			m_sOutputValue = {};
+			break;
 		}
 	}
 
 	// Returns the modified prop value - caller is responsible for freeing
-	_Check_return_ LPSPropValue CPropertyEditor::getValue() noexcept { return m_lpsOutputValue; }
+	_Check_return_ LPSPropValue CPropertyEditor::getValue() noexcept { return &m_sOutputValue; }
 
 	_Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 	{

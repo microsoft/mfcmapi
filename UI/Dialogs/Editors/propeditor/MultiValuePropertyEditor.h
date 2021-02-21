@@ -1,16 +1,15 @@
 #pragma once
-#include <UI/Dialogs/Editors/Editor.h>
+#include <UI/Dialogs/Editors/propeditor/ipropeditor.h>
 
 namespace dialog::editor
 {
-	class CMultiValuePropertyEditor : public CEditor
+	class CMultiValuePropertyEditor : public IPropEditor
 	{
 	public:
 		CMultiValuePropertyEditor(
 			_In_ CWnd* pParentWnd,
 			UINT uidTitle,
 			bool bIsAB,
-			_In_opt_ LPVOID lpAllocParent,
 			_In_opt_ LPMAPIPROP lpMAPIProp,
 			ULONG ulPropTag,
 			_In_opt_ const _SPropValue* lpsPropValue);
@@ -24,7 +23,6 @@ namespace dialog::editor
 		BOOL OnInitDialog() override;
 		void InitPropertyControls();
 		void ReadMultiValueStringsFromProperty() const;
-		void WriteSPropValueToObject() const;
 		void WriteMultiValueStringsToSPropValue();
 		void UpdateListRow(_In_ LPSPropValue lpProp, ULONG iMVCount) const;
 		std::vector<LONG> GetLongArray() const;
@@ -34,14 +32,16 @@ namespace dialog::editor
 		void OnOK() override;
 
 		// source variables
-		LPMAPIPROP m_lpMAPIProp{};
+		LPMAPIPROP m_lpMAPIProp{}; // Used only for parsing
 		ULONG m_ulPropTag{};
 		bool m_bIsAB{}; // whether the tag is from the AB or not
 		const _SPropValue* m_lpsInputValue{};
-		LPSPropValue m_lpsOutputValue{};
 
-		// all calls to MAPIAllocateMore will use m_lpAllocParent
-		// this is not something to be freed
-		LPVOID m_lpAllocParent{};
+		SPropValue m_sOutputValue{};
+		std::vector<BYTE> m_bin; // Temp storage for m_sOutputValue
+		std::vector<std::string> m_mvA; // Temp storage for m_sOutputValue array
+		std::vector<std::wstring> m_mvW; // Temp storage for m_sOutputValue array
+		std::vector<std::vector<BYTE>> m_mvBin; // Temp storage for m_sOutputValue array
+		std::vector<GUID> m_mvGuid; // Temp storage for m_sOutputValue array
 	};
 } // namespace dialog::editor
