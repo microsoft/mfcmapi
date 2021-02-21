@@ -141,7 +141,11 @@ namespace propertybag
 		return WC_H(m_lpAccount->SaveChanges(OLK_ACCOUNT_NO_FLAGS));
 	}
 
-	_Check_return_ HRESULT accountPropertyBag::SetProp(_In_ LPSPropValue lpProp) { return SetProp(lpProp, true); }
+	_Check_return_ HRESULT
+	accountPropertyBag::SetProp(_In_ LPSPropValue lpProp, _In_ ULONG /*ulPropTag*/, const std::wstring& /*name*/)
+	{
+		return SetProp(lpProp, true);
+	}
 
 	_Check_return_ std::vector<std::shared_ptr<model::mapiRowModel>> accountPropertyBag::GetAllModels()
 	{

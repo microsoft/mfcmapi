@@ -25,7 +25,8 @@ namespace propertybag
 		void FreeBuffer(LPSPropValue) override { return; }
 		// TODO: This is for paste, something we don't yet support for rows
 		_Check_return_ HRESULT SetProps(_In_ ULONG, _In_ LPSPropValue) override { return E_NOTIMPL; }
-		_Check_return_ HRESULT SetProp(_In_ LPSPropValue lpProp) override;
+		_Check_return_ HRESULT
+		SetProp(_In_ LPSPropValue lpProp, _In_ ULONG ulPropTag, const std::wstring& name) override;
 		//TODO: Not supported yet
 		_Check_return_ HRESULT DeleteProp(_In_ ULONG) override { return E_NOTIMPL; };
 		_Check_return_ std::vector<std::shared_ptr<model::mapiRowModel>> GetAllModels() override;

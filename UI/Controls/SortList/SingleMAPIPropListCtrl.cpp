@@ -941,7 +941,7 @@ namespace controls::sortlistctrl
 
 				ResProp.Value.lpszA = reinterpret_cast<LPSTR>(lpModRes);
 
-				const auto hRes = EC_H(lpPropBag->SetProp(&ResProp));
+				const auto hRes = EC_H(lpPropBag->SetProp(&ResProp, ulPropTag, L""));
 
 				// Remember, we had no alloc parent - this is safe to free
 				MAPIFreeBuffer(lpModRes);
@@ -1045,7 +1045,7 @@ namespace controls::sortlistctrl
 					if (!lpSourceObj)
 					{
 						// SetProp does not take ownership of memory
-						EC_H_S(lpPropBag->SetProp(lpModProp));
+						EC_H_S(lpPropBag->SetProp(lpModProp, ulPropTag, name));
 					}
 
 					RefreshMAPIPropList();

@@ -110,7 +110,8 @@ namespace propertybag
 		return hRes;
 	}
 
-	_Check_return_ HRESULT mapiPropPropertyBag::SetProp(_In_ LPSPropValue lpProp)
+	_Check_return_ HRESULT
+	mapiPropPropertyBag::SetProp(_In_ LPSPropValue lpProp, _In_ ULONG /*ulPropTag*/, const std::wstring& /*name*/)
 	{
 		if (nullptr == m_lpProp) return S_OK;
 

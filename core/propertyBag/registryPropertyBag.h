@@ -22,7 +22,7 @@ namespace propertybag
 		_Check_return_ LPSPropValue GetOneProp(ULONG ulPropTag, const std::wstring& name) override;
 		void FreeBuffer(LPSPropValue lpsPropValue) override { MAPIFreeBuffer(lpsPropValue); }
 		_Check_return_ HRESULT SetProps(ULONG cValues, LPSPropValue lpPropArray) override;
-		_Check_return_ HRESULT SetProp(LPSPropValue lpProp) override;
+		_Check_return_ HRESULT SetProp(_In_ LPSPropValue lpProp, _In_ ULONG ulPropTag, const std::wstring& name) override;
 		_Check_return_ HRESULT DeleteProp(ULONG /*ulPropTag*/) noexcept override { return E_NOTIMPL; };
 		_Check_return_ std::vector<std::shared_ptr<model::mapiRowModel>> GetAllModels() override;
 		_Check_return_ std::shared_ptr<model::mapiRowModel> GetOneModel(_In_ ULONG ulPropTag) override;

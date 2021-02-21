@@ -175,7 +175,8 @@ namespace propertybag
 		return hRes;
 	}
 
-	_Check_return_ HRESULT rowPropertyBag::SetProp(_In_ LPSPropValue lpProp)
+	_Check_return_ HRESULT
+	rowPropertyBag::SetProp(_In_ LPSPropValue lpProp, _In_ ULONG /*ulPropTag*/, const std::wstring& /*name*/)
 	{
 		ULONG ulNewArray = NULL;
 		LPSPropValue lpNewArray = nullptr;

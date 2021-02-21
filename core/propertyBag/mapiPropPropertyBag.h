@@ -23,7 +23,8 @@ namespace propertybag
 		_Check_return_ LPSPropValue GetOneProp(_In_ ULONG ulPropTag, const std::wstring& name) override;
 		void FreeBuffer(LPSPropValue lpProp) override;
 		_Check_return_ HRESULT SetProps(_In_ ULONG cValues, _In_ LPSPropValue lpPropArray) override;
-		_Check_return_ HRESULT SetProp(_In_ LPSPropValue lpProp) override;
+		_Check_return_ HRESULT
+		SetProp(_In_ LPSPropValue lpProp, _In_ ULONG ulPropTag, const std::wstring& name) override;
 		_Check_return_ HRESULT DeleteProp(_In_ ULONG ulPropTag) override;
 		_Check_return_ std::vector<std::shared_ptr<model::mapiRowModel>> GetAllModels() override;
 		_Check_return_ std::shared_ptr<model::mapiRowModel> GetOneModel(_In_ ULONG ulPropTag) override;

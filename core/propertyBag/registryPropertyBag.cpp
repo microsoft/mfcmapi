@@ -133,5 +133,9 @@ namespace propertybag
 		return E_NOTIMPL;
 	}
 
-	_Check_return_ HRESULT registryPropertyBag::SetProp(LPSPropValue /*lpProp*/) { return E_NOTIMPL; }
+	_Check_return_ HRESULT
+	registryPropertyBag::SetProp(_In_ LPSPropValue /*lpProp*/, _In_ ULONG /*ulPropTag*/, const std::wstring& /*name*/)
+	{
+		return E_NOTIMPL;
+	}
 } // namespace propertybag
