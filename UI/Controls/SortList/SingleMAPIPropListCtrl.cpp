@@ -20,7 +20,7 @@
 #include <UI/Dialogs/Editors/RestrictEditor.h>
 #include <UI/Dialogs/Editors/StreamEditor.h>
 #include <UI/Dialogs/Editors/TagArrayEditor.h>
-#include <UI/Dialogs/Editors/PropertyEditor.h>
+#include <UI/Dialogs/Editors/propeditor/ipropeditor.h>
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
 #include <core/mapi/cache/mapiObjects.h>
 #include <core/mapi/mapiMemory.h>
@@ -1034,19 +1034,22 @@ namespace controls::sortlistctrl
 		{
 			if (PROP_TYPE(ulPropTag) == PT_UNSPECIFIED && lpEditProp) ulPropTag = lpEditProp->ulPropTag;
 
-			const auto lpModProp = dialog::editor::DisplayPropertyEditor(
-				this, IDS_PROPEDITOR, lpPropBag->IsAB(), nullptr, lpSourceObj, ulPropTag, false, lpEditProp);
-			if (lpModProp)
+			const auto propEditor = dialog::editor::DisplayPropertyEditor(
+				this, IDS_PROPEDITOR, lpPropBag->IsAB(), lpSourceObj, ulPropTag, false, lpEditProp);
+			if (propEditor)
 			{
-				// If we didn't have a source object, we need to shove our results back in to the property bag
-				if (!lpSourceObj)
+				const auto lpModProp = propEditor->getValue();
+				if (lpModProp)
 				{
-					// SetProp does not take ownership of memory
-					EC_H_S(lpPropBag->SetProp(lpModProp));
-				}
+					// If we didn't have a source object, we need to shove our results back in to the property bag
+					if (!lpSourceObj)
+					{
+						// SetProp does not take ownership of memory
+						EC_H_S(lpPropBag->SetProp(lpModProp));
+					}
 
-				RefreshMAPIPropList();
-				MAPIFreeBuffer(lpModProp);
+					RefreshMAPIPropList();
+				}
 			}
 		}
 

@@ -326,6 +326,9 @@ namespace mapi
 
 	void ForceRop(_In_ LPMDB lpMDB);
 
+	_Check_return_ HRESULT
+	HrDupPropset(int cprop, _In_count_(cprop) LPSPropValue rgprop, _In_ const VOID* parent, _In_ LPSPropValue* prgprop);
+
 	_Check_return_ STDAPI HrCopyRestriction(
 		_In_ const _SRestriction* lpResSrc, // source restriction ptr
 		_In_opt_ const VOID* lpObject, // ptr to existing MAPI buffer
