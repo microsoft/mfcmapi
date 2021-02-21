@@ -217,40 +217,25 @@ namespace propertybag
 
 		if (m_dwType == REG_BINARY)
 		{
-			//WriteBinToRegistry
-			//	m_binVal = registry::ReadBinFromRegistry(hKey, m_name);
 			if (m_ulPropTag)
 			{
 				switch (PROP_TYPE(m_ulPropTag))
 				{
-				//case PT_CLSID:
-				//	registry::WriteBinToRegistry(
-				//		m_hKey, m_name, std::vector<BYTE>(newValue->Value.lpguid, newValue->Value.lpguid + 16));
-				//	break;
-				//case PT_SYSTIME:
-				//	if (m_binVal.size() == 8)
-				//	{
-				//		m_prop.Value.ft = *reinterpret_cast<LPFILETIME>(const_cast<LPBYTE>(m_binVal.data()));
-				//	}
-				//	break;
-				//case PT_I8:
-				//	if (m_binVal.size() == 8)
-				//	{
-				//		m_prop.Value.li.QuadPart = static_cast<LONGLONG>(*m_binVal.data());
-				//	}
-				//	break;
-				//case PT_LONG:
-				//	if (m_binVal.size() == 4)
-				//	{
-				//		m_prop.Value.l = static_cast<DWORD>(*m_binVal.data());
-				//	}
-				//	break;
-				//case PT_BOOLEAN:
-				//	if (m_binVal.size() == 2)
-				//	{
-				//		m_prop.Value.b = static_cast<WORD>(*m_binVal.data());
-				//	}
-				//	break;
+				case PT_CLSID:
+					registry::WriteBinToRegistry(m_hKey, m_name, 16, LPBYTE(newValue->Value.lpguid));
+					break;
+				case PT_SYSTIME:
+					registry::WriteBinToRegistry(m_hKey, m_name, 8, LPBYTE(&newValue->Value.ft));
+					break;
+				case PT_I8:
+					registry::WriteBinToRegistry(m_hKey, m_name, 8, LPBYTE(&newValue->Value.li.QuadPart));
+					break;
+				case PT_LONG:
+					registry::WriteBinToRegistry(m_hKey, m_name, 4, LPBYTE(&newValue->Value.l));
+					break;
+				case PT_BOOLEAN:
+					registry::WriteBinToRegistry(m_hKey, m_name, 2, LPBYTE(&newValue->Value.b));
+					break;
 				case PT_BINARY:
 					registry::WriteBinToRegistry(
 						m_hKey,

@@ -156,6 +156,10 @@ namespace registry
 	void WriteStringToRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValueName, _In_ const std::wstring& szValue);
 	void
 	WriteBinToRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValueName, _In_ const std::vector<BYTE>& binValue);
+	inline void WriteBinToRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValueName, _In_ ULONG cb, _In_ const BYTE* lpbin)
+	{
+		WriteBinToRegistry(hKey, szValueName, std::vector<BYTE>(lpbin, lpbin + cb));
+	}
 
 	extern dwordRegKey debugTag;
 	extern boolRegKey debugToFile;
