@@ -217,75 +217,75 @@ namespace propertybag
 
 		if (m_dwType == REG_BINARY)
 		{
+			//WriteBinToRegistry
 			//	m_binVal = registry::ReadBinFromRegistry(hKey, m_name);
-			//if (m_ulPropTag)
-			//{
-			//	switch (PROP_TYPE(m_ulPropTag))
-			//	{
-			//	case PT_CLSID:
-			//		registry::WriteToRegistry();
-			//		if (m_binVal.size() == 16)
-			//		{
-			//			m_prop.Value.lpguid = reinterpret_cast<LPGUID>(const_cast<LPBYTE>(m_binVal.data()));
-			//		}
-			//		break;
-			//	case PT_SYSTIME:
-			//		if (m_binVal.size() == 8)
-			//		{
-			//			m_prop.Value.ft = *reinterpret_cast<LPFILETIME>(const_cast<LPBYTE>(m_binVal.data()));
-			//		}
-			//		break;
-			//	case PT_I8:
-			//		if (m_binVal.size() == 8)
-			//		{
-			//			m_prop.Value.li.QuadPart = static_cast<LONGLONG>(*m_binVal.data());
-			//		}
-			//		break;
-			//	case PT_LONG:
-			//		if (m_binVal.size() == 4)
-			//		{
-			//			m_prop.Value.l = static_cast<DWORD>(*m_binVal.data());
-			//		}
-			//		break;
-			//	case PT_BOOLEAN:
-			//		if (m_binVal.size() == 2)
-			//		{
-			//			m_prop.Value.b = static_cast<WORD>(*m_binVal.data());
-			//		}
-			//		break;
-			//	case PT_BINARY:
-			//		m_prop.Value.bin.cb = m_binVal.size();
-			//		m_prop.Value.bin.lpb = const_cast<LPBYTE>(m_binVal.data());
-			//		break;
-			//	case PT_UNICODE:
-			//		if (m_secure)
-			//		{
-			//			m_prop.ulPropTag = PROP_TAG(PT_BINARY, PROP_ID(m_ulPropTag));
-			//			m_prop.Value.bin.cb = m_binVal.size();
-			//			m_prop.Value.bin.lpb = const_cast<LPBYTE>(m_binVal.data());
-			//		}
-			//		else
-			//		{
-			//			m_unicodeVal = m_binVal;
-			//			m_unicodeVal.push_back(0); // Add some null terminators just in case
-			//			m_unicodeVal.push_back(0);
-			//			m_prop.Value.lpszW = reinterpret_cast<LPWSTR>(const_cast<LPBYTE>(m_unicodeVal.data()));
-			//		}
-			//		break;
-			//	default:
-			//		m_prop.ulPropTag = PROP_TAG(PT_BINARY, PROP_ID(m_ulPropTag));
-			//		m_prop.Value.bin.cb = m_binVal.size();
-			//		m_prop.Value.bin.lpb = const_cast<LPBYTE>(m_binVal.data());
-			//		m_canParseMAPI = false;
-			//		break;
-			//	}
-			//}
-			//else
-			//{
-			//	m_prop.ulPropTag = PROP_TAG(PT_BINARY, PROP_ID_NULL);
-			//	m_prop.Value.bin.cb = m_binVal.size();
-			//	m_prop.Value.bin.lpb = const_cast<LPBYTE>(m_binVal.data());
-			//}
+			if (m_ulPropTag)
+			{
+				switch (PROP_TYPE(m_ulPropTag))
+				{
+				//case PT_CLSID:
+				//	registry::WriteBinToRegistry(
+				//		m_hKey, m_name, std::vector<BYTE>(newValue->Value.lpguid, newValue->Value.lpguid + 16));
+				//	break;
+				//case PT_SYSTIME:
+				//	if (m_binVal.size() == 8)
+				//	{
+				//		m_prop.Value.ft = *reinterpret_cast<LPFILETIME>(const_cast<LPBYTE>(m_binVal.data()));
+				//	}
+				//	break;
+				//case PT_I8:
+				//	if (m_binVal.size() == 8)
+				//	{
+				//		m_prop.Value.li.QuadPart = static_cast<LONGLONG>(*m_binVal.data());
+				//	}
+				//	break;
+				//case PT_LONG:
+				//	if (m_binVal.size() == 4)
+				//	{
+				//		m_prop.Value.l = static_cast<DWORD>(*m_binVal.data());
+				//	}
+				//	break;
+				//case PT_BOOLEAN:
+				//	if (m_binVal.size() == 2)
+				//	{
+				//		m_prop.Value.b = static_cast<WORD>(*m_binVal.data());
+				//	}
+				//	break;
+				case PT_BINARY:
+					registry::WriteBinToRegistry(
+						m_hKey,
+						m_name,
+						std::vector<BYTE>(newValue->Value.bin.lpb, newValue->Value.bin.lpb + newValue->Value.bin.cb));
+					break;
+					//case PT_UNICODE:
+					//	if (m_secure)
+					//	{
+					//		m_prop.ulPropTag = PROP_TAG(PT_BINARY, PROP_ID(m_ulPropTag));
+					//		m_prop.Value.bin.cb = m_binVal.size();
+					//		m_prop.Value.bin.lpb = const_cast<LPBYTE>(m_binVal.data());
+					//	}
+					//	else
+					//	{
+					//		m_unicodeVal = m_binVal;
+					//		m_unicodeVal.push_back(0); // Add some null terminators just in case
+					//		m_unicodeVal.push_back(0);
+					//		m_prop.Value.lpszW = reinterpret_cast<LPWSTR>(const_cast<LPBYTE>(m_unicodeVal.data()));
+					//	}
+					//	break;
+					//default:
+					//	m_prop.ulPropTag = PROP_TAG(PT_BINARY, PROP_ID(m_ulPropTag));
+					//	m_prop.Value.bin.cb = m_binVal.size();
+					//	m_prop.Value.bin.lpb = const_cast<LPBYTE>(m_binVal.data());
+					//	m_canParseMAPI = false;
+					//	break;
+				}
+			}
+			else
+			{
+				m_prop.ulPropTag = PROP_TAG(PT_BINARY, PROP_ID_NULL);
+				m_prop.Value.bin.cb = m_binVal.size();
+				m_prop.Value.bin.lpb = const_cast<LPBYTE>(m_binVal.data());
+			}
 		}
 		else if (m_dwType == REG_DWORD)
 		{

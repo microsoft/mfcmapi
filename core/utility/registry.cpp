@@ -162,7 +162,7 @@ namespace registry
 	ReadBinFromRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValue, _In_ const std::vector<BYTE>& binDefault)
 	{
 		if (szValue.empty()) return binDefault;
-		output::DebugPrint(output::dbgLevel::Generic, L"ReadStringFromRegistry(%ws)\n", szValue.c_str());
+		output::DebugPrint(output::dbgLevel::Generic, L"ReadBinFromRegistry(%ws)\n", szValue.c_str());
 
 		// Get its size
 		DWORD cb{};
@@ -175,7 +175,7 @@ namespace registry
 			// Get the current value
 			hRes = EC_W32(
 				RegQueryValueExW(hKey, szValue.c_str(), nullptr, &dwKeyType, const_cast<LPBYTE>(bin.data()), &cb));
-			if (hRes == S_OK && cb && !(cb % 2) && dwKeyType == REG_BINARY)
+			if (hRes == S_OK && cb && dwKeyType == REG_BINARY)
 			{
 				return bin;
 			}
@@ -258,6 +258,15 @@ namespace registry
 		{
 			WC_W32_S(RegDeleteValueW(hKey, szValueName.c_str()));
 		}
+	}
+
+	void
+	WriteBinToRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValueName, _In_ const std::vector<BYTE>& binValue)
+	{
+		auto cbValue = binValue.size();
+
+		WC_W32_S(RegSetValueExW(
+			hKey, szValueName.c_str(), NULL, REG_BINARY, LPBYTE(binValue.data()), static_cast<DWORD>(cbValue)));
 	}
 
 	_Check_return_ HKEY CreateRootKey()
