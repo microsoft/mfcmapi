@@ -252,9 +252,7 @@ namespace propertybag
 			}
 			else
 			{
-				m_prop.ulPropTag = PROP_TAG(PT_BINARY, PROP_ID_NULL);
-				m_prop.Value.bin.cb = m_binVal.size();
-				m_prop.Value.bin.lpb = const_cast<LPBYTE>(m_binVal.data());
+				registry::WriteBinToRegistry(m_hKey, m_name, newValue->Value.bin.cb, newValue->Value.bin.lpb);
 			}
 		}
 		else if (m_dwType == REG_DWORD)
