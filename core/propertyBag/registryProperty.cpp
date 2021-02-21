@@ -85,6 +85,7 @@ namespace propertybag
 				case PT_UNICODE:
 					if (m_secure)
 					{
+						// TODO - not showing right prop type in UI
 						m_prop.ulPropTag = PROP_TAG(PT_BINARY, PROP_ID(m_ulPropTag));
 						m_prop.Value.bin.cb = m_binVal.size();
 						m_prop.Value.bin.lpb = const_cast<LPBYTE>(m_binVal.data());
