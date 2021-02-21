@@ -218,9 +218,9 @@ namespace propertybag
 
 		if (m_dwType == REG_BINARY)
 		{
-			if (m_ulPropTag)
+			if (newValue->ulPropTag)
 			{
-				switch (PROP_TYPE(m_ulPropTag))
+				switch (PROP_TYPE(newValue->ulPropTag))
 				{
 				case PT_CLSID:
 					registry::WriteBinToRegistry(m_hKey, m_name, 16, LPBYTE(newValue->Value.lpguid));
