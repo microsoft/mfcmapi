@@ -134,8 +134,18 @@ namespace propertybag
 	}
 
 	_Check_return_ HRESULT
-	registryPropertyBag::SetProp(_In_ LPSPropValue /*lpProp*/, _In_ ULONG /*ulPropTag*/, const std::wstring& /*name*/)
+	registryPropertyBag::SetProp(_In_ LPSPropValue lpProp, _In_ ULONG /*ulPropTag*/, const std::wstring& name)
 	{
-		return E_NOTIMPL;
+		for (const auto& prop : m_props)
+		{
+			if (prop->toModel()->name() == name)
+			{
+				prop->set(lpProp);
+				return S_OK;
+			}
+		}
+
+		// TODO: Figure out what to do for cache misses
+		return MAPI_E_CALL_FAILED;
 	}
 } // namespace propertybag

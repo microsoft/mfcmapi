@@ -22,10 +22,13 @@ namespace propertybag
 			return m_model;
 		}
 
+		void set(_In_opt_ LPSPropValue newValue);
+
 	private:
 		void ensureSPropValue();
 		void ensureModel();
 
+		HKEY m_hKey{};
 		std::wstring m_name{};
 		ULONG m_ulPropTag{};
 		SPropValue m_prop{};

@@ -11,7 +11,7 @@
 namespace propertybag
 {
 	registryProperty::registryProperty(HKEY hKey, _In_ const std::wstring& name, DWORD dwType)
-		: m_name(name), m_dwType(dwType)
+		: m_hKey(hKey), m_name(name), m_dwType(dwType)
 	{
 		m_secure = false;
 		// Get our prop tag and determine if we're a secure prop
@@ -20,7 +20,7 @@ namespace propertybag
 			ULONG num{};
 			// If we're not a simple prop tag, perhaps we have a prefix
 			auto str = name;
-			if (strings::stripPrefix(str, L"S")  && strings::tryWstringToUlong(num, str, 16, false))
+			if (strings::stripPrefix(str, L"S") && strings::tryWstringToUlong(num, str, 16, false))
 			{
 				m_secure = true;
 				// abuse some macros to swap the order of the tag
@@ -32,19 +32,6 @@ namespace propertybag
 				m_ulPropTag = PROP_TAG(PROP_ID(num), PROP_TYPE(num));
 			}
 		}
-
-		switch (dwType)
-		{
-		case REG_BINARY:
-			m_binVal = registry::ReadBinFromRegistry(hKey, m_name);
-			break;
-		case REG_DWORD:
-			m_dwVal = registry::ReadDWORDFromRegistry(hKey, m_name);
-			break;
-		case REG_SZ:
-			m_szVal = registry::ReadStringFromRegistry(hKey, m_name);
-			break;
-		}
 	}
 
 	void registryProperty::ensureSPropValue()
@@ -55,6 +42,7 @@ namespace propertybag
 
 		if (m_dwType == REG_BINARY)
 		{
+			m_binVal = registry::ReadBinFromRegistry(m_hKey, m_name);
 			if (m_ulPropTag)
 			{
 				m_canParseMAPI = true;
@@ -126,6 +114,7 @@ namespace propertybag
 		}
 		else if (m_dwType == REG_DWORD)
 		{
+			m_dwVal = registry::ReadDWORDFromRegistry(m_hKey, m_name);
 			m_prop.Value.l = m_dwVal;
 			if (m_ulPropTag)
 			{
@@ -138,6 +127,7 @@ namespace propertybag
 		}
 		else if (m_dwType == REG_SZ)
 		{
+			m_szVal = registry::ReadStringFromRegistry(m_hKey, m_name);
 			if (!m_prop.ulPropTag) m_prop.ulPropTag = PROP_TAG(PT_UNICODE, PROP_ID_NULL);
 			switch (PROP_TYPE(m_prop.ulPropTag))
 			{
@@ -219,5 +209,112 @@ namespace propertybag
 		// For debugging purposes right now
 		m_model->namedPropName(strings::BinToHexString(m_binVal, true));
 		m_model->namedPropGuid(strings::BinToTextString(m_binVal, true));
+	}
+
+	void registryProperty::set(_In_opt_ LPSPropValue newValue)
+	{
+		if (!newValue) return;
+
+		if (m_dwType == REG_BINARY)
+		{
+			//	m_binVal = registry::ReadBinFromRegistry(hKey, m_name);
+			//if (m_ulPropTag)
+			//{
+			//	switch (PROP_TYPE(m_ulPropTag))
+			//	{
+			//	case PT_CLSID:
+			//		registry::WriteToRegistry();
+			//		if (m_binVal.size() == 16)
+			//		{
+			//			m_prop.Value.lpguid = reinterpret_cast<LPGUID>(const_cast<LPBYTE>(m_binVal.data()));
+			//		}
+			//		break;
+			//	case PT_SYSTIME:
+			//		if (m_binVal.size() == 8)
+			//		{
+			//			m_prop.Value.ft = *reinterpret_cast<LPFILETIME>(const_cast<LPBYTE>(m_binVal.data()));
+			//		}
+			//		break;
+			//	case PT_I8:
+			//		if (m_binVal.size() == 8)
+			//		{
+			//			m_prop.Value.li.QuadPart = static_cast<LONGLONG>(*m_binVal.data());
+			//		}
+			//		break;
+			//	case PT_LONG:
+			//		if (m_binVal.size() == 4)
+			//		{
+			//			m_prop.Value.l = static_cast<DWORD>(*m_binVal.data());
+			//		}
+			//		break;
+			//	case PT_BOOLEAN:
+			//		if (m_binVal.size() == 2)
+			//		{
+			//			m_prop.Value.b = static_cast<WORD>(*m_binVal.data());
+			//		}
+			//		break;
+			//	case PT_BINARY:
+			//		m_prop.Value.bin.cb = m_binVal.size();
+			//		m_prop.Value.bin.lpb = const_cast<LPBYTE>(m_binVal.data());
+			//		break;
+			//	case PT_UNICODE:
+			//		if (m_secure)
+			//		{
+			//			m_prop.ulPropTag = PROP_TAG(PT_BINARY, PROP_ID(m_ulPropTag));
+			//			m_prop.Value.bin.cb = m_binVal.size();
+			//			m_prop.Value.bin.lpb = const_cast<LPBYTE>(m_binVal.data());
+			//		}
+			//		else
+			//		{
+			//			m_unicodeVal = m_binVal;
+			//			m_unicodeVal.push_back(0); // Add some null terminators just in case
+			//			m_unicodeVal.push_back(0);
+			//			m_prop.Value.lpszW = reinterpret_cast<LPWSTR>(const_cast<LPBYTE>(m_unicodeVal.data()));
+			//		}
+			//		break;
+			//	default:
+			//		m_prop.ulPropTag = PROP_TAG(PT_BINARY, PROP_ID(m_ulPropTag));
+			//		m_prop.Value.bin.cb = m_binVal.size();
+			//		m_prop.Value.bin.lpb = const_cast<LPBYTE>(m_binVal.data());
+			//		m_canParseMAPI = false;
+			//		break;
+			//	}
+			//}
+			//else
+			//{
+			//	m_prop.ulPropTag = PROP_TAG(PT_BINARY, PROP_ID_NULL);
+			//	m_prop.Value.bin.cb = m_binVal.size();
+			//	m_prop.Value.bin.lpb = const_cast<LPBYTE>(m_binVal.data());
+			//}
+		}
+		else if (m_dwType == REG_DWORD)
+		{
+			//	m_dwVal = registry::ReadDWORDFromRegistry(hKey, m_name);
+			//m_prop.Value.l = m_dwVal;
+			//if (m_ulPropTag)
+			//{
+			//	m_canParseMAPI = true;
+			//}
+			//else
+			//{
+			//	m_prop.ulPropTag = PROP_TAG(PT_LONG, PROP_ID_NULL);
+			//}
+		}
+		else if (m_dwType == REG_SZ)
+		{
+			switch (PROP_TYPE(newValue->ulPropTag))
+			{
+			case PT_UNICODE:
+				registry::WriteStringToRegistry(m_hKey, m_name, newValue->Value.lpszW);
+				break;
+			case PT_STRING8:
+				registry::WriteStringToRegistry(m_hKey, m_name, strings::stringTowstring(newValue->Value.lpszA));
+				break;
+			}
+		}
+
+		m_model = nullptr;
+		m_prop = {};
+		ensureModel();
 	}
 } // namespace propertybag

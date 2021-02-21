@@ -1,8 +1,6 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/propList/RegistryDialog.h>
 #include <UI/Controls/SortList/SingleMAPIPropListCtrl.h>
-//#include <UI/Dialogs/MFCUtilityFunctions.h>
-//#include <core/utility/strings.h>
 #include <core/mapi/mapiFunctions.h>
 #include <core/utility/output.h>
 #include <core/propertyBag/registryPropertyBag.h>
@@ -64,7 +62,7 @@ namespace dialog
 	void RegistryDialog::AddProfileRoot(const std::wstring& szName, const std::wstring& szRoot)
 	{
 		HKEY hRootKey = nullptr;
-		auto hRes = WC_W32(RegOpenKeyExW(HKEY_CURRENT_USER, szRoot.c_str(), NULL, KEY_READ, &hRootKey));
+		auto hRes = WC_W32(RegOpenKeyExW(HKEY_CURRENT_USER, szRoot.c_str(), NULL, KEY_ALL_ACCESS, &hRootKey));
 
 		if (SUCCEEDED(hRes))
 		{
@@ -102,7 +100,7 @@ namespace dialog
 				if (hRes == S_OK)
 				{
 					HKEY hSubKey = nullptr;
-					hRes = WC_W32(RegOpenKeyExW(hRootKey, szBuf.c_str(), NULL, KEY_READ, &hSubKey));
+					hRes = WC_W32(RegOpenKeyExW(hRootKey, szBuf.c_str(), NULL, KEY_ALL_ACCESS, &hSubKey));
 					const auto node = m_lpRegKeyTree.AddChildNode(szBuf.c_str(), hParent, hSubKey, nullptr);
 					AddChildren(node, hSubKey);
 				}
