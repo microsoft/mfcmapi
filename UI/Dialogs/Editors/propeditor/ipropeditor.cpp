@@ -67,7 +67,7 @@ namespace dialog::editor
 
 			lpsPropValue = sourceProp;
 		}
-		else if (lpsPropValue && !ulPropTag)
+		else if (lpsPropValue && PROP_TYPE(lpsPropValue->ulPropTag) != PT_ERROR)
 		{
 			ulPropTag = lpsPropValue->ulPropTag;
 		}
