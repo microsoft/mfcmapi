@@ -152,6 +152,7 @@ namespace registry
 		_In_ const std::wstring& szValue,
 		_In_ const std::vector<BYTE>& binDefault = {});
 
+	void WriteDWORDToRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValueName, DWORD dwValue);
 	void WriteStringToRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValueName, _In_ const std::wstring& szValue);
 
 	extern dwordRegKey debugTag;

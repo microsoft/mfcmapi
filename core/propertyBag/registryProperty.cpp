@@ -289,16 +289,10 @@ namespace propertybag
 		}
 		else if (m_dwType == REG_DWORD)
 		{
-			//	m_dwVal = registry::ReadDWORDFromRegistry(hKey, m_name);
-			//m_prop.Value.l = m_dwVal;
-			//if (m_ulPropTag)
-			//{
-			//	m_canParseMAPI = true;
-			//}
-			//else
-			//{
-			//	m_prop.ulPropTag = PROP_TAG(PT_LONG, PROP_ID_NULL);
-			//}
+			if (PROP_TYPE(newValue->ulPropTag) == PT_LONG)
+			{
+				registry::WriteDWORDToRegistry(m_hKey, m_name, newValue->Value.l);
+			}
 		}
 		else if (m_dwType == REG_SZ)
 		{
