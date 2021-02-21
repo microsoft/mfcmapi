@@ -102,7 +102,7 @@ namespace model
 					}
 
 					// Third, look up all the tags and cache named prop info
-					namedPropCacheEntries = cache::GetNamesFromIDs(lpProp, lpSigBin, &lpTags, NULL);
+					namedPropCacheEntries = cache::GetNamesFromIDs(lpProp, lpSigBin, lpTags, NULL);
 					MAPIFreeBuffer(lpTags);
 				}
 			}

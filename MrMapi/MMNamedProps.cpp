@@ -35,8 +35,7 @@ void DoNamedProps(_In_opt_ LPMDB lpMDB)
 	wprintf(L"Dumping named properties...\n");
 	wprintf(L"\n");
 
-	LPSPropTagArray pProps = nullptr;
-	auto names = cache::GetNamesFromIDs(lpMDB, &pProps, 0);
+	auto names = cache::GetNamesFromIDs(lpMDB, nullptr, 0);
 
 	std::sort(
 		names.begin(),
