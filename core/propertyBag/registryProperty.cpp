@@ -7,6 +7,8 @@
 #include <core/interpret/proptags.h>
 #include <core/property/parseProperty.h>
 #include <core/smartview/SmartView.h>
+#include <core/smartview/block/binaryParser.h>
+#include <core/smartview/block/blockT.h>
 
 namespace propertybag
 {
@@ -98,6 +100,26 @@ namespace propertybag
 						m_prop.Value.lpszW = reinterpret_cast<LPWSTR>(const_cast<LPBYTE>(m_unicodeVal.data()));
 					}
 					break;
+				case PT_MV_LONG:
+				{
+					const auto parser = std::make_shared<smartview::binaryParser>(m_binVal);
+					auto values = std::vector<LONG>{};
+					while (parser->checkSize(sizeof(LONG)))
+					{
+						const auto val = smartview::blockT<LONG>::parse(parser);
+						values.push_back(*val);
+					}
+
+					const auto count = values.size();
+					m_mvBin = std::vector<BYTE>(sizeof(LONG) * count);
+					m_prop.Value.MVl.lpl = reinterpret_cast<LONG*>(m_mvBin.data());
+					m_prop.Value.MVl.cValues = count;
+					for (ULONG iMVCount = 0; iMVCount < count; iMVCount++)
+					{
+						m_prop.Value.MVl.lpl[iMVCount] = values[iMVCount];
+					}
+					break;
+				}
 				default:
 					m_prop.ulPropTag = PROP_TAG(PT_BINARY, PROP_ID(m_ulPropTag));
 					m_prop.Value.bin.cb = m_binVal.size();
