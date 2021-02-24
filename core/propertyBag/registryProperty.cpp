@@ -176,6 +176,32 @@ namespace propertybag
 					}
 					break;
 				}
+				case PT_MV_STRING8:
+				{
+					const auto parser = std::make_shared<smartview::binaryParser>(m_binVal);
+					const auto count = smartview::blockT<LONG>::parse(parser);
+					m_bin = std::vector<BYTE>(sizeof(LPSTR) * (*count));
+					m_mvA = std::vector<std::string>(*count);
+					m_prop.Value.MVszA.lppszA = reinterpret_cast<LPSTR*>(m_bin.data());
+					m_prop.Value.MVszA.cValues = *count;
+
+					// Read lengths
+					auto values = std::vector<LONG>{};
+					for (ULONG iMVCount = 0; iMVCount < m_prop.Value.MVszA.cValues; iMVCount++)
+					{
+						const auto length = smartview::blockT<ULONG>::parse(parser);
+						values.push_back(*length);
+					}
+
+					// Now set offsets and read strings
+					for (ULONG iMVCount = 0; iMVCount < m_prop.Value.MVszA.cValues; iMVCount++)
+					{
+						parser->setOffset(values[iMVCount]);
+						m_mvA[iMVCount] = *smartview::blockStringA::parse(parser);
+						m_prop.Value.MVszA.lppszA[iMVCount] = m_mvA[iMVCount].data();
+					}
+					break;
+				}
 				default:
 					m_prop.ulPropTag = PROP_TAG(PT_BINARY, PROP_ID(m_ulPropTag));
 					m_prop.Value.bin.cb = m_binVal.size();
