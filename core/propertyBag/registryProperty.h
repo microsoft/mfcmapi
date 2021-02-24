@@ -41,6 +41,11 @@ namespace propertybag
 		std::vector<BYTE> m_binVal{};
 		std::vector<BYTE> m_unicodeVal{}; // in case we need to modify the bin to aid parsing
 		std::string m_ansiVal{}; // For PT_STRING* in REG_SZ
-		std::vector<BYTE> m_mvBin{}; // temp storage for MV structs
+
+		// Temp storage for m_sOutputValue
+		std::vector<BYTE> m_bin;
+		std::vector<std::string> m_mvA; // Temp storage for MV structs
+		std::vector<std::wstring> m_mvW; // Temp storage for MV structs
+		std::vector<std::vector<BYTE>> m_mvBin; // Temp storage for m_sOutputValue array
 	};
 } // namespace propertybag

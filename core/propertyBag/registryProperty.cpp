@@ -9,6 +9,7 @@
 #include <core/smartview/SmartView.h>
 #include <core/smartview/block/binaryParser.h>
 #include <core/smartview/block/blockT.h>
+#include <core/smartview/block/blockBytes.h>
 
 namespace propertybag
 {
@@ -48,84 +49,97 @@ namespace propertybag
 			if (m_ulPropTag)
 			{
 				m_canParseMAPI = true;
-				switch (PROP_TYPE(m_ulPropTag))
+				if (PROP_TYPE(m_ulPropTag) & MV_FLAG)
 				{
-				case PT_CLSID:
-					if (m_binVal.size() == 16)
+				}
+				else
+				{
+					switch (PROP_TYPE(m_ulPropTag))
 					{
-						m_prop.Value.lpguid = reinterpret_cast<LPGUID>(const_cast<LPBYTE>(m_binVal.data()));
+					case PT_CLSID:
+						if (m_binVal.size() == 16)
+						{
+							m_prop.Value.lpguid = reinterpret_cast<LPGUID>(const_cast<LPBYTE>(m_binVal.data()));
+						}
+						break;
+					case PT_SYSTIME:
+						if (m_binVal.size() == 8)
+						{
+							m_prop.Value.ft = *reinterpret_cast<LPFILETIME>(const_cast<LPBYTE>(m_binVal.data()));
+						}
+						break;
+					case PT_I8:
+						if (m_binVal.size() == 8)
+						{
+							m_prop.Value.li.QuadPart = static_cast<LONGLONG>(*m_binVal.data());
+						}
+						break;
+					case PT_LONG:
+						if (m_binVal.size() == 4)
+						{
+							m_prop.Value.l = static_cast<DWORD>(*m_binVal.data());
+						}
+						break;
+					case PT_BOOLEAN:
+						if (m_binVal.size() == 2)
+						{
+							m_prop.Value.b = static_cast<WORD>(*m_binVal.data());
+						}
+						break;
+					case PT_BINARY:
+						m_prop.Value.bin.cb = m_binVal.size();
+						m_prop.Value.bin.lpb = const_cast<LPBYTE>(m_binVal.data());
+						break;
+					case PT_UNICODE:
+						if (m_secure)
+						{
+							// TODO - not showing right prop type in UI
+							m_prop.ulPropTag = PROP_TAG(PT_BINARY, PROP_ID(m_ulPropTag));
+							m_prop.Value.bin.cb = m_binVal.size();
+							m_prop.Value.bin.lpb = const_cast<LPBYTE>(m_binVal.data());
+						}
+						else
+						{
+							m_unicodeVal = m_binVal;
+							m_unicodeVal.push_back(0); // Add some null terminators just in case
+							m_unicodeVal.push_back(0);
+							m_prop.Value.lpszW = reinterpret_cast<LPWSTR>(const_cast<LPBYTE>(m_unicodeVal.data()));
+						}
+						break;
+					case PT_MV_BINARY:
+					{
+						const auto parser = std::make_shared<smartview::binaryParser>(m_binVal);
+						const auto count = smartview::blockT<LONG>::parse(parser);
+						m_bin = std::vector<BYTE>(sizeof(SBinary) * (*count));
+						m_mvBin = std::vector<std::vector<BYTE>>(*count);
+						m_prop.Value.MVbin.lpbin = reinterpret_cast<SBinary*>(m_bin.data());
+						m_prop.Value.MVbin.cValues = *count;
+
+						// Read lengths and offsets
+						auto values = std::vector<std::pair<ULONG, LONG>>{};
+						for (ULONG iMVCount = 0; iMVCount < m_prop.Value.MVbin.cValues; iMVCount++)
+						{
+							const auto length = smartview::blockT<ULONG>::parse(parser);
+							const auto offset = smartview::blockT<LONG>::parse(parser);
+							values.push_back({*length, *offset});
+						}
+
+						// Now set offsets and read bin
+						for (ULONG iMVCount = 0; iMVCount < m_prop.Value.MVbin.cValues; iMVCount++)
+						{
+							parser->setOffset(values[iMVCount].second);
+							m_mvBin[iMVCount] = *smartview::blockBytes::parse(parser, values[iMVCount].first);
+							m_prop.Value.MVbin.lpbin[iMVCount] = {values[iMVCount].first, m_mvBin[iMVCount].data()};
+						}
+						break;
 					}
-					break;
-				case PT_SYSTIME:
-					if (m_binVal.size() == 8)
-					{
-						m_prop.Value.ft = *reinterpret_cast<LPFILETIME>(const_cast<LPBYTE>(m_binVal.data()));
-					}
-					break;
-				case PT_I8:
-					if (m_binVal.size() == 8)
-					{
-						m_prop.Value.li.QuadPart = static_cast<LONGLONG>(*m_binVal.data());
-					}
-					break;
-				case PT_LONG:
-					if (m_binVal.size() == 4)
-					{
-						m_prop.Value.l = static_cast<DWORD>(*m_binVal.data());
-					}
-					break;
-				case PT_BOOLEAN:
-					if (m_binVal.size() == 2)
-					{
-						m_prop.Value.b = static_cast<WORD>(*m_binVal.data());
-					}
-					break;
-				case PT_BINARY:
-					m_prop.Value.bin.cb = m_binVal.size();
-					m_prop.Value.bin.lpb = const_cast<LPBYTE>(m_binVal.data());
-					break;
-				case PT_UNICODE:
-					if (m_secure)
-					{
-						// TODO - not showing right prop type in UI
+					default:
 						m_prop.ulPropTag = PROP_TAG(PT_BINARY, PROP_ID(m_ulPropTag));
 						m_prop.Value.bin.cb = m_binVal.size();
 						m_prop.Value.bin.lpb = const_cast<LPBYTE>(m_binVal.data());
+						m_canParseMAPI = false;
+						break;
 					}
-					else
-					{
-						m_unicodeVal = m_binVal;
-						m_unicodeVal.push_back(0); // Add some null terminators just in case
-						m_unicodeVal.push_back(0);
-						m_prop.Value.lpszW = reinterpret_cast<LPWSTR>(const_cast<LPBYTE>(m_unicodeVal.data()));
-					}
-					break;
-				case PT_MV_LONG:
-				{
-					const auto parser = std::make_shared<smartview::binaryParser>(m_binVal);
-					auto values = std::vector<LONG>{};
-					while (parser->checkSize(sizeof(LONG)))
-					{
-						const auto val = smartview::blockT<LONG>::parse(parser);
-						values.push_back(*val);
-					}
-
-					const auto count = values.size();
-					m_mvBin = std::vector<BYTE>(sizeof(LONG) * count);
-					m_prop.Value.MVl.lpl = reinterpret_cast<LONG*>(m_mvBin.data());
-					m_prop.Value.MVl.cValues = count;
-					for (ULONG iMVCount = 0; iMVCount < count; iMVCount++)
-					{
-						m_prop.Value.MVl.lpl[iMVCount] = values[iMVCount];
-					}
-					break;
-				}
-				default:
-					m_prop.ulPropTag = PROP_TAG(PT_BINARY, PROP_ID(m_ulPropTag));
-					m_prop.Value.bin.cb = m_binVal.size();
-					m_prop.Value.bin.lpb = const_cast<LPBYTE>(m_binVal.data());
-					m_canParseMAPI = false;
-					break;
 				}
 			}
 			else
