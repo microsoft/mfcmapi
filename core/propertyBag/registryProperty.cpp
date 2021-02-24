@@ -110,7 +110,7 @@ namespace propertybag
 					m_bin = std::vector<BYTE>(sizeof(LONG) * count);
 					m_prop.Value.MVl.lpl = reinterpret_cast<LONG*>(m_bin.data());
 					m_prop.Value.MVl.cValues = count;
-					for (ULONG iMVCount = 0; iMVCount < m_prop.Value.MVl.cValues; iMVCount++)
+					for (ULONG iMVCount = 0; iMVCount < count; iMVCount++)
 					{
 						m_prop.Value.MVl.lpl[iMVCount] = smartview::blockT<LONG>::parse(parser)->getData();
 					}
@@ -127,7 +127,7 @@ namespace propertybag
 					m_prop.Value.MVbin.cValues = count;
 
 					// Read lengths, offsets, and binary in a single loop
-					for (ULONG iMVCount = 0; iMVCount < m_prop.Value.MVbin.cValues; iMVCount++)
+					for (ULONG iMVCount = 0; iMVCount < count; iMVCount++)
 					{
 						const auto originalOffset = parser->getOffset();
 						const auto length = smartview::blockT<ULONG>::parse(parser)->getData();
@@ -143,53 +143,45 @@ namespace propertybag
 				case PT_MV_UNICODE:
 				{
 					const auto parser = std::make_shared<smartview::binaryParser>(m_binVal);
-					const auto count = smartview::blockT<LONG>::parse(parser);
-					m_bin = std::vector<BYTE>(sizeof(LPWSTR) * (*count));
-					m_mvW = std::vector<std::wstring>(*count);
+					const auto count = smartview::blockT<LONG>::parse(parser)->getData();
+					m_bin = std::vector<BYTE>(sizeof(LPWSTR) * count);
+					m_mvW = std::vector<std::wstring>(count);
 					m_prop.Value.MVszW.lppszW = reinterpret_cast<LPWSTR*>(m_bin.data());
-					m_prop.Value.MVszW.cValues = *count;
+					m_prop.Value.MVszW.cValues = count;
 
-					// Read offsets
-					auto values = std::vector<LONG>{};
-					for (ULONG iMVCount = 0; iMVCount < m_prop.Value.MVszW.cValues; iMVCount++)
+					// Read offsets and strings in a single loop
+					for (ULONG iMVCount = 0; iMVCount < count; iMVCount++)
 					{
-						const auto offset = smartview::blockT<LONG>::parse(parser);
-						values.push_back(*offset);
-					}
-
-					// Now set offsets and read strings
-					for (ULONG iMVCount = 0; iMVCount < m_prop.Value.MVszW.cValues; iMVCount++)
-					{
-						parser->setOffset(values[iMVCount]);
+						const auto originalOffset = parser->getOffset();
+						const auto offset = smartview::blockT<LONG>::parse(parser)->getData();
+						parser->setOffset(offset);
 						m_mvW[iMVCount] = *smartview::blockStringW::parse(parser);
 						m_prop.Value.MVszW.lppszW[iMVCount] = m_mvW[iMVCount].data();
+						parser->setOffset(originalOffset);
 					}
+
 					break;
 				}
 				case PT_MV_STRING8:
 				{
 					const auto parser = std::make_shared<smartview::binaryParser>(m_binVal);
-					const auto count = smartview::blockT<LONG>::parse(parser);
-					m_bin = std::vector<BYTE>(sizeof(LPSTR) * (*count));
-					m_mvA = std::vector<std::string>(*count);
+					const auto count = smartview::blockT<LONG>::parse(parser)->getData();
+					m_bin = std::vector<BYTE>(sizeof(LPSTR) * count);
+					m_mvA = std::vector<std::string>(count);
 					m_prop.Value.MVszA.lppszA = reinterpret_cast<LPSTR*>(m_bin.data());
-					m_prop.Value.MVszA.cValues = *count;
+					m_prop.Value.MVszA.cValues = count;
 
-					// Read lengths
-					auto values = std::vector<LONG>{};
-					for (ULONG iMVCount = 0; iMVCount < m_prop.Value.MVszA.cValues; iMVCount++)
+					// Read offsets and strings in a single loop
+					for (ULONG iMVCount = 0; iMVCount < count; iMVCount++)
 					{
-						const auto offset = smartview::blockT<LONG>::parse(parser);
-						values.push_back(*offset);
-					}
-
-					// Now set offsets and read strings
-					for (ULONG iMVCount = 0; iMVCount < m_prop.Value.MVszA.cValues; iMVCount++)
-					{
-						parser->setOffset(values[iMVCount]);
+						const auto originalOffset = parser->getOffset();
+						const auto offset = smartview::blockT<LONG>::parse(parser)->getData();
+						parser->setOffset(offset);
 						m_mvA[iMVCount] = *smartview::blockStringA::parse(parser);
 						m_prop.Value.MVszA.lppszA[iMVCount] = m_mvA[iMVCount].data();
+						parser->setOffset(originalOffset);
 					}
+
 					break;
 				}
 				default:
