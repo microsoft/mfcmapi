@@ -38,14 +38,14 @@ namespace propertybag
 		DWORD m_dwType{};
 		DWORD m_dwVal{};
 		std::wstring m_szVal{};
-		std::vector<BYTE> m_binVal{};
+		std::vector<BYTE> m_binVal{}; // raw data read from registry
 		std::vector<BYTE> m_unicodeVal{}; // in case we need to modify the bin to aid parsing
 		std::string m_ansiVal{}; // For PT_STRING* in REG_SZ
 
 		// Temp storage for m_sOutputValue
-		std::vector<BYTE> m_bin;
-		std::vector<std::string> m_mvA; // Temp storage for MV structs
-		std::vector<std::wstring> m_mvW; // Temp storage for MV structs
-		std::vector<std::vector<BYTE>> m_mvBin; // Temp storage for m_sOutputValue array
+		std::vector<BYTE> m_bin; // backing data for base MV structs
+		std::vector<std::string> m_mvA; // Backing data for MV ANSI array
+		std::vector<std::wstring> m_mvW; // Backing data for MV Unicode array
+		std::vector<std::vector<BYTE>> m_mvBin; // Backing data for MV binary array
 	};
 } // namespace propertybag
