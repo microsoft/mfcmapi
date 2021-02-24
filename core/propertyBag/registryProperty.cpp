@@ -12,6 +12,7 @@
 #include <core/smartview/block/blockBytes.h>
 #include <core/smartview/block/blockStringW.h>
 #include <core/smartview/block/blockStringA.h>
+#include <core/utility/import.h>
 
 namespace propertybag
 {
@@ -90,10 +91,18 @@ namespace propertybag
 				case PT_UNICODE:
 					if (m_secure)
 					{
-						// TODO - not showing right prop type in UI
-						m_prop.ulPropTag = PROP_TAG(PT_BINARY, PROP_ID(m_ulPropTag));
-						m_prop.Value.bin.cb = m_binVal.size();
-						m_prop.Value.bin.lpb = const_cast<LPBYTE>(m_binVal.data());
+						// TODO - handle decrypt at load and don't special case here
+						// will also need to work out set case
+						auto DataIn = DATA_BLOB{m_binVal.size(), m_binVal.data()};
+						auto DataOut = DATA_BLOB{};
+						if (import::pfnCryptUnprotectData(&DataIn, nullptr, nullptr, nullptr, nullptr, 0, &DataOut))
+						{
+							const auto bin = SBinary{DataOut.cbData, DataOut.pbData};
+							m_szVal = strings::BinToTextStringW(&bin, false);
+							m_prop.Value.lpszW = const_cast<LPWSTR>(m_szVal.data());
+						}
+
+						LocalFree(DataOut.pbData);
 					}
 					else
 					{
@@ -121,7 +130,7 @@ namespace propertybag
 				case PT_MV_BINARY:
 				{
 					const auto parser = std::make_shared<smartview::binaryParser>(m_binVal);
-					const auto count = smartview::blockT<LONG>::parse(parser)->getData();
+					const auto count = smartview::blockT<ULONG>::parse(parser)->getData();
 					m_bin = std::vector<BYTE>(sizeof(SBinary) * count);
 					m_mvBin = std::vector<std::vector<BYTE>>(count);
 					m_prop.Value.MVbin.lpbin = reinterpret_cast<SBinary*>(m_bin.data());
@@ -144,7 +153,7 @@ namespace propertybag
 				case PT_MV_UNICODE:
 				{
 					const auto parser = std::make_shared<smartview::binaryParser>(m_binVal);
-					const auto count = smartview::blockT<LONG>::parse(parser)->getData();
+					const auto count = smartview::blockT<ULONG>::parse(parser)->getData();
 					m_bin = std::vector<BYTE>(sizeof(LPWSTR) * count);
 					m_mvW = std::vector<std::wstring>(count);
 					m_prop.Value.MVszW.lppszW = reinterpret_cast<LPWSTR*>(m_bin.data());
@@ -166,7 +175,7 @@ namespace propertybag
 				case PT_MV_STRING8:
 				{
 					const auto parser = std::make_shared<smartview::binaryParser>(m_binVal);
-					const auto count = smartview::blockT<LONG>::parse(parser)->getData();
+					const auto count = smartview::blockT<ULONG>::parse(parser)->getData();
 					m_bin = std::vector<BYTE>(sizeof(LPSTR) * count);
 					m_mvA = std::vector<std::string>(count);
 					m_prop.Value.MVszA.lppszA = reinterpret_cast<LPSTR*>(m_bin.data());
@@ -186,6 +195,7 @@ namespace propertybag
 					break;
 				}
 				default:
+					// Haven't found any other property types out there so this ought never be used
 					m_prop.ulPropTag = PROP_TAG(PT_BINARY, PROP_ID(m_ulPropTag));
 					m_prop.Value.bin.cb = m_binVal.size();
 					m_prop.Value.bin.lpb = const_cast<LPBYTE>(m_binVal.data());
