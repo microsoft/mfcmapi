@@ -112,8 +112,7 @@ namespace propertybag
 					m_prop.Value.MVl.cValues = count;
 					for (ULONG iMVCount = 0; iMVCount < m_prop.Value.MVl.cValues; iMVCount++)
 					{
-						const auto val = smartview::blockT<LONG>::parse(parser);
-						m_prop.Value.MVl.lpl[iMVCount] = *val;
+						m_prop.Value.MVl.lpl[iMVCount] = smartview::blockT<LONG>::parse(parser)->getData();
 					}
 
 					break;
@@ -121,28 +120,24 @@ namespace propertybag
 				case PT_MV_BINARY:
 				{
 					const auto parser = std::make_shared<smartview::binaryParser>(m_binVal);
-					const auto count = smartview::blockT<LONG>::parse(parser);
-					m_bin = std::vector<BYTE>(sizeof(SBinary) * (*count));
-					m_mvBin = std::vector<std::vector<BYTE>>(*count);
+					const auto count = smartview::blockT<LONG>::parse(parser)->getData();
+					m_bin = std::vector<BYTE>(sizeof(SBinary) * count);
+					m_mvBin = std::vector<std::vector<BYTE>>(count);
 					m_prop.Value.MVbin.lpbin = reinterpret_cast<SBinary*>(m_bin.data());
-					m_prop.Value.MVbin.cValues = *count;
+					m_prop.Value.MVbin.cValues = count;
 
-					// Read lengths and offsets
-					auto values = std::vector<std::pair<ULONG, LONG>>{};
+					// Read lengths, offsets, and binary in a single loop
 					for (ULONG iMVCount = 0; iMVCount < m_prop.Value.MVbin.cValues; iMVCount++)
 					{
-						const auto length = smartview::blockT<ULONG>::parse(parser);
-						const auto offset = smartview::blockT<LONG>::parse(parser);
-						values.push_back({*length, *offset});
+						const auto originalOffset = parser->getOffset();
+						const auto length = smartview::blockT<ULONG>::parse(parser)->getData();
+						const auto offset = smartview::blockT<LONG>::parse(parser)->getData();
+						parser->setOffset(offset);
+						m_mvBin[iMVCount] = *smartview::blockBytes::parse(parser, length);
+						m_prop.Value.MVbin.lpbin[iMVCount] = {length, m_mvBin[iMVCount].data()};
+						parser->setOffset(originalOffset);
 					}
 
-					// Now set offsets and read bin
-					for (ULONG iMVCount = 0; iMVCount < m_prop.Value.MVbin.cValues; iMVCount++)
-					{
-						parser->setOffset(values[iMVCount].second);
-						m_mvBin[iMVCount] = *smartview::blockBytes::parse(parser, values[iMVCount].first);
-						m_prop.Value.MVbin.lpbin[iMVCount] = {values[iMVCount].first, m_mvBin[iMVCount].data()};
-					}
 					break;
 				}
 				case PT_MV_UNICODE:
@@ -158,7 +153,7 @@ namespace propertybag
 					auto values = std::vector<LONG>{};
 					for (ULONG iMVCount = 0; iMVCount < m_prop.Value.MVszW.cValues; iMVCount++)
 					{
-						const auto offset= smartview::blockT<LONG>::parse(parser);
+						const auto offset = smartview::blockT<LONG>::parse(parser);
 						values.push_back(*offset);
 					}
 
