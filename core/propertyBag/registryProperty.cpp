@@ -106,21 +106,16 @@ namespace propertybag
 				case PT_MV_LONG:
 				{
 					const auto parser = std::make_shared<smartview::binaryParser>(m_binVal);
-					auto values = std::vector<LONG>{};
-					while (parser->checkSize(sizeof(LONG)))
-					{
-						const auto val = smartview::blockT<LONG>::parse(parser);
-						values.push_back(*val);
-					}
-
-					const auto count = values.size();
+					const auto count = parser->getSize() / sizeof(LONG);
 					m_bin = std::vector<BYTE>(sizeof(LONG) * count);
 					m_prop.Value.MVl.lpl = reinterpret_cast<LONG*>(m_bin.data());
 					m_prop.Value.MVl.cValues = count;
 					for (ULONG iMVCount = 0; iMVCount < m_prop.Value.MVl.cValues; iMVCount++)
 					{
-						m_prop.Value.MVl.lpl[iMVCount] = values[iMVCount];
+						const auto val = smartview::blockT<LONG>::parse(parser);
+						m_prop.Value.MVl.lpl[iMVCount] = *val;
 					}
+
 					break;
 				}
 				case PT_MV_BINARY:
