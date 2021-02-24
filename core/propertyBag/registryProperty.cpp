@@ -159,12 +159,12 @@ namespace propertybag
 					m_prop.Value.MVszW.lppszW = reinterpret_cast<LPWSTR*>(m_bin.data());
 					m_prop.Value.MVszW.cValues = *count;
 
-					// Read lengths
+					// Read offsets
 					auto values = std::vector<LONG>{};
 					for (ULONG iMVCount = 0; iMVCount < m_prop.Value.MVszW.cValues; iMVCount++)
 					{
-						const auto length = smartview::blockT<ULONG>::parse(parser);
-						values.push_back(*length);
+						const auto offset= smartview::blockT<LONG>::parse(parser);
+						values.push_back(*offset);
 					}
 
 					// Now set offsets and read strings
@@ -189,8 +189,8 @@ namespace propertybag
 					auto values = std::vector<LONG>{};
 					for (ULONG iMVCount = 0; iMVCount < m_prop.Value.MVszA.cValues; iMVCount++)
 					{
-						const auto length = smartview::blockT<ULONG>::parse(parser);
-						values.push_back(*length);
+						const auto offset = smartview::blockT<LONG>::parse(parser);
+						values.push_back(*offset);
 					}
 
 					// Now set offsets and read strings
