@@ -110,6 +110,7 @@ namespace propertybag
 					m_bin = std::vector<BYTE>(sizeof(LONG) * count);
 					m_prop.Value.MVl.lpl = reinterpret_cast<LONG*>(m_bin.data());
 					m_prop.Value.MVl.cValues = count;
+
 					for (ULONG iMVCount = 0; iMVCount < count; iMVCount++)
 					{
 						m_prop.Value.MVl.lpl[iMVCount] = smartview::blockT<LONG>::parse(parser)->getData();
