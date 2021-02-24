@@ -252,7 +252,6 @@ namespace propertybag
 		else
 		{
 			m_model->name(m_name);
-			m_model->otherName(strings::format(L"%d", m_dwType)); // Just shoving in model to see it
 		}
 
 		if (m_secure) m_model->name(m_model->name() + L" (secure)");
