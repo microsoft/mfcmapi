@@ -55,6 +55,7 @@ namespace import
 	LPPACKAGEIDFROMFULLNAME pfnPackageIdFromFullName = nullptr;
 
 	// From crypt32.dll
+	LPCRYPTPROTECTDATA pfnCryptProtectData = nullptr;
 	LPCRYPTUNPROTECTDATA pfnCryptUnprotectData = nullptr;
 
 	_Check_return_ HMODULE LoadFromSystemDir(_In_ const std::wstring& szDLLName)
@@ -106,6 +107,7 @@ namespace import
 		LoadProc(L"shell32.dll", hModShell32, "SHGetPropertyStoreForWindow", pfnSHGetPropertyStoreForWindow); // STRING_OK;
 		LoadProc(L"kernel32.dll", mapistub::hModKernel32, "FindPackagesByPackageFamily", pfnFindPackagesByPackageFamily); // STRING_OK;
 		LoadProc(L"kernel32.dll", mapistub::hModKernel32, "PackageIdFromFullName", pfnPackageIdFromFullName); // STRING_OK;
+		LoadProc(L"crypt32.dll", hModCrypt32, "CryptProtectData", pfnCryptProtectData); // STRING_OK;
 		LoadProc(L"crypt32.dll", hModCrypt32, "CryptUnprotectData", pfnCryptUnprotectData ); // STRING_OK;
 		// clang-format on
 	}

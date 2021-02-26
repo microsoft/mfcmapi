@@ -276,13 +276,24 @@ namespace registry
 		_In_ HKEY hKey,
 		_In_ const std::wstring& szValueName,
 		_In_ const std::vector<BYTE>& binValue,
-		_In_ const bool /*bSecure*/)
+		_In_ const bool bSecure)
 	{
-		// TODO: implement bSecure
-		auto cbValue = binValue.size();
+		const DWORD cbValue = binValue.size();
+		if (bSecure)
+		{
+			auto DataIn = DATA_BLOB{cbValue, const_cast<LPBYTE>(binValue.data())};
+			auto DataOut = DATA_BLOB{};
+			if (import::pfnCryptProtectData(&DataIn, nullptr, nullptr, nullptr, nullptr, 0, &DataOut))
+			{
+				WC_W32_S(RegSetValueExW(hKey, szValueName.c_str(), NULL, REG_BINARY, DataOut.pbData, DataOut.cbData));
+			}
 
-		WC_W32_S(RegSetValueExW(
-			hKey, szValueName.c_str(), NULL, REG_BINARY, LPBYTE(binValue.data()), static_cast<DWORD>(cbValue)));
+			LocalFree(DataOut.pbData);
+		}
+		else
+		{
+			WC_W32_S(RegSetValueExW(hKey, szValueName.c_str(), NULL, REG_BINARY, binValue.data(), cbValue));
+		}
 	}
 
 	_Check_return_ HKEY CreateRootKey()
