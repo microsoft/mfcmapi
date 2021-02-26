@@ -147,19 +147,24 @@ namespace registry
 	DWORD ReadDWORDFromRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValue, _In_ DWORD dwDefaultVal = {});
 	std::wstring
 	ReadStringFromRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValue, _In_ const std::wstring& szDefault = {});
-	std::vector<BYTE> ReadBinFromRegistry(
-		_In_ HKEY hKey,
-		_In_ const std::wstring& szValue,
-		_In_ const std::vector<BYTE>& binDefault = {});
+	std::vector<BYTE>
+	ReadBinFromRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValue, _In_ const bool bSecure = false);
 
 	void WriteDWORDToRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValueName, DWORD dwValue);
 	void WriteStringToRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValueName, _In_ const std::wstring& szValue);
-	void
-	WriteBinToRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValueName, _In_ const std::vector<BYTE>& binValue);
-	inline void
-	WriteBinToRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValueName, _In_ size_t cb, _In_ const BYTE* lpbin)
+	void WriteBinToRegistry(
+		_In_ HKEY hKey,
+		_In_ const std::wstring& szValueName,
+		_In_ const std::vector<BYTE>& binValue_In_,
+		const bool bSecure = false);
+	inline void WriteBinToRegistry(
+		_In_ HKEY hKey,
+		_In_ const std::wstring& szValueName,
+		_In_ size_t cb,
+		_In_ const BYTE* lpbin,
+		_In_ const bool bSecure = false)
 	{
-		WriteBinToRegistry(hKey, szValueName, std::vector<BYTE>(lpbin, lpbin + cb));
+		WriteBinToRegistry(hKey, szValueName, std::vector<BYTE>(lpbin, lpbin + cb), bSecure);
 	}
 
 	extern dwordRegKey debugTag;

@@ -3,6 +3,7 @@
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 #include <core/utility/error.h>
+#include <core/utility/import.h>
 
 namespace registry
 {
@@ -158,10 +159,9 @@ namespace registry
 		return szDefault;
 	}
 
-	std::vector<BYTE>
-	ReadBinFromRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValue, _In_ const std::vector<BYTE>& binDefault)
+	std::vector<BYTE> ReadBinFromRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValue, _In_ const bool bSecure)
 	{
-		if (szValue.empty()) return binDefault;
+		if (szValue.empty()) return {};
 		output::DebugPrint(output::dbgLevel::Generic, L"ReadBinFromRegistry(%ws)\n", szValue.c_str());
 
 		// Get its size
@@ -177,11 +177,23 @@ namespace registry
 				RegQueryValueExW(hKey, szValue.c_str(), nullptr, &dwKeyType, const_cast<LPBYTE>(bin.data()), &cb));
 			if (hRes == S_OK && cb && dwKeyType == REG_BINARY)
 			{
+				if (bSecure)
+				{
+					auto DataIn = DATA_BLOB{bin.size(), bin.data()};
+					auto DataOut = DATA_BLOB{};
+					if (import::pfnCryptUnprotectData(&DataIn, nullptr, nullptr, nullptr, nullptr, 0, &DataOut))
+					{
+						bin = std::vector<BYTE>(DataOut.pbData, DataOut.pbData + DataOut.cbData);
+					}
+
+					LocalFree(DataOut.pbData);
+				}
+
 				return bin;
 			}
 		}
 
-		return binDefault;
+		return {};
 	}
 
 	void ReadFromRegistry()
@@ -260,9 +272,13 @@ namespace registry
 		}
 	}
 
-	void
-	WriteBinToRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValueName, _In_ const std::vector<BYTE>& binValue)
+	void WriteBinToRegistry(
+		_In_ HKEY hKey,
+		_In_ const std::wstring& szValueName,
+		_In_ const std::vector<BYTE>& binValue,
+		_In_ const bool /*bSecure*/)
 	{
+		// TODO: implement bSecure
 		auto cbValue = binValue.size();
 
 		WC_W32_S(RegSetValueExW(

@@ -12,7 +12,6 @@
 #include <core/smartview/block/blockBytes.h>
 #include <core/smartview/block/blockStringW.h>
 #include <core/smartview/block/blockStringA.h>
-#include <core/utility/import.h>
 
 namespace propertybag
 {
@@ -48,7 +47,7 @@ namespace propertybag
 
 		if (m_dwType == REG_BINARY)
 		{
-			m_binVal = registry::ReadBinFromRegistry(m_hKey, m_name);
+			m_binVal = registry::ReadBinFromRegistry(m_hKey, m_name, m_secure);
 			if (m_ulPropTag)
 			{
 				m_canParseMAPI = true;
@@ -89,28 +88,10 @@ namespace propertybag
 					m_prop.Value.bin.lpb = const_cast<LPBYTE>(m_binVal.data());
 					break;
 				case PT_UNICODE:
-					if (m_secure)
-					{
-						// TODO - handle decrypt at load and don't special case here
-						// will also need to work out set case
-						auto DataIn = DATA_BLOB{m_binVal.size(), m_binVal.data()};
-						auto DataOut = DATA_BLOB{};
-						if (import::pfnCryptUnprotectData(&DataIn, nullptr, nullptr, nullptr, nullptr, 0, &DataOut))
-						{
-							const auto bin = SBinary{DataOut.cbData, DataOut.pbData};
-							m_szVal = strings::BinToTextStringW(&bin, false);
-							m_prop.Value.lpszW = const_cast<LPWSTR>(m_szVal.data());
-						}
-
-						LocalFree(DataOut.pbData);
-					}
-					else
-					{
-						m_unicodeVal = m_binVal;
-						m_unicodeVal.push_back(0); // Add some null terminators just in case
-						m_unicodeVal.push_back(0);
-						m_prop.Value.lpszW = reinterpret_cast<LPWSTR>(const_cast<LPBYTE>(m_unicodeVal.data()));
-					}
+					m_unicodeVal = m_binVal;
+					m_unicodeVal.push_back(0); // Add some null terminators just in case
+					m_unicodeVal.push_back(0);
+					m_prop.Value.lpszW = reinterpret_cast<LPWSTR>(const_cast<LPBYTE>(m_unicodeVal.data()));
 					break;
 				case PT_MV_LONG:
 				{
@@ -316,34 +297,49 @@ namespace propertybag
 		{
 			if (newValue->ulPropTag)
 			{
+				ULONG cb = 0;
+				LPBYTE lpb = nullptr;
+				auto write = true;
+				// TODO: Implement MV props
 				switch (PROP_TYPE(newValue->ulPropTag))
 				{
 				case PT_CLSID:
-					registry::WriteBinToRegistry(m_hKey, m_name, 16, LPBYTE(newValue->Value.lpguid));
+					cb = 16;
+					lpb = LPBYTE(newValue->Value.lpguid);
 					break;
 				case PT_SYSTIME:
-					registry::WriteBinToRegistry(m_hKey, m_name, 8, LPBYTE(&newValue->Value.ft));
+					cb = 8;
+					lpb = LPBYTE(&newValue->Value.ft);
 					break;
 				case PT_I8:
-					registry::WriteBinToRegistry(m_hKey, m_name, 8, LPBYTE(&newValue->Value.li.QuadPart));
+					cb = 8;
+					lpb = LPBYTE(&newValue->Value.li.QuadPart);
 					break;
 				case PT_LONG:
-					registry::WriteBinToRegistry(m_hKey, m_name, 4, LPBYTE(&newValue->Value.l));
+					cb = 4;
+					lpb = LPBYTE(&newValue->Value.l);
 					break;
 				case PT_BOOLEAN:
-					registry::WriteBinToRegistry(m_hKey, m_name, 2, LPBYTE(&newValue->Value.b));
+					cb = 2;
+					lpb = LPBYTE(&newValue->Value.b);
 					break;
 				case PT_BINARY:
-					registry::WriteBinToRegistry(m_hKey, m_name, newValue->Value.bin.cb, newValue->Value.bin.lpb);
+					cb = newValue->Value.bin.cb;
+					lpb = newValue->Value.bin.lpb;
 					break;
 				case PT_UNICODE:
 					// Include null terminator
-					registry::WriteBinToRegistry(
-						m_hKey,
-						m_name,
-						(std::wstring(newValue->Value.lpszW).length() + 1) * sizeof(wchar_t),
-						LPBYTE(newValue->Value.lpszW));
+					cb = (std::wstring(newValue->Value.lpszW).length() + 1) * sizeof(wchar_t);
+					lpb = LPBYTE(newValue->Value.lpszW);
 					break;
+				default:
+					write = false;
+					break;
+				}
+
+				if (write)
+				{
+					registry::WriteBinToRegistry(m_hKey, m_name, cb, lpb, m_secure);
 				}
 			}
 			else
