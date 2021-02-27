@@ -409,7 +409,7 @@ namespace propertybag
 					for (ULONG iMVCount = 0; iMVCount < newValue->Value.MVszW.cValues; iMVCount++)
 					{
 						strings[iMVCount] = newValue->Value.MVszW.lppszW[iMVCount]; // cache for convenience
-						cb += ((strings[iMVCount].length() + 1) * sizeof(wchar_t));
+						cb += (strings[iMVCount].length() + 1) * sizeof(wchar_t);
 					}
 
 					// Then reserve additional space for the string data to avoid realloc
@@ -421,6 +421,39 @@ namespace propertybag
 					for (ULONG iMVCount = 0; iMVCount < newValue->Value.MVszW.cValues; iMVCount++)
 					{
 						auto cbBin = (strings[iMVCount].length() + 1) * sizeof(wchar_t);
+						const auto lpbBin = reinterpret_cast<LPBYTE>(strings[iMVCount].data());
+						assign(m_binVal, offset, m_binVal.size());
+						offset += sizeof(ULONG);
+						std::copy(lpbBin, lpbBin + cbBin, std::back_inserter(m_binVal));
+					}
+
+					lpb = m_binVal.data();
+					break;
+				}
+				case PT_MV_STRING8:
+				{
+					write = false;
+					// Allocate the header portion, which is a fixed size based on the number of strings to pack
+					cb = sizeof(LONG) * (1 + newValue->Value.MVszA.cValues); //  count and array of offset
+					m_binVal = std::vector<BYTE>(cb); // Ok to use this since we're gonna wipe it anyway
+
+					// Count up our additional needs for reserve
+					auto strings = std::vector<std::string>(newValue->Value.MVszA.cValues);
+					for (ULONG iMVCount = 0; iMVCount < newValue->Value.MVszA.cValues; iMVCount++)
+					{
+						strings[iMVCount] = newValue->Value.MVszA.lppszA[iMVCount]; // cache for convenience
+						cb += strings[iMVCount].length() + 1;
+					}
+
+					// Then reserve additional space for the string data to avoid realloc
+					m_binVal.reserve(cb);
+					auto offset = 0;
+					assign(m_binVal, offset, newValue->Value.MVszA.cValues);
+					offset += sizeof(ULONG);
+					// As we loop through and populate the header, we append the null terminated strings to the end of our array
+					for (ULONG iMVCount = 0; iMVCount < newValue->Value.MVszA.cValues; iMVCount++)
+					{
+						auto cbBin = strings[iMVCount].length() + 1;
 						const auto lpbBin = reinterpret_cast<LPBYTE>(strings[iMVCount].data());
 						assign(m_binVal, offset, m_binVal.size());
 						offset += sizeof(ULONG);
