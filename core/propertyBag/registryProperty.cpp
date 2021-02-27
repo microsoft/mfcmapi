@@ -332,6 +332,20 @@ namespace propertybag
 					cb = (std::wstring(newValue->Value.lpszW).length() + 1) * sizeof(wchar_t);
 					lpb = LPBYTE(newValue->Value.lpszW);
 					break;
+				case PT_MV_LONG:
+				{
+					cb = sizeof(LONG) * (newValue->Value.MVl.cValues);
+					m_binVal = std::vector<BYTE>(cb); // Ok to use this since we're gonna wipe it anyway
+					auto offset = 0;
+					for (ULONG iMVCount = 0; iMVCount < newValue->Value.MVl.cValues; iMVCount++)
+					{
+						*(reinterpret_cast<LONG*>(&m_binVal[offset])) = newValue->Value.MVl.lpl[iMVCount];
+						offset += sizeof(LONG);
+					}
+
+					lpb = m_binVal.data();
+					break;
+				}
 				default:
 					write = false;
 					break;
@@ -367,8 +381,10 @@ namespace propertybag
 			}
 		}
 
+		// After writing, clear everything out - we'll reload as needed.
 		m_model = nullptr;
 		m_prop = {};
+		m_binVal = {};
 		ensureModel();
 	}
 } // namespace propertybag
