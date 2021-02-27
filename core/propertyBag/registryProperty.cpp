@@ -158,8 +158,8 @@ namespace propertybag
 					// Read offsets and strings in a single loop
 					for (ULONG iMVCount = 0; iMVCount < count; iMVCount++)
 					{
-						const auto originalOffset = parser->getOffset();
 						const auto offset = smartview::blockT<LONG>::parse(parser)->getData();
+						const auto originalOffset = parser->getOffset();
 						parser->setOffset(offset);
 						m_mvW[iMVCount] = *smartview::blockStringW::parse(parser);
 						m_prop.Value.MVszW.lppszW[iMVCount] = m_mvW[iMVCount].data();
@@ -180,8 +180,8 @@ namespace propertybag
 					// Read offsets and strings in a single loop
 					for (ULONG iMVCount = 0; iMVCount < count; iMVCount++)
 					{
-						const auto originalOffset = parser->getOffset();
 						const auto offset = smartview::blockT<LONG>::parse(parser)->getData();
+						const auto originalOffset = parser->getOffset();
 						parser->setOffset(offset);
 						m_mvA[iMVCount] = *smartview::blockStringA::parse(parser);
 						m_prop.Value.MVszA.lppszA[iMVCount] = m_mvA[iMVCount].data();
@@ -393,6 +393,38 @@ namespace propertybag
 							m_binVal.push_back(0);
 							cbBin++;
 						}
+					}
+
+					lpb = m_binVal.data();
+					break;
+				}
+				case PT_MV_UNICODE:
+				{
+					// Allocate the header portion, which is a fixed size based on the number of strings to pack
+					cb = sizeof(LONG) * (1 + newValue->Value.MVszW.cValues); //  count and array of offset
+					m_binVal = std::vector<BYTE>(cb); // Ok to use this since we're gonna wipe it anyway
+
+					// Count up our additional needs for reserve
+					auto strings = std::vector<std::wstring>(newValue->Value.MVszW.cValues);
+					for (ULONG iMVCount = 0; iMVCount < newValue->Value.MVszW.cValues; iMVCount++)
+					{
+						strings[iMVCount] = newValue->Value.MVszW.lppszW[iMVCount]; // cache for convenience
+						cb += ((strings[iMVCount].length() + 1) * sizeof(wchar_t));
+					}
+
+					// Then reserve additional space for the string data to avoid realloc
+					m_binVal.reserve(cb);
+					auto offset = 0;
+					assign(m_binVal, offset, newValue->Value.MVszW.cValues);
+					offset += sizeof(ULONG);
+					// As we loop through and populate the header, we append the null terminated strings to the end of our array
+					for (ULONG iMVCount = 0; iMVCount < newValue->Value.MVszW.cValues; iMVCount++)
+					{
+						auto cbBin = (strings[iMVCount].length() + 1) * sizeof(wchar_t);
+						const auto lpbBin = reinterpret_cast<LPBYTE>(strings[iMVCount].data());
+						assign(m_binVal, offset, m_binVal.size());
+						offset += sizeof(ULONG);
+						std::copy(lpbBin, lpbBin + cbBin, std::back_inserter(m_binVal));
 					}
 
 					lpb = m_binVal.data();
