@@ -15,6 +15,21 @@
 
 namespace propertybag
 {
+	// TODO: Find the right header for this to live in
+#define ALIGN ((size_t)(sizeof(DWORD) - 1))
+	size_t align(size_t s) noexcept
+	{
+		if (s == ULONG_MAX || (s + ALIGN) < s) return ULONG_MAX;
+
+		return (((s) + ALIGN) & ~ALIGN);
+	}
+
+	template <typename T> void assign(std::vector<BYTE>& v, const size_t offset, const T val) noexcept
+	{
+		if (offset > v.size() + sizeof(T)) return;
+		*(reinterpret_cast<T*>(&v[offset])) = val;
+	}
+
 	registryProperty::registryProperty(HKEY hKey, _In_ const std::wstring& name, DWORD dwType)
 		: m_hKey(hKey), m_name(name), m_dwType(dwType)
 	{
@@ -120,9 +135,9 @@ namespace propertybag
 					// Read lengths, offsets, and binary in a single loop
 					for (ULONG iMVCount = 0; iMVCount < count; iMVCount++)
 					{
-						const auto originalOffset = parser->getOffset();
 						const auto length = smartview::blockT<ULONG>::parse(parser)->getData();
 						const auto offset = smartview::blockT<LONG>::parse(parser)->getData();
+						const auto originalOffset = parser->getOffset();
 						parser->setOffset(offset);
 						m_mvBin[iMVCount] = *smartview::blockBytes::parse(parser, length);
 						m_prop.Value.MVbin.lpbin[iMVCount] = {length, m_mvBin[iMVCount].data()};
@@ -339,8 +354,45 @@ namespace propertybag
 					auto offset = 0;
 					for (ULONG iMVCount = 0; iMVCount < newValue->Value.MVl.cValues; iMVCount++)
 					{
-						*(reinterpret_cast<LONG*>(&m_binVal[offset])) = newValue->Value.MVl.lpl[iMVCount];
+						assign(m_binVal, offset, newValue->Value.MVl.lpl[iMVCount]);
 						offset += sizeof(LONG);
+					}
+
+					lpb = m_binVal.data();
+					break;
+				}
+				case PT_MV_BINARY:
+				{
+					// Allocate the header portion, which is a fixed size based on the number of binaries to pack
+					cb = sizeof(LONG) * (1 + 2 * newValue->Value.MVbin.cValues); //  count and array of size/offset
+					m_binVal = std::vector<BYTE>(cb); // Ok to use this since we're gonna wipe it anyway
+
+					// Count up our additional needs for reserve
+					for (ULONG iMVCount = 0; iMVCount < newValue->Value.MVbin.cValues; iMVCount++)
+					{
+						cb += align(newValue->Value.MVbin.lpbin[iMVCount].cb);
+					}
+
+					// Then reserve additional space for the binary data to avoid realloc
+					m_binVal.reserve(cb);
+					auto offset = 0;
+					assign(m_binVal, offset, newValue->Value.MVbin.cValues);
+					offset += sizeof(ULONG);
+					// As we loop through and populate the header, we append the binary to the end of our array, aligning as we go
+					for (ULONG iMVCount = 0; iMVCount < newValue->Value.MVbin.cValues; iMVCount++)
+					{
+						auto cbBin = newValue->Value.MVbin.lpbin[iMVCount].cb;
+						const auto lpbBin = newValue->Value.MVbin.lpbin[iMVCount].lpb;
+						assign(m_binVal, offset, cbBin);
+						offset += sizeof(ULONG);
+						assign(m_binVal, offset, m_binVal.size());
+						offset += sizeof(ULONG);
+						std::copy(lpbBin, lpbBin + cbBin, std::back_inserter(m_binVal));
+						while (align(cbBin) > cbBin)
+						{
+							m_binVal.push_back(0);
+							cbBin++;
+						}
 					}
 
 					lpb = m_binVal.data();
