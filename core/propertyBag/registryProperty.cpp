@@ -432,7 +432,6 @@ namespace propertybag
 				}
 				case PT_MV_STRING8:
 				{
-					write = false;
 					// Allocate the header portion, which is a fixed size based on the number of strings to pack
 					cb = sizeof(LONG) * (1 + newValue->Value.MVszA.cValues); //  count and array of offset
 					m_binVal = std::vector<BYTE>(cb); // Ok to use this since we're gonna wipe it anyway
