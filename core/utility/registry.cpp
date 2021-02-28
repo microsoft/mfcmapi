@@ -179,7 +179,7 @@ namespace registry
 			{
 				if (bSecure)
 				{
-					auto DataIn = DATA_BLOB{bin.size(), bin.data()};
+					auto DataIn = DATA_BLOB{static_cast<DWORD>(bin.size()), bin.data()};
 					auto DataOut = DATA_BLOB{};
 					if (import::pfnCryptUnprotectData(&DataIn, nullptr, nullptr, nullptr, nullptr, 0, &DataOut))
 					{
