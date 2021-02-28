@@ -93,6 +93,21 @@ namespace dialog
 		return bRet;
 	}
 
+	void AccountsDialog::OnInitMenu(_In_ CMenu* pMenu)
+	{
+		CBaseDialog::OnInitMenu(pMenu);
+		if (pMenu)
+		{
+			pMenu->RemoveMenu(ID_DISPLAYPROPERTYASSECURITYDESCRIPTORPROPSHEET, MF_BYCOMMAND);
+			pMenu->RemoveMenu(ID_ATTACHMENTPROPERTIES, MF_BYCOMMAND);
+			pMenu->RemoveMenu(ID_RECIPIENTPROPERTIES, MF_BYCOMMAND);
+			pMenu->RemoveMenu(ID_RTFSYNC, MF_BYCOMMAND);
+			pMenu->RemoveMenu(ID_TESTEDITBODY, MF_BYCOMMAND);
+			pMenu->RemoveMenu(ID_TESTEDITHTML, MF_BYCOMMAND);
+			pMenu->RemoveMenu(ID_TESTEDITRTF, MF_BYCOMMAND);
+		}
+	}
+
 	void AccountsDialog::EnumAccounts(const std::wstring& szCat, const CLSID* pclsidCategory)
 	{
 		const auto root = m_lpAccountsList.AddChildNode(szCat.c_str(), TVI_ROOT, nullptr, nullptr);
