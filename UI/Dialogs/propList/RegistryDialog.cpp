@@ -48,6 +48,21 @@ namespace dialog
 		return bRet;
 	}
 
+	void RegistryDialog::OnInitMenu(_In_ CMenu* pMenu)
+	{
+		CBaseDialog::OnInitMenu(pMenu);
+		if (pMenu)
+		{
+			pMenu->EnableMenuItem(ID_DISPLAYPROPERTYASSECURITYDESCRIPTORPROPSHEET, MF_GRAYED);
+			pMenu->EnableMenuItem(ID_ATTACHMENTPROPERTIES, MF_GRAYED);
+			pMenu->EnableMenuItem(ID_RECIPIENTPROPERTIES, MF_GRAYED);
+			pMenu->EnableMenuItem(ID_RTFSYNC, MF_GRAYED);
+			pMenu->EnableMenuItem(ID_TESTEDITBODY, MF_GRAYED);
+			pMenu->EnableMenuItem(ID_TESTEDITHTML, MF_GRAYED);
+			pMenu->EnableMenuItem(ID_TESTEDITRTF, MF_GRAYED);
+		}
+	}
+
 	static const wchar_t* profileWMS =
 		L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Windows Messaging Subsystem\\Profiles";
 	static const wchar_t* profile15 = L"SOFTWARE\\Microsoft\\Office\\15.0\\Outlook\\Profiles";
