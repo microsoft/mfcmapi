@@ -44,7 +44,6 @@ namespace controls::sortlistctrl
 		_In_ dialog::CBaseDialog* lpHostDlg,
 		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects)
 		: m_lpMapiObjects(lpMapiObjects), m_lpHostDlg(lpHostDlg)
-
 	{
 		TRACE_CONSTRUCTOR(CLASS);
 
@@ -971,8 +970,9 @@ namespace controls::sortlistctrl
 				output::dbgLevel::Generic,
 				CLASS,
 				L"OnEditGivenProp",
-				L"editing property 0x%X (= %ws)\n",
+				L"editing property 0x%X (= %ws = %ws)\n",
 				ulPropTag,
+				name.c_str(),
 				proptags::TagToString(ulPropTag, lpPropBag->GetMAPIProp(), lpPropBag->IsAB(), true).c_str());
 		}
 
@@ -1035,7 +1035,7 @@ namespace controls::sortlistctrl
 			if (PROP_TYPE(ulPropTag) == PT_UNSPECIFIED && lpEditProp) ulPropTag = lpEditProp->ulPropTag;
 
 			const auto propEditor = dialog::editor::DisplayPropertyEditor(
-				this, IDS_PROPEDITOR, lpPropBag->IsAB(), lpSourceObj, ulPropTag, false, lpEditProp);
+				this, IDS_PROPEDITOR, name, lpPropBag->IsAB(), lpSourceObj, ulPropTag, false, lpEditProp);
 			if (propEditor)
 			{
 				const auto lpModProp = propEditor->getValue();

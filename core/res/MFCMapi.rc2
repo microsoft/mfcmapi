@@ -1320,6 +1320,8 @@ IDS_NAMEPROPGUIDMULTILINE "\r\nNamed Prop Guid: %6!ws!"
 IDS_DASLPROPTAG "\r\nDASL: http://schemas.microsoft.com/mapi/proptag/0x%1!08X!"
 IDS_DASLNAMED "\r\nDASL: http://schemas.microsoft.com/mapi/%7!ws!"
 
+IDS_NOTAGPROPNAME "Property Name: %1!ws!\r\nType: %2!ws!"
+
 IDS_PROBLEMARRAY "Index: 0x%1!08X!, ulPropTag: %2!ws!, scode: 0x%3!08X! = %4!ws!\r\n"
 IDS_MAPIERRUNICODE "ulVersion = 0x%1!X!\r\nlpszError = %2!ws!\r\nlpszComponent = %3!ws!\r\nulLowLevelError = 0x%4!X! = %5!ws!\r\nulContext = 0x%6!X!"
 IDS_MAPIERRANSI    "ulVersion = 0x%1!X!\r\nlpszError = %2!hs!\r\nlpszComponent = %3!hs!\r\nulLowLevelError = 0x%4!X! = %5!ws!\r\nulContext = 0x%6!X!"

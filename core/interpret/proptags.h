@@ -13,6 +13,7 @@ namespace proptags
 	};
 
 	std::wstring TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, bool bIsAB, bool bSingleLine);
+	std::wstring TagToString(const std::wstring& name, ULONG ulPropTag);
 
 	// Function to convert property tags to their names
 	PropTagNames PropTagToPropName(ULONG ulPropTag, bool bIsAB);

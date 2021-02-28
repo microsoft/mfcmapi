@@ -96,6 +96,11 @@ namespace proptags
 		return szRet;
 	}
 
+	std::wstring TagToString(const std::wstring& name, ULONG ulPropTag)
+	{
+		return strings::formatmessage(IDS_NOTAGPROPNAME, name.c_str(), proptype::TypeToString(ulPropTag).c_str());
+	}
+
 	PropTagNames PropTagToPropName(ULONG ulPropTag, bool bIsAB)
 	{
 		auto ulKey = (bIsAB ? static_cast<ULONG64>(1) << 32 : 0) | ulPropTag;

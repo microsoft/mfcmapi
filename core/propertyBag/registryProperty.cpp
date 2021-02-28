@@ -286,8 +286,8 @@ namespace propertybag
 		}
 
 		// For debugging purposes right now
-		m_model->namedPropName(strings::BinToHexString(m_binVal, true));
-		m_model->namedPropGuid(strings::BinToTextString(m_binVal, true));
+		//m_model->namedPropName(strings::BinToHexString(m_binVal, true));
+		//m_model->namedPropGuid(strings::BinToTextString(m_binVal, true));
 	}
 
 	void registryProperty::set(_In_opt_ LPSPropValue newValue)

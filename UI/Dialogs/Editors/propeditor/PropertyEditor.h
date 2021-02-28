@@ -9,6 +9,7 @@ namespace dialog::editor
 		CPropertyEditor(
 			_In_ CWnd* pParentWnd,
 			UINT uidTitle,
+			const std::wstring& name,
 			bool bIsAB,
 			bool bMVRow,
 			_In_opt_ LPMAPIPROP lpMAPIProp,
@@ -33,6 +34,7 @@ namespace dialog::editor
 		const _SPropValue* m_lpsInputValue{};
 		bool m_bDirty{};
 		bool m_bMVRow{}; // whether this row came from a multivalued property. Used for smart view parsing.
+		const std::wstring m_name;
 
 		SPropValue m_sOutputValue{};
 		std::vector<BYTE> m_bin; // Temp storage for m_sOutputValue

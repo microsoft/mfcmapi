@@ -205,7 +205,7 @@ namespace dialog::editor
 		if (m_lpNewProp) lpEditProp = m_lpNewProp;
 
 		const auto propEditor =
-			DisplayPropertyEditor(this, IDS_PROPEDITOR, false, nullptr, GetPropTag(4), false, lpEditProp);
+			DisplayPropertyEditor(this, IDS_PROPEDITOR, L"", false, nullptr, GetPropTag(4), false, lpEditProp);
 
 		if (propEditor)
 		{
@@ -738,7 +738,8 @@ namespace dialog::editor
 			lpSourceProp = &sProp;
 		}
 
-		const auto propEditor = DisplayPropertyEditor(this, IDS_PROPEDITOR, false, nullptr, NULL, false, lpSourceProp);
+		const auto propEditor =
+			DisplayPropertyEditor(this, IDS_PROPEDITOR, L"", false, nullptr, NULL, false, lpSourceProp);
 
 		if (propEditor)
 		{
