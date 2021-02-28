@@ -2,6 +2,7 @@
 #include <core/propertyBag/registryProperty.h>
 #include <core/mapi/mapiFunctions.h>
 #include <core/utility/strings.h>
+#include <core/utility/memory.h>
 #include <core/utility/registry.h>
 #include <core/utility/error.h>
 #include <core/interpret/proptags.h>
@@ -15,21 +16,6 @@
 
 namespace propertybag
 {
-	// TODO: Find the right header for this to live in
-#define ALIGN ((size_t)(sizeof(DWORD) - 1))
-	size_t align(size_t s) noexcept
-	{
-		if (s == ULONG_MAX || (s + ALIGN) < s) return ULONG_MAX;
-
-		return (((s) + ALIGN) & ~ALIGN);
-	}
-
-	template <typename T> void assign(std::vector<BYTE>& v, const size_t offset, const T val) noexcept
-	{
-		if (offset > v.size() + sizeof(T)) return;
-		*(reinterpret_cast<T*>(&v[offset])) = val;
-	}
-
 	registryProperty::registryProperty(HKEY hKey, _In_ const std::wstring& name, DWORD dwType)
 		: m_hKey(hKey), m_name(name), m_dwType(dwType)
 	{
@@ -354,7 +340,7 @@ namespace propertybag
 					auto offset = 0;
 					for (ULONG iMVCount = 0; iMVCount < newValue->Value.MVl.cValues; iMVCount++)
 					{
-						assign(m_binVal, offset, newValue->Value.MVl.lpl[iMVCount]);
+						memory::assign(m_binVal, offset, newValue->Value.MVl.lpl[iMVCount]);
 						offset += sizeof(LONG);
 					}
 
@@ -370,25 +356,25 @@ namespace propertybag
 					// Count up our additional needs for reserve
 					for (ULONG iMVCount = 0; iMVCount < newValue->Value.MVbin.cValues; iMVCount++)
 					{
-						cb += align(newValue->Value.MVbin.lpbin[iMVCount].cb);
+						cb += memory::align(newValue->Value.MVbin.lpbin[iMVCount].cb);
 					}
 
 					// Then reserve additional space for the binary data to avoid realloc
 					m_binVal.reserve(cb);
 					auto offset = 0;
-					assign(m_binVal, offset, newValue->Value.MVbin.cValues);
+					memory::assign(m_binVal, offset, newValue->Value.MVbin.cValues);
 					offset += sizeof(ULONG);
 					// As we loop through and populate the header, we append the binary to the end of our array, aligning as we go
 					for (ULONG iMVCount = 0; iMVCount < newValue->Value.MVbin.cValues; iMVCount++)
 					{
 						auto cbBin = newValue->Value.MVbin.lpbin[iMVCount].cb;
 						const auto lpbBin = newValue->Value.MVbin.lpbin[iMVCount].lpb;
-						assign(m_binVal, offset, cbBin);
+						memory::assign(m_binVal, offset, cbBin);
 						offset += sizeof(ULONG);
-						assign(m_binVal, offset, m_binVal.size());
+						memory::assign(m_binVal, offset, m_binVal.size());
 						offset += sizeof(ULONG);
 						std::copy(lpbBin, lpbBin + cbBin, std::back_inserter(m_binVal));
-						while (align(cbBin) > cbBin)
+						while (memory::align(cbBin) > cbBin)
 						{
 							m_binVal.push_back(0);
 							cbBin++;
@@ -415,14 +401,14 @@ namespace propertybag
 					// Then reserve additional space for the string data to avoid realloc
 					m_binVal.reserve(cb);
 					auto offset = 0;
-					assign(m_binVal, offset, newValue->Value.MVszW.cValues);
+					memory::assign(m_binVal, offset, newValue->Value.MVszW.cValues);
 					offset += sizeof(ULONG);
 					// As we loop through and populate the header, we append the null terminated strings to the end of our array
 					for (ULONG iMVCount = 0; iMVCount < newValue->Value.MVszW.cValues; iMVCount++)
 					{
 						auto cbBin = (strings[iMVCount].length() + 1) * sizeof(wchar_t);
 						const auto lpbBin = reinterpret_cast<LPBYTE>(strings[iMVCount].data());
-						assign(m_binVal, offset, m_binVal.size());
+						memory::assign(m_binVal, offset, m_binVal.size());
 						offset += sizeof(ULONG);
 						std::copy(lpbBin, lpbBin + cbBin, std::back_inserter(m_binVal));
 					}
@@ -447,14 +433,14 @@ namespace propertybag
 					// Then reserve additional space for the string data to avoid realloc
 					m_binVal.reserve(cb);
 					auto offset = 0;
-					assign(m_binVal, offset, newValue->Value.MVszA.cValues);
+					memory::assign(m_binVal, offset, newValue->Value.MVszA.cValues);
 					offset += sizeof(ULONG);
 					// As we loop through and populate the header, we append the null terminated strings to the end of our array
 					for (ULONG iMVCount = 0; iMVCount < newValue->Value.MVszA.cValues; iMVCount++)
 					{
 						auto cbBin = strings[iMVCount].length() + 1;
 						const auto lpbBin = reinterpret_cast<LPBYTE>(strings[iMVCount].data());
-						assign(m_binVal, offset, m_binVal.size());
+						memory::assign(m_binVal, offset, m_binVal.size());
 						offset += sizeof(ULONG);
 						std::copy(lpbBin, lpbBin + cbBin, std::back_inserter(m_binVal));
 					}

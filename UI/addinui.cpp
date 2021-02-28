@@ -3,7 +3,7 @@
 #include <UI/Dialogs/Editors/TagArrayEditor.h>
 #include <UI/UIFunctions.h>
 #include <core/addin/addin.h>
-#include <core/utility/strings.h>
+#include <core/utility/memory.h>
 #include <core/utility/output.h>
 #include <core/addin/mfcmapi.h>
 
@@ -138,7 +138,7 @@ namespace ui::addinui
 							{
 								const auto bin = MyComplexDialog.GetBinary(i);
 								lpResults->lpDialogControlResults[i].cbBin = bin.size();
-								lpResults->lpDialogControlResults[i].lpBin = strings::ByteVectorToLPBYTE(bin);
+								lpResults->lpDialogControlResults[i].lpBin = memory::ByteVectorToLPBYTE(bin);
 							}
 							break;
 							case ADDIN_CTRL_EDIT_NUM_DECIMAL:

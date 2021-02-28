@@ -60,7 +60,6 @@ namespace strings
 	std::wstring BinToHexString(_In_opt_ const SBinary* lpBin, bool bPrependCB);
 	bool stripPrefix(std::wstring& str, const std::wstring& prefix);
 	std::vector<BYTE> HexStringToBin(_In_ const std::wstring& input, size_t cbTarget = 0);
-	LPBYTE ByteVectorToLPBYTE(const std::vector<BYTE>& bin) noexcept;
 
 	std::vector<std::wstring> split(const std::wstring& str, wchar_t delim);
 	std::wstring join(const std::vector<std::wstring>& elems, const std::wstring& delim, bool bSkipEmpty = false);

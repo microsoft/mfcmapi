@@ -1,6 +1,7 @@
 ﻿#include <UnitTest/stdafx.h>
 #include <UnitTest/UnitTest.h>
 #include <core/utility/strings.h>
+#include <core/utility/memory.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -369,7 +370,7 @@ namespace stringtest
 
 		void ByteVectorToLPBYTETest(const std::vector<BYTE>& bin) const
 		{
-			const auto bytes = strings::ByteVectorToLPBYTE(bin);
+			const auto bytes = memory::ByteVectorToLPBYTE(bin);
 			for (size_t i = 0; i < bin.size(); i++)
 			{
 				Assert::AreEqual(bytes[i], bin[i]);
