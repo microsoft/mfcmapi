@@ -2,7 +2,7 @@
 #include <UI/Controls/SortList/SortListCtrl.h>
 #include <core/PropertyBag/PropertyBag.h>
 #include <core/model/mapiRowModel.h>
-#include <core/sortlistdata/propListData.h>
+#include <core/sortlistdata/propModelData.h>
 
 namespace cache
 {
@@ -32,7 +32,7 @@ namespace controls::sortlistctrl
 
 		// Selected item accessors
 		const std::shared_ptr<propertybag::IMAPIPropertyBag> GetDataSource();
-		_Check_return_ std::shared_ptr<sortlistdata::propListData> GetSelectedPropListData() const;
+		_Check_return_ std::shared_ptr<sortlistdata::propModelData> GetSelectedPropModelData() const;
 		_Check_return_ bool IsModifiedPropVals() const;
 
 		_Check_return_ bool HandleMenu(WORD wMenuSelect);
@@ -48,7 +48,7 @@ namespace controls::sortlistctrl
 		void CountNamedProps();
 		void LoadMAPIPropList();
 
-		void AddPropToListBox(int iRow, std::shared_ptr<model::mapiRowModel> model);
+		void AddPropToListBox(int iRow, const std::shared_ptr<model::mapiRowModel>& model);
 
 		_Check_return_ bool HandleAddInMenu(WORD wMenuSelect) const;
 		void OnContextMenu(_In_ CWnd* pWnd, CPoint pos);
@@ -57,7 +57,7 @@ namespace controls::sortlistctrl
 		void OnCopyTo();
 		void OnDeleteProperty();
 		void OnDisplayPropertyAsSecurityDescriptorPropSheet() const;
-		void OnEditGivenProp(ULONG ulPropTag);
+		void OnEditGivenProp(ULONG ulPropTag, const std::wstring& name);
 		void OnEditGivenProperty();
 		void OnEditProp();
 		void OnEditPropAsRestriction(ULONG ulPropTag);

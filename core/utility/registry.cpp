@@ -3,6 +3,7 @@
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 #include <core/utility/error.h>
+#include <core/utility/import.h>
 
 namespace registry
 {
@@ -14,17 +15,19 @@ namespace registry
 	// 4 - If the setting should show in options, ensure it has a unique options prompt value
 	// Note: Accessor objects can be used in code as their underlying type, though some care may be needed with casting
 #ifdef _DEBUG
-	dwordRegKey debugTag{L"DebugTag",
-						 regOptionType::stringHex,
-						 static_cast<DWORD>(output::dbgLevel::All),
-						 false,
-						 IDS_REGKEY_DEBUG_TAG};
+	dwordRegKey debugTag{
+		L"DebugTag",
+		regOptionType::stringHex,
+		static_cast<DWORD>(output::dbgLevel::All),
+		false,
+		IDS_REGKEY_DEBUG_TAG};
 #else
-	dwordRegKey debugTag{L"DebugTag",
-						 regOptionType::stringHex,
-						 static_cast<DWORD>(output::dbgLevel::NoDebug),
-						 false,
-						 IDS_REGKEY_DEBUG_TAG};
+	dwordRegKey debugTag{
+		L"DebugTag",
+		regOptionType::stringHex,
+		static_cast<DWORD>(output::dbgLevel::NoDebug),
+		false,
+		IDS_REGKEY_DEBUG_TAG};
 #endif
 	boolRegKey debugToFile{L"DebugToFile", false, false, IDS_REGKEY_DEBUG_TO_FILE};
 	wstringRegKey debugFileName{L"DebugFileName", L"c:\\mfcmapi.log", false, IDS_REGKEY_DEBUG_FILE_NAME};
@@ -35,10 +38,11 @@ namespace registry
 	boolRegKey hierRootNotifs{L"HierRootNotifs", false, false, IDS_REGKEY_HIER_ROOT_NOTIFS};
 	boolRegKey doSmartView{L"DoSmartView", true, true, IDS_REGKEY_DO_SMART_VIEW};
 	boolRegKey onlyAdditionalProperties{L"OnlyAdditionalProperties", false, true, IDS_REGKEY_ONLYADDITIONALPROPERTIES};
-	boolRegKey useRowDataForSinglePropList{L"UseRowDataForSinglePropList",
-										   false,
-										   true,
-										   IDS_REGKEY_USE_ROW_DATA_FOR_SINGLEPROPLIST};
+	boolRegKey useRowDataForSinglePropList{
+		L"UseRowDataForSinglePropList",
+		false,
+		true,
+		IDS_REGKEY_USE_ROW_DATA_FOR_SINGLEPROPLIST};
 	boolRegKey useGetPropList{L"UseGetPropList", true, true, IDS_REGKEY_USE_GETPROPLIST};
 	boolRegKey preferUnicodeProps{L"PreferUnicodeProps", true, true, IDS_REGKEY_PREFER_UNICODE_PROPS};
 	boolRegKey cacheNamedProps{L"CacheNamedProps", true, false, IDS_REGKEY_CACHE_NAMED_PROPS};
@@ -51,10 +55,11 @@ namespace registry
 	boolRegKey useIMAPIProgress{L"UseIMAPIProgress", false, false, IDS_REGKEY_USE_IMAPIPROGRESS};
 	boolRegKey useMessageRaw{L"UseMessageRaw", false, false, IDS_REGKEY_USE_MESSAGERAW};
 	boolRegKey suppressNotFound{L"SuppressNotFound", true, false, IDS_REGKEY_SUPPRESS_NOTFOUND};
-	boolRegKey heapEnableTerminationOnCorruption{L"HeapEnableTerminationOnCorruption",
-												 true,
-												 false,
-												 IDS_REGKEY_HEAPENABLETERMINATIONONCORRUPTION};
+	boolRegKey heapEnableTerminationOnCorruption{
+		L"HeapEnableTerminationOnCorruption",
+		true,
+		false,
+		IDS_REGKEY_HEAPENABLETERMINATIONONCORRUPTION};
 	boolRegKey loadAddIns{L"LoadAddIns", true, false, IDS_REGKEY_LOADADDINS};
 	boolRegKey forceOutlookMAPI{L"ForceOutlookMAPI", false, false, IDS_REGKEY_FORCEOUTLOOKMAPI};
 	boolRegKey forceSystemMAPI{L"ForceSystemMAPI", false, false, IDS_REGKEY_FORCESYSTEMMAPI};
@@ -94,8 +99,7 @@ namespace registry
 		&hexDialogDiag,
 		&displayAboutDialog,
 		&propertyColumnOrder,
-		&namedPropBatchSize
-	};
+		&namedPropBatchSize};
 
 	// If the value is not set in the registry, return the default value
 	DWORD ReadDWORDFromRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValue, _In_ const DWORD dwDefaultVal)
@@ -153,6 +157,43 @@ namespace registry
 		}
 
 		return szDefault;
+	}
+
+	std::vector<BYTE> ReadBinFromRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValue, _In_ const bool bSecure)
+	{
+		if (szValue.empty()) return {};
+		output::DebugPrint(output::dbgLevel::Generic, L"ReadBinFromRegistry(%ws)\n", szValue.c_str());
+
+		// Get its size
+		DWORD cb{};
+		DWORD dwKeyType{};
+		auto hRes = WC_W32(RegQueryValueExW(hKey, szValue.c_str(), nullptr, &dwKeyType, nullptr, &cb));
+
+		if (hRes == S_OK && cb && dwKeyType == REG_BINARY)
+		{
+			auto bin = std::vector<BYTE>(cb);
+			// Get the current value
+			hRes = EC_W32(
+				RegQueryValueExW(hKey, szValue.c_str(), nullptr, &dwKeyType, const_cast<LPBYTE>(bin.data()), &cb));
+			if (hRes == S_OK && cb && dwKeyType == REG_BINARY)
+			{
+				if (bSecure)
+				{
+					auto DataIn = DATA_BLOB{static_cast<DWORD>(bin.size()), bin.data()};
+					auto DataOut = DATA_BLOB{};
+					if (import::pfnCryptUnprotectData(&DataIn, nullptr, nullptr, nullptr, nullptr, 0, &DataOut))
+					{
+						bin = std::vector<BYTE>(DataOut.pbData, DataOut.pbData + DataOut.cbData);
+					}
+
+					LocalFree(DataOut.pbData);
+				}
+
+				return bin;
+			}
+		}
+
+		return {};
 	}
 
 	void ReadFromRegistry()
@@ -228,6 +269,30 @@ namespace registry
 		else
 		{
 			WC_W32_S(RegDeleteValueW(hKey, szValueName.c_str()));
+		}
+	}
+
+	void WriteBinToRegistry(
+		_In_ HKEY hKey,
+		_In_ const std::wstring& szValueName,
+		_In_ const std::vector<BYTE>& binValue,
+		_In_ const bool bSecure)
+	{
+		const DWORD cbValue = binValue.size();
+		if (bSecure)
+		{
+			auto DataIn = DATA_BLOB{cbValue, const_cast<LPBYTE>(binValue.data())};
+			auto DataOut = DATA_BLOB{};
+			if (import::pfnCryptProtectData(&DataIn, nullptr, nullptr, nullptr, nullptr, 0, &DataOut))
+			{
+				WC_W32_S(RegSetValueExW(hKey, szValueName.c_str(), NULL, REG_BINARY, DataOut.pbData, DataOut.cbData));
+			}
+
+			LocalFree(DataOut.pbData);
+		}
+		else
+		{
+			WC_W32_S(RegSetValueExW(hKey, szValueName.c_str(), NULL, REG_BINARY, binValue.data(), cbValue));
 		}
 	}
 

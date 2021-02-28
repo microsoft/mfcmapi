@@ -22,6 +22,7 @@ namespace dialog::editor
 	_Check_return_ std::shared_ptr<IPropEditor> DisplayPropertyEditor(
 		_In_ CWnd* pParentWnd,
 		UINT uidTitle,
+		const std::wstring& name,
 		bool bIsAB,
 		_In_opt_ LPMAPIPROP lpMAPIProp,
 		ULONG ulPropTag,

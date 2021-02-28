@@ -72,8 +72,10 @@ typedef ULONG(STDAPICALLTYPE FREEBUFFER)(LPVOID lpBuffer);
 #include <MAPIAux.h>
 #include <actMgmt.h>
 
+// For import procs
 #include <AclUI.h>
 #include <Uxtheme.h>
+#include <dpapi.h>
 
 // there's an odd conflict with mimeole.h and richedit.h - this should fix it
 #ifdef UNICODE

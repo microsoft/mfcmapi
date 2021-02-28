@@ -66,6 +66,26 @@ typedef LONG(STDMETHODCALLTYPE
 				 PACKAGEIDFROMFULLNAME)(PCWSTR packageFullName, const UINT32 flags, UINT32* bufferLength, BYTE* buffer);
 typedef PACKAGEIDFROMFULLNAME* LPPACKAGEIDFROMFULLNAME;
 
+typedef DPAPI_IMP BOOL(WINAPI CRYPTPROTECTDATA)(
+	DATA_BLOB* pDataIn,
+	LPCWSTR szDataDescr,
+	DATA_BLOB* pOptionalEntropy,
+	PVOID pvReserved,
+	CRYPTPROTECT_PROMPTSTRUCT* pPromptStruct,
+	DWORD dwFlags,
+	DATA_BLOB* pDataOut
+);
+typedef CRYPTPROTECTDATA* LPCRYPTPROTECTDATA;
+typedef BOOL(WINAPI CRYPTUNPROTECTDATA)(
+	DATA_BLOB* pDataIn,
+	LPWSTR* ppszDataDescr,
+	DATA_BLOB* pOptionalEntropy,
+	PVOID pvReserved,
+	CRYPTPROTECT_PROMPTSTRUCT* pPromptStruct,
+	DWORD dwFlags,
+	DATA_BLOB* pDataOut);
+typedef CRYPTUNPROTECTDATA* LPCRYPTUNPROTECTDATA;
+
 namespace import
 {
 	extern LPEDITSECURITY pfnEditSecurity;
@@ -79,6 +99,8 @@ namespace import
 	extern LPSHGETPROPERTYSTOREFORWINDOW pfnSHGetPropertyStoreForWindow;
 	extern LPFINDPACKAGESBYPACKAGEFAMILY pfnFindPackagesByPackageFamily;
 	extern LPPACKAGEIDFROMFULLNAME pfnPackageIdFromFullName;
+	extern LPCRYPTPROTECTDATA pfnCryptProtectData;
+	extern LPCRYPTUNPROTECTDATA pfnCryptUnprotectData;
 
 	_Check_return_ HMODULE LoadFromSystemDir(_In_ const std::wstring& szDLLName);
 	_Check_return_ HMODULE MyLoadLibraryW(_In_ const std::wstring& lpszLibFileName);

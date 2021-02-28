@@ -549,21 +549,6 @@ namespace strings
 		return lpb;
 	}
 
-	// Converts vector<BYTE> to LPBYTE allocated with new
-	LPBYTE ByteVectorToLPBYTE(const std::vector<BYTE>& bin) noexcept
-	{
-		if (bin.empty()) return nullptr;
-
-		const auto lpBin = new (std::nothrow) BYTE[bin.size()];
-		if (lpBin != nullptr)
-		{
-			memset(lpBin, 0, bin.size());
-			memcpy(lpBin, &bin[0], bin.size());
-		}
-
-		return lpBin;
-	}
-
 	std::vector<std::wstring> split(const std::wstring& str, const wchar_t delim)
 	{
 		auto ss = std::wstringstream(str);

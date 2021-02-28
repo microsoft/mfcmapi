@@ -582,6 +582,8 @@
     <ClInclude Include="propertyBag\accountPropertyBag.h" />
     <ClInclude Include="propertyBag\mapiPropPropertyBag.h" />
     <ClInclude Include="propertyBag\propertyBag.h" />
+    <ClInclude Include="sortlistdata\propModelData.h" />
+    <ClInclude Include="propertyBag\registryPropertyBag.h" />
     <ClInclude Include="propertyBag\rowPropertyBag.h" />
     <ClInclude Include="property\attributes.h" />
     <ClInclude Include="property\parseProperty.h" />
@@ -640,12 +642,14 @@
     <ClInclude Include="sortlistdata\resData.h" />
     <ClInclude Include="sortlistdata\sortListData.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="utility\memory.h" />
     <ClInclude Include="utility\cli.h" />
     <ClInclude Include="utility\error.h" />
     <ClInclude Include="utility\file.h" />
     <ClInclude Include="utility\import.h" />
     <ClInclude Include="utility\output.h" />
     <ClInclude Include="utility\registry.h" />
+    <ClInclude Include="propertyBag\registryProperty.h" />
     <ClInclude Include="utility\strings.h" />
   </ItemGroup>
   <ItemGroup>
@@ -676,6 +680,8 @@
     <ClCompile Include="model\mapiRowModel.cpp" />
     <ClCompile Include="propertyBag\accountPropertyBag.cpp" />
     <ClCompile Include="propertyBag\mapiPropPropertyBag.cpp" />
+    <ClCompile Include="sortlistdata\propModelData.cpp" />
+    <ClCompile Include="propertyBag\registryPropertyBag.cpp" />
     <ClCompile Include="propertyBag\rowPropertyBag.cpp" />
     <ClCompile Include="property\attributes.cpp" />
     <ClCompile Include="property\parseProperty.cpp" />
@@ -736,12 +742,14 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Prefast|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="utility\memory.cpp" />
     <ClCompile Include="utility\cli.cpp" />
     <ClCompile Include="utility\error.cpp" />
     <ClCompile Include="utility\file.cpp" />
     <ClCompile Include="utility\import.cpp" />
     <ClCompile Include="utility\output.cpp" />
     <ClCompile Include="utility\registry.cpp" />
+    <ClCompile Include="propertyBag\registryProperty.cpp" />
     <ClCompile Include="utility\strings.cpp" />
   </ItemGroup>
   <ItemGroup>

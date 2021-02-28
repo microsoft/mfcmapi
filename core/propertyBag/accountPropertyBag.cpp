@@ -53,7 +53,7 @@ namespace propertybag
 
 	// Convert an ACCT_VARIANT to SPropValue allocated off of pParent
 	// Frees any memory associated with the ACCT_VARIANT
-	SPropValue accountPropertyBag::convertVarToMAPI(
+	SPropValue accountPropertyBag::varToMAPI(
 		_In_ ULONG ulPropTag,
 		_In_ const ACCT_VARIANT& var,
 		_In_opt_ const VOID* pParent)
@@ -79,7 +79,7 @@ namespace propertybag
 	}
 
 	// Always returns a propval, even in errors, unless we fail allocating memory
-	_Check_return_ LPSPropValue accountPropertyBag::GetOneProp(_In_ ULONG ulPropTag)
+	_Check_return_ LPSPropValue accountPropertyBag::GetOneProp(_In_ ULONG ulPropTag, const std::wstring& /*name*/)
 	{
 		LPSPropValue lpPropVal = mapi::allocate<LPSPropValue>(sizeof(SPropValue));
 		if (lpPropVal)
@@ -88,7 +88,7 @@ namespace propertybag
 			const auto hRes = WC_H(m_lpAccount->GetProp(ulPropTag, &pProp));
 			if (SUCCEEDED(hRes))
 			{
-				*lpPropVal = convertVarToMAPI(ulPropTag, pProp, lpPropVal);
+				*lpPropVal = varToMAPI(ulPropTag, pProp, lpPropVal);
 			}
 			else
 			{
@@ -141,7 +141,11 @@ namespace propertybag
 		return WC_H(m_lpAccount->SaveChanges(OLK_ACCOUNT_NO_FLAGS));
 	}
 
-	_Check_return_ HRESULT accountPropertyBag::SetProp(_In_ LPSPropValue lpProp) { return SetProp(lpProp, true); }
+	_Check_return_ HRESULT
+	accountPropertyBag::SetProp(_In_ LPSPropValue lpProp, _In_ ULONG /*ulPropTag*/, const std::wstring& /*name*/)
+	{
+		return SetProp(lpProp, true);
+	}
 
 	_Check_return_ std::vector<std::shared_ptr<model::mapiRowModel>> accountPropertyBag::GetAllModels()
 	{
@@ -181,7 +185,7 @@ namespace propertybag
 
 			for (const auto& prop : props)
 			{
-				models.push_back(convertVarToModel(prop.second, prop.first));
+				models.push_back(varToModel(prop.second, prop.first));
 			}
 
 			return models;
@@ -196,7 +200,7 @@ namespace propertybag
 		const auto hRes = WC_H(m_lpAccount->GetProp(ulPropTag, &pProp));
 		if (SUCCEEDED(hRes))
 		{
-			return convertVarToModel(pProp, ulPropTag);
+			return varToModel(pProp, ulPropTag);
 		}
 		else
 		{
@@ -207,7 +211,7 @@ namespace propertybag
 	}
 
 	_Check_return_ std::shared_ptr<model::mapiRowModel>
-	accountPropertyBag::convertVarToModel(_In_ const ACCT_VARIANT& var, _In_ ULONG ulPropTag)
+	accountPropertyBag::varToModel(_In_ const ACCT_VARIANT& var, _In_ ULONG ulPropTag)
 	{
 		auto sProp = SPropValue{ulPropTag, 0};
 		switch (var.dwType)

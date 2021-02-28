@@ -330,7 +330,19 @@
     <ClInclude Include="model\mapiRowModel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="propertyBag\registryPropertyBag.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="propertyBag\registryProperty.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sortlistdata\propModelData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="smartview\swappedToDo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="utility\memory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -581,7 +593,19 @@
     <ClCompile Include="model\mapiRowModel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="propertyBag\registryPropertyBag.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="propertyBag\registryProperty.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sortlistdata\propModelData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="smartview\swappedToDo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="utility\memory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

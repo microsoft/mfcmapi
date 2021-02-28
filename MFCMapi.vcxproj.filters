@@ -119,6 +119,9 @@
     <ClInclude Include="UI\Dialogs\Editors\StreamEditor.h">
       <Filter>Source Files\UI\Dialogs\Editors</Filter>
     </ClInclude>
+    <ClInclude Include="UI\Dialogs\propList\RegistryDialog.h">
+      <Filter>Source Files\UI\Dialogs\propList</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StdAfx.h">
@@ -191,6 +194,9 @@
     </ClCompile>
     <ClCompile Include="UI\Dialogs\Editors\StreamEditor.cpp">
       <Filter>Source Files\UI\Dialogs\Editors</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Dialogs\propList\RegistryDialog.cpp">
+      <Filter>Source Files\UI\Dialogs\propList</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

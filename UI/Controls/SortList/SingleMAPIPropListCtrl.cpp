@@ -14,7 +14,6 @@
 #include <core/PropertyBag/MAPIPropPropertyBag.h>
 #include <core/PropertyBag/RowPropertyBag.h>
 #include <core/utility/strings.h>
-#include <core/sortlistdata/propListData.h>
 #include <core/mapi/cache/globalCache.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/Editors/RestrictEditor.h>
@@ -45,7 +44,6 @@ namespace controls::sortlistctrl
 		_In_ dialog::CBaseDialog* lpHostDlg,
 		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects)
 		: m_lpMapiObjects(lpMapiObjects), m_lpHostDlg(lpHostDlg)
-
 	{
 		TRACE_CONSTRUCTOR(CLASS);
 
@@ -160,7 +158,7 @@ namespace controls::sortlistctrl
 		if (pMenu)
 		{
 			const auto bHasSource = m_lpPropBag != nullptr;
-			const auto bPropSelected = GetSelectedPropListData() != nullptr;
+			const auto bPropSelected = GetSelectedPropModelData() != nullptr;
 
 			const auto ulStatus = cache::CGlobalCache::getInstance().GetBufferStatus();
 			const auto lpEIDsToCopy = cache::CGlobalCache::getInstance().GetMessagesToCopy();
@@ -273,7 +271,8 @@ namespace controls::sortlistctrl
 		return HandleAddInMenu(wMenuSelect);
 	}
 
-	_Check_return_ std::shared_ptr<sortlistdata::propListData> CSingleMAPIPropListCtrl::GetSelectedPropListData() const
+	_Check_return_ std::shared_ptr<sortlistdata::propModelData>
+	CSingleMAPIPropListCtrl::GetSelectedPropModelData() const
 	{
 		const auto iItem = GetNextItem(-1, LVNI_FOCUSED | LVNI_SELECTED);
 
@@ -282,7 +281,7 @@ namespace controls::sortlistctrl
 			const auto lpListData = reinterpret_cast<sortlistdata::sortListData*>(GetItemData(iItem));
 			if (lpListData)
 			{
-				return lpListData->cast<sortlistdata::propListData>();
+				return lpListData->cast<sortlistdata::propModelData>();
 			}
 		}
 
@@ -436,7 +435,7 @@ namespace controls::sortlistctrl
 	};
 
 	// Render the row model in the list.
-	void CSingleMAPIPropListCtrl::AddPropToListBox(int iRow, std::shared_ptr<model::mapiRowModel> model)
+	void CSingleMAPIPropListCtrl::AddPropToListBox(int iRow, const std::shared_ptr<model::mapiRowModel>& model)
 	{
 		if (!model) return;
 		auto ulPropTag = model->ulPropTag();
@@ -454,7 +453,7 @@ namespace controls::sortlistctrl
 		// Data used to refer to specific property tags. See GetSelectedPropTag.
 		if (lpData)
 		{
-			sortlistdata::propListData::init(lpData, ulPropTag);
+			sortlistdata::propModelData::init(lpData, model);
 		}
 
 		SetItemText(iRow, columns::pcPROPBESTGUESS, model->name());
@@ -637,7 +636,7 @@ namespace controls::sortlistctrl
 
 					if (lpListData)
 					{
-						const auto prop = lpListData->cast<sortlistdata::propListData>();
+						const auto prop = lpListData->cast<sortlistdata::propModelData>();
 						if (prop)
 						{
 							ulPropType = PROP_TYPE(prop->getPropTag());
@@ -848,8 +847,8 @@ namespace controls::sortlistctrl
 		if (!m_lpPropBag || m_lpPropBag->GetType() == propertybag::propBagType::Row) return;
 		auto lpPropBag = m_lpPropBag; // Hold the prop bag so it doesn't get deleted under us
 
-		const auto propListData = GetSelectedPropListData();
-		if (!propListData) return;
+		const auto propModelData = GetSelectedPropModelData();
+		if (!propModelData) return;
 
 		dialog::editor::CEditor Query(
 			this, IDS_DELETEPROPERTY, IDS_DELETEPROPERTYPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
@@ -860,9 +859,9 @@ namespace controls::sortlistctrl
 				CLASS,
 				L"OnDeleteProperty",
 				L"deleting property 0x%08X\n",
-				propListData->getPropTag());
+				propModelData->getPropTag());
 
-			const auto hRes = EC_H(lpPropBag->DeleteProp(propListData->getPropTag()));
+			const auto hRes = EC_H(lpPropBag->DeleteProp(propModelData->getPropTag()));
 			if (SUCCEEDED(hRes))
 			{
 				// Refresh the display
@@ -876,18 +875,18 @@ namespace controls::sortlistctrl
 	{
 		if (!m_lpPropBag || !import::pfnEditSecurity) return;
 
-		const auto propListData = GetSelectedPropListData();
-		if (!propListData) return;
+		const auto propModelData = GetSelectedPropModelData();
+		if (!propModelData) return;
 
 		output::DebugPrintEx(
 			output::dbgLevel::Generic,
 			CLASS,
 			L"OnDisplayPropertyAsSecurityDescriptorPropSheet",
 			L"interpreting 0x%X as Security Descriptor\n",
-			propListData->getPropTag());
+			propModelData->getPropTag());
 
 		const auto mySecInfo =
-			std::make_shared<mapi::mapiui::CMySecInfo>(m_lpPropBag->GetMAPIProp(), propListData->getPropTag());
+			std::make_shared<mapi::mapiui::CMySecInfo>(m_lpPropBag->GetMAPIProp(), propModelData->getPropTag());
 
 		EC_B_S(import::pfnEditSecurity(m_hWnd, mySecInfo.get()));
 	}
@@ -895,9 +894,9 @@ namespace controls::sortlistctrl
 	void CSingleMAPIPropListCtrl::OnEditProp()
 	{
 		if (!m_lpPropBag) return;
-		const auto propListData = GetSelectedPropListData();
-		if (!propListData) return;
-		OnEditGivenProp(propListData->getPropTag());
+		const auto propModelData = GetSelectedPropModelData();
+		if (!propModelData) return;
+		OnEditGivenProp(propModelData->getPropTag(), propModelData->getName());
 	}
 
 	void CSingleMAPIPropListCtrl::OnEditPropAsRestriction(ULONG ulPropTag)
@@ -905,7 +904,7 @@ namespace controls::sortlistctrl
 		if (!m_lpPropBag || !ulPropTag || PT_SRESTRICTION != PROP_TYPE(ulPropTag)) return;
 		auto lpPropBag = m_lpPropBag; // Hold the prop bag so it doesn't get deleted under us
 
-		auto lpEditProp = lpPropBag->GetOneProp(ulPropTag);
+		auto lpEditProp = lpPropBag->GetOneProp(ulPropTag, {}); // TODO: Should I have a name here?
 
 		LPSRestriction lpResIn = nullptr;
 		if (lpEditProp)
@@ -941,7 +940,7 @@ namespace controls::sortlistctrl
 
 				ResProp.Value.lpszA = reinterpret_cast<LPSTR>(lpModRes);
 
-				const auto hRes = EC_H(lpPropBag->SetProp(&ResProp));
+				const auto hRes = EC_H(lpPropBag->SetProp(&ResProp, ulPropTag, L""));
 
 				// Remember, we had no alloc parent - this is safe to free
 				MAPIFreeBuffer(lpModRes);
@@ -957,7 +956,7 @@ namespace controls::sortlistctrl
 		lpPropBag->FreeBuffer(lpEditProp);
 	}
 
-	void CSingleMAPIPropListCtrl::OnEditGivenProp(ULONG ulPropTag)
+	void CSingleMAPIPropListCtrl::OnEditGivenProp(ULONG ulPropTag, const std::wstring& name)
 	{
 		LPSPropValue lpEditProp = nullptr;
 
@@ -971,8 +970,9 @@ namespace controls::sortlistctrl
 				output::dbgLevel::Generic,
 				CLASS,
 				L"OnEditGivenProp",
-				L"editing property 0x%X (= %ws)\n",
+				L"editing property 0x%X (= %ws = %ws)\n",
 				ulPropTag,
+				name.c_str(),
 				proptags::TagToString(ulPropTag, lpPropBag->GetMAPIProp(), lpPropBag->IsAB(), true).c_str());
 		}
 
@@ -1000,7 +1000,7 @@ namespace controls::sortlistctrl
 		}
 		else
 		{
-			lpEditProp = lpPropBag->GetOneProp(ulPropTag);
+			lpEditProp = lpPropBag->GetOneProp(ulPropTag, name);
 		}
 
 		if (lpEditProp && PROP_TYPE(lpEditProp->ulPropTag) == PT_ERROR &&
@@ -1035,7 +1035,7 @@ namespace controls::sortlistctrl
 			if (PROP_TYPE(ulPropTag) == PT_UNSPECIFIED && lpEditProp) ulPropTag = lpEditProp->ulPropTag;
 
 			const auto propEditor = dialog::editor::DisplayPropertyEditor(
-				this, IDS_PROPEDITOR, lpPropBag->IsAB(), lpSourceObj, ulPropTag, false, lpEditProp);
+				this, IDS_PROPEDITOR, name, lpPropBag->IsAB(), lpSourceObj, ulPropTag, false, lpEditProp);
 			if (propEditor)
 			{
 				const auto lpModProp = propEditor->getValue();
@@ -1045,7 +1045,7 @@ namespace controls::sortlistctrl
 					if (!lpSourceObj)
 					{
 						// SetProp does not take ownership of memory
-						EC_H_S(lpPropBag->SetProp(lpModProp));
+						EC_H_S(lpPropBag->SetProp(lpModProp, ulPropTag, name));
 					}
 
 					RefreshMAPIPropList();
@@ -1062,9 +1062,9 @@ namespace controls::sortlistctrl
 		if (!m_lpPropBag) return;
 		auto lpPropBag = m_lpPropBag; // Hold the prop bag so it doesn't get deleted under us
 
-		const auto propListData = GetSelectedPropListData();
-		if (!propListData) return;
-		auto ulPropTag = propListData->getPropTag();
+		const auto propModelData = GetSelectedPropModelData();
+		if (!propModelData) return;
+		auto ulPropTag = propModelData->getPropTag();
 
 		// Explicit check since TagToString is expensive
 		if (fIsSet(output::dbgLevel::Generic))
@@ -1098,7 +1098,7 @@ namespace controls::sortlistctrl
 			if (MyPrompt.GetCheck(0))
 			{
 				bUseWrapEx = true;
-				const auto lpProp = lpPropBag->GetOneProp(PR_INTERNET_CPID);
+				const auto lpProp = lpPropBag->GetOneProp(PR_INTERNET_CPID, {});
 				if (lpProp && PT_LONG == PROP_TYPE(lpProp[0].ulPropTag))
 				{
 					ulInCodePage = lpProp[0].Value.l;
@@ -1147,9 +1147,9 @@ namespace controls::sortlistctrl
 	{
 		// for now, we only copy from objects - copying from rows would be difficult to generalize
 		if (!m_lpPropBag) return;
-		const auto propListData = GetSelectedPropListData();
-		if (!propListData) return;
-		const auto ulPropTag = propListData->getPropTag();
+		const auto propModelData = GetSelectedPropModelData();
+		if (!propModelData) return;
+		const auto ulPropTag = propModelData->getPropTag();
 		cache::CGlobalCache::getInstance().SetPropertyToCopy(ulPropTag, m_lpPropBag->GetMAPIProp());
 	}
 
@@ -1288,16 +1288,16 @@ namespace controls::sortlistctrl
 
 		if (!m_lpHostDlg) return;
 
-		const auto propListData = GetSelectedPropListData();
-		if (!propListData) return;
-		const auto ulPropTag = propListData->getPropTag();
+		const auto propModelData = GetSelectedPropModelData();
+		if (!propModelData) return;
+		const auto ulPropTag = propModelData->getPropTag();
 
 		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"OnOpenProperty", L"asked to open 0x%X\n", ulPropTag);
 		LPSPropValue lpProp = nullptr;
 		auto lpPropBag = m_lpPropBag; // Hold the prop bag so it doesn't get deleted under us
 		if (lpPropBag)
 		{
-			lpProp = lpPropBag->GetOneProp(ulPropTag);
+			lpProp = lpPropBag->GetOneProp(ulPropTag, {}); // TODO: Should I have a name here
 		}
 
 		if (SUCCEEDED(hRes) && lpProp)
@@ -1383,7 +1383,7 @@ namespace controls::sortlistctrl
 
 		if (MyPropertyTag.DisplayDialog())
 		{
-			OnEditGivenProp(MyPropertyTag.GetPropertyTag());
+			OnEditGivenProp(MyPropertyTag.GetPropertyTag(), {});
 		}
 	}
 
@@ -1512,10 +1512,10 @@ namespace controls::sortlistctrl
 			}
 		}
 
-		const auto propListData = GetSelectedPropListData();
-		if (propListData)
+		const auto propModelData = GetSelectedPropModelData();
+		if (propModelData)
 		{
-			MyAddInMenuParams.ulPropTag = propListData->getPropTag();
+			MyAddInMenuParams.ulPropTag = propModelData->getPropTag();
 		}
 
 		ui::addinui::InvokeAddInMenu(&MyAddInMenuParams);

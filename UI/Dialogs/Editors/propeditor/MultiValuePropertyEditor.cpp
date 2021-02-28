@@ -19,18 +19,22 @@ namespace dialog::editor
 	CMultiValuePropertyEditor::CMultiValuePropertyEditor(
 		_In_ CWnd* pParentWnd,
 		UINT uidTitle,
+		const std::wstring& name,
 		bool bIsAB,
 		_In_opt_ LPMAPIPROP lpMAPIProp,
 		ULONG ulPropTag,
 		_In_opt_ const _SPropValue* lpsPropValue)
 		: IPropEditor(pParentWnd, uidTitle, NULL, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL), m_bIsAB(bIsAB),
-		  m_lpMAPIProp(lpMAPIProp), m_ulPropTag(ulPropTag), m_lpsInputValue(lpsPropValue)
+		  m_lpMAPIProp(lpMAPIProp), m_ulPropTag(ulPropTag), m_lpsInputValue(lpsPropValue), m_name(name)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
 
 		if (m_lpMAPIProp) m_lpMAPIProp->AddRef();
 
-		SetPromptPostFix(proptags::TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, false));
+		const auto propName = !name.empty() && PROP_ID(m_ulPropTag) == PROP_ID_NULL
+								  ? proptags::TagToString(name, ulPropTag)
+								  : proptags::TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, false);
+		SetPromptPostFix(propName);
 
 		InitPropertyControls();
 	}
@@ -298,6 +302,7 @@ namespace dialog::editor
 		const auto propEditor = DisplayPropertyEditor(
 			this,
 			IDS_EDITROW,
+			m_name,
 			m_bIsAB,
 			m_lpMAPIProp,
 			NULL,

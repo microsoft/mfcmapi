@@ -22,13 +22,15 @@ namespace dialog::editor
 	CPropertyEditor::CPropertyEditor(
 		_In_ CWnd* pParentWnd,
 		UINT uidTitle,
+		const std::wstring& name,
 		bool bIsAB,
 		bool bMVRow,
 		_In_opt_ LPMAPIPROP lpMAPIProp,
 		ULONG ulPropTag,
 		_In_opt_ const _SPropValue* lpsPropValue)
 		: IPropEditor(pParentWnd, uidTitle, NULL, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL), m_bIsAB(bIsAB),
-		  m_bMVRow(bMVRow), m_lpMAPIProp(lpMAPIProp), m_ulPropTag(ulPropTag), m_lpsInputValue(lpsPropValue)
+		  m_bMVRow(bMVRow), m_lpMAPIProp(lpMAPIProp), m_ulPropTag(ulPropTag), m_lpsInputValue(lpsPropValue),
+		  m_name(name)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
 
@@ -38,8 +40,11 @@ namespace dialog::editor
 		// So by definition, we're already dirty
 		if (!m_lpsInputValue) m_bDirty = true;
 
-		SetPromptPostFix(
-			proptags::TagToString(m_ulPropTag | (m_bMVRow ? MV_FLAG : NULL), m_lpMAPIProp, m_bIsAB, false));
+		const auto propName =
+			!name.empty() && PROP_ID(m_ulPropTag) == PROP_ID_NULL
+				? proptags::TagToString(name, ulPropTag)
+				: proptags::TagToString(m_ulPropTag | (m_bMVRow ? MV_FLAG : NULL), m_lpMAPIProp, m_bIsAB, false);
+		SetPromptPostFix(propName);
 
 		InitPropertyControls();
 	}

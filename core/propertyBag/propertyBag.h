@@ -18,6 +18,7 @@ namespace propertybag
 		MAPIProp,
 		Row,
 		Account,
+		Registry
 	};
 
 	// TODO - Annotate for sal
@@ -33,10 +34,12 @@ namespace propertybag
 
 		// TODO: Should Commit take flags?
 		virtual _Check_return_ HRESULT Commit() = 0;
-		virtual _Check_return_ LPSPropValue GetOneProp(ULONG ulPropTag) = 0;
+		// MAPI Style property getter
+		// Data will be freed (if needed) via FreeBuffer
+		virtual _Check_return_ LPSPropValue GetOneProp(ULONG ulPropTag, const std::wstring& name) = 0;
 		virtual void FreeBuffer(LPSPropValue lpProp) = 0;
 		virtual _Check_return_ HRESULT SetProps(_In_ ULONG cValues, _In_ LPSPropValue lpPropArray) = 0;
-		virtual _Check_return_ HRESULT SetProp(_In_ LPSPropValue lpProp) = 0;
+		virtual _Check_return_ HRESULT SetProp(_In_ LPSPropValue lpProp, _In_ ULONG ulPropTag, const std::wstring& name) = 0;
 		virtual _Check_return_ HRESULT DeleteProp(_In_ ULONG ulPropTag) = 0;
 		bool IsAB() { return (GetFlags() & propBagFlags::AB) == propBagFlags::AB; }
 		bool IsModified() { return (GetFlags() & propBagFlags::Modified) == propBagFlags::Modified; }

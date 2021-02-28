@@ -9,6 +9,7 @@ namespace dialog::editor
 		CMultiValuePropertyEditor(
 			_In_ CWnd* pParentWnd,
 			UINT uidTitle,
+			const std::wstring& name,
 			bool bIsAB,
 			_In_opt_ LPMAPIPROP lpMAPIProp,
 			ULONG ulPropTag,
@@ -36,6 +37,7 @@ namespace dialog::editor
 		ULONG m_ulPropTag{};
 		bool m_bIsAB{}; // whether the tag is from the AB or not
 		const _SPropValue* m_lpsInputValue{};
+		const std::wstring m_name;
 
 		SPropValue m_sOutputValue{};
 		std::vector<BYTE> m_bin; // Temp storage for m_sOutputValue

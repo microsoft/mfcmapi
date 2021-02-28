@@ -4,8 +4,6 @@
 #include <core/sortlistdata/sortListData.h>
 #include <core/mapi/account/accountHelper.h>
 
-class CContentsTableListCtrl;
-
 namespace dialog
 {
 	class AccountsDialog : public CBaseDialog
