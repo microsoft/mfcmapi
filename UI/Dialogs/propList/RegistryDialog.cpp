@@ -4,6 +4,7 @@
 #include <core/mapi/mapiFunctions.h>
 #include <core/utility/output.h>
 #include <core/propertyBag/registryPropertyBag.h>
+#include <UI/UIFunctions.h>
 
 namespace dialog
 {
@@ -60,6 +61,9 @@ namespace dialog
 			pMenu->RemoveMenu(ID_TESTEDITBODY, MF_BYCOMMAND);
 			pMenu->RemoveMenu(ID_TESTEDITHTML, MF_BYCOMMAND);
 			pMenu->RemoveMenu(ID_TESTEDITRTF, MF_BYCOMMAND);
+
+			// Locate and delete "Edit as stream" menu by searching for an item on it
+			WC_B_S(ui::DeleteSubmenu(::GetMenu(m_hWnd), ID_EDITPROPERTYASASCIISTREAM));
 		}
 	}
 

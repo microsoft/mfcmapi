@@ -373,11 +373,8 @@ namespace ui
 
 		for (UINT nPosition = 0; nPosition < nCount; nPosition++)
 		{
-			auto menuiteminfo = MENUITEMINFOW{};
-			menuiteminfo.cbSize = sizeof(MENUITEMINFOW);
-			menuiteminfo.fMask = MIIM_SUBMENU | MIIM_ID;
-
-			GetMenuItemInfoW(hMenu, nPosition, true, &menuiteminfo);
+			auto menuiteminfo = MENUITEMINFOW{sizeof(MENUITEMINFOW), MIIM_SUBMENU | MIIM_ID};
+			WC_B_S(GetMenuItemInfoW(hMenu, nPosition, true, &menuiteminfo));
 
 			if (menuiteminfo.wID == uid) return hMenu;
 
@@ -387,7 +384,52 @@ namespace ui
 				if (hSub) return hSub;
 			}
 		}
+
 		return nullptr;
+	}
+
+	// Returns true if this HMENU contains an item with this uid
+	bool ContainsMenuItem(_In_ HMENU hMenu, const UINT uid)
+	{
+		const UINT nCount = GetMenuItemCount(hMenu);
+		if (nCount == static_cast<UINT>(-1)) return false;
+
+		for (UINT nPosition = 0; nPosition < nCount; nPosition++)
+		{
+			auto menuiteminfo = MENUITEMINFOW{sizeof(MENUITEMINFOW), MIIM_ID};
+			WC_B_S(GetMenuItemInfoW(hMenu, nPosition, true, &menuiteminfo));
+
+			if (menuiteminfo.wID == uid) return true;
+		}
+
+		return false;
+	}
+
+	bool DeleteSubmenu(_In_ HMENU hMenu, UINT uid)
+	{
+		const UINT nCount = GetMenuItemCount(hMenu);
+		if (nCount == static_cast<UINT>(-1)) return false;
+
+		// Walk through child items looking for submenus
+		for (UINT nPosition = 0; nPosition < nCount; nPosition++)
+		{
+			auto menuiteminfo = MENUITEMINFOW{sizeof(MENUITEMINFOW), MIIM_SUBMENU};
+			WC_B_S(GetMenuItemInfoW(hMenu, nPosition, true, &menuiteminfo));
+
+			if (menuiteminfo.hSubMenu)
+			{
+				if (ContainsMenuItem(menuiteminfo.hSubMenu, uid))
+				{
+					WC_B_S(::RemoveMenu(hMenu, nPosition, MF_BYPOSITION));
+					return true;
+				}
+
+				// This submenu may not contain the item, but it may contain an submenu that does, so check it.
+				if (DeleteSubmenu(menuiteminfo.hSubMenu, uid)) return true;
+			}
+		}
+
+		return false;
 	}
 
 	_Check_return_ int GetEditHeight(_In_opt_ HWND hwndEdit)
