@@ -14,7 +14,7 @@ namespace propertybag
 	registryPropertyBag::registryPropertyBag(HKEY hKey)
 	{
 		m_hKey = hKey;
-		GetAllProps();
+		load();
 	}
 
 	registryPropertyBag ::~registryPropertyBag() {}
@@ -41,8 +41,9 @@ namespace propertybag
 		return false;
 	}
 
-	void registryPropertyBag::GetAllProps()
+	void registryPropertyBag::load()
 	{
+		m_props = {};
 		auto cchMaxValueNameLen = DWORD{}; // Param in RegQueryInfoKeyW is misnamed
 		auto cValues = DWORD{};
 		auto hRes = WC_W32(RegQueryInfoKeyW(
@@ -145,11 +146,28 @@ namespace propertybag
 			}
 		}
 
-		const auto keyName = name.empty() ? strings::format(L"%04x%04x", PROP_TYPE(ulPropTag), PROP_ID(ulPropTag)) : name;
-		auto prop =
-			std::make_shared<registryProperty>(m_hKey, keyName, PROP_TYPE(ulPropTag) == PT_STRING8 ? REG_SZ : REG_BINARY);
+		const auto keyName =
+			name.empty() ? strings::format(L"%04x%04x", PROP_TYPE(ulPropTag), PROP_ID(ulPropTag)) : name;
+		auto prop = std::make_shared<registryProperty>(
+			m_hKey, keyName, PROP_TYPE(ulPropTag) == PT_STRING8 ? REG_SZ : REG_BINARY);
 		prop->set(lpProp);
 		m_props.push_back(prop);
 		return S_OK;
 	}
+
+	_Check_return_ HRESULT registryPropertyBag::DeleteProp(_In_ ULONG /*ulPropTag*/, _In_ const std::wstring& name)
+	{
+		for (const auto& prop : m_props)
+		{
+			if (prop->toModel()->name() == name)
+			{
+				WC_W32_S(RegDeleteValueW(m_hKey, prop->name().c_str()));
+				load(); // rather than try to rebuild our prop list, just reload
+				return S_OK;
+			}
+		}
+
+		return S_OK; // No need to error if the prop didn't exist.
+	};
+
 } // namespace propertybag

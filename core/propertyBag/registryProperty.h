@@ -22,6 +22,7 @@ namespace propertybag
 			return m_model;
 		}
 
+		std::wstring name() { return m_name; }
 		void set(_In_opt_ LPSPropValue newValue);
 
 	private:

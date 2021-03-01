@@ -28,7 +28,7 @@ namespace propertybag
 		_Check_return_ HRESULT
 		SetProp(_In_ LPSPropValue lpProp, _In_ ULONG ulPropTag, const std::wstring& name) override;
 		//TODO: Not supported yet
-		_Check_return_ HRESULT DeleteProp(_In_ ULONG) override { return E_NOTIMPL; };
+		_Check_return_ HRESULT DeleteProp(_In_ ULONG, _In_ const std::wstring& /*name*/) override { return E_NOTIMPL; };
 		_Check_return_ std::vector<std::shared_ptr<model::mapiRowModel>> GetAllModels() override;
 		_Check_return_ std::shared_ptr<model::mapiRowModel> GetOneModel(_In_ ULONG ulPropTag) override;
 
