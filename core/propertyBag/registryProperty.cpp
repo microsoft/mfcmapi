@@ -16,7 +16,7 @@
 
 namespace propertybag
 {
-	registryProperty::registryProperty(HKEY hKey, _In_ const std::wstring& name, DWORD dwType)
+	registryProperty::registryProperty(_In_ const HKEY hKey, _In_ const std::wstring& name, _In_ DWORD dwType)
 		: m_hKey(hKey), m_name(name), m_dwType(dwType)
 	{
 		m_secure = false;

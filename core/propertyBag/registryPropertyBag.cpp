@@ -134,7 +134,7 @@ namespace propertybag
 	}
 
 	_Check_return_ HRESULT
-	registryPropertyBag::SetProp(_In_ LPSPropValue lpProp, _In_ ULONG /*ulPropTag*/, const std::wstring& name)
+	registryPropertyBag::SetProp(_In_ LPSPropValue lpProp, _In_ ULONG ulPropTag, const std::wstring& name)
 	{
 		for (const auto& prop : m_props)
 		{
@@ -145,7 +145,11 @@ namespace propertybag
 			}
 		}
 
-		// TODO: Figure out what to do for cache misses
-		return MAPI_E_CALL_FAILED;
+		const auto keyName = name.empty() ? strings::format(L"%04x%04x", PROP_TYPE(ulPropTag), PROP_ID(ulPropTag)) : name;
+		auto prop =
+			std::make_shared<registryProperty>(m_hKey, keyName, PROP_TYPE(ulPropTag) == PT_STRING8 ? REG_SZ : REG_BINARY);
+		prop->set(lpProp);
+		m_props.push_back(prop);
+		return S_OK;
 	}
 } // namespace propertybag
