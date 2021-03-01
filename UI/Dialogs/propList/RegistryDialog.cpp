@@ -52,19 +52,16 @@ namespace dialog
 	void RegistryDialog::OnInitMenu(_In_ CMenu* pMenu)
 	{
 		CBaseDialog::OnInitMenu(pMenu);
-		if (pMenu)
-		{
-			pMenu->RemoveMenu(ID_DISPLAYPROPERTYASSECURITYDESCRIPTORPROPSHEET, MF_BYCOMMAND);
-			pMenu->RemoveMenu(ID_ATTACHMENTPROPERTIES, MF_BYCOMMAND);
-			pMenu->RemoveMenu(ID_RECIPIENTPROPERTIES, MF_BYCOMMAND);
-			pMenu->RemoveMenu(ID_RTFSYNC, MF_BYCOMMAND);
-			pMenu->RemoveMenu(ID_TESTEDITBODY, MF_BYCOMMAND);
-			pMenu->RemoveMenu(ID_TESTEDITHTML, MF_BYCOMMAND);
-			pMenu->RemoveMenu(ID_TESTEDITRTF, MF_BYCOMMAND);
+		ui::DeleteMenu(::GetMenu(m_hWnd), ID_DISPLAYPROPERTYASSECURITYDESCRIPTORPROPSHEET);
+		ui::DeleteMenu(::GetMenu(m_hWnd), ID_ATTACHMENTPROPERTIES);
+		ui::DeleteMenu(::GetMenu(m_hWnd), ID_RECIPIENTPROPERTIES);
+		ui::DeleteMenu(::GetMenu(m_hWnd), ID_RTFSYNC);
+		ui::DeleteMenu(::GetMenu(m_hWnd), ID_TESTEDITBODY);
+		ui::DeleteMenu(::GetMenu(m_hWnd), ID_TESTEDITHTML);
+		ui::DeleteMenu(::GetMenu(m_hWnd), ID_TESTEDITRTF);
 
-			// Locate and delete "Edit as stream" menu by searching for an item on it
-			WC_B_S(ui::DeleteSubmenu(::GetMenu(m_hWnd), ID_EDITPROPERTYASASCIISTREAM));
-		}
+		// Locate and delete "Edit as stream" menu by searching for an item on it
+		WC_B_S(ui::DeleteSubmenu(::GetMenu(m_hWnd), ID_EDITPROPERTYASASCIISTREAM));
 	}
 
 	static const wchar_t* profileWMS =
