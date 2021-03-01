@@ -203,7 +203,11 @@ namespace propertybag
 		// So we fetch it from there instead
 		if (hRes == MAPI_E_NOT_FOUND && m_lpListData)
 		{
-			return model::propToModel(m_lpListData->GetOneProp(ulPropTag), ulPropTag, m_lpProp, m_bIsAB);
+			const auto prop = m_lpListData->GetOneProp(ulPropTag);
+			if (prop)
+			{
+				return model::propToModel(prop, ulPropTag, m_lpProp, m_bIsAB);
+			}
 		}
 
 		// If we still don't have a prop, build an error prop
