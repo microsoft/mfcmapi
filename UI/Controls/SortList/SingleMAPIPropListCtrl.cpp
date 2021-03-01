@@ -1353,7 +1353,7 @@ namespace controls::sortlistctrl
 			NULL,
 			nullptr,
 			m_sptExtraProps,
-			m_lpPropBag->IsAB(),
+			m_lpPropBag ? m_lpPropBag->IsAB() : false,
 			m_lpPropBag ? m_lpPropBag->GetMAPIProp() : nullptr);
 
 		if (!MyTagArrayEditor.DisplayDialog()) return;
