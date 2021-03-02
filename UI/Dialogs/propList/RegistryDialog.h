@@ -15,6 +15,7 @@ namespace dialog
 		// Overrides from base class
 		BOOL OnInitDialog() override;
 		void OnInitMenu(_In_ CMenu* pMenu) override;
+		void OnRefreshView() override;
 
 	private:
 		controls::StyleTreeCtrl m_lpRegKeyTree{};

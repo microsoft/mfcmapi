@@ -41,6 +41,10 @@ namespace dialog
 				m_lpPropDisplay->SetDataSource(std::make_shared<propertybag::registryPropertyBag>(hKey));
 			};
 
+			m_lpRegKeyTree.KeyDownCallback = [&](auto _1, auto _2, auto _3, auto _4) {
+				return HandleKeyDown(_1, _2, _3, _4);
+			};
+
 			EnumRegistry();
 
 			m_lpFakeSplitter.SetPercent(0.25);
@@ -62,6 +66,12 @@ namespace dialog
 
 		// Locate and delete "Edit as stream" menu by searching for an item on it
 		WC_B_S(ui::DeleteSubmenu(::GetMenu(m_hWnd), ID_EDITPROPERTYASASCIISTREAM));
+	}
+
+	void RegistryDialog::OnRefreshView()
+	{
+		m_lpRegKeyTree.DeleteAllItems();
+		EnumRegistry();
 	}
 
 	static const wchar_t* profileWMS =
