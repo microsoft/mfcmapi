@@ -56,16 +56,20 @@ namespace dialog
 	void RegistryDialog::OnInitMenu(_In_ CMenu* pMenu)
 	{
 		CBaseDialog::OnInitMenu(pMenu);
-		ui::DeleteMenu(::GetMenu(m_hWnd), ID_DISPLAYPROPERTYASSECURITYDESCRIPTORPROPSHEET);
-		ui::DeleteMenu(::GetMenu(m_hWnd), ID_ATTACHMENTPROPERTIES);
-		ui::DeleteMenu(::GetMenu(m_hWnd), ID_RECIPIENTPROPERTIES);
-		ui::DeleteMenu(::GetMenu(m_hWnd), ID_RTFSYNC);
-		ui::DeleteMenu(::GetMenu(m_hWnd), ID_TESTEDITBODY);
-		ui::DeleteMenu(::GetMenu(m_hWnd), ID_TESTEDITHTML);
-		ui::DeleteMenu(::GetMenu(m_hWnd), ID_TESTEDITRTF);
 
-		// Locate and delete "Edit as stream" menu by searching for an item on it
-		WC_B_S(ui::DeleteSubmenu(::GetMenu(m_hWnd), ID_EDITPROPERTYASASCIISTREAM));
+		if (pMenu)
+		{
+			ui::DeleteMenu(pMenu->m_hMenu, ID_DISPLAYPROPERTYASSECURITYDESCRIPTORPROPSHEET);
+			ui::DeleteMenu(pMenu->m_hMenu, ID_ATTACHMENTPROPERTIES);
+			ui::DeleteMenu(pMenu->m_hMenu, ID_RECIPIENTPROPERTIES);
+			ui::DeleteMenu(pMenu->m_hMenu, ID_RTFSYNC);
+			ui::DeleteMenu(pMenu->m_hMenu, ID_TESTEDITBODY);
+			ui::DeleteMenu(pMenu->m_hMenu, ID_TESTEDITHTML);
+			ui::DeleteMenu(pMenu->m_hMenu, ID_TESTEDITRTF);
+
+			// Locate and delete "Edit as stream" menu by searching for an item on it
+			WC_B_S(ui::DeleteSubmenu(pMenu->m_hMenu, ID_EDITPROPERTYASASCIISTREAM));
+		}
 	}
 
 	void RegistryDialog::OnRefreshView()
