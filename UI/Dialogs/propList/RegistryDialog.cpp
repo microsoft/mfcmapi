@@ -74,6 +74,7 @@ namespace dialog
 
 	void RegistryDialog::OnRefreshView()
 	{
+		m_lpPropDisplay->SetDataSource({});
 		m_lpRegKeyTree.DeleteAllItems();
 		EnumRegistry();
 	}

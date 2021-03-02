@@ -100,14 +100,24 @@ namespace propertybag
 		return models;
 	}
 
-	_Check_return_ std::shared_ptr<model::mapiRowModel> registryPropertyBag::GetOneModel(_In_ ULONG /*ulPropTag*/)
+	_Check_return_ std::shared_ptr<model::mapiRowModel> registryPropertyBag::GetOneModel(_In_ ULONG ulPropTag)
 	{
-		return {};
+		for (const auto& prop : m_props)
+		{
+			if (prop->ulPropTag() == ulPropTag)
+			{
+				return prop->toModel();
+			}
+		}
+
+		const auto keyName = strings::format(L"%04x%04x", PROP_TYPE(ulPropTag), PROP_ID(ulPropTag));
+		auto prop = std::make_shared<registryProperty>(m_hKey, keyName, REG_NONE);
+		m_props.push_back(prop);
+		return prop->toModel();
 	}
 
 	_Check_return_ LPSPropValue registryPropertyBag::GetOneProp(ULONG ulPropTag, const std::wstring& name)
 	{
-		// TODO: go look for a prop if we don't have one cached
 		if (!name.empty())
 		{
 			for (const auto& prop : m_props)

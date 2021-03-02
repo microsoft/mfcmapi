@@ -23,6 +23,7 @@ namespace propertybag
 		}
 
 		std::wstring name() { return m_name; }
+		ULONG ulPropTag() noexcept { return m_ulPropTag; }
 		void set(_In_opt_ LPSPropValue newValue);
 
 	private:
