@@ -18,7 +18,7 @@ namespace propertybag
 		// Returns the underlying MAPI prop object, if one exists. Does NOT ref count it.
 		_Check_return_ LPMAPIPROP GetMAPIProp() const override { return nullptr; }
 
-		_Check_return_ HRESULT Commit() override { return E_NOTIMPL; }
+		_Check_return_ HRESULT Commit() override { return S_OK; }
 		_Check_return_ LPSPropValue GetOneProp(ULONG ulPropTag, const std::wstring& name) override;
 		void FreeBuffer(LPSPropValue) override {}
 		_Check_return_ HRESULT SetProps(ULONG cValues, LPSPropValue lpPropArray) override;
