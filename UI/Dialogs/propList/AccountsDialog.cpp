@@ -4,6 +4,7 @@
 #include <core/mapi/mapiFunctions.h>
 #include <core/utility/output.h>
 #include <core/propertyBag/accountPropertyBag.h>
+#include <UI/UIFunctions.h>
 
 namespace dialog
 {
@@ -91,6 +92,24 @@ namespace dialog
 		}
 
 		return bRet;
+	}
+
+	void AccountsDialog::OnInitMenu(_In_ CMenu* pMenu)
+	{
+		CBaseDialog::OnInitMenu(pMenu);
+		if (pMenu)
+		{
+			ui::DeleteMenu(pMenu->m_hMenu, ID_DISPLAYPROPERTYASSECURITYDESCRIPTORPROPSHEET);
+			ui::DeleteMenu(pMenu->m_hMenu, ID_ATTACHMENTPROPERTIES);
+			ui::DeleteMenu(pMenu->m_hMenu, ID_RECIPIENTPROPERTIES);
+			ui::DeleteMenu(pMenu->m_hMenu, ID_RTFSYNC);
+			ui::DeleteMenu(pMenu->m_hMenu, ID_TESTEDITBODY);
+			ui::DeleteMenu(pMenu->m_hMenu, ID_TESTEDITHTML);
+			ui::DeleteMenu(pMenu->m_hMenu, ID_TESTEDITRTF);
+
+			// Locate and delete "Edit as stream" menu by searching for an item on it
+			WC_B_S(ui::DeleteSubmenu(pMenu->m_hMenu, ID_EDITPROPERTYASASCIISTREAM));
+		}
 	}
 
 	void AccountsDialog::EnumAccounts(const std::wstring& szCat, const CLSID* pclsidCategory)

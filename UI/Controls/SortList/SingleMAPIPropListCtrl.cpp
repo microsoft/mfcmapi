@@ -861,7 +861,7 @@ namespace controls::sortlistctrl
 				L"deleting property 0x%08X\n",
 				propModelData->getPropTag());
 
-			const auto hRes = EC_H(lpPropBag->DeleteProp(propModelData->getPropTag()));
+			const auto hRes = EC_H(lpPropBag->DeleteProp(propModelData->getPropTag(), propModelData->getName()));
 			if (SUCCEEDED(hRes))
 			{
 				// Refresh the display

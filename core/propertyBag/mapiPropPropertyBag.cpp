@@ -118,7 +118,7 @@ namespace propertybag
 		return WC_H(HrSetOneProp(m_lpProp, lpProp));
 	}
 
-	_Check_return_ HRESULT mapiPropPropertyBag::DeleteProp(_In_ ULONG ulPropTag)
+	_Check_return_ HRESULT mapiPropPropertyBag::DeleteProp(_In_ ULONG ulPropTag, _In_ const std::wstring& /*name*/)
 	{
 		if (nullptr == m_lpProp) return S_OK;
 

@@ -16,7 +16,7 @@
 
 namespace propertybag
 {
-	registryProperty::registryProperty(HKEY hKey, _In_ const std::wstring& name, DWORD dwType)
+	registryProperty::registryProperty(_In_ const HKEY hKey, _In_ const std::wstring& name, _In_ DWORD dwType)
 		: m_hKey(hKey), m_name(name), m_dwType(dwType)
 	{
 		m_secure = false;
@@ -271,6 +271,10 @@ namespace propertybag
 			if (!m_model->ulPropTag()) m_model->ulPropTag(PROP_TAG(PT_UNICODE, PROP_ID_NULL));
 			m_model->value(m_szVal);
 		}
+		else if (m_dwType == REG_NONE)
+		{
+			m_model->value(L"Err: 0x8004010f = MAPI_E_NOT_FOUND");
+		}
 
 		if (m_canParseMAPI)
 		{
@@ -293,6 +297,11 @@ namespace propertybag
 	void registryProperty::set(_In_opt_ LPSPropValue newValue)
 	{
 		if (!newValue) return;
+
+		if (m_dwType == REG_NONE)
+		{
+			m_dwType = (PROP_TYPE(m_ulPropTag) == PT_STRING8) ? REG_SZ : REG_BINARY;
+		}
 
 		if (m_dwType == REG_BINARY)
 		{
