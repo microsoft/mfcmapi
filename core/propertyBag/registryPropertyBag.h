@@ -8,7 +8,7 @@ namespace propertybag
 	{
 	public:
 		registryPropertyBag(HKEY hKey);
-		virtual ~registryPropertyBag();
+		virtual ~registryPropertyBag() {}
 		registryPropertyBag(const registryPropertyBag&) = delete;
 		registryPropertyBag& operator=(const registryPropertyBag&) = delete;
 
@@ -20,7 +20,7 @@ namespace propertybag
 
 		_Check_return_ HRESULT Commit() override { return E_NOTIMPL; }
 		_Check_return_ LPSPropValue GetOneProp(ULONG ulPropTag, const std::wstring& name) override;
-		void FreeBuffer(LPSPropValue lpsPropValue) override { MAPIFreeBuffer(lpsPropValue); }
+		void FreeBuffer(LPSPropValue /*lpsPropValue*/) override {}
 		_Check_return_ HRESULT SetProps(ULONG cValues, LPSPropValue lpPropArray) override;
 		_Check_return_ HRESULT
 		SetProp(_In_ LPSPropValue lpProp, _In_ ULONG ulPropTag, const std::wstring& name) override;
@@ -29,10 +29,15 @@ namespace propertybag
 		_Check_return_ std::shared_ptr<model::mapiRowModel> GetOneModel(_In_ ULONG ulPropTag) override;
 
 	protected:
-		propBagFlags GetFlags() const override;
+		propBagFlags GetFlags() const override { return propBagFlags::None; }
 
 	private:
 		void load();
+		void ensureLoaded(bool force = false)
+		{
+			if (!m_loaded || force) load();
+		}
+		bool m_loaded{};
 		HKEY m_hKey{};
 		std::vector<std::shared_ptr<registryProperty>> m_props{};
 	};

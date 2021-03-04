@@ -11,19 +11,7 @@
 
 namespace propertybag
 {
-	registryPropertyBag::registryPropertyBag(HKEY hKey)
-	{
-		m_hKey = hKey;
-		load();
-	}
-
-	registryPropertyBag ::~registryPropertyBag() {}
-
-	propBagFlags registryPropertyBag::GetFlags() const
-	{
-		const auto ulFlags = propBagFlags::None;
-		return ulFlags;
-	}
+	registryPropertyBag::registryPropertyBag(HKEY hKey) : m_hKey(hKey) {}
 
 	bool registryPropertyBag::IsEqual(const std::shared_ptr<IMAPIPropertyBag> lpPropBag) const
 	{
@@ -87,10 +75,13 @@ namespace propertybag
 				}
 			}
 		}
+
+		m_loaded = true;
 	}
 
 	_Check_return_ std::vector<std::shared_ptr<model::mapiRowModel>> registryPropertyBag::GetAllModels()
 	{
+		ensureLoaded(true);
 		auto models = std::vector<std::shared_ptr<model::mapiRowModel>>{};
 		for (const auto& prop : m_props)
 		{
@@ -102,6 +93,7 @@ namespace propertybag
 
 	_Check_return_ std::shared_ptr<model::mapiRowModel> registryPropertyBag::GetOneModel(_In_ ULONG ulPropTag)
 	{
+		ensureLoaded();
 		for (const auto& prop : m_props)
 		{
 			if (prop->ulPropTag() == ulPropTag)
@@ -118,6 +110,7 @@ namespace propertybag
 
 	_Check_return_ LPSPropValue registryPropertyBag::GetOneProp(ULONG ulPropTag, const std::wstring& name)
 	{
+		ensureLoaded();
 		if (!name.empty())
 		{
 			for (const auto& prop : m_props)
@@ -147,6 +140,7 @@ namespace propertybag
 	_Check_return_ HRESULT
 	registryPropertyBag::SetProp(_In_ LPSPropValue lpProp, _In_ ULONG ulPropTag, const std::wstring& name)
 	{
+		ensureLoaded();
 		for (const auto& prop : m_props)
 		{
 			if (prop->toModel()->name() == name)
@@ -167,6 +161,7 @@ namespace propertybag
 
 	_Check_return_ HRESULT registryPropertyBag::DeleteProp(_In_ ULONG /*ulPropTag*/, _In_ const std::wstring& name)
 	{
+		ensureLoaded();
 		for (const auto& prop : m_props)
 		{
 			if (prop->toModel()->name() == name)
@@ -179,5 +174,4 @@ namespace propertybag
 
 		return S_OK; // No need to error if the prop didn't exist.
 	};
-
 } // namespace propertybag
