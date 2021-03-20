@@ -1,7 +1,7 @@
 Property[0]
 	PropTag = 0x3001001F (PT_UNICODE)
-		Name: PR_DISPLAY_NAME_W
-		Other Matches: PidTagDisplayName, PR_DISPLAY_NAME, PR_DISPLAY_NAME_A, ptagDisplayName
+		Name: PR_DISPLAY_NAME
+		Other Matches: PR_DISPLAY_NAME_W, PidTagDisplayName, ptagDisplayName, PR_DISPLAY_NAME_A
 	PropString = Mister Mistter
 	AltPropString = cb: 28 lpb: 4D006900730074006500720020004D00690073007400740065007200
 Property[1]

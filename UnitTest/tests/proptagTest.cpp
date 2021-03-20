@@ -15,22 +15,22 @@ namespace proptagTest
 		TEST_METHOD(Test_TagToString)
 		{
 			unittest::AreEqualEx(
-				L"0x0037001E (PT_STRING8): PR_SUBJECT: (PR_SUBJECT_A, ptagSubject, PR_SUBJECT_W, PidTagSubject)",
+				L"0x0037001E (PT_STRING8): PR_SUBJECT_A: (PR_SUBJECT, PR_SUBJECT_W, PidTagSubject, ptagSubject)",
 				proptags::TagToString(PR_SUBJECT_A, nullptr, false, true));
 			unittest::AreEqualEx(
 				L"Tag: 0x0037001E\r\n"
 				L"Type: PT_STRING8\r\n"
-				L"Property Name: PR_SUBJECT\r\n"
-				L"Other Names: PR_SUBJECT_A, ptagSubject, PR_SUBJECT_W, PidTagSubject\r\n"
+				L"Property Name: PR_SUBJECT_A\r\n"
+				L"Other Names: PR_SUBJECT, PR_SUBJECT_W, PidTagSubject, ptagSubject\r\n"
 				L"DASL: http://schemas.microsoft.com/mapi/proptag/0x0037001E",
 				proptags::TagToString(PR_SUBJECT_A, nullptr, false, false));
 		}
 
 		TEST_METHOD(Test_PropTagToPropName)
 		{
-			unittest::AreEqualEx(L"PR_SUBJECT", proptags::PropTagToPropName(PR_SUBJECT_A, false).bestGuess);
+			unittest::AreEqualEx(L"PR_SUBJECT_A", proptags::PropTagToPropName(PR_SUBJECT_A, false).bestGuess);
 			unittest::AreEqualEx(
-				L"PR_SUBJECT_A, ptagSubject, PR_SUBJECT_W, PidTagSubject",
+				L"PR_SUBJECT, PR_SUBJECT_W, PidTagSubject, ptagSubject",
 				proptags::PropTagToPropName(PR_SUBJECT_A, false).otherMatches);
 
 			unittest::AreEqualEx(L"PR_RW_RULES_STREAM", proptags::PropTagToPropName(0x68020102, false).bestGuess);
