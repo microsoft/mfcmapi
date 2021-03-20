@@ -160,7 +160,6 @@ static NAMEID_ARRAY_ENTRY g_NameIDArray[] = {
 	{0x8083, &guid::PSETID_Address, L"PidLidEmail1EmailAddress", PT_UNICODE, L"Contact"},
 	{0x8083, &guid::PSETID_Address, L"dispidEmail1EmailAddress", PT_UNICODE, L"Contact"},
 	{0x8083, &guid::PSETID_Address, L"dispidEmailEmailAddress", PT_UNICODE, L"Contact"},
-	{0x8084, &guid::PSETID_Address, L"EXSCHEMA_MAPI_EMAIL1ORIGINALDISPLAYNAME", PT_UNICODE, L"Contact"},
 	{0x8084, &guid::PSETID_Address, L"Email1OriginalDisplayName", PT_UNICODE, L"Contact"},
 	{0x8084, &guid::PSETID_Address, L"PidLidEmail1OriginalDisplayName", PT_UNICODE, L"Contact"},
 	{0x8084, &guid::PSETID_Address, L"dispidEmail1OriginalDisplayName", PT_UNICODE, L"Contact"},
