@@ -1,13 +1,13 @@
 Property[0]
 	PropTag = 0x3001001F (PT_UNICODE)
-		Name: PR_DISPLAY_NAME_W
-		Other Matches: PidTagDisplayName, PR_DISPLAY_NAME, PR_DISPLAY_NAME_A, ptagDisplayName
+		Name: PR_DISPLAY_NAME
+		Other Matches: PR_DISPLAY_NAME_W, PidTagDisplayName, ptagDisplayName, PR_DISPLAY_NAME_A
 	PropString = Jason Johnston
 	AltPropString = cb: 28 lpb: 4A00610073006F006E0020004A006F0068006E00730074006F006E00
 Property[1]
 	PropTag = 0x3002001F (PT_UNICODE)
-		Name: PR_ADDRTYPE_W
-		Other Matches: PidTagAddressType, PR_ADDRTYPE, PR_ADDRTYPE_A, ptagAddrType
+		Name: PR_ADDRTYPE
+		Other Matches: PR_ADDRTYPE_W, PidTagAddressType, ptagAddrType, PR_ADDRTYPE_A
 	PropString = EX
 	AltPropString = cb: 4 lpb: 45005800
 Property[2]

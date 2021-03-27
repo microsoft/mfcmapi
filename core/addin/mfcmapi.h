@@ -308,7 +308,7 @@ typedef _AddInDialogControl* LPADDINDIALOGCONTROL;
 // Passed in to ComplexDialog
 struct _AddInDialog
 {
-	LPWSTR szTitle; // Title for dialog
+	LPCWSTR szTitle; // Title for dialog
 	LPWSTR szPrompt; // String to display at top of dialog above controls (optional)
 	ULONG ulButtonFlags; // Buttons to be present at bottom of dialog
 	ULONG ulNumControls; // Number of entries in lpDialogControls
