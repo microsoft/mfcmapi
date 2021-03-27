@@ -310,7 +310,6 @@ namespace propertybag
 				ULONG cb = 0;
 				LPBYTE lpb = nullptr;
 				auto write = true;
-				// TODO: Implement MV props
 				switch (PROP_TYPE(newValue->ulPropTag))
 				{
 				case PT_CLSID:

@@ -150,8 +150,10 @@ namespace propertybag
 			}
 		}
 
-		const auto keyName =
-			name.empty() ? strings::format(L"%04x%04x", PROP_TYPE(ulPropTag), PROP_ID(ulPropTag)) : name;
+		// If our name is a prop tag name which matches our prop tag, use the prop tag
+		const auto keyName = name.empty() || proptags::PropNameToPropTag(name) != 0
+								 ? strings::format(L"%04x%04x", PROP_TYPE(ulPropTag), PROP_ID(ulPropTag))
+								 : name;
 		auto prop = std::make_shared<registryProperty>(
 			m_hKey, keyName, PROP_TYPE(ulPropTag) == PT_STRING8 ? REG_SZ : REG_BINARY);
 		prop->set(lpProp);
