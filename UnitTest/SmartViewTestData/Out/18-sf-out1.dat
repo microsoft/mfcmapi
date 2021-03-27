@@ -29,11 +29,11 @@ Search Folder Definition
 	|	rt = 0x3 = RES_CONTENT
 	|	resContent
 	|	|	FuzzyLevel = FL_PHRASE_MATCH | FL_IGNORECASE | FL_SUBSTRING = 0x00010021
-	|	|	PropTag = 0x0037001F (PT_UNICODE): PR_SUBJECT_W: (PidTagSubject, PR_SUBJECT, PR_SUBJECT_A, ptagSubject)
+	|	|	PropTag = 0x0037001F (PT_UNICODE): PR_SUBJECT: (PR_SUBJECT_W, PidTagSubject, ptagSubject, PR_SUBJECT_A)
 	|	|	lpProp
 	|	|		PropTag = 0x0037001F (PT_UNICODE)
-	|	|			Name: PR_SUBJECT_W
-	|	|			Other Matches: PidTagSubject, PR_SUBJECT, PR_SUBJECT_A, ptagSubject
+	|	|			Name: PR_SUBJECT
+	|	|			Other Matches: PR_SUBJECT_W, PidTagSubject, ptagSubject, PR_SUBJECT_A
 	|	|		PropString = Test
 	|	|		AltPropString = cb: 8 lpb: 5400650073007400
 	SkipLen3 = 0x00000000
