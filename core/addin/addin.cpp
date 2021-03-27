@@ -422,12 +422,12 @@ namespace addin
 		const auto lpTag1 = static_cast<const NAME_ARRAY_ENTRY_V2*>(a1);
 		const auto lpTag2 = static_cast<const NAME_ARRAY_ENTRY_V2*>(a2);
 
-		if (lpTag1->ulValue > lpTag2->ulValue) return 1;
-		if (lpTag1->ulValue == lpTag2->ulValue)
-		{
-			return wcscmp(lpTag1->lpszName, lpTag2->lpszName);
-		}
+		const auto nameCmp = wcscmp(lpTag1->lpszName, lpTag2->lpszName);
+		// If the names were the same, treat the entries as equal so we don't merge in two entries with the same name
+		if (nameCmp == 0) return 0;
 
+		if (lpTag1->ulValue > lpTag2->ulValue) return 1;
+		if (lpTag1->ulValue == lpTag2->ulValue) return nameCmp;
 		return -1;
 	}
 
@@ -618,11 +618,7 @@ namespace addin
 				output::dbgLevel::AddInPlumbing,
 				L"Found 0x%08X Smart View parser types.\n",
 				addIn.ulSmartViewParserTypes);
-		}
 
-		// Second pass - merge our arrays to the hardcoded arrays
-		for (const auto& addIn : g_lpMyAddins)
-		{
 			if (addIn.ulPropTypes)
 			{
 				MergeArrays<NAME_ARRAY_ENTRY>(PropTypeArray, addIn.lpPropTypes, addIn.ulPropTypes, CompareTypes);
