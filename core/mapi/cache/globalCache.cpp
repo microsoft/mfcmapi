@@ -7,19 +7,7 @@ namespace cache
 {
 	static std::wstring GCCLASS = L"CGlobalCache"; // STRING_OK
 
-	CGlobalCache::CGlobalCache() noexcept
-	{
-		TRACE_CONSTRUCTOR(GCCLASS);
-		m_bMAPIInitialized = false;
-
-		m_lpMessagesToCopy = nullptr;
-		m_lpFolderToCopy = nullptr;
-		m_lpAddressEntriesToCopy = nullptr;
-		m_ulPropTagToCopy = 0;
-
-		m_lpSourceParent = nullptr;
-		m_lpSourcePropObject = nullptr;
-	}
+	CGlobalCache::CGlobalCache() noexcept { TRACE_CONSTRUCTOR(GCCLASS); }
 
 	CGlobalCache::~CGlobalCache()
 	{
@@ -70,7 +58,8 @@ namespace cache
 		m_lpAddressEntriesToCopy = nullptr;
 		m_lpMessagesToCopy = nullptr;
 		m_lpFolderToCopy = nullptr;
-		m_ulPropTagToCopy = 0;
+		m_propToCopy = {};
+		m_sourcePropBag = {};
 		m_lpSourceParent = nullptr;
 		m_lpSourcePropObject = nullptr;
 	}
@@ -114,15 +103,24 @@ namespace cache
 		return m_lpSourceParent;
 	}
 
-	void CGlobalCache::SetPropertyToCopy(ULONG ulPropTag, _In_ LPMAPIPROP lpSourcePropObject) noexcept
+	void CGlobalCache::SetPropertyToCopy(
+		std::shared_ptr<sortlistdata::propModelData> prop,
+		std::shared_ptr<propertybag::IMAPIPropertyBag> propBag) noexcept
 	{
 		EmptyBuffer();
-		m_ulPropTagToCopy = ulPropTag;
-		m_lpSourcePropObject = lpSourcePropObject;
-		if (m_lpSourcePropObject) m_lpSourcePropObject->AddRef();
+		m_propToCopy = prop;
+		m_sourcePropBag = propBag;
 	}
 
-	_Check_return_ ULONG CGlobalCache::GetPropertyToCopy() const noexcept { return m_ulPropTagToCopy; }
+	_Check_return_ std::shared_ptr<sortlistdata::propModelData> CGlobalCache::GetPropertyToCopy() const noexcept
+	{
+		return m_propToCopy;
+	}
+
+	_Check_return_ std::shared_ptr<propertybag::IMAPIPropertyBag> CGlobalCache::GetSourcePropBag() const noexcept
+	{
+		return m_sourcePropBag;
+	}
 
 	_Check_return_ LPMAPIPROP CGlobalCache::GetSourcePropObject() const noexcept
 	{
@@ -151,7 +149,7 @@ namespace cache
 		if (m_lpFolderToCopy) ulStatus |= BUFFER_FOLDER;
 		if (m_lpSourceParent) ulStatus |= BUFFER_PARENTFOLDER;
 		if (m_lpAddressEntriesToCopy) ulStatus |= BUFFER_ABENTRIES;
-		if (m_ulPropTagToCopy) ulStatus |= BUFFER_PROPTAG;
+		if (m_propToCopy) ulStatus |= BUFFER_PROPTAG;
 		if (m_lpSourcePropObject) ulStatus |= BUFFER_SOURCEPROPOBJ;
 		if (!m_attachmentsToCopy.empty()) ulStatus |= BUFFER_ATTACHMENTS;
 		if (!m_szProfileToCopy.empty()) ulStatus |= BUFFER_PROFILE;
