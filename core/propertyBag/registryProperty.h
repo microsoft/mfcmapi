@@ -6,7 +6,7 @@ namespace propertybag
 	class registryProperty
 	{
 	public:
-		registryProperty(_In_ const HKEY hKey, _In_ const std::wstring& name, _In_ DWORD dwType);
+		registryProperty(_In_ const HKEY hKey, _In_ const std::wstring& name, _In_ DWORD dwType, _In_ ULONG ulPropTag);
 		registryProperty(const registryProperty&) = delete;
 		registryProperty& operator=(const registryProperty&) = delete;
 

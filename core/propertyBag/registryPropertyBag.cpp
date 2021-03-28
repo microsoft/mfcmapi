@@ -71,7 +71,7 @@ namespace propertybag
 					const auto valName =
 						std::wstring(szBuf.c_str()); // szBuf.size() is 0, so make a copy with a proper size
 
-					m_props.push_back(std::make_shared<registryProperty>(m_hKey, valName, dwType));
+					m_props.push_back(std::make_shared<registryProperty>(m_hKey, valName, dwType, PR_NULL));
 				}
 			}
 		}
@@ -102,8 +102,7 @@ namespace propertybag
 			}
 		}
 
-		const auto keyName = strings::format(L"%04x%04x", PROP_TYPE(ulPropTag), PROP_ID(ulPropTag));
-		auto prop = std::make_shared<registryProperty>(m_hKey, keyName, REG_NONE);
+		auto prop = std::make_shared<registryProperty>(m_hKey, L"", REG_NONE, ulPropTag);
 		m_props.push_back(prop);
 		return prop->toModel();
 	}
@@ -150,12 +149,7 @@ namespace propertybag
 			}
 		}
 
-		// If our name is a prop tag name which matches our prop tag, use the prop tag
-		const auto keyName = name.empty() || proptags::PropNameToPropTag(name) != 0
-								 ? strings::format(L"%04x%04x", PROP_TYPE(ulPropTag), PROP_ID(ulPropTag))
-								 : name;
-		auto prop = std::make_shared<registryProperty>(
-			m_hKey, keyName, PROP_TYPE(ulPropTag) == PT_STRING8 ? REG_SZ : REG_BINARY);
+		auto prop = std::make_shared<registryProperty>(m_hKey, name, REG_NONE, PR_NULL);
 		prop->set(lpProp);
 		m_props.push_back(prop);
 		return S_OK;
