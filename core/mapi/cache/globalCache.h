@@ -1,4 +1,6 @@
 ﻿#pragma once
+#include <core/sortlistdata/propModelData.h>
+#include <core/PropertyBag/PropertyBag.h>
 
 namespace cache
 {
@@ -46,8 +48,11 @@ namespace cache
 		void SetFolderToCopy(_In_ LPMAPIFOLDER lpFolderToCopy, _In_ LPMAPIFOLDER lpSourceParent) noexcept;
 		_Check_return_ LPMAPIFOLDER GetFolderToCopy() const noexcept;
 
-		void SetPropertyToCopy(ULONG ulPropTag, _In_ LPMAPIPROP lpSourcePropObject) noexcept;
-		_Check_return_ ULONG GetPropertyToCopy() const noexcept;
+		void SetPropertyToCopy(
+			std::shared_ptr<sortlistdata::propModelData> prop,
+			std::shared_ptr<propertybag::IMAPIPropertyBag> propBag) noexcept;
+		_Check_return_ std::shared_ptr<sortlistdata::propModelData> GetPropertyToCopy() const noexcept;
+		_Check_return_ std::shared_ptr<propertybag::IMAPIPropertyBag> GetSourcePropBag() const noexcept;
 		_Check_return_ LPMAPIPROP GetSourcePropObject() const noexcept;
 
 		void SetAttachmentsToCopy(_In_ LPMESSAGE lpMessage, _In_ const std::vector<ULONG>& attNumList);
@@ -63,14 +68,15 @@ namespace cache
 	private:
 		void EmptyBuffer() noexcept;
 
-		LPENTRYLIST m_lpAddressEntriesToCopy;
-		LPENTRYLIST m_lpMessagesToCopy;
-		LPMAPIFOLDER m_lpFolderToCopy;
-		ULONG m_ulPropTagToCopy;
-		std::vector<ULONG> m_attachmentsToCopy;
-		std::wstring m_szProfileToCopy;
-		LPMAPIFOLDER m_lpSourceParent;
-		LPMAPIPROP m_lpSourcePropObject;
-		bool m_bMAPIInitialized;
+		LPENTRYLIST m_lpAddressEntriesToCopy{};
+		LPENTRYLIST m_lpMessagesToCopy{};
+		LPMAPIFOLDER m_lpFolderToCopy{};
+		std::shared_ptr<sortlistdata::propModelData> m_propToCopy{};
+		std::vector<ULONG> m_attachmentsToCopy{};
+		std::wstring m_szProfileToCopy{};
+		LPMAPIFOLDER m_lpSourceParent{};
+		LPMAPIPROP m_lpSourcePropObject{};
+		std::shared_ptr<propertybag::IMAPIPropertyBag> m_sourcePropBag{};
+		bool m_bMAPIInitialized{};
 	};
 } // namespace cache

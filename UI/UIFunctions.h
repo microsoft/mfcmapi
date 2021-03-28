@@ -72,6 +72,8 @@ namespace ui
 	void DisplayContextMenu(UINT uiClassMenu, UINT uiControlMenu, _In_ HWND hWnd, int x, int y);
 
 	HMENU LocateSubmenu(_In_ HMENU hMenu, UINT uid);
+	bool DeleteMenu(_In_ HMENU hMenu, UINT uid);
+	bool DeleteSubmenu(_In_ HMENU hMenu, UINT uid);
 
 	_Check_return_ int GetEditHeight(_In_opt_ HWND hwndEdit);
 	_Check_return_ int GetTextHeight(_In_opt_ HWND hwndEdit);

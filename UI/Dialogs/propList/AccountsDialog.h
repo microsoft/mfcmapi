@@ -18,6 +18,7 @@ namespace dialog
 	protected:
 		// Overrides from base class
 		BOOL OnInitDialog() override;
+		void OnInitMenu(_In_ CMenu* pMenu);
 
 	private:
 		controls::StyleTreeCtrl m_lpAccountsList{};

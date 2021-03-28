@@ -11,19 +11,7 @@
 
 namespace propertybag
 {
-	registryPropertyBag::registryPropertyBag(HKEY hKey)
-	{
-		m_hKey = hKey;
-		GetAllProps();
-	}
-
-	registryPropertyBag ::~registryPropertyBag() {}
-
-	propBagFlags registryPropertyBag::GetFlags() const
-	{
-		const auto ulFlags = propBagFlags::None;
-		return ulFlags;
-	}
+	registryPropertyBag::registryPropertyBag(HKEY hKey) : m_hKey(hKey) {}
 
 	bool registryPropertyBag::IsEqual(const std::shared_ptr<IMAPIPropertyBag> lpPropBag) const
 	{
@@ -41,8 +29,9 @@ namespace propertybag
 		return false;
 	}
 
-	void registryPropertyBag::GetAllProps()
+	void registryPropertyBag::load()
 	{
+		m_props = {};
 		auto cchMaxValueNameLen = DWORD{}; // Param in RegQueryInfoKeyW is misnamed
 		auto cValues = DWORD{};
 		auto hRes = WC_W32(RegQueryInfoKeyW(
@@ -82,14 +71,17 @@ namespace propertybag
 					const auto valName =
 						std::wstring(szBuf.c_str()); // szBuf.size() is 0, so make a copy with a proper size
 
-					m_props.push_back(std::make_shared<registryProperty>(m_hKey, valName, dwType));
+					m_props.push_back(std::make_shared<registryProperty>(m_hKey, valName, dwType, 0));
 				}
 			}
 		}
+
+		m_loaded = true;
 	}
 
 	_Check_return_ std::vector<std::shared_ptr<model::mapiRowModel>> registryPropertyBag::GetAllModels()
 	{
+		ensureLoaded(true);
 		auto models = std::vector<std::shared_ptr<model::mapiRowModel>>{};
 		for (const auto& prop : m_props)
 		{
@@ -99,14 +91,25 @@ namespace propertybag
 		return models;
 	}
 
-	_Check_return_ std::shared_ptr<model::mapiRowModel> registryPropertyBag::GetOneModel(_In_ ULONG /*ulPropTag*/)
+	_Check_return_ std::shared_ptr<model::mapiRowModel> registryPropertyBag::GetOneModel(_In_ ULONG ulPropTag)
 	{
-		return {};
+		ensureLoaded();
+		for (const auto& prop : m_props)
+		{
+			if (prop->ulPropTag() == ulPropTag)
+			{
+				return prop->toModel();
+			}
+		}
+
+		auto prop = std::make_shared<registryProperty>(m_hKey, L"", REG_NONE, ulPropTag);
+		m_props.push_back(prop);
+		return prop->toModel();
 	}
 
 	_Check_return_ LPSPropValue registryPropertyBag::GetOneProp(ULONG ulPropTag, const std::wstring& name)
 	{
-		// TODO: go look for a prop if we don't have one cached
+		ensureLoaded();
 		if (!name.empty())
 		{
 			for (const auto& prop : m_props)
@@ -134,8 +137,9 @@ namespace propertybag
 	}
 
 	_Check_return_ HRESULT
-	registryPropertyBag::SetProp(_In_ LPSPropValue lpProp, _In_ ULONG /*ulPropTag*/, const std::wstring& name)
+	registryPropertyBag::SetProp(_In_ LPSPropValue lpProp, _In_ ULONG ulPropTag, const std::wstring& name)
 	{
+		ensureLoaded();
 		for (const auto& prop : m_props)
 		{
 			if (prop->toModel()->name() == name)
@@ -145,7 +149,25 @@ namespace propertybag
 			}
 		}
 
-		// TODO: Figure out what to do for cache misses
-		return MAPI_E_CALL_FAILED;
+		auto prop = std::make_shared<registryProperty>(m_hKey, name, REG_NONE, 0);
+		prop->set(lpProp);
+		m_props.push_back(prop);
+		return S_OK;
 	}
+
+	_Check_return_ HRESULT registryPropertyBag::DeleteProp(_In_ ULONG /*ulPropTag*/, _In_ const std::wstring& name)
+	{
+		ensureLoaded();
+		for (const auto& prop : m_props)
+		{
+			if (prop->toModel()->name() == name)
+			{
+				WC_W32_S(RegDeleteValueW(m_hKey, prop->name().c_str()));
+				load(); // rather than try to rebuild our prop list, just reload
+				return S_OK;
+			}
+		}
+
+		return S_OK; // No need to error if the prop didn't exist.
+	};
 } // namespace propertybag

@@ -16,27 +16,57 @@
 
 namespace propertybag
 {
-	registryProperty::registryProperty(HKEY hKey, _In_ const std::wstring& name, DWORD dwType)
-		: m_hKey(hKey), m_name(name), m_dwType(dwType)
+	registryProperty::registryProperty(
+		_In_ const HKEY hKey,
+		_In_ const std::wstring& name,
+		_In_ DWORD dwType,
+		_In_ ULONG ulPropTag)
+		: m_hKey(hKey), m_name(name), m_dwType(dwType), m_ulPropTag(ulPropTag)
 	{
 		m_secure = false;
-		// Get our prop tag and determine if we're a secure prop
-		if (name.size() == 8 || name.size() == 9)
+
+		// With no name we build a name from the prop tag
+		if (!m_name.empty())
 		{
-			ULONG num{};
-			// If we're not a simple prop tag, perhaps we have a prefix
-			auto str = name;
-			if (strings::stripPrefix(str, L"S") && strings::tryWstringToUlong(num, str, 16, false))
+			auto str = m_name;
+			// If we pass a name, but it's has S:: prefix, it's secure and name is likely a prop tag name
+			// After strip, we can parse the name with proptags::PropNameToPropTag
+			if (strings::stripPrefix(str, L"S::"))
 			{
 				m_secure = true;
-				// abuse some macros to swap the order of the tag
-				m_ulPropTag = PROP_TAG(PROP_ID(num), PROP_TYPE(num));
+				m_ulPropTag = proptags::PropNameToPropTag(str);
+				m_name = strings::format(L"S%04x%04x", PROP_TYPE(m_ulPropTag), PROP_ID(m_ulPropTag));
 			}
-			else if (strings::tryWstringToUlong(num, name, 16, false))
+			// Get our prop tag and determine if we're a secure prop
+			else if (str.size() == 8 || str.size() == 9)
 			{
-				// abuse some macros to swap the order of the tag
-				m_ulPropTag = PROP_TAG(PROP_ID(num), PROP_TYPE(num));
+				ULONG num{};
+				const auto secure = strings::stripPrefix(str, L"S");
+				if (strings::tryWstringToUlong(num, str, 16, false))
+				{
+					m_secure = secure;
+					// Abuse some macros to swap the order of the tag
+					m_ulPropTag = PROP_TAG(PROP_ID(num), PROP_TYPE(num));
+				}
 			}
+
+			// If we still don't have a prop tag, maybe the name matches a prop
+			if (m_ulPropTag == 0)
+			{
+				m_ulPropTag = proptags::PropNameToPropTag(m_name);
+				if (m_ulPropTag != 0) m_name.clear();
+			}
+		}
+
+		if (m_name.empty())
+		{
+			m_name = strings::format(L"%04x%04x", PROP_TYPE(m_ulPropTag), PROP_ID(m_ulPropTag));
+		}
+
+		// If we pass REG_NONE, we can just determine type from tag
+		if (m_dwType == REG_NONE)
+		{
+			m_dwType = (PROP_TYPE(m_ulPropTag) == PT_STRING8) ? REG_SZ : REG_BINARY;
 		}
 	}
 
@@ -246,7 +276,7 @@ namespace propertybag
 			m_model->name(m_name);
 		}
 
-		if (m_secure) m_model->name(m_model->name() + L" (secure)");
+		if (m_secure) m_model->name(L"S::" + m_model->name());
 
 		if (m_dwType == REG_BINARY)
 		{
@@ -271,6 +301,10 @@ namespace propertybag
 			if (!m_model->ulPropTag()) m_model->ulPropTag(PROP_TAG(PT_UNICODE, PROP_ID_NULL));
 			m_model->value(m_szVal);
 		}
+		else if (m_dwType == REG_NONE)
+		{
+			m_model->value(L"Err: 0x8004010f = MAPI_E_NOT_FOUND");
+		}
 
 		if (m_canParseMAPI)
 		{
@@ -294,6 +328,11 @@ namespace propertybag
 	{
 		if (!newValue) return;
 
+		if (m_dwType == REG_NONE)
+		{
+			m_dwType = (PROP_TYPE(m_ulPropTag) == PT_STRING8) ? REG_SZ : REG_BINARY;
+		}
+
 		if (m_dwType == REG_BINARY)
 		{
 			if (newValue->ulPropTag)
@@ -301,7 +340,6 @@ namespace propertybag
 				ULONG cb = 0;
 				LPBYTE lpb = nullptr;
 				auto write = true;
-				// TODO: Implement MV props
 				switch (PROP_TYPE(newValue->ulPropTag))
 				{
 				case PT_CLSID:

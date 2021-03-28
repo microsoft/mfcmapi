@@ -861,7 +861,7 @@ namespace controls::sortlistctrl
 				L"deleting property 0x%08X\n",
 				propModelData->getPropTag());
 
-			const auto hRes = EC_H(lpPropBag->DeleteProp(propModelData->getPropTag()));
+			const auto hRes = EC_H(lpPropBag->DeleteProp(propModelData->getPropTag(), propModelData->getName()));
 			if (SUCCEEDED(hRes))
 			{
 				// Refresh the display
@@ -1145,24 +1145,27 @@ namespace controls::sortlistctrl
 
 	void CSingleMAPIPropListCtrl::OnCopyProperty() const
 	{
-		// for now, we only copy from objects - copying from rows would be difficult to generalize
-		if (!m_lpPropBag) return;
-		const auto propModelData = GetSelectedPropModelData();
-		if (!propModelData) return;
-		const auto ulPropTag = propModelData->getPropTag();
-		cache::CGlobalCache::getInstance().SetPropertyToCopy(ulPropTag, m_lpPropBag->GetMAPIProp());
+		cache::CGlobalCache::getInstance().SetPropertyToCopy(GetSelectedPropModelData(), m_lpPropBag);
 	}
 
 	void CSingleMAPIPropListCtrl::OnPasteProperty()
 	{
-		// For now, we only paste to objects - copying to rows would be difficult to generalize
-		// TODO: Now that we have property bags, figure out how to generalize this
 		if (!m_lpHostDlg || !m_lpPropBag) return;
 		auto lpPropBag = m_lpPropBag; // Hold the prop bag so it doesn't get deleted under us
 
-		const auto ulSourcePropTag = cache::CGlobalCache::getInstance().GetPropertyToCopy();
-		auto lpSourcePropObj = cache::CGlobalCache::getInstance().GetSourcePropObject();
-		if (!lpSourcePropObj) return;
+		const auto sourceProp = cache::CGlobalCache::getInstance().GetPropertyToCopy();
+		const auto sourcePropBag = cache::CGlobalCache::getInstance().GetSourcePropBag();
+		const auto ulSourcePropTag = sourceProp->getPropTag();
+		auto lpSourcePropObj = sourcePropBag->GetMAPIProp();
+		if (!lpSourcePropObj)
+		{
+			// If we don't have a source prop object, try setting the prop back to the prop bag
+			const auto sourceName = sourceProp->getName();
+			const auto lpSourceProp = sourcePropBag->GetOneProp(ulSourcePropTag, sourceName);
+			EC_H(lpPropBag->SetProp(lpSourceProp, ulSourcePropTag, sourceName));
+			this->RefreshMAPIPropList();
+			return;
+		}
 
 		auto hRes = S_OK;
 		LPSPropProblemArray lpProblems = nullptr;

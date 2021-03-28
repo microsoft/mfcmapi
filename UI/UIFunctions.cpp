@@ -202,9 +202,7 @@ namespace ui
 
 		for (UINT nPosition = 0; nPosition < nCount; nPosition++)
 		{
-			auto menuiteminfo = MENUITEMINFOW{};
-			menuiteminfo.cbSize = sizeof(MENUITEMINFOW);
-			menuiteminfo.fMask = MIIM_DATA | MIIM_SUBMENU;
+			auto menuiteminfo = MENUITEMINFOW{sizeof(MENUITEMINFOW), MIIM_DATA | MIIM_SUBMENU};
 
 			GetMenuItemInfoW(hMenu, nPosition, true, &menuiteminfo);
 			if (menuiteminfo.dwItemData)
@@ -269,9 +267,7 @@ namespace ui
 		const auto hMenu = GetMenu(hWnd);
 		if (!hMenu) return;
 
-		auto menuiteminfo = MENUITEMINFOW{};
-		menuiteminfo.cbSize = sizeof menuiteminfo;
-		menuiteminfo.fMask = MIIM_DATA | MIIM_FTYPE;
+		auto menuiteminfo = MENUITEMINFOW{sizeof(MENUITEMINFOW), MIIM_DATA | MIIM_FTYPE};
 
 		EC_B_S(::GetMenuItemInfoW(hMenu, uiMenuTag, false, &menuiteminfo));
 		auto lpMenuEntry = CreateMenuEntry(szNewString);
@@ -373,11 +369,8 @@ namespace ui
 
 		for (UINT nPosition = 0; nPosition < nCount; nPosition++)
 		{
-			auto menuiteminfo = MENUITEMINFOW{};
-			menuiteminfo.cbSize = sizeof(MENUITEMINFOW);
-			menuiteminfo.fMask = MIIM_SUBMENU | MIIM_ID;
-
-			GetMenuItemInfoW(hMenu, nPosition, true, &menuiteminfo);
+			auto menuiteminfo = MENUITEMINFOW{sizeof(MENUITEMINFOW), MIIM_SUBMENU | MIIM_ID};
+			WC_B_S(GetMenuItemInfoW(hMenu, nPosition, true, &menuiteminfo));
 
 			if (menuiteminfo.wID == uid) return hMenu;
 
@@ -387,7 +380,89 @@ namespace ui
 				if (hSub) return hSub;
 			}
 		}
+
 		return nullptr;
+	}
+
+	// Returns true if this HMENU contains an item with this uid
+	bool ContainsMenuItem(_In_ HMENU hMenu, const UINT uid)
+	{
+		const UINT nCount = GetMenuItemCount(hMenu);
+		if (nCount == static_cast<UINT>(-1)) return false;
+
+		for (UINT nPosition = 0; nPosition < nCount; nPosition++)
+		{
+			auto menuiteminfo = MENUITEMINFOW{sizeof(MENUITEMINFOW), MIIM_ID};
+			WC_B_S(GetMenuItemInfoW(hMenu, nPosition, true, &menuiteminfo));
+
+			if (menuiteminfo.wID == uid) return true;
+		}
+
+		return false;
+	}
+
+	bool DeleteMenu(_In_ HMENU hMenu, UINT uid)
+	{
+		const UINT nCount = GetMenuItemCount(hMenu);
+		if (nCount == static_cast<UINT>(-1)) return false;
+
+		for (UINT nPosition = 0; nPosition < nCount; nPosition++)
+		{
+			auto menuiteminfo = MENUITEMINFOW{sizeof(MENUITEMINFOW), MIIM_DATA | MIIM_ID | MIIM_SUBMENU};
+
+			GetMenuItemInfoW(hMenu, nPosition, true, &menuiteminfo);
+			if (menuiteminfo.wID == uid && menuiteminfo.dwItemData)
+			{
+				DeleteMenuEntry(reinterpret_cast<LPMENUENTRY>(menuiteminfo.dwItemData));
+				WC_B_S(::RemoveMenu(hMenu, nPosition, MF_BYPOSITION));
+				return true;
+			}
+
+			if (menuiteminfo.hSubMenu)
+			{
+				// This submenu may not contain the item, but it may contain an submenu that does, so check it.
+				if (DeleteMenu(menuiteminfo.hSubMenu, uid)) return true;
+			}
+		}
+
+		return false;
+	}
+
+	bool DeleteSubmenu(_In_ HMENU hMenu, UINT uid)
+	{
+		const UINT nCount = GetMenuItemCount(hMenu);
+		if (nCount == static_cast<UINT>(-1)) return false;
+
+		// Walk through child items looking for submenus
+		for (UINT nPosition = 0; nPosition < nCount; nPosition++)
+		{
+			auto menuiteminfo = MENUITEMINFOW{sizeof(MENUITEMINFOW), MIIM_DATA | MIIM_SUBMENU};
+			WC_B_S(GetMenuItemInfoW(hMenu, nPosition, true, &menuiteminfo));
+
+			if (menuiteminfo.hSubMenu)
+			{
+				if (ContainsMenuItem(menuiteminfo.hSubMenu, uid))
+				{
+					// Delete children
+					DeleteMenuEntries(menuiteminfo.hSubMenu);
+
+					// Delete self
+					if (menuiteminfo.dwItemData)
+					{
+						DeleteMenuEntry(reinterpret_cast<LPMENUENTRY>(menuiteminfo.dwItemData));
+					}
+
+					// Remove self from parent menu
+					WC_B_S(::RemoveMenu(hMenu, nPosition, MF_BYPOSITION));
+					return true;
+				}
+
+				// This submenu may not contain the item, but it may contain an submenu that does, so check it.
+				if (DeleteSubmenu(menuiteminfo.hSubMenu, uid)) return true;
+			}
+		}
+
+		return false;
 	}
 
 	_Check_return_ int GetEditHeight(_In_opt_ HWND hwndEdit)
