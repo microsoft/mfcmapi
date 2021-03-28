@@ -45,15 +45,10 @@ namespace propertybag
 			else if (str.size() == 8 || str.size() == 9)
 			{
 				ULONG num{};
-				// If we're not a simple prop tag, perhaps we have a prefix
-				if (strings::stripPrefix(str, L"S") && strings::tryWstringToUlong(num, str, 16, false))
+				const auto secure = strings::stripPrefix(str, L"S");
+				if (strings::tryWstringToUlong(num, str, 16, false))
 				{
-					m_secure = true;
-					// Abuse some macros to swap the order of the tag
-					m_ulPropTag = PROP_TAG(PROP_ID(num), PROP_TYPE(num));
-				}
-				else if (strings::tryWstringToUlong(num, str, 16, false))
-				{
+					m_secure = secure;
 					// Abuse some macros to swap the order of the tag
 					m_ulPropTag = PROP_TAG(PROP_ID(num), PROP_TYPE(num));
 				}
