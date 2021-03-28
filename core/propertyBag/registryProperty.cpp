@@ -25,7 +25,7 @@ namespace propertybag
 	{
 		m_secure = false;
 
-		//Suppose we pass a tag and no name we can determine name from tag
+		// With no name we build a name from the prop tag
 		if (m_name.empty())
 		{
 			m_name = strings::format(L"%04x%04x", PROP_TYPE(m_ulPropTag), PROP_ID(m_ulPropTag));
@@ -33,8 +33,8 @@ namespace propertybag
 		else
 		{
 			auto str = m_name;
-			//If we pass a name, but it's has S:: prefix, it's secure and name is likely a prop tag name
-			//	After strip, we can parse the name with proptags::PropNameToPropTag
+			// If we pass a name, but it's has S:: prefix, it's secure and name is likely a prop tag name
+			// After strip, we can parse the name with proptags::PropNameToPropTag
 			if (strings::stripPrefix(str, L"S::"))
 			{
 				m_secure = true;
@@ -49,12 +49,12 @@ namespace propertybag
 				if (strings::stripPrefix(str, L"S") && strings::tryWstringToUlong(num, str, 16, false))
 				{
 					m_secure = true;
-					// abuse some macros to swap the order of the tag
+					// Abuse some macros to swap the order of the tag
 					m_ulPropTag = PROP_TAG(PROP_ID(num), PROP_TYPE(num));
 				}
 				else if (strings::tryWstringToUlong(num, str, 16, false))
 				{
-					// abuse some macros to swap the order of the tag
+					// Abuse some macros to swap the order of the tag
 					m_ulPropTag = PROP_TAG(PROP_ID(num), PROP_TYPE(num));
 				}
 			}
@@ -64,12 +64,12 @@ namespace propertybag
 				m_ulPropTag = proptags::PropNameToPropTag(m_name);
 				m_name = strings::format(L"%04x%04x", PROP_TYPE(m_ulPropTag), PROP_ID(m_ulPropTag));
 			}
+		}
 
-			// If we pass REG_NONE, we can just determine type from tag
-			if (m_dwType == REG_NONE)
-			{
-				m_dwType = (PROP_TYPE(m_ulPropTag) == PT_STRING8) ? REG_SZ : REG_BINARY;
-			}
+		// If we pass REG_NONE, we can just determine type from tag
+		if (m_dwType == REG_NONE)
+		{
+			m_dwType = (PROP_TYPE(m_ulPropTag) == PT_STRING8) ? REG_SZ : REG_BINARY;
 		}
 	}
 
