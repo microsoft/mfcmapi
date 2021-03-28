@@ -26,11 +26,7 @@ namespace propertybag
 		m_secure = false;
 
 		// With no name we build a name from the prop tag
-		if (m_name.empty())
-		{
-			m_name = strings::format(L"%04x%04x", PROP_TYPE(m_ulPropTag), PROP_ID(m_ulPropTag));
-		}
-		else
+		if (!m_name.empty())
 		{
 			auto str = m_name;
 			// If we pass a name, but it's has S:: prefix, it's secure and name is likely a prop tag name
@@ -54,11 +50,17 @@ namespace propertybag
 				}
 			}
 
-			if (m_ulPropTag == PT_NULL && !m_name.empty())
+			// If we still don't have a prop tag, maybe the name matches a prop
+			if (m_ulPropTag == 0)
 			{
 				m_ulPropTag = proptags::PropNameToPropTag(m_name);
-				m_name = strings::format(L"%04x%04x", PROP_TYPE(m_ulPropTag), PROP_ID(m_ulPropTag));
+				if (m_ulPropTag != 0) m_name.clear();
 			}
+		}
+
+		if (m_name.empty())
+		{
+			m_name = strings::format(L"%04x%04x", PROP_TYPE(m_ulPropTag), PROP_ID(m_ulPropTag));
 		}
 
 		// If we pass REG_NONE, we can just determine type from tag

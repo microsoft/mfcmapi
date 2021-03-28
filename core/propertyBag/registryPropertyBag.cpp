@@ -71,7 +71,7 @@ namespace propertybag
 					const auto valName =
 						std::wstring(szBuf.c_str()); // szBuf.size() is 0, so make a copy with a proper size
 
-					m_props.push_back(std::make_shared<registryProperty>(m_hKey, valName, dwType, PR_NULL));
+					m_props.push_back(std::make_shared<registryProperty>(m_hKey, valName, dwType, 0));
 				}
 			}
 		}
@@ -149,7 +149,7 @@ namespace propertybag
 			}
 		}
 
-		auto prop = std::make_shared<registryProperty>(m_hKey, name, REG_NONE, PR_NULL);
+		auto prop = std::make_shared<registryProperty>(m_hKey, name, REG_NONE, 0);
 		prop->set(lpProp);
 		m_props.push_back(prop);
 		return S_OK;
