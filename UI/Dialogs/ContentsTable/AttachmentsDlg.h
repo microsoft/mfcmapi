@@ -24,8 +24,8 @@ namespace dialog
 		void OnDeleteSelectedItem() override;
 		void OnDisplayItem() override;
 		void OnInitMenu(_In_ CMenu* pMenu) override;
-		_Check_return_ LPATTACH OpenAttach(ULONG ulAttachNum) const;
-		_Check_return_ LPMESSAGE OpenEmbeddedMessage() const;
+		_Check_return_ LPATTACH OpenAttach(ULONG ulAttachNum, bool bCache);
+		_Check_return_ LPMESSAGE OpenEmbeddedMessage(LPATTACH lpAttach) const;
 		_Check_return_ LPMAPIPROP OpenItemProp(int iSelectedItem, modifyType bModify) override;
 
 		// Menu items
@@ -35,10 +35,10 @@ namespace dialog
 		void OnViewEmbeddedMessageProps();
 		void OnAddAttachment();
 
-		LPATTACH m_lpAttach; // Currently opened attachment
-		ULONG m_ulAttachNum; // Currently opened attachment number
-		LPMESSAGE m_lpMessage;
-		bool m_bDisplayAttachAsEmbeddedMessage;
+		LPATTACH m_lpAttach{}; // Currently opened attachment
+		ULONG m_ulAttachNum{static_cast<ULONG>(-1)}; // Currently opened attachment number
+		LPMESSAGE m_lpMessage{};
+		bool m_bDisplayAttachAsEmbeddedMessage{};
 
 		DECLARE_MESSAGE_MAP()
 	};
