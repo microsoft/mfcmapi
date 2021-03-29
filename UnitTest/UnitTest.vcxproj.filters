@@ -68,6 +68,9 @@
     <ClCompile Include="tests\propertytest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="tests\addintest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="res\UnitTest.rc">

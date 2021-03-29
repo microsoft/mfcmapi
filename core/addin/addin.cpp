@@ -402,7 +402,7 @@ namespace addin
 	}
 
 	// Compare type arrays.
-	int _cdecl CompareTypes(_In_ const void* a1, _In_ const void* a2) noexcept
+	int _cdecl compareTypes(_In_ const void* a1, _In_ const void* a2) noexcept
 	{
 		const auto lpType1 = static_cast<const NAME_ARRAY_ENTRY*>(a1);
 		const auto lpType2 = static_cast<const NAME_ARRAY_ENTRY*>(a2);
@@ -417,7 +417,7 @@ namespace addin
 	}
 
 	// Compare tag arrays. Pay no attention to sort order - we'll sort on sort order during output.
-	int _cdecl CompareTags(_In_ const void* a1, _In_ const void* a2) noexcept
+	int _cdecl compareTags(_In_ const void* a1, _In_ const void* a2) noexcept
 	{
 		const auto lpTag1 = static_cast<const NAME_ARRAY_ENTRY_V2*>(a1);
 		const auto lpTag2 = static_cast<const NAME_ARRAY_ENTRY_V2*>(a2);
@@ -431,7 +431,7 @@ namespace addin
 		return -1;
 	}
 
-	int _cdecl CompareNameID(_In_ const void* a1, _In_ const void* a2) noexcept
+	int _cdecl compareNameID(_In_ const void* a1, _In_ const void* a2) noexcept
 	{
 		const auto lpID1 = static_cast<const NAMEID_ARRAY_ENTRY*>(a1);
 		const auto lpID2 = static_cast<const NAMEID_ARRAY_ENTRY*>(a2);
@@ -447,7 +447,7 @@ namespace addin
 		return -1;
 	}
 
-	int _cdecl CompareSmartViewParser(_In_ const void* a1, _In_ const void* a2) noexcept
+	int _cdecl compareSmartViewParser(_In_ const void* a1, _In_ const void* a2) noexcept
 	{
 		const auto lpParser1 = static_cast<const SMARTVIEW_PARSER_ARRAY_ENTRY*>(a1);
 		const auto lpParser2 = static_cast<const SMARTVIEW_PARSER_ARRAY_ENTRY*>(a2);
@@ -621,17 +621,17 @@ namespace addin
 
 			if (addIn.ulPropTypes)
 			{
-				MergeArrays<NAME_ARRAY_ENTRY>(PropTypeArray, addIn.lpPropTypes, addIn.ulPropTypes, CompareTypes);
+				MergeArrays<NAME_ARRAY_ENTRY>(PropTypeArray, addIn.lpPropTypes, addIn.ulPropTypes, compareTypes);
 			}
 
 			if (addIn.ulPropTags)
 			{
-				MergeArrays<NAME_ARRAY_ENTRY_V2>(PropTagArray, addIn.lpPropTags, addIn.ulPropTags, CompareTags);
+				MergeArrays<NAME_ARRAY_ENTRY_V2>(PropTagArray, addIn.lpPropTags, addIn.ulPropTags, compareTags);
 			}
 
 			if (addIn.ulNameIDs)
 			{
-				MergeArrays<NAMEID_ARRAY_ENTRY>(NameIDArray, addIn.lpNameIDs, addIn.ulNameIDs, CompareNameID);
+				MergeArrays<NAMEID_ARRAY_ENTRY>(NameIDArray, addIn.lpNameIDs, addIn.ulNameIDs, compareNameID);
 			}
 
 			if (addIn.ulPropFlags)
@@ -643,7 +643,7 @@ namespace addin
 			if (addIn.ulSmartViewParsers)
 			{
 				MergeArrays<SMARTVIEW_PARSER_ARRAY_ENTRY>(
-					SmartViewParserArray, addIn.lpSmartViewParsers, addIn.ulSmartViewParsers, CompareSmartViewParser);
+					SmartViewParserArray, addIn.lpSmartViewParsers, addIn.ulSmartViewParsers, compareSmartViewParser);
 			}
 
 			// We add our new parsers to the end of the array, assigning ids starting with parserType::END
