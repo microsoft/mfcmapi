@@ -40,11 +40,6 @@ namespace dialog
 	{
 		TRACE_CONSTRUCTOR(CLASS);
 		m_lpMessage = mapi::safe_cast<LPMESSAGE>(lpMessage);
-
-		m_bDisplayAttachAsEmbeddedMessage = false;
-		m_lpAttach = nullptr;
-		m_ulAttachNum = static_cast<ULONG>(-1);
-
 		CContentsTableDlg::CreateDialogAndMenu(IDR_MENU_ATTACHMENTS);
 	}
 
@@ -96,7 +91,6 @@ namespace dialog
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		if (!m_lpContentsTableListCtrl || !m_lpMessage) return;
-		if (!m_lpAttach) return;
 
 		const auto lpListData = m_lpContentsTableListCtrl->GetFirstSelectedItemData();
 		if (lpListData)
@@ -104,35 +98,65 @@ namespace dialog
 			const auto contents = lpListData->cast<sortlistdata::contentsData>();
 			if (contents && contents->getAttachMethod() == ATTACH_EMBEDDED_MSG)
 			{
-				auto lpMessage = OpenEmbeddedMessage();
-				if (lpMessage)
+				const auto lpAttach = OpenAttach(contents->getAttachNum(), false);
+				if (lpAttach)
 				{
-					WC_H_S(DisplayObject(lpMessage, MAPI_MESSAGE, objectType::otDefault, this));
-					lpMessage->Release();
+					auto lpMessage = OpenEmbeddedMessage(lpAttach);
+					if (lpMessage)
+					{
+						WC_H_S(DisplayObject(lpMessage, MAPI_MESSAGE, objectType::otDefault, this));
+						lpMessage->Release();
+					}
+
+					lpAttach->Release();
 				}
 			}
 		}
 	}
 
-	_Check_return_ LPATTACH CAttachmentsDlg::OpenAttach(ULONG ulAttachNum) const
+	// Opens attachment by attach number. If caching, set the item into the single item cache.
+	// Will addref the att which is returns. Caller must release.
+	_Check_return_ LPATTACH CAttachmentsDlg::OpenAttach(ULONG ulAttachNum, bool bCache)
 	{
-		LPATTACH lpAttach = nullptr;
+		if (ulAttachNum == m_ulAttachNum && m_lpAttach)
+		{
+			m_lpAttach->AddRef();
+			return m_lpAttach;
+		}
 
+		// Have to open an attachment since the one which may be cached isn't ours
+		auto lpAttach = LPATTACH{};
 		const auto hRes = WC_MAPI(m_lpMessage->OpenAttach(ulAttachNum, nullptr, MAPI_MODIFY, &lpAttach));
 		if (hRes == MAPI_E_NO_ACCESS)
 		{
 			WC_MAPI_S(m_lpMessage->OpenAttach(ulAttachNum, nullptr, MAPI_BEST_ACCESS, &lpAttach));
 		}
 
+		if (bCache)
+		{
+			// Release any existing cache
+			if (m_lpAttach) m_lpAttach->Release();
+			m_lpAttach = nullptr;
+			m_ulAttachNum = static_cast<ULONG>(-1);
+
+			// And cache the new att if we have one
+			if (lpAttach)
+			{
+				m_lpAttach = lpAttach;
+				m_lpAttach->AddRef();
+				m_ulAttachNum = ulAttachNum;
+			}
+		}
+
 		return lpAttach;
 	}
 
-	_Check_return_ LPMESSAGE CAttachmentsDlg::OpenEmbeddedMessage() const
+	_Check_return_ LPMESSAGE CAttachmentsDlg::OpenEmbeddedMessage(LPATTACH lpAttach) const
 	{
-		if (!m_lpAttach) return nullptr;
+		if (!lpAttach) return nullptr;
 
 		LPMESSAGE lpMessage = nullptr;
-		auto hRes = WC_MAPI(m_lpAttach->OpenProperty(
+		auto hRes = WC_MAPI(lpAttach->OpenProperty(
 			PR_ATTACH_DATA_OBJ,
 			const_cast<LPIID>(&IID_IMessage),
 			0,
@@ -140,7 +164,7 @@ namespace dialog
 			reinterpret_cast<LPUNKNOWN*>(&lpMessage)));
 		if (hRes == MAPI_E_NO_ACCESS)
 		{
-			hRes = WC_MAPI(m_lpAttach->OpenProperty(
+			hRes = WC_MAPI(lpAttach->OpenProperty(
 				PR_ATTACH_DATA_OBJ,
 				const_cast<LPIID>(&IID_IMessage),
 				0,
@@ -165,6 +189,7 @@ namespace dialog
 		// Find the highlighted item AttachNum
 		const auto lpListData = m_lpContentsTableListCtrl->GetSortListData(iSelectedItem);
 
+		LPMAPIPROP lpRet = nullptr;
 		if (lpListData)
 		{
 			const auto contents = lpListData->cast<sortlistdata::contentsData>();
@@ -173,36 +198,28 @@ namespace dialog
 				const auto ulAttachNum = contents->getAttachNum();
 				const auto ulAttachMethod = contents->getAttachMethod();
 
-				// Check for matching cached attachment to avoid reopen
-				if (ulAttachNum != m_ulAttachNum || !m_lpAttach)
-				{
-					if (m_lpAttach) m_lpAttach->Release();
-					m_lpAttach = OpenAttach(ulAttachNum);
-					m_ulAttachNum = static_cast<ULONG>(-1);
-					if (m_lpAttach)
-					{
-						m_ulAttachNum = ulAttachNum;
-					}
-				}
+				// Open/cache our attachment
+				const auto attach = OpenAttach(ulAttachNum, true);
 
-				if (m_lpAttach && m_bDisplayAttachAsEmbeddedMessage && ATTACH_EMBEDDED_MSG == ulAttachMethod)
+				if (attach && m_bDisplayAttachAsEmbeddedMessage && ATTACH_EMBEDDED_MSG == ulAttachMethod)
 				{
 					// Reopening an embedded message can fail
 					// The view might be holding the embedded message we're trying to open, so we clear
 					// it from the view to allow us to reopen it.
 					// TODO: Consider caching our embedded message so this isn't necessary
 					OnUpdateSingleMAPIPropListCtrl(nullptr, nullptr);
-					return OpenEmbeddedMessage();
+					// Since we're not returning the attach we got, release it
+					lpRet = OpenEmbeddedMessage(attach);
+					attach->Release();
 				}
 				else
 				{
-					if (m_lpAttach) m_lpAttach->AddRef();
-					return m_lpAttach;
+					lpRet = attach;
 				}
 			}
 		}
 
-		return nullptr;
+		return lpRet;
 	}
 
 	void CAttachmentsDlg::HandleCopy()
@@ -370,7 +387,6 @@ namespace dialog
 	void CAttachmentsDlg::OnSaveToFile()
 	{
 		auto hRes = S_OK;
-		LPATTACH lpAttach = nullptr;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		if (!m_lpContentsTableListCtrl || !m_lpMessage) return;
@@ -390,17 +406,11 @@ namespace dialog
 				const auto contents = lpListData->cast<sortlistdata::contentsData>();
 				if (contents)
 				{
-					const auto ulAttachNum = contents->getAttachNum();
-
-					EC_MAPI_S(m_lpMessage->OpenAttach(
-						ulAttachNum, nullptr, MAPI_BEST_ACCESS, static_cast<LPATTACH*>(&lpAttach)));
-
+					const auto lpAttach = OpenAttach(contents->getAttachNum(), false);
 					if (lpAttach)
 					{
 						hRes = WC_H(ui::mapiui::WriteAttachmentToFile(lpAttach, m_hWnd));
-
 						lpAttach->Release();
-						lpAttach = nullptr;
 					}
 				}
 			}
