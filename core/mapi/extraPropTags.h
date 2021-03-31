@@ -440,9 +440,9 @@ enum TaskStatusValue
 {
 	tsvNotStarted = 0, // The user has not started work on the task object. If this value is set,
 	// dispidPercentComplete MUST be 0.0.
-	tsvInProgress, // The user’s work on this task object is in progress. If this value is set,
+	tsvInProgress, // The user's work on this task object is in progress. If this value is set,
 	// dispidPercentComplete MUST be greater than 0.0 and less than 1.0
-	tsvComplete, // The user’s work on this task object is complete. If this value is set,
+	tsvComplete, // The user's work on this task object is complete. If this value is set,
 	// dispidPercentComplete MUST be 1.0, dispidTaskDateCompleted
 	// MUST be the current date, and dispidTaskComplete MUST be true.
 	tsvWaiting, // The user is waiting on somebody else.
@@ -455,9 +455,9 @@ enum TaskDelegState
 	tdsNOM = 0, // This task object was created to correspond to a task object that was
 	// embedded in a task rejection but could not be found locally.
 	tdsOWNNEW, // The task object is not assigned.
-	tdsOWN, // The task object is the task assignee’s copy of an assigned task object.
-	tdsACC, // The task object is the task assigner’s copy of an assigned task object.
-	tdsDEC // The task object is the task assigner’s copy of a rejected task object.
+	tdsOWN, // The task object is the task assignee's copy of an assigned task object.
+	tdsACC, // The task object is the task assigner's copy of an assigned task object.
+	tdsDEC // The task object is the task assigner's copy of a rejected task object.
 };
 
 #define dispidTaskHistory 0x811A
@@ -485,15 +485,15 @@ enum TaskMultRecips
 enum TaskOwnershipValue
 {
 	tovNew, // The task object is not assigned.
-	tovDeleg, // The task object is the task assigner’s copy of the task object.
-	tovMe // The task object is the task assignee’s copy of the task object.
+	tovDeleg, // The task object is the task assigner's copy of the task object.
+	tovMe // The task object is the task assignee's copy of the task object.
 };
 
 #define dispidTaskDelegValue 0x812A
 enum TaskDelegValue
 {
 	tdvNone, // The task object is not assigned.
-	tdvUnknown, // The task object’s acceptance status is unknown.
+	tdvUnknown, // The task object's acceptance status is unknown.
 	tdvAccepted, // The task assignee has accepted the task object. This value is set when
 	// the client processes a task acceptance.
 	tdvDeclined // The task assignee has rejected the task object. This value is set when the
@@ -1213,3 +1213,5 @@ STDAPI STDAPICALLTYPE LaunchWizard(
 #define TDP_TITLE 0x00000020
 #define TDP_REMINDER_FLAG 0x00000040
 #define TDP_REMINDER_TIME 0x00000080
+
+#define RULE_ERR_FOLDER_OVER_QUOTA 14 // the folder quota has been exceeded
