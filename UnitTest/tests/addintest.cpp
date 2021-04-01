@@ -12,6 +12,7 @@ namespace addin
 	int _cdecl compareSmartViewParser(_In_ const void* a1, _In_ const void* a2) noexcept;
 
 	void SortFlagArray(_In_count_(ulFlags) LPFLAG_ARRAY_ENTRY lpFlags, _In_ size_t ulFlags) noexcept;
+	void AppendFlagIfNotDupe(std::vector<FLAG_ARRAY_ENTRY>& target, FLAG_ARRAY_ENTRY source);
 } // namespace addin
 
 namespace addintest
@@ -151,10 +152,26 @@ namespace addintest
 			// Do a stable sort on ulFlagName (first member)
 			addin::SortFlagArray(flagArray, _countof(flagArray));
 
-			testFA(L"0", flagArray[0], FLAG_ARRAY_ENTRY{1, 2, flagVALUE, L"two"});
-			testFA(L"1", flagArray[1], FLAG_ARRAY_ENTRY{1, 1, flagVALUE, L"one"});
-			testFA(L"2", flagArray[2], FLAG_ARRAY_ENTRY{2, 1, flagVALUE, L"b one"});
-			testFA(L"3", flagArray[3], FLAG_ARRAY_ENTRY{2, 2, flagVALUE, L"a two"});
+			testFA(L"0", flagArray[0], {1, 2, flagVALUE, L"two"});
+			testFA(L"1", flagArray[1], {1, 1, flagVALUE, L"one"});
+			testFA(L"2", flagArray[2], {2, 1, flagVALUE, L"b one"});
+			testFA(L"3", flagArray[3], {2, 2, flagVALUE, L"a two"});
+		}
+
+		TEST_METHOD(Test_AppendFlagIfNotDupe)
+		{
+			auto flagArray = std::vector<FLAG_ARRAY_ENTRY>{};
+			// Do a stable sort on ulFlagName (first member)
+			addin::AppendFlagIfNotDupe(flagArray, {1, 2, flagVALUE, L"two"});
+			testFA(L"add 1", flagArray[0], {1, 2, flagVALUE, L"two"});
+
+			addin::AppendFlagIfNotDupe(flagArray, {1, 1, flagVALUE, L"one"});
+			testFA(L"add 2", flagArray[1], {1, 1, flagVALUE, L"one"});
+			addin::AppendFlagIfNotDupe(flagArray, {1, 1, flagVALUE, L"one"});
+			Assert::AreEqual(size_t{2}, flagArray.size(), L"no dupe");
+
+			addin::AppendFlagIfNotDupe(flagArray, {2, 1, flagVALUE, L"b one"});
+			testFA(L"add 3", flagArray[2], {2, 1, flagVALUE, L"b one"});
 		}
 	};
 } // namespace addintest
