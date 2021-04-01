@@ -496,7 +496,7 @@ namespace addin
 	// Flags are difficult to sort since we need to have a stable sort
 	// Records with the same key must appear in the output in the same order as the input
 	// qsort doesn't guarantee this, so we do it manually with an insertion sort
-	void SortFlagArray(_In_count_(ulFlags) LPFLAG_ARRAY_ENTRY lpFlags, _In_ ULONG ulFlags) noexcept
+	void SortFlagArray(_In_count_(ulFlags) LPFLAG_ARRAY_ENTRY lpFlags, _In_ size_t ulFlags) noexcept
 	{
 		for (ULONG i = 1; i < ulFlags; i++)
 		{

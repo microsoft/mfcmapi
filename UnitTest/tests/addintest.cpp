@@ -10,6 +10,8 @@ namespace addin
 	int _cdecl compareTags(_In_ const void* a1, _In_ const void* a2) noexcept;
 	int _cdecl compareNameID(_In_ const void* a1, _In_ const void* a2) noexcept;
 	int _cdecl compareSmartViewParser(_In_ const void* a1, _In_ const void* a2) noexcept;
+
+	void SortFlagArray(_In_count_(ulFlags) LPFLAG_ARRAY_ENTRY lpFlags, _In_ size_t ulFlags) noexcept;
 } // namespace addin
 
 namespace addintest
@@ -127,6 +129,32 @@ namespace addintest
 				-1, testCompareSmartViewParser({1, parserType::REPORTTAG, false}, {1, parserType::REPORTTAG, true}));
 			Assert::AreEqual(
 				1, testCompareSmartViewParser({1, parserType::REPORTTAG, true}, {1, parserType::REPORTTAG, false}));
+		}
+
+		void testFA(std::wstring testName, const FLAG_ARRAY_ENTRY& fa1, const FLAG_ARRAY_ENTRY& fa2)
+		{
+			Assert::AreEqual(fa1.ulFlagName, fa2.ulFlagName, (testName + L"-ulFlagName").c_str());
+			Assert::AreEqual(fa1.lFlagValue, fa2.lFlagValue, (testName + L"-lFlagValue").c_str());
+			Assert::AreEqual(fa1.ulFlagType, fa2.ulFlagType, (testName + L"-ulFlagType").c_str());
+			Assert::AreEqual(fa1.lpszName, fa2.lpszName, (testName + L"-lpszName").c_str());
+		}
+
+		TEST_METHOD(Test_SortFlagArray)
+		{
+			FLAG_ARRAY_ENTRY flagArray[] = {
+				{2, 1, flagVALUE, L"b one"},
+				{1, 2, flagVALUE, L"two"},
+				{2, 2, flagVALUE, L"a two"},
+				{1, 1, flagVALUE, L"one"},
+			};
+
+			// Do a stable sort on ulFlagName (first member)
+			addin::SortFlagArray(flagArray, _countof(flagArray));
+
+			testFA(L"0", flagArray[0], FLAG_ARRAY_ENTRY{1, 2, flagVALUE, L"two"});
+			testFA(L"1", flagArray[1], FLAG_ARRAY_ENTRY{1, 1, flagVALUE, L"one"});
+			testFA(L"2", flagArray[2], FLAG_ARRAY_ENTRY{2, 1, flagVALUE, L"b one"});
+			testFA(L"3", flagArray[3], FLAG_ARRAY_ENTRY{2, 2, flagVALUE, L"a two"});
 		}
 	};
 } // namespace addintest
