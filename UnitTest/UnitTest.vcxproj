@@ -534,6 +534,7 @@
     <ClInclude Include="UnitTest.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="tests\addintest.cpp" />
     <ClCompile Include="tests\filetest.cpp" />
     <ClCompile Include="tests\flagtest.cpp" />
     <ClCompile Include="tests\proptagTest.cpp" />
