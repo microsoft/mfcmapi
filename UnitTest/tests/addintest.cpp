@@ -11,6 +11,8 @@ namespace addin
 	int _cdecl compareNameID(_In_ const void* a1, _In_ const void* a2) noexcept;
 	int _cdecl compareSmartViewParser(_In_ const void* a1, _In_ const void* a2) noexcept;
 
+	std::wstring AddInStructTypeToString(parserType parser);
+
 	void SortFlagArray(_In_count_(ulFlags) LPFLAG_ARRAY_ENTRY lpFlags, _In_ size_t ulFlags) noexcept;
 	void AppendFlagIfNotDupe(std::vector<FLAG_ARRAY_ENTRY>& target, FLAG_ARRAY_ENTRY source);
 
@@ -132,6 +134,16 @@ namespace addintest
 				-1, testCompareSmartViewParser({1, parserType::REPORTTAG, false}, {1, parserType::REPORTTAG, true}));
 			Assert::AreEqual(
 				1, testCompareSmartViewParser({1, parserType::REPORTTAG, true}, {1, parserType::REPORTTAG, false}));
+		}
+
+		//AddInStructTypeToString
+		TEST_METHOD(Test_AddInStructTypeToString)
+		{
+			Assert::AreEqual(
+				L"Choose Smart View Parser",
+				addin::AddInStructTypeToString(parserType::NOPARSING).c_str(),
+				L"NOPARSING");
+			Assert::AreEqual(L"", addin::AddInStructTypeToString(parserType{0xfff}).c_str(), L"unknown");
 		}
 
 		void testFA(std::wstring testName, const FLAG_ARRAY_ENTRY& fa1, const FLAG_ARRAY_ENTRY& fa2)
