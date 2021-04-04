@@ -13,6 +13,8 @@ namespace addin
 
 	void SortFlagArray(_In_count_(ulFlags) LPFLAG_ARRAY_ENTRY lpFlags, _In_ size_t ulFlags) noexcept;
 	void AppendFlagIfNotDupe(std::vector<FLAG_ARRAY_ENTRY>& target, FLAG_ARRAY_ENTRY source);
+
+	void MergeFlagArrays(std::vector<FLAG_ARRAY_ENTRY>& In1, _In_count_(cIn2) LPFLAG_ARRAY_ENTRY In2, _In_ size_t cIn2);
 } // namespace addin
 
 namespace addintest
@@ -140,12 +142,12 @@ namespace addintest
 			Assert::AreEqual(fa1.lpszName, fa2.lpszName, (testName + L"-lpszName").c_str());
 		}
 
-		TEST_METHOD(Test_SortFlagArray)
+		TEST_METHOD(Test_FlagArray)
 		{
 			FLAG_ARRAY_ENTRY flagArray[] = {
 				{2, 1, flagVALUE, L"b one"},
 				{1, 2, flagVALUE, L"two"},
-				{2, 2, flagVALUE, L"a two"},
+				{2, 3, flagVALUE, L"a three"},
 				{1, 1, flagVALUE, L"one"},
 			};
 
@@ -155,23 +157,45 @@ namespace addintest
 			testFA(L"0", flagArray[0], {1, 2, flagVALUE, L"two"});
 			testFA(L"1", flagArray[1], {1, 1, flagVALUE, L"one"});
 			testFA(L"2", flagArray[2], {2, 1, flagVALUE, L"b one"});
-			testFA(L"3", flagArray[3], {2, 2, flagVALUE, L"a two"});
-		}
+			testFA(L"3", flagArray[3], {2, 3, flagVALUE, L"a three"});
 
-		TEST_METHOD(Test_AppendFlagIfNotDupe)
-		{
-			auto flagArray = std::vector<FLAG_ARRAY_ENTRY>{};
-			// Do a stable sort on ulFlagName (first member)
-			addin::AppendFlagIfNotDupe(flagArray, {1, 2, flagVALUE, L"two"});
-			testFA(L"add 1", flagArray[0], {1, 2, flagVALUE, L"two"});
+			auto flagV = std::vector<FLAG_ARRAY_ENTRY>{};
+			addin::AppendFlagIfNotDupe(flagV, {1, 3, flagVALUE, L"three"});
+			testFA(L"add 1", flagV[0], {1, 3, flagVALUE, L"three"});
 
-			addin::AppendFlagIfNotDupe(flagArray, {1, 1, flagVALUE, L"one"});
-			testFA(L"add 2", flagArray[1], {1, 1, flagVALUE, L"one"});
-			addin::AppendFlagIfNotDupe(flagArray, {1, 1, flagVALUE, L"one"});
-			Assert::AreEqual(size_t{2}, flagArray.size(), L"no dupe");
+			addin::AppendFlagIfNotDupe(flagV, {1, 4, flagVALUE, L"one"});
+			testFA(L"add 2", flagV[1], {1, 4, flagVALUE, L"one"});
+			addin::AppendFlagIfNotDupe(flagV, {1, 4, flagVALUE, L"one"});
+			Assert::AreEqual(size_t{2}, flagV.size(), L"no dupe");
 
-			addin::AppendFlagIfNotDupe(flagArray, {2, 1, flagVALUE, L"b one"});
-			testFA(L"add 3", flagArray[2], {2, 1, flagVALUE, L"b one"});
+			addin::AppendFlagIfNotDupe(flagV, {2, 2, flagVALUE, L"c two"});
+			testFA(L"add 3", flagV[2], {2, 2, flagVALUE, L"c two"});
+
+			addin::MergeFlagArrays(flagV, flagArray, _countof(flagArray));
+			Assert::AreEqual(size_t{7}, flagV.size(), L"merge size");
+
+			testFA(L"m0", flagV[0], {1, 3, flagVALUE, L"three"});
+			testFA(L"m1", flagV[1], {1, 4, flagVALUE, L"one"});
+			testFA(L"m2", flagV[2], {1, 2, flagVALUE, L"two"});
+			testFA(L"m3", flagV[3], {1, 1, flagVALUE, L"one"});
+			testFA(L"m4", flagV[4], {2, 2, flagVALUE, L"c two"});
+			testFA(L"m5", flagV[5], {2, 1, flagVALUE, L"b one"});
+			testFA(L"m6", flagV[6], {2, 3, flagVALUE, L"a three"});
+
+			auto flagV2 = std::vector<FLAG_ARRAY_ENTRY>{};
+			addin::AppendFlagIfNotDupe(flagV2, {4, 3, flagVALUE, L"three"});
+			testFA(L"f2 add 1", flagV2[0], {4, 3, flagVALUE, L"three"});
+			addin::MergeFlagArrays(flagV2, nullptr, 0);
+			Assert::AreEqual(size_t{1}, flagV2.size(), L"merge null");
+
+			addin::AppendFlagIfNotDupe(flagV2, {4, 4, flagVALUE, L"four"});
+			Assert::AreEqual(size_t{2}, flagV2.size(), L"merge null");
+			testFA(L"f2 add 2", flagV2[1], {4, 4, flagVALUE, L"four"});
+
+			FLAG_ARRAY_ENTRY flagArray2[] = {{3, 1, flagVALUE, L"four one"}};
+			addin::MergeFlagArrays(flagV2, flagArray2, _countof(flagArray2));
+			Assert::AreEqual(size_t{3}, flagV2.size(), L"merge null");
+			testFA(L"f2 merge", flagV2[0], {3, 1, flagVALUE, L"four one"});
 		}
 	};
 } // namespace addintest
