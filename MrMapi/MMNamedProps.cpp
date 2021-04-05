@@ -9,10 +9,27 @@
 #include <core/utility/output.h>
 #include <core/mapi/mapiFunctions.h>
 #include <core/mapi/cache/namedProps.h>
+#include <core/addin/mfcmapi.h>
+#include <chrono>
 
-void PrintGuid(const GUID& lpGuid)
+template<typename... Arguments>
+void WriteOutput(FILE* fOut, LPCWSTR szMsg, Arguments&&... args)
 {
-	wprintf(
+	auto szString = strings::format(szMsg, std::forward<Arguments>(args)...);
+	if (fOut)
+	{
+		output::Output(output::dbgLevel::NoDebug, fOut, false, szString);
+	}
+	else
+	{
+		wprintf(L"%ws", szString.c_str());
+	}
+}
+
+void PrintGuid(FILE* fOut, const GUID& lpGuid)
+{
+	WriteOutput(
+		fOut,
 		L"%.8lX-%.4X-%.4X-%.2X%.2X-%.2X%.2X%.2X%.2X%.2X%.2X",
 		lpGuid.Data1,
 		lpGuid.Data2,
@@ -27,13 +44,43 @@ void PrintGuid(const GUID& lpGuid)
 		lpGuid.Data4[7]);
 }
 
-void DoNamedProps(_In_opt_ LPMDB lpMDB)
+void DoNamedProps(_In_opt_ LPMAPISESSION lpSession, _In_opt_ LPMDB lpMDB)
 {
-	if (!lpMDB) return;
+	if (!lpSession || !lpMDB) return;
 	registry::cacheNamedProps = false;
 
-	wprintf(L"Dumping named properties...\n");
-	wprintf(L"\n");
+	// Ignore the reg key that disables smart view parsing
+	registry::doSmartView = true;
+
+	// See if they have specified an output file
+	FILE* fOut = nullptr;
+	const auto output = cli::switchOutput[0];
+	if (!output.empty())
+	{
+		fOut = output::MyOpenFileMode(output, L"wb");
+		if (!fOut)
+		{
+			wprintf(L"Cannot open output file %ws\n", output.c_str());
+			return exit(-1);
+		}
+	}
+
+	wprintf(L"Dumping named properties...\n\n");
+
+	// Print the name of the profile and the parsed store entry-id so we can tell which mailbox this is
+	auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+	WriteOutput(fOut, L"Timestamp: %hs\n", ctime(&now));
+	WriteOutput(fOut, L"Profile Name: %ws\n", mapi::GetProfileName(lpSession).c_str());
+	LPSPropValue lpStoreEntryId = nullptr;
+	HRESULT result = HrGetOneProp(lpMDB, PR_STORE_ENTRYID, &lpStoreEntryId);
+	if (SUCCEEDED(result))
+	{
+		auto block = smartview::InterpretBinary(lpStoreEntryId->Value.bin, parserType::ENTRYID, lpMDB);
+		auto storeEntryId = strings::StripCarriage(block->toString());
+		WriteOutput(fOut, L"%ws\n\n", storeEntryId.c_str());
+
+		MAPIFreeBuffer(lpStoreEntryId);
+	}
 
 	auto names = cache::GetNamesFromIDs(lpMDB, nullptr, 0);
 
@@ -67,18 +114,21 @@ void DoNamedProps(_In_opt_ LPMDB lpMDB)
 
 	for (const auto& name : names)
 	{
-		wprintf(L"[%08x] (", name->getPropID());
+		WriteOutput(fOut, L"[%08X] (", PROP_TAG(PT_UNSPECIFIED, name->getPropID()));
 		const auto nameId = name->getMapiNameId();
-		PrintGuid(*nameId->lpguid);
+		PrintGuid(fOut, *nameId->lpguid);
 		switch (nameId->ulKind)
 		{
 		case MNID_ID:
-			wprintf(L":0x%08x)\n", nameId->Kind.lID);
+			WriteOutput(fOut, L":0x%04X)\n", nameId->Kind.lID);
 			break;
 
 		case MNID_STRING:
-			wprintf(L":%ws)\n", nameId->Kind.lpwstrName);
+			WriteOutput(fOut, L":%ws)\n", nameId->Kind.lpwstrName);
 			break;
 		}
 	}
+
+	wprintf(L"Completed.\n");
+	if (fOut) fclose(fOut);
 }

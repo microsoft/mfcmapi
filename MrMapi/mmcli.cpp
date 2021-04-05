@@ -264,7 +264,7 @@ namespace cli
 			switchSearchState.name(),
 			switchFolder.name(),
 			switchProfile.name());
-		wprintf(L"   MrMAPI -%ws [-%ws <profile>]\n", switchNamedProps.name(), switchProfile.name());
+		wprintf(L"   MrMAPI -%ws [-%ws <profile>] [-%ws <path to output file>]\n", switchNamedProps.name(), switchProfile.name(), switchOutput.name());
 		wprintf(
 			L"   MrMAPI -%ws [-%ws] [-%ws <profile>]\n",
 			switchAccounts.name(),
@@ -558,7 +558,8 @@ namespace cli
 		if (cmdmodeUnknown == options.mode) options.mode = cmdmodePropTag;
 
 		// If we weren't passed an output file/directory, remember the current directory
-		if (switchOutput.empty() && options.mode != cmdmodeSmartView && options.mode != cmdmodeProfile)
+		if (switchOutput.empty() && options.mode != cmdmodeSmartView && options.mode != cmdmodeProfile &&
+			options.mode != cmdmodeNamedProps)
 		{
 			WCHAR strPath[_MAX_PATH];
 			GetCurrentDirectoryW(_MAX_PATH, strPath);
