@@ -225,7 +225,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/safeseh %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;Rpcrt4.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
@@ -265,7 +265,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;Rpcrt4.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
@@ -306,7 +306,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/safeseh %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;Rpcrt4.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
@@ -346,7 +346,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;Rpcrt4.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
@@ -385,7 +385,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/safeseh %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;Rpcrt4.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
@@ -421,7 +421,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;Rpcrt4.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
@@ -457,7 +457,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;Rpcrt4.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
@@ -493,7 +493,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;Rpcrt4.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
@@ -530,7 +530,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/safeseh %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;Rpcrt4.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
@@ -566,7 +566,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;Rpcrt4.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
