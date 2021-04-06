@@ -14,10 +14,10 @@
 #include <unordered_set>
 #include <core/interpret/guid.h>
 
-template<typename... Arguments>
-void WriteOutput(FILE* fOut, LPCWSTR szMsg, Arguments&&... args)
+template <typename... Arguments>
+void WriteOutput(_In_opt_ FILE* fOut, _Printf_format_string_ LPCWSTR szMsg, Arguments&&... args)
 {
-	auto szString = strings::format(szMsg, std::forward<Arguments>(args)...);
+	const auto szString = strings::format(szMsg, std::forward<Arguments>(args)...);
 	if (fOut)
 	{
 		output::Output(output::dbgLevel::NoDebug, fOut, false, szString);
@@ -67,10 +67,7 @@ public:
 class GuidLess
 {
 public:
-	bool operator()(const GUID& lhs, const GUID& rhs) const
-	{
-		return memcmp(&lhs, &rhs, sizeof(GUID)) < 0;
-	}
+	bool operator()(const GUID& lhs, const GUID& rhs) const { return memcmp(&lhs, &rhs, sizeof(GUID)) < 0; }
 };
 
 /// <summary>
@@ -78,7 +75,9 @@ public:
 /// </summary>
 /// <param name="fOut">The output file pointer</param>
 /// <param name="nameToNumberMap">The named property list</param>
-void AnalyzeNamedProps(_In_opt_ FILE* fOut, std::vector<std::shared_ptr<cache::namedPropCacheEntry>> const& nameToNumberMap)
+void AnalyzeNamedProps(
+	_In_opt_ FILE* fOut,
+	std::vector<std::shared_ptr<cache::namedPropCacheEntry>> const& nameToNumberMap)
 {
 	const long namedPropsQuota = 16384;
 	const std::uint32_t NamedPropsLeakPatternCheckPercentageThreshold = 30;
@@ -100,18 +99,21 @@ void AnalyzeNamedProps(_In_opt_ FILE* fOut, std::vector<std::shared_ptr<cache::n
 		std::map<std::wstring, int> namePrefixCounts;
 
 		// Loop through all properties and discovery leaky GUID patterns and leaky prefixes
-		for (auto &entry : nameToNumberMap)
+		for (const auto& entry : nameToNumberMap)
 		{
-			auto registeredPropName = entry->getMapiNameId();
-			bool isInternetHeadersNamespace = memcmp(registeredPropName->lpguid, &guid::PS_INTERNET_HEADERS, sizeof(GUID)) == 0;
+			const auto registeredPropName = entry->getMapiNameId();
+			const auto isInternetHeadersNamespace =
+				memcmp(registeredPropName->lpguid, &guid::PS_INTERNET_HEADERS, sizeof(GUID)) == 0;
 
 			// Check for a GUID pattern. We consider abnormal if we see more than
 			// 2K names within the same GUID namespace. We allow larger limit for InternetHeaders
 			// because some mailboxes migrated from older versions have more properties in this namespace.
 			int count = ++guidCounts[*registeredPropName->lpguid];
 
-			if ((isInternetHeadersNamespace && count > namedPropsQuota / 100 * NamedPropsLeakPatternGuidPercentageThresholdForInternetHeaders)
-				|| (false == isInternetHeadersNamespace && count > namedPropsQuota / 100 * NamedPropsLeakPatternGuidPercentageThreshold))
+			if ((isInternetHeadersNamespace &&
+				 count > namedPropsQuota / 100 * NamedPropsLeakPatternGuidPercentageThresholdForInternetHeaders) ||
+				(false == isInternetHeadersNamespace &&
+				 count > namedPropsQuota / 100 * NamedPropsLeakPatternGuidPercentageThreshold))
 			{
 				leakPatternGuids.emplace(*registeredPropName->lpguid);
 			}
@@ -139,23 +141,29 @@ void AnalyzeNamedProps(_In_opt_ FILE* fOut, std::vector<std::shared_ptr<cache::n
 	WriteOutput(fOut, L"\nDetected %zu property sets with a large number of properties.\n", leakPatternGuids.size());
 	if (!leakPatternGuids.empty())
 	{
-		WriteOutput(fOut, L"This typically indicates the incorrect use of named properties by a custom application.\nCheck the full list of properties in the property set(s) listed below to help identify the application at fault.\n");
+		WriteOutput(
+			fOut,
+			L"This typically indicates the incorrect use of named properties by a custom application.\nCheck the full "
+			L"list of properties in the property set(s) listed below to help identify the application at fault.\n");
 	}
 
-	for (auto &guid : leakPatternGuids)
+	for (const auto& guid : leakPatternGuids)
 	{
-		auto guidString = guid::GUIDToStringAndName(guid);
+		const auto guidString = guid::GUIDToStringAndName(guid);
 		WriteOutput(fOut, L"%ws\n", guidString.c_str());
 	}
 
 	// Print out leaky prefixes
-	WriteOutput(fOut, L"\nDetected %zu large sets of unique properties sharing a common prefix.\n", leakPatternNamePrefixes.size());
+	WriteOutput(
+		fOut,
+		L"\nDetected %zu large sets of unique properties sharing a common prefix.\n",
+		leakPatternNamePrefixes.size());
 	if (!leakPatternNamePrefixes.empty())
 	{
 		WriteOutput(fOut, L"This typically indicates the incorrect use of named properties by a custom application.\n");
 	}
 
-	for (auto &prefix : leakPatternNamePrefixes)
+	for (const auto& prefix : leakPatternNamePrefixes)
 	{
 		WriteOutput(fOut, L"%ws\n", prefix.c_str());
 	}
@@ -190,15 +198,15 @@ void DoNamedProps(_In_opt_ LPMAPISESSION lpSession, _In_opt_ LPMDB lpMDB)
 	wprintf(L"Dumping named properties...\n\n");
 
 	// Print the name of the profile and the parsed store entry-id so we can tell which mailbox this is
-	auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+	const auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 	WriteOutput(fOut, L"Timestamp: %hs\n", ctime(&now));
 	WriteOutput(fOut, L"Profile Name: %ws\n", mapi::GetProfileName(lpSession).c_str());
 	LPSPropValue lpStoreEntryId = nullptr;
-	HRESULT result = HrGetOneProp(lpMDB, PR_STORE_ENTRYID, &lpStoreEntryId);
+	const auto result = WC_H(HrGetOneProp(lpMDB, PR_STORE_ENTRYID, &lpStoreEntryId));
 	if (SUCCEEDED(result))
 	{
-		auto block = smartview::InterpretBinary(lpStoreEntryId->Value.bin, parserType::ENTRYID, lpMDB);
-		auto storeEntryId = strings::StripCarriage(block->toString());
+		const auto block = smartview::InterpretBinary(lpStoreEntryId->Value.bin, parserType::ENTRYID, lpMDB);
+		const auto storeEntryId = strings::StripCarriage(block->toString());
 		WriteOutput(fOut, L"%ws\n\n", storeEntryId.c_str());
 
 		MAPIFreeBuffer(lpStoreEntryId);
