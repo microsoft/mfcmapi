@@ -108,12 +108,14 @@ void AnalyzeNamedProps(
 			// Check for a GUID pattern. We consider abnormal if we see more than
 			// 2K names within the same GUID namespace. We allow larger limit for InternetHeaders
 			// because some mailboxes migrated from older versions have more properties in this namespace.
-			int count = ++guidCounts[*registeredPropName->lpguid];
+
+			// Increment and capture the new count
+			const int guidCount = ++guidCounts[*registeredPropName->lpguid];
 
 			if ((isInternetHeadersNamespace &&
-				 count > namedPropsQuota / 100 * NamedPropsLeakPatternGuidPercentageThresholdForInternetHeaders) ||
-				(false == isInternetHeadersNamespace &&
-				 count > namedPropsQuota / 100 * NamedPropsLeakPatternGuidPercentageThreshold))
+				 guidCount > namedPropsQuota / 100 * NamedPropsLeakPatternGuidPercentageThresholdForInternetHeaders) ||
+				(!isInternetHeadersNamespace &&
+				 guidCount > namedPropsQuota / 100 * NamedPropsLeakPatternGuidPercentageThreshold))
 			{
 				leakPatternGuids.emplace(*registeredPropName->lpguid);
 			}
@@ -128,8 +130,9 @@ void AnalyzeNamedProps(
 					namePrefix = namePrefix.substr(0, NamedPropsLeakPatternNamePrefixLength);
 				}
 
-				count = ++namePrefixCounts[namePrefix];
-				if (count > namedPropsQuota / 100 * NamedPropsLeakPatternNamePrefixPercentageThreshold)
+				// Increment and capture the new count
+				const int prefixCount = ++namePrefixCounts[namePrefix];
+				if (prefixCount > namedPropsQuota / 100 * NamedPropsLeakPatternNamePrefixPercentageThreshold)
 				{
 					leakPatternNamePrefixes.emplace(namePrefix);
 				}
