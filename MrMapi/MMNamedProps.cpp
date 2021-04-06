@@ -81,15 +81,11 @@ public:
 void AnalyzeNamedProps(_In_opt_ FILE* fOut, std::vector<std::shared_ptr<cache::namedPropCacheEntry>> const& nameToNumberMap)
 {
 	const long namedPropsQuota = 16384;
-	// const std::uint32_t NamedPropsLeakPatternCheckPercentageThreshold = 30;
-	const std::uint32_t NamedPropsLeakPatternCheckPercentageThreshold = 1;
-	// const std::uint32_t NamedPropsLeakPatternGuidPercentageThreshold = 20;
-	const std::uint32_t NamedPropsLeakPatternGuidPercentageThreshold = 1;
+	const std::uint32_t NamedPropsLeakPatternCheckPercentageThreshold = 30;
+	const std::uint32_t NamedPropsLeakPatternGuidPercentageThreshold = 20;
 	const std::uint32_t NamedPropsLeakPatternGuidPercentageThresholdForInternetHeaders = 60;
-	//const std::uint32_t NamedPropsLeakPatternNamePrefixLength = 10;
-	const std::uint32_t NamedPropsLeakPatternNamePrefixLength = 5;
-	// const std::uint32_t NamedPropsLeakPatternNamePrefixPercentageThreshold = 10;
-	const std::uint32_t NamedPropsLeakPatternNamePrefixPercentageThreshold = 1;
+	const std::uint32_t NamedPropsLeakPatternNamePrefixLength = 10;
+	const std::uint32_t NamedPropsLeakPatternNamePrefixPercentageThreshold = 10;
 
 	std::unordered_set<GUID, GuidHasher> leakPatternGuids;
 	std::unordered_set<std::wstring> leakPatternNamePrefixes;
