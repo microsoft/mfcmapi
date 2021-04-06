@@ -128,7 +128,9 @@ namespace dialog::editor
 		}
 
 		if (bEditPropAsRTF)
-			m_ulEditorType = m_bUseWrapEx && ulOutCodePage == CP_UNICODE ? EDITOR_RTF_UNICODE : EDITOR_RTF;
+			m_ulEditorType = m_bUseWrapEx && ulOutCodePage == CP_UNICODE && !(m_ulStreamFlags & MAPI_NATIVE_BODY_TYPE_RTF)
+								 ? EDITOR_RTF_UNICODE
+								 : EDITOR_RTF;
 		else
 		{
 			switch (PROP_TYPE(m_ulPropTag))

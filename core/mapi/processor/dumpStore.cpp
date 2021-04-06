@@ -366,10 +366,10 @@ namespace mapi::processor
 				{
 					if (bWrapEx)
 					{
-						bUnicode = true;
 						ULONG ulStreamFlags = NULL;
 						WC_H_S(mapi::WrapStreamForRTF(
 							lpStream, true, MAPI_NATIVE_BODY, ulCPID, CP_UNICODE, &lpRTFUncompressed, &ulStreamFlags));
+						bUnicode = !(ulStreamFlags && MAPI_NATIVE_BODY_TYPE_RTF);
 						auto szFlags = flags::InterpretFlags(flagStreamFlag, ulStreamFlags);
 						output::OutputToFilef(
 							fMessageProps,
