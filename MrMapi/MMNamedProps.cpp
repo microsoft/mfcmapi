@@ -54,9 +54,9 @@ class GuidHasher
 public:
 	size_t operator()(const GUID& guid) const
 	{
-		RPC_STATUS status;
-		std::uint16_t hash = UuidHash(const_cast<UUID*>(&guid), &status);
-		return std::hash<std::uint16_t>()(hash);
+		std::uint32_t hash =
+			guid.Data1 ^ (((int) guid.Data2 << 16) | (int) guid.Data3) ^ (((int) guid.Data4[2] << 24) | guid.Data4[7]);
+		return std::hash<std::uint32_t>()(hash);
 	}
 };
 
@@ -79,7 +79,7 @@ void AnalyzeNamedProps(
 	_In_opt_ FILE* fOut,
 	std::vector<std::shared_ptr<cache::namedPropCacheEntry>> const& nameToNumberMap)
 {
-	const long namedPropsQuota = 16384;
+	const std::uint32_t namedPropsQuota = 16384;
 	const std::uint32_t NamedPropsLeakPatternCheckPercentageThreshold = 30;
 	const std::uint32_t NamedPropsLeakPatternGuidPercentageThreshold = 20;
 	const std::uint32_t NamedPropsLeakPatternGuidPercentageThresholdForInternetHeaders = 60;
