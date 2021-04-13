@@ -303,7 +303,7 @@ int wmain(_In_ int argc, _In_count_(argc) wchar_t* argv[])
 			DoAccounts(lpMAPISession);
 			break;
 		case cli::cmdmodeNamedProps:
-			DoNamedProps(lpMDB);
+			DoNamedProps(lpMAPISession, lpMDB);
 			break;
 		case cli::cmdmodeUnknown:
 			break;
