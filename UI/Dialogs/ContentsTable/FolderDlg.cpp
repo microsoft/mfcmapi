@@ -1356,7 +1356,7 @@ namespace dialog
 			auto lpMessage = OpenMessage(iItem, modifyType::REQUEST_MODIFY);
 			if (lpMessage)
 			{
-				hRes = EC_H(exporter.exportMessage(lpMessage));
+				hRes = EC_H_CANCEL(exporter.exportMessage(lpMessage));
 				lpMessage->Release();
 			}
 			else

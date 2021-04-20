@@ -78,7 +78,7 @@ namespace dialog
 		auto exporter = file::exporter();
 		if (exporter.init(this, false, m_lpMapiObjects->GetAddrBook(true)))
 		{
-			EC_H_S(exporter.exportMessage(m_lpMessage));
+			EC_H_CANCEL_S(exporter.exportMessage(m_lpMessage));
 		}
 	}
 

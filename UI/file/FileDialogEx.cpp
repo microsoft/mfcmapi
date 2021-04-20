@@ -4,60 +4,6 @@
 
 namespace file
 {
-	std::wstring CFileDialogExW::OpenFile(
-		_In_ const std::wstring& lpszDefExt,
-		_In_ const std::wstring& lpszFileName,
-		DWORD dwFlags,
-		_In_ const std::wstring& lpszFilter,
-		_In_opt_ CWnd* pParentWnd)
-	{
-		CFileDialogExW dlgFilePicker;
-		const auto iDlgRet =
-			EC_D_DIALOG(dlgFilePicker.DisplayDialog(true, lpszDefExt, lpszFileName, dwFlags, lpszFilter, pParentWnd));
-		if (iDlgRet == IDOK)
-		{
-			return dlgFilePicker.GetFileName();
-		}
-
-		return std::wstring();
-	}
-
-	std::vector<std::wstring> CFileDialogExW::OpenFiles(
-		_In_ const std::wstring& lpszDefExt,
-		_In_ const std::wstring& lpszFileName,
-		DWORD dwFlags,
-		_In_ const std::wstring& lpszFilter,
-		_In_opt_ CWnd* pParentWnd)
-	{
-		CFileDialogExW dlgFilePicker;
-		const auto iDlgRet = EC_D_DIALOG(dlgFilePicker.DisplayDialog(
-			true, lpszDefExt, lpszFileName, dwFlags | OFN_ALLOWMULTISELECT, lpszFilter, pParentWnd));
-		if (iDlgRet == IDOK)
-		{
-			return dlgFilePicker.GetFileNames();
-		}
-
-		return std::vector<std::wstring>();
-	}
-
-	std::wstring CFileDialogExW::SaveAs(
-		_In_ const std::wstring& lpszDefExt,
-		_In_ const std::wstring& lpszFileName,
-		DWORD dwFlags,
-		_In_ const std::wstring& lpszFilter,
-		_In_opt_ CWnd* pParentWnd)
-	{
-		CFileDialogExW dlgFilePicker;
-		const auto iDlgRet =
-			EC_D_DIALOG(dlgFilePicker.DisplayDialog(false, lpszDefExt, lpszFileName, dwFlags, lpszFilter, pParentWnd));
-		if (iDlgRet == IDOK)
-		{
-			return dlgFilePicker.GetFileName();
-		}
-
-		return std::wstring();
-	}
-
 	// Make sure OPENFILENAMEEX is the same size regardless of how _WIN32_WINNT is defined
 #if (_WIN32_WINNT >= 0x0500)
 	struct OPENFILENAMEEXW : public OPENFILENAMEW
@@ -72,19 +18,69 @@ namespace file
 	};
 #endif
 
-#define CCHBIGBUFF 8192
+	static const size_t CCHBIGBUFF = 8192;
+
+	std::wstring CFileDialogExW::OpenFile(
+		_In_ const std::wstring& lpszDefExt,
+		_In_ const std::wstring& lpszFileName,
+		DWORD dwFlags,
+		_In_ const std::wstring& lpszFilter,
+		_In_opt_ CWnd* pParentWnd)
+	{
+		auto dlgFilePicker = CFileDialogExW{};
+		const auto iDlgRet =
+			EC_D_DIALOG(dlgFilePicker.DisplayDialog(true, lpszDefExt, lpszFileName, dwFlags, lpszFilter, pParentWnd));
+		if (iDlgRet == IDOK)
+		{
+			return dlgFilePicker.GetFileName();
+		}
+
+		return {};
+	}
+
+	std::vector<std::wstring> CFileDialogExW::OpenFiles(
+		_In_ const std::wstring& lpszDefExt,
+		_In_ const std::wstring& lpszFileName,
+		DWORD dwFlags,
+		_In_ const std::wstring& lpszFilter,
+		_In_opt_ CWnd* pParentWnd)
+	{
+		auto dlgFilePicker = CFileDialogExW{};
+		const auto iDlgRet = EC_D_DIALOG(dlgFilePicker.DisplayDialog(
+			true, lpszDefExt, lpszFileName, dwFlags | OFN_ALLOWMULTISELECT | OFN_EXPLORER, lpszFilter, pParentWnd));
+		if (iDlgRet == IDOK)
+		{
+			return dlgFilePicker.GetFileNames();
+		}
+
+		return {};
+	}
+
+	std::wstring CFileDialogExW::SaveAs(
+		_In_ const std::wstring& lpszDefExt,
+		_In_ const std::wstring& lpszFileName,
+		DWORD dwFlags,
+		_In_ const std::wstring& lpszFilter,
+		_In_opt_ CWnd* pParentWnd)
+	{
+		auto dlgFilePicker = CFileDialogExW{};
+		const auto iDlgRet =
+			EC_D_DIALOG(dlgFilePicker.DisplayDialog(false, lpszDefExt, lpszFileName, dwFlags, lpszFilter, pParentWnd));
+		if (iDlgRet == IDOK)
+		{
+			return dlgFilePicker.GetFileName();
+		}
+
+		return {};
+	}
 
 	std::vector<std::wstring> UnpackFileNames(OPENFILENAMEEXW ofn)
 	{
-		auto paths = std::vector<std::wstring>();
-
 		if ((ofn.Flags & OFN_ALLOWMULTISELECT) == 0)
 		{
-			paths.push_back(ofn.lpstrFile);
-			return paths;
+			return {ofn.lpstrFile};
 		}
 
-		auto strBasePath = std::wstring(ofn.lpstrFile) + L"\\";
 		auto lpsz = ofn.lpstrFile;
 		// find char pos after first Delimiter
 		while (*lpsz != L'\0')
@@ -94,10 +90,11 @@ namespace file
 		// if single selection then return only selection
 		if (*lpsz == L'\0')
 		{
-			paths.push_back(ofn.lpstrFile);
-			return paths;
+			return {ofn.lpstrFile};
 		}
 
+		auto paths = std::vector<std::wstring>{};
+		auto strBasePath = std::wstring(ofn.lpstrFile) + L"\\";
 		while (lpsz != nullptr)
 		{
 			WCHAR strPath[_MAX_PATH] = {};
@@ -183,7 +180,7 @@ namespace file
 	std::wstring CFileDialogExW::GetFileName() const
 	{
 		if (m_paths.size() >= 1) return m_paths[0];
-		return strings::emptystring;
+		return {};
 	}
 
 	std::vector<std::wstring> CFileDialogExW::GetFileNames() const { return m_paths; }
