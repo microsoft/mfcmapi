@@ -26,7 +26,7 @@ namespace SmartViewTest
 
 			if (unittest::parse_all)
 			{
-				for (auto parser : SmartViewParserTypeArray)
+				for (const auto parser : SmartViewParserTypeArray)
 				{
 					try
 					{
