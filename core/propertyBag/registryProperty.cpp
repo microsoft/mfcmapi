@@ -115,7 +115,7 @@ namespace propertybag
 					}
 					break;
 				case PT_BINARY:
-					m_prop.Value.bin.cb = m_binVal.size();
+					m_prop.Value.bin.cb = static_cast<ULONG>(m_binVal.size());
 					m_prop.Value.bin.lpb = const_cast<LPBYTE>(m_binVal.data());
 					break;
 				case PT_UNICODE:
@@ -127,7 +127,7 @@ namespace propertybag
 				case PT_MV_LONG:
 				{
 					const auto parser = std::make_shared<smartview::binaryParser>(m_binVal);
-					const auto count = parser->getSize() / sizeof(LONG);
+					const auto count = static_cast<ULONG>(parser->getSize() / sizeof(LONG));
 					m_bin = std::vector<BYTE>(sizeof(LONG) * count);
 					m_prop.Value.MVl.lpl = reinterpret_cast<LONG*>(m_bin.data());
 					m_prop.Value.MVl.cValues = count;
@@ -209,7 +209,7 @@ namespace propertybag
 				default:
 					// Haven't found any other property types out there so this ought never be used
 					m_prop.ulPropTag = PROP_TAG(PT_BINARY, PROP_ID(m_ulPropTag));
-					m_prop.Value.bin.cb = m_binVal.size();
+					m_prop.Value.bin.cb = static_cast<ULONG>(m_binVal.size());
 					m_prop.Value.bin.lpb = const_cast<LPBYTE>(m_binVal.data());
 					m_canParseMAPI = false;
 					break;
@@ -218,7 +218,7 @@ namespace propertybag
 			else
 			{
 				m_prop.ulPropTag = PROP_TAG(PT_BINARY, PROP_ID_NULL);
-				m_prop.Value.bin.cb = m_binVal.size();
+				m_prop.Value.bin.cb = static_cast<ULONG>(m_binVal.size());
 				m_prop.Value.bin.lpb = const_cast<LPBYTE>(m_binVal.data());
 			}
 		}
@@ -368,7 +368,7 @@ namespace propertybag
 					break;
 				case PT_UNICODE:
 					// Include null terminator
-					cb = (std::wstring(newValue->Value.lpszW).length() + 1) * sizeof(wchar_t);
+					cb = static_cast<ULONG>((std::wstring(newValue->Value.lpszW).length() + 1) * sizeof(wchar_t));
 					lpb = LPBYTE(newValue->Value.lpszW);
 					break;
 				case PT_MV_LONG:
@@ -394,7 +394,7 @@ namespace propertybag
 					// Count up our additional needs for reserve
 					for (ULONG iMVCount = 0; iMVCount < newValue->Value.MVbin.cValues; iMVCount++)
 					{
-						cb += memory::align(newValue->Value.MVbin.lpbin[iMVCount].cb);
+						cb += static_cast<ULONG>(memory::align(newValue->Value.MVbin.lpbin[iMVCount].cb));
 					}
 
 					// Then reserve additional space for the binary data to avoid realloc
@@ -433,7 +433,7 @@ namespace propertybag
 					for (ULONG iMVCount = 0; iMVCount < newValue->Value.MVszW.cValues; iMVCount++)
 					{
 						strings[iMVCount] = newValue->Value.MVszW.lppszW[iMVCount]; // cache for convenience
-						cb += (strings[iMVCount].length() + 1) * sizeof(wchar_t);
+						cb += static_cast<ULONG>((strings[iMVCount].length() + 1) * sizeof(wchar_t));
 					}
 
 					// Then reserve additional space for the string data to avoid realloc
@@ -465,7 +465,7 @@ namespace propertybag
 					for (ULONG iMVCount = 0; iMVCount < newValue->Value.MVszA.cValues; iMVCount++)
 					{
 						strings[iMVCount] = newValue->Value.MVszA.lppszA[iMVCount]; // cache for convenience
-						cb += strings[iMVCount].length() + 1;
+						cb += static_cast<ULONG>(strings[iMVCount].length()) + 1;
 					}
 
 					// Then reserve additional space for the string data to avoid realloc

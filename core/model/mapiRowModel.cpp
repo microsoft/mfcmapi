@@ -83,7 +83,7 @@ namespace model
 				auto lpTags = mapi::allocate<LPSPropTagArray>(CbNewSPropTagArray(static_cast<ULONG>(tags.size())));
 				if (lpTags)
 				{
-					lpTags->cValues = tags.size();
+					lpTags->cValues = static_cast<ULONG>(tags.size());
 					ULONG i = 0;
 					for (const auto tag : tags)
 					{

@@ -137,7 +137,7 @@ namespace propertybag
 	}
 
 	_Check_return_ HRESULT
-	registryPropertyBag::SetProp(_In_ LPSPropValue lpProp, _In_ ULONG ulPropTag, const std::wstring& name)
+	registryPropertyBag::SetProp(_In_ LPSPropValue lpProp, _In_ ULONG /*ulPropTag*/, const std::wstring& name)
 	{
 		ensureLoaded();
 		for (const auto& prop : m_props)
