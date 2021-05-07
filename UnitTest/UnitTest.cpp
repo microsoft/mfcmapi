@@ -42,7 +42,7 @@ namespace unittest
 			Logger::WriteMessage(strings::format(L"Test: %ws\n", message).c_str());
 		}
 
-		Logger::WriteMessage(L"Diff:\n");
+		Logger::WriteMessage(L"Diff (expected vs actual):\n");
 
 		auto splitExpected = strings::split(expected, L'\n');
 		auto splitActual = strings::split(actual, L'\n');
