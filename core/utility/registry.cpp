@@ -278,7 +278,7 @@ namespace registry
 		_In_ const std::vector<BYTE>& binValue,
 		_In_ const bool bSecure)
 	{
-		const DWORD cbValue = binValue.size();
+		const DWORD cbValue = static_cast<DWORD>(binValue.size());
 		if (bSecure)
 		{
 			auto DataIn = DATA_BLOB{cbValue, const_cast<LPBYTE>(binValue.data())};
