@@ -71,14 +71,11 @@ namespace cache
 		}
 	}
 
-	_Check_return_ bool namedPropCacheEntry::match(
-		const std::shared_ptr<namedPropCacheEntry>& entry,
-		bool bMatchSig,
-		bool bMatchID,
-		bool bMatchName) const
+	_Check_return_ bool
+	namedPropCacheEntry::match(const std::shared_ptr<namedPropCacheEntry>& entry, bool bMatchID, bool bMatchName) const
 	{
 		if (!entry) return false;
-		if (bMatchSig && entry->sig != sig) return false;
+		if (entry->sig != sig) return false;
 		if (bMatchID && entry->ulPropID != ulPropID) return false;
 
 		if (bMatchName)
@@ -202,9 +199,10 @@ namespace cache
 		ULONG ulFlags)
 	{
 		if (!lpMAPIProp) return {};
+		const auto sigValid = sig && sig->lpb && sig->cb;
 
 		// Check if we're bypassing the cache:
-		if (!registry::cacheNamedProps ||
+		if (!sigValid || !registry::cacheNamedProps ||
 			// None of my code uses these flags, but bypass the cache if we see them
 			ulFlags)
 		{
@@ -214,7 +212,7 @@ namespace cache
 		}
 
 		auto sigv = std::vector<BYTE>{};
-		if (sig && sig->lpb && sig->cb) sigv = {sig->lpb, sig->lpb + sig->cb};
+		if (sigValid) sigv = {sig->lpb, sig->lpb + sig->cb};
 		return namedPropCache::GetNamesFromIDs(lpMAPIProp, sigv, lpPropTags);
 	}
 
@@ -239,7 +237,7 @@ namespace cache
 
 		if (lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag))
 		{
-			const auto &bin = mapi::getBin(lpProp);
+			const auto& bin = mapi::getBin(lpProp);
 			sig = {bin.lpb, bin.lpb + bin.cb};
 		}
 
@@ -253,7 +251,7 @@ namespace cache
 	NamePropNames NameIDToStrings(_In_ const MAPINAMEID* lpNameID, ULONG ulPropTag)
 	{
 		// Can't generate strings without a MAPINAMEID structure
-		if (!lpNameID) return {};
+		if (!lpNameID || !lpNameID->lpguid) return {};
 
 		auto lpNamedPropCacheEntry = std::shared_ptr<namedPropCacheEntry>{};
 
@@ -261,7 +259,7 @@ namespace cache
 		if (registry::cacheNamedProps)
 		{
 			lpNamedPropCacheEntry = namedPropCache::find(PROP_ID(ulPropTag), *lpNameID);
-			if (lpNamedPropCacheEntry && lpNamedPropCacheEntry->hasCachedStrings())
+			if (cache::namedPropCacheEntry::valid(lpNamedPropCacheEntry) && lpNamedPropCacheEntry->hasCachedStrings())
 			{
 				return lpNamedPropCacheEntry->getNamePropNames();
 			}
@@ -370,7 +368,7 @@ namespace cache
 		}
 
 		// We've built our strings - if we're caching, put them in the cache
-		if (lpNamedPropCacheEntry)
+		if (cache::namedPropCacheEntry::valid(lpNamedPropCacheEntry))
 		{
 			lpNamedPropCacheEntry->setNamePropNames(namePropNames);
 		}
@@ -486,5 +484,23 @@ namespace cache
 		}
 
 		return ulHighestKnown;
+	}
+
+	_Check_return_ std::shared_ptr<namedPropCacheEntry> find(
+		const std::vector<std::shared_ptr<namedPropCacheEntry>>& list,
+		const std::function<bool(const std::shared_ptr<namedPropCacheEntry>&)>& compare)
+	{
+		const auto entry = find_if(list.begin(), list.end(), [compare](const auto& _entry) { return compare(_entry); });
+
+		if (entry != list.end())
+		{
+			output::DebugPrint(output::dbgLevel::NamedPropCache, L"find: found match\n");
+			return *entry;
+		}
+		else
+		{
+			output::DebugPrint(output::dbgLevel::NamedPropCache, L"find: no match\n");
+			return namedPropCacheEntry::empty();
+		}
 	}
 } // namespace cache

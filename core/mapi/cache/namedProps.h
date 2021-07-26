@@ -15,10 +15,7 @@ namespace cache
 	class namedPropCacheEntry
 	{
 	public:
-		namedPropCacheEntry(
-			const MAPINAMEID* lpPropName,
-			ULONG _ulPropID,
-			_In_ const std::vector<BYTE>& _sig = {});
+		namedPropCacheEntry(const MAPINAMEID* lpPropName, ULONG _ulPropID, _In_ const std::vector<BYTE>& _sig = {});
 
 		// Disables making copies of NamedPropCacheEntry
 		namedPropCacheEntry(const namedPropCacheEntry&) = delete;
@@ -53,7 +50,7 @@ namespace cache
 		void setSig(const std::vector<BYTE>& _sig) { sig = _sig; }
 
 		_Check_return_ bool
-		match(const std::shared_ptr<namedPropCacheEntry>& entry, bool bMatchSig, bool bMatchID, bool bMatchName) const;
+		match(const std::shared_ptr<namedPropCacheEntry>& entry, bool bMatchID, bool bMatchName) const;
 
 		// Compare given a signature, MAPINAMEID
 		_Check_return_ bool match(_In_ const std::vector<BYTE>& _sig, _In_ const MAPINAMEID& _mapiNameId) const;
@@ -107,4 +104,8 @@ namespace cache
 	std::vector<std::wstring> NameIDToPropNames(_In_opt_ const MAPINAMEID* lpNameID);
 
 	ULONG FindHighestNamedProp(_In_ LPMAPIPROP lpMAPIProp);
+
+	_Check_return_ std::shared_ptr<namedPropCacheEntry> find(
+		const std::vector<std::shared_ptr<namedPropCacheEntry>>& list,
+		const std::function<bool(const std::shared_ptr<namedPropCacheEntry>&)>& compare);
 } // namespace cache

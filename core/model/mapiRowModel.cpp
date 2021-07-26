@@ -23,7 +23,7 @@ namespace model
 		ret->ulPropTag(ulPropTag);
 
 		const auto propTagNames = proptags::PropTagToPropName(ulPropTag, bIsAB);
-		const auto namePropNames = cache::NameIDToStrings(ulPropTag, lpProp, nullptr, sig, bIsAB);
+		const auto namePropNames = cache::NameIDToStrings(ulPropTag, lpProp, lpNameID, sig, bIsAB);
 		if (!propTagNames.bestGuess.empty())
 		{
 			ret->name(propTagNames.bestGuess);
@@ -112,9 +112,10 @@ namespace model
 		for (ULONG i = 0; i < cValues; i++)
 		{
 			const auto prop = lpPropVals[i];
-			const auto lpNameID =
-				(namedPropCacheEntries.size() > i) ? namedPropCacheEntries[i]->getMapiNameId() : nullptr;
-			models.push_back(model::propToModelInternal(&prop, prop.ulPropTag, lpProp, bIsAB, lpSigBin, lpNameID));
+			const auto lpNameID = cache::find(
+				namedPropCacheEntries, [&](const auto& _entry) { return _entry->getPropID() == PROP_ID(prop.ulPropTag); });
+			models.push_back(
+				model::propToModelInternal(&prop, prop.ulPropTag, lpProp, bIsAB, lpSigBin, lpNameID->getMapiNameId()));
 		}
 
 		if (lpMappingSigFromObject) MAPIFreeBuffer(lpMappingSigFromObject);
