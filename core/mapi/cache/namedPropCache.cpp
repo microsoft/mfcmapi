@@ -262,35 +262,15 @@ namespace cache
 		}
 	} // namespace directMapi
 
-	std::list<std::shared_ptr<namedPropCacheEntry>>& namedPropCache::getCache() noexcept
+	std::vector<std::shared_ptr<namedPropCacheEntry>>& namedPropCache::getCache() noexcept
 	{
 		// We keep a list of named prop cache entries
-		static std::list<std::shared_ptr<namedPropCacheEntry>> cache;
+		static std::vector<std::shared_ptr<namedPropCacheEntry>> cache;
 		return cache;
-	}
-
-	_Check_return_ std::shared_ptr<namedPropCacheEntry>
-	namedPropCache::find(const std::function<bool(const std::shared_ptr<namedPropCacheEntry>&)>& compare)
-	{
-		const auto& cache = getCache();
-		const auto entry =
-			find_if(cache.begin(), cache.end(), [compare](const auto& _entry) { return compare(_entry); });
-
-		if (entry != cache.end())
-		{
-			output::DebugPrint(output::dbgLevel::NamedPropCache, L"find: found match\n");
-			return *entry;
-		}
-		else
-		{
-			output::DebugPrint(output::dbgLevel::NamedPropCache, L"find: no match\n");
-			return namedPropCacheEntry::empty();
-		}
 	}
 
 	_Check_return_ std::shared_ptr<namedPropCacheEntry> namedPropCache::find(
 		const std::shared_ptr<cache::namedPropCacheEntry>& entry,
-		bool bMatchSig,
 		bool bMatchID,
 		bool bMatchName)
 	{
@@ -298,14 +278,13 @@ namespace cache
 		{
 			output::DebugPrint(
 				output::dbgLevel::NamedPropCache,
-				L"find: bMatchSig=%d, bMatchID=%d, bMatchName=%d\n",
-				bMatchSig,
+				L"find: bMatchID=%d, bMatchName=%d\n",
 				bMatchID,
 				bMatchName);
 			entry->output();
 		}
 
-		return find([&](const auto& _entry) { return _entry->match(entry, bMatchSig, bMatchID, bMatchName); });
+		return cache::find(getCache(), [&](const auto& _entry) { return _entry->match(entry, bMatchID, bMatchName); });
 	}
 
 	_Check_return_ std::shared_ptr<namedPropCacheEntry>
@@ -329,7 +308,7 @@ namespace cache
 			}
 		}
 
-		return find([&](const auto& _entry) { return _entry->match(_sig, _mapiNameId); });
+		return cache::find(getCache(), [&](const auto& _entry) { return _entry->match(_sig, _mapiNameId); });
 	}
 
 	_Check_return_ std::shared_ptr<namedPropCacheEntry>
@@ -349,7 +328,7 @@ namespace cache
 			}
 		}
 
-		return find([&](const auto& _entry) { return _entry->match(_sig, _ulPropID); });
+		return cache::find(getCache(), [&](const auto& _entry) { return _entry->match(_sig, _ulPropID); });
 	}
 
 	_Check_return_ std::shared_ptr<namedPropCacheEntry>
@@ -365,7 +344,7 @@ namespace cache
 				nameidString.c_str());
 		}
 
-		return find([&](const auto& _entry) { return _entry->match(_ulPropID, _mapiNameId); });
+		return cache::find(getCache(), [&](const auto& _entry) { return _entry->match(_ulPropID, _mapiNameId); });
 	}
 
 	// Add a mapping to the cache if it doesn't already exist
@@ -374,6 +353,9 @@ namespace cache
 	void
 	namedPropCache::add(const std::vector<std::shared_ptr<namedPropCacheEntry>>& entries, const std::vector<BYTE>& sig)
 	{
+		// Don't bother adding entries to the cache if they have no signature - we cannot trust entries without a signature.
+		if (sig.empty()) return;
+
 		auto& cache = getCache();
 		for (auto& entry : entries)
 		{
@@ -386,15 +368,8 @@ namespace cache
 			}
 
 			auto match = std::shared_ptr<namedPropCacheEntry>{};
-			if (sig.empty())
-			{
-				match = find(entry, false, true, true);
-			}
-			else
-			{
-				entry->setSig(sig);
-				match = find(entry, true, true, true);
-			}
+			entry->setSig(sig);
+			match = find(entry, true, true);
 
 			if (!namedPropCacheEntry::valid(match))
 			{
@@ -428,7 +403,8 @@ namespace cache
 		if (!lpMAPIProp) return {};
 
 		// If this is a get all names call, we have to go direct to MAPI since we cannot trust the cache is full.
-		if (!lpPropTags)
+		// Same if we don't have a signature at all as anything cached could be wrong
+		if (!lpPropTags || sig.empty())
 		{
 			output::DebugPrint(output::dbgLevel::NamedPropCache, L"GetNamesFromIDs: making direct all for all props\n");
 
