@@ -75,8 +75,8 @@ namespace model
 			auto tags = std::vector<ULONG>{};
 			for (ULONG i = 0; i < cValues; i++)
 			{
-				if ((registry::getPropNamesOnAllProps ||
-					 PROP_ID(lpPropVals[i].ulPropTag) >= 0x8000)) // It's either a named prop or we're doing all props
+				if (registry::getPropNamesOnAllProps ||
+					PROP_ID(lpPropVals[i].ulPropTag) >= 0x8000) // It's either a named prop or we're doing all props
 				{
 					tags.push_back(lpPropVals[i].ulPropTag);
 				}
