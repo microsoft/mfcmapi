@@ -1215,3 +1215,5 @@ STDAPI STDAPICALLTYPE LaunchWizard(
 #define TDP_REMINDER_TIME 0x00000080
 
 #define RULE_ERR_FOLDER_OVER_QUOTA 14 // the folder quota has been exceeded
+
+#define STORE_RULES_OK ((ULONG) 0x10000000)
