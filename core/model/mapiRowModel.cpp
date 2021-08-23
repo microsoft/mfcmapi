@@ -75,7 +75,11 @@ namespace model
 			auto tags = std::vector<ULONG>{};
 			for (ULONG i = 0; i < cValues; i++)
 			{
-				tags.push_back(lpPropVals[i].ulPropTag);
+				if ((registry::getPropNamesOnAllProps ||
+					 PROP_ID(lpPropVals[i].ulPropTag) >= 0x8000)) // It's either a named prop or we're doing all props
+				{
+					tags.push_back(lpPropVals[i].ulPropTag);
+				}
 			}
 
 			if (!tags.empty())
@@ -112,8 +116,9 @@ namespace model
 		for (ULONG i = 0; i < cValues; i++)
 		{
 			const auto prop = lpPropVals[i];
-			const auto lpNameID = cache::find(
-				namedPropCacheEntries, [&](const auto& _entry) { return _entry->getPropID() == PROP_ID(prop.ulPropTag); });
+			const auto lpNameID = cache::find(namedPropCacheEntries, [&](const auto& _entry) {
+				return _entry->getPropID() == PROP_ID(prop.ulPropTag);
+			});
 			models.push_back(
 				model::propToModelInternal(&prop, prop.ulPropTag, lpProp, bIsAB, lpSigBin, lpNameID->getMapiNameId()));
 		}
