@@ -10,7 +10,7 @@ namespace dialog::editor
 			: CEditor(pParentWnd, uidTitle, uidPrompt, ulButtonFlags)
 		{
 		}
-		// Impleentations of getValue returns data owned completly by the object
+		// Implementations of getValue returns data owned completly by the object
 		// so there is nothing to free
 		// Callers CANNOT hold on to this data
 		// If they need it, they can use mapi::HrDupPropset

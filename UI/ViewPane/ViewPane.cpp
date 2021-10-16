@@ -44,6 +44,8 @@ namespace viewpane
 		// We compute nID for our view, the label, and collapse button all from the pane's base ID.
 		const UINT iCurIDLabel = IDC_PROP_CONTROL_ID_BASE + 2 * m_paneID;
 		m_nID = IDC_PROP_CONTROL_ID_BASE + 2 * m_paneID + 1;
+		// Assign a nID to the collapse button that is IDD_COLLAPSE more than the control's nID
+		m_nIDCollapse = m_nID + IDD_COLLAPSE;
 
 		EC_B_S(m_Label.Create(
 			WS_CHILD | WS_CLIPSIBLINGS | ES_READONLY | WS_VISIBLE, CRect(0, 0, 0, 0), pParent, iCurIDLabel));
@@ -54,13 +56,12 @@ namespace viewpane
 		{
 			StyleLabel(m_Label.m_hWnd, ui::uiLabelStyle::PaneHeaderLabel);
 
-			// Assign a nID to the collapse button that is IDD_COLLAPSE more than the control's nID
 			EC_B_S(m_CollapseButton.Create(
 				nullptr,
 				WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE,
 				CRect(0, 0, 0, 0),
 				pParent,
-				IDD_COLLAPSE + m_nID));
+				m_nIDCollapse));
 		}
 
 		const auto sizeText = ui::GetTextExtentPoint32(hdc, m_szLabel);
@@ -76,7 +77,7 @@ namespace viewpane
 	{
 		// Collapse buttons have a nID IDD_COLLAPSE higher than nID of the pane they toggle.
 		// So if we get asked about one that matches, we can assume it's time to toggle our collapse.
-		if (IDD_COLLAPSE + m_nID == nID)
+		if (m_nIDCollapse == nID)
 		{
 			OnToggleCollapse();
 			return m_paneID;

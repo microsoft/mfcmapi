@@ -51,6 +51,7 @@ namespace viewpane
 		int m_iLabelWidth{}; // The width of the label
 		CEdit m_Label;
 		UINT m_nID{}; // NID for matching change notifications back to controls. Also used for Create calls.
+		UINT m_nIDCollapse{}; // NID for collapse button.
 		HWND m_hWndParent{};
 		bool m_bCollapsible{};
 		bool m_bCollapsed{};
