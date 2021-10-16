@@ -620,7 +620,7 @@ namespace cli
 				options.mode = cmdmodeHelp;
 			else if (switchProfile.empty() && !switchOutput.empty())
 				options.mode = cmdmodeHelp;
-			else if (switchProfileSection.empty() && switchProfile.empty())
+			else if (switchProfileSection.isSet() && switchProfile.empty())
 				options.mode = cmdmodeHelp;
 
 			break;
