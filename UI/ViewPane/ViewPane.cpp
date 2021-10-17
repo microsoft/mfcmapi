@@ -7,7 +7,6 @@
 namespace viewpane
 {
 	// Draw our header, if needed.
-	// Draws everything to GetLabelHeight()
 	void ViewPane::DeferWindowPos(
 		_In_ HDWP hWinPosInfo,
 		const _In_ int x,
@@ -15,14 +14,8 @@ namespace viewpane
 		const _In_ int width,
 		const _In_ int /*height*/)
 	{
-		const auto labelHeight = GetLabelHeight();
-		output::DebugPrint(
-			output::dbgLevel::Draw,
-			L"ViewPane::DeferWindowPos x:%d width:%d \n",
-			x,
-			width);
-
-		m_Header.DeferWindowPos(hWinPosInfo, x, y, width, labelHeight);
+		output::DebugPrint(output::dbgLevel::Draw, L"ViewPane::DeferWindowPos x:%d width:%d \n", x, width);
+		m_Header.DeferWindowPos(hWinPosInfo, x, y, width);
 	}
 
 	void ViewPane::Initialize(_In_ CWnd* pParent, _In_opt_ HDC hdc)

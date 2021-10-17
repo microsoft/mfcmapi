@@ -7,13 +7,12 @@
 namespace controls
 {
 	// Draw our collapse button and label, if needed.
-	// Draws everything to GetLabelHeight()
+	// Draws everything to GetFixedHeight()
 	void ViewHeader::DeferWindowPos(
 		_In_ HDWP hWinPosInfo,
 		const _In_ int x,
 		const _In_ int y,
-		const _In_ int width,
-		const _In_ int /*height*/)
+		const _In_ int width)
 	{
 		const auto labelHeight = GetFixedHeight();
 		auto curX = x;
