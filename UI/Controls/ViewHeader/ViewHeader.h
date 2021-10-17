@@ -10,12 +10,10 @@ namespace controls
 
 		void SetLabel(const UINT uidLabel) { m_szLabel = strings::loadstring(uidLabel); }
 		void SetLabel(const std::wstring szLabel) { m_szLabel = szLabel; }
-		void SetReadOnly(const bool bReadOnly) noexcept { m_bReadOnly = bReadOnly; }
 
 		void Initialize(_In_ CWnd* pParent, _In_opt_ HDC hdc, _In_ bool bCollapsible, _In_ UINT nidParent);
 		void DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height);
 
-		bool IsDirty() { return false; }
 		int GetMinWidth() { return (m_bCollapsible ? m_iButtonHeight : 0) + m_iLabelWidth; }
 		int GetLines() { return 0; }
 		bool HandleChange(UINT nID);
@@ -45,7 +43,6 @@ namespace controls
 	protected:
 		int m_paneID{-1}; // ID of the view pane in the view - used for callbacks and layout
 		bool m_bInitialized{};
-		bool m_bReadOnly{true};
 		std::wstring m_szLabel; // Text to push into UI in Initialize
 		int m_iLabelWidth{}; // The width of the label
 		UINT m_nIDCollapse{}; // NID for collapse button.
