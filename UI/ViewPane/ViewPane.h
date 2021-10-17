@@ -44,7 +44,6 @@ namespace viewpane
 		bool m_bReadOnly{true};
 		controls::ViewHeader m_Header;
 		UINT m_nID{}; // NID for matching change notifications back to controls. Also used for Create calls.
-		UINT m_nIDCollapse{}; // NID for collapse button.
 		HWND m_hWndParent{};
 		bool m_bCollapsible{};
 		bool m_bCollapsed{};

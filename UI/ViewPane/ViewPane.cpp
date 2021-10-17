@@ -24,9 +24,6 @@ namespace viewpane
 		// We compute nID for our view, the label, and collapse button all from the pane's base ID.
 		const UINT iCurIDLabel = IDC_PROP_CONTROL_ID_BASE + 2 * m_paneID;
 		m_nID = IDC_PROP_CONTROL_ID_BASE + 2 * m_paneID + 1;
-		// Assign a nID to the collapse button that is IDD_COLLAPSE more than the control's nID
-		m_nIDCollapse = m_nID + IDD_COLLAPSE;
-
 		m_Header.Initialize(pParent, hdc, m_bCollapsible, m_nID);
 	}
 
