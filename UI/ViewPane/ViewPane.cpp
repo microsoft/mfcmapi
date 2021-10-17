@@ -6,7 +6,7 @@
 
 namespace viewpane
 {
-	// Draw our collapse button and label, if needed.
+	// Draw our header, if needed.
 	// Draws everything to GetLabelHeight()
 	void ViewPane::DeferWindowPos(
 		_In_ HDWP hWinPosInfo,
@@ -16,26 +16,13 @@ namespace viewpane
 		const _In_ int /*height*/)
 	{
 		const auto labelHeight = GetLabelHeight();
-		auto curX = x;
-		if (m_bCollapsible)
-		{
-			StyleButton(
-				m_CollapseButton.m_hWnd, m_bCollapsed ? ui::uiButtonStyle::UpArrow : ui::uiButtonStyle::DownArrow);
-			::DeferWindowPos(
-				hWinPosInfo, m_CollapseButton.GetSafeHwnd(), nullptr, curX, y, width, labelHeight, SWP_NOZORDER);
-			curX += m_iButtonHeight;
-		}
-
 		output::DebugPrint(
 			output::dbgLevel::Draw,
-			L"ViewPane::DeferWindowPos x:%d width:%d labelpos:%d labelwidth:%d \n",
+			L"ViewPane::DeferWindowPos x:%d width:%d \n",
 			x,
-			width,
-			curX,
-			m_iLabelWidth);
+			width);
 
-		::DeferWindowPos(
-			hWinPosInfo, m_Label.GetSafeHwnd(), nullptr, curX, y, m_iLabelWidth, labelHeight, SWP_NOZORDER);
+		m_Header.DeferWindowPos(hWinPosInfo, x, y, width, labelHeight);
 	}
 
 	void ViewPane::Initialize(_In_ CWnd* pParent, _In_opt_ HDC hdc)
@@ -47,41 +34,25 @@ namespace viewpane
 		// Assign a nID to the collapse button that is IDD_COLLAPSE more than the control's nID
 		m_nIDCollapse = m_nID + IDD_COLLAPSE;
 
-		EC_B_S(m_Label.Create(
-			WS_CHILD | WS_CLIPSIBLINGS | ES_READONLY | WS_VISIBLE, CRect(0, 0, 0, 0), pParent, iCurIDLabel));
-		::SetWindowTextW(m_Label.m_hWnd, m_szLabel.c_str());
-		ui::SubclassLabel(m_Label.m_hWnd);
-
-		if (m_bCollapsible)
-		{
-			StyleLabel(m_Label.m_hWnd, ui::uiLabelStyle::PaneHeaderLabel);
-
-			EC_B_S(m_CollapseButton.Create(
-				nullptr,
-				WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE,
-				CRect(0, 0, 0, 0),
-				pParent,
-				m_nIDCollapse));
-		}
-
-		const auto sizeText = ui::GetTextExtentPoint32(hdc, m_szLabel);
-		m_iLabelWidth = sizeText.cx;
-		output::DebugPrint(
-			output::dbgLevel::Draw,
-			L"ViewPane::Initialize m_iLabelWidth:%d \"%ws\"\n",
-			m_iLabelWidth,
-			m_szLabel.c_str());
+		m_Header.Initialize(pParent, hdc, m_bCollapsible, m_nID);
+		//m_Header.ToggleCollapseCallback = [&]() { OnToggleCollapse(); };
 	}
 
 	ULONG ViewPane::HandleChange(UINT nID)
 	{
-		// Collapse buttons have a nID IDD_COLLAPSE higher than nID of the pane they toggle.
-		// So if we get asked about one that matches, we can assume it's time to toggle our collapse.
-		if (m_nIDCollapse == nID)
+		if (m_Header.HandleChange(nID))
 		{
 			OnToggleCollapse();
 			return m_paneID;
 		}
+		 //Collapse buttons have a nID IDD_COLLAPSE higher than nID of the pane they toggle.
+		 //So if we get asked about one that matches, we can assume it's time to toggle our collapse.
+		//if (m_nIDCollapse == nID)
+		//{
+		//	OnToggleCollapse();
+		//	m_Header.OnToggleCollapse();
+		//	return m_paneID;
+		//}
 
 		return static_cast<ULONG>(-1);
 	}
@@ -105,14 +76,16 @@ namespace viewpane
 	{
 		m_iMargin = iMargin;
 		m_iSideMargin = iSideMargin;
-		m_iLabelHeight = iLabelHeight;
 		m_iSmallHeightMargin = iSmallHeightMargin;
 		m_iLargeHeightMargin = iLargeHeightMargin;
 		m_iButtonHeight = iButtonHeight;
 		m_iEditHeight = iEditHeight;
+
+		m_Header.SetMargins(
+			iMargin, iSideMargin, iLabelHeight, iSmallHeightMargin, iLargeHeightMargin, iButtonHeight, iEditHeight);
 	}
 
-	void ViewPane::SetAddInLabel(const std::wstring& szLabel) { m_szLabel = szLabel; }
+	void ViewPane::SetAddInLabel(const std::wstring& szLabel) { m_Header.SetLabel(szLabel); }
 
 	void ViewPane::UpdateButtons() {}
 } // namespace viewpane

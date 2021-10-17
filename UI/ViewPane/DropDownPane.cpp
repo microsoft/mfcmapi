@@ -102,12 +102,11 @@ namespace viewpane
 			curY += m_iSmallHeightMargin;
 		}
 
-		if (!m_szLabel.empty())
-		{
-			EC_B_S(::DeferWindowPos(
-				hWinPosInfo, m_Label.GetSafeHwnd(), nullptr, x, curY, width, labelHeight, SWP_NOZORDER));
-			curY += labelHeight;
-		}
+		//if (!m_szLabel.empty())
+		//{
+		//	m_Header.DeferWindowPos(hWinPosInfo, x, curY, width, labelHeight);
+		//	curY += labelHeight;
+		//}
 
 		// Note - Real height of a combo box is fixed at m_iEditHeight
 		// Height we set here influences the amount of dropdown entries we see

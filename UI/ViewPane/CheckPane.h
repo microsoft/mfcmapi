@@ -18,6 +18,7 @@ namespace viewpane
 		int GetFixedHeight() override;
 
 		CButton m_Check;
+		std::wstring m_szLabel; // Check label
 		bool m_bCheckValue{false};
 		bool m_bCommitted{false};
 	};

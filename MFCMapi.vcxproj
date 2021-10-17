@@ -593,6 +593,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
   <ItemGroup>
     <ClInclude Include="UI\Controls\SortList\SortHeader.h" />
     <ClInclude Include="UI\Controls\SortList\SortListCtrl.h" />
+    <ClInclude Include="UI\Controls\ViewHeader\ViewHeader.h" />
     <ClInclude Include="UI\Dialogs\Editors\propeditor\ipropeditor.h" />
     <ClInclude Include="UI\Dialogs\propList\AccountsDialog.h" />
     <ClInclude Include="UI\Dialogs\propList\RegistryDialog.h" />
@@ -675,6 +676,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="UI\addinui.cpp" />
     <ClCompile Include="UI\Controls\SortList\SortHeader.cpp" />
     <ClCompile Include="UI\Controls\SortList\SortListCtrl.cpp" />
+    <ClCompile Include="UI\Controls\ViewHeader\ViewHeader.cpp" />
     <ClCompile Include="UI\Dialogs\Editors\propeditor\ipropeditor.cpp" />
     <ClCompile Include="UI\Dialogs\propList\AccountsDialog.cpp" />
     <ClCompile Include="UI\Dialogs\propList\RegistryDialog.cpp" />

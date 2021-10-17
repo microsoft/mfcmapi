@@ -1,5 +1,6 @@
 #pragma once
 #include <core/utility/strings.h>
+#include <UI/Controls/ViewHeader/ViewHeader.h>
 
 namespace viewpane
 {
@@ -8,7 +9,7 @@ namespace viewpane
 	public:
 		virtual ~ViewPane() = default;
 
-		void SetLabel(const UINT uidLabel) { m_szLabel = strings::loadstring(uidLabel); }
+		void SetLabel(const UINT uidLabel) { m_Header.SetLabel(uidLabel); }
 		void SetReadOnly(const bool bReadOnly) noexcept { m_bReadOnly = bReadOnly; }
 
 		virtual void Initialize(_In_ CWnd* pParent, _In_opt_ HDC hdc);
@@ -16,7 +17,7 @@ namespace viewpane
 
 		virtual void CommitUIValues() = 0;
 		virtual bool IsDirty() { return false; }
-		virtual int GetMinWidth() { return (m_bCollapsible ? m_iButtonHeight : 0) + m_iLabelWidth; }
+		virtual int GetMinWidth() { return m_Header.GetMinWidth(); }
 		virtual int GetFixedHeight() = 0;
 		virtual int GetLines() { return 0; }
 		virtual ULONG HandleChange(UINT nID);
@@ -36,31 +37,21 @@ namespace viewpane
 		UINT GetNID() const noexcept { return m_nID; }
 
 	protected:
-		// Returns the height of our label, accounting for an expand/collapse button
-		// Will return 0 if we have no label or button
-		int GetLabelHeight() const noexcept
-		{
-			if (m_bCollapsible || !m_szLabel.empty()) return max(m_iButtonHeight, m_iLabelHeight);
-
-			return 0;
-		}
+		// Returns the height of our header
+		int GetLabelHeight() const noexcept { return m_Header.GetFixedHeight(); }
 		int m_paneID{-1}; // ID of the view pane in the view - used for callbacks and layout
 		bool m_bInitialized{};
 		bool m_bReadOnly{true};
-		std::wstring m_szLabel; // Text to push into UI in Initialize
-		int m_iLabelWidth{}; // The width of the label
-		CEdit m_Label;
+		controls::ViewHeader m_Header;
 		UINT m_nID{}; // NID for matching change notifications back to controls. Also used for Create calls.
 		UINT m_nIDCollapse{}; // NID for collapse button.
 		HWND m_hWndParent{};
 		bool m_bCollapsible{};
 		bool m_bCollapsed{};
-		CButton m_CollapseButton;
 
 		// Margins
 		int m_iMargin{};
 		int m_iSideMargin{};
-		int m_iLabelHeight{}; // Height of the label
 		int m_iSmallHeightMargin{};
 		int m_iLargeHeightMargin{};
 		int m_iButtonHeight{}; // Height of buttons below the control

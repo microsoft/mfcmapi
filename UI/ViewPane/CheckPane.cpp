@@ -12,7 +12,8 @@ namespace viewpane
 		if (pane)
 		{
 			pane->m_bCheckValue = bVal;
-			pane->SetLabel(uidLabel);
+			pane->m_szLabel = strings::loadstring(uidLabel);
+
 			pane->SetReadOnly(bReadOnly);
 			pane->m_paneID = paneID;
 		}
@@ -99,8 +100,9 @@ namespace viewpane
 			hDC,
 			&rcCheck,
 			GetSysBrush(
-				bDisabled ? ui::uiColor::FrameUnselected
-						  : bGlow || bFocused ? ui::uiColor::Glow : ui::uiColor::FrameSelected));
+				bDisabled			? ui::uiColor::FrameUnselected
+				: bGlow || bFocused ? ui::uiColor::Glow
+									: ui::uiColor::FrameSelected));
 		if (bChecked)
 		{
 			auto rcFill = rcCheck;

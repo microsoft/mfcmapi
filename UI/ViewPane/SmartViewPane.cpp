@@ -93,8 +93,7 @@ namespace viewpane
 		_In_ const int height)
 	{
 		const auto visibility = !m_bDoDropDown && !m_bHasData ? SW_HIDE : SW_SHOW;
-		WC_B_S(m_CollapseButton.ShowWindow(visibility));
-		WC_B_S(m_Label.ShowWindow(visibility));
+		WC_B_S(m_Header.ShowWindow(visibility));
 
 		auto curY = y;
 		const auto labelHeight = GetLabelHeight();
