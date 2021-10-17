@@ -31,7 +31,7 @@ namespace controls
 		}
 
 	protected:
-		int m_paneID{-1}; // ID of the view pane in the view - used for callbacks and layout
+		//int m_paneID{-1}; // ID of the view pane in the view - used for callbacks and layout
 		bool m_bInitialized{};
 		std::wstring m_szLabel; // Text to push into UI in Initialize
 		int m_iLabelWidth{}; // The width of the label

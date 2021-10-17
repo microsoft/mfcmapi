@@ -8,11 +8,7 @@ namespace controls
 {
 	// Draw our collapse button and label, if needed.
 	// Draws everything to GetFixedHeight()
-	void ViewHeader::DeferWindowPos(
-		_In_ HDWP hWinPosInfo,
-		const _In_ int x,
-		const _In_ int y,
-		const _In_ int width)
+	void ViewHeader::DeferWindowPos(_In_ HDWP hWinPosInfo, const _In_ int x, const _In_ int y, const _In_ int width)
 	{
 		const auto labelHeight = GetFixedHeight();
 		auto curX = x;
@@ -40,12 +36,12 @@ namespace controls
 	{
 		m_bCollapsible = bCollapsible;
 		if (pParent) m_hWndParent = pParent->m_hWnd;
-		// We compute nID for our view, the label, and collapse button all from the pane's base ID.
-		const UINT iCurIDLabel = IDC_PROP_CONTROL_ID_BASE + 2 * m_paneID;
 		// Assign a nID to the collapse button that is IDD_COLLAPSE more than the control's nID
 		m_nIDCollapse = nidParent + IDD_COLLAPSE;
 
-		EC_B_S(Create(WS_CHILD | WS_CLIPSIBLINGS | ES_READONLY | WS_VISIBLE, CRect(0, 0, 0, 0), pParent, iCurIDLabel));
+		// TODO: validate this nid
+		EC_B_S(
+			Create(WS_CHILD | WS_CLIPSIBLINGS | ES_READONLY | WS_VISIBLE, CRect(0, 0, 0, 0), pParent, nidParent + 1));
 		::SetWindowTextW(m_hWnd, m_szLabel.c_str());
 		ui::SubclassLabel(m_hWnd);
 
