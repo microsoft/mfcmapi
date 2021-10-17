@@ -15,21 +15,12 @@ namespace controls
 		void DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height);
 
 		int GetMinWidth() { return (m_bCollapsible ? m_iButtonHeight : 0) + m_iLabelWidth; }
-		int GetLines() { return 0; }
 		bool HandleChange(UINT nID);
 		void OnToggleCollapse();
 
-		virtual void SetMargins(
-			int iMargin,
-			int iSideMargin,
+		void SetMargins(
 			int iLabelHeight, // Height of the label
-			int iSmallHeightMargin,
-			int iLargeHeightMargin,
-			int iButtonHeight, // Height of buttons below the control
-			int iEditHeight); // Height of an edit control
-		void SetAddInLabel(const std::wstring& szLabel);
-		virtual void UpdateButtons();
-		int GetID() const noexcept { return m_paneID; }
+			int iButtonHeight); // Height of buttons below the control
 		// Returns the height of our label, accounting for an expand/collapse button
 		// Will return 0 if we have no label or button
 		int GetFixedHeight() const noexcept
@@ -51,12 +42,7 @@ namespace controls
 		CButton m_CollapseButton;
 
 		// Margins
-		int m_iMargin{};
-		int m_iSideMargin{};
 		int m_iLabelHeight{}; // Height of the label
-		int m_iSmallHeightMargin{};
-		int m_iLargeHeightMargin{};
 		int m_iButtonHeight{}; // Height of buttons below the control
-		int m_iEditHeight{}; // Height of an edit control
 	};
 } // namespace controls

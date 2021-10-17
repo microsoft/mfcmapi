@@ -93,24 +93,10 @@ namespace controls
 	}
 
 	void ViewHeader::SetMargins(
-		int iMargin,
-		int iSideMargin,
 		int iLabelHeight, // Height of the label
-		int iSmallHeightMargin,
-		int iLargeHeightMargin,
-		int iButtonHeight, // Height of buttons below the control
-		int iEditHeight) // height of an edit control
+		int iButtonHeight) // Height of buttons below the control
 	{
-		m_iMargin = iMargin;
-		m_iSideMargin = iSideMargin;
 		m_iLabelHeight = iLabelHeight;
-		m_iSmallHeightMargin = iSmallHeightMargin;
-		m_iLargeHeightMargin = iLargeHeightMargin;
 		m_iButtonHeight = iButtonHeight;
-		m_iEditHeight = iEditHeight;
 	}
-
-	void ViewHeader::SetAddInLabel(const std::wstring& szLabel) { m_szLabel = szLabel; }
-
-	void ViewHeader::UpdateButtons() {}
 } // namespace controls
