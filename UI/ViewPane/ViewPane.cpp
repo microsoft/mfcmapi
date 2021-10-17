@@ -35,7 +35,6 @@ namespace viewpane
 		m_nIDCollapse = m_nID + IDD_COLLAPSE;
 
 		m_Header.Initialize(pParent, hdc, m_bCollapsible, m_nID);
-		//m_Header.ToggleCollapseCallback = [&]() { OnToggleCollapse(); };
 	}
 
 	ULONG ViewPane::HandleChange(UINT nID)
@@ -45,14 +44,6 @@ namespace viewpane
 			OnToggleCollapse();
 			return m_paneID;
 		}
-		 //Collapse buttons have a nID IDD_COLLAPSE higher than nID of the pane they toggle.
-		 //So if we get asked about one that matches, we can assume it's time to toggle our collapse.
-		//if (m_nIDCollapse == nID)
-		//{
-		//	OnToggleCollapse();
-		//	m_Header.OnToggleCollapse();
-		//	return m_paneID;
-		//}
 
 		return static_cast<ULONG>(-1);
 	}

@@ -87,7 +87,6 @@ namespace controls
 	void ViewHeader::OnToggleCollapse()
 	{
 		m_bCollapsed = !m_bCollapsed;
-		//if (ToggleCollapseCallback) ToggleCollapseCallback();
 
 		// Trigger a redraw
 		::PostMessage(m_hWndParent, WM_COMMAND, IDD_RECALCLAYOUT, NULL);

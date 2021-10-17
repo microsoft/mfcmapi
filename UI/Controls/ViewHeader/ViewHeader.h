@@ -18,7 +18,6 @@ namespace controls
 		int GetLines() { return 0; }
 		bool HandleChange(UINT nID);
 		void OnToggleCollapse();
-		std::function<void()> ToggleCollapseCallback = nullptr;
 
 		virtual void SetMargins(
 			int iMargin,
