@@ -44,7 +44,6 @@ namespace viewpane
 		bool m_bReadOnly{true};
 		controls::ViewHeader m_Header;
 		UINT m_nID{}; // NID for matching change notifications back to controls. Also used for Create calls.
-		HWND m_hWndParent{};
 		bool m_bCollapsible{};
 
 		// Margins
@@ -54,5 +53,8 @@ namespace viewpane
 		int m_iLargeHeightMargin{};
 		int m_iButtonHeight{}; // Height of buttons below the control
 		int m_iEditHeight{}; // Height of an edit control
+
+	private:
+		HWND m_hWndParent{};
 	};
 } // namespace viewpane
