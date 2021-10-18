@@ -37,7 +37,7 @@ namespace viewpane
 		auto iHeight = 0;
 		if (0 != m_paneID) iHeight += m_iSmallHeightMargin; // Top margin
 
-		const auto labelHeight = GetLabelHeight();
+		const auto labelHeight = GetHeaderHeight();
 
 		if (labelHeight)
 		{
@@ -65,7 +65,7 @@ namespace viewpane
 			output::dbgLevel::Draw, L"TreePane::DeferWindowPos x:%d y:%d width:%d height:%d \n", x, y, width, height);
 
 		auto curY = y;
-		const auto labelHeight = GetLabelHeight();
+		const auto labelHeight = GetHeaderHeight();
 		if (0 != m_paneID)
 		{
 			curY += m_iSmallHeightMargin;

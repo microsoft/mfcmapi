@@ -48,7 +48,7 @@ namespace viewpane
 		// TODO: Better way to find the top pane
 		if (0 != m_paneID) iHeight += m_iSmallHeightMargin; // Top margin
 
-		iHeight += GetLabelHeight();
+		iHeight += GetHeaderHeight();
 
 		if (collapsed())
 		{
@@ -175,7 +175,7 @@ namespace viewpane
 			height);
 
 		auto curY = y;
-		const auto labelHeight = GetLabelHeight();
+		const auto labelHeight = GetHeaderHeight();
 		if (0 != m_paneID)
 		{
 			curY += m_iSmallHeightMargin;

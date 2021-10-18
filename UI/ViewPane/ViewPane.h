@@ -38,7 +38,7 @@ namespace viewpane
 
 	protected:
 		// Returns the height of our header
-		int GetLabelHeight() const noexcept { return m_Header.GetFixedHeight(); }
+		int GetHeaderHeight() const noexcept { return m_Header.GetFixedHeight(); }
 		int m_paneID{-1}; // ID of the view pane in the view - used for callbacks and layout
 		bool m_bInitialized{};
 		bool m_bReadOnly{true};

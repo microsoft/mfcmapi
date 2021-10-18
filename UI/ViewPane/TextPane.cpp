@@ -137,7 +137,7 @@ namespace viewpane
 		auto iHeight = 0;
 		if (0 != m_paneID) iHeight += m_iSmallHeightMargin; // Top margin
 
-		iHeight += GetLabelHeight();
+		iHeight += GetHeaderHeight();
 
 		if (!m_bMultiline)
 		{
@@ -172,7 +172,7 @@ namespace viewpane
 		_In_ const int height)
 	{
 		auto curY = y;
-		const auto labelHeight = GetLabelHeight();
+		const auto labelHeight = GetHeaderHeight();
 		if (0 != m_paneID)
 		{
 			curY += m_iSmallHeightMargin;

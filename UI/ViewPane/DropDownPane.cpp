@@ -79,7 +79,7 @@ namespace viewpane
 
 		if (0 != m_paneID) iHeight += m_iSmallHeightMargin; // Top margin
 
-		iHeight += GetLabelHeight();
+		iHeight += GetHeaderHeight();
 
 		iHeight += m_iEditHeight; // Height of the dropdown
 
@@ -96,7 +96,7 @@ namespace viewpane
 		_In_ const int /*height*/)
 	{
 		auto curY = y;
-		const auto labelHeight = GetLabelHeight();
+		const auto labelHeight = GetHeaderHeight();
 		if (0 != m_paneID)
 		{
 			curY += m_iSmallHeightMargin;
