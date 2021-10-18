@@ -44,7 +44,7 @@ namespace viewpane
 			iHeight += labelHeight;
 		}
 
-		if (m_bCollapsible && !m_bCollapsed)
+		if (m_bCollapsible && !collapsed())
 		{
 			iHeight += m_iSmallHeightMargin;
 		}
@@ -71,7 +71,7 @@ namespace viewpane
 			curY += m_iSmallHeightMargin;
 		}
 
-		WC_B_S(m_Tree.ShowWindow(m_bCollapsed ? SW_HIDE : SW_SHOW));
+		WC_B_S(m_Tree.ShowWindow(collapsed() ? SW_HIDE : SW_SHOW));
 		// Layout our label
 		ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y));
 

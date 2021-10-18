@@ -102,7 +102,7 @@ namespace viewpane
 
 		iHeight += GetLabelHeight();
 
-		if (!m_bCollapsed)
+		if (!collapsed())
 		{
 			iHeight += m_iSmallHeightMargin;
 
@@ -115,15 +115,7 @@ namespace viewpane
 		return iHeight;
 	}
 
-	int ListPane::GetLines()
-	{
-		if (m_bCollapsed)
-		{
-			return 0;
-		}
-
-		return LINES_LIST;
-	}
+	int ListPane::GetLines() { return collapsed() ? 0 : LINES_LIST; }
 
 	ULONG ListPane::HandleChange(UINT nID)
 	{
@@ -175,7 +167,7 @@ namespace viewpane
 		ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y));
 		curY += labelHeight + m_iSmallHeightMargin;
 
-		const auto cmdShow = m_bCollapsed ? SW_HIDE : SW_SHOW;
+		const auto cmdShow = collapsed() ? SW_HIDE : SW_SHOW;
 		WC_B_S(m_List.ShowWindow(cmdShow));
 		auto listHeight = height - (curY - y);
 		if (!m_bReadOnly) listHeight -= m_iLargeHeightMargin + m_iButtonHeight;

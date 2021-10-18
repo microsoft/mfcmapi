@@ -151,7 +151,7 @@ namespace viewpane
 
 	int TextPane::GetLines()
 	{
-		if (m_bCollapsed)
+		if (collapsed())
 		{
 			return 0;
 		}
@@ -181,7 +181,7 @@ namespace viewpane
 		// Layout our label
 		ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y));
 
-		if (m_bCollapsed)
+		if (collapsed())
 		{
 			WC_B_S(m_EditBox.ShowWindow(SW_HIDE));
 

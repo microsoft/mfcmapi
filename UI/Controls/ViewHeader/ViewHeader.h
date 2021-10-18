@@ -30,6 +30,7 @@ namespace controls
 
 			return 0;
 		}
+		bool collapsed() const noexcept { return m_bCollapsed; }
 
 	protected:
 		bool m_bInitialized{};

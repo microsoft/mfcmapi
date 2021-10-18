@@ -66,7 +66,7 @@ namespace viewpane
 
 		iHeight += GetLabelHeight();
 
-		if (m_bDoDropDown && !m_bCollapsed)
+		if (m_bDoDropDown && !collapsed())
 		{
 			iHeight += m_iEditHeight; // Height of the dropdown
 			iHeight += m_Splitter->GetFixedHeight();
@@ -77,7 +77,7 @@ namespace viewpane
 
 	int SmartViewPane::GetLines()
 	{
-		if (!m_bCollapsed && m_bHasData)
+		if (!collapsed() && m_bHasData)
 		{
 			return m_Splitter->GetLines();
 		}
@@ -107,7 +107,7 @@ namespace viewpane
 
 		curY += labelHeight + m_iSmallHeightMargin;
 
-		if (!m_bCollapsed)
+		if (!collapsed())
 		{
 			if (m_bDoDropDown)
 			{
@@ -120,8 +120,8 @@ namespace viewpane
 			m_Splitter->DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y));
 		}
 
-		WC_B_S(m_DropDown.ShowWindow(m_bCollapsed ? SW_HIDE : SW_SHOW));
-		m_Splitter->ShowWindow(m_bCollapsed || !m_bHasData ? SW_HIDE : SW_SHOW);
+		WC_B_S(m_DropDown.ShowWindow(collapsed() ? SW_HIDE : SW_SHOW));
+		m_Splitter->ShowWindow(collapsed() || !m_bHasData ? SW_HIDE : SW_SHOW);
 	}
 
 	void SmartViewPane::SetMargins(
@@ -184,8 +184,7 @@ namespace viewpane
 		auto source = 0;
 		for (auto& bin : m_bins)
 		{
-			auto svp =
-				smartview::InterpretBinary({static_cast<ULONG>(bin.size()), bin.data()}, iStructType, nullptr);
+			auto svp = smartview::InterpretBinary({static_cast<ULONG>(bin.size()), bin.data()}, iStructType, nullptr);
 			if (svp)
 			{
 				svp->setSource(source++);
@@ -218,8 +217,7 @@ namespace viewpane
 		{
 			// This loans pointers to our blocks to the visual tree without refcounting.
 			// Care must be taken to ensure we never release treeData without first clearing the UI.
-			root =
-				m_TreePane->m_Tree.AddChildNode(data->getText(), parent, data.get(), nullptr);
+			root = m_TreePane->m_Tree.AddChildNode(data->getText(), parent, data.get(), nullptr);
 		}
 
 		for (const auto& item : data->getChildren())

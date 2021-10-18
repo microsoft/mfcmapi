@@ -50,7 +50,7 @@ namespace viewpane
 
 		iHeight += GetLabelHeight();
 
-		if (m_bCollapsed)
+		if (collapsed())
 		{
 			iHeight += m_iSmallHeightMargin; // Bottom margin
 		}
@@ -78,7 +78,7 @@ namespace viewpane
 
 	int SplitterPane::GetLines()
 	{
-		if (!m_bCollapsed)
+		if (!collapsed())
 		{
 			if (m_bVertical)
 			{
@@ -184,7 +184,7 @@ namespace viewpane
 		// Layout our label
 		ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y));
 
-		if (m_bCollapsed)
+		if (collapsed())
 		{
 			WC_B_S(m_lpSplitter->ShowWindow(SW_HIDE));
 		}

@@ -64,7 +64,7 @@ namespace viewpane
 
 		iHeight += GetLabelHeight();
 
-		if (!m_bCollapsed)
+		if (!collapsed())
 		{
 			// Small gap before the edit box
 			iHeight += m_iSmallHeightMargin;
@@ -75,7 +75,7 @@ namespace viewpane
 		return iHeight;
 	}
 
-	int CountedTextPane::GetLines() { return m_bCollapsed ? 0 : LINES_MULTILINEEDIT; }
+	int CountedTextPane::GetLines() { return collapsed() ? 0 : LINES_MULTILINEEDIT; }
 
 	void CountedTextPane::DeferWindowPos(
 		_In_ HDWP hWinPosInfo,
@@ -94,7 +94,7 @@ namespace viewpane
 		// Layout our label
 		ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y));
 
-		if (m_bCollapsed)
+		if (collapsed())
 		{
 			WC_B_S(m_Count.ShowWindow(SW_HIDE));
 			WC_B_S(m_EditBox.ShowWindow(SW_HIDE));

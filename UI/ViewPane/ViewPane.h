@@ -21,7 +21,6 @@ namespace viewpane
 		virtual int GetFixedHeight() = 0;
 		virtual int GetLines() { return 0; }
 		virtual ULONG HandleChange(UINT nID);
-		void OnToggleCollapse();
 
 		virtual void SetMargins(
 			int iMargin,
@@ -35,6 +34,7 @@ namespace viewpane
 		virtual void UpdateButtons();
 		int GetID() const noexcept { return m_paneID; }
 		UINT GetNID() const noexcept { return m_nID; }
+		bool collapsed() const noexcept { return m_Header.collapsed(); }
 
 	protected:
 		// Returns the height of our header
@@ -46,7 +46,6 @@ namespace viewpane
 		UINT m_nID{}; // NID for matching change notifications back to controls. Also used for Create calls.
 		HWND m_hWndParent{};
 		bool m_bCollapsible{};
-		bool m_bCollapsed{};
 
 		// Margins
 		int m_iMargin{};

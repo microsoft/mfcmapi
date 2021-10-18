@@ -31,19 +31,10 @@ namespace viewpane
 	{
 		if (m_Header.HandleChange(nID))
 		{
-			OnToggleCollapse();
 			return m_paneID;
 		}
 
 		return static_cast<ULONG>(-1);
-	}
-
-	void ViewPane::OnToggleCollapse()
-	{
-		m_bCollapsed = !m_bCollapsed;
-
-		// Trigger a redraw
-		::PostMessage(m_hWndParent, WM_COMMAND, IDD_RECALCLAYOUT, NULL);
 	}
 
 	void ViewPane::SetMargins(
