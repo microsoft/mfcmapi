@@ -10,6 +10,7 @@ namespace controls
 
 		void SetLabel(const UINT uidLabel) { m_szLabel = strings::loadstring(uidLabel); }
 		void SetLabel(const std::wstring szLabel) { m_szLabel = szLabel; }
+		_NODISCARD constexpr bool empty() const noexcept { return m_szLabel.empty(); }
 
 		void Initialize(_In_ CWnd* pParent, _In_opt_ HDC hdc, _In_ bool bCollapsible, _In_ UINT nidParent);
 		void DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width);
@@ -33,7 +34,6 @@ namespace controls
 	protected:
 		bool m_bInitialized{};
 		std::wstring m_szLabel; // Text to push into UI in Initialize
-		int m_iLabelWidth{}; // The width of the label
 		UINT m_nIDCollapse{}; // NID for collapse button.
 		HWND m_hWndParent{};
 		bool m_bCollapsible{};
@@ -41,6 +41,7 @@ namespace controls
 		CButton m_CollapseButton;
 
 		// Margins
+		int m_iLabelWidth{}; // The width of the label
 		int m_iLabelHeight{}; // Height of the label
 		int m_iButtonHeight{}; // Height of buttons below the control
 	};
