@@ -12,7 +12,7 @@ namespace controls
 		void SetLabel(const std::wstring szLabel) { m_szLabel = szLabel; }
 		_NODISCARD bool empty() const noexcept { return m_szLabel.empty(); }
 
-		void Initialize(_In_ CWnd* pParent, _In_opt_ HDC hdc, _In_ bool bCollapsible, _In_ UINT nidParent);
+		void Initialize(_In_ CWnd* pParent, _In_opt_ HDC hdc, _In_ bool bCollapsible, _In_ UINT nid);
 		void DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width);
 
 		int GetMinWidth() { return (m_bCollapsible ? m_iButtonHeight : 0) + m_iLabelWidth; }

@@ -32,16 +32,15 @@ namespace controls
 		::DeferWindowPos(hWinPosInfo, GetSafeHwnd(), nullptr, curX, y, m_iLabelWidth, height, SWP_NOZORDER);
 	}
 
-	void PaneHeader::Initialize(_In_ CWnd* pParent, _In_opt_ HDC hdc, _In_ bool bCollapsible, _In_ UINT nidParent)
+	void PaneHeader::Initialize(_In_ CWnd* pParent, _In_opt_ HDC hdc, _In_ bool bCollapsible, _In_ UINT nid)
 	{
 		m_bCollapsible = bCollapsible;
 		if (pParent) m_hWndParent = pParent->m_hWnd;
 		// Assign a nID to the collapse button that is IDD_COLLAPSE more than the control's nID
-		m_nIDCollapse = nidParent + IDD_COLLAPSE;
+		m_nIDCollapse = nid + IDD_COLLAPSE;
+		// TODO: We don't save our header's nID here, but we could if we wanted
 
-		// TODO: validate this nid
-		EC_B_S(
-			Create(WS_CHILD | WS_CLIPSIBLINGS | ES_READONLY | WS_VISIBLE, CRect(0, 0, 0, 0), pParent, nidParent + 1));
+		EC_B_S(Create(WS_CHILD | WS_CLIPSIBLINGS | ES_READONLY | WS_VISIBLE, CRect(0, 0, 0, 0), pParent, nid));
 		::SetWindowTextW(m_hWnd, m_szLabel.c_str());
 		ui::SubclassLabel(m_hWnd);
 

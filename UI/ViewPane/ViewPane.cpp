@@ -21,10 +21,10 @@ namespace viewpane
 	void ViewPane::Initialize(_In_ CWnd* pParent, _In_opt_ HDC hdc)
 	{
 		if (pParent) m_hWndParent = pParent->m_hWnd;
-		// We compute nID for our view, the label, and collapse button all from the pane's base ID.
-		const UINT iCurIDLabel = IDC_PROP_CONTROL_ID_BASE + 2 * m_paneID;
+		// We compute nID for our view and the header from the pane's base ID.
+		const UINT nidHeader = IDC_PROP_CONTROL_ID_BASE + 2 * m_paneID;
 		m_nID = IDC_PROP_CONTROL_ID_BASE + 2 * m_paneID + 1;
-		m_Header.Initialize(pParent, hdc, m_bCollapsible, m_nID);
+		m_Header.Initialize(pParent, hdc, m_bCollapsible, nidHeader);
 	}
 
 	ULONG ViewPane::HandleChange(UINT nID)
