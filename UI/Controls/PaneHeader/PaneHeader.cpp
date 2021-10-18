@@ -10,14 +10,14 @@ namespace controls
 	// Draws everything to GetFixedHeight()
 	void PaneHeader::DeferWindowPos(_In_ HDWP hWinPosInfo, const _In_ int x, const _In_ int y, const _In_ int width)
 	{
-		const auto labelHeight = GetFixedHeight();
+		const auto height = GetFixedHeight();
 		auto curX = x;
 		if (m_bCollapsible)
 		{
 			StyleButton(
 				m_CollapseButton.m_hWnd, m_bCollapsed ? ui::uiButtonStyle::UpArrow : ui::uiButtonStyle::DownArrow);
 			::DeferWindowPos(
-				hWinPosInfo, m_CollapseButton.GetSafeHwnd(), nullptr, curX, y, width, labelHeight, SWP_NOZORDER);
+				hWinPosInfo, m_CollapseButton.GetSafeHwnd(), nullptr, curX, y, width, height, SWP_NOZORDER);
 			curX += m_iButtonHeight;
 		}
 
@@ -29,7 +29,7 @@ namespace controls
 			curX,
 			m_iLabelWidth);
 
-		::DeferWindowPos(hWinPosInfo, GetSafeHwnd(), nullptr, curX, y, m_iLabelWidth, labelHeight, SWP_NOZORDER);
+		::DeferWindowPos(hWinPosInfo, GetSafeHwnd(), nullptr, curX, y, m_iLabelWidth, height, SWP_NOZORDER);
 	}
 
 	void PaneHeader::Initialize(_In_ CWnd* pParent, _In_opt_ HDC hdc, _In_ bool bCollapsible, _In_ UINT nidParent)
@@ -89,7 +89,7 @@ namespace controls
 
 	void PaneHeader::SetMargins(
 		int iLabelHeight, // Height of the label
-		int iButtonHeight) // Height of buttons below the control
+		int iButtonHeight) // Height of button
 	{
 		m_iLabelHeight = iLabelHeight;
 		m_iButtonHeight = iButtonHeight;

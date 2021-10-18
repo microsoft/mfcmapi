@@ -22,7 +22,7 @@ namespace controls
 		void SetMargins(
 			int iLabelHeight, // Height of the label
 			int iButtonHeight); // Height of buttons below the control
-		// Returns the height of our label, accounting for an expand/collapse button
+		// Returns the height of our control, accounting for an expand/collapse button
 		// Will return 0 if we have no label or button
 		int GetFixedHeight() const noexcept
 		{
@@ -44,6 +44,6 @@ namespace controls
 		// Margins
 		int m_iLabelWidth{}; // The width of the label
 		int m_iLabelHeight{}; // Height of the label
-		int m_iButtonHeight{}; // Height of buttons below the control
+		int m_iButtonHeight{}; // Height of button
 	};
 } // namespace controls
