@@ -1,6 +1,6 @@
 #pragma once
 #include <core/utility/strings.h>
-#include <UI/Controls/ViewHeader/ViewHeader.h>
+#include <UI/Controls/PaneHeader/PaneHeader.h>
 
 namespace viewpane
 {
@@ -42,7 +42,7 @@ namespace viewpane
 		int m_paneID{-1}; // ID of the view pane in the view - used for callbacks and layout
 		bool m_bInitialized{};
 		bool m_bReadOnly{true};
-		controls::ViewHeader m_Header;
+		controls::PaneHeader m_Header;
 		UINT m_nID{}; // NID for matching change notifications back to controls. Also used for Create calls.
 		bool m_bCollapsible{};
 

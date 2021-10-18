@@ -3,14 +3,14 @@
 
 namespace controls
 {
-	class ViewHeader : public CEdit
+	class PaneHeader : public CEdit
 	{
 	public:
-		virtual ~ViewHeader() = default;
+		virtual ~PaneHeader() = default;
 
 		void SetLabel(const UINT uidLabel) { m_szLabel = strings::loadstring(uidLabel); }
 		void SetLabel(const std::wstring szLabel) { m_szLabel = szLabel; }
-		_NODISCARD constexpr bool empty() const noexcept { return m_szLabel.empty(); }
+		_NODISCARD bool empty() const noexcept { return m_szLabel.empty(); }
 
 		void Initialize(_In_ CWnd* pParent, _In_opt_ HDC hdc, _In_ bool bCollapsible, _In_ UINT nidParent);
 		void DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width);

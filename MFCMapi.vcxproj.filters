@@ -122,7 +122,7 @@
     <ClInclude Include="UI\Dialogs\propList\RegistryDialog.h">
       <Filter>Source Files\UI\Dialogs\propList</Filter>
     </ClInclude>
-    <ClInclude Include="UI\Controls\ViewHeader\ViewHeader.h" />
+    <ClInclude Include="UI\Controls\PaneHeader\PaneHeader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StdAfx.h">
@@ -199,7 +199,7 @@
     <ClCompile Include="UI\Dialogs\propList\RegistryDialog.cpp">
       <Filter>Source Files\UI\Dialogs\propList</Filter>
     </ClCompile>
-    <ClCompile Include="UI\Controls\ViewHeader\ViewHeader.cpp">
+    <ClCompile Include="UI\Controls\PaneHeader\PaneHeader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

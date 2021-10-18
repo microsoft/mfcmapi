@@ -1,5 +1,5 @@
 #include <StdAfx.h>
-#include <UI/Controls/ViewHeader/ViewHeader.h>
+#include <UI/Controls/PaneHeader/PaneHeader.h>
 #include <UI/UIFunctions.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
@@ -8,7 +8,7 @@ namespace controls
 {
 	// Draw our collapse button and label, if needed.
 	// Draws everything to GetFixedHeight()
-	void ViewHeader::DeferWindowPos(_In_ HDWP hWinPosInfo, const _In_ int x, const _In_ int y, const _In_ int width)
+	void PaneHeader::DeferWindowPos(_In_ HDWP hWinPosInfo, const _In_ int x, const _In_ int y, const _In_ int width)
 	{
 		const auto labelHeight = GetFixedHeight();
 		auto curX = x;
@@ -23,7 +23,7 @@ namespace controls
 
 		output::DebugPrint(
 			output::dbgLevel::Draw,
-			L"ViewHeader::DeferWindowPos x:%d width:%d labelpos:%d labelwidth:%d \n",
+			L"PaneHeader::DeferWindowPos x:%d width:%d labelpos:%d labelwidth:%d \n",
 			x,
 			width,
 			curX,
@@ -32,7 +32,7 @@ namespace controls
 		::DeferWindowPos(hWinPosInfo, GetSafeHwnd(), nullptr, curX, y, m_iLabelWidth, labelHeight, SWP_NOZORDER);
 	}
 
-	void ViewHeader::Initialize(_In_ CWnd* pParent, _In_opt_ HDC hdc, _In_ bool bCollapsible, _In_ UINT nidParent)
+	void PaneHeader::Initialize(_In_ CWnd* pParent, _In_opt_ HDC hdc, _In_ bool bCollapsible, _In_ UINT nidParent)
 	{
 		m_bCollapsible = bCollapsible;
 		if (pParent) m_hWndParent = pParent->m_hWnd;
@@ -61,12 +61,12 @@ namespace controls
 		m_iLabelWidth = sizeText.cx;
 		output::DebugPrint(
 			output::dbgLevel::Draw,
-			L"ViewHeader::Initialize m_iLabelWidth:%d \"%ws\"\n",
+			L"PaneHeader::Initialize m_iLabelWidth:%d \"%ws\"\n",
 			m_iLabelWidth,
 			m_szLabel.c_str());
 	}
 
-	bool ViewHeader::HandleChange(UINT nID)
+	bool PaneHeader::HandleChange(UINT nID)
 	{
 		// Collapse buttons have a nID IDD_COLLAPSE higher than nID of the pane they toggle.
 		// So if we get asked about one that matches, we can assume it's time to toggle our collapse.
@@ -79,7 +79,7 @@ namespace controls
 		return false;
 	}
 
-	void ViewHeader::OnToggleCollapse()
+	void PaneHeader::OnToggleCollapse()
 	{
 		m_bCollapsed = !m_bCollapsed;
 
@@ -87,7 +87,7 @@ namespace controls
 		::PostMessage(m_hWndParent, WM_COMMAND, IDD_RECALCLAYOUT, NULL);
 	}
 
-	void ViewHeader::SetMargins(
+	void PaneHeader::SetMargins(
 		int iLabelHeight, // Height of the label
 		int iButtonHeight) // Height of buttons below the control
 	{
