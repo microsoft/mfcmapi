@@ -15,11 +15,12 @@ namespace controls
 		void Initialize(_In_ CWnd* pParent, _In_opt_ HDC hdc, _In_ bool bCollapsible, _In_ UINT nid);
 		void DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width);
 
-		int GetMinWidth() { return (m_bCollapsible ? m_iButtonHeight : 0) + m_iLabelWidth; }
+		int GetMinWidth();
 		bool HandleChange(UINT nID);
 		void OnToggleCollapse();
 
 		void SetMargins(
+			int iSideMargin,
 			int iLabelHeight, // Height of the label
 			int iButtonHeight); // Height of buttons below the control
 		// Returns the height of our control, accounting for an expand/collapse button
@@ -32,6 +33,8 @@ namespace controls
 		}
 		bool collapsed() const noexcept { return m_bCollapsed; }
 
+		void SetCount(const std::wstring szCount);
+
 	protected:
 		bool m_bInitialized{};
 		std::wstring m_szLabel; // Text to push into UI in Initialize
@@ -42,8 +45,12 @@ namespace controls
 		CButton m_CollapseButton;
 
 		// Margins
+		int m_iSideMargin{};
 		int m_iLabelWidth{}; // The width of the label
 		int m_iLabelHeight{}; // Height of the label
 		int m_iButtonHeight{}; // Height of button
+
+		CEdit m_Count; // The display of the count
+		int m_iCountLabelWidth{0}; // The width of the string
 	};
 } // namespace controls

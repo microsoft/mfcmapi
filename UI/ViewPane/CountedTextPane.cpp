@@ -24,37 +24,8 @@ namespace viewpane
 
 	void CountedTextPane::Initialize(_In_ CWnd* pParent, _In_ HDC hdc)
 	{
-		EC_B_S(m_Count.Create(
-			WS_CHILD | WS_CLIPSIBLINGS | ES_READONLY | WS_VISIBLE, CRect(0, 0, 0, 0), pParent, IDD_COUNTLABEL));
-		::SetWindowTextW(m_Count.m_hWnd, m_szCountLabel.c_str());
-		ui::SubclassLabel(m_Count.m_hWnd);
-		StyleLabel(m_Count.m_hWnd, ui::uiLabelStyle::PaneHeaderText);
-
 		TextPane::Initialize(pParent, hdc);
-	}
-
-	int CountedTextPane::GetMinWidth()
-	{
-		const auto iLabelWidth = TextPane::GetMinWidth();
-
-		auto szCount = strings::format(
-			L"%ws: 0x%08X = %u",
-			m_szCountLabel.c_str(),
-			static_cast<int>(m_iCount),
-			static_cast<UINT>(m_iCount)); // STRING_OK
-		::SetWindowTextW(m_Count.m_hWnd, szCount.c_str());
-
-		const auto hdc = GetDC(m_Count.GetSafeHwnd());
-		const auto hfontOld = SelectObject(hdc, ui::GetSegoeFont());
-		const auto sizeText = ui::GetTextExtentPoint32(hdc, szCount);
-		static_cast<void>(SelectObject(hdc, hfontOld));
-		ReleaseDC(m_Count.GetSafeHwnd(), hdc);
-		m_iCountLabelWidth = sizeText.cx + m_iSideMargin;
-
-		// Button, margin, label, margin, count label
-		const auto cx = m_iButtonHeight + m_iSideMargin + iLabelWidth + m_iSideMargin + m_iCountLabelWidth;
-
-		return cx;
+		SetCount(m_iCount);
 	}
 
 	int CountedTextPane::GetFixedHeight()
@@ -96,26 +67,13 @@ namespace viewpane
 
 		if (collapsed())
 		{
-			WC_B_S(m_Count.ShowWindow(SW_HIDE));
 			WC_B_S(m_EditBox.ShowWindow(SW_HIDE));
 
 			EC_B_S(::DeferWindowPos(hWinPosInfo, m_EditBox.GetSafeHwnd(), nullptr, x, curY, 0, 0, SWP_NOZORDER));
 		}
 		else
 		{
-			WC_B_S(m_Count.ShowWindow(SW_SHOW));
 			WC_B_S(m_EditBox.ShowWindow(SW_SHOW));
-
-			// Drop the count on top of the label we drew above
-			EC_B_S(::DeferWindowPos(
-				hWinPosInfo,
-				m_Count.GetSafeHwnd(),
-				nullptr,
-				x + width - m_iCountLabelWidth,
-				curY,
-				m_iCountLabelWidth,
-				labelHeight,
-				SWP_NOZORDER));
 
 			curY += labelHeight + m_iSmallHeightMargin;
 
@@ -131,5 +89,13 @@ namespace viewpane
 		}
 	}
 
-	void CountedTextPane::SetCount(size_t iCount) { m_iCount = iCount; }
+	void CountedTextPane::SetCount(size_t iCount)
+	{
+		m_iCount = iCount;
+		m_Header.SetCount(strings::format(
+			L"%ws: 0x%08X = %u",
+			m_szCountLabel.c_str(),
+			static_cast<int>(m_iCount),
+			static_cast<UINT>(m_iCount))); // STRING_OK
+	}
 } // namespace viewpane

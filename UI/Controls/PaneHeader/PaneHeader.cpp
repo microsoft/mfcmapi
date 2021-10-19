@@ -30,6 +30,26 @@ namespace controls
 			m_iLabelWidth);
 
 		::DeferWindowPos(hWinPosInfo, GetSafeHwnd(), nullptr, curX, y, m_iLabelWidth, height, SWP_NOZORDER);
+
+		if (m_bCollapsed)
+		{
+			WC_B_S(m_Count.ShowWindow(SW_HIDE));
+		}
+		else
+		{
+			WC_B_S(m_Count.ShowWindow(SW_SHOW));
+
+			// Drop the count on top of the label we drew above
+			EC_B_S(::DeferWindowPos(
+				hWinPosInfo,
+				m_Count.GetSafeHwnd(),
+				nullptr,
+				x + width - m_iCountLabelWidth,
+				y,
+				m_iCountLabelWidth,
+				height,
+				SWP_NOZORDER));
+		}
 	}
 
 	void PaneHeader::Initialize(_In_ CWnd* pParent, _In_opt_ HDC hdc, _In_ bool bCollapsible, _In_ UINT nid)
@@ -39,6 +59,11 @@ namespace controls
 		// Assign a nID to the collapse button that is IDD_COLLAPSE more than the control's nID
 		m_nIDCollapse = nid + IDD_COLLAPSE;
 		// TODO: We don't save our header's nID here, but we could if we wanted
+
+		EC_B_S(m_Count.Create(
+			WS_CHILD | WS_CLIPSIBLINGS | ES_READONLY | WS_VISIBLE, CRect(0, 0, 0, 0), pParent, IDD_COUNTLABEL));
+		ui::SubclassLabel(m_Count.m_hWnd);
+		StyleLabel(m_Count.m_hWnd, ui::uiLabelStyle::PaneHeaderText);
 
 		EC_B_S(Create(WS_CHILD | WS_CLIPSIBLINGS | ES_READONLY | WS_VISIBLE, CRect(0, 0, 0, 0), pParent, nid));
 		::SetWindowTextW(m_hWnd, m_szLabel.c_str());
@@ -65,6 +90,29 @@ namespace controls
 			m_szLabel.c_str());
 	}
 
+	void PaneHeader::SetCount(const std::wstring szCount)
+	{
+		::SetWindowTextW(m_Count.m_hWnd, szCount.c_str());
+
+		const auto hdc = ::GetDC(m_Count.GetSafeHwnd());
+		const auto hfontOld = SelectObject(hdc, ui::GetSegoeFont());
+		const auto sizeText = ui::GetTextExtentPoint32(hdc, szCount);
+		static_cast<void>(SelectObject(hdc, hfontOld));
+		::ReleaseDC(m_Count.GetSafeHwnd(), hdc);
+		m_iCountLabelWidth = sizeText.cx + m_iSideMargin;
+	}
+
+	int PaneHeader::GetMinWidth()
+	{
+		const auto iLabelWidth = (m_bCollapsible ? m_iButtonHeight : 0) + m_iLabelWidth;
+
+		// Button, margin, label, margin, count label
+		// TODO: Can probably tighten this up
+		const auto cx = m_iButtonHeight + m_iSideMargin + iLabelWidth + m_iSideMargin + m_iCountLabelWidth;
+
+		return cx;
+	}
+
 	bool PaneHeader::HandleChange(UINT nID)
 	{
 		// Collapse buttons have a nID IDD_COLLAPSE higher than nID of the pane they toggle.
@@ -87,9 +135,11 @@ namespace controls
 	}
 
 	void PaneHeader::SetMargins(
+		int iSideMargin,
 		int iLabelHeight, // Height of the label
 		int iButtonHeight) // Height of button
 	{
+		m_iSideMargin = iSideMargin;
 		m_iLabelHeight = iLabelHeight;
 		m_iButtonHeight = iButtonHeight;
 	}
