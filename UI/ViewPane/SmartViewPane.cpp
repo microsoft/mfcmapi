@@ -11,9 +11,11 @@
 
 namespace viewpane
 {
-	enum __SmartViewFields
+	enum __SmartViewPanes
 	{
-		SV_TREE,
+		// Start the SmartViewPane sub panes at 50
+		// This means we can only have one SmartViewPane per editor
+		SV_TREE = 50,
 		SV_TEXT
 	};
 
@@ -83,6 +85,14 @@ namespace viewpane
 		}
 
 		return 0;
+	}
+
+	ULONG SmartViewPane::HandleChange(const UINT nID)
+	{
+		auto paneID = m_Splitter->HandleChange(nID);
+		if (paneID != static_cast<ULONG>(-1)) return paneID;
+
+		return ViewPane::HandleChange(nID);
 	}
 
 	void SmartViewPane::DeferWindowPos(

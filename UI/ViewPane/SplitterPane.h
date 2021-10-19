@@ -17,6 +17,7 @@ namespace viewpane
 		void DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height) override;
 		int GetFixedHeight() override;
 		int GetLines() override;
+		ULONG HandleChange(UINT nID) override;
 		void SetMargins(
 			int iMargin,
 			int iSideMargin,
@@ -33,7 +34,6 @@ namespace viewpane
 	private:
 		void CommitUIValues() override {}
 		int GetMinWidth() override;
-		ULONG HandleChange(UINT nID) override;
 
 		std::shared_ptr<controls::CFakeSplitter> m_lpSplitter{};
 		std::shared_ptr<ViewPane> m_PaneOne{};

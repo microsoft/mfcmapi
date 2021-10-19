@@ -44,11 +44,6 @@ namespace viewpane
 			iHeight += labelHeight;
 		}
 
-		if (m_bCollapsible && !collapsed())
-		{
-			iHeight += m_iSmallHeightMargin;
-		}
-
 		iHeight += m_iSmallHeightMargin;
 
 		return iHeight;
