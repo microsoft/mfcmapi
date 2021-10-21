@@ -14,9 +14,6 @@ namespace controls
 		auto curX = x;
 		if (m_bCollapsible)
 		{
-			// TODO: move this style elsewhere
-			StyleButton(
-				m_CollapseButton.m_hWnd, m_bCollapsed ? ui::uiButtonStyle::UpArrow : ui::uiButtonStyle::DownArrow);
 			::DeferWindowPos(
 				hWinPosInfo, m_CollapseButton.GetSafeHwnd(), nullptr, curX, y, width, height, SWP_NOZORDER);
 			curX += m_iButtonHeight;
@@ -80,6 +77,8 @@ namespace controls
 				CRect(0, 0, 0, 0),
 				pParent,
 				m_nIDCollapse));
+			StyleButton(
+				m_CollapseButton.m_hWnd, m_bCollapsed ? ui::uiButtonStyle::UpArrow : ui::uiButtonStyle::DownArrow);
 		}
 
 		const auto sizeText = ui::GetTextExtentPoint32(hdc, m_szLabel);
@@ -131,6 +130,7 @@ namespace controls
 	{
 		m_bCollapsed = !m_bCollapsed;
 
+		StyleButton(m_CollapseButton.m_hWnd, m_bCollapsed ? ui::uiButtonStyle::UpArrow : ui::uiButtonStyle::DownArrow);
 		// Trigger a redraw
 		::PostMessage(m_hWndParent, WM_COMMAND, IDD_RECALCLAYOUT, NULL);
 	}
