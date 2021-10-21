@@ -8,21 +8,23 @@ namespace controls
 	public:
 		virtual ~PaneHeader() = default;
 
-		void SetLabel(const UINT uidLabel) { m_szLabel = strings::loadstring(uidLabel); }
-		void SetLabel(const std::wstring szLabel) { m_szLabel = szLabel; }
-		_NODISCARD bool empty() const noexcept { return m_szLabel.empty(); }
-
 		void Initialize(_In_ CWnd* pParent, _In_opt_ HDC hdc, _In_ bool bCollapsible, _In_ UINT nid);
 		void DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width);
-
 		int GetMinWidth();
+
+		void SetCount(const std::wstring szCount);
 		bool HandleChange(UINT nID);
 		void OnToggleCollapse();
 
+		_NODISCARD bool empty() const noexcept { return m_szLabel.empty(); }
 		void SetMargins(
 			int iSideMargin,
 			int iLabelHeight, // Height of the label
 			int iButtonHeight); // Height of buttons below the control
+
+		void SetLabel(const UINT uidLabel) { m_szLabel = strings::loadstring(uidLabel); }
+		void SetLabel(const std::wstring szLabel) { m_szLabel = szLabel; }
+
 		// Returns the height of our control, accounting for an expand/collapse button
 		// Will return 0 if we have no label or button
 		int GetFixedHeight() const noexcept
@@ -32,8 +34,6 @@ namespace controls
 			return 0;
 		}
 		bool collapsed() const noexcept { return m_bCollapsed; }
-
-		void SetCount(const std::wstring szCount);
 
 	protected:
 		bool m_bInitialized{};

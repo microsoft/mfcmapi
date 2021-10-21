@@ -6,44 +6,6 @@
 
 namespace controls
 {
-	// Draw our collapse button and label, if needed.
-	// Draws everything to GetFixedHeight()
-	void PaneHeader::DeferWindowPos(_In_ HDWP hWinPosInfo, const _In_ int x, const _In_ int y, const _In_ int width)
-	{
-		const auto height = GetFixedHeight();
-		auto curX = x;
-		if (m_bCollapsible)
-		{
-			::DeferWindowPos(
-				hWinPosInfo, m_CollapseButton.GetSafeHwnd(), nullptr, curX, y, width, height, SWP_NOZORDER);
-			curX += m_iButtonHeight;
-		}
-
-		output::DebugPrint(
-			output::dbgLevel::Draw,
-			L"PaneHeader::DeferWindowPos x:%d width:%d labelpos:%d labelwidth:%d \n",
-			x,
-			width,
-			curX,
-			m_iLabelWidth);
-
-		::DeferWindowPos(hWinPosInfo, GetSafeHwnd(), nullptr, curX, y, m_iLabelWidth, height, SWP_NOZORDER);
-
-		if (!m_bCollapsed)
-		{
-			// Drop the count on top of the label we drew above
-			EC_B_S(::DeferWindowPos(
-				hWinPosInfo,
-				m_Count.GetSafeHwnd(),
-				nullptr,
-				x + width - m_iCountLabelWidth,
-				y,
-				m_iCountLabelWidth,
-				height,
-				SWP_NOZORDER));
-		}
-	}
-
 	void PaneHeader::Initialize(_In_ CWnd* pParent, _In_opt_ HDC hdc, _In_ bool bCollapsible, _In_ UINT nid)
 	{
 		m_bCollapsible = bCollapsible;
@@ -84,16 +46,42 @@ namespace controls
 			m_szLabel.c_str());
 	}
 
-	void PaneHeader::SetCount(const std::wstring szCount)
+	// Draw our collapse button and label, if needed.
+	// Draws everything to GetFixedHeight()
+	void PaneHeader::DeferWindowPos(_In_ HDWP hWinPosInfo, const _In_ int x, const _In_ int y, const _In_ int width)
 	{
-		::SetWindowTextW(m_Count.m_hWnd, szCount.c_str());
+		const auto height = GetFixedHeight();
+		auto curX = x;
+		if (m_bCollapsible)
+		{
+			::DeferWindowPos(
+				hWinPosInfo, m_CollapseButton.GetSafeHwnd(), nullptr, curX, y, width, height, SWP_NOZORDER);
+			curX += m_iButtonHeight;
+		}
 
-		const auto hdc = ::GetDC(m_Count.GetSafeHwnd());
-		const auto hfontOld = SelectObject(hdc, ui::GetSegoeFont());
-		const auto sizeText = ui::GetTextExtentPoint32(hdc, szCount);
-		static_cast<void>(SelectObject(hdc, hfontOld));
-		::ReleaseDC(m_Count.GetSafeHwnd(), hdc);
-		m_iCountLabelWidth = sizeText.cx + m_iSideMargin;
+		output::DebugPrint(
+			output::dbgLevel::Draw,
+			L"PaneHeader::DeferWindowPos x:%d width:%d labelpos:%d labelwidth:%d \n",
+			x,
+			width,
+			curX,
+			m_iLabelWidth);
+
+		::DeferWindowPos(hWinPosInfo, GetSafeHwnd(), nullptr, curX, y, m_iLabelWidth, height, SWP_NOZORDER);
+
+		if (!m_bCollapsed)
+		{
+			// Drop the count on top of the label we drew above
+			EC_B_S(::DeferWindowPos(
+				hWinPosInfo,
+				m_Count.GetSafeHwnd(),
+				nullptr,
+				x + width - m_iCountLabelWidth,
+				y,
+				m_iCountLabelWidth,
+				height,
+				SWP_NOZORDER));
+		}
 	}
 
 	int PaneHeader::GetMinWidth()
@@ -105,6 +93,18 @@ namespace controls
 		const auto cx = m_iButtonHeight + m_iSideMargin + iLabelWidth + m_iSideMargin + m_iCountLabelWidth;
 
 		return cx;
+	}
+
+	void PaneHeader::SetCount(const std::wstring szCount)
+	{
+		::SetWindowTextW(m_Count.m_hWnd, szCount.c_str());
+
+		const auto hdc = ::GetDC(m_Count.GetSafeHwnd());
+		const auto hfontOld = SelectObject(hdc, ui::GetSegoeFont());
+		const auto sizeText = ui::GetTextExtentPoint32(hdc, szCount);
+		static_cast<void>(SelectObject(hdc, hfontOld));
+		::ReleaseDC(m_Count.GetSafeHwnd(), hdc);
+		m_iCountLabelWidth = sizeText.cx + m_iSideMargin;
 	}
 
 	bool PaneHeader::HandleChange(UINT nID)
