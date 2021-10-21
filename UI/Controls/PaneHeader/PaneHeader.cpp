@@ -29,14 +29,8 @@ namespace controls
 
 		::DeferWindowPos(hWinPosInfo, GetSafeHwnd(), nullptr, curX, y, m_iLabelWidth, height, SWP_NOZORDER);
 
-		if (m_bCollapsed)
+		if (!m_bCollapsed)
 		{
-			WC_B_S(m_Count.ShowWindow(SW_HIDE));
-		}
-		else
-		{
-			WC_B_S(m_Count.ShowWindow(SW_SHOW));
-
 			// Drop the count on top of the label we drew above
 			EC_B_S(::DeferWindowPos(
 				hWinPosInfo,
@@ -131,6 +125,8 @@ namespace controls
 		m_bCollapsed = !m_bCollapsed;
 
 		StyleButton(m_CollapseButton.m_hWnd, m_bCollapsed ? ui::uiButtonStyle::UpArrow : ui::uiButtonStyle::DownArrow);
+		WC_B_S(m_Count.ShowWindow(m_bCollapsed ? SW_HIDE : SW_SHOW));
+
 		// Trigger a redraw
 		::PostMessage(m_hWndParent, WM_COMMAND, IDD_RECALCLAYOUT, NULL);
 	}
