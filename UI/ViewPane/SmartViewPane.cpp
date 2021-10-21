@@ -254,7 +254,7 @@ namespace viewpane
 		const auto lpData = reinterpret_cast<smartview::block*>(tvi.lParam);
 		if (lpData)
 		{
-			if (registry::hexDialogDiag)
+			if (registry::uiDiag)
 			{
 				SetStringW(lpData->toString());
 			}
@@ -276,7 +276,7 @@ namespace viewpane
 		{
 		case CDDS_ITEMPOSTPAINT:
 		{
-			if (!registry::hexDialogDiag) return;
+			if (!registry::uiDiag) return;
 			const auto hItem = reinterpret_cast<HTREEITEM>(lvcd->nmcd.dwItemSpec);
 			if (hItem)
 			{

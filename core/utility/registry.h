@@ -194,7 +194,7 @@ namespace registry
 	extern boolRegKey loadAddIns;
 	extern boolRegKey forceOutlookMAPI;
 	extern boolRegKey forceSystemMAPI;
-	extern boolRegKey hexDialogDiag;
+	extern boolRegKey uiDiag;
 	extern boolRegKey displayAboutDialog;
 	extern wstringRegKey propertyColumnOrder;
 	extern dwordRegKey namedPropBatchSize;

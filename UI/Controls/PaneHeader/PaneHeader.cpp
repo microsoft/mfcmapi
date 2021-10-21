@@ -14,6 +14,7 @@ namespace controls
 		auto curX = x;
 		if (m_bCollapsible)
 		{
+			// TODO: move this style elsewhere
 			StyleButton(
 				m_CollapseButton.m_hWnd, m_bCollapsed ? ui::uiButtonStyle::UpArrow : ui::uiButtonStyle::DownArrow);
 			::DeferWindowPos(

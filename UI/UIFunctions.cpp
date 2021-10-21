@@ -9,6 +9,7 @@
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 #include <core/addin/mfcmapi.h>
+#include <core/utility/registry.h>
 
 namespace ui
 {
@@ -37,6 +38,8 @@ namespace ui
 		PaleBlue,
 		Pink,
 		Lavender,
+		Red,
+		Green,
 		ColorEnd
 	};
 
@@ -54,6 +57,8 @@ namespace ui
 		RGB(0xE6, 0xF2, 0xFA), // cPaleBlue
 		RGB(0xFF, 0xC0, 0xCB), // cPink
 		RGB(0xE6, 0xE6, 0xFA), // cLavender
+		RGB(0xFF, 0x00, 0x00), // cRed
+		RGB(0x00, 0xFF, 0x00), // cGreen
 	};
 
 	// Fixed mapping of UI elements to colors
@@ -83,6 +88,8 @@ namespace ui
 		myColor::Black, // cTextHighlight,
 		myColor::Pink, // cTestPink,
 		myColor::Lavender, // cTestLavender,
+		myColor::Red, // cTestRed,
+		myColor::Green, // cTestGreen,
 	};
 
 	// Mapping of UI elements to system colors
@@ -1402,7 +1409,8 @@ namespace ui
 
 	void DrawButton(_In_ HWND hWnd, _In_ HDC hDC, _In_ const RECT& rc, const UINT itemState)
 	{
-		FillRect(hDC, &rc, GetSysBrush(uiColor::Background));
+		const auto background = registry::uiDiag ? GetSysBrush(uiColor::TestPink) : GetSysBrush(uiColor::Background);
+		FillRect(hDC, &rc, background);
 
 		const auto bsStyle = static_cast<uiButtonStyle>(reinterpret_cast<intptr_t>(::GetProp(hWnd, BUTTON_STYLE)));
 		switch (bsStyle)
@@ -1438,6 +1446,11 @@ namespace ui
 		case uiButtonStyle::DownArrow:
 			DrawTriangle(hWnd, hDC, rc, true, false);
 			break;
+		}
+
+		if (registry::uiDiag)
+		{
+			FrameRect(hDC, &rc, GetSysBrush(uiColor::TestRed));
 		}
 	}
 
@@ -2091,7 +2104,7 @@ namespace ui
 			if (lsStyle == uiLabelStyle::PaneHeaderLabel || lsStyle == uiLabelStyle::PaneHeaderText)
 			{
 				uiText = uiColor::PaneHeaderText;
-				uiBackground = uiColor::PaneHeaderBackground;
+				uiBackground = registry::uiDiag ? uiColor::TestLavender : uiColor::PaneHeaderBackground;
 			}
 
 			const auto hdc = reinterpret_cast<HDC>(wParam);

@@ -29,6 +29,8 @@ namespace ui
 		TextHighlight,
 		TestPink,
 		TestLavender,
+		TestRed,
+		TestGreen,
 		UIEnd
 	};
 
