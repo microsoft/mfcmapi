@@ -85,11 +85,13 @@ namespace controls
 
 	int PaneHeader::GetMinWidth()
 	{
-		const auto iLabelWidth = (m_bCollapsible ? m_iButtonHeight : 0) + m_iLabelWidth;
-
-		// Button, margin, label, margin, count label
-		// TODO: Can probably tighten this up
-		const auto cx = m_iButtonHeight + m_iSideMargin + iLabelWidth + m_iSideMargin + m_iCountLabelWidth;
+		auto cx = m_iLabelWidth;
+		if (m_bCollapsible) cx += m_iButtonHeight;
+		if (m_iCountLabelWidth)
+		{
+			cx += m_iSideMargin;
+			cx += m_iCountLabelWidth;
+		}
 
 		return cx;
 	}
