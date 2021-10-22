@@ -37,7 +37,7 @@ namespace controls
 		bool collapsible() const noexcept { return m_bCollapsible; }
 		bool collapsed() const noexcept { return m_bCollapsed; }
 
-	protected:
+	private:
 		bool m_bInitialized{};
 		std::wstring m_szLabel; // Text to push into UI in Initialize
 		UINT m_nIDCollapse{}; // NID for collapse button.
