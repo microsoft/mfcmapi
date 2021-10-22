@@ -13,10 +13,10 @@ namespace controls
 		m_nIDCollapse = nid + IDD_COLLAPSE;
 		// TODO: We don't save our header's nID here, but we could if we wanted
 
-		EC_B_S(m_Count.Create(
+		EC_B_S(m_rightLabel.Create(
 			WS_CHILD | WS_CLIPSIBLINGS | ES_READONLY | WS_VISIBLE, CRect(0, 0, 0, 0), pParent, IDD_COUNTLABEL));
-		ui::SubclassLabel(m_Count.m_hWnd);
-		StyleLabel(m_Count.m_hWnd, ui::uiLabelStyle::PaneHeaderText);
+		ui::SubclassLabel(m_rightLabel.m_hWnd);
+		StyleLabel(m_rightLabel.m_hWnd, ui::uiLabelStyle::PaneHeaderText);
 
 		EC_B_S(Create(WS_CHILD | WS_CLIPSIBLINGS | ES_READONLY | WS_VISIBLE, CRect(0, 0, 0, 0), pParent, nid));
 		::SetWindowTextW(m_hWnd, m_szLabel.c_str());
@@ -73,11 +73,11 @@ namespace controls
 			// Drop the count on top of the label we drew above
 			EC_B_S(::DeferWindowPos(
 				hWinPosInfo,
-				m_Count.GetSafeHwnd(),
+				m_rightLabel.GetSafeHwnd(),
 				nullptr,
-				x + width - m_iCountLabelWidth,
+				x + width - m_rightLabelWidth,
 				y,
-				m_iCountLabelWidth,
+				m_rightLabelWidth,
 				height,
 				SWP_NOZORDER));
 		}
@@ -87,25 +87,25 @@ namespace controls
 	{
 		auto cx = m_iLabelWidth;
 		if (m_bCollapsible) cx += m_iButtonHeight;
-		if (m_iCountLabelWidth)
+		if (m_rightLabelWidth)
 		{
 			cx += m_iSideMargin;
-			cx += m_iCountLabelWidth;
+			cx += m_rightLabelWidth;
 		}
 
 		return cx;
 	}
 
-	void PaneHeader::SetCount(const std::wstring szCount)
+	void PaneHeader::SetRightLabel(const std::wstring szLabel)
 	{
-		::SetWindowTextW(m_Count.m_hWnd, szCount.c_str());
+		::SetWindowTextW(m_rightLabel.m_hWnd, szLabel.c_str());
 
-		const auto hdc = ::GetDC(m_Count.GetSafeHwnd());
+		const auto hdc = ::GetDC(m_rightLabel.GetSafeHwnd());
 		const auto hfontOld = SelectObject(hdc, ui::GetSegoeFont());
-		const auto sizeText = ui::GetTextExtentPoint32(hdc, szCount);
+		const auto sizeText = ui::GetTextExtentPoint32(hdc, szLabel);
 		static_cast<void>(SelectObject(hdc, hfontOld));
-		::ReleaseDC(m_Count.GetSafeHwnd(), hdc);
-		m_iCountLabelWidth = sizeText.cx + m_iSideMargin;
+		::ReleaseDC(m_rightLabel.GetSafeHwnd(), hdc);
+		m_rightLabelWidth = sizeText.cx + m_iSideMargin;
 	}
 
 	bool PaneHeader::HandleChange(UINT nID)
@@ -126,7 +126,7 @@ namespace controls
 		m_bCollapsed = !m_bCollapsed;
 
 		StyleButton(m_CollapseButton.m_hWnd, m_bCollapsed ? ui::uiButtonStyle::UpArrow : ui::uiButtonStyle::DownArrow);
-		WC_B_S(m_Count.ShowWindow(m_bCollapsed ? SW_HIDE : SW_SHOW));
+		WC_B_S(m_rightLabel.ShowWindow(m_bCollapsed ? SW_HIDE : SW_SHOW));
 
 		// Trigger a redraw
 		::PostMessage(m_hWndParent, WM_COMMAND, IDD_RECALCLAYOUT, NULL);

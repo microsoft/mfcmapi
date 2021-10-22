@@ -92,7 +92,7 @@ namespace viewpane
 	void CountedTextPane::SetCount(size_t iCount)
 	{
 		m_iCount = iCount;
-		m_Header.SetCount(strings::format(
+		m_Header.SetRightLabel(strings::format(
 			L"%ws: 0x%08X = %u",
 			m_szCountLabel.c_str(),
 			static_cast<int>(m_iCount),

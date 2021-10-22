@@ -12,7 +12,7 @@ namespace controls
 		void DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width);
 		int GetMinWidth();
 
-		void SetCount(const std::wstring szCount);
+		void SetRightLabel(const std::wstring szLabel);
 		bool HandleChange(UINT nID);
 		void OnToggleCollapse();
 
@@ -52,7 +52,7 @@ namespace controls
 		int m_iLabelHeight{}; // Height of the label
 		int m_iButtonHeight{}; // Height of button
 
-		CEdit m_Count; // The display of the count
-		int m_iCountLabelWidth{0}; // The width of the string
+		CEdit m_rightLabel; // Label on right of header
+		int m_rightLabelWidth{0}; // The width of the string
 	};
 } // namespace controls
