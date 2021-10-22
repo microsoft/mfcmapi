@@ -280,7 +280,7 @@ namespace dialog::editor
 	void CEditor::SetAddInLabel(ULONG id, const std::wstring& szLabel) const
 	{
 		auto pane = GetPane(id);
-		if (pane) pane->SetAddInLabel(szLabel);
+		if (pane) pane->SetLabel(szLabel);
 	}
 
 	LRESULT CALLBACK DrawScrollProc(

@@ -56,7 +56,5 @@ namespace viewpane
 		m_Header.SetMargins(iSideMargin, iLabelHeight, iButtonHeight);
 	}
 
-	void ViewPane::SetAddInLabel(const std::wstring& szLabel) { m_Header.SetLabel(szLabel); }
-
 	void ViewPane::UpdateButtons() {}
 } // namespace viewpane

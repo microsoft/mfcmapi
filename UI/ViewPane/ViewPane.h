@@ -10,6 +10,7 @@ namespace viewpane
 		virtual ~ViewPane() = default;
 
 		void SetLabel(const UINT uidLabel) { m_Header.SetLabel(uidLabel); }
+		void SetLabel(const std::wstring& szLabel) { m_Header.SetLabel(szLabel); }
 		void SetReadOnly(const bool bReadOnly) noexcept { m_bReadOnly = bReadOnly; }
 
 		virtual void Initialize(_In_ CWnd* pParent, _In_opt_ HDC hdc);
