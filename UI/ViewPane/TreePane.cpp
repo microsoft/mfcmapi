@@ -13,7 +13,7 @@ namespace viewpane
 			if (uidLabel)
 			{
 				pane->SetLabel(uidLabel);
-				pane->m_bCollapsible = true;
+				pane->makeCollapsible();
 			}
 
 			pane->SetReadOnly(bReadOnly);

@@ -20,7 +20,7 @@ namespace viewpane
 			pane->SetLabel(uidLabel);
 			if (uidLabel)
 			{
-				pane->m_bCollapsible = true;
+				pane->makeCollapsible();
 			}
 
 			pane->m_paneID = paneID;
@@ -57,7 +57,7 @@ namespace viewpane
 		else
 		{
 			// A small margin between our button and the splitter control, if we're collapsible and not collapsed
-			if (m_bCollapsible)
+			if (collapsible())
 			{
 				iHeight += m_iSmallHeightMargin;
 			}
@@ -196,7 +196,7 @@ namespace viewpane
 		}
 		else
 		{
-			if (m_bCollapsible)
+			if (collapsible())
 			{
 				curY += labelHeight + m_iSmallHeightMargin;
 			}

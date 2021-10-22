@@ -34,6 +34,8 @@ namespace viewpane
 		virtual void UpdateButtons();
 		int GetID() const noexcept { return m_paneID; }
 		UINT GetNID() const noexcept { return m_nID; }
+		void makeCollapsible() noexcept { m_Header.makeCollapsible(); }
+		bool collapsible() const noexcept { m_Header.collapsible(); }
 		bool collapsed() const noexcept { return m_Header.collapsed(); }
 
 	protected:
@@ -44,7 +46,6 @@ namespace viewpane
 		bool m_bReadOnly{true};
 		controls::PaneHeader m_Header;
 		UINT m_nID{}; // NID for matching change notifications back to controls. Also used for Create calls.
-		bool m_bCollapsible{};
 
 		// Margins
 		int m_iMargin{};

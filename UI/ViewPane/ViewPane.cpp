@@ -24,7 +24,7 @@ namespace viewpane
 		// We compute nID for our view and the header from the pane's base ID.
 		const UINT nidHeader = IDC_PROP_CONTROL_ID_BASE + 2 * m_paneID;
 		m_nID = IDC_PROP_CONTROL_ID_BASE + 2 * m_paneID + 1;
-		m_Header.Initialize(pParent, hdc, m_bCollapsible, nidHeader);
+		m_Header.Initialize(pParent, hdc, nidHeader);
 	}
 
 	ULONG ViewPane::HandleChange(UINT nID)

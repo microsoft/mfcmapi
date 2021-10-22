@@ -43,7 +43,7 @@ namespace viewpane
 			pane->Setup(bAllowSort, std::move(callback));
 			pane->SetLabel(uidLabel);
 			pane->SetReadOnly(bReadOnly);
-			pane->m_bCollapsible = true;
+			pane->makeCollapsible();
 			pane->m_paneID = paneID;
 		}
 

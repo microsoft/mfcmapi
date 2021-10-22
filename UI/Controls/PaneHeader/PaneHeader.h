@@ -8,7 +8,7 @@ namespace controls
 	public:
 		virtual ~PaneHeader() = default;
 
-		void Initialize(_In_ CWnd* pParent, _In_opt_ HDC hdc, _In_ bool bCollapsible, _In_ UINT nid);
+		void Initialize(_In_ CWnd* pParent, _In_opt_ HDC hdc, _In_ UINT nid);
 		void DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width);
 		int GetMinWidth();
 
@@ -33,6 +33,8 @@ namespace controls
 
 			return 0;
 		}
+		void makeCollapsible() noexcept { m_bCollapsible = true; }
+		bool collapsible() const noexcept { return m_bCollapsible; }
 		bool collapsed() const noexcept { return m_bCollapsed; }
 
 	protected:

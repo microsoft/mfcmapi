@@ -83,7 +83,7 @@ namespace viewpane
 			pane->SetMultiline();
 			pane->SetLabel(uidLabel);
 			pane->ViewPane::SetReadOnly(bReadOnly);
-			pane->m_bCollapsible = true;
+			pane->makeCollapsible();
 			pane->m_paneID = paneID;
 		}
 

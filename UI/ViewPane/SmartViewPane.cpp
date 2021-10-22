@@ -26,7 +26,7 @@ namespace viewpane
 		{
 			pane->SetLabel(uidLabel);
 			pane->SetReadOnly(true);
-			pane->m_bCollapsible = true;
+			pane->makeCollapsible();
 			pane->m_paneID = paneID;
 		}
 

@@ -6,9 +6,8 @@
 
 namespace controls
 {
-	void PaneHeader::Initialize(_In_ CWnd* pParent, _In_opt_ HDC hdc, _In_ bool bCollapsible, _In_ UINT nid)
+	void PaneHeader::Initialize(_In_ CWnd* pParent, _In_opt_ HDC hdc, _In_ UINT nid)
 	{
-		m_bCollapsible = bCollapsible;
 		if (pParent) m_hWndParent = pParent->m_hWnd;
 		// Assign a nID to the collapse button that is IDD_COLLAPSE more than the control's nID
 		m_nIDCollapse = nid + IDD_COLLAPSE;
