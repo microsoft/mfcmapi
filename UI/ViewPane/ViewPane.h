@@ -31,7 +31,6 @@ namespace viewpane
 			int iLargeHeightMargin,
 			int iButtonHeight, // Height of buttons below the control
 			int iEditHeight); // Height of an edit control
-		void SetAddInLabel(const std::wstring& szLabel);
 		virtual void UpdateButtons();
 		int GetID() const noexcept { return m_paneID; }
 		UINT GetNID() const noexcept { return m_nID; }
