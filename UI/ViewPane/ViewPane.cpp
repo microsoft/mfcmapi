@@ -53,7 +53,7 @@ namespace viewpane
 		m_iButtonHeight = iButtonHeight;
 		m_iEditHeight = iEditHeight;
 
-		m_Header.SetMargins(iSideMargin, iLabelHeight, iButtonHeight);
+		m_Header.SetMargins(iMargin, iSideMargin, iLabelHeight, iButtonHeight);
 	}
 
 	void ViewPane::UpdateButtons() {}

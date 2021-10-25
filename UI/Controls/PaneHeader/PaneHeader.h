@@ -13,11 +13,13 @@ namespace controls
 		int GetMinWidth();
 
 		void SetRightLabel(const std::wstring szLabel);
+		void SetButton(const std::wstring szButtonLabel, _In_ UINT nid);
 		bool HandleChange(UINT nID);
 		void OnToggleCollapse();
 
 		_NODISCARD bool empty() const noexcept { return m_szLabel.empty(); }
 		void SetMargins(
+			int iMargin,
 			int iSideMargin,
 			int iLabelHeight, // Height of the label
 			int iButtonHeight); // Height of buttons below the control
@@ -47,6 +49,7 @@ namespace controls
 		CButton m_CollapseButton;
 
 		// Margins
+		int m_iMargin{};
 		int m_iSideMargin{};
 		int m_iLabelWidth{}; // The width of the label
 		int m_iLabelHeight{}; // Height of the label
@@ -54,5 +57,10 @@ namespace controls
 
 		CEdit m_rightLabel; // Label on right of header
 		int m_rightLabelWidth{0}; // The width of the string
+
+		CButton m_actionButton;
+		std::wstring m_szActionButton;
+		int m_actionButtonWidth{0};
+		UINT m_nIDAction{}; // NID for action button.
 	};
 } // namespace controls

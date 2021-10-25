@@ -16,7 +16,8 @@ namespace viewpane
 		// Start the SmartViewPane sub panes at 50
 		// This means we can only have one SmartViewPane per editor
 		SV_TREE = 50,
-		SV_TEXT
+		SV_TEXT,
+		SV_ACTIONBUTTON
 	};
 
 	std::shared_ptr<SmartViewPane> SmartViewPane::Create(const int paneID, const UINT uidLabel)
@@ -26,6 +27,7 @@ namespace viewpane
 		{
 			pane->SetLabel(uidLabel);
 			pane->SetReadOnly(true);
+			pane->m_Header.SetButton(std::wstring(L"button"), SV_ACTIONBUTTON);
 			pane->makeCollapsible();
 			pane->m_paneID = paneID;
 		}
@@ -89,6 +91,11 @@ namespace viewpane
 
 	ULONG SmartViewPane::HandleChange(const UINT nID)
 	{
+		if (nID == SV_ACTIONBUTTON)
+		{
+			return nID;
+		}
+
 		auto paneID = m_Splitter->HandleChange(nID);
 		if (paneID != static_cast<ULONG>(-1)) return paneID;
 

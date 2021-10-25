@@ -13,6 +13,17 @@ namespace controls
 		m_nIDCollapse = nid + IDD_COLLAPSE;
 		// TODO: We don't save our header's nID here, but we could if we wanted
 
+		if (!m_szActionButton.empty())
+		{
+			EC_B_S(m_actionButton.Create(
+				strings::wstringTotstring(m_szActionButton).c_str(),
+				WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE,
+				CRect(0, 0, 0, 0),
+				pParent,
+				m_nIDAction));
+			StyleButton(m_actionButton.m_hWnd, ui::uiButtonStyle::Unstyled);
+		}
+
 		EC_B_S(m_rightLabel.Create(
 			WS_CHILD | WS_CLIPSIBLINGS | ES_READONLY | WS_VISIBLE, CRect(0, 0, 0, 0), pParent, IDD_COUNTLABEL));
 		ui::SubclassLabel(m_rightLabel.m_hWnd);
@@ -51,10 +62,19 @@ namespace controls
 	{
 		const auto height = GetFixedHeight();
 		auto curX = x;
+		const auto actionButtonWidth = m_actionButtonWidth ? m_actionButtonWidth + 2 * m_iMargin : 0;
+		const auto actionButtonAndGutterWidth = actionButtonWidth ? actionButtonWidth + m_iSideMargin : 0;
 		if (m_bCollapsible)
 		{
 			::DeferWindowPos(
-				hWinPosInfo, m_CollapseButton.GetSafeHwnd(), nullptr, curX, y, width, height, SWP_NOZORDER);
+				hWinPosInfo,
+				m_CollapseButton.GetSafeHwnd(),
+				nullptr,
+				curX,
+				y,
+				width - actionButtonAndGutterWidth,
+				height,
+				SWP_NOZORDER);
 			curX += m_iButtonHeight;
 		}
 
@@ -75,9 +95,23 @@ namespace controls
 				hWinPosInfo,
 				m_rightLabel.GetSafeHwnd(),
 				nullptr,
-				x + width - m_rightLabelWidth,
+				x + width - m_rightLabelWidth - actionButtonAndGutterWidth,
 				y,
 				m_rightLabelWidth,
+				height,
+				SWP_NOZORDER));
+		}
+
+		if (actionButtonWidth != 0)
+		{
+			// Drop the action button next to the label we drew above
+			EC_B_S(::DeferWindowPos(
+				hWinPosInfo,
+				m_actionButton.GetSafeHwnd(),
+				nullptr,
+				x + width - actionButtonWidth,
+				y,
+				actionButtonWidth,
 				height,
 				SWP_NOZORDER));
 		}
@@ -93,6 +127,12 @@ namespace controls
 			cx += m_rightLabelWidth;
 		}
 
+		if (m_actionButtonWidth)
+		{
+			cx += m_iSideMargin;
+			cx += m_actionButtonWidth + 2 * m_iMargin;
+		}
+
 		return cx;
 	}
 
@@ -105,7 +145,19 @@ namespace controls
 		const auto sizeText = ui::GetTextExtentPoint32(hdc, szLabel);
 		static_cast<void>(SelectObject(hdc, hfontOld));
 		::ReleaseDC(m_rightLabel.GetSafeHwnd(), hdc);
-		m_rightLabelWidth = sizeText.cx + m_iSideMargin;
+		m_rightLabelWidth = sizeText.cx;
+	}
+
+	void PaneHeader::SetButton(const std::wstring szButtonLabel, _In_ UINT nid)
+	{
+		m_nIDAction = nid;
+		m_szActionButton = szButtonLabel;
+		const auto hdc = ::GetDC(m_actionButton.GetSafeHwnd());
+		const auto hfontOld = SelectObject(hdc, ui::GetSegoeFont());
+		const auto sizeText = ui::GetTextExtentPoint32(hdc, szButtonLabel);
+		static_cast<void>(SelectObject(hdc, hfontOld));
+		::ReleaseDC(m_actionButton.GetSafeHwnd(), hdc);
+		m_actionButtonWidth = sizeText.cx;
 	}
 
 	bool PaneHeader::HandleChange(UINT nID)
@@ -133,10 +185,12 @@ namespace controls
 	}
 
 	void PaneHeader::SetMargins(
+		int iMargin,
 		int iSideMargin,
 		int iLabelHeight, // Height of the label
 		int iButtonHeight) // Height of button
 	{
+		m_iMargin = iMargin;
 		m_iSideMargin = iSideMargin;
 		m_iLabelHeight = iLabelHeight;
 		m_iButtonHeight = iButtonHeight;
