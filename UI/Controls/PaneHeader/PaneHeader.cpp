@@ -13,13 +13,17 @@ namespace controls
 		m_nIDCollapse = nid + IDD_COLLAPSE;
 		// TODO: We don't save our header's nID here, but we could if we wanted
 
-		EC_B_S(m_actionButton.Create(
-			strings::wstringTotstring(m_szActionButton).c_str(),
-			WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE,
-			CRect(0, 0, 0, 0),
-			pParent,
-			m_nIDAction));
-		StyleButton(m_actionButton.m_hWnd, ui::uiButtonStyle::Unstyled);
+		// If we need an action button, go ahead and create it
+		if (m_nIDAction)
+		{
+			EC_B_S(m_actionButton.Create(
+				strings::wstringTotstring(m_szActionButton).c_str(),
+				WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE,
+				CRect(0, 0, 0, 0),
+				pParent,
+				m_nIDAction));
+			StyleButton(m_actionButton.m_hWnd, ui::uiButtonStyle::Unstyled);
+		}
 
 		EC_B_S(m_rightLabel.Create(
 			WS_CHILD | WS_CLIPSIBLINGS | ES_READONLY | WS_VISIBLE, CRect(0, 0, 0, 0), pParent, IDD_COUNTLABEL));
@@ -99,16 +103,19 @@ namespace controls
 				SWP_NOZORDER));
 		}
 
-		// Drop the action button next to the label we drew above
-		EC_B_S(::DeferWindowPos(
-			hWinPosInfo,
-			m_actionButton.GetSafeHwnd(),
-			nullptr,
-			x + width - actionButtonWidth,
-			y,
-			actionButtonWidth,
-			height,
-			SWP_NOZORDER));
+		if (m_nIDAction)
+		{
+			// Drop the action button next to the label we drew above
+			EC_B_S(::DeferWindowPos(
+				hWinPosInfo,
+				m_actionButton.GetSafeHwnd(),
+				nullptr,
+				x + width - actionButtonWidth,
+				y,
+				actionButtonWidth,
+				height,
+				SWP_NOZORDER));
+		}
 	}
 
 	int PaneHeader::GetMinWidth()
@@ -142,15 +149,17 @@ namespace controls
 		m_rightLabelWidth = sizeText.cx;
 	}
 
-	void PaneHeader::SetButton(const std::wstring szButtonLabel, _In_ UINT nid)
+	void PaneHeader::SetActionButton(const std::wstring szActionButton)
 	{
-		EC_B_S(::SetWindowTextW(m_actionButton.GetSafeHwnd(), szButtonLabel.c_str()));
+		// Don't bother if we never enabled the button
+		if (m_nIDAction == 0) return;
 
-		m_nIDAction = nid;
-		m_szActionButton = szButtonLabel;
+		EC_B_S(::SetWindowTextW(m_actionButton.GetSafeHwnd(), szActionButton.c_str()));
+
+		m_szActionButton = szActionButton;
 		const auto hdc = ::GetDC(m_actionButton.GetSafeHwnd());
 		const auto hfontOld = SelectObject(hdc, ui::GetSegoeFont());
-		const auto sizeText = ui::GetTextExtentPoint32(hdc, szButtonLabel);
+		const auto sizeText = ui::GetTextExtentPoint32(hdc, szActionButton);
 		static_cast<void>(SelectObject(hdc, hfontOld));
 		::ReleaseDC(m_actionButton.GetSafeHwnd(), hdc);
 		m_actionButtonWidth = sizeText.cx;

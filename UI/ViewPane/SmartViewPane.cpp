@@ -29,6 +29,7 @@ namespace viewpane
 			pane->SetReadOnly(true);
 			pane->makeCollapsible();
 			pane->m_paneID = paneID;
+			pane->m_Header.EnableActionButton(SV_ACTIONBUTTON);
 		}
 
 		return pane;
@@ -198,11 +199,11 @@ namespace viewpane
 		auto szSmartViewArray = std::vector<std::wstring>{};
 		if (m_bins.size() == 1 && iStructType == parserType::ENTRYID)
 		{
-			m_Header.SetButton(std::wstring(L"button"), SV_ACTIONBUTTON);
+			m_Header.SetActionButton(L"Open");
 		}
 		else
 		{
-			m_Header.SetButton(L"", SV_ACTIONBUTTON);
+			m_Header.SetActionButton(L"");
 		}
 
 		treeData = smartview::block::create(m_bins.size() > 1 ? L"Multivalued Property" : L"");
