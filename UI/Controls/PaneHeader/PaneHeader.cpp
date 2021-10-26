@@ -13,16 +13,13 @@ namespace controls
 		m_nIDCollapse = nid + IDD_COLLAPSE;
 		// TODO: We don't save our header's nID here, but we could if we wanted
 
-		if (!m_szActionButton.empty())
-		{
-			EC_B_S(m_actionButton.Create(
-				strings::wstringTotstring(m_szActionButton).c_str(),
-				WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE,
-				CRect(0, 0, 0, 0),
-				pParent,
-				m_nIDAction));
-			StyleButton(m_actionButton.m_hWnd, ui::uiButtonStyle::Unstyled);
-		}
+		EC_B_S(m_actionButton.Create(
+			strings::wstringTotstring(m_szActionButton).c_str(),
+			WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE,
+			CRect(0, 0, 0, 0),
+			pParent,
+			m_nIDAction));
+		StyleButton(m_actionButton.m_hWnd, ui::uiButtonStyle::Unstyled);
 
 		EC_B_S(m_rightLabel.Create(
 			WS_CHILD | WS_CLIPSIBLINGS | ES_READONLY | WS_VISIBLE, CRect(0, 0, 0, 0), pParent, IDD_COUNTLABEL));
@@ -102,19 +99,16 @@ namespace controls
 				SWP_NOZORDER));
 		}
 
-		if (actionButtonWidth != 0)
-		{
-			// Drop the action button next to the label we drew above
-			EC_B_S(::DeferWindowPos(
-				hWinPosInfo,
-				m_actionButton.GetSafeHwnd(),
-				nullptr,
-				x + width - actionButtonWidth,
-				y,
-				actionButtonWidth,
-				height,
-				SWP_NOZORDER));
-		}
+		// Drop the action button next to the label we drew above
+		EC_B_S(::DeferWindowPos(
+			hWinPosInfo,
+			m_actionButton.GetSafeHwnd(),
+			nullptr,
+			x + width - actionButtonWidth,
+			y,
+			actionButtonWidth,
+			height,
+			SWP_NOZORDER));
 	}
 
 	int PaneHeader::GetMinWidth()
@@ -138,7 +132,7 @@ namespace controls
 
 	void PaneHeader::SetRightLabel(const std::wstring szLabel)
 	{
-		::SetWindowTextW(m_rightLabel.m_hWnd, szLabel.c_str());
+		EC_B_S(::SetWindowTextW(m_rightLabel.m_hWnd, szLabel.c_str()));
 
 		const auto hdc = ::GetDC(m_rightLabel.GetSafeHwnd());
 		const auto hfontOld = SelectObject(hdc, ui::GetSegoeFont());
@@ -150,6 +144,8 @@ namespace controls
 
 	void PaneHeader::SetButton(const std::wstring szButtonLabel, _In_ UINT nid)
 	{
+		EC_B_S(::SetWindowTextW(m_actionButton.GetSafeHwnd(), szButtonLabel.c_str()));
+
 		m_nIDAction = nid;
 		m_szActionButton = szButtonLabel;
 		const auto hdc = ::GetDC(m_actionButton.GetSafeHwnd());
