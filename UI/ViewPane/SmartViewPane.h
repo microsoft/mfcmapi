@@ -18,6 +18,7 @@ namespace viewpane
 		void Parse(const std::vector<BYTE>& myBin) { Parse(std::vector<std::vector<BYTE>>{myBin}); }
 		void Parse(const std::vector<std::vector<BYTE>>& myBins);
 		std::function<void(smartview::block*)> OnItemSelected = nullptr;
+		std::function<void(_In_ const SBinary& lpBin)> OnActionButton = nullptr;
 
 	private:
 		void Initialize(_In_ CWnd* pParent, _In_ HDC hdc) override;
@@ -25,6 +26,7 @@ namespace viewpane
 		int GetFixedHeight() override;
 		int GetLines() override;
 		ULONG HandleChange(UINT nID) override;
+		void HandleAction();
 		void AddChildren(HTREEITEM parent, const std::shared_ptr<smartview::block>& data);
 		void ItemSelected(HTREEITEM hItem);
 		void OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* /*pResult*/, _In_ HTREEITEM hItemCurHover) const;
