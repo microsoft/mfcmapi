@@ -204,8 +204,7 @@ namespace viewpane
 		if (m_TreePane) m_TreePane->m_Tree.Refresh();
 
 		const auto iStructType = static_cast<parserType>(GetDropDownSelectionValue());
-		auto szSmartViewArray = std::vector<std::wstring>{};
-		if (m_bins.size() == 1 && iStructType == parserType::ENTRYID)
+		if (OnActionButton && m_bins.size() == 1 && iStructType == parserType::ENTRYID)
 		{
 			m_Header.SetActionButton(L"Open");
 		}
