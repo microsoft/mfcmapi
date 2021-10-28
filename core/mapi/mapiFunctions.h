@@ -102,8 +102,8 @@ namespace mapi
 		_In_opt_ LPADRBOOK lpAB,
 		_In_opt_ LPMAPICONTAINER lpContainer,
 		_In_opt_ LPMAPISESSION lpMAPISession,
-		ULONG cbEntryID,
-		_In_opt_ LPENTRYID lpEntryID,
+		const ULONG cbEntryID,
+		const _In_opt_ LPENTRYID lpEntryID,
 		_In_opt_ LPCIID lpInterface,
 		ULONG ulFlags,
 		_Out_opt_ ULONG* ulObjTypeRet); // optional - can be NULL
@@ -114,8 +114,8 @@ namespace mapi
 		_In_opt_ LPADRBOOK lpAB,
 		_In_opt_ LPMAPICONTAINER lpContainer,
 		_In_opt_ LPMAPISESSION lpMAPISession,
-		ULONG cbEntryID,
-		_In_opt_ LPENTRYID lpEntryID,
+		const ULONG cbEntryID,
+		const _In_opt_ LPENTRYID lpEntryID,
 		_In_opt_ LPCIID lpInterface,
 		ULONG ulFlags,
 		_Out_opt_ ULONG* ulObjTypeRet) // optional - can be NULL

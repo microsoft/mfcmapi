@@ -21,6 +21,7 @@ namespace dialog::editor
 		void OnOK() override;
 		void OnCancel() override;
 		void SetHex(_In_opt_count_(cb) LPBYTE lpb, size_t cb) const;
+		void OpenEntry(_In_ const SBinary& bin);
 
 		std::shared_ptr<cache::CMapiObjects> m_lpMapiObjects{};
 	};

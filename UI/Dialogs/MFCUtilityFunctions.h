@@ -19,6 +19,14 @@ namespace dialog
 		storeDeletedItems,
 	};
 
+	_Check_return_ HRESULT DisplayObject(
+		_In_ LPMAPIPROP lpUnk,
+		ULONG ulObjType,
+		objectType tType,
+		_In_opt_ CBaseDialog* lpHostDlg,
+		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
+		_In_ ui::CParentWnd* lpParentWnd);
+
 	_Check_return_ HRESULT
 	DisplayObject(_In_ LPMAPIPROP lpUnk, ULONG ulObjType, objectType tType, _In_ dialog::CBaseDialog* lpHostDlg);
 
