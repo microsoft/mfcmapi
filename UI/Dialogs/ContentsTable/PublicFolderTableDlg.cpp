@@ -13,12 +13,10 @@ namespace dialog
 	static std::wstring CLASS = L"CPublicFolderTableDlg";
 
 	CPublicFolderTableDlg::CPublicFolderTableDlg(
-		_In_ ui::CParentWnd* pParentWnd,
 		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 		_In_ const std::wstring& lpszServerName,
 		_In_ LPMAPITABLE lpMAPITable)
 		: CContentsTableDlg(
-			  pParentWnd,
 			  lpMapiObjects,
 			  IDS_PUBLICFOLDERTABLE,
 			  createDialogType::DO_NOT_CALL_CREATE_DIALOG,

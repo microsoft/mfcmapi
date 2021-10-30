@@ -31,10 +31,7 @@ namespace dialog
 	class CBaseDialog : public CMyDialog
 	{
 	public:
-		CBaseDialog(
-			_In_ ui::CParentWnd* pParentWnd,
-			_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
-			ULONG ulAddInContext);
+		CBaseDialog(_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects, ULONG ulAddInContext);
 		~CBaseDialog();
 
 		STDMETHODIMP_(ULONG) AddRef();

@@ -138,14 +138,11 @@ namespace dialog
 		const auto lpMapiObjects = lpHostDlg->GetMapiObjects(); // do not release
 		if (!lpMapiObjects) return;
 
-		const auto lpParentWnd = ui::GetParentWnd(); // do not release
-		if (!lpParentWnd) return;
-
 		auto lpAdrBook = OpenABForQuickStart(lpHostDlg, hwnd);
 		if (lpAdrBook)
 		{
 			// call the dialog
-			new CAbContDlg(lpParentWnd, lpMapiObjects);
+			new CAbContDlg(lpMapiObjects);
 			lpAdrBook->Release();
 		}
 	}

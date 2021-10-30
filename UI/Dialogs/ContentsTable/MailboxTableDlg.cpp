@@ -19,12 +19,10 @@ namespace dialog
 	static std::wstring CLASS = L"CMailboxTableDlg";
 
 	CMailboxTableDlg::CMailboxTableDlg(
-		_In_ ui::CParentWnd* pParentWnd,
 		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 		_In_ const std::wstring& lpszServerName,
 		_In_ LPMAPITABLE lpMAPITable)
 		: CContentsTableDlg(
-			  pParentWnd,
 			  lpMapiObjects,
 			  IDS_MAILBOXTABLE,
 			  createDialogType::DO_NOT_CALL_CREATE_DIALOG,
@@ -107,8 +105,7 @@ namespace dialog
 								false);
 							if (lpNewMDB)
 							{
-								EC_H_S(
-									DisplayObject(static_cast<LPMAPIPROP>(lpNewMDB), NULL, objectType::store, this));
+								EC_H_S(DisplayObject(static_cast<LPMAPIPROP>(lpNewMDB), NULL, objectType::store, this));
 								lpNewMDB->Release();
 								lpNewMDB = nullptr;
 							}

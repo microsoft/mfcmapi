@@ -23,7 +23,6 @@ namespace dialog
 	static std::wstring CLASS = L"CContentsTableDlg";
 
 	CContentsTableDlg::CContentsTableDlg(
-		_In_ ui::CParentWnd* pParentWnd,
 		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 		UINT uidTitle,
 		createDialogType bCreateDialog,
@@ -33,7 +32,7 @@ namespace dialog
 		_In_ const std::vector<columns::TagNames>& lpDefaultDisplayColumns,
 		ULONG nIDContextMenu,
 		ULONG ulAddInContext)
-		: CBaseDialog(pParentWnd, lpMapiObjects, ulAddInContext)
+		: CBaseDialog(lpMapiObjects, ulAddInContext)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
 		if (NULL != uidTitle)

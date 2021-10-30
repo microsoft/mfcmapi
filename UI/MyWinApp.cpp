@@ -52,13 +52,13 @@ namespace ui
 	{
 		mapiui::initCallbacks();
 
-		// Create a parent window that all objects get a pointer to, ensuring we don't
+		// Create a parent window that all objects grab a pointer to, ensuring we don't
 		// quit this thread until all objects have freed themselves.
 		auto pWnd = GetParentWnd();
 		if (pWnd)
 		{
 			m_pMainWnd = pWnd;
-			new dialog::CMainDlg(pWnd, std::make_shared<cache::CMapiObjects>(nullptr));
+			new dialog::CMainDlg(std::make_shared<cache::CMapiObjects>(nullptr));
 			pWnd->Release();
 		}
 

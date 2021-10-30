@@ -12,14 +12,8 @@ namespace dialog
 {
 	static std::wstring CLASS = L"CAbContDlg";
 
-	CAbContDlg::CAbContDlg(_In_ ui::CParentWnd* pParentWnd, _In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects)
-		: CHierarchyTableDlg(
-			  pParentWnd,
-			  lpMapiObjects,
-			  IDS_ABCONT,
-			  nullptr,
-			  IDR_MENU_ABCONT_POPUP,
-			  MENU_CONTEXT_AB_TREE)
+	CAbContDlg::CAbContDlg(_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects)
+		: CHierarchyTableDlg(lpMapiObjects, IDS_ABCONT, nullptr, IDR_MENU_ABCONT_POPUP, MENU_CONTEXT_AB_TREE)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
 

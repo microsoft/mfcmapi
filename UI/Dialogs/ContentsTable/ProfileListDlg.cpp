@@ -21,11 +21,9 @@ namespace dialog
 	static std::wstring CLASS = L"CProfileListDlg";
 
 	CProfileListDlg::CProfileListDlg(
-		_In_ ui::CParentWnd* pParentWnd,
 		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 		_In_ LPMAPITABLE lpMAPITable)
 		: CContentsTableDlg(
-			  pParentWnd,
 			  lpMapiObjects,
 			  IDS_PROFILES,
 			  createDialogType::DO_NOT_CALL_CREATE_DIALOG,
@@ -134,7 +132,7 @@ namespace dialog
 
 			if (!contents->getProfileDisplayName().empty())
 			{
-				new CMsgServiceTableDlg(m_lpParent, m_lpMapiObjects, contents->getProfileDisplayName());
+				new CMsgServiceTableDlg(m_lpMapiObjects, contents->getProfileDisplayName());
 			}
 		}
 	}
@@ -462,7 +460,7 @@ namespace dialog
 			const auto szProfileName = MyData.GetStringW(0);
 			if (!szProfileName.empty())
 			{
-				new CMsgServiceTableDlg(m_lpParent, m_lpMapiObjects, szProfileName);
+				new CMsgServiceTableDlg(m_lpMapiObjects, szProfileName);
 			}
 		}
 	}

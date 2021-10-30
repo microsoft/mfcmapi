@@ -20,11 +20,9 @@ namespace dialog
 	static std::wstring CLASS = L"CFormContainerDlg";
 
 	CFormContainerDlg::CFormContainerDlg(
-		_In_ ui::CParentWnd* pParentWnd,
 		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 		_In_ LPMAPIFORMCONTAINER lpFormContainer)
 		: CContentsTableDlg(
-			  pParentWnd,
 			  lpMapiObjects,
 			  IDS_FORMCONTAINER,
 			  createDialogType::DO_NOT_CALL_CREATE_DIALOG,

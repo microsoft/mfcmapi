@@ -9,7 +9,7 @@ namespace dialog::editor
 	class CHexEditor : public CEditor
 	{
 	public:
-		CHexEditor(_In_ ui::CParentWnd* pParentWnd, _In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects);
+		CHexEditor(_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects);
 
 	private:
 		_Check_return_ ULONG HandleChange(UINT nID) override;

@@ -11,10 +11,9 @@ namespace dialog
 	static std::wstring CLASS = L"AccountsDialog";
 
 	AccountsDialog::AccountsDialog(
-		_In_ ui::CParentWnd* pParentWnd,
 		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 		_In_opt_ LPMAPISESSION lpMAPISession)
-		: CBaseDialog(pParentWnd, lpMapiObjects, NULL)
+		: CBaseDialog(lpMapiObjects, NULL)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
 		m_szTitle = strings::loadstring(IDS_ACCOUNT_DIALOG);

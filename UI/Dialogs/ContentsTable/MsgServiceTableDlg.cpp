@@ -18,11 +18,9 @@ namespace dialog
 	static std::wstring CLASS = L"CMsgServiceTableDlg";
 
 	CMsgServiceTableDlg::CMsgServiceTableDlg(
-		_In_ ui::CParentWnd* pParentWnd,
 		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 		_In_ const std::wstring& szProfileName)
 		: CContentsTableDlg(
-			  pParentWnd,
 			  lpMapiObjects,
 			  IDS_SERVICES,
 			  createDialogType::DO_NOT_CALL_CREATE_DIALOG,
@@ -154,7 +152,7 @@ namespace dialog
 
 							if (lpProviderTable)
 							{
-								new CProviderTableDlg(m_lpParent, m_lpMapiObjects, lpProviderTable, lpProviderAdmin);
+								new CProviderTableDlg(m_lpMapiObjects, lpProviderTable, lpProviderAdmin);
 								lpProviderTable->Release();
 								lpProviderTable = nullptr;
 							}
