@@ -992,8 +992,6 @@ namespace dialog
 		return false;
 	}
 
-	_Check_return_ ui::CParentWnd* CBaseDialog::GetParentWnd() const noexcept { return m_lpParent; }
-
 	_Check_return_ std::shared_ptr<cache::CMapiObjects> CBaseDialog::GetMapiObjects() const noexcept
 	{
 		return m_lpMapiObjects;

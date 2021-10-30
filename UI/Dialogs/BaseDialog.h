@@ -57,7 +57,6 @@ namespace dialog
 			const std::wstring& szParam2,
 			const std::wstring& szParam3);
 		void OnOpenEntryID(_In_ const SBinary& bin);
-		_Check_return_ ui::CParentWnd* GetParentWnd() const noexcept;
 		_Check_return_ std::shared_ptr<cache::CMapiObjects> GetMapiObjects() const noexcept;
 
 		static void UpdateStatus(HWND hWndHost, const statusPane pane, const std::wstring& status) noexcept;

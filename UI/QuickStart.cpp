@@ -138,7 +138,7 @@ namespace dialog
 		const auto lpMapiObjects = lpHostDlg->GetMapiObjects(); // do not release
 		if (!lpMapiObjects) return;
 
-		const auto lpParentWnd = lpHostDlg->GetParentWnd(); // do not release
+		const auto lpParentWnd = ui::GetParentWnd(); // do not release
 		if (!lpParentWnd) return;
 
 		auto lpAdrBook = OpenABForQuickStart(lpHostDlg, hwnd);
@@ -383,9 +383,6 @@ namespace dialog
 		const auto lpMapiObjects = lpHostDlg->GetMapiObjects(); // do not release
 		if (!lpMapiObjects) return;
 
-		const auto lpParentWnd = lpHostDlg->GetParentWnd(); // do not release
-		if (!lpParentWnd) return;
-
 		auto lpAdrBook = OpenABForQuickStart(lpHostDlg, hwnd);
 		if (lpAdrBook)
 		{
@@ -408,9 +405,6 @@ namespace dialog
 
 		const auto lpMapiObjects = lpHostDlg->GetMapiObjects(); // do not release
 		if (!lpMapiObjects) return;
-
-		const auto lpParentWnd = lpHostDlg->GetParentWnd(); // do not release
-		if (!lpParentWnd) return;
 
 		auto lpAdrBook = OpenABForQuickStart(lpHostDlg, hwnd);
 		if (lpAdrBook)

@@ -36,7 +36,7 @@ namespace dialog
 		auto lpMapiObjects = lpHostDlg->GetMapiObjects(); // do not release
 		if (!lpMapiObjects) return MAPI_E_INVALID_PARAMETER;
 
-		const auto lpParentWnd = lpHostDlg->GetParentWnd(); // do not release
+		const auto lpParentWnd = ui::GetParentWnd(); // do not release
 		if (!lpParentWnd) return MAPI_E_INVALID_PARAMETER;
 
 		// If we weren't passed an object type, go get one - careful! Some objects lie!
@@ -168,7 +168,7 @@ namespace dialog
 		const auto lpMapiObjects = lpHostDlg->GetMapiObjects(); // do not release
 		if (!lpMapiObjects) return MAPI_E_INVALID_PARAMETER;
 
-		const auto lpParentWnd = lpHostDlg->GetParentWnd(); // do not release
+		const auto lpParentWnd = ui::GetParentWnd(); // do not release
 		if (!lpParentWnd) return MAPI_E_INVALID_PARAMETER;
 
 		output::DebugPrint(output::dbgLevel::Generic, L"DisplayTable asked to display %p\n", lpTable);
@@ -290,10 +290,10 @@ namespace dialog
 			switch (PROP_ID(ulPropTag))
 			{
 			case PROP_ID(PR_MESSAGE_ATTACHMENTS):
-				new CAttachmentsDlg(lpHostDlg->GetParentWnd(), lpHostDlg->GetMapiObjects(), lpTable, lpMAPIProp);
+				new CAttachmentsDlg(ui::GetParentWnd(), lpHostDlg->GetMapiObjects(), lpTable, lpMAPIProp);
 				break;
 			case PROP_ID(PR_MESSAGE_RECIPIENTS):
-				new CRecipientsDlg(lpHostDlg->GetParentWnd(), lpHostDlg->GetMapiObjects(), lpTable, lpMAPIProp);
+				new CRecipientsDlg(ui::GetParentWnd(), lpHostDlg->GetMapiObjects(), lpTable, lpMAPIProp);
 				break;
 			default:
 				hRes = EC_H(DisplayTable(lpTable, tType, lpHostDlg));
@@ -317,7 +317,7 @@ namespace dialog
 		const auto lpMapiObjects = lpHostDlg->GetMapiObjects(); // do not release
 		if (!lpMapiObjects) return MAPI_E_INVALID_PARAMETER;
 
-		const auto lpParentWnd = lpHostDlg->GetParentWnd(); // do not release
+		const auto lpParentWnd = ui::GetParentWnd(); // do not release
 		if (!lpParentWnd) return MAPI_E_INVALID_PARAMETER;
 
 		// Open the table in an IExchangeModifyTable interface
