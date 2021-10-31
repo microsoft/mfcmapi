@@ -62,15 +62,13 @@ namespace viewpane
 
 	int SmartViewPane::GetFixedHeight()
 	{
-		if (!m_bDoDropDown && !m_bHasData) return 0;
-
 		auto iHeight = 0;
 
 		if (0 != m_paneID) iHeight += m_iSmallHeightMargin; // Top margin
 
 		iHeight += GetHeaderHeight();
 
-		if (m_bDoDropDown && !collapsed())
+		if (!collapsed())
 		{
 			iHeight += m_iEditHeight; // Height of the dropdown
 			iHeight += m_Splitter->GetFixedHeight();
@@ -117,9 +115,6 @@ namespace viewpane
 		_In_ const int width,
 		_In_ const int height)
 	{
-		const auto visibility = !m_bDoDropDown && !m_bHasData ? SW_HIDE : SW_SHOW;
-		WC_B_S(m_Header.ShowWindow(visibility));
-
 		auto curY = y;
 		const auto labelHeight = GetHeaderHeight();
 		if (0 != m_paneID)
@@ -134,13 +129,10 @@ namespace viewpane
 
 		if (!collapsed())
 		{
-			if (m_bDoDropDown)
-			{
-				EC_B_S(::DeferWindowPos(
-					hWinPosInfo, m_DropDown.GetSafeHwnd(), nullptr, x, curY, width, m_iEditHeight * 10, SWP_NOZORDER));
+			EC_B_S(::DeferWindowPos(
+				hWinPosInfo, m_DropDown.GetSafeHwnd(), nullptr, x, curY, width, m_iEditHeight * 10, SWP_NOZORDER));
 
-				curY += m_iEditHeight;
-			}
+			curY += m_iEditHeight;
 
 			m_Splitter->DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y));
 		}

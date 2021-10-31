@@ -46,6 +46,5 @@ namespace viewpane
 		std::shared_ptr<SplitterPane> m_Splitter;
 		std::shared_ptr<TreePane> m_TreePane;
 		bool m_bHasData{false};
-		bool m_bDoDropDown{true};
 	};
 } // namespace viewpane
