@@ -13,14 +13,14 @@ namespace controls
 		m_nIDCollapse = nid + IDD_COLLAPSE;
 		// TODO: We don't save our header's nID here, but we could if we wanted
 
+		EC_B_S(Create(WS_CHILD | WS_CLIPSIBLINGS | ES_READONLY | WS_VISIBLE, CRect(0, 0, 0, 0), pParent, nid));
+		::SetWindowTextW(m_hWnd, m_szLabel.c_str());
+		ui::SubclassLabel(m_hWnd);
+
 		EC_B_S(m_rightLabel.Create(
 			WS_CHILD | WS_CLIPSIBLINGS | ES_READONLY | WS_VISIBLE, CRect(0, 0, 0, 0), pParent, IDD_COUNTLABEL));
 		ui::SubclassLabel(m_rightLabel.m_hWnd);
 		StyleLabel(m_rightLabel.m_hWnd, ui::uiLabelStyle::PaneHeaderText);
-
-		EC_B_S(Create(WS_CHILD | WS_CLIPSIBLINGS | ES_READONLY | WS_VISIBLE, CRect(0, 0, 0, 0), pParent, nid));
-		::SetWindowTextW(m_hWnd, m_szLabel.c_str());
-		ui::SubclassLabel(m_hWnd);
 
 		if (m_bCollapsible)
 		{
