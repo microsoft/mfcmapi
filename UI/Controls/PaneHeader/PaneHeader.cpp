@@ -13,18 +13,6 @@ namespace controls
 		m_nIDCollapse = nid + IDD_COLLAPSE;
 		// TODO: We don't save our header's nID here, but we could if we wanted
 
-		// If we need an action button, go ahead and create it
-		if (m_nIDAction)
-		{
-			EC_B_S(m_actionButton.Create(
-				strings::wstringTotstring(m_szActionButton).c_str(),
-				WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE,
-				CRect(0, 0, 0, 0),
-				pParent,
-				m_nIDAction));
-			StyleButton(m_actionButton.m_hWnd, ui::uiButtonStyle::Unstyled);
-		}
-
 		EC_B_S(m_rightLabel.Create(
 			WS_CHILD | WS_CLIPSIBLINGS | ES_READONLY | WS_VISIBLE, CRect(0, 0, 0, 0), pParent, IDD_COUNTLABEL));
 		ui::SubclassLabel(m_rightLabel.m_hWnd);
@@ -55,6 +43,18 @@ namespace controls
 			L"PaneHeader::Initialize m_iLabelWidth:%d \"%ws\"\n",
 			m_iLabelWidth,
 			m_szLabel.c_str());
+
+		// If we need an action button, go ahead and create it
+		if (m_nIDAction)
+		{
+			EC_B_S(m_actionButton.Create(
+				strings::wstringTotstring(m_szActionButton).c_str(),
+				WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE,
+				CRect(0, 0, 0, 0),
+				pParent,
+				m_nIDAction));
+			StyleButton(m_actionButton.m_hWnd, ui::uiButtonStyle::Unstyled);
+		}
 
 		m_bInitialized = true;
 	}
