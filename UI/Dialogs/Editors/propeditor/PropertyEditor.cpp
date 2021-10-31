@@ -13,6 +13,7 @@
 #include <core/interpret/proptags.h>
 #include <core/addin/mfcmapi.h>
 #include <core/property/parseProperty.h>
+#include <UI/Dialogs/MFCUtilityFunctions.h>
 
 namespace dialog::editor
 {
@@ -21,6 +22,7 @@ namespace dialog::editor
 	// Create an editor for a MAPI property
 	CPropertyEditor::CPropertyEditor(
 		_In_ CWnd* pParentWnd,
+		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 		UINT uidTitle,
 		const std::wstring& name,
 		bool bIsAB,
@@ -29,10 +31,11 @@ namespace dialog::editor
 		ULONG ulPropTag,
 		_In_opt_ const _SPropValue* lpsPropValue)
 		: IPropEditor(pParentWnd, uidTitle, NULL, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL), m_bIsAB(bIsAB),
-		  m_bMVRow(bMVRow), m_lpMAPIProp(lpMAPIProp), m_ulPropTag(ulPropTag), m_lpsInputValue(lpsPropValue),
-		  m_name(name)
+		  m_bMVRow(bMVRow),
+		  m_lpMAPIProp(lpMAPIProp), m_ulPropTag(ulPropTag), m_lpsInputValue(lpsPropValue), m_name(name)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
+		m_lpMapiObjects = lpMapiObjects;
 
 		if (m_lpMAPIProp) m_lpMAPIProp->AddRef();
 
@@ -268,6 +271,7 @@ namespace dialog::editor
 					m_lpsInputValue ? mapi::getBin(m_lpsInputValue).lpb + mapi::getBin(m_lpsInputValue).cb : nullptr));
 
 				smartViewPane->OnItemSelected = [&](auto _1) { return HighlightHex(0, _1); };
+				smartViewPane->OnActionButton = [&](auto _1) { return OpenEntry(_1); };
 			}
 		}
 
@@ -634,5 +638,25 @@ namespace dialog::editor
 
 		OnRecalcLayout();
 		return paneID;
+	}
+
+	void CPropertyEditor::OpenEntry(_In_ const SBinary& bin)
+	{
+		ULONG ulObjType = NULL;
+		auto obj = mapi::CallOpenEntry<LPMAPIPROP>(
+			m_lpMapiObjects->GetMDB(),
+			m_lpMapiObjects->GetAddrBook(false),
+			nullptr,
+			m_lpMapiObjects->GetSession(),
+			&bin,
+			nullptr,
+			MAPI_BEST_ACCESS,
+			&ulObjType);
+
+		if (obj)
+		{
+			WC_H_S(dialog::DisplayObject(obj, ulObjType, dialog::objectType::otDefault, nullptr, m_lpMapiObjects));
+			obj->Release();
+		}
 	}
 } // namespace dialog::editor

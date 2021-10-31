@@ -18,6 +18,7 @@ namespace dialog::editor
 	// Create an editor for a MAPI property
 	CMultiValuePropertyEditor::CMultiValuePropertyEditor(
 		_In_ CWnd* pParentWnd,
+		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 		UINT uidTitle,
 		const std::wstring& name,
 		bool bIsAB,
@@ -28,6 +29,7 @@ namespace dialog::editor
 		  m_lpMAPIProp(lpMAPIProp), m_ulPropTag(ulPropTag), m_lpsInputValue(lpsPropValue), m_name(name)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
+		m_lpMapiObjects = lpMapiObjects;
 
 		if (m_lpMAPIProp) m_lpMAPIProp->AddRef();
 
@@ -301,6 +303,7 @@ namespace dialog::editor
 
 		const auto propEditor = DisplayPropertyEditor(
 			this,
+			m_lpMapiObjects,
 			IDS_EDITROW,
 			m_name,
 			m_bIsAB,

@@ -356,6 +356,7 @@ namespace dialog
 
 		editor::CRestrictEditor MyRestrict(
 			this,
+			m_lpMapiObjects,
 			nullptr, // No alloc parent - we must MAPIFreeBuffer the result
 			m_lpContentsTableListCtrl->GetRestriction());
 

@@ -26,6 +26,7 @@ namespace dialog::editor
 
 	_Check_return_ std::shared_ptr<IPropEditor> DisplayPropertyEditor(
 		_In_ CWnd* pParentWnd,
+		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 		UINT uidTitle,
 		const std::wstring& name,
 		bool bIsAB,
@@ -79,13 +80,13 @@ namespace dialog::editor
 		if (PROP_TYPE(ulPropTag) & MV_FLAG)
 		{
 			propertyEditor = std::make_shared<CMultiValuePropertyEditor>(
-				pParentWnd, uidTitle, name, bIsAB, lpMAPIProp, ulPropTag, lpsPropValue);
+				pParentWnd, lpMapiObjects, uidTitle, name, bIsAB, lpMAPIProp, ulPropTag, lpsPropValue);
 		}
 		// Or the single value prop case
 		else
 		{
 			propertyEditor = std::make_shared<CPropertyEditor>(
-				pParentWnd, uidTitle, name, bIsAB, bMVRow, lpMAPIProp, ulPropTag, lpsPropValue);
+				pParentWnd, lpMapiObjects, uidTitle, name, bIsAB, bMVRow, lpMAPIProp, ulPropTag, lpsPropValue);
 		}
 
 		if (propertyEditor)

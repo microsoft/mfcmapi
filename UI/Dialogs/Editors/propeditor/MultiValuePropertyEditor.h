@@ -1,5 +1,6 @@
 #pragma once
 #include <UI/Dialogs/Editors/propeditor/ipropeditor.h>
+#include <core/mapi/cache/mapiObjects.h>
 
 namespace dialog::editor
 {
@@ -8,6 +9,7 @@ namespace dialog::editor
 	public:
 		CMultiValuePropertyEditor(
 			_In_ CWnd* pParentWnd,
+			_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 			UINT uidTitle,
 			const std::wstring& name,
 			bool bIsAB,
@@ -45,5 +47,6 @@ namespace dialog::editor
 		std::vector<std::wstring> m_mvW; // Temp storage for m_sOutputValue array
 		std::vector<std::vector<BYTE>> m_mvBin; // Temp storage for m_sOutputValue array
 		std::vector<GUID> m_mvGuid; // Temp storage for m_sOutputValue array
+		std::shared_ptr<cache::CMapiObjects> m_lpMapiObjects{};
 	};
 } // namespace dialog::editor

@@ -173,7 +173,7 @@ namespace dialog
 			else
 				CHECKHRESMSG(hRes, IDS_GETSEARCHCRITERIAFAILED);
 
-			editor::CCriteriaEditor MyCriteria(this, lpRes, lpEntryList, ulSearchState);
+			editor::CCriteriaEditor MyCriteria(this, m_lpMapiObjects, lpRes, lpEntryList, ulSearchState);
 
 			if (MyCriteria.DisplayDialog())
 			{
