@@ -42,9 +42,8 @@ namespace dialog
 {
 	static std::wstring CLASS = L"CMainDlg";
 
-	CMainDlg::CMainDlg(_In_ ui::CParentWnd* pParentWnd, _In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects)
+	CMainDlg::CMainDlg(_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects)
 		: CContentsTableDlg(
-			  pParentWnd,
 			  lpMapiObjects,
 			  ID_PRODUCTNAME,
 			  createDialogType::DO_NOT_CALL_CREATE_DIALOG,
@@ -295,7 +294,7 @@ namespace dialog
 		static_cast<void>(m_lpMapiObjects->GetAddrBook(true)); // do not release
 
 		// call the dialog
-		new CAbContDlg(m_lpParent, m_lpMapiObjects);
+		new CAbContDlg(m_lpMapiObjects);
 	}
 
 	void CMainDlg::OnOpenDefaultDir()
@@ -857,7 +856,7 @@ namespace dialog
 					reinterpret_cast<ULONG_PTR>(m_hWnd), ulFlags, &lpMAPIFormContainer));
 				if (lpMAPIFormContainer)
 				{
-					new CFormContainerDlg(m_lpParent, m_lpMapiObjects, lpMAPIFormContainer);
+					new CFormContainerDlg(m_lpMapiObjects, lpMAPIFormContainer);
 
 					lpMAPIFormContainer->Release();
 				}
@@ -891,7 +890,7 @@ namespace dialog
 				EC_H_CANCEL_S(lpMAPIFormMgr->OpenFormContainer(hFrmReg, nullptr, &lpMAPIFormContainer));
 				if (lpMAPIFormContainer)
 				{
-					new CFormContainerDlg(m_lpParent, m_lpMapiObjects, lpMAPIFormContainer);
+					new CFormContainerDlg(m_lpMapiObjects, lpMAPIFormContainer);
 
 					lpMAPIFormContainer->Release();
 				}
@@ -912,7 +911,7 @@ namespace dialog
 
 		if (lpMAPILocalFormContainer)
 		{
-			new CFormContainerDlg(m_lpParent, m_lpMapiObjects, lpMAPILocalFormContainer);
+			new CFormContainerDlg(m_lpMapiObjects, lpMAPILocalFormContainer);
 
 			lpMAPILocalFormContainer->Release();
 		}
@@ -1245,7 +1244,7 @@ namespace dialog
 			&lpProfTable));
 		if (lpProfTable)
 		{
-			new CProfileListDlg(m_lpParent, m_lpMapiObjects, lpProfTable);
+			new CProfileListDlg(m_lpMapiObjects, lpProfTable);
 
 			lpProfTable->Release();
 		}
@@ -1312,29 +1311,29 @@ namespace dialog
 		{
 			// Since we've opened a session, populate the store table in the UI
 			OnOpenMessageStoreTable();
-			new AccountsDialog(m_lpParent, m_lpMapiObjects, lpMAPISession);
+			new AccountsDialog(m_lpMapiObjects, lpMAPISession);
 		}
 	}
 
 	void CMainDlg::OnDisplayRegistryDialog()
 	{
-		if (!m_lpParent || !m_lpMapiObjects) return;
+		if (!m_lpMapiObjects) return;
 
-		new RegistryDialog(m_lpParent, m_lpMapiObjects);
+		new RegistryDialog(m_lpMapiObjects);
 	}
 
 	void CMainDlg::OnDisplayMailboxTable()
 	{
-		if (!m_lpParent || !m_lpMapiObjects) return;
+		if (!m_lpMapiObjects) return;
 
-		DisplayMailboxTable(m_lpParent, m_lpMapiObjects);
+		DisplayMailboxTable(m_lpMapiObjects);
 	}
 
 	void CMainDlg::OnDisplayPublicFolderTable()
 	{
-		if (!m_lpParent || !m_lpMapiObjects) return;
+		if (!m_lpMapiObjects) return;
 
-		DisplayPublicFolderTable(m_lpParent, m_lpMapiObjects);
+		DisplayPublicFolderTable(m_lpMapiObjects);
 	}
 
 	void CMainDlg::OnViewMSGProperties()

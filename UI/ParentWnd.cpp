@@ -14,6 +14,17 @@ namespace ui
 {
 	static std::wstring CLASS = L"CParentWnd";
 
+	static CParentWnd* s_parentWnd{};
+	_Check_return_ CParentWnd* GetParentWnd()
+	{
+		if (!s_parentWnd)
+		{
+			s_parentWnd = new CParentWnd();
+		}
+
+		return s_parentWnd;
+	}
+
 	// This appears to be the only way to catch a column drag event
 	// Since we end up catching for EVERY event, we have to be clever to ensure only
 	// the CSingleMAPIPropListCtrl that generated it catches it.
@@ -79,6 +90,7 @@ namespace ui
 		// Since we didn't create a window, we can't call DestroyWindow to let MFC know we're done.
 		// We call AfxPostQuitMessage instead
 		TRACE_DESTRUCTOR(CLASS);
+		s_parentWnd = nullptr;
 		UninitializeGDI();
 		addin::UnloadAddIns();
 		if (m_hwinEventHook) UnhookWinEvent(m_hwinEventHook);

@@ -25,4 +25,6 @@ namespace ui
 		LONG m_cRef;
 		HWINEVENTHOOK m_hwinEventHook; // Hook to trap header reordering
 	};
+
+	_Check_return_ CParentWnd* GetParentWnd();
 } // namespace ui

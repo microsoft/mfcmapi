@@ -10,7 +10,7 @@ namespace dialog::editor
 	class CDbgView : public CEditor
 	{
 	public:
-		CDbgView(_In_ ui::CParentWnd* pParentWnd);
+		CDbgView();
 		~CDbgView();
 		void AppendText(const std::wstring& szMsg) const;
 
@@ -28,9 +28,9 @@ namespace dialog::editor
 	CDbgView* g_DgbView = nullptr;
 
 	// Displays the debug viewer - only one may exist at a time
-	void DisplayDbgView(_In_ ui::CParentWnd* pParentWnd)
+	void DisplayDbgView()
 	{
-		if (!g_DgbView) g_DgbView = new CDbgView(pParentWnd);
+		if (!g_DgbView) g_DgbView = new CDbgView();
 	}
 
 	void OutputToDbgView(const std::wstring& szMsg)
@@ -49,9 +49,9 @@ namespace dialog::editor
 
 	static std::wstring CLASS = L"CDbgView";
 
-	CDbgView::CDbgView(_In_ ui::CParentWnd* pParentWnd)
+	CDbgView::CDbgView()
 		: CEditor(
-			  pParentWnd,
+			  nullptr,
 			  IDS_DBGVIEW,
 			  NULL,
 			  CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_ACTION2,
@@ -65,7 +65,7 @@ namespace dialog::editor
 		AddPane(viewpane::CheckPane::Create(DBGVIEW_PAUSE, IDS_PAUSE, false, false));
 		AddPane(viewpane::TextPane::CreateMultiLinePane(DBGVIEW_VIEW, NULL, true));
 		m_bPaused = false;
-		DisplayParentedDialog(pParentWnd, 800);
+		DisplayParentedDialog(800);
 	}
 
 	CDbgView::~CDbgView()

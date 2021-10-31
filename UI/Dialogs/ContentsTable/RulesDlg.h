@@ -11,10 +11,7 @@ namespace dialog
 	class CRulesDlg : public CContentsTableDlg
 	{
 	public:
-		CRulesDlg(
-			_In_ ui::CParentWnd* pParentWnd,
-			_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
-			_In_ LPEXCHANGEMODIFYTABLE lpExchTbl);
+		CRulesDlg(_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects, _In_ LPEXCHANGEMODIFYTABLE lpExchTbl);
 		~CRulesDlg();
 
 	private:

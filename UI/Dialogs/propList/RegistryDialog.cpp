@@ -10,10 +10,8 @@ namespace dialog
 {
 	static std::wstring CLASS = L"RegistryDialog";
 
-	RegistryDialog::RegistryDialog(
-		_In_ ui::CParentWnd* pParentWnd,
-		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects)
-		: CBaseDialog(pParentWnd, lpMapiObjects, NULL)
+	RegistryDialog::RegistryDialog(_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects)
+		: CBaseDialog(lpMapiObjects, NULL)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
 		m_szTitle = strings::loadstring(IDS_REGISTRY_DIALOG);

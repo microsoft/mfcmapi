@@ -24,9 +24,9 @@ namespace dialog ::editor
 		HEXED_SMARTVIEW
 	};
 
-	CHexEditor::CHexEditor(_In_ ui::CParentWnd* pParentWnd, _In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects)
+	CHexEditor::CHexEditor(_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects)
 		: CEditor(
-			  pParentWnd,
+			  nullptr,
 			  IDS_HEXEDITOR,
 			  NULL,
 			  CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_ACTION2 | CEDITOR_BUTTON_ACTION3,
@@ -49,7 +49,7 @@ namespace dialog ::editor
 		smartViewPane->OnActionButton = [&](auto _1) { return OpenEntry(_1); };
 		AddPane(smartViewPane);
 
-		DisplayParentedDialog(pParentWnd, 1000);
+		DisplayParentedDialog(1000);
 	}
 
 	void CHexEditor::OnOK()
@@ -270,8 +270,7 @@ namespace dialog ::editor
 
 		if (obj)
 		{
-			WC_H_S(dialog::DisplayObject(
-				obj, ulObjType, dialog::objectType::otDefault, nullptr, m_lpMapiObjects, m_lpNonModalParent));
+			WC_H_S(dialog::DisplayObject(obj, ulObjType, dialog::objectType::otDefault, nullptr, m_lpMapiObjects));
 			obj->Release();
 		}
 	}

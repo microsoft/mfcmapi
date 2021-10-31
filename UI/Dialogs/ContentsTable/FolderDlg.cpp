@@ -31,12 +31,10 @@ namespace dialog
 	static std::wstring CLASS = L"CFolderDlg";
 
 	CFolderDlg::CFolderDlg(
-		_In_ ui::CParentWnd* pParentWnd,
 		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 		_In_ LPMAPIPROP lpMAPIFolder,
 		tableDisplayFlags displayFlags)
 		: CContentsTableDlg(
-			  pParentWnd,
 			  lpMapiObjects,
 			  IDS_FOLDER,
 			  createDialogType::DO_NOT_CALL_CREATE_DIALOG,

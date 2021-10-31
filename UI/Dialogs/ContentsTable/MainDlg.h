@@ -11,7 +11,7 @@ namespace dialog
 	class CMainDlg : public CContentsTableDlg
 	{
 	public:
-		CMainDlg(_In_ ui::CParentWnd* pParentWnd, _In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects);
+		CMainDlg(_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects);
 		~CMainDlg();
 
 		// public so CBaseDialog can call it

@@ -22,12 +22,10 @@ namespace dialog
 #define ACL_INCLUDE_OTHER 0x00000002
 
 	CAclDlg::CAclDlg(
-		_In_ ui::CParentWnd* pParentWnd,
 		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 		_In_ LPEXCHANGEMODIFYTABLE lpExchTbl,
 		bool fFreeBusyVisible)
 		: CContentsTableDlg(
-			  pParentWnd,
 			  lpMapiObjects,
 			  fFreeBusyVisible ? IDS_ACLFBTABLE : IDS_ACLTABLE,
 			  createDialogType::DO_NOT_CALL_CREATE_DIALOG,

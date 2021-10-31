@@ -8,8 +8,6 @@
 #include <UI/ViewPane/ListPane.h>
 #include <core/smartview/SmartView.h>
 
-class CParentWnd;
-
 namespace dialog::editor
 {
 	// Buttons for CEditor
