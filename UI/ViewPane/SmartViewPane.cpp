@@ -196,7 +196,7 @@ namespace viewpane
 		if (m_TreePane) m_TreePane->m_Tree.Refresh();
 
 		const auto iStructType = static_cast<parserType>(GetDropDownSelectionValue());
-		if (OnActionButton && m_bins.size() == 1 && iStructType == parserType::ENTRYID)
+		if (OnActionButton && m_bins.size() == 1 && !m_bins[0].empty() && iStructType == parserType::ENTRYID)
 		{
 			m_Header.SetActionButton(L"Open");
 		}
