@@ -36,9 +36,8 @@ namespace dialog
 
 	_Check_return_ bool bShouldCancel(_In_opt_ CWnd* cWnd, HRESULT hResPrev);
 
-	void DisplayMailboxTable(_In_ ui::CParentWnd* lpParent, _In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects);
-	void
-	DisplayPublicFolderTable(_In_ ui::CParentWnd* lpParent, _In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects);
+	void DisplayMailboxTable(_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects);
+	void DisplayPublicFolderTable(_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects);
 	_Check_return_ LPMAPIFORMINFO
 	ResolveMessageClass(_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects, _In_opt_ LPMAPIFOLDER lpMAPIFolder);
 	_Check_return_ LPMAPIFORMINFO SelectForm(

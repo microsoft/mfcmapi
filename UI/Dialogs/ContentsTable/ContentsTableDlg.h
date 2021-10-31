@@ -14,7 +14,6 @@ namespace dialog
 	{
 	public:
 		CContentsTableDlg(
-			_In_ ui::CParentWnd* pParentWnd,
 			_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 			UINT uidTitle,
 			createDialogType bCreateDialog,

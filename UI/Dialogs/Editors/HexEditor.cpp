@@ -23,9 +23,9 @@ namespace dialog ::editor
 		HEXED_SMARTVIEW
 	};
 
-	CHexEditor::CHexEditor(_In_ ui::CParentWnd* pParentWnd, _In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects)
+	CHexEditor::CHexEditor(_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects)
 		: CEditor(
-			  pParentWnd,
+			  nullptr,
 			  IDS_HEXEDITOR,
 			  NULL,
 			  CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_ACTION2 | CEDITOR_BUTTON_ACTION3,
@@ -47,7 +47,7 @@ namespace dialog ::editor
 		smartViewPane->OnItemSelected = [&](auto _1) { return HighlightHex(HEXED_HEX, _1); };
 		AddPane(smartViewPane);
 
-		DisplayParentedDialog(pParentWnd, 1000);
+		DisplayParentedDialog(1000);
 	}
 
 	void CHexEditor::OnOK()

@@ -2,8 +2,6 @@
 #include <UI/Dialogs/BaseDialog.h>
 #include <UI/Controls/StyleTree/HierarchyTableTreeCtrl.h>
 
-class CParentWnd;
-
 namespace cache
 {
 	class CMapiObjects;
@@ -15,7 +13,6 @@ namespace dialog
 	{
 	public:
 		CHierarchyTableDlg(
-			_In_ ui::CParentWnd* pParentWnd,
 			_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 			UINT uidTitle,
 			_In_opt_ LPMAPIPROP lpRootContainer,

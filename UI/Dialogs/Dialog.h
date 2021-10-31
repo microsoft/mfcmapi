@@ -10,7 +10,7 @@ namespace dialog
 		CMyDialog();
 		CMyDialog(UINT nIDTemplate, CWnd* pParentWnd = nullptr);
 		~CMyDialog();
-		void DisplayParentedDialog(ui::CParentWnd* lpNonModalParent, UINT iAutoCenterWidth);
+		void DisplayParentedDialog(UINT iAutoCenterWidth);
 
 	protected:
 		LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;

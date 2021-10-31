@@ -281,12 +281,12 @@ namespace dialog
 		ui::DrawWindowFrame(m_hWnd, true, GetStatusHeight());
 	}
 
-	void CMyDialog::DisplayParentedDialog(ui::CParentWnd* lpNonModalParent, const UINT iAutoCenterWidth)
+	void CMyDialog::DisplayParentedDialog(const UINT iAutoCenterWidth)
 	{
 		m_iAutoCenterWidth = iAutoCenterWidth;
 		m_lpszTemplateName = MAKEINTRESOURCE(IDD_BLANK_DIALOG);
 
-		m_lpNonModalParent = lpNonModalParent;
+		m_lpNonModalParent = ui::GetParentWnd();
 		if (m_lpNonModalParent) m_lpNonModalParent->AddRef();
 
 		m_hwndCenteringWindow = GetActiveWindow();

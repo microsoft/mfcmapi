@@ -36,7 +36,7 @@ namespace dialog
 		auto lpMapiObjects = lpHostDlg->GetMapiObjects(); // do not release
 		if (!lpMapiObjects) return MAPI_E_INVALID_PARAMETER;
 
-		const auto lpParentWnd = lpHostDlg->GetParentWnd(); // do not release
+		const auto lpParentWnd = ui::GetParentWnd(); // do not release
 		if (!lpParentWnd) return MAPI_E_INVALID_PARAMETER;
 
 		// If we weren't passed an object type, go get one - careful! Some objects lie!
@@ -68,7 +68,6 @@ namespace dialog
 			lpMapiObjects->SetMDB(lpTempMDB);
 
 			new CMsgStoreDlg(
-				lpParentWnd,
 				lpMapiObjects,
 				lpUnk,
 				nullptr,
@@ -89,7 +88,7 @@ namespace dialog
 				const auto lpMDB = lpMapiObjects->GetMDB(); // do not release
 				if (lpMDB)
 				{
-					new CMsgStoreDlg(lpParentWnd, lpMapiObjects, lpMDB, lpUnk, tableDisplayFlags::dfNormal);
+					new CMsgStoreDlg(lpMapiObjects, lpMDB, lpUnk, tableDisplayFlags::dfNormal);
 				}
 				else
 				{
@@ -101,7 +100,7 @@ namespace dialog
 						if (lpNewMDB)
 						{
 							lpMapiObjects->SetMDB(lpNewMDB);
-							new CMsgStoreDlg(lpParentWnd, lpMapiObjects, lpNewMDB, lpUnk, tableDisplayFlags::dfNormal);
+							new CMsgStoreDlg(lpMapiObjects, lpNewMDB, lpUnk, tableDisplayFlags::dfNormal);
 
 							// restore the old MDB
 							lpMapiObjects->SetMDB(nullptr);
@@ -113,7 +112,6 @@ namespace dialog
 			else if (tType == objectType::contents || tType == objectType::assocContents)
 			{
 				new CFolderDlg(
-					lpParentWnd,
 					lpMapiObjects,
 					lpUnk,
 					tType == objectType::assocContents ? tableDisplayFlags::dfAssoc : tableDisplayFlags::dfNormal);
@@ -122,20 +120,20 @@ namespace dialog
 		break;
 		// #define MAPI_ABCONT ((ULONG) 0x00000004) /* Address Book Container */
 		case MAPI_ABCONT:
-			new CAbDlg(lpParentWnd, lpMapiObjects, lpUnk);
+			new CAbDlg(lpMapiObjects, lpUnk);
 			break;
 			// #define MAPI_MESSAGE ((ULONG) 0x00000005) /* Message */
 		case MAPI_MESSAGE:
-			new SingleMessageDialog(lpParentWnd, lpMapiObjects, lpUnk);
+			new SingleMessageDialog(lpMapiObjects, lpUnk);
 			break;
 			// #define MAPI_MAILUSER ((ULONG) 0x00000006) /* Individual Recipient */
 		case MAPI_MAILUSER:
-			new SingleRecipientDialog(lpParentWnd, lpMapiObjects, lpUnk);
+			new SingleRecipientDialog(lpMapiObjects, lpUnk);
 			break;
 			// #define MAPI_DISTLIST ((ULONG) 0x00000008) /* Distribution List Recipient */
 		case MAPI_DISTLIST: // A DistList is really an Address book anyways
-			new SingleRecipientDialog(lpParentWnd, lpMapiObjects, lpUnk);
-			new CAbDlg(lpParentWnd, lpMapiObjects, lpUnk);
+			new SingleRecipientDialog(lpMapiObjects, lpUnk);
+			new CAbDlg(lpMapiObjects, lpUnk);
 			break;
 			// The following types don't have special viewers - just dump their props in the property pane
 			// #define MAPI_ADDRBOOK ((ULONG) 0x00000002) /* Address Book */
@@ -168,9 +166,6 @@ namespace dialog
 		const auto lpMapiObjects = lpHostDlg->GetMapiObjects(); // do not release
 		if (!lpMapiObjects) return MAPI_E_INVALID_PARAMETER;
 
-		const auto lpParentWnd = lpHostDlg->GetParentWnd(); // do not release
-		if (!lpParentWnd) return MAPI_E_INVALID_PARAMETER;
-
 		output::DebugPrint(output::dbgLevel::Generic, L"DisplayTable asked to display %p\n", lpTable);
 
 		switch (tType)
@@ -179,7 +174,6 @@ namespace dialog
 		{
 			if (!lpTable) return MAPI_E_INVALID_PARAMETER;
 			new CContentsTableDlg(
-				lpParentWnd,
 				lpMapiObjects,
 				IDS_STATUSTABLE,
 				createDialogType::CALL_CREATE_DIALOG,
@@ -195,7 +189,6 @@ namespace dialog
 		{
 			if (!lpTable) return MAPI_E_INVALID_PARAMETER;
 			new CContentsTableDlg(
-				lpParentWnd,
 				lpMapiObjects,
 				IDS_RECEIVEFOLDERTABLE,
 				createDialogType::CALL_CREATE_DIALOG,
@@ -211,7 +204,6 @@ namespace dialog
 		{
 			if (!lpTable) return MAPI_E_INVALID_PARAMETER;
 			new CContentsTableDlg(
-				lpParentWnd,
 				lpMapiObjects,
 				IDS_HIERARCHYTABLE,
 				createDialogType::CALL_CREATE_DIALOG,
@@ -229,7 +221,6 @@ namespace dialog
 			if (!lpTable) return MAPI_E_INVALID_PARAMETER;
 			if (tType != objectType::otDefault) error::ErrDialog(__FILE__, __LINE__, IDS_EDDISPLAYTABLE, tType);
 			new CContentsTableDlg(
-				lpParentWnd,
 				lpMapiObjects,
 				IDS_CONTENTSTABLE,
 				createDialogType::CALL_CREATE_DIALOG,
@@ -290,10 +281,10 @@ namespace dialog
 			switch (PROP_ID(ulPropTag))
 			{
 			case PROP_ID(PR_MESSAGE_ATTACHMENTS):
-				new CAttachmentsDlg(lpHostDlg->GetParentWnd(), lpHostDlg->GetMapiObjects(), lpTable, lpMAPIProp);
+				new CAttachmentsDlg(lpHostDlg->GetMapiObjects(), lpTable, lpMAPIProp);
 				break;
 			case PROP_ID(PR_MESSAGE_RECIPIENTS):
-				new CRecipientsDlg(lpHostDlg->GetParentWnd(), lpHostDlg->GetMapiObjects(), lpTable, lpMAPIProp);
+				new CRecipientsDlg(lpHostDlg->GetMapiObjects(), lpTable, lpMAPIProp);
 				break;
 			default:
 				hRes = EC_H(DisplayTable(lpTable, tType, lpHostDlg));
@@ -317,9 +308,6 @@ namespace dialog
 		const auto lpMapiObjects = lpHostDlg->GetMapiObjects(); // do not release
 		if (!lpMapiObjects) return MAPI_E_INVALID_PARAMETER;
 
-		const auto lpParentWnd = lpHostDlg->GetParentWnd(); // do not release
-		if (!lpParentWnd) return MAPI_E_INVALID_PARAMETER;
-
 		// Open the table in an IExchangeModifyTable interface
 		auto hRes = EC_MAPI(lpMAPIProp->OpenProperty(
 			ulPropTag,
@@ -333,7 +321,7 @@ namespace dialog
 			switch (tType)
 			{
 			case objectType::rules:
-				new CRulesDlg(lpParentWnd, lpMapiObjects, lpExchTbl);
+				new CRulesDlg(lpMapiObjects, lpExchTbl);
 				break;
 			case objectType::ACL:
 			{
@@ -344,7 +332,7 @@ namespace dialog
 
 				if (MyData.DisplayDialog())
 				{
-					new CAclDlg(lpParentWnd, lpMapiObjects, lpExchTbl, MyData.GetCheck(0));
+					new CAclDlg(lpMapiObjects, lpExchTbl, MyData.GetCheck(0));
 				}
 			}
 			break;
@@ -397,9 +385,9 @@ namespace dialog
 		return false;
 	}
 
-	void DisplayMailboxTable(_In_ ui::CParentWnd* lpParent, _In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects)
+	void DisplayMailboxTable(_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects)
 	{
-		if (!lpParent || !lpMapiObjects) return;
+		if (!lpMapiObjects) return;
 		LPMDB lpPrivateMDB = nullptr;
 		auto lpMDB = lpMapiObjects->GetMDB(); // do not release
 		const auto lpMAPISession = lpMapiObjects->GetSession(); // do not release
@@ -418,10 +406,7 @@ namespace dialog
 			const auto szServerName = mapi::store::GetServerName(lpMAPISession);
 
 			editor::CEditor MyData(
-				static_cast<CWnd*>(lpParent),
-				IDS_DISPLAYMAILBOXTABLE,
-				IDS_SERVERNAMEPROMPT,
-				CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+				nullptr, IDS_DISPLAYMAILBOXTABLE, IDS_SERVERNAMEPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 			MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_SERVERNAME, szServerName, false));
 			MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_OFFSET, false));
 			MyData.SetHex(1, 0);
@@ -488,7 +473,7 @@ namespace dialog
 
 						if (lpMailboxTable)
 						{
-							new CMailboxTableDlg(lpParent, lpMapiObjects, MyData.GetStringW(0), lpMailboxTable);
+							new CMailboxTableDlg(lpMapiObjects, MyData.GetStringW(0), lpMailboxTable);
 							lpMailboxTable->Release();
 						}
 						else
@@ -514,10 +499,9 @@ namespace dialog
 		if (lpPrivateMDB) lpPrivateMDB->Release();
 	}
 
-	void
-	DisplayPublicFolderTable(_In_ ui::CParentWnd* lpParent, _In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects)
+	void DisplayPublicFolderTable(_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects)
 	{
-		if (!lpParent || !lpMapiObjects) return;
+		if (!lpMapiObjects) return;
 		LPMDB lpPrivateMDB = nullptr;
 		auto lpMDB = lpMapiObjects->GetMDB(); // do not release
 		const auto lpMAPISession = lpMapiObjects->GetSession(); // do not release
@@ -536,10 +520,7 @@ namespace dialog
 			const auto szServerName = mapi::store::GetServerName(lpMAPISession);
 
 			editor::CEditor MyData(
-				reinterpret_cast<CWnd*>(lpParent),
-				IDS_DISPLAYPFTABLE,
-				IDS_DISPLAYPFTABLEPROMPT,
-				CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+				nullptr, IDS_DISPLAYPFTABLE, IDS_DISPLAYPFTABLEPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 			MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_SERVERNAME, szServerName, false));
 			MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_OFFSET, false));
 			MyData.SetHex(1, 0);
@@ -611,7 +592,7 @@ namespace dialog
 
 						if (lpPFTable)
 						{
-							new CPublicFolderTableDlg(lpParent, lpMapiObjects, MyData.GetStringW(0), lpPFTable);
+							new CPublicFolderTableDlg(lpMapiObjects, MyData.GetStringW(0), lpPFTable);
 							lpPFTable->Release();
 						}
 						else

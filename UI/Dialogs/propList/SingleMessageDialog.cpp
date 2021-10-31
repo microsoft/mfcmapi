@@ -16,10 +16,9 @@ namespace dialog
 	static std::wstring CLASS = L"SingleMessageDialog";
 
 	SingleMessageDialog::SingleMessageDialog(
-		_In_ ui::CParentWnd* pParentWnd,
 		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 		_In_opt_ LPMAPIPROP lpMAPIProp)
-		: CBaseDialog(pParentWnd, lpMapiObjects, NULL)
+		: CBaseDialog(lpMapiObjects, NULL)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
 		m_szTitle = strings::loadstring(IDS_MESSAGE);

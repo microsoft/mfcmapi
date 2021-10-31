@@ -32,7 +32,6 @@ namespace dialog
 	static std::wstring CLASS = L"CBaseDialog";
 
 	CBaseDialog::CBaseDialog(
-		_In_ ui::CParentWnd* pParentWnd,
 		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects, // Pass NULL to create a new m_lpMapiObjects,
 		const ULONG ulAddInContext)
 	{
@@ -45,7 +44,7 @@ namespace dialog
 		// Let the parent know we have a status bar so we can draw our border correctly
 		SetStatusHeight(GetSystemMetrics(SM_CXSIZEFRAME) + ui::GetTextHeight(::GetDesktopWindow()));
 
-		m_lpParent = pParentWnd;
+		m_lpParent = ui::GetParentWnd();
 		if (m_lpParent) m_lpParent->AddRef();
 
 		m_ulAddInContext = ulAddInContext;
@@ -158,7 +157,7 @@ namespace dialog
 
 		m_lpszTemplateName = MAKEINTRESOURCE(IDD_BLANK_DIALOG);
 
-		DisplayParentedDialog(nullptr, NULL);
+		DisplayParentedDialog(0);
 
 		HMENU hMenu = nullptr;
 		if (nIDMenuResource)
@@ -210,7 +209,7 @@ namespace dialog
 			OnHexEditor();
 			return true;
 		case ID_DBGVIEW:
-			editor::DisplayDbgView(m_lpParent);
+			editor::DisplayDbgView();
 			return true;
 		case ID_COMPAREENTRYIDS:
 			OnCompareEntryIDs();
@@ -313,7 +312,7 @@ namespace dialog
 		case 'D':
 			if (bCtrl)
 			{
-				editor::DisplayDbgView(m_lpParent);
+				editor::DisplayDbgView();
 				return true;
 			}
 			break;
@@ -419,7 +418,7 @@ namespace dialog
 
 	void CBaseDialog::OnOpenMainWindow()
 	{
-		auto pMain = new CMainDlg(m_lpParent, m_lpMapiObjects);
+		auto pMain = new CMainDlg(m_lpMapiObjects);
 		if (pMain) pMain->OnOpenMessageStoreTable();
 	}
 
@@ -650,7 +649,7 @@ namespace dialog
 		return S_OK;
 	}
 
-	void CBaseDialog::OnHexEditor() { new editor::CHexEditor(m_lpParent, m_lpMapiObjects); }
+	void CBaseDialog::OnHexEditor() { new editor::CHexEditor(m_lpMapiObjects); }
 
 	void CBaseDialog::OnOutlookVersion()
 	{
@@ -991,8 +990,6 @@ namespace dialog
 			output::dbgLevel::AddInPlumbing, CLASS, L"HandleAddInMenu", L"wMenuSelect = 0x%08X\n", wMenuSelect);
 		return false;
 	}
-
-	_Check_return_ ui::CParentWnd* CBaseDialog::GetParentWnd() const noexcept { return m_lpParent; }
 
 	_Check_return_ std::shared_ptr<cache::CMapiObjects> CBaseDialog::GetMapiObjects() const noexcept
 	{

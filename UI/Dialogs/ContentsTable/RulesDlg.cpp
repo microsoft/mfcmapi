@@ -17,12 +17,8 @@ namespace dialog
 #define RULE_INCLUDE_ID 0x00000001
 #define RULE_INCLUDE_OTHER 0x00000002
 
-	CRulesDlg::CRulesDlg(
-		_In_ ui::CParentWnd* pParentWnd,
-		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
-		_In_ LPEXCHANGEMODIFYTABLE lpExchTbl)
+	CRulesDlg::CRulesDlg(_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects, _In_ LPEXCHANGEMODIFYTABLE lpExchTbl)
 		: CContentsTableDlg(
-			  pParentWnd,
 			  lpMapiObjects,
 			  IDS_RULESTABLE,
 			  createDialogType::DO_NOT_CALL_CREATE_DIALOG,

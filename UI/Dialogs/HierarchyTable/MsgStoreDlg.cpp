@@ -27,13 +27,11 @@ namespace dialog
 	static std::wstring CLASS = L"CMsgStoreDlg";
 
 	CMsgStoreDlg::CMsgStoreDlg(
-		_In_ ui::CParentWnd* pParentWnd,
 		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 		_In_opt_ LPMAPIPROP lpMDB,
 		_In_opt_ LPMAPIPROP lpRootFolder,
 		tableDisplayFlags displayFlags)
 		: CHierarchyTableDlg(
-			  pParentWnd,
 			  lpMapiObjects,
 			  IDS_FOLDERTREE,
 			  lpRootFolder,
@@ -288,7 +286,7 @@ namespace dialog
 
 				if (lpMAPIFormContainer)
 				{
-					new CFormContainerDlg(m_lpParent, m_lpMapiObjects, lpMAPIFormContainer);
+					new CFormContainerDlg(m_lpMapiObjects, lpMAPIFormContainer);
 
 					lpMAPIFormContainer->Release();
 				}
@@ -648,7 +646,7 @@ namespace dialog
 				if (lpMAPIFolder)
 				{
 					// call the dialog
-					new CFolderDlg(m_lpParent, m_lpMapiObjects, lpMAPIFolder, tableDisplayFlags::dfDeleted);
+					new CFolderDlg(m_lpMapiObjects, lpMAPIFolder, tableDisplayFlags::dfDeleted);
 
 					lpMAPIFolder->Release();
 				}
@@ -665,16 +663,16 @@ namespace dialog
 
 		if (lpFolder)
 		{
-			new CMsgStoreDlg(m_lpParent, m_lpMapiObjects, m_lpMDB, lpFolder, tableDisplayFlags::dfDeleted);
+			new CMsgStoreDlg(m_lpMapiObjects, m_lpMDB, lpFolder, tableDisplayFlags::dfDeleted);
 			lpFolder->Release();
 		}
 	}
 
 	void CMsgStoreDlg::OnDisplayMailboxTable()
 	{
-		if (!m_lpParent || !m_lpMapiObjects) return;
+		if (!m_lpMapiObjects) return;
 
-		DisplayMailboxTable(m_lpParent, m_lpMapiObjects);
+		DisplayMailboxTable(m_lpMapiObjects);
 	}
 
 	void CMsgStoreDlg::OnEmptyFolder()

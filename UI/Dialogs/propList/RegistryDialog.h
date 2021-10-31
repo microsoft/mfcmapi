@@ -8,7 +8,7 @@ namespace dialog
 	class RegistryDialog : public CBaseDialog
 	{
 	public:
-		RegistryDialog(_In_ ui::CParentWnd* pParentWnd, _In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects);
+		RegistryDialog(_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects);
 		~RegistryDialog();
 
 	protected:

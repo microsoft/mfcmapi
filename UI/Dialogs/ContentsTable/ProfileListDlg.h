@@ -11,10 +11,7 @@ namespace dialog
 	class CProfileListDlg : public CContentsTableDlg
 	{
 	public:
-		CProfileListDlg(
-			_In_ ui::CParentWnd* pParentWnd,
-			_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
-			_In_ LPMAPITABLE lpMAPITable);
+		CProfileListDlg(_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects, _In_ LPMAPITABLE lpMAPITable);
 		~CProfileListDlg();
 
 	private:
