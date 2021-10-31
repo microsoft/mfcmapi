@@ -17,6 +17,10 @@ namespace controls
 			WS_CHILD | WS_CLIPSIBLINGS | ES_READONLY | WS_VISIBLE | WS_TABSTOP, CRect(0, 0, 0, 0), pParent, nid));
 		::SetWindowTextW(m_hWnd, m_szLabel.c_str());
 		ui::SubclassLabel(m_hWnd);
+		if (m_bCollapsible)
+		{
+			StyleLabel(m_hWnd, ui::uiLabelStyle::PaneHeaderLabel);
+		}
 
 		EC_B_S(m_rightLabel.Create(
 			WS_CHILD | WS_CLIPSIBLINGS | ES_READONLY | WS_VISIBLE | WS_TABSTOP,
@@ -28,8 +32,6 @@ namespace controls
 
 		if (m_bCollapsible)
 		{
-			StyleLabel(m_hWnd, ui::uiLabelStyle::PaneHeaderLabel);
-
 			EC_B_S(m_CollapseButton.Create(
 				nullptr,
 				WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE,
