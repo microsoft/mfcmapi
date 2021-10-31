@@ -3,7 +3,7 @@
 
 namespace controls
 {
-	class PaneHeader : public CEdit
+	class PaneHeader
 	{
 	public:
 		virtual ~PaneHeader() = default;
@@ -56,6 +56,7 @@ namespace controls
 		int m_iLabelHeight{}; // Height of the label
 		int m_iButtonHeight{}; // Height of button
 
+		CEdit m_leftLabel; // Label on left of header
 		CEdit m_rightLabel; // Label on right of header
 		int m_rightLabelWidth{0}; // The width of the string
 
