@@ -13,13 +13,13 @@ namespace controls
 		m_nIDCollapse = nid + IDD_COLLAPSE;
 		// TODO: We don't save our header's nID here, but we could if we wanted
 
-		EC_B_S(m_leftLabel.Create(
+		EC_B_S(Create(
 			WS_CHILD | WS_CLIPSIBLINGS | ES_READONLY | WS_VISIBLE | WS_TABSTOP, CRect(0, 0, 0, 0), pParent, nid));
-		::SetWindowTextW(m_leftLabel.m_hWnd, m_szLabel.c_str());
-		ui::SubclassLabel(m_leftLabel.m_hWnd);
+		::SetWindowTextW(m_hWnd, m_szLabel.c_str());
+		ui::SubclassLabel(m_hWnd);
 		if (m_bCollapsible)
 		{
-			StyleLabel(m_leftLabel.m_hWnd, ui::uiLabelStyle::PaneHeaderLabel);
+			StyleLabel(m_hWnd, ui::uiLabelStyle::PaneHeaderLabel);
 		}
 
 		EC_B_S(m_rightLabel.Create(
@@ -95,7 +95,7 @@ namespace controls
 			curX,
 			m_iLabelWidth);
 
-		::DeferWindowPos(hWinPosInfo, m_leftLabel.GetSafeHwnd(), nullptr, curX, y, m_iLabelWidth, height, SWP_NOZORDER);
+		::DeferWindowPos(hWinPosInfo, GetSafeHwnd(), nullptr, curX, y, m_iLabelWidth, height, SWP_NOZORDER);
 
 		if (!m_bCollapsed)
 		{
