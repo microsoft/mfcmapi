@@ -535,7 +535,7 @@ namespace dialog
 
 	void CBaseDialog::OnSize(UINT /* nType*/, const int cx, const int cy)
 	{
-		const auto hdwp = WC_D(HDWP, BeginDeferWindowPos(1));
+		auto hdwp = WC_D(HDWP, BeginDeferWindowPos(1));
 		if (hdwp)
 		{
 			const auto iHeight = GetStatusHeight();
@@ -551,7 +551,8 @@ namespace dialog
 
 			if (m_lpFakeSplitter && m_lpFakeSplitter.m_hWnd)
 			{
-				DeferWindowPos(hdwp, m_lpFakeSplitter.m_hWnd, nullptr, 0, 0, cx, iNewCY, SWP_NOZORDER);
+				hdwp =
+					EC_D(HDWP, DeferWindowPos(hdwp, m_lpFakeSplitter.m_hWnd, nullptr, 0, 0, cx, iNewCY, SWP_NOZORDER));
 			}
 
 			WC_B_S(EndDeferWindowPos(hdwp));

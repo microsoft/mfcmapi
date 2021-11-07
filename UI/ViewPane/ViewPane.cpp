@@ -7,7 +7,7 @@
 namespace viewpane
 {
 	// Draw our header, if needed.
-	void ViewPane::DeferWindowPos(
+	HDWP ViewPane::DeferWindowPos(
 		_In_ HDWP hWinPosInfo,
 		const _In_ int x,
 		const _In_ int y,
@@ -15,7 +15,9 @@ namespace viewpane
 		const _In_ int /*height*/)
 	{
 		output::DebugPrint(output::dbgLevel::Draw, L"ViewPane::DeferWindowPos x:%d width:%d \n", x, width);
-		m_Header.DeferWindowPos(hWinPosInfo, x, y, width);
+		hWinPosInfo = EC_D(HDWP, m_Header.DeferWindowPos(hWinPosInfo, x, y, width));
+
+		return hWinPosInfo;
 	}
 
 	void ViewPane::Initialize(_In_ CWnd* pParent, _In_opt_ HDC hdc)

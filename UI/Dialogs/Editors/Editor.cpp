@@ -906,7 +906,7 @@ namespace dialog::editor
 			iCYTop = -iScrollPos; // We get scrolling for free by adjusting our top
 		}
 
-		const auto hdwp = WC_D(HDWP, BeginDeferWindowPos(2));
+		auto hdwp = WC_D(HDWP, BeginDeferWindowPos(2));
 		if (hdwp)
 		{
 			for (const auto& pane : m_Panes)
@@ -934,12 +934,14 @@ namespace dialog::editor
 					}
 
 					const auto paneHeight = iViewHeight + pane->GetFixedHeight();
-					pane->DeferWindowPos(
-						hdwp,
-						iCXMargin, // x
-						iCYTop, // y
-						iFullWidth, // width
-						paneHeight); // height
+					hdwp = EC_D(
+						HDWP,
+						pane->DeferWindowPos(
+							hdwp,
+							iCXMargin, // x
+							iCYTop, // y
+							iFullWidth, // width
+							paneHeight)); // height
 					iCYTop += paneHeight;
 				}
 			}

@@ -108,7 +108,7 @@ namespace viewpane
 		OnActionButton(bin);
 	}
 
-	void SmartViewPane::DeferWindowPos(
+	HDWP SmartViewPane::DeferWindowPos(
 		_In_ HDWP hWinPosInfo,
 		_In_ const int x,
 		_In_ const int y,
@@ -123,22 +123,25 @@ namespace viewpane
 		}
 
 		// Layout our label
-		ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y));
+		hWinPosInfo = EC_D(HDWP, ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y)));
 
 		curY += labelHeight + m_iSmallHeightMargin;
 
 		if (!collapsed())
 		{
-			EC_B_S(::DeferWindowPos(
-				hWinPosInfo, m_DropDown.GetSafeHwnd(), nullptr, x, curY, width, m_iEditHeight * 10, SWP_NOZORDER));
+			hWinPosInfo = EC_D(
+				HDWP,
+				::DeferWindowPos(
+					hWinPosInfo, m_DropDown.GetSafeHwnd(), nullptr, x, curY, width, m_iEditHeight * 10, SWP_NOZORDER));
 
 			curY += m_iEditHeight;
 
-			m_Splitter->DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y));
+			hWinPosInfo = EC_D(HDWP, m_Splitter->DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y)));
 		}
 
 		WC_B_S(m_DropDown.ShowWindow(collapsed() ? SW_HIDE : SW_SHOW));
 		m_Splitter->ShowWindow(collapsed() || !m_bHasData ? SW_HIDE : SW_SHOW);
+		return hWinPosInfo;
 	}
 
 	void SmartViewPane::SetMargins(

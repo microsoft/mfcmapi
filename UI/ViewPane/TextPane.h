@@ -13,8 +13,10 @@ namespace viewpane
 	{
 	public:
 		static std::shared_ptr<TextPane> CreateMultiLinePane(int paneID, UINT uidLabel, bool bReadOnly);
-		static std::shared_ptr<TextPane> CreateMultiLinePane(int paneID, UINT uidLabel, _In_ const std::wstring& szVal, bool bReadOnly);
-		static std::shared_ptr<TextPane> CreateSingleLinePane(int paneID, UINT uidLabel, bool bReadOnly, bool bMultiLine = false);
+		static std::shared_ptr<TextPane>
+		CreateMultiLinePane(int paneID, UINT uidLabel, _In_ const std::wstring& szVal, bool bReadOnly);
+		static std::shared_ptr<TextPane>
+		CreateSingleLinePane(int paneID, UINT uidLabel, bool bReadOnly, bool bMultiLine = false);
 		static std::shared_ptr<TextPane> CreateSingleLinePane(
 			int paneID,
 			UINT uidLabel,
@@ -25,7 +27,7 @@ namespace viewpane
 		static std::shared_ptr<TextPane> CreateCollapsibleTextPane(int paneID, UINT uidLabel, bool bReadOnly);
 
 		void Initialize(_In_ CWnd* pParent, _In_ HDC hdc) override;
-		void DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height) override;
+		HDWP DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height) override;
 		int GetFixedHeight() override;
 		int GetLines() override;
 

@@ -149,7 +149,7 @@ namespace viewpane
 		return GetID();
 	}
 
-	void ListPane::DeferWindowPos(
+	HDWP ListPane::DeferWindowPos(
 		_In_ HDWP hWinPosInfo,
 		_In_ const int x,
 		_In_ const int y,
@@ -164,14 +164,16 @@ namespace viewpane
 		}
 
 		// Layout our label
-		ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y));
+		hWinPosInfo = EC_D(HDWP, ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y)));
 		curY += labelHeight + m_iSmallHeightMargin;
 
 		const auto cmdShow = collapsed() ? SW_HIDE : SW_SHOW;
 		WC_B_S(m_List.ShowWindow(cmdShow));
 		auto listHeight = height - (curY - y);
 		if (!m_bReadOnly) listHeight -= m_iLargeHeightMargin + m_iButtonHeight;
-		EC_B_S(::DeferWindowPos(hWinPosInfo, m_List.GetSafeHwnd(), nullptr, x, curY, width, listHeight, SWP_NOZORDER));
+		hWinPosInfo = EC_D(
+			HDWP,
+			::DeferWindowPos(hWinPosInfo, m_List.GetSafeHwnd(), nullptr, x, curY, width, listHeight, SWP_NOZORDER));
 
 		if (!m_bReadOnly)
 		{
@@ -184,17 +186,21 @@ namespace viewpane
 			for (auto iButton = 0; iButton < NUMLISTBUTTONS; iButton++)
 			{
 				WC_B_S(m_ButtonArray[iButton].ShowWindow(cmdShow));
-				EC_B_S(::DeferWindowPos(
-					hWinPosInfo,
-					m_ButtonArray[iButton].GetSafeHwnd(),
-					nullptr,
-					iOffset - iSlotWidth * (NUMLISTBUTTONS - iButton),
-					curY,
-					m_iButtonWidth,
-					m_iButtonHeight,
-					SWP_NOZORDER));
+				hWinPosInfo = EC_D(
+					HDWP,
+					::DeferWindowPos(
+						hWinPosInfo,
+						m_ButtonArray[iButton].GetSafeHwnd(),
+						nullptr,
+						iOffset - iSlotWidth * (NUMLISTBUTTONS - iButton),
+						curY,
+						m_iButtonWidth,
+						m_iButtonHeight,
+						SWP_NOZORDER));
 			}
 		}
+
+		return hWinPosInfo;
 	}
 
 	void ListPane::CommitUIValues() {}

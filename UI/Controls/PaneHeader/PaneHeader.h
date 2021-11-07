@@ -9,7 +9,7 @@ namespace controls
 		virtual ~PaneHeader() = default;
 
 		void Initialize(_In_ CWnd* pParent, _In_opt_ HDC hdc, _In_ UINT nid);
-		void DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width);
+		HDWP DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width);
 		int GetMinWidth();
 
 		void SetRightLabel(const std::wstring szLabel);
