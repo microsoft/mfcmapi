@@ -54,7 +54,7 @@ namespace viewpane
 		return iHeight;
 	}
 
-	void TreePane::DeferWindowPos(
+	HDWP TreePane::DeferWindowPos(
 		_In_ HDWP hWinPosInfo,
 		_In_ const int x,
 		_In_ const int y,
@@ -73,7 +73,7 @@ namespace viewpane
 
 		WC_B_S(m_Tree.ShowWindow(m_bCollapsed ? SW_HIDE : SW_SHOW));
 		// Layout our label
-		ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y));
+		hWinPosInfo = EC_D(HDWP, ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y)));
 
 		if (labelHeight)
 		{
@@ -82,6 +82,9 @@ namespace viewpane
 
 		auto treeHeight = height - (curY - y) - m_iSmallHeightMargin;
 
-		EC_B_S(::DeferWindowPos(hWinPosInfo, m_Tree.GetSafeHwnd(), nullptr, x, curY, width, treeHeight, SWP_NOZORDER));
+		hWinPosInfo =
+			EC_D(HDWP, ::DeferWindowPos(hWinPosInfo, m_Tree.GetSafeHwnd(), nullptr, x, curY, width, treeHeight, SWP_NOZORDER));
+
+		return hWinPosInfo;
 	}
 } // namespace viewpane

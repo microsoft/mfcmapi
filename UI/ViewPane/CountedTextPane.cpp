@@ -77,7 +77,7 @@ namespace viewpane
 
 	int CountedTextPane::GetLines() { return m_bCollapsed ? 0 : LINES_MULTILINEEDIT; }
 
-	void CountedTextPane::DeferWindowPos(
+	HDWP CountedTextPane::DeferWindowPos(
 		_In_ HDWP hWinPosInfo,
 		_In_ const int x,
 		_In_ const int y,
@@ -92,14 +92,15 @@ namespace viewpane
 		}
 
 		// Layout our label
-		ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y));
+		hWinPosInfo = EC_D(HDWP, ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y)));
 
 		if (m_bCollapsed)
 		{
 			WC_B_S(m_Count.ShowWindow(SW_HIDE));
 			WC_B_S(m_EditBox.ShowWindow(SW_HIDE));
 
-			EC_B_S(::DeferWindowPos(hWinPosInfo, m_EditBox.GetSafeHwnd(), nullptr, x, curY, 0, 0, SWP_NOZORDER));
+			hWinPosInfo = EC_D(
+				HDWP, ::DeferWindowPos(hWinPosInfo, m_EditBox.GetSafeHwnd(), nullptr, x, curY, 0, 0, SWP_NOZORDER));
 		}
 		else
 		{
@@ -107,28 +108,34 @@ namespace viewpane
 			WC_B_S(m_EditBox.ShowWindow(SW_SHOW));
 
 			// Drop the count on top of the label we drew above
-			EC_B_S(::DeferWindowPos(
-				hWinPosInfo,
-				m_Count.GetSafeHwnd(),
-				nullptr,
-				x + width - m_iCountLabelWidth,
-				curY,
-				m_iCountLabelWidth,
-				labelHeight,
-				SWP_NOZORDER));
+			hWinPosInfo = EC_D(
+				HDWP,
+				::DeferWindowPos(
+					hWinPosInfo,
+					m_Count.GetSafeHwnd(),
+					nullptr,
+					x + width - m_iCountLabelWidth,
+					curY,
+					m_iCountLabelWidth,
+					labelHeight,
+					SWP_NOZORDER));
 
 			curY += labelHeight + m_iSmallHeightMargin;
 
-			EC_B_S(::DeferWindowPos(
-				hWinPosInfo,
-				m_EditBox.GetSafeHwnd(),
-				nullptr,
-				x,
-				curY,
-				width,
-				height - (curY - y) - m_iSmallHeightMargin,
-				SWP_NOZORDER));
+			hWinPosInfo = EC_D(
+				HDWP,
+				::DeferWindowPos(
+					hWinPosInfo,
+					m_EditBox.GetSafeHwnd(),
+					nullptr,
+					x,
+					curY,
+					width,
+					height - (curY - y) - m_iSmallHeightMargin,
+					SWP_NOZORDER));
 		}
+
+		return hWinPosInfo;
 	}
 
 	void CountedTextPane::SetCount(size_t iCount) { m_iCount = iCount; }

@@ -12,7 +12,7 @@ namespace viewpane
 		void SetReadOnly(const bool bReadOnly) noexcept { m_bReadOnly = bReadOnly; }
 
 		virtual void Initialize(_In_ CWnd* pParent, _In_opt_ HDC hdc);
-		virtual void DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height);
+		virtual HDWP DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height);
 
 		virtual void CommitUIValues() = 0;
 		virtual bool IsDirty() { return false; }

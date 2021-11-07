@@ -14,7 +14,7 @@ namespace viewpane
 		std::shared_ptr<ViewPane> GetPaneTwo() noexcept { return m_PaneTwo; }
 		void SetPaneTwo(std::shared_ptr<ViewPane> paneTwo) noexcept { m_PaneTwo = paneTwo; }
 		void Initialize(_In_ CWnd* pParent, _In_ HDC hdc) override;
-		void DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height) override;
+		HDWP DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height) override;
 		int GetFixedHeight() override;
 		int GetLines() override;
 		void SetMargins(

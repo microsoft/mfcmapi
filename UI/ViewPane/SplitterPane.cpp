@@ -159,7 +159,7 @@ namespace viewpane
 		m_bInitialized = true;
 	}
 
-	void SplitterPane::DeferWindowPos(
+	HDWP SplitterPane::DeferWindowPos(
 		_In_ HDWP hWinPosInfo,
 		_In_ const int x,
 		_In_ const int y,
@@ -182,7 +182,7 @@ namespace viewpane
 		}
 
 		// Layout our label
-		ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y));
+		hWinPosInfo = EC_D(HDWP, ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y)));
 
 		if (m_bCollapsed)
 		{
@@ -196,9 +196,20 @@ namespace viewpane
 			}
 
 			WC_B_S(m_lpSplitter->ShowWindow(SW_SHOW));
-			::DeferWindowPos(
-				hWinPosInfo, m_lpSplitter->GetSafeHwnd(), nullptr, x, curY, width, height - (curY - y), SWP_NOZORDER);
+			hWinPosInfo = EC_D(
+				HDWP,
+				::DeferWindowPos(
+					hWinPosInfo,
+					m_lpSplitter->GetSafeHwnd(),
+					nullptr,
+					x,
+					curY,
+					width,
+					height - (curY - y),
+					SWP_NOZORDER));
 			m_lpSplitter->OnSize(NULL, width, height - (curY - y));
 		}
+
+		return hWinPosInfo;
 	}
 } // namespace viewpane

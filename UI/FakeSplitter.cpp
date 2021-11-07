@@ -125,15 +125,15 @@ namespace controls
 	{
 		CalcSplitPos();
 
-		const auto hdwp = WC_D(HDWP, BeginDeferWindowPos(2));
+		auto hdwp = WC_D(HDWP, BeginDeferWindowPos(2));
 		if (hdwp)
 		{
-			DeferWindowPos(hdwp, 0, 0, cx, cy);
+			hdwp = EC_D(HDWP, DeferWindowPos(hdwp, 0, 0, cx, cy));
 			EC_B_S(EndDeferWindowPos(hdwp));
 		}
 	}
 
-	void CFakeSplitter::DeferWindowPos(
+	HDWP CFakeSplitter::DeferWindowPos(
 		_In_ HDWP hWinPosInfo,
 		_In_ const int x,
 		_In_ const int y,
@@ -155,12 +155,14 @@ namespace controls
 
 			if (m_PaneOne)
 			{
-				::DeferWindowPos(hWinPosInfo, m_PaneOne, nullptr, x, y, r1.Width(), r1.Height(), SWP_NOZORDER);
+				hWinPosInfo = EC_D(
+					HDWP,
+					::DeferWindowPos(hWinPosInfo, m_PaneOne, nullptr, x, y, r1.Width(), r1.Height(), SWP_NOZORDER));
 			}
 
 			if (m_ViewPaneOne)
 			{
-				m_ViewPaneOne->DeferWindowPos(hWinPosInfo, x, y, r1.Width(), r1.Height());
+				hWinPosInfo = EC_D(HDWP, m_ViewPaneOne->DeferWindowPos(hWinPosInfo, x, y, r1.Width(), r1.Height()));
 			}
 		}
 
@@ -186,15 +188,20 @@ namespace controls
 
 			if (m_PaneTwo)
 			{
-				::DeferWindowPos(
-					hWinPosInfo, m_PaneTwo, nullptr, r2.left, r2.top, r2.Width(), r2.Height(), SWP_NOZORDER);
+				hWinPosInfo = EC_D(
+					HDWP,
+					::DeferWindowPos(
+						hWinPosInfo, m_PaneTwo, nullptr, r2.left, r2.top, r2.Width(), r2.Height(), SWP_NOZORDER));
 			}
 
 			if (m_ViewPaneTwo)
 			{
-				m_ViewPaneTwo->DeferWindowPos(hWinPosInfo, r2.left, r2.top, r2.Width(), r2.Height());
+				hWinPosInfo =
+					EC_D(HDWP, m_ViewPaneTwo->DeferWindowPos(hWinPosInfo, r2.left, r2.top, r2.Width(), r2.Height()));
 			}
 		}
+
+		return hWinPosInfo;
 	}
 
 	void CFakeSplitter::CalcSplitPos()

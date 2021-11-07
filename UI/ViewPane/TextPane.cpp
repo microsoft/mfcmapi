@@ -164,7 +164,7 @@ namespace viewpane
 		return 0;
 	}
 
-	void TextPane::DeferWindowPos(
+	HDWP TextPane::DeferWindowPos(
 		_In_ HDWP hWinPosInfo,
 		_In_ const int x,
 		_In_ const int y,
@@ -179,13 +179,14 @@ namespace viewpane
 		}
 
 		// Layout our label
-		ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y));
+		hWinPosInfo = EC_D(HDWP, ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y)));
 
 		if (m_bCollapsed)
 		{
 			WC_B_S(m_EditBox.ShowWindow(SW_HIDE));
 
-			EC_B_S(::DeferWindowPos(hWinPosInfo, m_EditBox.GetSafeHwnd(), nullptr, x, curY, 0, 0, SWP_NOZORDER));
+			hWinPosInfo = EC_D(
+				HDWP, ::DeferWindowPos(hWinPosInfo, m_EditBox.GetSafeHwnd(), nullptr, x, curY, 0, 0, SWP_NOZORDER));
 		}
 		else
 		{
@@ -198,9 +199,13 @@ namespace viewpane
 
 			WC_B_S(m_EditBox.ShowWindow(SW_SHOW));
 
-			EC_B_S(::DeferWindowPos(
-				hWinPosInfo, m_EditBox.GetSafeHwnd(), nullptr, x, curY, width, editHeight, SWP_NOZORDER));
+			hWinPosInfo = EC_D(
+				HDWP,
+				::DeferWindowPos(
+					hWinPosInfo, m_EditBox.GetSafeHwnd(), nullptr, x, curY, width, editHeight, SWP_NOZORDER));
 		}
+
+		return hWinPosInfo;
 	}
 
 	void TextPane::Initialize(_In_ CWnd* pParent, _In_ HDC hdc)
