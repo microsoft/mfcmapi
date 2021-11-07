@@ -53,7 +53,7 @@ namespace viewpane
 		m_bInitialized = true;
 	}
 
-	void CheckPane::DeferWindowPos(
+	HDWP CheckPane::DeferWindowPos(
 		_In_ HDWP hWinPosInfo,
 		_In_ const int x,
 		_In_ const int y,
@@ -61,7 +61,9 @@ namespace viewpane
 		_In_ const int height)
 	{
 		output::DebugPrint(output::dbgLevel::Draw, L"CheckPane::DeferWindowPos x:%d width:%d \n", x, width);
-		EC_B_S(::DeferWindowPos(hWinPosInfo, m_Check.GetSafeHwnd(), nullptr, x, y, width, height, SWP_NOZORDER));
+		hWinPosInfo = EC_D(
+			HDWP, ::DeferWindowPos(hWinPosInfo, m_Check.GetSafeHwnd(), nullptr, x, y, width, height, SWP_NOZORDER));
+		return hWinPosInfo;
 	}
 
 	void CheckPane::CommitUIValues()
@@ -99,8 +101,9 @@ namespace viewpane
 			hDC,
 			&rcCheck,
 			GetSysBrush(
-				bDisabled ? ui::uiColor::FrameUnselected
-						  : bGlow || bFocused ? ui::uiColor::Glow : ui::uiColor::FrameSelected));
+				bDisabled			? ui::uiColor::FrameUnselected
+				: bGlow || bFocused ? ui::uiColor::Glow
+									: ui::uiColor::FrameSelected));
 		if (bChecked)
 		{
 			auto rcFill = rcCheck;

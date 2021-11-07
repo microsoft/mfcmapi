@@ -85,7 +85,7 @@ namespace viewpane
 		return 0;
 	}
 
-	void SmartViewPane::DeferWindowPos(
+	HDWP SmartViewPane::DeferWindowPos(
 		_In_ HDWP hWinPosInfo,
 		_In_ const int x,
 		_In_ const int y,
@@ -104,7 +104,7 @@ namespace viewpane
 		}
 
 		// Layout our label
-		ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y));
+		hWinPosInfo = EC_D(HDWP, ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y)));
 
 		curY += labelHeight + m_iSmallHeightMargin;
 
@@ -112,17 +112,28 @@ namespace viewpane
 		{
 			if (m_bDoDropDown)
 			{
-				EC_B_S(::DeferWindowPos(
-					hWinPosInfo, m_DropDown.GetSafeHwnd(), nullptr, x, curY, width, m_iEditHeight * 10, SWP_NOZORDER));
+				hWinPosInfo = EC_D(
+					HDWP,
+					::DeferWindowPos(
+						hWinPosInfo,
+						m_DropDown.GetSafeHwnd(),
+						nullptr,
+						x,
+						curY,
+						width,
+						m_iEditHeight * 10,
+						SWP_NOZORDER));
 
 				curY += m_iEditHeight;
 			}
 
-			m_Splitter->DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y));
+			hWinPosInfo = EC_D(HDWP, m_Splitter->DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y)));
 		}
 
 		WC_B_S(m_DropDown.ShowWindow(m_bCollapsed ? SW_HIDE : SW_SHOW));
 		m_Splitter->ShowWindow(m_bCollapsed || !m_bHasData ? SW_HIDE : SW_SHOW);
+
+		return hWinPosInfo;
 	}
 
 	void SmartViewPane::SetMargins(
@@ -185,8 +196,7 @@ namespace viewpane
 		auto source = 0;
 		for (auto& bin : m_bins)
 		{
-			auto svp =
-				smartview::InterpretBinary({static_cast<ULONG>(bin.size()), bin.data()}, iStructType, nullptr);
+			auto svp = smartview::InterpretBinary({static_cast<ULONG>(bin.size()), bin.data()}, iStructType, nullptr);
 			if (svp)
 			{
 				svp->setSource(source++);
@@ -219,8 +229,7 @@ namespace viewpane
 		{
 			// This loans pointers to our blocks to the visual tree without refcounting.
 			// Care must be taken to ensure we never release treeData without first clearing the UI.
-			root =
-				m_TreePane->m_Tree.AddChildNode(data->getText(), parent, data.get(), nullptr);
+			root = m_TreePane->m_Tree.AddChildNode(data->getText(), parent, data.get(), nullptr);
 		}
 
 		for (const auto& item : data->getChildren())

@@ -8,7 +8,7 @@ namespace viewpane
 {
 	// Draw our collapse button and label, if needed.
 	// Draws everything to GetLabelHeight()
-	void ViewPane::DeferWindowPos(
+	HDWP ViewPane::DeferWindowPos(
 		_In_ HDWP hWinPosInfo,
 		const _In_ int x,
 		const _In_ int y,
@@ -21,8 +21,10 @@ namespace viewpane
 		{
 			StyleButton(
 				m_CollapseButton.m_hWnd, m_bCollapsed ? ui::uiButtonStyle::UpArrow : ui::uiButtonStyle::DownArrow);
-			::DeferWindowPos(
-				hWinPosInfo, m_CollapseButton.GetSafeHwnd(), nullptr, curX, y, width, labelHeight, SWP_NOZORDER);
+			hWinPosInfo = EC_D(
+				HDWP,
+				::DeferWindowPos(
+					hWinPosInfo, m_CollapseButton.GetSafeHwnd(), nullptr, curX, y, width, labelHeight, SWP_NOZORDER));
 			curX += m_iButtonHeight;
 		}
 
@@ -34,8 +36,12 @@ namespace viewpane
 			curX,
 			m_iLabelWidth);
 
-		::DeferWindowPos(
-			hWinPosInfo, m_Label.GetSafeHwnd(), nullptr, curX, y, m_iLabelWidth, labelHeight, SWP_NOZORDER);
+		hWinPosInfo = EC_D(
+			HDWP,
+			::DeferWindowPos(
+				hWinPosInfo, m_Label.GetSafeHwnd(), nullptr, curX, y, m_iLabelWidth, labelHeight, SWP_NOZORDER));
+
+		return hWinPosInfo;
 	}
 
 	void ViewPane::Initialize(_In_ CWnd* pParent, _In_opt_ HDC hdc)

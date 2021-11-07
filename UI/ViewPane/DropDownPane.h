@@ -31,7 +31,7 @@ namespace viewpane
 		CComboBox m_DropDown;
 
 	private:
-		void DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height) override;
+		HDWP DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height) override;
 		void CommitUIValues() override;
 		int GetMinWidth() override;
 		int GetFixedHeight() override;
