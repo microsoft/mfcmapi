@@ -8,12 +8,6 @@ namespace controls
 {
 	static std::wstring CLASS = L"CFakeSplitter2";
 
-	enum FakesSplitHitTestValue
-	{
-		noHit = 0,
-		SplitterHit = 1
-	};
-
 	CFakeSplitter2::~CFakeSplitter2()
 	{
 		TRACE_DESTRUCTOR(CLASS);
@@ -39,8 +33,8 @@ namespace controls
 		// WS_CLIPCHILDREN is used to reduce flicker
 		EC_B_S(CreateEx(
 			0,
-			_T("FakeSplitter"), // STRING_OK
-			_T("FakeSplitter"), // STRING_OK
+			_T("FakeSplitter2"), // STRING_OK
+			_T("FakeSplitter2"), // STRING_OK
 			WS_CHILD | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_VISIBLE,
 			0,
 			0,
@@ -58,7 +52,35 @@ namespace controls
 	BEGIN_MESSAGE_MAP(CFakeSplitter2, CWnd)
 	ON_WM_SIZE()
 	ON_WM_PAINT()
+	ON_WM_CREATE()
 	END_MESSAGE_MAP()
+
+	int CFakeSplitter2::OnCreate(LPCREATESTRUCT /*lpCreateStruct*/)
+	{
+		EC_B_S(m_rightLabel.Create(
+			WS_CHILD | WS_CLIPSIBLINGS | ES_READONLY | WS_VISIBLE | WS_TABSTOP,
+			CRect(0, 0, 0, 0),
+			this,
+			IDD_COUNTLABEL));
+		ui::SubclassLabel(m_rightLabel.m_hWnd);
+		StyleLabel(m_rightLabel.m_hWnd, ui::uiLabelStyle::PaneHeaderText);
+
+		SetRightLabel(L"Hello world");
+		return 0;
+	}
+
+	void CFakeSplitter2::SetRightLabel(const std::wstring szLabel)
+	{
+		//if (!m_bInitialized) return;
+		EC_B_S(::SetWindowTextW(m_rightLabel.m_hWnd, szLabel.c_str()));
+
+		const auto hdc = ::GetDC(m_rightLabel.GetSafeHwnd());
+		const auto hfontOld = SelectObject(hdc, ui::GetSegoeFont());
+		const auto sizeText = ui::GetTextExtentPoint32(hdc, szLabel);
+		static_cast<void>(SelectObject(hdc, hfontOld));
+		::ReleaseDC(m_rightLabel.GetSafeHwnd(), hdc);
+		m_rightLabelWidth = sizeText.cx;
+	}
 
 	LRESULT CFakeSplitter2::WindowProc(const UINT message, const WPARAM wParam, const LPARAM lParam)
 	{
@@ -87,10 +109,6 @@ namespace controls
 		return CWnd::WindowProc(message, wParam, lParam);
 	}
 
-	void CFakeSplitter2::SetPaneOne(HWND paneOne) noexcept { m_PaneOne = paneOne; }
-
-	void CFakeSplitter2::SetPaneTwo(HWND /*paneTwo*/) noexcept {}
-
 	void CFakeSplitter2::OnSize(UINT /*nType*/, const int cx, const int cy)
 	{
 		auto hdwp = WC_D(HDWP, BeginDeferWindowPos(2));
@@ -117,28 +135,17 @@ namespace controls
 			height,
 			IsWindowVisible());
 		InvalidateRect(CRect(x, y, width, height), false);
-		if (m_PaneOne || m_ViewPaneOne)
+		// Drop the count on top of the label we drew above
+		if (m_rightLabel.GetSafeHwnd())
 		{
-			CRect r1;
-			r1.SetRect(x, y, width, height);
-
-			if (m_PaneOne)
-			{
-				hWinPosInfo = ui::DeferWindowPos(
-					hWinPosInfo, m_PaneOne, x, y, r1.Width(), r1.Height(), L"CFakeSplitter2::DeferWindowPos pane 1");
-			}
-
-			if (m_ViewPaneOne)
-			{
-				output::DebugPrint(
-					output::dbgLevel::Draw,
-					L"CFakeSplitter2::DeferWindowPos viewpane 1 x:%d y:%d width:%d height:%d\n",
-					x,
-					y,
-					width,
-					height);
-				hWinPosInfo = EC_D(HDWP, m_ViewPaneOne->DeferWindowPos(hWinPosInfo, x, y, r1.Width(), r1.Height()));
-			}
+			hWinPosInfo = ui::DeferWindowPos(
+				hWinPosInfo,
+				m_rightLabel.GetSafeHwnd(),
+				x /* + width - m_rightLabelWidth - actionButtonAndGutterWidth */,
+				y,
+				m_rightLabelWidth,
+				height,
+				L"PaneHeader::DeferWindowPos::rightLabel");
 		}
 
 		output::DebugPrint(output::dbgLevel::Draw, L"CFakeSplitter2::DeferWindowPos end\n");

@@ -19,11 +19,12 @@ namespace controls
 		~CFakeSplitter2();
 
 		void Init(HWND hWnd);
-		void SetPaneOne(HWND paneOne) noexcept;
-		void SetPaneTwo(HWND paneTwo) noexcept;
+		void SetPaneOne(HWND /*paneOne*/) noexcept {}
+		void SetPaneTwo(HWND /*paneTwo*/) noexcept {}
 		void SetPaneOne(std::shared_ptr<viewpane::ViewPane> paneOne) noexcept { m_ViewPaneOne = paneOne; }
 		void SetPaneTwo(std::shared_ptr<viewpane::ViewPane> paneTwo) noexcept {}
 
+		void SetRightLabel(const std::wstring szLabel);
 		void SetPercent(FLOAT /*iNewPercent*/) {}
 		void SetSplitType(splitType /*stSplitType*/) noexcept {}
 		void OnSize(UINT nType, int cx, int cy);
@@ -36,7 +37,11 @@ namespace controls
 
 	private:
 		void OnPaint();
+		int OnCreate(LPCREATESTRUCT lpCreateStruct);
 		LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
+
+		CEdit m_rightLabel; // Label on right of header
+		int m_rightLabelWidth{0}; // The width of the string
 
 		HWND m_PaneOne{};
 		HWND m_hwndParent{};
