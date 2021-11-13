@@ -1,6 +1,6 @@
 #pragma once
 #include <UI/ViewPane/ViewPane.h>
-#include <UI/Controls/FakeSplitter.h>
+#include <UI/Controls/PaneHeader/FakeSplitter2.h>
 
 namespace viewpane
 {
@@ -35,7 +35,7 @@ namespace viewpane
 		void CommitUIValues() override {}
 		int GetMinWidth() override;
 
-		std::shared_ptr<controls::CFakeSplitter> m_lpSplitter{};
+		std::shared_ptr<controls::CFakeSplitter2> m_lpSplitter{};
 		std::shared_ptr<ViewPane> m_PaneOne{};
 		std::shared_ptr<ViewPane> m_PaneTwo{};
 		bool m_bVertical{};

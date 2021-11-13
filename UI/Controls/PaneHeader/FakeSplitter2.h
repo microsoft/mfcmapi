@@ -34,7 +34,7 @@ namespace controls
 			}
 		}
 
-		void SetPaneTwo(std::shared_ptr<viewpane::ViewPane> paneTwo) noexcept { m_ViewPaneTwo = paneTwo; }
+		void SetPaneTwo(std::shared_ptr<viewpane::ViewPane> paneTwo) noexcept { }
 
 		void SetPercent(FLOAT iNewPercent);
 		void SetSplitType(splitType stSplitType) noexcept;
@@ -60,10 +60,8 @@ namespace controls
 		bool m_bTracking{};
 		FLOAT m_flSplitPercent{0.5};
 		HWND m_PaneOne{};
-		HWND m_PaneTwo{};
 		HWND m_hwndParent{};
 		std::shared_ptr<viewpane::ViewPane> m_ViewPaneOne{};
-		std::shared_ptr<viewpane::ViewPane> m_ViewPaneTwo{};
 		int m_iSplitWidth{};
 		int m_iSplitPos{1};
 		splitType m_SplitType{splitType::horizontal};
