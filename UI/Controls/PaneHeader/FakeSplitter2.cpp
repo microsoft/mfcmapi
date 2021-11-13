@@ -17,8 +17,6 @@ namespace controls
 	CFakeSplitter2::~CFakeSplitter2()
 	{
 		TRACE_DESTRUCTOR(CLASS);
-		static_cast<void>(DestroyCursor(m_hSplitCursorH));
-		static_cast<void>(DestroyCursor(m_hSplitCursorV));
 		CWnd::DestroyWindow();
 	}
 
@@ -55,10 +53,6 @@ namespace controls
 		// Necessary for TAB to work. Without this, all TABS get stuck on the fake splitter control
 		// instead of passing to the children. Haven't tested with nested splitters.
 		EC_B_S(ModifyStyleEx(0, WS_EX_CONTROLPARENT));
-
-		// Load split cursors
-		m_hSplitCursorV = EC_D(HCURSOR, ::LoadCursor(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDC_SPLITV)));
-		m_hSplitCursorH = EC_D(HCURSOR, ::LoadCursor(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDC_SPLITH)));
 	}
 
 	BEGIN_MESSAGE_MAP(CFakeSplitter2, CWnd)
@@ -151,35 +145,6 @@ namespace controls
 		return hWinPosInfo;
 	}
 
-	void CFakeSplitter2::SetPercent(const FLOAT /*iNewPercent*/)
-	{
-		CRect rect;
-		GetClientRect(rect);
-
-		// Recalculate our layout
-		OnSize(0, rect.Width(), rect.Height());
-	}
-
-	void CFakeSplitter2::SetSplitType(const splitType stSplitType) noexcept { m_SplitType = stSplitType; }
-
-	_Check_return_ int CFakeSplitter2::HitTest(const LONG x, const LONG y) const noexcept
-	{
-		if (!m_PaneOne && !m_ViewPaneOne) return noHit;
-
-		LONG lTestPos = 0;
-
-		if (m_SplitType == splitType::horizontal)
-		{
-			lTestPos = x;
-		}
-		else
-		{
-			lTestPos = y;
-		}
-
-		return noHit;
-	}
-
 	void CFakeSplitter2::OnPaint()
 	{
 		auto ps = PAINTSTRUCT{};
@@ -191,16 +156,7 @@ namespace controls
 			ui::CDoubleBuffer db;
 			auto hdc = ps.hdc;
 			db.Begin(hdc, rcWin);
-
-			auto rcSplitter = rcWin;
-			FillRect(hdc, &rcSplitter, GetSysBrush(ui::uiColor::Background));
-
-			POINT pts[2] = {}; // 0 is left top, 1 is right bottom
-			pts[0].x = 0;
-			pts[0].y = rcSplitter.top;
-			pts[1].x = pts[0].x;
-			pts[1].y = rcSplitter.bottom;
-
+			FillRect(hdc, &rcWin, GetSysBrush(ui::uiColor::Background));
 			db.End(hdc);
 		}
 

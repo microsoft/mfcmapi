@@ -24,8 +24,8 @@ namespace controls
 		void SetPaneOne(std::shared_ptr<viewpane::ViewPane> paneOne) noexcept { m_ViewPaneOne = paneOne; }
 		void SetPaneTwo(std::shared_ptr<viewpane::ViewPane> paneTwo) noexcept {}
 
-		void SetPercent(FLOAT iNewPercent);
-		void SetSplitType(splitType stSplitType) noexcept;
+		void SetPercent(FLOAT /*iNewPercent*/) {}
+		void SetSplitType(splitType /*stSplitType*/) noexcept {}
 		void OnSize(UINT nType, int cx, int cy);
 		HDWP DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height);
 		int GetSplitWidth() const noexcept {}
@@ -37,14 +37,10 @@ namespace controls
 	private:
 		void OnPaint();
 		LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
-		_Check_return_ int HitTest(LONG x, LONG y) const noexcept;
 
 		HWND m_PaneOne{};
 		HWND m_hwndParent{};
 		std::shared_ptr<viewpane::ViewPane> m_ViewPaneOne{};
-		splitType m_SplitType{splitType::horizontal};
-		HCURSOR m_hSplitCursorV{};
-		HCURSOR m_hSplitCursorH{};
 
 		DECLARE_MESSAGE_MAP()
 	};
