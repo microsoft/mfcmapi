@@ -617,7 +617,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="UI\Dialogs\Editors\DbgView.h" />
     <ClInclude Include="UI\Dialogs\Dialog.h" />
     <ClInclude Include="UI\Dialogs\Editors\Editor.h" />
-    <ClInclude Include="UI\FakeSplitter.h" />
+    <ClInclude Include="UI\Controls\FakeSplitter.h" />
     <ClInclude Include="UI\Dialogs\ContentsTable\FolderDlg.h" />
     <ClInclude Include="UI\Dialogs\ContentsTable\FormContainerDlg.h" />
     <ClInclude Include="UI\Dialogs\Editors\HexEditor.h" />
@@ -705,7 +705,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="UI\Dialogs\Editors\DbgView.cpp" />
     <ClCompile Include="UI\Dialogs\Dialog.cpp" />
     <ClCompile Include="UI\Dialogs\Editors\Editor.cpp" />
-    <ClCompile Include="UI\FakeSplitter.cpp" />
+    <ClCompile Include="UI\Controls\FakeSplitter.cpp" />
     <ClCompile Include="UI\Dialogs\ContentsTable\FolderDlg.cpp" />
     <ClCompile Include="UI\Dialogs\ContentsTable\FormContainerDlg.cpp" />
     <ClCompile Include="UI\Dialogs\Editors\HexEditor.cpp" />

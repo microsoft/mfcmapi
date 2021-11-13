@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/HierarchyTable/HierarchyTableDlg.h>
 #include <UI/Controls/StyleTree/HierarchyTableTreeCtrl.h>
-#include <UI/FakeSplitter.h>
+#include <UI/Controls/FakeSplitter.h>
 #include <UI/Controls/SortList/SingleMAPIPropListCtrl.h>
 #include <core/mapi/cache/mapiObjects.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>

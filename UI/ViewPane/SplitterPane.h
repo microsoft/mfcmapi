@@ -1,6 +1,6 @@
 #pragma once
 #include <UI/ViewPane/ViewPane.h>
-#include <UI/FakeSplitter.h>
+#include <UI/Controls/FakeSplitter.h>
 
 namespace viewpane
 {
