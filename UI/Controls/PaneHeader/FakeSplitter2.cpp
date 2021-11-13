@@ -62,7 +62,6 @@ namespace controls
 	}
 
 	BEGIN_MESSAGE_MAP(CFakeSplitter2, CWnd)
-	ON_WM_MOUSEMOVE()
 	ON_WM_SIZE()
 	ON_WM_PAINT()
 	END_MESSAGE_MAP()
@@ -79,18 +78,6 @@ namespace controls
 			return true;
 		case WM_HELP:
 			return true;
-		case WM_LBUTTONUP:
-		case WM_CANCELMODE: // Called if focus changes while we're adjusting the splitter
-			StopTracking();
-			return NULL;
-		case WM_LBUTTONDOWN:
-			if (m_bTracking) return true;
-			StartTracking(HitTest(LOWORD(lParam), HIWORD(lParam)));
-			return NULL;
-		case WM_SETCURSOR:
-			if (LOWORD(lParam) == HTCLIENT && reinterpret_cast<HWND>(wParam) == this->m_hWnd && !m_bTracking)
-				return true; // we will handle it in the mouse move
-			break;
 		case WM_COMMAND:
 		{
 			const auto nCode = HIWORD(wParam);
@@ -112,8 +99,6 @@ namespace controls
 
 	void CFakeSplitter2::OnSize(UINT /*nType*/, const int cx, const int cy)
 	{
-		CalcSplitPos();
-
 		auto hdwp = WC_D(HDWP, BeginDeferWindowPos(2));
 		if (hdwp)
 		{
@@ -166,8 +151,6 @@ namespace controls
 		return hWinPosInfo;
 	}
 
-	void CFakeSplitter2::CalcSplitPos() {}
-
 	void CFakeSplitter2::SetPercent(const FLOAT /*iNewPercent*/)
 	{
 		CRect rect;
@@ -197,65 +180,6 @@ namespace controls
 		return noHit;
 	}
 
-	void CFakeSplitter2::OnMouseMove(UINT /*nFlags*/, const CPoint point)
-	{
-		if (!m_PaneOne && !m_ViewPaneOne) return;
-
-		// If we don't have GetCapture, then we don't want to track right now.
-		if (GetCapture() != this) StopTracking();
-
-		if (SplitterHit == HitTest(point.x, point.y))
-		{
-			// This looks backwards, but it is not. A horizontal split needs the vertical cursor
-			SetCursor(m_SplitType == splitType::horizontal ? m_hSplitCursorV : m_hSplitCursorH);
-		}
-
-		if (m_bTracking)
-		{
-			CRect Rect;
-			FLOAT flNewPercent = {};
-			GetWindowRect(Rect);
-
-			if (m_SplitType == splitType::horizontal)
-			{
-				flNewPercent = point.x / static_cast<FLOAT>(Rect.Width());
-			}
-			else
-			{
-				flNewPercent = point.y / static_cast<FLOAT>(Rect.Height());
-			}
-			SetPercent(flNewPercent);
-
-			// Force child windows to refresh now
-			EC_B_S(RedrawWindow(nullptr, nullptr, RDW_ALLCHILDREN | RDW_UPDATENOW));
-		}
-	}
-
-	void CFakeSplitter2::StartTracking(const int ht)
-	{
-		if (ht == noHit) return;
-
-		// steal focus and capture
-		SetCapture();
-		SetFocus();
-
-		// make sure no updates are pending
-		// CSplitterWnd does this...not sure why
-		EC_B_S(RedrawWindow(nullptr, nullptr, RDW_ALLCHILDREN | RDW_UPDATENOW));
-
-		// set tracking state and appropriate cursor
-		m_bTracking = true;
-	}
-
-	void CFakeSplitter2::StopTracking()
-	{
-		if (!m_bTracking) return;
-
-		ReleaseCapture();
-
-		m_bTracking = false;
-	}
-
 	void CFakeSplitter2::OnPaint()
 	{
 		auto ps = PAINTSTRUCT{};
@@ -276,12 +200,6 @@ namespace controls
 			pts[0].y = rcSplitter.top;
 			pts[1].x = pts[0].x;
 			pts[1].y = rcSplitter.bottom;
-
-			// Draw the splitter bar
-			const auto hpenOld = SelectObject(hdc, GetPen(m_bTracking ? ui::uiPen::SolidPen : ui::uiPen::DashedPen));
-			MoveToEx(hdc, pts[0].x, pts[0].y, nullptr);
-			LineTo(hdc, pts[1].x, pts[1].y);
-			static_cast<void>(SelectObject(hdc, hpenOld));
 
 			db.End(hdc);
 		}

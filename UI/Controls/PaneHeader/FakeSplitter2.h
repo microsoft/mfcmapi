@@ -36,16 +36,9 @@ namespace controls
 
 	private:
 		void OnPaint();
-		void OnMouseMove(UINT nFlags, CPoint point);
 		LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
 		_Check_return_ int HitTest(LONG x, LONG y) const noexcept;
 
-		// starting and stopping tracking
-		void StartTracking(int ht);
-		void StopTracking();
-		void CalcSplitPos();
-
-		bool m_bTracking{};
 		HWND m_PaneOne{};
 		HWND m_hwndParent{};
 		std::shared_ptr<viewpane::ViewPane> m_ViewPaneOne{};
