@@ -21,26 +21,14 @@ namespace controls
 		void Init(HWND hWnd);
 		void SetPaneOne(HWND paneOne) noexcept;
 		void SetPaneTwo(HWND paneTwo) noexcept;
-		void SetPaneOne(std::shared_ptr<viewpane::ViewPane> paneOne) noexcept
-		{
-			m_ViewPaneOne = paneOne;
-			if (m_ViewPaneOne)
-			{
-				m_iSplitWidth = 7;
-			}
-			else
-			{
-				m_iSplitWidth = 0;
-			}
-		}
-
-		void SetPaneTwo(std::shared_ptr<viewpane::ViewPane> paneTwo) noexcept { }
+		void SetPaneOne(std::shared_ptr<viewpane::ViewPane> paneOne) noexcept { m_ViewPaneOne = paneOne; }
+		void SetPaneTwo(std::shared_ptr<viewpane::ViewPane> paneTwo) noexcept {}
 
 		void SetPercent(FLOAT iNewPercent);
 		void SetSplitType(splitType stSplitType) noexcept;
 		void OnSize(UINT nType, int cx, int cy);
 		HDWP DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height);
-		int GetSplitWidth() const noexcept { return m_iSplitWidth; }
+		int GetSplitWidth() const noexcept {}
 
 		// Callbacks
 		std::function<int()> PaneOneMinSpanCallback = nullptr;
@@ -58,12 +46,9 @@ namespace controls
 		void CalcSplitPos();
 
 		bool m_bTracking{};
-		FLOAT m_flSplitPercent{0.5};
 		HWND m_PaneOne{};
 		HWND m_hwndParent{};
 		std::shared_ptr<viewpane::ViewPane> m_ViewPaneOne{};
-		int m_iSplitWidth{};
-		int m_iSplitPos{1};
 		splitType m_SplitType{splitType::horizontal};
 		HCURSOR m_hSplitCursorV{};
 		HCURSOR m_hSplitCursorH{};

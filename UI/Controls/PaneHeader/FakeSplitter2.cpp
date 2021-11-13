@@ -106,18 +106,7 @@ namespace controls
 		return CWnd::WindowProc(message, wParam, lParam);
 	}
 
-	void CFakeSplitter2::SetPaneOne(HWND paneOne) noexcept
-	{
-		m_PaneOne = paneOne;
-		if (m_PaneOne)
-		{
-			m_iSplitWidth = 7;
-		}
-		else
-		{
-			m_iSplitWidth = 0;
-		}
-	}
+	void CFakeSplitter2::SetPaneOne(HWND paneOne) noexcept { m_PaneOne = paneOne; }
 
 	void CFakeSplitter2::SetPaneTwo(HWND /*paneTwo*/) noexcept {}
 
@@ -152,14 +141,7 @@ namespace controls
 		if (m_PaneOne || m_ViewPaneOne)
 		{
 			CRect r1;
-			if (m_SplitType == splitType::horizontal)
-			{
-				r1.SetRect(x, y, m_iSplitPos, height);
-			}
-			else
-			{
-				r1.SetRect(x, y, width, m_iSplitPos);
-			}
+			r1.SetRect(x, y, width, height);
 
 			if (m_PaneOne)
 			{
@@ -184,59 +166,10 @@ namespace controls
 		return hWinPosInfo;
 	}
 
-	void CFakeSplitter2::CalcSplitPos()
+	void CFakeSplitter2::CalcSplitPos() {}
+
+	void CFakeSplitter2::SetPercent(const FLOAT /*iNewPercent*/)
 	{
-		if (!m_PaneOne && !m_ViewPaneOne)
-		{
-			m_iSplitPos = 0;
-			return;
-		}
-
-		int iCurSpan = 0;
-		CRect rect;
-		GetClientRect(rect);
-		if (m_SplitType == splitType::horizontal)
-		{
-			iCurSpan = rect.Width();
-		}
-		else
-		{
-			iCurSpan = rect.Height();
-		}
-
-		m_iSplitPos = static_cast<int>(static_cast<FLOAT>(iCurSpan) * m_flSplitPercent);
-		auto paneOneMinSpan = PaneOneMinSpanCallback ? PaneOneMinSpanCallback() : 0;
-		auto paneTwoMinSpan = PaneTwoMinSpanCallback ? PaneTwoMinSpanCallback() : 0;
-		if (paneOneMinSpan + paneTwoMinSpan + m_iSplitWidth + 1 >= iCurSpan)
-		{
-			paneOneMinSpan = 0;
-			paneTwoMinSpan = 0;
-		}
-
-		if (m_iSplitPos < paneOneMinSpan)
-		{
-			m_iSplitPos = paneOneMinSpan;
-		}
-		else if (iCurSpan - m_iSplitPos < paneTwoMinSpan)
-		{
-			m_iSplitPos = iCurSpan - paneTwoMinSpan;
-		}
-
-		if (m_iSplitPos + m_iSplitWidth + 1 >= iCurSpan)
-		{
-			m_iSplitPos = m_iSplitPos - m_iSplitWidth - 1;
-		}
-
-		if (m_iSplitPos < 0) m_iSplitPos = 0;
-	}
-
-	void CFakeSplitter2::SetPercent(const FLOAT iNewPercent)
-	{
-		if (iNewPercent < 0.0 || iNewPercent > 1.0) return;
-		m_flSplitPercent = iNewPercent;
-
-		CalcSplitPos();
-
 		CRect rect;
 		GetClientRect(rect);
 
@@ -260,8 +193,6 @@ namespace controls
 		{
 			lTestPos = y;
 		}
-
-		if (lTestPos >= m_iSplitPos && lTestPos <= m_iSplitPos + m_iSplitWidth) return SplitterHit;
 
 		return noHit;
 	}
@@ -314,9 +245,6 @@ namespace controls
 
 		// set tracking state and appropriate cursor
 		m_bTracking = true;
-
-		// Force redraw to get our tracking gripper
-		SetPercent(m_flSplitPercent);
 	}
 
 	void CFakeSplitter2::StopTracking()
@@ -326,9 +254,6 @@ namespace controls
 		ReleaseCapture();
 
 		m_bTracking = false;
-
-		// Force redraw to get our non-tracking gripper
-		SetPercent(m_flSplitPercent);
 	}
 
 	void CFakeSplitter2::OnPaint()
@@ -347,20 +272,10 @@ namespace controls
 			FillRect(hdc, &rcSplitter, GetSysBrush(ui::uiColor::Background));
 
 			POINT pts[2] = {}; // 0 is left top, 1 is right bottom
-			if (m_SplitType == splitType::horizontal)
-			{
-				pts[0].x = m_iSplitPos + m_iSplitWidth / 2;
-				pts[0].y = rcSplitter.top;
-				pts[1].x = pts[0].x;
-				pts[1].y = rcSplitter.bottom;
-			}
-			else
-			{
-				pts[0].x = rcSplitter.left;
-				pts[0].y = m_iSplitPos + m_iSplitWidth / 2;
-				pts[1].x = rcSplitter.right;
-				pts[1].y = pts[0].y;
-			}
+			pts[0].x = 0;
+			pts[0].y = rcSplitter.top;
+			pts[1].x = pts[0].x;
+			pts[1].y = rcSplitter.bottom;
 
 			// Draw the splitter bar
 			const auto hpenOld = SelectObject(hdc, GetPen(m_bTracking ? ui::uiPen::SolidPen : ui::uiPen::DashedPen));
