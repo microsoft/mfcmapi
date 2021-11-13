@@ -2231,4 +2231,43 @@ namespace ui
 
 		return hwndRet;
 	}
+
+	HDWP WINAPI DeferWindowPos(
+		_In_ HDWP hWinPosInfo,
+		_In_ HWND hWnd,
+		_In_ int x,
+		_In_ int y,
+		_In_ int cx,
+		_In_ int cy,
+		_In_ const WCHAR* szName,
+		_In_opt_ const WCHAR* szLabel)
+	{
+		if (szLabel)
+		{
+			output::DebugPrint(
+				output::dbgLevel::Draw,
+				L"%ws x:%d y:%d width:%d height:%d v:%d label:\"%ws\"\n",
+				szName,
+				x,
+				y,
+				cx,
+				cy,
+				::IsWindowVisible(hWnd),
+				szLabel);
+		}
+		else
+		{
+			output::DebugPrint(
+				output::dbgLevel::Draw,
+				L"%ws x:%d y:%d cx:%d cy:%d v:%d\n",
+				szName,
+				x,
+				y,
+				cx,
+				cy,
+				::IsWindowVisible(hWnd));
+		}
+
+		return EC_D(HDWP, ::DeferWindowPos(hWinPosInfo, hWnd, nullptr, x, y, cx, cy, SWP_NOZORDER));
+	}
 } // namespace ui

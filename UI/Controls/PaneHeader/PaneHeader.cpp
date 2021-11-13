@@ -67,71 +67,63 @@ namespace controls
 
 	// Draw our collapse button and label, if needed.
 	// Draws everything to GetFixedHeight()
-	HDWP PaneHeader::DeferWindowPos(_In_ HDWP hWinPosInfo, const _In_ int x, const _In_ int y, const _In_ int width)
+	HDWP PaneHeader::DeferWindowPos(
+		_In_ HDWP hWinPosInfo,
+		const _In_ int x,
+		const _In_ int y,
+		const _In_ int width,
+		const _In_ int height)
 	{
-		const auto height = GetFixedHeight();
+		if (!m_bInitialized) return hWinPosInfo;
+		hWinPosInfo = ui::DeferWindowPos(
+			hWinPosInfo, GetSafeHwnd(), x, y, width, height, L"PaneHeader::DeferWindowPos", m_szLabel.c_str());
+
 		auto curX = x;
 		const auto actionButtonWidth = m_actionButtonWidth ? m_actionButtonWidth + 2 * m_iMargin : 0;
 		const auto actionButtonAndGutterWidth = actionButtonWidth ? actionButtonWidth + m_iSideMargin : 0;
 		if (m_bCollapsible)
 		{
-			hWinPosInfo = EC_D(
-				HDWP,
-				::DeferWindowPos(
-					hWinPosInfo,
-					m_CollapseButton.GetSafeHwnd(),
-					nullptr,
-					curX,
-					y,
-					width - actionButtonAndGutterWidth,
-					height,
-					SWP_NOZORDER));
+			hWinPosInfo = ui::DeferWindowPos(
+				hWinPosInfo,
+				m_CollapseButton.GetSafeHwnd(),
+				curX,
+				y,
+				width - actionButtonAndGutterWidth,
+				height,
+				L"PaneHeader::DeferWindowPos::collapseButton");
 			curX += m_iButtonHeight;
 		}
 
-		output::DebugPrint(
-			output::dbgLevel::Draw,
-			L"PaneHeader::DeferWindowPos x:%d width:%d labelpos:%d labelwidth:%d \n",
-			x,
-			width,
-			curX,
-			m_iLabelWidth);
-
-		hWinPosInfo = EC_D(
-			HDWP, ::DeferWindowPos(hWinPosInfo, GetSafeHwnd(), nullptr, curX, y, m_iLabelWidth, height, SWP_NOZORDER));
+		hWinPosInfo = ui::DeferWindowPos(
+			hWinPosInfo, GetSafeHwnd(), curX, y, m_iLabelWidth, height, L"PaneHeader::DeferWindowPos::leftLabel");
 
 		if (!m_bCollapsed)
 		{
 			// Drop the count on top of the label we drew above
-			hWinPosInfo = EC_D(
-				HDWP,
-				::DeferWindowPos(
-					hWinPosInfo,
-					m_rightLabel.GetSafeHwnd(),
-					nullptr,
-					x + width - m_rightLabelWidth - actionButtonAndGutterWidth,
-					y,
-					m_rightLabelWidth,
-					height,
-					SWP_NOZORDER));
+			hWinPosInfo = ui::DeferWindowPos(
+				hWinPosInfo,
+				m_rightLabel.GetSafeHwnd(),
+				x + width - m_rightLabelWidth - actionButtonAndGutterWidth,
+				y,
+				m_rightLabelWidth,
+				height,
+				L"PaneHeader::DeferWindowPos::rightLabel");
 		}
 
 		if (m_nIDAction)
 		{
 			// Drop the action button next to the label we drew above
-			hWinPosInfo = EC_D(
-				HDWP,
-				::DeferWindowPos(
-					hWinPosInfo,
-					m_actionButton.GetSafeHwnd(),
-					nullptr,
-					x + width - actionButtonWidth,
-					y,
-					actionButtonWidth,
-					height,
-					SWP_NOZORDER));
+			hWinPosInfo = ui::DeferWindowPos(
+				hWinPosInfo,
+				m_actionButton.GetSafeHwnd(),
+				x + width - actionButtonWidth,
+				y,
+				actionButtonWidth,
+				height,
+				L"PaneHeader::DeferWindowPos::actionButton");
 		}
 
+		output::DebugPrint(output::dbgLevel::Draw, L"PaneHeader::DeferWindowPos end\n");
 		return hWinPosInfo;
 	}
 

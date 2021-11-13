@@ -171,9 +171,8 @@ namespace viewpane
 		WC_B_S(m_List.ShowWindow(cmdShow));
 		auto listHeight = height - (curY - y);
 		if (!m_bReadOnly) listHeight -= m_iLargeHeightMargin + m_iButtonHeight;
-		hWinPosInfo = EC_D(
-			HDWP,
-			::DeferWindowPos(hWinPosInfo, m_List.GetSafeHwnd(), nullptr, x, curY, width, listHeight, SWP_NOZORDER));
+		hWinPosInfo = ui::DeferWindowPos(
+			hWinPosInfo, m_List.GetSafeHwnd(), x, curY, width, listHeight, L"ListPane::DeferWindowPos::list");
 
 		if (!m_bReadOnly)
 		{

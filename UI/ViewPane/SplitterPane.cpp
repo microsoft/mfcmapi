@@ -1,6 +1,7 @@
 #include <StdAfx.h>
 #include <UI/ViewPane/SplitterPane.h>
 #include <core/utility/output.h>
+#include <UI/UIFunctions.h>
 
 namespace viewpane
 {
@@ -202,17 +203,13 @@ namespace viewpane
 			}
 
 			WC_B_S(m_lpSplitter->ShowWindow(SW_SHOW));
-			hWinPosInfo = EC_D(
-				HDWP,
-				::DeferWindowPos(
+			hWinPosInfo = ui::DeferWindowPos(
 					hWinPosInfo,
 					m_lpSplitter->GetSafeHwnd(),
-					nullptr,
 					x,
 					curY,
 					width,
-					height - (curY - y),
-					SWP_NOZORDER));
+					height - (curY - y), L"SplitterPane::DeferWindowPos::splitter");
 			m_lpSplitter->OnSize(NULL, width, height - (curY - y));
 		}
 

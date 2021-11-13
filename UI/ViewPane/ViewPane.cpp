@@ -12,11 +12,18 @@ namespace viewpane
 		const _In_ int x,
 		const _In_ int y,
 		const _In_ int width,
-		const _In_ int /*height*/)
+		const _In_ int height)
 	{
-		output::DebugPrint(output::dbgLevel::Draw, L"ViewPane::DeferWindowPos x:%d width:%d \n", x, width);
-		hWinPosInfo = EC_D(HDWP, m_Header.DeferWindowPos(hWinPosInfo, x, y, width));
-
+		output::DebugPrint(
+			output::dbgLevel::Draw,
+			L"ViewPane::DeferWindowPos x:%d y:%d width:%d height:%d v:%d\n",
+			x,
+			y,
+			width,
+			height,
+			m_Header.IsWindowVisible());
+		hWinPosInfo = EC_D(HDWP, m_Header.DeferWindowPos(hWinPosInfo, x, y, width, m_Header.GetFixedHeight()));
+		output::DebugPrint(output::dbgLevel::Draw, L"ViewPane::DeferWindowPos end\n");
 		return hWinPosInfo;
 	}
 

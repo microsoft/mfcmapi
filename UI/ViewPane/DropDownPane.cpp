@@ -104,7 +104,7 @@ namespace viewpane
 
 		if (!m_Header.empty())
 		{
-			hWinPosInfo = EC_D(HDWP, m_Header.DeferWindowPos(hWinPosInfo, x, curY, width));
+			hWinPosInfo = EC_D(HDWP, m_Header.DeferWindowPos(hWinPosInfo, x, curY, width, labelHeight));
 			curY += labelHeight;
 		}
 
@@ -113,10 +113,8 @@ namespace viewpane
 		// This will give us something between 4 and 10 entries
 		const auto ulDrops = static_cast<int>(min(10, 1 + max(m_DropList.size(), 4)));
 
-		hWinPosInfo = EC_D(
-			HDWP,
-			::DeferWindowPos(
-				hWinPosInfo, m_DropDown.GetSafeHwnd(), nullptr, x, curY, width, m_iEditHeight * ulDrops, SWP_NOZORDER));
+		hWinPosInfo = ui::DeferWindowPos(
+				hWinPosInfo, m_DropDown.GetSafeHwnd(), x, curY, width, m_iEditHeight * ulDrops, L"DropDownPane::DeferWindowPos::dropdown");
 		return hWinPosInfo;
 	}
 

@@ -61,9 +61,8 @@ namespace viewpane
 		_In_ const int width,
 		_In_ const int height)
 	{
-		output::DebugPrint(output::dbgLevel::Draw, L"CheckPane::DeferWindowPos x:%d width:%d \n", x, width);
-		hWinPosInfo = EC_D(
-			HDWP, ::DeferWindowPos(hWinPosInfo, m_Check.GetSafeHwnd(), nullptr, x, y, width, height, SWP_NOZORDER));
+		hWinPosInfo =
+			ui::DeferWindowPos(hWinPosInfo, m_Check.GetSafeHwnd(), x, y, width, height, L"CheckPane::DeferWindowPos");
 		return hWinPosInfo;
 	}
 

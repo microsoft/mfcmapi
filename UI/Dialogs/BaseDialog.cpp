@@ -551,8 +551,7 @@ namespace dialog
 
 			if (m_lpFakeSplitter && m_lpFakeSplitter.m_hWnd)
 			{
-				hdwp =
-					EC_D(HDWP, DeferWindowPos(hdwp, m_lpFakeSplitter.m_hWnd, nullptr, 0, 0, cx, iNewCY, SWP_NOZORDER));
+				hdwp = ui::DeferWindowPos(hdwp, m_lpFakeSplitter.m_hWnd, 0, 0, cx, iNewCY, L"CBaseDialog::OnSize::fakesplitter");
 			}
 
 			WC_B_S(EndDeferWindowPos(hdwp));

@@ -2,6 +2,7 @@
 #include <UI/ViewPane/TreePane.h>
 #include <utility>
 #include <core/utility/output.h>
+#include <ui/UIFunctions.h>
 
 namespace viewpane
 {
@@ -77,8 +78,8 @@ namespace viewpane
 
 		auto treeHeight = height - (curY - y) - m_iSmallHeightMargin;
 
-		hWinPosInfo =
-			EC_D(HDWP, ::DeferWindowPos(hWinPosInfo, m_Tree.GetSafeHwnd(), nullptr, x, curY, width, treeHeight, SWP_NOZORDER));
+		hWinPosInfo = ui::DeferWindowPos(
+			hWinPosInfo, m_Tree.GetSafeHwnd(), x, curY, width, treeHeight, L"TreePane::DeferWindowPos::tree");
 
 		return hWinPosInfo;
 	}

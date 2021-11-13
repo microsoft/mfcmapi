@@ -185,8 +185,8 @@ namespace viewpane
 		{
 			WC_B_S(m_EditBox.ShowWindow(SW_HIDE));
 
-			hWinPosInfo = EC_D(
-				HDWP, ::DeferWindowPos(hWinPosInfo, m_EditBox.GetSafeHwnd(), nullptr, x, curY, 0, 0, SWP_NOZORDER));
+			hWinPosInfo = ui::DeferWindowPos(
+				hWinPosInfo, m_EditBox.GetSafeHwnd(), x, curY, 0, 0, L"TextPane::DeferWindowPos::editbox(collapsed)");
 		}
 		else
 		{
@@ -199,10 +199,8 @@ namespace viewpane
 
 			WC_B_S(m_EditBox.ShowWindow(SW_SHOW));
 
-			hWinPosInfo = EC_D(
-				HDWP,
-				::DeferWindowPos(
-					hWinPosInfo, m_EditBox.GetSafeHwnd(), nullptr, x, curY, width, editHeight, SWP_NOZORDER));
+			hWinPosInfo = ui::DeferWindowPos(
+				hWinPosInfo, m_EditBox.GetSafeHwnd(), x, curY, width, editHeight, L"TextPane::DeferWindowPos::editbox");
 		}
 
 		return hWinPosInfo;

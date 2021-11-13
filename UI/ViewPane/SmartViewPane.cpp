@@ -129,10 +129,7 @@ namespace viewpane
 
 		if (!collapsed())
 		{
-			hWinPosInfo = EC_D(
-				HDWP,
-				::DeferWindowPos(
-					hWinPosInfo, m_DropDown.GetSafeHwnd(), nullptr, x, curY, width, m_iEditHeight * 10, SWP_NOZORDER));
+			hWinPosInfo = ui::DeferWindowPos(hWinPosInfo, m_DropDown.GetSafeHwnd(), x, curY, width, m_iEditHeight * 10, L"SmartViewPane::DeferWindowPos::dropdown");
 
 			curY += m_iEditHeight;
 
