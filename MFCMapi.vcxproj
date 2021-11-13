@@ -591,6 +591,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="UI\Controls\PaneHeader\FakeSplitter2.h" />
     <ClInclude Include="UI\Controls\SortList\SortHeader.h" />
     <ClInclude Include="UI\Controls\SortList\SortListCtrl.h" />
     <ClInclude Include="UI\Controls\PaneHeader\PaneHeader.h" />
@@ -674,6 +675,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
   <ItemGroup>
     <ClCompile Include="UI\CMAPIProgress.cpp" />
     <ClCompile Include="UI\addinui.cpp" />
+    <ClCompile Include="UI\Controls\PaneHeader\FakeSplitter2.cpp" />
     <ClCompile Include="UI\Controls\SortList\SortHeader.cpp" />
     <ClCompile Include="UI\Controls\SortList\SortListCtrl.cpp" />
     <ClCompile Include="UI\Controls\PaneHeader\PaneHeader.cpp" />

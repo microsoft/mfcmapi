@@ -1,6 +1,5 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/BaseDialog.h>
-#include <UI/Controls/FakeSplitter.h>
 #include <core/mapi/cache/mapiObjects.h>
 #include <UI/ParentWnd.h>
 #include <UI/Controls/SortList/SingleMAPIPropListCtrl.h>
