@@ -1,7 +1,7 @@
 #pragma once
 #include <core/utility/strings.h>
 #include <UI/Controls/PaneHeader/PaneHeader.h>
-#include <UI/Controls/PaneHeader/FakeSplitter2.h>
+#include <UI/Controls/PaneHeader/PaneHeader2.h>
 
 namespace viewpane
 {
@@ -46,7 +46,7 @@ namespace viewpane
 		bool m_bInitialized{};
 		bool m_bReadOnly{true};
 		controls::PaneHeader m_Header;
-		std::shared_ptr<controls::CFakeSplitter2> m_Header2{};
+		std::shared_ptr<controls::PaneHeader2> m_Header2{};
 		UINT m_nID{}; // NID for matching change notifications back to controls. Also used for Create calls.
 
 		// Margins

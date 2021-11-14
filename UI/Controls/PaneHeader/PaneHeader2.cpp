@@ -1,29 +1,29 @@
 #include <StdAfx.h>
-#include <UI/Controls/PaneHeader/FakeSplitter2.h>
+#include <UI/Controls/PaneHeader/PaneHeader2.h>
 #include <UI/UIFunctions.h>
 #include <UI/DoubleBuffer.h>
 #include <core/utility/output.h>
 
 namespace controls
 {
-	static std::wstring CLASS = L"CFakeSplitter2";
+	static std::wstring CLASS = L"PaneHeader2";
 
-	CFakeSplitter2::~CFakeSplitter2()
+	PaneHeader2::~PaneHeader2()
 	{
 		TRACE_DESTRUCTOR(CLASS);
 		CWnd::DestroyWindow();
 	}
 
-	void CFakeSplitter2::Init(HWND hWnd)
+	void PaneHeader2::Init(HWND hWnd)
 	{
 		m_hwndParent = hWnd;
 		WNDCLASSEX wc = {};
 		const auto hInst = AfxGetInstanceHandle();
-		if (!::GetClassInfoEx(hInst, _T("FakeSplitter2"), &wc)) // STRING_OK
+		if (!::GetClassInfoEx(hInst, _T("PaneHeader"), &wc)) // STRING_OK
 		{
 			wc.cbSize = sizeof wc;
 			wc.style = 0; // not passing CS_VREDRAW | CS_HREDRAW fixes flicker
-			wc.lpszClassName = _T("FakeSplitter2"); // STRING_OK
+			wc.lpszClassName = _T("PaneHeader"); // STRING_OK
 			wc.lpfnWndProc = ::DefWindowProc;
 			wc.hbrBackground = GetSysBrush(ui::uiColor::Background); // helps spot flashing
 
@@ -33,29 +33,29 @@ namespace controls
 		// WS_CLIPCHILDREN is used to reduce flicker
 		EC_B_S(CreateEx(
 			0,
-			_T("FakeSplitter2"), // STRING_OK
-			_T("FakeSplitter2"), // STRING_OK
+			_T("PaneHeader"), // STRING_OK
+			_T("PaneHeader"), // STRING_OK
 			WS_CHILD | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_VISIBLE,
 			0,
 			0,
 			0,
 			0,
 			m_hwndParent,
-			reinterpret_cast<HMENU>(static_cast<INT_PTR>(IDC_FAKE_SPLITTER2)),
+			reinterpret_cast<HMENU>(static_cast<INT_PTR>(IDC_PANE_HEADER)),
 			nullptr));
 
-		// Necessary for TAB to work. Without this, all TABS get stuck on the fake splitter control
-		// instead of passing to the children. Haven't tested with nested splitters.
+		// Necessary for TAB to work. Without this, all TABS get stuck on the control
+		// instead of passing to the children.
 		EC_B_S(ModifyStyleEx(0, WS_EX_CONTROLPARENT));
 	}
 
-	BEGIN_MESSAGE_MAP(CFakeSplitter2, CWnd)
+	BEGIN_MESSAGE_MAP(PaneHeader2, CWnd)
 	ON_WM_SIZE()
 	ON_WM_PAINT()
 	ON_WM_CREATE()
 	END_MESSAGE_MAP()
 
-	int CFakeSplitter2::OnCreate(LPCREATESTRUCT /*lpCreateStruct*/)
+	int PaneHeader2::OnCreate(LPCREATESTRUCT /*lpCreateStruct*/)
 	{
 		EC_B_S(m_rightLabel.Create(
 			WS_CHILD | WS_CLIPSIBLINGS | ES_READONLY | WS_VISIBLE | WS_TABSTOP,
@@ -69,7 +69,7 @@ namespace controls
 		return 0;
 	}
 
-	void CFakeSplitter2::SetRightLabel(const std::wstring szLabel)
+	void PaneHeader2::SetRightLabel(const std::wstring szLabel)
 	{
 		//if (!m_bInitialized) return;
 		EC_B_S(::SetWindowTextW(m_rightLabel.m_hWnd, szLabel.c_str()));
@@ -82,7 +82,7 @@ namespace controls
 		m_rightLabelWidth = sizeText.cx;
 	}
 
-	LRESULT CFakeSplitter2::WindowProc(const UINT message, const WPARAM wParam, const LPARAM lParam)
+	LRESULT PaneHeader2::WindowProc(const UINT message, const WPARAM wParam, const LPARAM lParam)
 	{
 		LRESULT lRes = 0;
 		if (ui::HandleControlUI(message, wParam, lParam, &lRes)) return lRes;
@@ -109,7 +109,7 @@ namespace controls
 		return CWnd::WindowProc(message, wParam, lParam);
 	}
 
-	void CFakeSplitter2::OnSize(UINT /*nType*/, const int cx, const int cy)
+	void PaneHeader2::OnSize(UINT /*nType*/, const int cx, const int cy)
 	{
 		auto hdwp = WC_D(HDWP, BeginDeferWindowPos(2));
 		if (hdwp)
@@ -119,7 +119,7 @@ namespace controls
 		}
 	}
 
-	HDWP CFakeSplitter2::DeferWindowPos(
+	HDWP PaneHeader2::DeferWindowPos(
 		_In_ HDWP hWinPosInfo,
 		_In_ const int x,
 		_In_ const int y,
@@ -128,7 +128,7 @@ namespace controls
 	{
 		output::DebugPrint(
 			output::dbgLevel::Draw,
-			L"CFakeSplitter2::DeferWindowPos x:%d y:%d width:%d height:%d v:%d\n",
+			L"PaneHeader2::DeferWindowPos x:%d y:%d width:%d height:%d v:%d\n",
 			x,
 			y,
 			width,
@@ -148,11 +148,11 @@ namespace controls
 				L"PaneHeader::DeferWindowPos::rightLabel");
 		}
 
-		output::DebugPrint(output::dbgLevel::Draw, L"CFakeSplitter2::DeferWindowPos end\n");
+		output::DebugPrint(output::dbgLevel::Draw, L"PaneHeader2::DeferWindowPos end\n");
 		return hWinPosInfo;
 	}
 
-	void CFakeSplitter2::OnPaint()
+	void PaneHeader2::OnPaint()
 	{
 		auto ps = PAINTSTRUCT{};
 		::BeginPaint(m_hWnd, &ps);

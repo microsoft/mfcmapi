@@ -1,11 +1,11 @@
 #pragma once
 namespace controls
 {
-	class CFakeSplitter2 : public CWnd
+	class PaneHeader2 : public CWnd
 	{
 	public:
-		CFakeSplitter2() = default;
-		~CFakeSplitter2();
+		PaneHeader2() = default;
+		~PaneHeader2();
 
 		void Init(HWND hWnd);
 

@@ -46,7 +46,7 @@ namespace viewpane
 		const UINT nidHeader = IDC_PROP_CONTROL_ID_BASE + 2 * m_paneID;
 		m_nID = IDC_PROP_CONTROL_ID_BASE + 2 * m_paneID + 1;
 		m_Header.Initialize(pParent, hdc, nidHeader);
-		m_Header2 = std::make_shared<controls::CFakeSplitter2>();
+		m_Header2 = std::make_shared<controls::PaneHeader2>();
 		if (m_Header2)
 		{
 			m_Header2->Init(pParent->GetSafeHwnd());
