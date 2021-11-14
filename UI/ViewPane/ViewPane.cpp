@@ -49,7 +49,8 @@ namespace viewpane
 		m_Header2 = std::make_shared<controls::PaneHeader2>();
 		if (m_Header2)
 		{
-			m_Header2->Init(pParent->GetSafeHwnd());
+			//m_Header2->SetLabel(L"Hello World");
+			m_Header2->Init(pParent->GetSafeHwnd()/*, hdc, nidHeader*/);
 		}
 	}
 
