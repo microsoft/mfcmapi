@@ -71,14 +71,14 @@ namespace controls
 
 	int PaneHeader2::OnCreate(LPCREATESTRUCT /*lpCreateStruct*/)
 	{
-		//EC_B_S(m_leftLabel.Create(
-		//	WS_CHILD | WS_CLIPSIBLINGS | ES_READONLY | WS_VISIBLE | WS_TABSTOP, CRect(0, 0, 0, 0), this, m_nID));
-		//::SetWindowTextW(m_leftLabel.m_hWnd, m_szLabel.c_str());
-		//ui::SubclassLabel(m_leftLabel.m_hWnd);
-		//if (m_bCollapsible)
-		//{
-		//	StyleLabel(m_leftLabel.m_hWnd, ui::uiLabelStyle::PaneHeaderLabel);
-		//}
+		EC_B_S(m_leftLabel.Create(
+			WS_CHILD | WS_CLIPSIBLINGS | ES_READONLY | WS_VISIBLE | WS_TABSTOP, CRect(0, 0, 0, 0), this, m_nID));
+		::SetWindowTextW(m_leftLabel.m_hWnd, m_szLabel.c_str());
+		ui::SubclassLabel(m_leftLabel.m_hWnd);
+		if (m_bCollapsible)
+		{
+			StyleLabel(m_leftLabel.m_hWnd, ui::uiLabelStyle::PaneHeaderLabel);
+		}
 
 		EC_B_S(m_rightLabel.Create(
 			WS_CHILD | WS_CLIPSIBLINGS | ES_READONLY | WS_VISIBLE | WS_TABSTOP,
@@ -90,27 +90,27 @@ namespace controls
 
 		SetRightLabel(L"Hello world");
 
-		//if (m_bCollapsible)
-		//{
-		//	EC_B_S(m_CollapseButton.Create(
-		//		nullptr, WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE, CRect(0, 0, 0, 0), this, m_nIDCollapse));
-		//	StyleButton(
-		//		m_CollapseButton.m_hWnd, m_bCollapsed ? ui::uiButtonStyle::UpArrow : ui::uiButtonStyle::DownArrow);
-		//}
+		if (m_bCollapsible)
+		{
+			EC_B_S(m_CollapseButton.Create(
+				nullptr, WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE, CRect(0, 0, 0, 0), this, m_nIDCollapse));
+			StyleButton(
+				m_CollapseButton.m_hWnd, m_bCollapsed ? ui::uiButtonStyle::UpArrow : ui::uiButtonStyle::DownArrow);
+		}
 
 		// If we need an action button, go ahead and create it
-		//if (m_nIDAction)
-		//{
-		//	EC_B_S(m_actionButton.Create(
-		//		strings::wstringTotstring(m_szActionButton).c_str(),
-		//		WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE,
-		//		CRect(0, 0, 0, 0),
-		//		this,
-		//		m_nIDAction));
-		//	StyleButton(m_actionButton.m_hWnd, ui::uiButtonStyle::Unstyled);
-		//}
+		if (m_nIDAction)
+		{
+			EC_B_S(m_actionButton.Create(
+				strings::wstringTotstring(m_szActionButton).c_str(),
+				WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE,
+				CRect(0, 0, 0, 0),
+				this,
+				m_nIDAction));
+			StyleButton(m_actionButton.m_hWnd, ui::uiButtonStyle::Unstyled);
+		}
 
-		//m_bInitialized = true;
+		m_bInitialized = true;
 		return 0;
 	}
 
