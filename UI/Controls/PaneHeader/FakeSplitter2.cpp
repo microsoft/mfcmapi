@@ -19,11 +19,11 @@ namespace controls
 		m_hwndParent = hWnd;
 		WNDCLASSEX wc = {};
 		const auto hInst = AfxGetInstanceHandle();
-		if (!::GetClassInfoEx(hInst, _T("FakeSplitter"), &wc)) // STRING_OK
+		if (!::GetClassInfoEx(hInst, _T("FakeSplitter2"), &wc)) // STRING_OK
 		{
 			wc.cbSize = sizeof wc;
 			wc.style = 0; // not passing CS_VREDRAW | CS_HREDRAW fixes flicker
-			wc.lpszClassName = _T("FakeSplitter"); // STRING_OK
+			wc.lpszClassName = _T("FakeSplitter2"); // STRING_OK
 			wc.lpfnWndProc = ::DefWindowProc;
 			wc.hbrBackground = GetSysBrush(ui::uiColor::Background); // helps spot flashing
 
