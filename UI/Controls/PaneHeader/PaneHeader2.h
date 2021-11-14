@@ -9,7 +9,7 @@ namespace controls
 		PaneHeader2() = default;
 		~PaneHeader2();
 
-		void Init(HWND hWnd/*, HDC hdc, _In_ UINT nid*/);
+		void Init(HWND hWnd, HDC hdc, _In_ UINT nid);
 		int GetMinWidth();
 
 		void SetRightLabel(const std::wstring szLabel);

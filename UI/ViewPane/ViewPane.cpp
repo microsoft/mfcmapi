@@ -50,7 +50,7 @@ namespace viewpane
 		if (m_Header2)
 		{
 			//m_Header2->SetLabel(L"Hello World");
-			m_Header2->Init(pParent->GetSafeHwnd()/*, hdc, nidHeader*/);
+			m_Header2->Init(pParent->GetSafeHwnd(), hdc, nidHeader);
 		}
 	}
 

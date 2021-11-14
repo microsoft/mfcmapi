@@ -15,13 +15,13 @@ namespace controls
 		CWnd::DestroyWindow();
 	}
 
-	void PaneHeader2::Init(HWND hWnd /*, HDC hdc, _In_ UINT nid*/)
+	void PaneHeader2::Init(HWND hWnd, HDC hdc, _In_ UINT nid)
 	{
 		m_hwndParent = hWnd;
 
 		// Assign a nID to the collapse button that is IDD_COLLAPSE more than the control's nID
-		//m_nID = nid;
-		//m_nIDCollapse = nid + IDD_COLLAPSE;
+		m_nID = nid;
+		m_nIDCollapse = nid + IDD_COLLAPSE;
 
 		WNDCLASSEX wc = {};
 		const auto hInst = AfxGetInstanceHandle();
@@ -54,13 +54,13 @@ namespace controls
 		// instead of passing to the children.
 		EC_B_S(ModifyStyleEx(0, WS_EX_CONTROLPARENT));
 
-		//const auto sizeText = ui::GetTextExtentPoint32(hdc, m_szLabel);
-		//m_iLabelWidth = sizeText.cx;
-		//output::DebugPrint(
-		//	output::dbgLevel::Draw,
-		//	L"PaneHeader::Initialize m_iLabelWidth:%d \"%ws\"\n",
-		//	m_iLabelWidth,
-		//	m_szLabel.c_str());
+		const auto sizeText = ui::GetTextExtentPoint32(hdc, m_szLabel);
+		m_iLabelWidth = sizeText.cx;
+		output::DebugPrint(
+			output::dbgLevel::Draw,
+			L"PaneHeader::Initialize m_iLabelWidth:%d \"%ws\"\n",
+			m_iLabelWidth,
+			m_szLabel.c_str());
 	}
 
 	BEGIN_MESSAGE_MAP(PaneHeader2, CWnd)
