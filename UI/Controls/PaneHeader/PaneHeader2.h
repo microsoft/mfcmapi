@@ -10,22 +10,22 @@ namespace controls
 		~PaneHeader2();
 
 		void Init(HWND hWnd/*, HDC hdc, _In_ UINT nid*/);
-		//int GetMinWidth();
+		int GetMinWidth();
 
 		void SetRightLabel(const std::wstring szLabel);
 		void OnSize(UINT nType, int cx, int cy);
 		HDWP DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height);
 		void EnableActionButton(_In_ UINT nid) { m_nIDAction = nid; }
-		//void SetActionButton(const std::wstring szActionButton);
-		//bool HandleChange(UINT nID);
-		//void OnToggleCollapse();
+		void SetActionButton(const std::wstring szActionButton);
+		bool HandleChange(UINT nID);
+		void OnToggleCollapse();
 
-		//_NODISCARD bool empty() const noexcept { return m_szLabel.empty(); }
-		//void SetMargins(
-		//	int iMargin,
-		//	int iSideMargin,
-		//	int iLabelHeight, // Height of the label
-		//	int iButtonHeight); // Height of buttons below the control
+		_NODISCARD bool empty() const noexcept { return m_szLabel.empty(); }
+		void SetMargins(
+			int iMargin,
+			int iSideMargin,
+			int iLabelHeight, // Height of the label
+			int iButtonHeight); // Height of buttons below the control
 
 		void SetLabel(const UINT uidLabel) { m_szLabel = strings::loadstring(uidLabel); }
 		void SetLabel(const std::wstring szLabel) { m_szLabel = szLabel; }
