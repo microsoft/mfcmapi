@@ -257,74 +257,74 @@ namespace controls
 		::EndPaint(m_hWnd, &ps);
 	}
 
-	//int PaneHeader2::GetMinWidth()
-	//{
-	//	auto cx = m_iLabelWidth;
-	//	if (m_bCollapsible) cx += m_iButtonHeight;
-	//	if (m_rightLabelWidth)
-	//	{
-	//		cx += m_iSideMargin;
-	//		cx += m_rightLabelWidth;
-	//	}
+	int PaneHeader2::GetMinWidth()
+	{
+		auto cx = m_iLabelWidth;
+		if (m_bCollapsible) cx += m_iButtonHeight;
+		if (m_rightLabelWidth)
+		{
+			cx += m_iSideMargin;
+			cx += m_rightLabelWidth;
+		}
 
-	//	if (m_actionButtonWidth)
-	//	{
-	//		cx += m_iSideMargin;
-	//		cx += m_actionButtonWidth + 2 * m_iMargin;
-	//	}
+		if (m_actionButtonWidth)
+		{
+			cx += m_iSideMargin;
+			cx += m_actionButtonWidth + 2 * m_iMargin;
+		}
 
-	//	return cx;
-	//}
+		return cx;
+	}
 
-	//void PaneHeader2::SetActionButton(const std::wstring szActionButton)
-	//{
-	//	// Don't bother if we never enabled the button
-	//	if (m_nIDAction == 0) return;
+	void PaneHeader2::SetActionButton(const std::wstring szActionButton)
+	{
+		// Don't bother if we never enabled the button
+		if (m_nIDAction == 0) return;
 
-	//	EC_B_S(::SetWindowTextW(m_actionButton.GetSafeHwnd(), szActionButton.c_str()));
+		EC_B_S(::SetWindowTextW(m_actionButton.GetSafeHwnd(), szActionButton.c_str()));
 
-	//	m_szActionButton = szActionButton;
-	//	const auto hdc = ::GetDC(m_actionButton.GetSafeHwnd());
-	//	const auto hfontOld = SelectObject(hdc, ui::GetSegoeFont());
-	//	const auto sizeText = ui::GetTextExtentPoint32(hdc, szActionButton);
-	//	static_cast<void>(SelectObject(hdc, hfontOld));
-	//	::ReleaseDC(m_actionButton.GetSafeHwnd(), hdc);
-	//	m_actionButtonWidth = sizeText.cx;
-	//}
+		m_szActionButton = szActionButton;
+		const auto hdc = ::GetDC(m_actionButton.GetSafeHwnd());
+		const auto hfontOld = SelectObject(hdc, ui::GetSegoeFont());
+		const auto sizeText = ui::GetTextExtentPoint32(hdc, szActionButton);
+		static_cast<void>(SelectObject(hdc, hfontOld));
+		::ReleaseDC(m_actionButton.GetSafeHwnd(), hdc);
+		m_actionButtonWidth = sizeText.cx;
+	}
 
-	//bool PaneHeader2::HandleChange(UINT nID)
-	//{
-	//	// Collapse buttons have a nID IDD_COLLAPSE higher than nID of the pane they toggle.
-	//	// So if we get asked about one that matches, we can assume it's time to toggle our collapse.
-	//	if (m_nIDCollapse == nID)
-	//	{
-	//		OnToggleCollapse();
-	//		return true;
-	//	}
+	bool PaneHeader2::HandleChange(UINT nID)
+	{
+		// Collapse buttons have a nID IDD_COLLAPSE higher than nID of the pane they toggle.
+		// So if we get asked about one that matches, we can assume it's time to toggle our collapse.
+		if (m_nIDCollapse == nID)
+		{
+			OnToggleCollapse();
+			return true;
+		}
 
-	//	return false;
-	//}
+		return false;
+	}
 
-	//void PaneHeader2::OnToggleCollapse()
-	//{
-	//	m_bCollapsed = !m_bCollapsed;
+	void PaneHeader2::OnToggleCollapse()
+	{
+		m_bCollapsed = !m_bCollapsed;
 
-	//	StyleButton(m_CollapseButton.m_hWnd, m_bCollapsed ? ui::uiButtonStyle::UpArrow : ui::uiButtonStyle::DownArrow);
-	//	WC_B_S(m_rightLabel.ShowWindow(m_bCollapsed ? SW_HIDE : SW_SHOW));
+		StyleButton(m_CollapseButton.m_hWnd, m_bCollapsed ? ui::uiButtonStyle::UpArrow : ui::uiButtonStyle::DownArrow);
+		WC_B_S(m_rightLabel.ShowWindow(m_bCollapsed ? SW_HIDE : SW_SHOW));
 
-	//	// Trigger a redraw
-	//	::PostMessage(m_hwndParent, WM_COMMAND, IDD_RECALCLAYOUT, NULL);
-	//}
+		// Trigger a redraw
+		::PostMessage(m_hwndParent, WM_COMMAND, IDD_RECALCLAYOUT, NULL);
+	}
 
-	//void PaneHeader2::SetMargins(
-	//	int iMargin,
-	//	int iSideMargin,
-	//	int iLabelHeight, // Height of the label
-	//	int iButtonHeight) // Height of button
-	//{
-	//	m_iMargin = iMargin;
-	//	m_iSideMargin = iSideMargin;
-	//	m_iLabelHeight = iLabelHeight;
-	//	m_iButtonHeight = iButtonHeight;
-	//}
+	void PaneHeader2::SetMargins(
+		int iMargin,
+		int iSideMargin,
+		int iLabelHeight, // Height of the label
+		int iButtonHeight) // Height of button
+	{
+		m_iMargin = iMargin;
+		m_iSideMargin = iSideMargin;
+		m_iLabelHeight = iLabelHeight;
+		m_iButtonHeight = iButtonHeight;
+	}
 } // namespace controls
