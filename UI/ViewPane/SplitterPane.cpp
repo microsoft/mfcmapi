@@ -141,7 +141,7 @@ namespace viewpane
 	{
 		ViewPane::Initialize(pParent, hdc);
 
-		m_lpSplitter = std::make_shared<controls::CFakeSplitter2>();
+		m_lpSplitter = std::make_shared<controls::CFakeSplitter>();
 
 		if (m_lpSplitter)
 		{
