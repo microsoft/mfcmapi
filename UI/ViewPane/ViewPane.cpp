@@ -25,16 +25,16 @@ namespace viewpane
 		hWinPosInfo = EC_D(
 			HDWP,
 			m_Header.DeferWindowPos(hWinPosInfo, x, y + m_Header.GetFixedHeight(), width, m_Header.GetFixedHeight()));
-		WC_B_S(m_Header2->ShowWindow(SW_SHOW));
+		WC_B_S(m_Header2.ShowWindow(SW_SHOW));
 		hWinPosInfo = ui::DeferWindowPos(
 			hWinPosInfo,
-			m_Header2->GetSafeHwnd(),
+			m_Header2.GetSafeHwnd(),
 			x,
 			y,
 			width,
 			m_Header.GetFixedHeight(),
 			L"ViewPane::DeferWindowPos::header2");
-		m_Header2->OnSize(NULL, width, m_Header.GetFixedHeight());
+		m_Header2.OnSize(NULL, width, m_Header.GetFixedHeight());
 		output::DebugPrint(output::dbgLevel::Draw, L"ViewPane::DeferWindowPos end\n");
 		return hWinPosInfo;
 	}
@@ -46,12 +46,7 @@ namespace viewpane
 		const UINT nidHeader = IDC_PROP_CONTROL_ID_BASE + 2 * m_paneID;
 		m_nID = IDC_PROP_CONTROL_ID_BASE + 2 * m_paneID + 1;
 		m_Header.Initialize(pParent, hdc, nidHeader);
-		m_Header2 = std::make_shared<controls::PaneHeader2>();
-		if (m_Header2)
-		{
-			//m_Header2->SetLabel(L"Hello World");
-			m_Header2->Initialize(pParent->GetSafeHwnd(), hdc, nidHeader);
-		}
+		m_Header2.Initialize(pParent->GetSafeHwnd(), hdc, nidHeader);
 	}
 
 	ULONG ViewPane::HandleChange(UINT nID)

@@ -46,7 +46,7 @@ namespace viewpane
 		bool m_bInitialized{};
 		bool m_bReadOnly{true};
 		controls::PaneHeader m_Header;
-		std::shared_ptr<controls::PaneHeader2> m_Header2{};
+		controls::PaneHeader2 m_Header2;
 		UINT m_nID{}; // NID for matching change notifications back to controls. Also used for Create calls.
 
 		// Margins
