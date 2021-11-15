@@ -211,15 +211,15 @@ namespace controls
 
 		if (m_nIDAction)
 		{
-			//	// Drop the action button next to the label we drew above
-			//	hWinPosInfo = ui::DeferWindowPos(
-			//		hWinPosInfo,
-			//		m_actionButton.GetSafeHwnd(),
-			//		x + width - actionButtonWidth,
-			//		y,
-			//		actionButtonWidth,
-			//		height,
-			//		L"PaneHeader::DeferWindowPos::actionButton");
+			// Drop the action button next to the label we drew above
+			hWinPosInfo = ui::DeferWindowPos(
+				hWinPosInfo,
+				m_actionButton.GetSafeHwnd(),
+				x + width - actionButtonWidth,
+				y,
+				actionButtonWidth,
+				height,
+				L"PaneHeader::DeferWindowPos::actionButton");
 		}
 
 		output::DebugPrint(output::dbgLevel::Draw, L"PaneHeader::DeferWindowPos end\n");
