@@ -174,20 +174,20 @@ namespace controls
 		//hWinPosInfo = ui::DeferWindowPos(
 		//	hWinPosInfo, GetSafeHwnd(), x, y, width, height, L"PaneHeader::DeferWindowPos", m_szLabel.c_str());
 
-		//auto curX = x;
+		auto curX = x;
 		const auto actionButtonWidth = m_actionButtonWidth ? m_actionButtonWidth + 2 * m_iMargin : 0;
 		const auto actionButtonAndGutterWidth = actionButtonWidth ? actionButtonWidth + m_iSideMargin : 0;
 		if (m_bCollapsible)
 		{
-			//	hWinPosInfo = ui::DeferWindowPos(
-			//		hWinPosInfo,
-			//		m_CollapseButton.GetSafeHwnd(),
-			//		curX,
-			//		y,
-			//		width - actionButtonAndGutterWidth,
-			//		height,
-			//		L"PaneHeader::DeferWindowPos::collapseButton");
-			//	curX += m_iButtonHeight;
+				hWinPosInfo = ui::DeferWindowPos(
+					hWinPosInfo,
+					m_CollapseButton.GetSafeHwnd(),
+					curX,
+					y,
+					width - actionButtonAndGutterWidth,
+					height,
+					L"PaneHeader::DeferWindowPos::collapseButton");
+				curX += m_iButtonHeight;
 		}
 
 		//hWinPosInfo = ui::DeferWindowPos(
