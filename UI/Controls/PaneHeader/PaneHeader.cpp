@@ -188,8 +188,14 @@ namespace controls
 			curX += m_iButtonHeight;
 		}
 
-		//hWinPosInfo = ui::DeferWindowPos(
-		//	hWinPosInfo, GetSafeHwnd(), curX, y, m_iLabelWidth, height, L"PaneHeader::DeferWindowPos::leftLabel");
+		hWinPosInfo = ui::DeferWindowPos(
+			hWinPosInfo,
+			m_leftLabel.GetSafeHwnd(),
+			curX,
+			y,
+			m_iLabelWidth,
+			height,
+			L"PaneHeader::DeferWindowPos::leftLabel");
 
 		if (!m_bCollapsed)
 		{
