@@ -243,7 +243,7 @@ namespace controls
 
 	void PaneHeader::SetRightLabel(const std::wstring szLabel)
 	{
-		//if (!m_bInitialized) return;
+		if (!m_bInitialized) return;
 		EC_B_S(::SetWindowTextW(m_rightLabel.m_hWnd, szLabel.c_str()));
 
 		const auto hdc = ::GetDC(m_rightLabel.GetSafeHwnd());
