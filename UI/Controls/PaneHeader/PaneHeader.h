@@ -48,7 +48,6 @@ namespace controls
 		bool collapsed() const noexcept { return m_bCollapsed; }
 
 	private:
-		void OnPaint();
 		int OnCreate(LPCREATESTRUCT lpCreateStruct);
 		LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
 		bool m_bInitialized{};
