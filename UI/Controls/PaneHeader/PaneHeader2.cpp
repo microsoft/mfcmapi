@@ -15,7 +15,7 @@ namespace controls
 		CWnd::DestroyWindow();
 	}
 
-	void PaneHeader2::Init(HWND hWnd, HDC hdc, _In_ UINT nid)
+	void PaneHeader2::Initialize(HWND hWnd, _In_opt_ HDC hdc, _In_ UINT nid)
 	{
 		m_hwndParent = hWnd;
 
@@ -114,19 +114,6 @@ namespace controls
 		return 0;
 	}
 
-	void PaneHeader2::SetRightLabel(const std::wstring szLabel)
-	{
-		//if (!m_bInitialized) return;
-		EC_B_S(::SetWindowTextW(m_rightLabel.m_hWnd, szLabel.c_str()));
-
-		const auto hdc = ::GetDC(m_rightLabel.GetSafeHwnd());
-		const auto hfontOld = SelectObject(hdc, ui::GetSegoeFont());
-		const auto sizeText = ui::GetTextExtentPoint32(hdc, szLabel);
-		static_cast<void>(SelectObject(hdc, hfontOld));
-		::ReleaseDC(m_rightLabel.GetSafeHwnd(), hdc);
-		m_rightLabelWidth = sizeText.cx;
-	}
-
 	LRESULT PaneHeader2::WindowProc(const UINT message, const WPARAM wParam, const LPARAM lParam)
 	{
 		LRESULT lRes = 0;
@@ -168,10 +155,10 @@ namespace controls
 	// Draws everything to GetFixedHeight()
 	HDWP PaneHeader2::DeferWindowPos(
 		_In_ HDWP hWinPosInfo,
-		_In_ const int x,
-		_In_ const int y,
-		_In_ const int width,
-		_In_ const int height)
+		const _In_ int x,
+		const _In_ int y,
+		const _In_ int width,
+		const _In_ int height)
 	{
 		//if (!m_bInitialized) return hWinPosInfo;
 		output::DebugPrint(
@@ -274,6 +261,19 @@ namespace controls
 		}
 
 		return cx;
+	}
+
+	void PaneHeader2::SetRightLabel(const std::wstring szLabel)
+	{
+		//if (!m_bInitialized) return;
+		EC_B_S(::SetWindowTextW(m_rightLabel.m_hWnd, szLabel.c_str()));
+
+		const auto hdc = ::GetDC(m_rightLabel.GetSafeHwnd());
+		const auto hfontOld = SelectObject(hdc, ui::GetSegoeFont());
+		const auto sizeText = ui::GetTextExtentPoint32(hdc, szLabel);
+		static_cast<void>(SelectObject(hdc, hfontOld));
+		::ReleaseDC(m_rightLabel.GetSafeHwnd(), hdc);
+		m_rightLabelWidth = sizeText.cx;
 	}
 
 	void PaneHeader2::SetActionButton(const std::wstring szActionButton)

@@ -9,12 +9,17 @@ namespace controls
 		PaneHeader2() = default;
 		~PaneHeader2();
 
-		void Init(HWND hWnd, HDC hdc, _In_ UINT nid);
+		void Initialize(HWND hWnd, _In_opt_ HDC hdc, _In_ UINT nid);
+		HDWP DeferWindowPos(
+			_In_ HDWP hWinPosInfo,
+			const _In_ int x,
+			const _In_ int y,
+			const _In_ int width,
+			const _In_ int height);
 		int GetMinWidth();
 
 		void SetRightLabel(const std::wstring szLabel);
 		void OnSize(UINT nType, int cx, int cy);
-		HDWP DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height);
 		void EnableActionButton(_In_ UINT nid) { m_nIDAction = nid; }
 		void SetActionButton(const std::wstring szActionButton);
 		bool HandleChange(UINT nID);
@@ -50,6 +55,7 @@ namespace controls
 		std::wstring m_szLabel; // Text to push into UI in Initialize
 		UINT m_nID{};
 		UINT m_nIDCollapse{}; // NID for collapse button.
+		HWND m_hwndParent{};
 		bool m_bCollapsible{};
 		bool m_bCollapsed{};
 		CButton m_CollapseButton;
@@ -67,7 +73,6 @@ namespace controls
 		CEdit m_rightLabel; // Label on right of header
 		int m_rightLabelWidth{0}; // The width of the string
 
-		HWND m_hwndParent{};
 		CButton m_actionButton;
 		std::wstring m_szActionButton;
 		int m_actionButtonWidth{0};
