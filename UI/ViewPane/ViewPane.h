@@ -1,7 +1,6 @@
 #pragma once
 #include <core/utility/strings.h>
 #include <UI/Controls/PaneHeader/PaneHeader.h>
-#include <UI/Controls/PaneHeader/PaneHeader2.h>
 
 namespace viewpane
 {
@@ -41,12 +40,11 @@ namespace viewpane
 
 	protected:
 		// Returns the height of our header
-		int GetHeaderHeight() const noexcept { return m_Header.GetFixedHeight() * 2; }
+		int GetHeaderHeight() const noexcept { return m_Header.GetFixedHeight(); }
 		int m_paneID{-1}; // ID of the view pane in the view - used for callbacks and layout
 		bool m_bInitialized{};
 		bool m_bReadOnly{true};
 		controls::PaneHeader m_Header;
-		controls::PaneHeader2 m_Header2;
 		UINT m_nID{}; // NID for matching change notifications back to controls. Also used for Create calls.
 
 		// Margins

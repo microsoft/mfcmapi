@@ -22,19 +22,16 @@ namespace viewpane
 			width,
 			height,
 			m_Header.IsWindowVisible());
-		hWinPosInfo = EC_D(
-			HDWP,
-			m_Header.DeferWindowPos(hWinPosInfo, x, y + m_Header.GetFixedHeight(), width, m_Header.GetFixedHeight()));
-		WC_B_S(m_Header2.ShowWindow(SW_SHOW));
+		WC_B_S(m_Header.ShowWindow(SW_SHOW));
 		hWinPosInfo = ui::DeferWindowPos(
 			hWinPosInfo,
-			m_Header2.GetSafeHwnd(),
+			m_Header.GetSafeHwnd(),
 			x,
 			y,
 			width,
 			m_Header.GetFixedHeight(),
 			L"ViewPane::DeferWindowPos::header2");
-		m_Header2.OnSize(NULL, width, m_Header.GetFixedHeight());
+		m_Header.OnSize(NULL, width, m_Header.GetFixedHeight());
 		output::DebugPrint(output::dbgLevel::Draw, L"ViewPane::DeferWindowPos end\n");
 		return hWinPosInfo;
 	}
@@ -45,8 +42,7 @@ namespace viewpane
 		// We compute nID for our view and the header from the pane's base ID.
 		const UINT nidHeader = IDC_PROP_CONTROL_ID_BASE + 2 * m_paneID;
 		m_nID = IDC_PROP_CONTROL_ID_BASE + 2 * m_paneID + 1;
-		m_Header.Initialize(pParent, hdc, nidHeader);
-		m_Header2.Initialize(pParent->GetSafeHwnd(), hdc, nidHeader);
+		m_Header.Initialize(pParent->GetSafeHwnd(), hdc, nidHeader);
 	}
 
 	ULONG ViewPane::HandleChange(UINT nID)

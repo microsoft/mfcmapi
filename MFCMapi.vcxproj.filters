@@ -123,7 +123,6 @@
       <Filter>Source Files\UI\Dialogs\propList</Filter>
     </ClInclude>
     <ClInclude Include="UI\Controls\PaneHeader\PaneHeader.h" />
-    <ClInclude Include="UI\Controls\PaneHeader\PaneHeader2.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StdAfx.h">
@@ -201,9 +200,6 @@
       <Filter>Source Files\UI\Dialogs\propList</Filter>
     </ClCompile>
     <ClCompile Include="UI\Controls\PaneHeader\PaneHeader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Controls\PaneHeader\PaneHeader2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
