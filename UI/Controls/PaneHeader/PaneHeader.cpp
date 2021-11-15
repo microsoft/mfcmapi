@@ -195,17 +195,14 @@ namespace controls
 		if (!m_bCollapsed)
 		{
 			// Drop the count on top of the label we drew above
-			if (m_rightLabel.GetSafeHwnd())
-			{
-				hWinPosInfo = ui::DeferWindowPos(
-					hWinPosInfo,
-					m_rightLabel.GetSafeHwnd(),
-					x + width - m_rightLabelWidth - actionButtonAndGutterWidth,
-					y,
-					m_rightLabelWidth,
-					height,
-					L"PaneHeader::DeferWindowPos::rightLabel");
-			}
+			hWinPosInfo = ui::DeferWindowPos(
+				hWinPosInfo,
+				m_rightLabel.GetSafeHwnd(),
+				x + width - m_rightLabelWidth - actionButtonAndGutterWidth,
+				y,
+				m_rightLabelWidth,
+				height,
+				L"PaneHeader::DeferWindowPos::rightLabel");
 		}
 
 		if (m_nIDAction)
