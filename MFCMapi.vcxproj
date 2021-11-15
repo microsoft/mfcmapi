@@ -591,9 +591,9 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="UI\Controls\PaneHeader\PaneHeader.h" />
     <ClInclude Include="UI\Controls\SortList\SortHeader.h" />
     <ClInclude Include="UI\Controls\SortList\SortListCtrl.h" />
+    <ClInclude Include="UI\Controls\PaneHeader\PaneHeader.h" />
     <ClInclude Include="UI\Dialogs\Editors\propeditor\ipropeditor.h" />
     <ClInclude Include="UI\Dialogs\propList\AccountsDialog.h" />
     <ClInclude Include="UI\Dialogs\propList\RegistryDialog.h" />
@@ -674,9 +674,9 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
   <ItemGroup>
     <ClCompile Include="UI\CMAPIProgress.cpp" />
     <ClCompile Include="UI\addinui.cpp" />
-    <ClCompile Include="UI\Controls\PaneHeader\PaneHeader.cpp" />
     <ClCompile Include="UI\Controls\SortList\SortHeader.cpp" />
     <ClCompile Include="UI\Controls\SortList\SortListCtrl.cpp" />
+    <ClCompile Include="UI\Controls\PaneHeader\PaneHeader.cpp" />
     <ClCompile Include="UI\Dialogs\Editors\propeditor\ipropeditor.cpp" />
     <ClCompile Include="UI\Dialogs\propList\AccountsDialog.cpp" />
     <ClCompile Include="UI\Dialogs\propList\RegistryDialog.cpp" />
