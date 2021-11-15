@@ -17,7 +17,7 @@ namespace controls
 
 	void PaneHeader2::Initialize(HWND hWnd, _In_opt_ HDC hdc, _In_ UINT nid)
 	{
-		m_hwndParent = hWnd;
+		m_hWndParent = hWnd;
 
 		// Assign a nID to the collapse button that is IDD_COLLAPSE more than the control's nID
 		m_nID = nid;
@@ -46,7 +46,7 @@ namespace controls
 			0,
 			0,
 			0,
-			m_hwndParent,
+			m_hWndParent,
 			reinterpret_cast<HMENU>(static_cast<INT_PTR>(IDC_PANE_HEADER)),
 			nullptr));
 
@@ -122,7 +122,7 @@ namespace controls
 		switch (message)
 		{
 		case WM_CLOSE:
-			::SendMessage(m_hwndParent, message, wParam, lParam);
+			::SendMessage(m_hWndParent, message, wParam, lParam);
 			return true;
 		case WM_HELP:
 			return true;
@@ -131,7 +131,7 @@ namespace controls
 			const auto nCode = HIWORD(wParam);
 			if (EN_CHANGE == nCode || CBN_SELCHANGE == nCode || CBN_EDITCHANGE == nCode || BN_CLICKED == nCode)
 			{
-				::SendMessage(m_hwndParent, message, wParam, lParam);
+				::SendMessage(m_hWndParent, message, wParam, lParam);
 			}
 
 			break;
@@ -179,15 +179,15 @@ namespace controls
 		const auto actionButtonAndGutterWidth = actionButtonWidth ? actionButtonWidth + m_iSideMargin : 0;
 		if (m_bCollapsible)
 		{
-				hWinPosInfo = ui::DeferWindowPos(
-					hWinPosInfo,
-					m_CollapseButton.GetSafeHwnd(),
-					curX,
-					y,
-					width - actionButtonAndGutterWidth,
-					height,
-					L"PaneHeader::DeferWindowPos::collapseButton");
-				curX += m_iButtonHeight;
+			hWinPosInfo = ui::DeferWindowPos(
+				hWinPosInfo,
+				m_CollapseButton.GetSafeHwnd(),
+				curX,
+				y,
+				width - actionButtonAndGutterWidth,
+				height,
+				L"PaneHeader::DeferWindowPos::collapseButton");
+			curX += m_iButtonHeight;
 		}
 
 		//hWinPosInfo = ui::DeferWindowPos(
@@ -313,7 +313,7 @@ namespace controls
 		WC_B_S(m_rightLabel.ShowWindow(m_bCollapsed ? SW_HIDE : SW_SHOW));
 
 		// Trigger a redraw
-		::PostMessage(m_hwndParent, WM_COMMAND, IDD_RECALCLAYOUT, NULL);
+		::PostMessage(m_hWndParent, WM_COMMAND, IDD_RECALCLAYOUT, NULL);
 	}
 
 	void PaneHeader2::SetMargins(

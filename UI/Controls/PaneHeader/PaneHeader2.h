@@ -55,7 +55,7 @@ namespace controls
 		std::wstring m_szLabel; // Text to push into UI in Initialize
 		UINT m_nID{};
 		UINT m_nIDCollapse{}; // NID for collapse button.
-		HWND m_hwndParent{};
+		HWND m_hWndParent{};
 		bool m_bCollapsible{};
 		bool m_bCollapsed{};
 		CButton m_CollapseButton;
