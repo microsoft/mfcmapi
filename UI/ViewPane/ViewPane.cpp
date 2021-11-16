@@ -22,6 +22,7 @@ namespace viewpane
 			width,
 			height,
 			m_Header.IsWindowVisible());
+		WC_B_S(m_Header.ShowWindow(SW_SHOW));
 		hWinPosInfo = ui::DeferWindowPos(
 			hWinPosInfo,
 			m_Header.GetSafeHwnd(),
@@ -30,6 +31,7 @@ namespace viewpane
 			width,
 			m_Header.GetFixedHeight(),
 			L"ViewPane::DeferWindowPos::header2");
+		m_Header.OnSize(NULL, width, m_Header.GetFixedHeight());
 		output::DebugPrint(output::dbgLevel::Draw, L"ViewPane::DeferWindowPos end\n");
 		return hWinPosInfo;
 	}

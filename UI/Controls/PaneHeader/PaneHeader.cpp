@@ -65,6 +65,7 @@ namespace controls
 
 	BEGIN_MESSAGE_MAP(PaneHeader, CWnd)
 	ON_WM_SIZE()
+	ON_WM_PAINT()
 	ON_WM_CREATE()
 	END_MESSAGE_MAP()
 
@@ -166,6 +167,10 @@ namespace controls
 			width,
 			height,
 			IsWindowVisible());
+		InvalidateRect(CRect(x, y, width, height), false);
+
+		//hWinPosInfo = ui::DeferWindowPos(
+		//	hWinPosInfo, GetSafeHwnd(), x, y, width, height, L"PaneHeader::DeferWindowPos", m_szLabel.c_str());
 
 		auto curX = x;
 		const auto actionButtonWidth = m_actionButtonWidth ? m_actionButtonWidth + 2 * m_iMargin : 0;
@@ -195,14 +200,17 @@ namespace controls
 		if (!m_bCollapsed)
 		{
 			// Drop the count on top of the label we drew above
-			hWinPosInfo = ui::DeferWindowPos(
-				hWinPosInfo,
-				m_rightLabel.GetSafeHwnd(),
-				x + width - m_rightLabelWidth - actionButtonAndGutterWidth,
-				y,
-				m_rightLabelWidth,
-				height,
-				L"PaneHeader::DeferWindowPos::rightLabel");
+			if (m_rightLabel.GetSafeHwnd())
+			{
+				hWinPosInfo = ui::DeferWindowPos(
+					hWinPosInfo,
+					m_rightLabel.GetSafeHwnd(),
+					x + width - m_rightLabelWidth - actionButtonAndGutterWidth,
+					y,
+					m_rightLabelWidth,
+					height,
+					L"PaneHeader::DeferWindowPos::rightLabel");
+			}
 		}
 
 		if (m_nIDAction)
@@ -220,6 +228,24 @@ namespace controls
 
 		output::DebugPrint(output::dbgLevel::Draw, L"PaneHeader::DeferWindowPos end\n");
 		return hWinPosInfo;
+	}
+
+	void PaneHeader::OnPaint()
+	{
+		auto ps = PAINTSTRUCT{};
+		::BeginPaint(m_hWnd, &ps);
+		if (ps.hdc)
+		{
+			auto rcWin = RECT{};
+			::GetClientRect(m_hWnd, &rcWin);
+			ui::CDoubleBuffer db;
+			auto hdc = ps.hdc;
+			db.Begin(hdc, rcWin);
+			FillRect(hdc, &rcWin, GetSysBrush(ui::uiColor::Background));
+			db.End(hdc);
+		}
+
+		::EndPaint(m_hWnd, &ps);
 	}
 
 	int PaneHeader::GetMinWidth()
@@ -243,7 +269,7 @@ namespace controls
 
 	void PaneHeader::SetRightLabel(const std::wstring szLabel)
 	{
-		if (!m_bInitialized) return;
+		//if (!m_bInitialized) return;
 		EC_B_S(::SetWindowTextW(m_rightLabel.m_hWnd, szLabel.c_str()));
 
 		const auto hdc = ::GetDC(m_rightLabel.GetSafeHwnd());
