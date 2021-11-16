@@ -167,10 +167,6 @@ namespace controls
 			width,
 			height,
 			IsWindowVisible());
-		InvalidateRect(CRect(x, y, width, height), false);
-
-		//hWinPosInfo = ui::DeferWindowPos(
-		//	hWinPosInfo, GetSafeHwnd(), x, y, width, height, L"PaneHeader::DeferWindowPos", m_szLabel.c_str());
 
 		auto curX = x;
 		const auto actionButtonWidth = m_actionButtonWidth ? m_actionButtonWidth + 2 * m_iMargin : 0;
