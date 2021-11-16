@@ -65,7 +65,6 @@ namespace controls
 
 	BEGIN_MESSAGE_MAP(PaneHeader, CWnd)
 	ON_WM_SIZE()
-	ON_WM_PAINT()
 	ON_WM_CREATE()
 	END_MESSAGE_MAP()
 
@@ -224,24 +223,6 @@ namespace controls
 
 		output::DebugPrint(output::dbgLevel::Draw, L"PaneHeader::DeferWindowPos end\n");
 		return hWinPosInfo;
-	}
-
-	void PaneHeader::OnPaint()
-	{
-		auto ps = PAINTSTRUCT{};
-		::BeginPaint(m_hWnd, &ps);
-		if (ps.hdc)
-		{
-			auto rcWin = RECT{};
-			::GetClientRect(m_hWnd, &rcWin);
-			ui::CDoubleBuffer db;
-			auto hdc = ps.hdc;
-			db.Begin(hdc, rcWin);
-			FillRect(hdc, &rcWin, GetSysBrush(ui::uiColor::Background));
-			db.End(hdc);
-		}
-
-		::EndPaint(m_hWnd, &ps);
 	}
 
 	int PaneHeader::GetMinWidth()
