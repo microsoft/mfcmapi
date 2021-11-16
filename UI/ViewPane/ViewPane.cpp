@@ -22,7 +22,6 @@ namespace viewpane
 			width,
 			height,
 			m_Header.IsWindowVisible());
-		WC_B_S(m_Header.ShowWindow(SW_SHOW));
 		hWinPosInfo = ui::DeferWindowPos(
 			hWinPosInfo,
 			m_Header.GetSafeHwnd(),
