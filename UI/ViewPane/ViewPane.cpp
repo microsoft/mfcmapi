@@ -29,7 +29,7 @@ namespace viewpane
 			y,
 			width,
 			m_Header.GetFixedHeight(),
-			L"ViewPane::DeferWindowPos::header2");
+			L"ViewPane::DeferWindowPos::header");
 		m_Header.OnSize(NULL, width, m_Header.GetFixedHeight());
 		output::DebugPrint(output::dbgLevel::Draw, L"ViewPane::DeferWindowPos end\n");
 		return hWinPosInfo;
