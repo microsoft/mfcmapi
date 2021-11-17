@@ -30,12 +30,6 @@ namespace viewpane
 			width,
 			m_Header.GetFixedHeight(),
 			L"ViewPane::DeferWindowPos::header");
-		auto hdwp = WC_D(HDWP, BeginDeferWindowPos(2));
-		if (hdwp)
-		{
-			hdwp = EC_D(HDWP, m_Header.DeferWindowPos(hdwp, 0, 0, width, m_Header.GetFixedHeight()));
-			EC_B_S(EndDeferWindowPos(hdwp));
-		}
 
 		output::DebugPrint(output::dbgLevel::Draw, L"ViewPane::DeferWindowPos end\n");
 		return hWinPosInfo;

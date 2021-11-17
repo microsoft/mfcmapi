@@ -10,12 +10,6 @@ namespace controls
 		~PaneHeader();
 
 		void Initialize(HWND hWnd, _In_opt_ HDC hdc, _In_ UINT nid);
-		HDWP DeferWindowPos(
-			_In_ HDWP hWinPosInfo,
-			const _In_ int x,
-			const _In_ int y,
-			const _In_ int width,
-			const _In_ int height);
 		int GetMinWidth();
 
 		void SetRightLabel(const std::wstring szLabel);
@@ -47,7 +41,9 @@ namespace controls
 		bool collapsed() const noexcept { return m_bCollapsed; }
 
 	private:
+		void OnWindowPosChanged(WINDOWPOS* lpwndpos);
 		int OnCreate(LPCREATESTRUCT lpCreateStruct);
+		void Redraw();
 		LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
 		bool m_bInitialized{};
 		std::wstring m_szLabel; // Text to push into UI in Initialize

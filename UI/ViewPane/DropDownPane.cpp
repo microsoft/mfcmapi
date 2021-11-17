@@ -104,7 +104,14 @@ namespace viewpane
 
 		if (!m_Header.empty())
 		{
-			hWinPosInfo = EC_D(HDWP, m_Header.DeferWindowPos(hWinPosInfo, x, curY, width, labelHeight));
+			ui::DeferWindowPos(
+				hWinPosInfo,
+				m_Header.GetSafeHwnd(),
+				x,
+				curY,
+				width,
+				labelHeight,
+				L"DropDownPane::DeferWindowPos::header");
 			curY += labelHeight;
 		}
 
@@ -114,7 +121,13 @@ namespace viewpane
 		const auto ulDrops = static_cast<int>(min(10, 1 + max(m_DropList.size(), 4)));
 
 		hWinPosInfo = ui::DeferWindowPos(
-				hWinPosInfo, m_DropDown.GetSafeHwnd(), x, curY, width, m_iEditHeight * ulDrops, L"DropDownPane::DeferWindowPos::dropdown");
+			hWinPosInfo,
+			m_DropDown.GetSafeHwnd(),
+			x,
+			curY,
+			width,
+			m_iEditHeight * ulDrops,
+			L"DropDownPane::DeferWindowPos::dropdown");
 		return hWinPosInfo;
 	}
 

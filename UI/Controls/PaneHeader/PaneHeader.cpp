@@ -65,6 +65,7 @@ namespace controls
 
 	BEGIN_MESSAGE_MAP(PaneHeader, CWnd)
 	ON_WM_CREATE()
+	ON_WM_WINDOWPOSCHANGED()
 	END_MESSAGE_MAP()
 
 	int PaneHeader::OnCreate(LPCREATESTRUCT /*lpCreateStruct*/)
@@ -139,78 +140,93 @@ namespace controls
 
 	// Draw our collapse button and label, if needed.
 	// Draws everything to GetFixedHeight()
-	HDWP PaneHeader::DeferWindowPos(
-		_In_ HDWP hWinPosInfo,
-		const _In_ int x,
-		const _In_ int y,
-		const _In_ int width,
-		const _In_ int height)
+	void PaneHeader::OnWindowPosChanged(WINDOWPOS* lpwndpos)
 	{
-		if (!m_bInitialized) return hWinPosInfo;
-		output::DebugPrint(
-			output::dbgLevel::Draw,
-			L"PaneHeader::DeferWindowPos x:%d y:%d width:%d height:%d v:%d\n",
-			x,
-			y,
-			width,
-			height,
-			IsWindowVisible());
-		auto curX = 0;
-		const auto actionButtonWidth = m_actionButtonWidth ? m_actionButtonWidth + 2 * m_iMargin : 0;
-		const auto actionButtonAndGutterWidth = actionButtonWidth ? actionButtonWidth + m_iSideMargin : 0;
-		if (m_bCollapsible)
+		if (!m_bInitialized || !lpwndpos) return; // TODO: wrap
+		auto hWinPosInfo = WC_D(HDWP, BeginDeferWindowPos(2));
+		if (hWinPosInfo)
 		{
-			hWinPosInfo = ui::DeferWindowPos(
-				hWinPosInfo,
-				m_CollapseButton.GetSafeHwnd(),
-				curX,
-				0,
-				width - actionButtonAndGutterWidth,
+			const auto width = lpwndpos->cx;
+			const auto height = lpwndpos->cy;
+			output::DebugPrint(
+				output::dbgLevel::Draw,
+				L"PaneHeader::DeferWindowPos width:%d height:%d v:%d\n",
+				width,
 				height,
-				L"PaneHeader::DeferWindowPos::collapseButton");
-			curX += m_iButtonHeight;
-		}
-
-		hWinPosInfo = ui::DeferWindowPos(
-			hWinPosInfo,
-			m_leftLabel.GetSafeHwnd(),
-			curX,
-			0,
-			m_iLabelWidth,
-			height,
-			L"PaneHeader::DeferWindowPos::leftLabel");
-
-		if (!m_bCollapsed)
-		{
-			// Drop the count on top of the label we drew above
-			if (m_rightLabel.GetSafeHwnd())
+				IsWindowVisible());
+			auto curX = 0;
+			const auto actionButtonWidth = m_actionButtonWidth ? m_actionButtonWidth + 2 * m_iMargin : 0;
+			const auto actionButtonAndGutterWidth = actionButtonWidth ? actionButtonWidth + m_iSideMargin : 0;
+			if (m_bCollapsible)
 			{
 				hWinPosInfo = ui::DeferWindowPos(
 					hWinPosInfo,
-					m_rightLabel.GetSafeHwnd(),
-					width - m_rightLabelWidth - actionButtonAndGutterWidth,
+					m_CollapseButton.GetSafeHwnd(),
+					curX,
 					0,
-					m_rightLabelWidth,
+					width - actionButtonAndGutterWidth,
 					height,
-					L"PaneHeader::DeferWindowPos::rightLabel");
+					L"PaneHeader::DeferWindowPos::collapseButton");
+				curX += m_iButtonHeight;
 			}
-		}
 
-		if (m_nIDAction)
-		{
-			// Drop the action button next to the label we drew above
 			hWinPosInfo = ui::DeferWindowPos(
 				hWinPosInfo,
-				m_actionButton.GetSafeHwnd(),
-				x + width - actionButtonWidth,
+				m_leftLabel.GetSafeHwnd(),
+				curX,
 				0,
-				actionButtonWidth,
+				m_iLabelWidth,
 				height,
-				L"PaneHeader::DeferWindowPos::actionButton");
+				L"PaneHeader::DeferWindowPos::leftLabel");
+
+			if (!m_bCollapsed)
+			{
+				// Drop the count on top of the label we drew above
+				if (m_rightLabel.GetSafeHwnd())
+				{
+					hWinPosInfo = ui::DeferWindowPos(
+						hWinPosInfo,
+						m_rightLabel.GetSafeHwnd(),
+						width - m_rightLabelWidth - actionButtonAndGutterWidth,
+						0,
+						m_rightLabelWidth,
+						height,
+						L"PaneHeader::DeferWindowPos::rightLabel");
+				}
+			}
+
+			if (m_nIDAction)
+			{
+				// Drop the action button next to the label we drew above
+				hWinPosInfo = ui::DeferWindowPos(
+					hWinPosInfo,
+					m_actionButton.GetSafeHwnd(),
+					width - actionButtonWidth,
+					0,
+					actionButtonWidth,
+					height,
+					L"PaneHeader::DeferWindowPos::actionButton");
+			}
+
+			output::DebugPrint(output::dbgLevel::Draw, L"PaneHeader::DeferWindowPos end\n");
+			EC_B_S(EndDeferWindowPos(hWinPosInfo));
 		}
 
-		output::DebugPrint(output::dbgLevel::Draw, L"PaneHeader::DeferWindowPos end\n");
-		return hWinPosInfo;
+		return CWnd::OnWindowPosChanged(lpwndpos);
+	}
+
+	void PaneHeader::Redraw()
+	{
+		// Trigger a redraw
+		RECT rcControl = {0};
+		::GetWindowRect(GetSafeHwnd(), &rcControl);
+		::MoveWindow(
+			GetSafeHwnd(),
+			rcControl.left,
+			rcControl.top,
+			rcControl.right - rcControl.left,
+			rcControl.bottom - rcControl.top,
+			false);
 	}
 
 	int PaneHeader::GetMinWidth()
@@ -234,7 +250,7 @@ namespace controls
 
 	void PaneHeader::SetRightLabel(const std::wstring szLabel)
 	{
-		//if (!m_bInitialized) return;
+		if (!m_bInitialized) return;
 		EC_B_S(::SetWindowTextW(m_rightLabel.m_hWnd, szLabel.c_str()));
 
 		const auto hdc = ::GetDC(m_rightLabel.GetSafeHwnd());
@@ -243,6 +259,8 @@ namespace controls
 		static_cast<void>(SelectObject(hdc, hfontOld));
 		::ReleaseDC(m_rightLabel.GetSafeHwnd(), hdc);
 		m_rightLabelWidth = sizeText.cx;
+
+		Redraw();
 	}
 
 	void PaneHeader::SetActionButton(const std::wstring szActionButton)
