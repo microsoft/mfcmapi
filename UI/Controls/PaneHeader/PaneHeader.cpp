@@ -155,8 +155,7 @@ namespace controls
 			width,
 			height,
 			IsWindowVisible());
-
-		auto curX = x;
+		auto curX = 0;
 		const auto actionButtonWidth = m_actionButtonWidth ? m_actionButtonWidth + 2 * m_iMargin : 0;
 		const auto actionButtonAndGutterWidth = actionButtonWidth ? actionButtonWidth + m_iSideMargin : 0;
 		if (m_bCollapsible)
@@ -165,7 +164,7 @@ namespace controls
 				hWinPosInfo,
 				m_CollapseButton.GetSafeHwnd(),
 				curX,
-				y,
+				0,
 				width - actionButtonAndGutterWidth,
 				height,
 				L"PaneHeader::DeferWindowPos::collapseButton");
@@ -176,7 +175,7 @@ namespace controls
 			hWinPosInfo,
 			m_leftLabel.GetSafeHwnd(),
 			curX,
-			y,
+			0,
 			m_iLabelWidth,
 			height,
 			L"PaneHeader::DeferWindowPos::leftLabel");
@@ -189,8 +188,8 @@ namespace controls
 				hWinPosInfo = ui::DeferWindowPos(
 					hWinPosInfo,
 					m_rightLabel.GetSafeHwnd(),
-					x + width - m_rightLabelWidth - actionButtonAndGutterWidth,
-					y,
+					width - m_rightLabelWidth - actionButtonAndGutterWidth,
+					0,
 					m_rightLabelWidth,
 					height,
 					L"PaneHeader::DeferWindowPos::rightLabel");
@@ -204,7 +203,7 @@ namespace controls
 				hWinPosInfo,
 				m_actionButton.GetSafeHwnd(),
 				x + width - actionButtonWidth,
-				y,
+				0,
 				actionButtonWidth,
 				height,
 				L"PaneHeader::DeferWindowPos::actionButton");
