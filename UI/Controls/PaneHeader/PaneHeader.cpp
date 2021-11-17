@@ -277,6 +277,8 @@ namespace controls
 		static_cast<void>(SelectObject(hdc, hfontOld));
 		::ReleaseDC(m_actionButton.GetSafeHwnd(), hdc);
 		m_actionButtonWidth = sizeText.cx;
+
+		Redraw();
 	}
 
 	bool PaneHeader::HandleChange(UINT nID)
