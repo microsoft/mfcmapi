@@ -65,7 +65,7 @@ namespace controls
 
 	BEGIN_MESSAGE_MAP(PaneHeader, CWnd)
 	ON_WM_CREATE()
-	ON_WM_WINDOWPOSCHANGED()
+	ON_WM_PAINT()
 	END_MESSAGE_MAP()
 
 	int PaneHeader::OnCreate(LPCREATESTRUCT /*lpCreateStruct*/)
@@ -140,14 +140,17 @@ namespace controls
 
 	// Draw our collapse button and label, if needed.
 	// Draws everything to GetFixedHeight()
-	void PaneHeader::OnWindowPosChanged(WINDOWPOS* lpwndpos)
+	void PaneHeader::OnPaint()
 	{
-		if (!m_bInitialized || !lpwndpos) return; // TODO: wrap
+		if (!m_bInitialized) return;
+		auto rcWin = RECT{};
+		::GetClientRect(m_hWnd, &rcWin);
+
 		auto hWinPosInfo = WC_D(HDWP, BeginDeferWindowPos(2));
 		if (hWinPosInfo)
 		{
-			const auto width = lpwndpos->cx;
-			const auto height = lpwndpos->cy;
+			const auto width = rcWin.right - rcWin.left;
+			const auto height = rcWin.bottom - rcWin.top;
 			output::DebugPrint(
 				output::dbgLevel::Draw,
 				L"PaneHeader::DeferWindowPos width:%d height:%d v:%d\n",
@@ -211,22 +214,6 @@ namespace controls
 			output::DebugPrint(output::dbgLevel::Draw, L"PaneHeader::DeferWindowPos end\n");
 			EC_B_S(EndDeferWindowPos(hWinPosInfo));
 		}
-
-		return CWnd::OnWindowPosChanged(lpwndpos);
-	}
-
-	void PaneHeader::Redraw()
-	{
-		// Trigger a redraw
-		RECT rcControl = {0};
-		::GetWindowRect(GetSafeHwnd(), &rcControl);
-		::MoveWindow(
-			GetSafeHwnd(),
-			rcControl.left,
-			rcControl.top,
-			rcControl.right - rcControl.left,
-			rcControl.bottom - rcControl.top,
-			false);
 	}
 
 	int PaneHeader::GetMinWidth()
@@ -260,7 +247,7 @@ namespace controls
 		::ReleaseDC(m_rightLabel.GetSafeHwnd(), hdc);
 		m_rightLabelWidth = sizeText.cx;
 
-		Redraw();
+		RedrawWindow();
 	}
 
 	void PaneHeader::SetActionButton(const std::wstring szActionButton)
