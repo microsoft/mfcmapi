@@ -19,7 +19,6 @@ namespace controls
 		int GetMinWidth();
 
 		void SetRightLabel(const std::wstring szLabel);
-		void OnSize(UINT nType, int cx, int cy);
 		void EnableActionButton(_In_ UINT nid) { m_nIDAction = nid; }
 		void SetActionButton(const std::wstring szActionButton);
 		bool HandleChange(UINT nID);

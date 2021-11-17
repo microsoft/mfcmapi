@@ -64,7 +64,6 @@ namespace controls
 	}
 
 	BEGIN_MESSAGE_MAP(PaneHeader, CWnd)
-	ON_WM_SIZE()
 	ON_WM_CREATE()
 	END_MESSAGE_MAP()
 
@@ -136,16 +135,6 @@ namespace controls
 		}
 
 		return CWnd::WindowProc(message, wParam, lParam);
-	}
-
-	void PaneHeader::OnSize(UINT /*nType*/, const int cx, const int cy)
-	{
-		auto hdwp = WC_D(HDWP, BeginDeferWindowPos(2));
-		if (hdwp)
-		{
-			hdwp = EC_D(HDWP, DeferWindowPos(hdwp, 0, 0, cx, cy));
-			EC_B_S(EndDeferWindowPos(hdwp));
-		}
 	}
 
 	// Draw our collapse button and label, if needed.
