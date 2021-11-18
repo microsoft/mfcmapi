@@ -50,9 +50,10 @@ namespace controls
 			reinterpret_cast<HMENU>(static_cast<INT_PTR>(IDC_PANE_HEADER)),
 			nullptr));
 
+		// We hang if we do this:
 		// Necessary for TAB to work. Without this, all TABS get stuck on the control
 		// instead of passing to the children.
-		EC_B_S(ModifyStyleEx(0, WS_EX_CONTROLPARENT));
+		//EC_B_S(ModifyStyleEx(0, WS_EX_CONTROLPARENT));
 
 		const auto sizeText = ui::GetTextExtentPoint32(hdc, m_szLabel);
 		m_iLabelWidth = sizeText.cx;
