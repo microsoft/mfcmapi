@@ -156,8 +156,7 @@ namespace controls
 		return CWnd::WindowProc(message, wParam, lParam);
 	}
 
-	// Draw our collapse button and label, if needed.
-	// Draws everything to GetFixedHeight()
+	// Position collapse button, labels, action button.
 	void PaneHeader::OnWindowPosChanged(WINDOWPOS* lpwndpos)
 	{
 		if (!m_bInitialized || !lpwndpos) return; // TODO: wrap
