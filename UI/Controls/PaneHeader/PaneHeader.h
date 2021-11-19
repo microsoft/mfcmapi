@@ -41,9 +41,8 @@ namespace controls
 		bool collapsed() const noexcept { return m_bCollapsed; }
 
 	private:
-		void OnWindowPosChanged(WINDOWPOS* lpwndpos);
+		void RecalcLayout();
 		int OnCreate(LPCREATESTRUCT lpCreateStruct);
-		void Redraw();
 		LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
 		bool m_bInitialized{};
 		std::wstring m_szLabel; // Text to push into UI in Initialize

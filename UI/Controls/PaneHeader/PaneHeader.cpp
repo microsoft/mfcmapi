@@ -134,7 +134,9 @@ namespace controls
 
 			::EndPaint(m_hWnd, &ps);
 			return 0;
-			break;
+		case WM_WINDOWPOSCHANGED:
+			RecalcLayout();
+			return 0;
 		case WM_CLOSE:
 			::SendMessage(m_hWndParent, message, wParam, lParam);
 			return true;
@@ -157,14 +159,16 @@ namespace controls
 	}
 
 	// Position collapse button, labels, action button.
-	void PaneHeader::OnWindowPosChanged(WINDOWPOS* lpwndpos)
+	void PaneHeader::RecalcLayout()
 	{
-		if (!m_bInitialized || !lpwndpos) return; // TODO: wrap
-		auto hWinPosInfo = WC_D(HDWP, BeginDeferWindowPos(2));
+		if (!m_bInitialized) return;
+		auto hWinPosInfo = WC_D(HDWP, BeginDeferWindowPos(4));
 		if (hWinPosInfo)
 		{
-			const auto width = lpwndpos->cx;
-			const auto height = lpwndpos->cy;
+			auto rcWin = RECT{};
+			::GetClientRect(m_hWnd, &rcWin);
+			const auto width = rcWin.right - rcWin.left;
+			const auto height = rcWin.bottom - rcWin.top;
 			output::DebugPrint(
 				output::dbgLevel::Draw,
 				L"PaneHeader::DeferWindowPos width:%d height:%d v:%d\n",
@@ -228,22 +232,6 @@ namespace controls
 			output::DebugPrint(output::dbgLevel::Draw, L"PaneHeader::DeferWindowPos end\n");
 			EC_B_S(EndDeferWindowPos(hWinPosInfo));
 		}
-
-		return CWnd::OnWindowPosChanged(lpwndpos);
-	}
-
-	void PaneHeader::Redraw()
-	{
-		// Trigger a redraw
-		RECT rcControl = {0};
-		::GetWindowRect(GetSafeHwnd(), &rcControl);
-		::MoveWindow(
-			GetSafeHwnd(),
-			rcControl.left,
-			rcControl.top,
-			rcControl.right - rcControl.left,
-			rcControl.bottom - rcControl.top,
-			false);
 	}
 
 	int PaneHeader::GetMinWidth()
@@ -277,7 +265,7 @@ namespace controls
 		::ReleaseDC(m_rightLabel.GetSafeHwnd(), hdc);
 		m_rightLabelWidth = sizeText.cx;
 
-		Redraw();
+		RecalcLayout();
 	}
 
 	void PaneHeader::SetActionButton(const std::wstring szActionButton)
@@ -295,7 +283,7 @@ namespace controls
 		::ReleaseDC(m_actionButton.GetSafeHwnd(), hdc);
 		m_actionButtonWidth = sizeText.cx;
 
-		Redraw();
+		RecalcLayout();
 	}
 
 	bool PaneHeader::HandleChange(UINT nID)
