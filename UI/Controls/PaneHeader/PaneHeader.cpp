@@ -143,7 +143,8 @@ namespace controls
 		case WM_COMMAND:
 		{
 			const auto nCode = HIWORD(wParam);
-			if (EN_CHANGE == nCode || CBN_SELCHANGE == nCode || CBN_EDITCHANGE == nCode || BN_CLICKED == nCode)
+			// Pass button clicks up to parent
+			if (BN_CLICKED == nCode)
 			{
 				::SendMessage(m_hWndParent, message, wParam, lParam);
 			}
