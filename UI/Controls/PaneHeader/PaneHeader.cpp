@@ -4,6 +4,7 @@
 #include <core/utility/strings.h>
 #include <UI/DoubleBuffer.h>
 #include <core/utility/output.h>
+#include <core/utility/registry.h>
 
 namespace controls
 {
@@ -119,6 +120,21 @@ namespace controls
 
 		switch (message)
 		{
+		case WM_PAINT:
+			auto ps = PAINTSTRUCT{};
+			::BeginPaint(m_hWnd, &ps);
+			if (ps.hdc)
+			{
+				auto rcWin = RECT{};
+				::GetClientRect(m_hWnd, &rcWin);
+				const auto background = registry::uiDiag ? ui::GetSysBrush(ui::uiColor::TestGreen)
+														 : ui::GetSysBrush(ui::uiColor::Background);
+				FillRect(ps.hdc, &rcWin, background);
+			}
+
+			::EndPaint(m_hWnd, &ps);
+			return 0;
+			break;
 		case WM_CLOSE:
 			::SendMessage(m_hWndParent, message, wParam, lParam);
 			return true;
