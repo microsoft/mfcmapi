@@ -67,7 +67,6 @@ namespace controls
 
 	BEGIN_MESSAGE_MAP(PaneHeader, CWnd)
 	ON_WM_CREATE()
-	ON_WM_WINDOWPOSCHANGED()
 	END_MESSAGE_MAP()
 
 	int PaneHeader::OnCreate(LPCREATESTRUCT /*lpCreateStruct*/)
