@@ -201,21 +201,22 @@ namespace controls
 				height,
 				L"PaneHeader::DeferWindowPos::leftLabel");
 
-			if (!m_bCollapsed)
+			auto cmdShow = SW_HIDE;
+			if (!m_bCollapsed && m_rightLabelWidth)
 			{
 				// Drop the count on top of the label we drew above
-				if (m_rightLabel.GetSafeHwnd())
-				{
-					hWinPosInfo = ui::DeferWindowPos(
-						hWinPosInfo,
-						m_rightLabel.GetSafeHwnd(),
-						width - m_rightLabelWidth - actionButtonAndGutterWidth,
-						0,
-						m_rightLabelWidth,
-						height,
-						L"PaneHeader::DeferWindowPos::rightLabel");
-				}
+				hWinPosInfo = ui::DeferWindowPos(
+					hWinPosInfo,
+					m_rightLabel.GetSafeHwnd(),
+					width - m_rightLabelWidth - actionButtonAndGutterWidth,
+					0,
+					m_rightLabelWidth,
+					height,
+					L"PaneHeader::DeferWindowPos::rightLabel");
+				cmdShow = SW_SHOW;
 			}
+
+			WC_B_S(::ShowWindow(m_rightLabel.GetSafeHwnd(), cmdShow));
 
 			if (m_nIDAction)
 			{
@@ -228,7 +229,14 @@ namespace controls
 					actionButtonWidth,
 					height,
 					L"PaneHeader::DeferWindowPos::actionButton");
+				cmdShow = SW_SHOW;
 			}
+			else
+			{
+				cmdShow = SW_HIDE;
+			}
+
+			WC_B_S(::ShowWindow(m_actionButton.GetSafeHwnd(), cmdShow));
 
 			output::DebugPrint(output::dbgLevel::Draw, L"PaneHeader::DeferWindowPos end\n");
 			EC_B_S(EndDeferWindowPos(hWinPosInfo));
