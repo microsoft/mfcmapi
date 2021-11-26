@@ -73,8 +73,8 @@ namespace controls
 
 	int PaneHeader::OnCreate(LPCREATESTRUCT /*lpCreateStruct*/)
 	{
-		EC_B_S(m_leftLabel.Create(
-			WS_CHILD | WS_CLIPSIBLINGS | ES_READONLY | WS_VISIBLE, CRect(0, 0, 0, 0), this, m_nID));
+		EC_B_S(
+			m_leftLabel.Create(WS_CHILD | WS_CLIPSIBLINGS | ES_READONLY | WS_VISIBLE, CRect(0, 0, 0, 0), this, m_nID));
 		::SetWindowTextW(m_leftLabel.m_hWnd, m_szLabel.c_str());
 		ui::SubclassLabel(m_leftLabel.m_hWnd);
 		if (m_bCollapsible)
@@ -170,6 +170,7 @@ namespace controls
 			::GetClientRect(m_hWnd, &rcWin);
 			const auto width = rcWin.right - rcWin.left;
 			const auto height = rcWin.bottom - rcWin.top;
+			const auto labelHeight = height > 2 ? height - 2 : 0;
 			output::DebugPrint(
 				output::dbgLevel::Draw,
 				L"PaneHeader::DeferWindowPos width:%d height:%d v:%d\n",
@@ -196,9 +197,9 @@ namespace controls
 				hWinPosInfo,
 				m_leftLabel.GetSafeHwnd(),
 				curX,
-				0,
+				1,
 				m_iLabelWidth,
-				height,
+				labelHeight,
 				L"PaneHeader::DeferWindowPos::leftLabel");
 
 			auto cmdShow = SW_HIDE;
@@ -208,10 +209,10 @@ namespace controls
 				hWinPosInfo = ui::DeferWindowPos(
 					hWinPosInfo,
 					m_rightLabel.GetSafeHwnd(),
-					width - m_rightLabelWidth - actionButtonAndGutterWidth,
-					0,
+					width - m_rightLabelWidth - actionButtonAndGutterWidth - m_iSideMargin - 1,
+					1,
 					m_rightLabelWidth,
-					height,
+					labelHeight,
 					L"PaneHeader::DeferWindowPos::rightLabel");
 				cmdShow = SW_SHOW;
 			}
@@ -249,7 +250,7 @@ namespace controls
 		if (m_bCollapsible) cx += m_iButtonHeight;
 		if (m_rightLabelWidth)
 		{
-			cx += m_iSideMargin;
+			cx += m_iSideMargin * 2;
 			cx += m_rightLabelWidth;
 		}
 
