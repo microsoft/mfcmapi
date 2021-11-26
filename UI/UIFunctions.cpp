@@ -1412,6 +1412,11 @@ namespace ui
 		const auto background = registry::uiDiag ? GetSysBrush(uiColor::TestPink) : GetSysBrush(uiColor::Background);
 		FillRect(hDC, &rc, background);
 
+		const auto iState = static_cast<int>(::SendMessage(hWnd, BM_GETSTATE, NULL, NULL));
+		const auto bGlow = (iState & BST_HOT) != 0;
+		const auto bPushed = (iState & BST_PUSHED) != 0;
+		const auto bFocused = (itemState & CDIS_FOCUS) != 0;
+
 		const auto bsStyle = static_cast<uiButtonStyle>(reinterpret_cast<intptr_t>(::GetProp(hWnd, BUTTON_STYLE)));
 		switch (bsStyle)
 		{
@@ -1419,17 +1424,7 @@ namespace ui
 		{
 			WCHAR szButton[255] = {0};
 			GetWindowTextW(hWnd, szButton, _countof(szButton));
-			const auto iState = static_cast<int>(::SendMessage(hWnd, BM_GETSTATE, NULL, NULL));
-			const auto bGlow = (iState & BST_HOT) != 0;
-			const auto bPushed = (iState & BST_PUSHED) != 0;
 			const auto bDisabled = (itemState & CDIS_DISABLED) != 0;
-			const auto bFocused = (itemState & CDIS_FOCUS) != 0;
-
-			FrameRect(
-				hDC,
-				&rc,
-				bFocused || bGlow || bPushed ? GetSysBrush(uiColor::FrameSelected)
-											 : GetSysBrush(uiColor::FrameUnselected));
 
 			DrawSegoeTextW(
 				hDC,
@@ -1448,10 +1443,10 @@ namespace ui
 			break;
 		}
 
-		if (registry::uiDiag)
-		{
-			FrameRect(hDC, &rc, GetSysBrush(uiColor::TestRed));
-		}
+		FrameRect(
+			hDC,
+			&rc,
+			bFocused || bGlow || bPushed ? GetSysBrush(uiColor::FrameSelected) : GetSysBrush(uiColor::FrameUnselected));
 	}
 
 	bool CustomDrawButton(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
