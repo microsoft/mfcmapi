@@ -74,7 +74,7 @@ namespace controls
 	int PaneHeader::OnCreate(LPCREATESTRUCT /*lpCreateStruct*/)
 	{
 		EC_B_S(m_leftLabel.Create(
-			WS_CHILD | WS_CLIPSIBLINGS | ES_READONLY | WS_VISIBLE | WS_TABSTOP, CRect(0, 0, 0, 0), this, m_nID));
+			WS_CHILD | WS_CLIPSIBLINGS | ES_READONLY | WS_VISIBLE, CRect(0, 0, 0, 0), this, m_nID));
 		::SetWindowTextW(m_leftLabel.m_hWnd, m_szLabel.c_str());
 		ui::SubclassLabel(m_leftLabel.m_hWnd);
 		if (m_bCollapsible)
