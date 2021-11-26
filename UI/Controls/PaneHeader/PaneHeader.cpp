@@ -313,7 +313,6 @@ namespace controls
 		m_bCollapsed = !m_bCollapsed;
 
 		StyleButton(m_CollapseButton.m_hWnd, m_bCollapsed ? ui::uiButtonStyle::UpArrow : ui::uiButtonStyle::DownArrow);
-		WC_B_S(m_rightLabel.ShowWindow(m_bCollapsed ? SW_HIDE : SW_SHOW));
 
 		// Trigger a redraw
 		::PostMessage(m_hWndParent, WM_COMMAND, IDD_RECALCLAYOUT, NULL);
