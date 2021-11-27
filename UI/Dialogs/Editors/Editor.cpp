@@ -357,6 +357,8 @@ namespace dialog::editor
 				CRect(0, 0, 0, 0),
 				this,
 				NULL);
+			// Necessary for TAB to work. Without this, all TABS get stuck on the control
+			// instead of passing to the children.
 			EC_B_S(m_ScrollWindow.ModifyStyleEx(0, WS_EX_CONTROLPARENT));
 
 			m_hWndVertScroll = ::CreateWindowEx(
