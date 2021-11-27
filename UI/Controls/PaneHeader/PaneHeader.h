@@ -44,6 +44,7 @@ namespace controls
 		void RecalcLayout();
 		int OnCreate(LPCREATESTRUCT lpCreateStruct);
 		LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
+		BOOL PreTranslateMessage(MSG* pMsg);
 		bool m_bInitialized{};
 		std::wstring m_szLabel; // Text to push into UI in Initialize
 		UINT m_nID{};

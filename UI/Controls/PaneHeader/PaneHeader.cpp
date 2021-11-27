@@ -159,6 +159,29 @@ namespace controls
 		return CWnd::WindowProc(message, wParam, lParam);
 	}
 
+	BOOL PaneHeader::PreTranslateMessage(MSG* pMsg)
+	{
+		if (pMsg && pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_RETURN)
+		{
+			if (pMsg->hwnd == m_rightLabel.GetSafeHwnd())
+			{
+				if (m_bCollapsible)
+				{
+					::SetFocus(m_CollapseButton.GetSafeHwnd());
+				}
+				else
+				{
+					::SetFocus(GetSafeHwnd());
+				}
+			}
+
+			OnToggleCollapse();
+			return true;
+		}
+
+		return CWnd::PreTranslateMessage(pMsg);
+	}
+
 	// Position collapse button, labels, action button.
 	void PaneHeader::RecalcLayout()
 	{
