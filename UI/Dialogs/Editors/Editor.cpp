@@ -357,6 +357,8 @@ namespace dialog::editor
 				CRect(0, 0, 0, 0),
 				this,
 				NULL);
+			EC_B_S(m_ScrollWindow.ModifyStyleEx(0, WS_EX_CONTROLPARENT));
+
 			m_hWndVertScroll = ::CreateWindowEx(
 				0,
 				_T("SCROLLBAR"), // STRING_OK
@@ -371,8 +373,7 @@ namespace dialog::editor
 				nullptr,
 				nullptr);
 			// Subclass static control so we can ensure we're drawing everything right
-			SetWindowSubclass(
-				m_ScrollWindow.m_hWnd, DrawScrollProc, 0, reinterpret_cast<DWORD_PTR>(m_ScrollWindow.m_hWnd));
+			SetWindowSubclass(m_ScrollWindow.m_hWnd, DrawScrollProc, 0, 0);
 			pParent = &m_ScrollWindow;
 		}
 
