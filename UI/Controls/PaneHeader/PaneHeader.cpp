@@ -83,10 +83,7 @@ namespace controls
 		}
 
 		EC_B_S(m_rightLabel.Create(
-			WS_CHILD | WS_CLIPSIBLINGS | ES_READONLY | WS_VISIBLE | WS_TABSTOP,
-			CRect(0, 0, 0, 0),
-			this,
-			IDD_COUNTLABEL));
+			WS_CHILD | WS_CLIPSIBLINGS | ES_READONLY | WS_VISIBLE, CRect(0, 0, 0, 0), this, IDD_RIGHTLABEL));
 		ui::SubclassLabel(m_rightLabel.m_hWnd);
 		StyleLabel(m_rightLabel.m_hWnd, ui::uiLabelStyle::PaneHeaderText);
 
@@ -161,7 +158,7 @@ namespace controls
 
 	BOOL PaneHeader::PreTranslateMessage(MSG* pMsg)
 	{
-		if (pMsg && pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_RETURN)
+		if (pMsg && pMsg->message == WM_KEYDOWN && (pMsg->wParam == VK_RETURN || pMsg->wParam == VK_SPACE))
 		{
 			if (pMsg->hwnd == m_rightLabel.GetSafeHwnd())
 			{

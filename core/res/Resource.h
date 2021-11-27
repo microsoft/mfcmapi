@@ -64,7 +64,7 @@
 #define IDD_EDITACTION1 220
 #define IDD_EDITACTION2 221
 #define IDD_RECALCLAYOUT 222
-#define IDD_COUNTLABEL 223
+#define IDD_RIGHTLABEL 223
 #define IDD_EDITACTION3 225
 // Collapsible controls will use this ID plus their 0 based control ID for uniqueness
 // Be careful that the next ID allocated is higher than the max number of collapsible controls that appear in a dialog.
