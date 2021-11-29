@@ -283,19 +283,17 @@ namespace dialog::editor
 		if (pane) pane->SetLabel(szLabel);
 	}
 
-	LRESULT CALLBACK DrawScrollProc(
-		_In_ HWND hWnd,
-		UINT uMsg,
-		WPARAM wParam,
-		LPARAM lParam,
-		UINT_PTR uIdSubclass,
-		DWORD_PTR /*dwRefData*/)
+	LRESULT CALLBACK
+	DrawScrollProc(_In_ HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData)
 	{
 		LRESULT lRes = 0;
 		if (ui::HandleControlUI(uMsg, wParam, lParam, &lRes)) return lRes;
 
 		switch (uMsg)
 		{
+		case WM_NEXTDLGCTL:
+			// Ensure tabs are handled by parent dialog
+			return ::SendMessage(reinterpret_cast<HWND>(dwRefData), uMsg, wParam, lParam);
 		case WM_NCDESTROY:
 			RemoveWindowSubclass(hWnd, DrawScrollProc, uIdSubclass);
 			return DefSubclassProc(hWnd, uMsg, wParam, lParam);
@@ -375,7 +373,7 @@ namespace dialog::editor
 				nullptr,
 				nullptr);
 			// Subclass static control so we can ensure we're drawing everything right
-			SetWindowSubclass(m_ScrollWindow.m_hWnd, DrawScrollProc, 0, 0);
+			SetWindowSubclass(m_ScrollWindow.m_hWnd, DrawScrollProc, 0, reinterpret_cast<DWORD_PTR>(m_hWnd));
 			pParent = &m_ScrollWindow;
 		}
 
