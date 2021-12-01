@@ -152,12 +152,16 @@ namespace dialog::editor
 		{
 			const auto nCode = HIWORD(wParam);
 			const auto idFrom = LOWORD(wParam);
-			if (EN_CHANGE == nCode || CBN_SELCHANGE == nCode || CBN_EDITCHANGE == nCode)
+			output::DebugPrint(
+				output::dbgLevel::Generic, L"WindowProc:WM_COMMAND 0x%08X 0x%08x 0x%08x!\n", m_hWnd, nCode, idFrom);
+			switch (nCode)
 			{
+			case EN_CHANGE:
+			case CBN_SELCHANGE:
+			case CBN_EDITCHANGE:
 				static_cast<void>(HandleChange(idFrom));
-			}
-			else if (BN_CLICKED == nCode)
-			{
+				break;
+			case BN_CLICKED:
 				switch (idFrom)
 				{
 				case IDD_EDITACTION1:
@@ -176,7 +180,9 @@ namespace dialog::editor
 					static_cast<void>(HandleChange(idFrom));
 					break;
 				}
+				break;
 			}
+
 			break;
 		}
 		case WM_ERASEBKGND:
@@ -291,6 +297,23 @@ namespace dialog::editor
 
 		switch (uMsg)
 		{
+		case WM_COMMAND:
+		{
+			const auto nCode = HIWORD(wParam);
+			const auto idFrom = LOWORD(wParam);
+			switch (nCode)
+			{
+			case BN_SETFOCUS:
+				output::DebugPrint(
+					output::dbgLevel::Generic, L"BN_SETFOCUS 0x%08X 0x%08x 0x%08x!\n", hWnd, nCode, idFrom);
+				break;
+			case EN_SETFOCUS:
+				output::DebugPrint(
+					output::dbgLevel::Generic, L"EN_SETFOCUS 0x%08X 0x%08x 0x%08x!\n", hWnd, nCode, idFrom);
+				break;
+			}
+			break;
+		}
 		case WM_NEXTDLGCTL:
 			// Ensure tabs are handled by parent dialog
 			return ::SendMessage(reinterpret_cast<HWND>(dwRefData), uMsg, wParam, lParam);

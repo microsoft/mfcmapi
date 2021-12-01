@@ -44,7 +44,8 @@ namespace viewpane
 
 		EC_B_S(m_Check.Create(
 			nullptr,
-			WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE | BS_AUTOCHECKBOX | (m_bReadOnly ? WS_DISABLED : 0),
+			WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE | BS_AUTOCHECKBOX | (m_bReadOnly ? WS_DISABLED : 0) |
+				BS_NOTIFY,
 			CRect(0, 0, 0, 0),
 			pParent,
 			m_nID));
