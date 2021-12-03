@@ -32,6 +32,7 @@ namespace viewpane
 		_Check_return_ bool OnEditListEntry();
 		std::wstring GetItemText(_In_ int nItem, _In_ int nSubItem) const;
 		bool IsDirty() override;
+		bool containsWindow(HWND hWnd) const noexcept override;
 
 	private:
 		void Setup(bool bAllowSort, DoListEditCallback callback) noexcept;

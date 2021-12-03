@@ -503,4 +503,10 @@ namespace viewpane
 		InvalidateRect(m_EditBox.GetSafeHwnd(), nullptr, true);
 		::SendMessage(m_EditBox.GetSafeHwnd(), EM_SETEVENTMASK, 0, eventMask);
 	}
+
+	bool TextPane::containsWindow(HWND hWnd) const noexcept
+	{
+		if (m_EditBox.GetSafeHwnd() == hWnd) return true;
+		return m_Header.containsWindow(hWnd);
+	}
 } // namespace viewpane

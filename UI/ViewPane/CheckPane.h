@@ -9,6 +9,7 @@ namespace viewpane
 		static std::shared_ptr<CheckPane> Create(int paneID, UINT uidLabel, bool bVal, bool bReadOnly);
 		bool GetCheck() const;
 		static void Draw(_In_ HWND hWnd, _In_ HDC hDC, _In_ const RECT& rc, UINT itemState);
+		bool containsWindow(HWND hWnd) const noexcept override;
 
 	private:
 		void Initialize(_In_ CWnd* pParent, _In_ HDC hdc) override;

@@ -204,15 +204,24 @@ namespace viewpane
 
 			WC_B_S(m_lpSplitter->ShowWindow(SW_SHOW));
 			hWinPosInfo = ui::DeferWindowPos(
-					hWinPosInfo,
-					m_lpSplitter->GetSafeHwnd(),
-					x,
-					curY,
-					width,
-					height - (curY - y), L"SplitterPane::DeferWindowPos::splitter");
+				hWinPosInfo,
+				m_lpSplitter->GetSafeHwnd(),
+				x,
+				curY,
+				width,
+				height - (curY - y),
+				L"SplitterPane::DeferWindowPos::splitter");
 			m_lpSplitter->OnSize(NULL, width, height - (curY - y));
 		}
 
 		return hWinPosInfo;
+	}
+
+	bool SplitterPane::containsWindow(HWND hWnd) const noexcept
+	{
+		if (m_lpSplitter && m_lpSplitter->GetSafeHwnd()) return true;
+		if (m_PaneOne && m_PaneOne->containsWindow(hWnd)) return true;
+		if (m_PaneTwo && m_PaneTwo->containsWindow(hWnd)) return true;
+		return m_Header.containsWindow(hWnd);
 	}
 } // namespace viewpane

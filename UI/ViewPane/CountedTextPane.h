@@ -8,6 +8,7 @@ namespace viewpane
 	public:
 		static std::shared_ptr<CountedTextPane> Create(int paneID, UINT uidLabel, bool bReadOnly, UINT uidCountLabel);
 		void SetCount(size_t iCount);
+		bool containsWindow(HWND hWnd) const noexcept override;
 
 	private:
 		void Initialize(_In_ CWnd* pParent, _In_ HDC hdc) override;

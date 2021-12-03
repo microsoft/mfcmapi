@@ -30,6 +30,7 @@ namespace viewpane
 		{
 			if (m_lpSplitter) m_lpSplitter->ShowWindow(nCmdShow);
 		}
+		bool containsWindow(HWND hWnd) const noexcept override;
 
 	private:
 		void CommitUIValues() override {}

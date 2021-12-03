@@ -19,6 +19,7 @@ namespace viewpane
 		void Parse(const std::vector<std::vector<BYTE>>& myBins);
 		std::function<void(smartview::block*)> OnItemSelected = nullptr;
 		std::function<void(_In_ const SBinary& lpBin)> OnActionButton = nullptr;
+		bool containsWindow(HWND hWnd) const noexcept override;
 
 	private:
 		void Initialize(_In_ CWnd* pParent, _In_ HDC hdc) override;

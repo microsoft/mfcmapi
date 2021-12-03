@@ -347,4 +347,14 @@ namespace controls
 		m_iLabelHeight = iLabelHeight;
 		m_iButtonHeight = iButtonHeight;
 	}
+
+	bool PaneHeader::containsWindow(HWND hWnd) const noexcept
+	{
+		if (GetSafeHwnd() == hWnd) return true;
+		if (m_leftLabel.GetSafeHwnd() == hWnd) return true;
+		if (m_rightLabel.GetSafeHwnd() == hWnd) return true;
+		if (m_actionButton.GetSafeHwnd() == hWnd) return true;
+		if (m_CollapseButton.GetSafeHwnd() == hWnd) return true;
+		return false;
+	}
 } // namespace controls

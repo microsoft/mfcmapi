@@ -39,6 +39,7 @@ namespace controls
 		void makeCollapsible() noexcept { m_bCollapsible = true; }
 		bool collapsible() const noexcept { return m_bCollapsible; }
 		bool collapsed() const noexcept { return m_bCollapsed; }
+		bool containsWindow(HWND hWnd) const noexcept;
 
 	private:
 		void RecalcLayout();

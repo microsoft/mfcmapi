@@ -446,4 +446,10 @@ namespace viewpane
 	{
 		return m_List.GetItemText(nItem, nSubItem);
 	}
+
+	bool ListPane::containsWindow(HWND hWnd) const noexcept
+	{
+		if (m_List.GetSafeHwnd() == hWnd) return true;
+		return m_Header.containsWindow(hWnd);
+	}
 } // namespace viewpane

@@ -137,4 +137,10 @@ namespace viewpane
 			false,
 			DT_SINGLELINE | DT_VCENTER);
 	}
+
+	bool CheckPane::containsWindow(HWND hWnd) const noexcept
+	{
+		if (m_Check.GetSafeHwnd() == hWnd) return true;
+		return m_Header.containsWindow(hWnd);
+	}
 } // namespace viewpane

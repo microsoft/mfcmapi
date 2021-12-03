@@ -83,4 +83,10 @@ namespace viewpane
 
 		return hWinPosInfo;
 	}
+
+	bool TreePane::containsWindow(HWND hWnd) const noexcept
+	{
+		if (m_Tree.GetSafeHwnd() == hWnd) return true;
+		return m_Header.containsWindow(hWnd);
+	}
 } // namespace viewpane

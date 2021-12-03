@@ -217,6 +217,7 @@ namespace dialog::editor
 
 		// Panes are held in the order in which they render on screen
 		std::vector<std::shared_ptr<viewpane::ViewPane>> m_Panes{};
+		std::shared_ptr<viewpane::ViewPane> PaneFromWindow(HWND hWnd) const noexcept;
 
 		bool m_bEnableScroll{};
 		CWnd m_ScrollWindow;

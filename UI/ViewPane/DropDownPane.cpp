@@ -282,4 +282,10 @@ namespace viewpane
 			m_DropDown.SetCurSel(static_cast<int>(iSelection));
 		}
 	}
+
+	bool DropDownPane::containsWindow(HWND hWnd) const noexcept
+	{
+		if (m_DropDown.GetSafeHwnd() == hWnd) return true;
+		return m_Header.containsWindow(hWnd);
+	}
 } // namespace viewpane

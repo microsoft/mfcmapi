@@ -37,6 +37,7 @@ namespace viewpane
 		void makeCollapsible() noexcept { m_Header.makeCollapsible(); }
 		bool collapsible() const noexcept { m_Header.collapsible(); }
 		bool collapsed() const noexcept { return m_Header.collapsed(); }
+		virtual bool containsWindow(HWND hWnd) const noexcept { return m_Header.containsWindow(hWnd); }
 
 	protected:
 		// Returns the height of our header

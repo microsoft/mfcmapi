@@ -106,4 +106,9 @@ namespace viewpane
 			static_cast<int>(m_iCount),
 			static_cast<UINT>(m_iCount))); // STRING_OK
 	}
+
+	bool CountedTextPane::containsWindow(HWND hWnd) const noexcept
+	{
+		return TextPane::containsWindow(hWnd);
+	}
 } // namespace viewpane

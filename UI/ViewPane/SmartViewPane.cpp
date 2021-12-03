@@ -129,7 +129,14 @@ namespace viewpane
 
 		if (!collapsed())
 		{
-			hWinPosInfo = ui::DeferWindowPos(hWinPosInfo, m_DropDown.GetSafeHwnd(), x, curY, width, m_iEditHeight * 10, L"SmartViewPane::DeferWindowPos::dropdown");
+			hWinPosInfo = ui::DeferWindowPos(
+				hWinPosInfo,
+				m_DropDown.GetSafeHwnd(),
+				x,
+				curY,
+				width,
+				m_iEditHeight * 10,
+				L"SmartViewPane::DeferWindowPos::dropdown");
 
 			curY += m_iEditHeight;
 
@@ -324,5 +331,12 @@ namespace viewpane
 			break;
 		}
 		}
+	}
+
+	bool SmartViewPane::containsWindow(HWND hWnd) const noexcept
+	{
+		if (m_Splitter && m_Splitter->containsWindow(hWnd)) return true;
+		if (m_TreePane && m_TreePane->containsWindow(hWnd)) return true;
+		return m_Header.containsWindow(hWnd);
 	}
 } // namespace viewpane

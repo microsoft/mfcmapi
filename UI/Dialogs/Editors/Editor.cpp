@@ -181,6 +181,16 @@ namespace dialog::editor
 					break;
 				}
 				break;
+			case BN_SETFOCUS:
+			case EN_SETFOCUS:
+			{
+				output::DebugPrint(output::dbgLevel::Generic, L"SETFOCUS 0x%08x 0x%08x!\n", nCode, idFrom);
+				const auto pane = PaneFromWindow(reinterpret_cast<HWND>(lParam));
+				if (pane != nullptr)
+				{
+					output::DebugPrint(output::dbgLevel::Generic, L"Found a pane!!\n");
+				}
+			}
 			}
 
 			break;
@@ -301,16 +311,13 @@ namespace dialog::editor
 		{
 			const auto nCode = HIWORD(wParam);
 			const auto idFrom = LOWORD(wParam);
+			output::DebugPrint(
+				output::dbgLevel::Generic, L"WindowProc:WM_COMMAND 0x%08X 0x%08x 0x%08x!\n", hWnd, nCode, idFrom);
 			switch (nCode)
 			{
 			case BN_SETFOCUS:
-				output::DebugPrint(
-					output::dbgLevel::Generic, L"BN_SETFOCUS 0x%08X 0x%08x 0x%08x!\n", hWnd, nCode, idFrom);
-				break;
 			case EN_SETFOCUS:
-				output::DebugPrint(
-					output::dbgLevel::Generic, L"EN_SETFOCUS 0x%08X 0x%08x 0x%08x!\n", hWnd, nCode, idFrom);
-				break;
+				return ::SendMessage(reinterpret_cast<HWND>(dwRefData), uMsg, wParam, lParam);
 			}
 			break;
 		}
@@ -1299,5 +1306,15 @@ namespace dialog::editor
 		}
 
 		return false;
+	}
+
+	std::shared_ptr<viewpane::ViewPane> CEditor::PaneFromWindow(HWND hWnd) const noexcept
+	{
+		for (const auto& pane : m_Panes)
+		{
+			if (pane && pane->containsWindow(hWnd)) return pane;
+		}
+
+		return nullptr;
 	}
 } // namespace dialog::editor

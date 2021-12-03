@@ -55,6 +55,7 @@ namespace viewpane
 			DoHighlights();
 		}
 		void DoHighlights();
+		bool containsWindow(HWND hWnd) const noexcept override;
 
 	protected:
 		CRichEditCtrl m_EditBox;
