@@ -87,7 +87,11 @@ namespace controls
 		if (m_bCollapsible)
 		{
 			EC_B_S(m_CollapseButton.Create(
-				nullptr, WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE, CRect(0, 0, 0, 0), this, m_nIDCollapse));
+				nullptr,
+				WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE | BS_NOTIFY,
+				CRect(0, 0, 0, 0),
+				this,
+				m_nIDCollapse));
 			StyleButton(
 				m_CollapseButton.m_hWnd, m_bCollapsed ? ui::uiButtonStyle::UpArrow : ui::uiButtonStyle::DownArrow);
 		}
@@ -97,7 +101,7 @@ namespace controls
 		{
 			EC_B_S(m_actionButton.Create(
 				strings::wstringTotstring(m_szActionButton).c_str(),
-				WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE,
+				WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE | BS_NOTIFY,
 				CRect(0, 0, 0, 0),
 				this,
 				m_nIDAction));
@@ -140,10 +144,14 @@ namespace controls
 		case WM_COMMAND:
 		{
 			const auto nCode = HIWORD(wParam);
-			// Pass button clicks up to parent
-			if (BN_CLICKED == nCode)
+			switch (nCode)
 			{
-				::SendMessage(m_hWndParent, message, wParam, lParam);
+			// Pass button clicks up to parent
+			case BN_CLICKED:
+				// Pass focus notifications up to parent
+			case BN_SETFOCUS:
+			case EN_SETFOCUS:
+				return ::SendMessage(m_hWndParent, message, wParam, lParam);
 			}
 
 			break;
