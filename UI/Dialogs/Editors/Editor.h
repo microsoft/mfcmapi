@@ -173,6 +173,7 @@ namespace dialog::editor
 		void OnSize(UINT nType, int cx, int cy);
 		LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
 		void SetMargins() const;
+		void EnsureVisible(const HWND hWnd);
 
 		// List functions and data
 		_Check_return_ bool OnEditListEntry(ULONG id) const;

@@ -183,14 +183,7 @@ namespace dialog::editor
 				break;
 			case BN_SETFOCUS:
 			case EN_SETFOCUS:
-			{
-				output::DebugPrint(output::dbgLevel::Generic, L"SETFOCUS 0x%08x 0x%08x!\n", nCode, idFrom);
-				const auto pane = PaneFromWindow(reinterpret_cast<HWND>(lParam));
-				if (pane != nullptr)
-				{
-					output::DebugPrint(output::dbgLevel::Generic, L"Found a pane!!\n");
-				}
-			}
+				EnsureVisible(reinterpret_cast<HWND>(lParam));
 			}
 
 			break;
@@ -1316,5 +1309,69 @@ namespace dialog::editor
 		}
 
 		return nullptr;
+	}
+
+	void CEditor::EnsureVisible(const HWND hWnd)
+	{
+		if (!m_bScrollVisible) return;
+		// TODO: Use PaneFromWindow to find true bounds of window including header
+		//const auto pane = PaneFromWindow(hWnd);
+
+		auto si = SCROLLINFO{};
+		si.cbSize = sizeof si;
+		si.fMask = SIF_POS;
+		::GetScrollInfo(m_hWndVertScroll, SB_CTL, &si);
+		output::DebugPrint(output::dbgLevel::Generic, L"si.nPos = %d\n", si.nPos);
+		auto rcScroll = RECT{};
+		::GetClientRect(m_ScrollWindow.GetSafeHwnd(), &rcScroll);
+		output::DebugPrint(
+			output::dbgLevel::Generic, L"Scroll: top = %d, bottom = %d\n", rcScroll.top, rcScroll.bottom);
+
+		auto rcPane = RECT{};
+		::GetWindowRect(hWnd, &rcPane);
+		::MapWindowPoints(HWND_DESKTOP, m_ScrollWindow.GetSafeHwnd(), (LPPOINT) &rcPane, 2);
+		output::DebugPrint(output::dbgLevel::Generic, L"Pane: top = %d, bottom = %d\n", rcPane.top, rcPane.bottom);
+
+		auto iScroll = 0;
+		// Scroll down
+		// If top of our pane is above top of the window
+		// Or our pane is taller than the window
+		// Move the top of the pane to the top of the view
+		if (rcPane.top < rcScroll.top || rcPane.bottom - rcPane.top > rcScroll.bottom - rcScroll.top)
+		{
+			output::DebugPrint(output::dbgLevel::Generic, L"Scroll down\n");
+			iScroll = rcPane.top;
+		}
+		// Scroll up
+		// If the bottom of our pane is below the bottom of the window
+		// Move the pane up so the bottom of the pane aligns with the bottom of the view
+		// This will not send the top too far up as we covered that in the scroll down case
+		else if (rcPane.bottom > rcScroll.bottom)
+		{
+			output::DebugPrint(output::dbgLevel::Generic, L"Scroll up\n");
+			iScroll = rcPane.bottom - rcScroll.bottom;
+		}
+		else
+		{
+			output::DebugPrint(output::dbgLevel::Generic, L"No scroll\n");
+		}
+
+		if (iScroll == 0) return;
+		output::DebugPrint(output::dbgLevel::Generic, L"iscroll = %d, newPos = %d\n", iScroll, si.nPos + iScroll);
+		// Adjust scroll bar
+		si.fMask = SIF_POS;
+		si.nPos = si.nPos + iScroll;
+		::SetScrollInfo(m_hWndVertScroll, SB_CTL, &si, TRUE);
+
+		// Adjust view
+		::ScrollWindowEx(
+			m_ScrollWindow.GetSafeHwnd(),
+			0,
+			-iScroll,
+			nullptr,
+			nullptr,
+			nullptr,
+			nullptr,
+			SW_SCROLLCHILDREN | SW_INVALIDATE);
 	}
 } // namespace dialog::editor
