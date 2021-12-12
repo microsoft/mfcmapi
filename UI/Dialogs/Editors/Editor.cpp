@@ -1314,8 +1314,8 @@ namespace dialog::editor
 	void CEditor::EnsureVisible(const HWND hWnd)
 	{
 		if (!m_bScrollVisible) return;
-		// TODO: Use PaneFromWindow to find true bounds of window including header
-		//const auto pane = PaneFromWindow(hWnd);
+		const auto pane = PaneFromWindow(hWnd);
+		if (!pane) return;
 
 		auto si = SCROLLINFO{};
 		si.cbSize = sizeof si;
@@ -1327,8 +1327,7 @@ namespace dialog::editor
 		output::DebugPrint(
 			output::dbgLevel::Generic, L"Scroll: top = %d, bottom = %d\n", rcScroll.top, rcScroll.bottom);
 
-		auto rcPane = RECT{};
-		::GetWindowRect(hWnd, &rcPane);
+		auto rcPane = pane->GetWindowRect();
 		::MapWindowPoints(HWND_DESKTOP, m_ScrollWindow.GetSafeHwnd(), (LPPOINT) &rcPane, 2);
 		output::DebugPrint(output::dbgLevel::Generic, L"Pane: top = %d, bottom = %d\n", rcPane.top, rcPane.bottom);
 

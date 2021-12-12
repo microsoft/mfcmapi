@@ -38,6 +38,13 @@ namespace viewpane
 		bool collapsible() const noexcept { m_Header.collapsible(); }
 		bool collapsed() const noexcept { return m_Header.collapsed(); }
 		virtual bool containsWindow(HWND hWnd) const noexcept { return m_Header.containsWindow(hWnd); }
+		virtual RECT GetWindowRect() const noexcept
+		{
+			// TODO: ViewPanes which will scroll need to override this
+			auto rcPane = RECT{};
+			::GetWindowRect(m_Header.GetSafeHwnd(), &rcPane);
+			return rcPane;
+		}
 
 	protected:
 		// Returns the height of our header

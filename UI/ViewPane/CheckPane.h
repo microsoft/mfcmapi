@@ -10,6 +10,15 @@ namespace viewpane
 		bool GetCheck() const;
 		static void Draw(_In_ HWND hWnd, _In_ HDC hDC, _In_ const RECT& rc, UINT itemState);
 		bool containsWindow(HWND hWnd) const noexcept override;
+		RECT GetWindowRect() const noexcept override
+		{
+			auto rcCheck = RECT{};
+			::GetWindowRect(m_Check.GetSafeHwnd(), &rcCheck);
+			const auto rcHeader = ViewPane::GetWindowRect();
+			auto rcPane = RECT{};
+			::UnionRect(&rcPane, &rcCheck, &rcHeader);
+			return rcPane;
+		}
 
 	private:
 		void Initialize(_In_ CWnd* pParent, _In_ HDC hdc) override;

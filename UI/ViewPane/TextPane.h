@@ -56,6 +56,15 @@ namespace viewpane
 		}
 		void DoHighlights();
 		bool containsWindow(HWND hWnd) const noexcept override;
+		RECT GetWindowRect() const noexcept override
+		{
+			auto rcEdit = RECT{};
+			::GetWindowRect(m_EditBox.GetSafeHwnd(), &rcEdit);
+			const auto rcHeader = ViewPane::GetWindowRect();
+			auto rcPane = RECT{};
+			::UnionRect(&rcPane, &rcEdit, &rcHeader);
+			return rcPane;
+		}
 
 	protected:
 		CRichEditCtrl m_EditBox;
