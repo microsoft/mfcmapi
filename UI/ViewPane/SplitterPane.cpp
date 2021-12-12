@@ -46,8 +46,7 @@ namespace viewpane
 	int SplitterPane::GetFixedHeight()
 	{
 		auto iHeight = 0;
-		// TODO: Better way to find the top pane
-		if (0 != m_paneID) iHeight += m_iSmallHeightMargin; // Top margin
+		if (!m_topPane) iHeight += m_iSmallHeightMargin; // Top margin
 
 		iHeight += GetHeaderHeight();
 
@@ -182,14 +181,9 @@ namespace viewpane
 			height);
 
 		auto curY = y;
-		const auto labelHeight = GetHeaderHeight();
-		if (0 != m_paneID)
-		{
-			curY += m_iSmallHeightMargin;
-		}
 
 		// Layout our label
-		hWinPosInfo = EC_D(HDWP, ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y)));
+		hWinPosInfo = EC_D(HDWP, ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height));
 
 		if (collapsed())
 		{
@@ -199,7 +193,7 @@ namespace viewpane
 		{
 			if (collapsible())
 			{
-				curY += labelHeight + m_iSmallHeightMargin;
+				curY += GetHeaderHeight() + m_iSmallHeightMargin;
 			}
 
 			WC_B_S(m_lpSplitter->ShowWindow(SW_SHOW));

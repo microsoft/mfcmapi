@@ -135,7 +135,7 @@ namespace viewpane
 	int TextPane::GetFixedHeight()
 	{
 		auto iHeight = 0;
-		if (0 != m_paneID) iHeight += m_iSmallHeightMargin; // Top margin
+		if (!m_topPane) iHeight += m_iSmallHeightMargin; // Top margin
 
 		iHeight += GetHeaderHeight();
 
@@ -172,15 +172,9 @@ namespace viewpane
 		_In_ const int height)
 	{
 		auto curY = y;
-		const auto labelHeight = GetHeaderHeight();
-		if (0 != m_paneID)
-		{
-			curY += m_iSmallHeightMargin;
-		}
 
 		// Layout our label
-		hWinPosInfo = EC_D(HDWP, ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y)));
-
+		hWinPosInfo = EC_D(HDWP, ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height));
 		if (collapsed())
 		{
 			WC_B_S(m_EditBox.ShowWindow(SW_HIDE));
@@ -191,6 +185,7 @@ namespace viewpane
 		else
 		{
 			auto editHeight = height - (curY - y) - m_iSmallHeightMargin;
+			const auto labelHeight = GetHeaderHeight();
 			if (labelHeight)
 			{
 				curY += labelHeight + m_iSmallHeightMargin;

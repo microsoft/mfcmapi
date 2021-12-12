@@ -22,11 +22,17 @@ namespace viewpane
 			width,
 			height,
 			m_Header.IsWindowVisible());
+		auto curY = y;
+		if (!m_topPane)
+		{
+			curY += m_iSmallHeightMargin;
+		}
+
 		hWinPosInfo = ui::DeferWindowPos(
 			hWinPosInfo,
 			m_Header.GetSafeHwnd(),
 			x,
-			y,
+			curY,
 			width,
 			m_Header.GetFixedHeight(),
 			L"ViewPane::DeferWindowPos::header");

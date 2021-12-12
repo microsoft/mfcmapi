@@ -12,6 +12,7 @@ namespace viewpane
 		void SetLabel(const UINT uidLabel) { m_Header.SetLabel(uidLabel); }
 		void SetLabel(const std::wstring& szLabel) { m_Header.SetLabel(szLabel); }
 		void SetReadOnly(const bool bReadOnly) noexcept { m_bReadOnly = bReadOnly; }
+		void SetTop() { m_topPane = true; }
 
 		virtual void Initialize(_In_ CWnd* pParent, _In_opt_ HDC hdc);
 		virtual HDWP DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height);
@@ -48,12 +49,23 @@ namespace viewpane
 
 	protected:
 		// Returns the height of our header
-		int GetHeaderHeight() const noexcept { return m_Header.GetFixedHeight(); }
+		// Include any gutter spacing which should be above the header
+		int GetHeaderHeight() const noexcept
+		{
+			auto height = m_Header.GetFixedHeight();
+			if (!m_topPane)
+			{
+				height += m_iSmallHeightMargin;
+			}
+
+			return height;
+		}
 		int m_paneID{-1}; // ID of the view pane in the view - used for callbacks and layout
 		bool m_bInitialized{};
 		bool m_bReadOnly{true};
 		controls::PaneHeader m_Header;
 		UINT m_nID{}; // NID for matching change notifications back to controls. Also used for Create calls.
+		bool m_topPane{};
 
 		// Margins
 		int m_iMargin{};

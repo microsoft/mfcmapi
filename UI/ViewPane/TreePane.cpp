@@ -36,7 +36,7 @@ namespace viewpane
 	int TreePane::GetFixedHeight()
 	{
 		auto iHeight = 0;
-		if (0 != m_paneID) iHeight += m_iSmallHeightMargin; // Top margin
+		if (!m_topPane) iHeight += m_iSmallHeightMargin; // Top margin
 
 		const auto labelHeight = GetHeaderHeight();
 
@@ -61,16 +61,12 @@ namespace viewpane
 			output::dbgLevel::Draw, L"TreePane::DeferWindowPos x:%d y:%d width:%d height:%d \n", x, y, width, height);
 
 		auto curY = y;
-		const auto labelHeight = GetHeaderHeight();
-		if (0 != m_paneID)
-		{
-			curY += m_iSmallHeightMargin;
-		}
 
 		WC_B_S(m_Tree.ShowWindow(collapsed() ? SW_HIDE : SW_SHOW));
 		// Layout our label
-		hWinPosInfo = EC_D(HDWP, ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y)));
+		hWinPosInfo = EC_D(HDWP, ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height));
 
+		const auto labelHeight = GetHeaderHeight();
 		if (labelHeight)
 		{
 			curY += labelHeight + m_iSmallHeightMargin;

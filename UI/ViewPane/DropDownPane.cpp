@@ -77,7 +77,7 @@ namespace viewpane
 	{
 		auto iHeight = 0;
 
-		if (0 != m_paneID) iHeight += m_iSmallHeightMargin; // Top margin
+		if (!m_topPane) iHeight += m_iSmallHeightMargin; // Top margin
 
 		iHeight += GetHeaderHeight();
 
@@ -97,7 +97,7 @@ namespace viewpane
 	{
 		auto curY = y;
 		const auto labelHeight = GetHeaderHeight();
-		if (0 != m_paneID)
+		if (!m_topPane)
 		{
 			curY += m_iSmallHeightMargin;
 		}

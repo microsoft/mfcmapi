@@ -64,7 +64,7 @@ namespace viewpane
 	{
 		auto iHeight = 0;
 
-		if (0 != m_paneID) iHeight += m_iSmallHeightMargin; // Top margin
+		if (!m_topPane) iHeight += m_iSmallHeightMargin; // Top margin
 
 		iHeight += GetHeaderHeight();
 
@@ -116,16 +116,10 @@ namespace viewpane
 		_In_ const int height)
 	{
 		auto curY = y;
-		const auto labelHeight = GetHeaderHeight();
-		if (0 != m_paneID)
-		{
-			curY += m_iSmallHeightMargin;
-		}
 
 		// Layout our label
-		hWinPosInfo = EC_D(HDWP, ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y)));
-
-		curY += labelHeight + m_iSmallHeightMargin;
+		hWinPosInfo = EC_D(HDWP, ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height));
+		curY += GetHeaderHeight() + m_iSmallHeightMargin;
 
 		if (!collapsed())
 		{

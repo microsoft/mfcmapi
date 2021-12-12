@@ -31,7 +31,7 @@ namespace viewpane
 	int CountedTextPane::GetFixedHeight()
 	{
 		auto iHeight = 0;
-		if (0 != m_paneID) iHeight += m_iSmallHeightMargin; // Top margin
+		if (!m_topPane) iHeight += m_iSmallHeightMargin; // Top margin
 
 		iHeight += GetHeaderHeight();
 
@@ -56,14 +56,9 @@ namespace viewpane
 		_In_ const int height)
 	{
 		auto curY = y;
-		const auto labelHeight = GetHeaderHeight();
-		if (0 != m_paneID)
-		{
-			curY += m_iSmallHeightMargin;
-		}
 
 		// Layout our label
-		hWinPosInfo = EC_D(HDWP, ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y)));
+		hWinPosInfo = EC_D(HDWP, ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height));
 
 		if (collapsed())
 		{
@@ -82,7 +77,7 @@ namespace viewpane
 		{
 			WC_B_S(m_EditBox.ShowWindow(SW_SHOW));
 
-			curY += labelHeight + m_iSmallHeightMargin;
+			curY += GetHeaderHeight() + m_iSmallHeightMargin;
 
 			hWinPosInfo = ui::DeferWindowPos(
 				hWinPosInfo,
@@ -107,8 +102,5 @@ namespace viewpane
 			static_cast<UINT>(m_iCount))); // STRING_OK
 	}
 
-	bool CountedTextPane::containsWindow(HWND hWnd) const noexcept
-	{
-		return TextPane::containsWindow(hWnd);
-	}
+	bool CountedTextPane::containsWindow(HWND hWnd) const noexcept { return TextPane::containsWindow(hWnd); }
 } // namespace viewpane

@@ -976,6 +976,7 @@ namespace dialog::editor
 	void CEditor::AddPane(std::shared_ptr<viewpane::ViewPane> lpPane)
 	{
 		if (!lpPane) return;
+		if (m_Panes.empty()) lpPane->SetTop(); // First pane added is top
 		m_Panes.push_back(lpPane);
 	}
 
