@@ -244,7 +244,7 @@ namespace controls
 
 			WC_B_S(::ShowWindow(m_rightLabel.GetSafeHwnd(), cmdShow));
 
-			if (m_nIDAction)
+			if (m_nIDAction && m_actionButtonWidth)
 			{
 				// Drop the action button next to the label we drew above
 				hWinPosInfo = ui::DeferWindowPos(
