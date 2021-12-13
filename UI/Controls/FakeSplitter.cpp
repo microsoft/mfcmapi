@@ -91,6 +91,9 @@ namespace controls
 			if (LOWORD(lParam) == HTCLIENT && reinterpret_cast<HWND>(wParam) == this->m_hWnd && !m_bTracking)
 				return true; // we will handle it in the mouse move
 			break;
+		case WM_NEXTDLGCTL:
+			// Ensure tabs are handled by parent dialog
+			return ::SendMessage(m_hwndParent, message, wParam, lParam);
 		case WM_COMMAND:
 		{
 			const auto nCode = HIWORD(wParam);
