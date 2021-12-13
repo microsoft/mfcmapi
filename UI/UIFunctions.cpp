@@ -618,13 +618,13 @@ namespace ui
 		case uiPen::SolidPen:
 		{
 			lbr.lbColor = MyGetSysColor(uiColor::FrameSelected);
-			g_Pens[static_cast<int>(uiPen::SolidPen)] = ExtCreatePen(PS_SOLID, 1, &lbr, 0, nullptr);
+			g_Pens[static_cast<int>(uiPen::SolidPen)] = ExtCreatePen(PS_COSMETIC | PS_SOLID, 1, &lbr, 0, nullptr);
 			return g_Pens[static_cast<int>(uiPen::SolidPen)];
 		}
 		case uiPen::SolidGreyPen:
 		{
 			lbr.lbColor = MyGetSysColor(uiColor::FrameUnselected);
-			g_Pens[static_cast<int>(uiPen::SolidGreyPen)] = ExtCreatePen(PS_SOLID, 1, &lbr, 0, nullptr);
+			g_Pens[static_cast<int>(uiPen::SolidGreyPen)] = ExtCreatePen(PS_COSMETIC | PS_SOLID, 1, &lbr, 0, nullptr);
 			return g_Pens[static_cast<int>(uiPen::SolidGreyPen)];
 		}
 		case uiPen::DashedPen:
@@ -633,6 +633,20 @@ namespace ui
 			const DWORD rgStyle[2] = {1, 3};
 			g_Pens[static_cast<int>(uiPen::DashedPen)] = ExtCreatePen(PS_GEOMETRIC | PS_USERSTYLE, 1, &lbr, 2, rgStyle);
 			return g_Pens[static_cast<int>(uiPen::DashedPen)];
+		}
+		case uiPen::CheckFocusedPen:
+		{
+			lbr.lbColor = MyGetSysColor(uiColor::Glow);
+			g_Pens[static_cast<int>(uiPen::CheckFocusedPen)] =
+				ExtCreatePen(PS_GEOMETRIC | PS_SOLID | PS_ENDCAP_SQUARE, 3, &lbr, 0, nullptr);
+			return g_Pens[static_cast<int>(uiPen::CheckFocusedPen)];
+		}
+		case uiPen::CheckGlowPen:
+		{
+			lbr.lbColor = MyGetSysColor(uiColor::Glow);
+			g_Pens[static_cast<int>(uiPen::CheckGlowPen)] =
+				ExtCreatePen(PS_GEOMETRIC | PS_SOLID | PS_ENDCAP_SQUARE, 2, &lbr, 0, nullptr);
+			return g_Pens[static_cast<int>(uiPen::CheckGlowPen)];
 		}
 		default:
 			break;
@@ -2266,20 +2280,20 @@ namespace ui
 		return EC_D(HDWP, ::DeferWindowPos(hWinPosInfo, hWnd, nullptr, x, y, cx, cy, SWP_NOZORDER));
 	}
 
-	void WINAPI FrameRect(_In_ HDC hDC, _In_ CONST RECT* lprc, _In_ int width, _In_ const uiColor uc)
+	void WINAPI FrameRect(_In_ HDC hDC, _In_ RECT rect, _In_ const uiPen up)
 	{
-		if (width < 1) return;
-		const auto hbr = GetSysBrush(uc);
-		::FrameRect(hDC, lprc, hbr);
-		if (width > 1)
+		// Thicker pens bleed out a bit, so shrink out rect to make them fit
+		switch (up)
 		{
-			auto rcEdge = *lprc;
-			while (width > 1)
-			{
-				::InflateRect(&rcEdge, -1, -1);
-				::FrameRect(hDC, &rcEdge, hbr);
-				width--;
-			}
+		case uiPen::CheckFocusedPen:
+		case uiPen::CheckGlowPen:
+			InflateRect(&rect, -1, -1);
+			break;
 		}
+
+		const auto hPen = GetPen(up);
+		const auto hPenOld = (HPEN)::SelectObject(hDC, hPen);
+		::Rectangle(hDC, rect.left, rect.top, rect.right, rect.bottom);
+		::SelectObject(hDC, hPenOld);
 	}
 } // namespace ui
