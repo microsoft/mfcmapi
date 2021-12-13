@@ -96,15 +96,13 @@ namespace viewpane
 		rcCheck.right = rcCheck.left + lCheck;
 		rcCheck.top = (rc.bottom - rc.top - lCheck) / 2;
 		rcCheck.bottom = rcCheck.top + lCheck;
+		const auto frameThickness = bFocused ? 3 : bGlow ? 2 : 1;
+		const auto frameColor = bDisabled			? ui::uiColor::FrameUnselected
+								: bGlow || bFocused ? ui::uiColor::Glow
+													: ui::uiColor::FrameSelected;
 
 		FillRect(hDC, &rc, GetSysBrush(ui::uiColor::Background));
-		FrameRect(
-			hDC,
-			&rcCheck,
-			GetSysBrush(
-				bDisabled			? ui::uiColor::FrameUnselected
-				: bGlow || bFocused ? ui::uiColor::Glow
-									: ui::uiColor::FrameSelected));
+		ui::FrameRect(hDC, &rcCheck, frameThickness, frameColor);
 		if (bChecked)
 		{
 			auto rcFill = rcCheck;

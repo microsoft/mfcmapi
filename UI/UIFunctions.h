@@ -200,4 +200,6 @@ namespace ui
 		_In_ int cy,
 		_In_ const WCHAR* szName,
 		_In_opt_ const WCHAR* szLabel = nullptr);
+
+	void WINAPI FrameRect(_In_ HDC hDC, _In_ CONST RECT* lprc, _In_ int width, _In_ const uiColor uc);
 } // namespace ui

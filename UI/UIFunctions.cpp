@@ -2265,4 +2265,21 @@ namespace ui
 
 		return EC_D(HDWP, ::DeferWindowPos(hWinPosInfo, hWnd, nullptr, x, y, cx, cy, SWP_NOZORDER));
 	}
+
+	void WINAPI FrameRect(_In_ HDC hDC, _In_ CONST RECT* lprc, _In_ int width, _In_ const uiColor uc)
+	{
+		if (width < 1) return;
+		const auto hbr = GetSysBrush(uc);
+		::FrameRect(hDC, lprc, hbr);
+		if (width > 1)
+		{
+			auto rcEdge = *lprc;
+			while (width > 1)
+			{
+				::InflateRect(&rcEdge, -1, -1);
+				::FrameRect(hDC, &rcEdge, hbr);
+				width--;
+			}
+		}
+	}
 } // namespace ui
