@@ -590,7 +590,6 @@ namespace dialog::editor
 
 		lpPrompt->SetRectNP(OldRect); // restore the old edit rectangle
 
-		iPromptLineCount++; // Add one for an extra line of whitespace
 		if (iLineCount) *iLineCount = iPromptLineCount;
 		return cx;
 	}
@@ -663,7 +662,12 @@ namespace dialog::editor
 
 		// Figure a good height (cy)
 		auto cy = 2 * m_iMargin; // margins top and bottom
-		cy += iPromptLineCount * m_iTextHeight; // prompt text
+		if (iPromptLineCount)
+		{
+			cy += iPromptLineCount * m_iTextHeight; // prompt text
+			cy += m_iMargin; // Margin between prompt and panes
+		}
+
 		cy += m_iButtonHeight; // Button height
 		cy += m_iMargin; // add a little height between the buttons and our panes
 
@@ -773,11 +777,11 @@ namespace dialog::editor
 		auto iPromptLineCount = 0;
 		if (m_bHasPrompt)
 		{
-			iPromptLineCount = m_Prompt.GetLineCount() + 1; // we allow space for the prompt and one line of whitespace
+			iPromptLineCount = m_Prompt.GetLineCount();
 		}
 
 		auto iCYBottom = cy - m_iButtonHeight - m_iMargin; // Top of Buttons
-		auto iCYTop = m_iTextHeight * iPromptLineCount + m_iMargin; // Bottom of prompt
+		auto iCYTop = m_iMargin; // Top margin
 
 		if (m_bHasPrompt)
 		{
@@ -789,6 +793,7 @@ namespace dialog::editor
 				iFullWidth, // Full width
 				m_iTextHeight * iPromptLineCount,
 				SWP_NOZORDER));
+			iCYTop += m_iTextHeight * iPromptLineCount + m_iMargin; // Shift our top down past the prompt including a margin
 		}
 
 		if (m_cButtons)

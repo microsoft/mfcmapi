@@ -2108,7 +2108,7 @@ namespace ui
 			const auto lsStyle = static_cast<uiLabelStyle>(
 				reinterpret_cast<intptr_t>(::GetProp(reinterpret_cast<HWND>(lParam), LABEL_STYLE)));
 			auto uiText = uiColor::Text;
-			auto uiBackground = uiColor::Background;
+			auto uiBackground = registry::uiDiag ? uiColor::TestPink : uiColor::Background;
 
 			if (lsStyle == uiLabelStyle::PaneHeaderLabel || lsStyle == uiLabelStyle::PaneHeaderText)
 			{
@@ -2133,7 +2133,7 @@ namespace ui
 
 			switch (pHdr->code)
 			{
-				// Paint Buttons
+			// Paint Buttons
 			case NM_CUSTOMDRAW:
 				return CustomDrawButton(pHdr, lpResult);
 			}
