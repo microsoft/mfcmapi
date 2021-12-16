@@ -198,10 +198,11 @@ namespace controls
 			const auto labelHeight = height > 2 ? height - 2 : 0;
 			output::DebugPrint(
 				output::dbgLevel::Draw,
-				L"PaneHeader::DeferWindowPos width:%d height:%d v:%d\n",
+				L"PaneHeader::DeferWindowPos width:%d height:%d v:%d l:\"%ws\"\n",
 				width,
 				height,
-				IsWindowVisible());
+				IsWindowVisible(),
+				m_szLabel.c_str());
 			auto curX = 0;
 			const auto actionButtonWidth = m_actionButtonWidth ? m_actionButtonWidth + 2 * m_iMargin : 0;
 			const auto actionButtonAndGutterWidth = actionButtonWidth ? actionButtonWidth + m_iSideMargin : 0;
@@ -336,6 +337,7 @@ namespace controls
 
 	void PaneHeader::OnToggleCollapse()
 	{
+		if (!m_bCollapsible) return;
 		m_bCollapsed = !m_bCollapsed;
 
 		StyleButton(m_CollapseButton.m_hWnd, m_bCollapsed ? ui::uiButtonStyle::UpArrow : ui::uiButtonStyle::DownArrow);

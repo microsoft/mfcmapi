@@ -43,39 +43,6 @@ namespace viewpane
 		}
 	}
 
-	int SplitterPane::GetFixedHeight()
-	{
-		auto iHeight = 0;
-		if (!m_topPane) iHeight += m_iSmallHeightMargin; // Top margin
-
-		iHeight += GetHeaderHeight();
-
-		if (collapsed())
-		{
-			iHeight += m_iSmallHeightMargin; // Bottom margin
-		}
-		else
-		{
-			// A small margin between our button and the splitter control, if we're collapsible and not collapsed
-			if (collapsible())
-			{
-				iHeight += m_iSmallHeightMargin;
-			}
-
-			if (m_bVertical)
-			{
-				iHeight += m_PaneOne->GetFixedHeight() + m_PaneTwo->GetFixedHeight() +
-						   (m_lpSplitter ? m_lpSplitter->GetSplitWidth() : 0);
-			}
-			else
-			{
-				iHeight += max(m_PaneOne->GetFixedHeight(), m_PaneTwo->GetFixedHeight());
-			}
-		}
-
-		return iHeight;
-	}
-
 	int SplitterPane::GetLines()
 	{
 		if (!collapsed())
@@ -163,6 +130,39 @@ namespace viewpane
 		}
 
 		m_bInitialized = true;
+	}
+
+	int SplitterPane::GetFixedHeight()
+	{
+		auto iHeight = 0;
+		if (!m_topPane) iHeight += m_iSmallHeightMargin; // Top margin
+
+		iHeight += GetHeaderHeight();
+
+		if (collapsed())
+		{
+			iHeight += m_iSmallHeightMargin; // Bottom margin
+		}
+		else
+		{
+			// A small margin between our button and the splitter control, if we're collapsible and not collapsed
+			if (collapsible())
+			{
+				iHeight += m_iSmallHeightMargin;
+			}
+
+			if (m_bVertical)
+			{
+				iHeight += m_PaneOne->GetFixedHeight() + m_PaneTwo->GetFixedHeight() +
+						   (m_lpSplitter ? m_lpSplitter->GetSplitWidth() : 0);
+			}
+			else
+			{
+				iHeight += max(m_PaneOne->GetFixedHeight(), m_PaneTwo->GetFixedHeight());
+			}
+		}
+
+		return iHeight;
 	}
 
 	HDWP SplitterPane::DeferWindowPos(
