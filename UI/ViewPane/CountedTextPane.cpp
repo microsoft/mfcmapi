@@ -63,15 +63,6 @@ namespace viewpane
 		if (collapsed())
 		{
 			WC_B_S(m_EditBox.ShowWindow(SW_HIDE));
-
-			hWinPosInfo = ui::DeferWindowPos(
-				hWinPosInfo,
-				m_EditBox.GetSafeHwnd(),
-				x,
-				curY,
-				0,
-				0,
-				L"CountedTextPane::DeferWindowPos::editbox(collapsed)");
 		}
 		else
 		{
