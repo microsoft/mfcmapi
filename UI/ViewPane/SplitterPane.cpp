@@ -132,6 +132,14 @@ namespace viewpane
 		m_bInitialized = true;
 	}
 
+	// SplitterPaneLayout:
+	// Top margin: m_iSmallHeightMargin (only on not top pane)
+	// Header: GetHeaderHeight
+	// Header bottom margin: m_iSmallHeightMargin if header && !collapsed
+	// Collapsible:
+	//    margin: m_iSmallHeightMargin
+	//    variable to fit panes
+	// bottom margin: m_iSmallHeightMargin
 	int SplitterPane::GetFixedHeight()
 	{
 		auto iHeight = 0;

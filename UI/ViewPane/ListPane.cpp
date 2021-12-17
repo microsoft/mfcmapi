@@ -95,26 +95,6 @@ namespace viewpane
 		return max(ViewPane::GetMinWidth(), (int) (NUMLISTBUTTONS * m_iButtonWidth + m_iMargin * (NUMLISTBUTTONS - 1)));
 	}
 
-	int ListPane::GetFixedHeight()
-	{
-		auto iHeight = 0;
-		if (!m_topPane) iHeight += m_iSmallHeightMargin; // Top margin
-
-		iHeight += GetHeaderHeight();
-
-		if (!collapsed())
-		{
-			iHeight += m_iSmallHeightMargin;
-
-			if (!m_bReadOnly)
-			{
-				iHeight += m_iLargeHeightMargin + m_iButtonHeight;
-			}
-		}
-
-		return iHeight;
-	}
-
 	int ListPane::GetLines() { return collapsed() ? 0 : LINES_LIST; }
 
 	ULONG ListPane::HandleChange(UINT nID)
@@ -147,6 +127,35 @@ namespace viewpane
 		}
 
 		return GetID();
+	}
+
+	// ListPane Layout:
+	// Top margin: m_iSmallHeightMargin (only on not top pane)
+	// Header: GetHeaderHeight
+	// Header bottom margin: m_iSmallHeightMargin if header && !collapsed
+	// collapsible:
+	//     list: variable
+	//     margin: m_iLargeHeightMargin
+	//     buttons: m_iButtonHeight
+	// bottom margin: m_iLargeHeightMargin <- different from others
+	int ListPane::GetFixedHeight()
+	{
+		auto iHeight = 0;
+		if (!m_topPane) iHeight += m_iSmallHeightMargin; // Top margin
+
+		iHeight += GetHeaderHeight();
+
+		if (!collapsed())
+		{
+			iHeight += m_iSmallHeightMargin;
+
+			if (!m_bReadOnly)
+			{
+				iHeight += m_iLargeHeightMargin + m_iButtonHeight;
+			}
+		}
+
+		return iHeight;
 	}
 
 	HDWP ListPane::DeferWindowPos(

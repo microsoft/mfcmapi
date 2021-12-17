@@ -33,17 +33,19 @@ namespace viewpane
 		m_bInitialized = true;
 	}
 
+	// TreePane Layout:
+	// Top margin: m_iSmallHeightMargin (only on not top pane)
+	// Header: GetHeaderHeight
+	// Header bottom margin: m_iSmallHeightMargin if header && !collapsed
+	// Tree:
+	//    variable
+	// bottom margin: m_iSmallHeightMargin
 	int TreePane::GetFixedHeight()
 	{
 		auto iHeight = 0;
 		if (!m_topPane) iHeight += m_iSmallHeightMargin; // Top margin
 
-		const auto labelHeight = GetHeaderHeight();
-
-		if (labelHeight)
-		{
-			iHeight += labelHeight;
-		}
+		iHeight += GetHeaderHeight();
 
 		iHeight += m_iSmallHeightMargin;
 

@@ -132,6 +132,29 @@ namespace viewpane
 
 	bool TextPane::IsDirty() { return m_EditBox.m_hWnd && m_EditBox.GetModify(); }
 
+	int TextPane::GetLines()
+	{
+		if (collapsed())
+		{
+			return 0;
+		}
+
+		if (m_bMultiline)
+		{
+			return LINES_MULTILINEEDIT;
+		}
+
+		return 0;
+	}
+
+	// TextPane Layout:
+	// Top margin: m_iSmallHeightMargin (only on not top pane)
+	// Header: GetHeaderHeight
+	// Header bottom margin: m_iSmallHeightMargin if header && !collapsed
+	// Collapsible:
+	//    margin: m_iSmallHeightMargin
+	//    variable
+	// bottom margin: m_iSmallHeightMargin
 	int TextPane::GetFixedHeight()
 	{
 		auto iHeight = 0;
@@ -147,21 +170,6 @@ namespace viewpane
 		iHeight += m_iSmallHeightMargin; // Bottom margin
 
 		return iHeight;
-	}
-
-	int TextPane::GetLines()
-	{
-		if (collapsed())
-		{
-			return 0;
-		}
-
-		if (m_bMultiline)
-		{
-			return LINES_MULTILINEEDIT;
-		}
-
-		return 0;
 	}
 
 	HDWP TextPane::DeferWindowPos(

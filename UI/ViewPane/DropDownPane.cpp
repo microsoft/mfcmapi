@@ -73,6 +73,12 @@ namespace viewpane
 		return max(ViewPane::GetMinWidth(), cxDropDown);
 	}
 
+	// DropDownPane Layout:
+	// Top margin: m_iSmallHeightMargin (only on not top pane)
+	// Header: GetHeaderHeight
+	// Header bottom margin: m_iSmallHeightMargin if header && !collapsed
+	// dropdown: m_iEditHeight
+	// bottom margin: m_iLargeHeightMargin <- different from others
 	int DropDownPane::GetFixedHeight()
 	{
 		auto iHeight = 0;

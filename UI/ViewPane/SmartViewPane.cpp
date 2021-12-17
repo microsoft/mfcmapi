@@ -60,23 +60,6 @@ namespace viewpane
 		Parse(m_bins);
 	}
 
-	int SmartViewPane::GetFixedHeight()
-	{
-		auto iHeight = 0;
-
-		if (!m_topPane) iHeight += m_iSmallHeightMargin; // Top margin
-
-		iHeight += GetHeaderHeight();
-
-		if (!collapsed())
-		{
-			iHeight += m_iEditHeight; // Height of the dropdown
-			iHeight += m_Splitter->GetFixedHeight();
-		}
-
-		return iHeight;
-	}
-
 	int SmartViewPane::GetLines()
 	{
 		if (!collapsed() && m_bHasData)
@@ -106,6 +89,32 @@ namespace viewpane
 		if (!OnActionButton || m_bins.size() != 1) return;
 		const auto bin = SBinary{static_cast<ULONG>(m_bins[0].size()), m_bins[0].data()};
 		OnActionButton(bin);
+	}
+
+	// SmartViewPane Layout:
+	// Top margin: m_iSmallHeightMargin (only on not top pane)
+	// Header: GetHeaderHeight
+	// Header bottom margin: m_iSmallHeightMargin if header && !collapsed
+	// Collapsible:
+	//    margin: m_iSmallHeightMargin
+	//    dropdown: m_iEditHeight
+	//    variable: Splitter
+	// bottom margin: m_iSmallHeightMargin
+	int SmartViewPane::GetFixedHeight()
+	{
+		auto iHeight = 0;
+
+		if (!m_topPane) iHeight += m_iSmallHeightMargin; // Top margin
+
+		iHeight += GetHeaderHeight();
+
+		if (!collapsed())
+		{
+			iHeight += m_iEditHeight; // Height of the dropdown
+			iHeight += m_Splitter->GetFixedHeight();
+		}
+
+		return iHeight;
 	}
 
 	HDWP SmartViewPane::DeferWindowPos(

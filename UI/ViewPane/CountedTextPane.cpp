@@ -28,6 +28,16 @@ namespace viewpane
 		SetCount(m_iCount);
 	}
 
+	int CountedTextPane::GetLines() { return collapsed() ? 0 : LINES_MULTILINEEDIT; }
+
+	// CountedTextPane Layout:
+	// Top margin: m_iSmallHeightMargin (only on not top pane)
+	// Header: GetHeaderHeight
+	// Header bottom margin: m_iSmallHeightMargin if header && !collapsed
+	// Collapsible:
+	//    margin: m_iSmallHeightMargin
+	//    variable
+	// bottom margin: m_iSmallHeightMargin
 	int CountedTextPane::GetFixedHeight()
 	{
 		auto iHeight = 0;
@@ -45,8 +55,6 @@ namespace viewpane
 
 		return iHeight;
 	}
-
-	int CountedTextPane::GetLines() { return collapsed() ? 0 : LINES_MULTILINEEDIT; }
 
 	HDWP CountedTextPane::DeferWindowPos(
 		_In_ HDWP hWinPosInfo,
