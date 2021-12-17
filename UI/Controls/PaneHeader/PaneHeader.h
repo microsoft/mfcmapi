@@ -30,12 +30,7 @@ namespace controls
 
 		// Returns the height of our control, accounting for an expand/collapse button
 		// Will return 0 if we have no label or button
-		int GetFixedHeight() const noexcept
-		{
-			if (m_bCollapsible || !m_szLabel.empty()) return max(m_iButtonHeight, m_iLabelHeight);
-
-			return 0;
-		}
+		int GetFixedHeight() const noexcept;
 		void makeCollapsible() noexcept { m_bCollapsible = true; }
 		bool collapsible() const noexcept { return m_bCollapsible; }
 		bool collapsed() const noexcept { return m_bCollapsed; }

@@ -184,6 +184,14 @@ namespace controls
 		return CWnd::PreTranslateMessage(pMsg);
 	}
 
+	int PaneHeader::GetFixedHeight() const noexcept
+	{
+		int iHeight = 0;
+		if (m_bCollapsible || !m_szLabel.empty()) iHeight = max(m_iButtonHeight, m_iLabelHeight);
+
+		return iHeight;
+	}
+
 	// Position collapse button, labels, action button.
 	void PaneHeader::RecalcLayout()
 	{
@@ -195,7 +203,6 @@ namespace controls
 			::GetClientRect(m_hWnd, &rcWin);
 			const auto width = rcWin.right - rcWin.left;
 			const auto height = rcWin.bottom - rcWin.top;
-			const auto labelHeight = height > 2 ? height - 2 : 0;
 			output::DebugPrint(
 				output::dbgLevel::Draw,
 				L"PaneHeader::DeferWindowPos width:%d height:%d v:%d l:\"%ws\"\n",
@@ -214,7 +221,7 @@ namespace controls
 					curX,
 					0,
 					width - actionButtonAndGutterWidth,
-					height,
+					m_iButtonHeight,
 					L"PaneHeader::DeferWindowPos::collapseButton");
 				curX += m_iButtonHeight;
 			}
@@ -225,7 +232,7 @@ namespace controls
 				curX,
 				1,
 				m_iLabelWidth,
-				labelHeight,
+				m_iLabelHeight,
 				L"PaneHeader::DeferWindowPos::leftLabel");
 
 			auto cmdShow = SW_HIDE;
@@ -254,7 +261,7 @@ namespace controls
 					width - actionButtonWidth,
 					0,
 					actionButtonWidth,
-					height,
+					m_iButtonHeight,
 					L"PaneHeader::DeferWindowPos::actionButton");
 				cmdShow = SW_SHOW;
 			}
