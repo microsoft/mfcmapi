@@ -41,7 +41,6 @@ namespace controls
 		void RecalcLayout();
 		int OnCreate(LPCREATESTRUCT lpCreateStruct);
 		LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
-		BOOL PreTranslateMessage(MSG* pMsg);
 		bool m_bInitialized{};
 		std::wstring m_szLabel; // Text to push into UI in Initialize
 		UINT m_nID{};
@@ -59,10 +58,10 @@ namespace controls
 		int m_iLabelHeight{}; // Height of the label
 		int m_iButtonHeight{}; // Height of button
 
-		CEdit m_leftLabel; // Label on left of header
+		CStatic m_leftLabel; // Label on left of header
 		int m_leftLabelWidth{0}; // The width of the string
 
-		CEdit m_rightLabel; // Label on right of header
+		CStatic m_rightLabel; // Label on right of header
 		int m_rightLabelWidth{0}; // The width of the string
 
 		CButton m_actionButton;

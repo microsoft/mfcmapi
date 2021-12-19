@@ -2191,14 +2191,6 @@ namespace ui
 			return DefSubclassProc(hWnd, uMsg, wParam, lParam);
 		case WM_ERASEBKGND:
 			return true;
-		case WM_NCHITTEST:
-			if (static_cast<uiLabelStyle>(reinterpret_cast<intptr_t>(::GetProp(hWnd, LABEL_STYLE))) ==
-				uiLabelStyle::PaneHeaderLabel)
-			{
-				return HTTRANSPARENT;
-			}
-
-			break;
 		}
 
 		return DefSubclassProc(hWnd, uMsg, wParam, lParam);

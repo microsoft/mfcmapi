@@ -70,8 +70,8 @@ namespace controls
 
 	int PaneHeader::OnCreate(LPCREATESTRUCT /*lpCreateStruct*/)
 	{
-		EC_B_S(
-			m_leftLabel.Create(WS_CHILD | WS_CLIPSIBLINGS | ES_READONLY | WS_VISIBLE, CRect(0, 0, 0, 0), this, m_nID));
+		EC_B_S(m_leftLabel.Create(
+			nullptr, WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE, CRect(0, 0, 0, 0), this, m_nID));
 		::SetWindowTextW(m_leftLabel.m_hWnd, m_szLabel.c_str());
 		ui::SubclassLabel(m_leftLabel.m_hWnd);
 		if (m_bCollapsible)
@@ -80,7 +80,7 @@ namespace controls
 		}
 
 		EC_B_S(m_rightLabel.Create(
-			WS_CHILD | WS_CLIPSIBLINGS | ES_READONLY | WS_VISIBLE, CRect(0, 0, 0, 0), this, IDD_RIGHTLABEL));
+			nullptr, WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE, CRect(0, 0, 0, 0), this, IDD_RIGHTLABEL));
 		ui::SubclassLabel(m_rightLabel.m_hWnd);
 		StyleLabel(m_rightLabel.m_hWnd, ui::uiLabelStyle::PaneHeaderText);
 
@@ -159,29 +159,6 @@ namespace controls
 		}
 
 		return CWnd::WindowProc(message, wParam, lParam);
-	}
-
-	BOOL PaneHeader::PreTranslateMessage(MSG* pMsg)
-	{
-		if (pMsg && pMsg->message == WM_KEYDOWN && (pMsg->wParam == VK_RETURN || pMsg->wParam == VK_SPACE))
-		{
-			if (pMsg->hwnd == m_rightLabel.GetSafeHwnd())
-			{
-				if (m_bCollapsible)
-				{
-					::SetFocus(m_CollapseButton.GetSafeHwnd());
-				}
-				else
-				{
-					::SetFocus(GetSafeHwnd());
-				}
-			}
-
-			OnToggleCollapse();
-			return true;
-		}
-
-		return CWnd::PreTranslateMessage(pMsg);
 	}
 
 	int PaneHeader::GetFixedHeight() const noexcept
