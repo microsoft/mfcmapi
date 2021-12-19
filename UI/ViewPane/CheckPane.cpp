@@ -56,9 +56,7 @@ namespace viewpane
 	// CheckPane Layout:
 	// Top margin: none
 	// Header: GetHeaderHeight
-	// Header bottom margin: m_iSmallHeightMargin if header && !collapsed
 	// CheckPane: m_iButtonHeight
-	// bottom margin: none
 	int CheckPane::GetFixedHeight() { return m_iButtonHeight; }
 
 	HDWP CheckPane::DeferWindowPos(

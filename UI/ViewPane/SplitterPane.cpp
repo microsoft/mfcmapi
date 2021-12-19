@@ -114,7 +114,9 @@ namespace viewpane
 			m_lpSplitter->Init(pParent->GetSafeHwnd());
 			m_lpSplitter->SetSplitType(m_bVertical ? controls::splitType::vertical : controls::splitType::horizontal);
 			m_PaneOne->Initialize(m_lpSplitter.get(), hdc);
+			m_PaneOne->SetTop();
 			m_PaneTwo->Initialize(m_lpSplitter.get(), hdc);
+			m_PaneTwo->SetTop();
 			m_lpSplitter->SetPaneOne(m_PaneOne);
 			m_lpSplitter->SetPaneTwo(m_PaneTwo);
 			if (m_bVertical)
@@ -135,11 +137,9 @@ namespace viewpane
 	// SplitterPaneLayout:
 	// Top margin: m_iSmallHeightMargin (only on not top pane)
 	// Header: GetHeaderHeight
-	// Header bottom margin: m_iSmallHeightMargin if header && !collapsed
 	// Collapsible:
 	//    margin: m_iSmallHeightMargin
 	//    variable to fit panes
-	// bottom margin: m_iSmallHeightMargin
 	int SplitterPane::GetFixedHeight()
 	{
 		auto iHeight = 0;
@@ -147,18 +147,8 @@ namespace viewpane
 
 		iHeight += GetHeaderHeight();
 
-		if (collapsed())
+		if (!collapsed())
 		{
-			iHeight += m_iSmallHeightMargin; // Bottom margin
-		}
-		else
-		{
-			// A small margin between our button and the splitter control, if we're collapsible and not collapsed
-			if (collapsible())
-			{
-				iHeight += m_iSmallHeightMargin;
-			}
-
 			if (m_bVertical)
 			{
 				iHeight += m_PaneOne->GetFixedHeight() + m_PaneTwo->GetFixedHeight() +
@@ -189,6 +179,7 @@ namespace viewpane
 			height);
 
 		auto curY = y;
+		if (!m_topPane) curY += m_iSmallHeightMargin; // Top margin
 
 		// Layout our label
 		hWinPosInfo = EC_D(HDWP, ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height));
@@ -199,10 +190,7 @@ namespace viewpane
 		}
 		else
 		{
-			if (collapsible())
-			{
-				curY += GetHeaderHeight() + m_iSmallHeightMargin;
-			}
+			curY += GetHeaderHeight();
 
 			WC_B_S(m_lpSplitter->ShowWindow(SW_SHOW));
 			hWinPosInfo = ui::DeferWindowPos(

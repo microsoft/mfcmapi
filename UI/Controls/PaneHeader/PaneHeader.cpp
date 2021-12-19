@@ -188,6 +188,7 @@ namespace controls
 	{
 		int iHeight = 0;
 		if (m_bCollapsible || !m_szLabel.empty()) iHeight = max(m_iButtonHeight, m_iLabelHeight);
+		if (!m_bCollapsed && iHeight) iHeight += m_iSmallHeightMargin;
 
 		return iHeight;
 	}
@@ -245,7 +246,7 @@ namespace controls
 					width - m_rightLabelWidth - actionButtonAndGutterWidth - m_iSideMargin - 1,
 					1,
 					m_rightLabelWidth,
-					labelHeight,
+					m_iLabelHeight,
 					L"PaneHeader::DeferWindowPos::rightLabel");
 				cmdShow = SW_SHOW;
 			}
@@ -357,11 +358,13 @@ namespace controls
 		int iMargin,
 		int iSideMargin,
 		int iLabelHeight, // Height of the label
+		int iSmallHeightMargin,
 		int iButtonHeight) // Height of button
 	{
 		m_iMargin = iMargin;
 		m_iSideMargin = iSideMargin;
 		m_iLabelHeight = iLabelHeight;
+		m_iSmallHeightMargin = iSmallHeightMargin;
 		m_iButtonHeight = iButtonHeight;
 	}
 

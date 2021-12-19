@@ -33,25 +33,15 @@ namespace viewpane
 	// CountedTextPane Layout:
 	// Top margin: m_iSmallHeightMargin (only on not top pane)
 	// Header: GetHeaderHeight
-	// Header bottom margin: m_iSmallHeightMargin if header && !collapsed
 	// Collapsible:
 	//    margin: m_iSmallHeightMargin
 	//    variable
-	// bottom margin: m_iSmallHeightMargin
 	int CountedTextPane::GetFixedHeight()
 	{
 		auto iHeight = 0;
 		if (!m_topPane) iHeight += m_iSmallHeightMargin; // Top margin
 
 		iHeight += GetHeaderHeight();
-
-		if (!collapsed())
-		{
-			// Small gap before the edit box
-			iHeight += m_iSmallHeightMargin;
-		}
-
-		iHeight += m_iSmallHeightMargin; // Bottom margin
 
 		return iHeight;
 	}
@@ -64,6 +54,7 @@ namespace viewpane
 		_In_ const int height)
 	{
 		auto curY = y;
+		if (!m_topPane) curY += m_iSmallHeightMargin; // Top margin
 
 		// Layout our label
 		hWinPosInfo = EC_D(HDWP, ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height));
@@ -76,7 +67,7 @@ namespace viewpane
 		{
 			WC_B_S(m_EditBox.ShowWindow(SW_SHOW));
 
-			curY += GetHeaderHeight() + m_iSmallHeightMargin;
+			curY += GetHeaderHeight();
 
 			hWinPosInfo = ui::DeferWindowPos(
 				hWinPosInfo,
@@ -84,7 +75,7 @@ namespace viewpane
 				x,
 				curY,
 				width,
-				height - (curY - y) - m_iSmallHeightMargin,
+				height - (curY - y),
 				L"CountedTextPane::DeferWindowPos::editbox");
 		}
 

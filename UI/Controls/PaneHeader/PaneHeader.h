@@ -23,6 +23,7 @@ namespace controls
 			int iMargin,
 			int iSideMargin,
 			int iLabelHeight, // Height of the label
+			int iSmallHeightMargin,
 			int iButtonHeight); // Height of buttons below the control
 
 		void SetLabel(const UINT uidLabel) { m_szLabel = strings::loadstring(uidLabel); }
@@ -53,6 +54,7 @@ namespace controls
 		// Margins
 		int m_iMargin{};
 		int m_iSideMargin{};
+		int m_iSmallHeightMargin{};
 		int m_iLabelWidth{}; // The width of the label
 		int m_iLabelHeight{}; // Height of the label
 		int m_iButtonHeight{}; // Height of button

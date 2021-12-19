@@ -76,9 +76,7 @@ namespace viewpane
 	// DropDownPane Layout:
 	// Top margin: m_iSmallHeightMargin (only on not top pane)
 	// Header: GetHeaderHeight
-	// Header bottom margin: m_iSmallHeightMargin if header && !collapsed
 	// dropdown: m_iEditHeight
-	// bottom margin: m_iLargeHeightMargin <- different from others
 	int DropDownPane::GetFixedHeight()
 	{
 		auto iHeight = 0;
@@ -89,8 +87,6 @@ namespace viewpane
 
 		iHeight += m_iEditHeight; // Height of the dropdown
 
-		iHeight += m_iLargeHeightMargin; // Bottom margin
-
 		return iHeight;
 	}
 
@@ -99,27 +95,14 @@ namespace viewpane
 		_In_ const int x,
 		_In_ const int y,
 		_In_ const int width,
-		_In_ const int /*height*/)
+		_In_ const int height)
 	{
 		auto curY = y;
-		const auto labelHeight = GetHeaderHeight();
-		if (!m_topPane)
-		{
-			curY += m_iSmallHeightMargin;
-		}
+		if (!m_topPane) curY += m_iSmallHeightMargin; // Top margin
 
-		if (!m_Header.empty())
-		{
-			ui::DeferWindowPos(
-				hWinPosInfo,
-				m_Header.GetSafeHwnd(),
-				x,
-				curY,
-				width,
-				labelHeight,
-				L"DropDownPane::DeferWindowPos::header");
-			curY += labelHeight;
-		}
+		ui::DeferWindowPos(
+			hWinPosInfo, m_Header.GetSafeHwnd(), x, curY, width, height, L"DropDownPane::DeferWindowPos::header");
+		curY += GetHeaderHeight();
 
 		// Note - Real height of a combo box is fixed at m_iEditHeight
 		// Height we set here influences the amount of dropdown entries we see

@@ -94,12 +94,10 @@ namespace viewpane
 	// SmartViewPane Layout:
 	// Top margin: m_iSmallHeightMargin (only on not top pane)
 	// Header: GetHeaderHeight
-	// Header bottom margin: m_iSmallHeightMargin if header && !collapsed
 	// Collapsible:
 	//    margin: m_iSmallHeightMargin
 	//    dropdown: m_iEditHeight
 	//    variable: Splitter
-	// bottom margin: m_iSmallHeightMargin
 	int SmartViewPane::GetFixedHeight()
 	{
 		auto iHeight = 0;
@@ -125,10 +123,11 @@ namespace viewpane
 		_In_ const int height)
 	{
 		auto curY = y;
+		if (!m_topPane) curY += m_iSmallHeightMargin; // Top margin
 
 		// Layout our label
 		hWinPosInfo = EC_D(HDWP, ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height));
-		curY += GetHeaderHeight() + m_iSmallHeightMargin;
+		curY += GetHeaderHeight();
 
 		if (!collapsed())
 		{
