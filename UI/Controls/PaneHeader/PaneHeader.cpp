@@ -212,7 +212,8 @@ namespace controls
 				IsWindowVisible(),
 				m_szLabel.c_str());
 			auto curX = 0;
-			const auto actionButtonWidth = m_actionButtonWidth ? m_actionButtonWidth + 2 * m_iMargin : 0;
+			const auto actionButtonWidth =
+				!m_bCollapsed && m_actionButtonWidth ? m_actionButtonWidth + 2 * m_iMargin : 0;
 			const auto actionButtonAndGutterWidth = actionButtonWidth ? actionButtonWidth + m_iSideMargin : 0;
 			if (m_bCollapsible)
 			{
@@ -253,7 +254,7 @@ namespace controls
 
 			WC_B_S(::ShowWindow(m_rightLabel.GetSafeHwnd(), cmdShow));
 
-			if (m_nIDAction && m_actionButtonWidth)
+			if (!m_bCollapsed && m_nIDAction && m_actionButtonWidth)
 			{
 				// Drop the action button next to the label we drew above
 				hWinPosInfo = ui::DeferWindowPos(
