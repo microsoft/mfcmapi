@@ -401,11 +401,26 @@ namespace dialog::editor
 		}
 
 		SetMargins(); // Not all margins have been computed yet, but some have and we can use them during Initialize
+		bool previousPaneWasCheck = true; // Avoid margin at the top
 		for (const auto& pane : m_Panes)
 		{
 			if (pane)
 			{
 				pane->Initialize(pParent, hdc);
+				auto checkPane = std::dynamic_pointer_cast<viewpane::CheckPane>(pane);
+				if (checkPane)
+				{
+					if (!previousPaneWasCheck)
+					{
+						checkPane->EnableTopMargin();
+					}
+
+					previousPaneWasCheck = true;
+				}
+				else
+				{
+					previousPaneWasCheck = false;
+				}
 			}
 		}
 
@@ -793,7 +808,8 @@ namespace dialog::editor
 				iFullWidth, // Full width
 				m_iTextHeight * iPromptLineCount,
 				SWP_NOZORDER));
-			iCYTop += m_iTextHeight * iPromptLineCount + m_iMargin; // Shift our top down past the prompt including a margin
+			iCYTop +=
+				m_iTextHeight * iPromptLineCount + m_iMargin; // Shift our top down past the prompt including a margin
 		}
 
 		if (m_cButtons)

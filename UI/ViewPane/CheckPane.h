@@ -19,6 +19,7 @@ namespace viewpane
 			::UnionRect(&rcPane, &rcCheck, &rcHeader);
 			return rcPane;
 		}
+		void EnableTopMargin() { m_bTopMargin = true; }
 
 	private:
 		void Initialize(_In_ CWnd* pParent, _In_ HDC hdc) override;
@@ -31,5 +32,6 @@ namespace viewpane
 		std::wstring m_szLabel; // Check label
 		bool m_bCheckValue{false};
 		bool m_bCommitted{false};
+		bool m_bTopMargin{false};
 	};
 } // namespace viewpane

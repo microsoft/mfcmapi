@@ -57,7 +57,12 @@ namespace viewpane
 	// Top margin: none
 	// Header: GetHeaderHeight
 	// CheckPane: m_iButtonHeight
-	int CheckPane::GetFixedHeight() { return m_iButtonHeight; }
+	int CheckPane::GetFixedHeight()
+	{
+		auto height = m_iButtonHeight;
+		if (m_bTopMargin) height += m_iSmallHeightMargin;
+		return height;
+	}
 
 	HDWP CheckPane::DeferWindowPos(
 		_In_ HDWP hWinPosInfo,
@@ -66,8 +71,11 @@ namespace viewpane
 		_In_ const int width,
 		_In_ const int height)
 	{
-		hWinPosInfo =
-			ui::DeferWindowPos(hWinPosInfo, m_Check.GetSafeHwnd(), x, y, width, height, L"CheckPane::DeferWindowPos");
+		auto curY = y;
+		if (m_bTopMargin) curY += m_iSmallHeightMargin;
+
+		hWinPosInfo = ui::DeferWindowPos(
+			hWinPosInfo, m_Check.GetSafeHwnd(), x, curY, width, height - (curY - y), L"CheckPane::DeferWindowPos");
 		return hWinPosInfo;
 	}
 
