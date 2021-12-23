@@ -130,18 +130,13 @@ namespace viewpane
 	}
 
 	// ListPane Layout:
-	// Top margin: m_iSmallHeightMargin (only on not top pane)
 	// Header: GetHeaderHeight
-	// collapsible:
-	//     list: variable
-	//     margin: m_iLargeHeightMargin
-	//     buttons: m_iButtonHeight
+	// List: variable
+	// Margin: m_iLargeHeightMargin
+	// Buttons: m_iButtonHeight (if not read only)
 	int ListPane::GetFixedHeight()
 	{
-		auto iHeight = 0;
-		if (!m_topPane) iHeight += m_iSmallHeightMargin; // Top margin
-
-		iHeight += GetHeaderHeight();
+		auto iHeight = GetHeaderHeight();
 
 		if (!collapsed())
 		{
@@ -162,7 +157,6 @@ namespace viewpane
 		_In_ const int height)
 	{
 		auto curY = y;
-		if (!m_topPane) curY += m_iSmallHeightMargin; // Top margin
 
 		// Layout our label
 		hWinPosInfo = EC_D(HDWP, ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height));
@@ -171,6 +165,7 @@ namespace viewpane
 		const auto cmdShow = collapsed() ? SW_HIDE : SW_SHOW;
 		WC_B_S(m_List.ShowWindow(cmdShow));
 		auto listHeight = height - (curY - y);
+		// Space for buttons if needed
 		if (!m_bReadOnly) listHeight -= m_iLargeHeightMargin + m_iButtonHeight;
 		hWinPosInfo = ui::DeferWindowPos(
 			hWinPosInfo, m_List.GetSafeHwnd(), x, curY, width, listHeight, L"ListPane::DeferWindowPos::list");

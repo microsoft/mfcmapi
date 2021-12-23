@@ -50,16 +50,7 @@ namespace viewpane
 	protected:
 		// Returns the height of our header
 		// Include any gutter spacing which should be above the header
-		int GetHeaderHeight() const noexcept
-		{
-			auto height = m_Header.GetFixedHeight();
-			if (!m_topPane)
-			{
-				height += m_iSmallHeightMargin;
-			}
-
-			return height;
-		}
+		int GetHeaderHeight() const noexcept;
 		int m_paneID{-1}; // ID of the view pane in the view - used for callbacks and layout
 		bool m_bInitialized{};
 		bool m_bReadOnly{true};

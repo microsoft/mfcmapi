@@ -6,6 +6,14 @@
 
 namespace viewpane
 {
+	int ViewPane::GetHeaderHeight() const noexcept
+	{
+		auto height = m_Header.GetFixedHeight();
+		if (!m_topPane) height += m_iSmallHeightMargin;
+
+		return height;
+	}
+
 	// Draw our header, if needed.
 	HDWP ViewPane::DeferWindowPos(
 		_In_ HDWP hWinPosInfo,
@@ -23,10 +31,7 @@ namespace viewpane
 			height,
 			m_Header.IsWindowVisible());
 		auto curY = y;
-		if (!m_topPane)
-		{
-			curY += m_iSmallHeightMargin;
-		}
+		if (!m_topPane) curY += m_iSmallHeightMargin;
 
 		hWinPosInfo = ui::DeferWindowPos(
 			hWinPosInfo,

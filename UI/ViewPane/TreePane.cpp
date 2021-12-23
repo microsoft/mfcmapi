@@ -34,19 +34,10 @@ namespace viewpane
 	}
 
 	// TreePane Layout:
-	// Top margin: m_iSmallHeightMargin (only on not top pane)
 	// Header: GetHeaderHeight
 	// Tree:
-	//    variable
-	int TreePane::GetFixedHeight()
-	{
-		auto iHeight = 0;
-		if (!m_topPane) iHeight += m_iSmallHeightMargin; // Top margin
-
-		iHeight += GetHeaderHeight();
-
-		return iHeight;
-	}
+	//    Tree: variable
+	int TreePane::GetFixedHeight() { return GetHeaderHeight(); }
 
 	HDWP TreePane::DeferWindowPos(
 		_In_ HDWP hWinPosInfo,
@@ -59,18 +50,14 @@ namespace viewpane
 			output::dbgLevel::Draw, L"TreePane::DeferWindowPos x:%d y:%d width:%d height:%d \n", x, y, width, height);
 
 		auto curY = y;
-		if (!m_topPane) curY += m_iSmallHeightMargin; // Top margin
 
-		WC_B_S(m_Tree.ShowWindow(collapsed() ? SW_HIDE : SW_SHOW));
 		// Layout our label
 		hWinPosInfo = EC_D(HDWP, ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height));
-
 		curY += GetHeaderHeight();
 
-		auto treeHeight = height - (curY - y);
-
+		WC_B_S(m_Tree.ShowWindow(collapsed() ? SW_HIDE : SW_SHOW));
 		hWinPosInfo = ui::DeferWindowPos(
-			hWinPosInfo, m_Tree.GetSafeHwnd(), x, curY, width, treeHeight, L"TreePane::DeferWindowPos::tree");
+			hWinPosInfo, m_Tree.GetSafeHwnd(), x, curY, width, height - (curY - y), L"TreePane::DeferWindowPos::tree");
 
 		return hWinPosInfo;
 	}

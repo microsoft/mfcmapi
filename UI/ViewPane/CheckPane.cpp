@@ -54,8 +54,8 @@ namespace viewpane
 	}
 
 	// CheckPane Layout:
-	// Top margin: none
-	// Header: GetHeaderHeight
+	// Top margin: m_iSmallHeightMargin if requested
+	// Header: none
 	// CheckPane: m_iButtonHeight
 	int CheckPane::GetFixedHeight()
 	{

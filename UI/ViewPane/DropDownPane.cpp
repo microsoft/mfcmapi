@@ -74,21 +74,9 @@ namespace viewpane
 	}
 
 	// DropDownPane Layout:
-	// Top margin: m_iSmallHeightMargin (only on not top pane)
 	// Header: GetHeaderHeight
-	// dropdown: m_iEditHeight
-	int DropDownPane::GetFixedHeight()
-	{
-		auto iHeight = 0;
-
-		if (!m_topPane) iHeight += m_iSmallHeightMargin; // Top margin
-
-		iHeight += GetHeaderHeight();
-
-		iHeight += m_iEditHeight; // Height of the dropdown
-
-		return iHeight;
-	}
+	// Dropdown: m_iEditHeight
+	int DropDownPane::GetFixedHeight() { return GetHeaderHeight() + m_iEditHeight; }
 
 	HDWP DropDownPane::DeferWindowPos(
 		_In_ HDWP hWinPosInfo,
@@ -98,10 +86,9 @@ namespace viewpane
 		_In_ const int height)
 	{
 		auto curY = y;
-		if (!m_topPane) curY += m_iSmallHeightMargin; // Top margin
 
-		ui::DeferWindowPos(
-			hWinPosInfo, m_Header.GetSafeHwnd(), x, curY, width, height, L"DropDownPane::DeferWindowPos::header");
+		// Layout our label
+		hWinPosInfo = EC_D(HDWP, ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height));
 		curY += GetHeaderHeight();
 
 		// Note - Real height of a combo box is fixed at m_iEditHeight
