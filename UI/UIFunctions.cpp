@@ -816,6 +816,11 @@ namespace ui
 		case WM_NCDESTROY:
 			RemoveWindowSubclass(hWnd, DrawEditProc, uIdSubclass);
 			return DefSubclassProc(hWnd, uMsg, wParam, lParam);
+		case WM_SETFOCUS:
+		case WM_KILLFOCUS:
+			// Trigger WM_NCPAINT so we can get an updated frame reflecting focus status
+			::RedrawWindow(hWnd, nullptr, nullptr, RDW_FRAME | RDW_INVALIDATE | RDW_ERASENOW);
+			break;
 		case WM_NCPAINT:
 		{
 			const auto hdc = GetWindowDC(hWnd);
@@ -824,7 +829,8 @@ namespace ui
 				auto rc = RECT{};
 				GetWindowRect(hWnd, &rc);
 				OffsetRect(&rc, -rc.left, -rc.top);
-				FrameRect(hdc, &rc, GetSysBrush(uiColor::FrameSelected));
+				const auto color = (::GetFocus() == hWnd) ? uiColor::FrameSelected : uiColor::FrameUnselected;
+				FrameRect(hdc, &rc, GetSysBrush(color));
 				ReleaseDC(hWnd, hdc);
 			}
 
@@ -841,6 +847,7 @@ namespace ui
 				::DefWindowProc(hWnd, WM_NCPAINT, reinterpret_cast<WPARAM>(hRgnCaption), NULL);
 				DeleteObject(hRgnCaption);
 			}
+
 			return 0;
 		}
 		}
@@ -849,7 +856,7 @@ namespace ui
 
 	void SubclassEdit(_In_ HWND hWnd, _In_opt_ HWND hWndParent, const bool bReadOnly)
 	{
-		SetWindowSubclass(hWnd, DrawEditProc, 0, 0);
+		SetWindowSubclass(hWnd, DrawEditProc, 0, reinterpret_cast<DWORD_PTR>(hWndParent));
 
 		auto lStyle = ::GetWindowLongPtr(hWnd, GWL_EXSTYLE);
 		lStyle &= ~WS_EX_CLIENTEDGE;
@@ -2274,7 +2281,7 @@ namespace ui
 
 	void WINAPI FrameRect(_In_ HDC hDC, _In_ RECT rect, _In_ const uiPen up)
 	{
-		// Thicker pens bleed out a bit, so shrink out rect to make them fit
+		// Thicker pens bleed out a bit, so shrink our rect to make them fit
 		switch (up)
 		{
 		case uiPen::CheckFocusedPen:
