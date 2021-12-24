@@ -39,8 +39,6 @@ namespace ui
 		SolidPen,
 		SolidGreyPen,
 		DashedPen,
-		CheckFocusedPen,
-		CheckGlowPen,
 		PenEnd
 	};
 
@@ -203,5 +201,5 @@ namespace ui
 		_In_ const WCHAR* szName,
 		_In_opt_ const WCHAR* szLabel = nullptr);
 
-	void WINAPI FrameRect(_In_ HDC hDC, _In_ RECT lprc, _In_ const uiPen up);
+	void WINAPI FrameRect(_In_ HDC hDC, _In_ RECT rect, _In_ int width, _In_ const uiColor color);
 } // namespace ui

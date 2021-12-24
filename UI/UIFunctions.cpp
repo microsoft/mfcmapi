@@ -634,20 +634,6 @@ namespace ui
 			g_Pens[static_cast<int>(uiPen::DashedPen)] = ExtCreatePen(PS_GEOMETRIC | PS_USERSTYLE, 1, &lbr, 2, rgStyle);
 			return g_Pens[static_cast<int>(uiPen::DashedPen)];
 		}
-		case uiPen::CheckFocusedPen:
-		{
-			lbr.lbColor = MyGetSysColor(uiColor::Glow);
-			g_Pens[static_cast<int>(uiPen::CheckFocusedPen)] =
-				ExtCreatePen(PS_GEOMETRIC | PS_SOLID | PS_ENDCAP_SQUARE, 3, &lbr, 0, nullptr);
-			return g_Pens[static_cast<int>(uiPen::CheckFocusedPen)];
-		}
-		case uiPen::CheckGlowPen:
-		{
-			lbr.lbColor = MyGetSysColor(uiColor::Glow);
-			g_Pens[static_cast<int>(uiPen::CheckGlowPen)] =
-				ExtCreatePen(PS_GEOMETRIC | PS_SOLID | PS_ENDCAP_SQUARE, 2, &lbr, 0, nullptr);
-			return g_Pens[static_cast<int>(uiPen::CheckGlowPen)];
-		}
 		default:
 			break;
 		}
@@ -811,8 +797,13 @@ namespace ui
 		const UINT_PTR uIdSubclass,
 		DWORD_PTR /*dwRefData*/) noexcept
 	{
+		static auto borderWidth = 2;
 		switch (uMsg)
 		{
+		case WM_NCCALCSIZE:
+			InflateRect((LPRECT) lParam, -borderWidth, -borderWidth);
+			return 0;
+			break;
 		case WM_NCDESTROY:
 			RemoveWindowSubclass(hWnd, DrawEditProc, uIdSubclass);
 			return DefSubclassProc(hWnd, uMsg, wParam, lParam);
@@ -829,8 +820,15 @@ namespace ui
 				auto rc = RECT{};
 				GetWindowRect(hWnd, &rc);
 				OffsetRect(&rc, -rc.left, -rc.top);
-				const auto color = (::GetFocus() == hWnd) ? uiColor::FrameSelected : uiColor::FrameUnselected;
-				FrameRect(hdc, &rc, GetSysBrush(color));
+				if ((::GetFocus() == hWnd))
+				{
+					FrameRect(hdc, rc, borderWidth, uiColor::Glow);
+				}
+				else
+				{
+					FrameRect(hdc, rc, 1, uiColor::FrameSelected);
+				}
+
 				ReleaseDC(hWnd, hdc);
 			}
 
@@ -2279,20 +2277,13 @@ namespace ui
 		return EC_D(HDWP, ::DeferWindowPos(hWinPosInfo, hWnd, nullptr, x, y, cx, cy, SWP_NOZORDER));
 	}
 
-	void WINAPI FrameRect(_In_ HDC hDC, _In_ RECT rect, _In_ const uiPen up)
+	// Draw a frame, clearing out the background first
+	void WINAPI FrameRect(_In_ HDC hDC, _In_ RECT rect, _In_ int width, _In_ const uiColor color)
 	{
-		// Thicker pens bleed out a bit, so shrink our rect to make them fit
-		switch (up)
-		{
-		case uiPen::CheckFocusedPen:
-		case uiPen::CheckGlowPen:
-			InflateRect(&rect, -1, -1);
-			break;
-		}
-
-		const auto hPen = GetPen(up);
-		const auto hPenOld = (HPEN)::SelectObject(hDC, hPen);
-		::Rectangle(hDC, rect.left, rect.top, rect.right, rect.bottom);
-		::SelectObject(hDC, hPenOld);
+		auto rcInnerFrame = rect;
+		::FillRect(hDC, &rect, GetSysBrush(ui::uiColor::Background));
+		::InflateRect(&rcInnerFrame, -width, -width);
+		::ExcludeClipRect(hDC, rcInnerFrame.left, rcInnerFrame.top, rcInnerFrame.right, rcInnerFrame.bottom);
+		::FillRect(hDC, &rect, GetSysBrush(color));
 	}
 } // namespace ui

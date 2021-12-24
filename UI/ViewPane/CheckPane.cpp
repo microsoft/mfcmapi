@@ -109,13 +109,23 @@ namespace viewpane
 		rcCheck.top = (rc.bottom - rc.top - lCheck) / 2;
 		rcCheck.bottom = rcCheck.top + lCheck;
 
-		const auto pen = bFocused	 ? ui::uiPen::CheckFocusedPen
-						 : bGlow	 ? ui::uiPen::CheckGlowPen
-						 : bDisabled ? ui::uiPen::SolidGreyPen
-									 : ui::uiPen::SolidPen;
+		if (bFocused)
+		{
+			ui::FrameRect(hDC, rcCheck, 3, ui::uiColor::Glow);
+		}
+		else if (bGlow)
+		{
+			ui::FrameRect(hDC, rcCheck, 2, ui::uiColor::Glow);
+		}
+		else if (bDisabled)
+		{
+			ui::FrameRect(hDC, rcCheck, 1, ui::uiColor::FrameUnselected);
+		}
+		else
+		{
+			ui::FrameRect(hDC, rcCheck, 1, ui::uiColor::FrameSelected);
+		}
 
-		FillRect(hDC, &rc, GetSysBrush(ui::uiColor::Background));
-		ui::FrameRect(hDC, rcCheck, pen);
 		if (bChecked)
 		{
 			auto rcFill = rcCheck;
