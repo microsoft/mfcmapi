@@ -70,8 +70,7 @@ namespace controls
 
 	int PaneHeader::OnCreate(LPCREATESTRUCT /*lpCreateStruct*/)
 	{
-		EC_B_S(m_leftLabel.Create(
-			nullptr, WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE, CRect(0, 0, 0, 0), this, m_nID));
+		EC_B_S(m_leftLabel.Create(nullptr, WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE, CRect(0, 0, 0, 0), this, m_nID));
 		::SetWindowTextW(m_leftLabel.m_hWnd, m_szLabel.c_str());
 		ui::SubclassLabel(m_leftLabel.m_hWnd);
 		if (m_bCollapsible)
@@ -330,6 +329,9 @@ namespace controls
 
 		// Trigger a redraw
 		::PostMessage(m_hWndParent, WM_COMMAND, IDD_RECALCLAYOUT, NULL);
+
+		// When we toggle because of VK_ENTER, we don't redraw - signal one just in case
+		::RedrawWindow(m_CollapseButton.m_hWnd, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
 	}
 
 	void PaneHeader::SetMargins(
