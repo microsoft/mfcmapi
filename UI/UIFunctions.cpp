@@ -2281,9 +2281,22 @@ namespace ui
 	void WINAPI FrameRect(_In_ HDC hDC, _In_ RECT rect, _In_ int width, _In_ const uiColor color)
 	{
 		auto rcInnerFrame = rect;
-		::FillRect(hDC, &rect, GetSysBrush(ui::uiColor::Background));
-		::InflateRect(&rcInnerFrame, -width, -width);
-		::ExcludeClipRect(hDC, rcInnerFrame.left, rcInnerFrame.top, rcInnerFrame.right, rcInnerFrame.bottom);
-		::FillRect(hDC, &rect, GetSysBrush(color));
+		WC_D_S(::FillRect(hDC, &rect, GetSysBrush(ui::uiColor::Background)));
+		WC_D_S(::InflateRect(&rcInnerFrame, -width, -width));
+		auto rgn = WC_D(HRGN, ::CreateRectRgn(0, 0, 0, 0));
+		if (GetClipRgn(hDC, rgn) != 1)
+		{
+			WC_B_S(::DeleteObject(rgn));
+			rgn = nullptr;
+		}
+
+		WC_D_S(::ExcludeClipRect(hDC, rcInnerFrame.left, rcInnerFrame.top, rcInnerFrame.right, rcInnerFrame.bottom));
+		WC_D_S(::FillRect(hDC, &rect, GetSysBrush(color)));
+
+		WC_D_S(::SelectClipRgn(hDC, rgn));
+		if (rgn != nullptr)
+		{
+			WC_B_S(::DeleteObject(rgn));
+		}
 	}
 } // namespace ui
