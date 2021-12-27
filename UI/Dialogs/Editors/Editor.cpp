@@ -8,6 +8,7 @@
 #include <core/addin/mfcmapi.h>
 #include <core/interpret/proptags.h>
 #include <UI/ViewPane/getpane.h>
+#include <core/utility/registry.h>
 
 extern ui::CMyWinApp theApp;
 
@@ -192,7 +193,10 @@ namespace dialog::editor
 		{
 			auto rect = RECT{};
 			::GetClientRect(m_hWnd, &rect);
-			const auto hOld = SelectObject(reinterpret_cast<HDC>(wParam), GetSysBrush(ui::uiColor::Background));
+
+			const auto background =
+				registry::uiDiag ? GetSysBrush(ui::uiColor::TestPink) : GetSysBrush(ui::uiColor::Background);
+			const auto hOld = SelectObject(reinterpret_cast<HDC>(wParam), background);
 			const auto bRet =
 				PatBlt(reinterpret_cast<HDC>(wParam), 0, 0, rect.right - rect.left, rect.bottom - rect.top, PATCOPY);
 			SelectObject(reinterpret_cast<HDC>(wParam), hOld);
@@ -906,24 +910,19 @@ namespace dialog::editor
 			if (iCYBottom - iCYTop < m_iScrollClient)
 			{
 				const auto iScrollWidth = GetSystemMetrics(SM_CXVSCROLL);
-				iFullWidth -= iScrollWidth;
+				// This positions the scroll bar on the right just iCXMargin from the edge
+				const auto iScrollPosition = cx + iCXMargin - iScrollWidth;
+				// Our new width should then be this position minus two margins
+				iFullWidth = iScrollPosition - 2 * iCXMargin;
 				output::DebugPrint(
 					output::dbgLevel::Draw,
 					L"CEditor::OnSize Scroll iScrollWidth=%d new iFullWidth=%d\n",
 					iScrollWidth,
 					iFullWidth);
 				output::DebugPrint(
-					output::dbgLevel::Draw,
-					L"CEditor::OnSize m_hWndVertScroll positioned at=%d\n",
-					iFullWidth + iCXMargin);
+					output::dbgLevel::Draw, L"CEditor::OnSize m_hWndVertScroll positioned at=%d\n", iScrollPosition);
 				::SetWindowPos(
-					m_hWndVertScroll,
-					nullptr,
-					iFullWidth + iCXMargin,
-					iCYTop,
-					iScrollWidth,
-					iCYBottom - iCYTop,
-					SWP_NOZORDER);
+					m_hWndVertScroll, nullptr, iScrollPosition, iCYTop, iScrollWidth, iCYBottom - iCYTop, SWP_NOZORDER);
 				auto si = SCROLLINFO{};
 				si.cbSize = sizeof si;
 				si.fMask = SIF_POS;
@@ -982,7 +981,7 @@ namespace dialog::editor
 						HDWP,
 						pane->DeferWindowPos(
 							hdwp,
-							iCXMargin, // x
+							m_bEnableScroll ? 0 : iCXMargin, // x
 							iCYTop, // y
 							iFullWidth, // width
 							paneHeight)); // height
