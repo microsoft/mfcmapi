@@ -24,16 +24,7 @@ namespace viewpane
 	int CheckPane::GetMinWidth()
 	{
 		const auto label = ViewPane::GetMinWidth();
-		const auto check = GetSystemMetrics(SM_CXMENUCHECK);
-		const auto edge = check / 5;
-		output::DebugPrint(
-			output::dbgLevel::Draw,
-			L"CheckPane::GetMinWidth Label:%d + check:%d + edge:%d = minwidth:%d\n",
-			label,
-			check,
-			edge,
-			label + edge + check);
-		return label + edge + check;
+		return max(label, m_iLabelWidth);
 	}
 
 	void CheckPane::Initialize(_In_ CWnd* pParent, _In_ HDC hdc)
@@ -49,6 +40,18 @@ namespace viewpane
 			m_nID));
 		m_Check.SetCheck(m_bCheckValue);
 		::SetWindowTextW(m_Check.m_hWnd, m_szLabel.c_str());
+
+		const auto sizeText = ui::GetTextExtentPoint32(hdc, m_szLabel);
+		const auto check = GetSystemMetrics(SM_CXMENUCHECK);
+		const auto edge = check / 5;
+		m_iLabelWidth = check + edge + sizeText.cx;
+		output::DebugPrint(
+			output::dbgLevel::Draw,
+			L"CheckPane::Initialize check:%d + edge:%d + sizeText.cx:%d = m_iLabelWidth:%d\n",
+			check,
+			edge,
+			sizeText.cx,
+			m_iLabelWidth);
 
 		m_bInitialized = true;
 	}
@@ -68,14 +71,20 @@ namespace viewpane
 		_In_ HDWP hWinPosInfo,
 		_In_ const int x,
 		_In_ const int y,
-		_In_ const int width,
+		_In_ const int /*width*/,
 		_In_ const int height)
 	{
 		auto curY = y;
 		if (m_bTopMargin) curY += m_iSmallHeightMargin;
 
 		hWinPosInfo = ui::DeferWindowPos(
-			hWinPosInfo, m_Check.GetSafeHwnd(), x, curY, width, height - (curY - y), L"CheckPane::DeferWindowPos");
+			hWinPosInfo,
+			m_Check.GetSafeHwnd(),
+			x,
+			curY,
+			m_iLabelWidth,
+			height - (curY - y),
+			L"CheckPane::DeferWindowPos");
 		return hWinPosInfo;
 	}
 

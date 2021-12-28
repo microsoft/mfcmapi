@@ -30,6 +30,7 @@ namespace viewpane
 
 		CButton m_Check;
 		std::wstring m_szLabel; // Check label
+		int m_iLabelWidth{}; // The width of the label
 		bool m_bCheckValue{false};
 		bool m_bCommitted{false};
 		bool m_bTopMargin{false};
