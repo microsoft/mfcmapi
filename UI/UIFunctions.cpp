@@ -40,6 +40,7 @@ namespace ui
 		Lavender,
 		Red,
 		Green,
+		Orange,
 		ColorEnd
 	};
 
@@ -57,8 +58,9 @@ namespace ui
 		RGB(0xE6, 0xF2, 0xFA), // cPaleBlue
 		RGB(0xFF, 0xC0, 0xCB), // cPink
 		RGB(0xE6, 0xE6, 0xFA), // cLavender
-		RGB(0xFF, 0x00, 0x00), // cRed
+		RGB(0xCD, 0x5C, 0x5C), // cRed
 		RGB(0x00, 0xFF, 0x00), // cGreen
+		RGB(0xFF, 0x7F, 0x50), // cOrange
 	};
 
 	// Fixed mapping of UI elements to colors
@@ -90,6 +92,7 @@ namespace ui
 		myColor::Lavender, // cTestLavender,
 		myColor::Red, // cTestRed,
 		myColor::Green, // cTestGreen,
+		myColor::Orange, // cTestOrange,
 	};
 
 	// Mapping of UI elements to system colors
@@ -1428,7 +1431,7 @@ namespace ui
 
 	void DrawButton(_In_ HWND hWnd, _In_ HDC hDC, _In_ const RECT& rc, const UINT itemState)
 	{
-		const auto background = registry::uiDiag ? GetSysBrush(uiColor::TestPink) : GetSysBrush(uiColor::Background);
+		const auto background = registry::uiDiag ? GetSysBrush(uiColor::TestOrange) : GetSysBrush(uiColor::Background);
 		FillRect(hDC, &rc, background);
 
 		const auto iState = static_cast<int>(::SendMessage(hWnd, BM_GETSTATE, NULL, NULL));
@@ -2118,7 +2121,7 @@ namespace ui
 			if (lsStyle == uiLabelStyle::PaneHeaderLabel || lsStyle == uiLabelStyle::PaneHeaderText)
 			{
 				uiText = uiColor::PaneHeaderText;
-				uiBackground = registry::uiDiag ? uiColor::TestLavender : uiColor::PaneHeaderBackground;
+				uiBackground = registry::uiDiag ? uiColor::TestRed : uiColor::PaneHeaderBackground;
 			}
 
 			const auto hdc = reinterpret_cast<HDC>(wParam);

@@ -31,6 +31,7 @@ namespace ui
 		TestLavender,
 		TestRed,
 		TestGreen,
+		TestOrange,
 		UIEnd
 	};
 

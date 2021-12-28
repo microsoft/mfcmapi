@@ -191,6 +191,7 @@ namespace controls
 			const auto actionButtonWidth =
 				!m_bCollapsed && m_actionButtonWidth ? m_actionButtonWidth + 2 * m_iMargin : 0;
 			const auto actionButtonAndGutterWidth = actionButtonWidth ? actionButtonWidth + m_iSideMargin : 0;
+			const auto labelY = (m_iButtonHeight - m_iLabelHeight) / 2;
 			if (m_bCollapsible)
 			{
 				hWinPosInfo = ui::DeferWindowPos(
@@ -208,7 +209,7 @@ namespace controls
 				hWinPosInfo,
 				m_leftLabel.GetSafeHwnd(),
 				curX,
-				1,
+				labelY,
 				m_iLabelWidth,
 				m_iLabelHeight,
 				L"PaneHeader::DeferWindowPos::leftLabel");
@@ -221,7 +222,7 @@ namespace controls
 					hWinPosInfo,
 					m_rightLabel.GetSafeHwnd(),
 					width - m_rightLabelWidth - actionButtonAndGutterWidth - m_iSideMargin - 1,
-					1,
+					labelY,
 					m_rightLabelWidth,
 					m_iLabelHeight,
 					L"PaneHeader::DeferWindowPos::rightLabel");

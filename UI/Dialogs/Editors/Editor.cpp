@@ -195,7 +195,7 @@ namespace dialog::editor
 			::GetClientRect(m_hWnd, &rect);
 
 			const auto background =
-				registry::uiDiag ? GetSysBrush(ui::uiColor::TestPink) : GetSysBrush(ui::uiColor::Background);
+				registry::uiDiag ? GetSysBrush(ui::uiColor::TestLavender) : GetSysBrush(ui::uiColor::Background);
 			const auto hOld = SelectObject(reinterpret_cast<HDC>(wParam), background);
 			const auto bRet =
 				PatBlt(reinterpret_cast<HDC>(wParam), 0, 0, rect.right - rect.left, rect.bottom - rect.top, PATCOPY);
