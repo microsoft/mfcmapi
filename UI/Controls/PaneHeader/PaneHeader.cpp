@@ -191,7 +191,7 @@ namespace controls
 			const auto actionButtonWidth =
 				!m_bCollapsed && m_actionButtonWidth ? m_actionButtonWidth + 2 * m_iMargin : 0;
 			const auto actionButtonAndGutterWidth = actionButtonWidth ? actionButtonWidth + m_iSideMargin : 0;
-			const auto labelY = (m_iButtonHeight - m_iLabelHeight) / 2;
+			const auto labelY = ((m_bCollapsible ? m_iButtonHeight : height) - m_iLabelHeight) / 2;
 			if (m_bCollapsible)
 			{
 				hWinPosInfo = ui::DeferWindowPos(
