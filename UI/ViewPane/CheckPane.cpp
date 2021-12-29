@@ -118,6 +118,7 @@ namespace viewpane
 		rcCheck.top = (rc.bottom - rc.top - lCheck) / 2;
 		rcCheck.bottom = rcCheck.top + lCheck;
 
+		WC_D_S(::FillRect(hDC, &rcCheck, GetSysBrush(ui::uiColor::Background)));
 		if (bFocused)
 		{
 			ui::FrameRect(hDC, rcCheck, 3, ui::uiColor::Glow);

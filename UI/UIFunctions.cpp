@@ -710,7 +710,7 @@ namespace ui
 		DrawTextW(hdc, lpchText.c_str(), -1, &drawRc, format);
 
 #ifdef SKIPBUFFER
-		FrameRect(hdc, &drawRc, GetSysBrush(bBold ? cBitmapTransFore : cBitmapTransBack));
+		::FrameRect(hdc, &drawRc, GetSysBrush(bBold ? cBitmapTransFore : cBitmapTransBack));
 #endif
 
 		SelectObject(hdc, hfontOld);
@@ -829,6 +829,8 @@ namespace ui
 				}
 				else
 				{
+					// Clear out any previous border first
+					FrameRect(hdc, rc, borderWidth, uiColor::Background);
 					FrameRect(hdc, rc, 1, uiColor::FrameSelected);
 				}
 
@@ -1113,7 +1115,7 @@ namespace ui
 		if (hdcBitmap) DeleteDC(hdcBitmap);
 
 #ifdef SKIPBUFFER
-		FrameRect(hdc, &rcTarget, GetSysBrush(bHover ? cBitmapTransFore : cBitmapTransBack));
+		::FrameRect(hdc, &rcTarget, GetSysBrush(bHover ? cBitmapTransFore : cBitmapTransBack));
 #endif
 	}
 
@@ -1342,7 +1344,7 @@ namespace ui
 		InflateRect(&rcHeader, 0, -1);
 		rcHeader.left = rcHeader.right - 2;
 		rcHeader.bottom -= 1;
-		FrameRect(hdc, &rcHeader, GetSysBrush(uiColor::FrameUnselected));
+		::FrameRect(hdc, &rcHeader, GetSysBrush(uiColor::FrameUnselected));
 
 		db.End(hdc);
 	}
@@ -1465,7 +1467,7 @@ namespace ui
 			break;
 		}
 
-		FrameRect(
+		::FrameRect(
 			hDC,
 			&rc,
 			bFocused || bGlow || bPushed ? GetSysBrush(uiColor::FrameSelected) : GetSysBrush(uiColor::FrameUnselected));
@@ -1666,7 +1668,7 @@ namespace ui
 				auto frameRect = rcItem;
 				frameRect.right = frameRect.left + nWidth;
 				frameRect.bottom = frameRect.top + nHeight;
-				FrameRect(hdc, &frameRect, GetSysBrush(cBitmapTransFore));
+				::FrameRect(hdc, &frameRect, GetSysBrush(cBitmapTransFore));
 #endif
 
 				DeleteDC(hdcMem);
@@ -2280,11 +2282,10 @@ namespace ui
 		return EC_D(HDWP, ::DeferWindowPos(hWinPosInfo, hWnd, nullptr, x, y, cx, cy, SWP_NOZORDER));
 	}
 
-	// Draw a frame, clearing out the background first
+	// Draw a frame but don't touch the inside of the frame
 	void WINAPI FrameRect(_In_ HDC hDC, _In_ RECT rect, _In_ int width, _In_ const uiColor color)
 	{
 		auto rcInnerFrame = rect;
-		WC_D_S(::FillRect(hDC, &rect, GetSysBrush(ui::uiColor::Background)));
 		WC_D_S(::InflateRect(&rcInnerFrame, -width, -width));
 		auto rgn = WC_D(HRGN, ::CreateRectRgn(0, 0, 0, 0));
 		if (GetClipRgn(hDC, rgn) != 1)
