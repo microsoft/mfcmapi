@@ -28,14 +28,6 @@ namespace viewpane
 		SetCount(m_iCount);
 	}
 
-	int CountedTextPane::GetLines() { return collapsed() ? 0 : LINES_MULTILINEEDIT; }
-
-	// CountedTextPane Layout:
-	// Header: GetHeaderHeight
-	// Collapsible:
-	//    Edit box: variable
-	int CountedTextPane::GetFixedHeight() { return GetHeaderHeight(); }
-
 	void CountedTextPane::SetCount(size_t iCount)
 	{
 		m_iCount = iCount;
@@ -45,6 +37,4 @@ namespace viewpane
 			static_cast<int>(m_iCount),
 			static_cast<UINT>(m_iCount))); // STRING_OK
 	}
-
-	bool CountedTextPane::containsWindow(HWND hWnd) const noexcept { return TextPane::containsWindow(hWnd); }
 } // namespace viewpane
