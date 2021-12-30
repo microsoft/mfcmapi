@@ -905,20 +905,26 @@ namespace dialog::editor
 		{
 			if (iCYBottom - iCYTop < m_iScrollClient)
 			{
-				const auto iScrollWidth = GetSystemMetrics(SM_CXVSCROLL);
+				const auto iScrollBarWidth = GetSystemMetrics(SM_CXVSCROLL);
 				// This positions the scroll bar on the right just iCXMargin from the edge
-				const auto iScrollPosition = cx + iCXMargin - iScrollWidth;
+				const auto iScrollBarPosition = cx + iCXMargin - iScrollBarWidth;
 				// Our new width should then be this position minus two margins
-				iFullWidth = iScrollPosition - 2 * iCXMargin;
+				iFullWidth = iScrollBarPosition - 2 * iCXMargin;
 				output::DebugPrint(
 					output::dbgLevel::Draw,
-					L"CEditor::OnSize Scroll iScrollWidth=%d new iFullWidth=%d\n",
-					iScrollWidth,
+					L"CEditor::OnSize Scroll iScrollBarWidth =%d new iFullWidth=%d\n",
+					iScrollBarWidth,
 					iFullWidth);
 				output::DebugPrint(
-					output::dbgLevel::Draw, L"CEditor::OnSize m_hWndVertScroll positioned at=%d\n", iScrollPosition);
+					output::dbgLevel::Draw, L"CEditor::OnSize m_hWndVertScroll positioned at=%d\n", iScrollBarPosition);
 				::SetWindowPos(
-					m_hWndVertScroll, nullptr, iScrollPosition, iCYTop, iScrollWidth, iCYBottom - iCYTop, SWP_NOZORDER);
+					m_hWndVertScroll,
+					nullptr,
+					iScrollBarPosition,
+					iCYTop,
+					iScrollBarWidth,
+					iCYBottom - iCYTop,
+					SWP_NOZORDER);
 				auto si = SCROLLINFO{};
 				si.cbSize = sizeof si;
 				si.fMask = SIF_POS;
