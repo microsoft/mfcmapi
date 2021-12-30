@@ -903,24 +903,23 @@ namespace dialog::editor
 		auto iScrollPos = 0;
 		if (m_bEnableScroll)
 		{
+			auto iScrollWindowWidth = cx;
 			if (iCYBottom - iCYTop < m_iScrollClient)
 			{
 				const auto iScrollBarWidth = GetSystemMetrics(SM_CXVSCROLL);
 				// This positions the scroll bar on the right just iCXMargin from the edge
-				const auto iScrollBarPosition = cx + iCXMargin - iScrollBarWidth;
-				// Our new width should then be this position minus two margins
-				iFullWidth = iScrollBarPosition - 2 * iCXMargin;
+				iScrollWindowWidth -= iScrollBarWidth - iCXMargin;
 				output::DebugPrint(
 					output::dbgLevel::Draw,
 					L"CEditor::OnSize Scroll iScrollBarWidth =%d new iFullWidth=%d\n",
 					iScrollBarWidth,
 					iFullWidth);
 				output::DebugPrint(
-					output::dbgLevel::Draw, L"CEditor::OnSize m_hWndVertScroll positioned at=%d\n", iScrollBarPosition);
+					output::dbgLevel::Draw, L"CEditor::OnSize m_hWndVertScroll positioned at=%d\n", iScrollWindowWidth);
 				::SetWindowPos(
 					m_hWndVertScroll,
 					nullptr,
-					iScrollBarPosition,
+					iScrollWindowWidth,
 					iCYTop,
 					iScrollBarWidth,
 					iCYBottom - iCYTop,
@@ -947,8 +946,11 @@ namespace dialog::editor
 
 			output::DebugPrint(output::dbgLevel::Draw, L"CEditor::OnSize m_ScrollWindow positioned at=%d\n", iCXMargin);
 			::SetWindowPos(
-				m_ScrollWindow.m_hWnd, nullptr, 0, iCYTop, iFullWidth + iCXMargin, iCYBottom - iCYTop, SWP_NOZORDER);
+				m_ScrollWindow.m_hWnd, nullptr, 0, iCYTop, iScrollWindowWidth, iCYBottom - iCYTop, SWP_NOZORDER);
 			iCYTop = -iScrollPos; // We get scrolling for free by adjusting our top
+
+			// Our pane width should now be the scroll width minus two margins
+			iFullWidth = iScrollWindowWidth - 2 * iCXMargin;
 		}
 
 		auto hdwp = WC_D(HDWP, BeginDeferWindowPos(2));
