@@ -27,7 +27,6 @@ namespace viewpane
 		int GetFixedHeight() override;
 		int GetLines() override;
 		ULONG HandleChange(UINT nID) override;
-		void HandleAction();
 		void AddChildren(HTREEITEM parent, const std::shared_ptr<smartview::block>& data);
 		void ItemSelected(HTREEITEM hItem);
 		void OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* /*pResult*/, _In_ HTREEITEM hItemCurHover) const;

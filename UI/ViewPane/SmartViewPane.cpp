@@ -74,7 +74,12 @@ namespace viewpane
 	{
 		if (nID == SV_ACTIONBUTTON)
 		{
-			HandleAction();
+			if (OnActionButton && m_bins.size() == 1)
+			{
+				const auto bin = SBinary{static_cast<ULONG>(m_bins[0].size()), m_bins[0].data()};
+				OnActionButton(bin);
+			}
+
 			return nID;
 		}
 
@@ -82,13 +87,6 @@ namespace viewpane
 		if (paneID != static_cast<ULONG>(-1)) return paneID;
 
 		return ViewPane::HandleChange(nID);
-	}
-
-	void SmartViewPane::HandleAction()
-	{
-		if (!OnActionButton || m_bins.size() != 1) return;
-		const auto bin = SBinary{static_cast<ULONG>(m_bins[0].size()), m_bins[0].data()};
-		OnActionButton(bin);
 	}
 
 	// SmartViewPane Layout:
