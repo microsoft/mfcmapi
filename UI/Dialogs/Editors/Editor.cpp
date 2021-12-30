@@ -941,7 +941,7 @@ namespace dialog::editor
 
 			output::DebugPrint(output::dbgLevel::Draw, L"CEditor::OnSize m_ScrollWindow positioned at=%d\n", iCXMargin);
 			::SetWindowPos(
-				m_ScrollWindow.m_hWnd, nullptr, iCXMargin, iCYTop, iFullWidth, iCYBottom - iCYTop, SWP_NOZORDER);
+				m_ScrollWindow.m_hWnd, nullptr, 0, iCYTop, iFullWidth + iCXMargin, iCYBottom - iCYTop, SWP_NOZORDER);
 			iCYTop = -iScrollPos; // We get scrolling for free by adjusting our top
 		}
 
@@ -977,7 +977,7 @@ namespace dialog::editor
 						HDWP,
 						pane->DeferWindowPos(
 							hdwp,
-							m_bEnableScroll ? 0 : iCXMargin, // x
+							iCXMargin, // x
 							iCYTop, // y
 							iFullWidth, // width
 							paneHeight)); // height
