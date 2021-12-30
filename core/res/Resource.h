@@ -69,7 +69,6 @@
 // Collapsible controls will use this ID plus their 0 based control ID for uniqueness
 // Be careful that the next ID allocated is higher than the max number of collapsible controls that appear in a dialog.
 #define IDD_COLLAPSE 250
-#define IDD_ACTION 260 // TODO: Figure out what's best here
 
 // Keep this in sync with dialog in mfcmapi.rc2
 #define IDD_ABOUTVERFIRST 300
