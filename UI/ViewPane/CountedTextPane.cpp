@@ -36,40 +36,6 @@ namespace viewpane
 	//    Edit box: variable
 	int CountedTextPane::GetFixedHeight() { return GetHeaderHeight(); }
 
-	HDWP CountedTextPane::DeferWindowPos(
-		_In_ HDWP hWinPosInfo,
-		_In_ const int x,
-		_In_ const int y,
-		_In_ const int width,
-		_In_ const int height)
-	{
-		auto curY = y;
-
-		// Layout our label
-		hWinPosInfo = EC_D(HDWP, ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height));
-		curY += GetHeaderHeight();
-
-		if (collapsed())
-		{
-			WC_B_S(m_EditBox.ShowWindow(SW_HIDE));
-		}
-		else
-		{
-			WC_B_S(m_EditBox.ShowWindow(SW_SHOW));
-
-			hWinPosInfo = ui::DeferWindowPos(
-				hWinPosInfo,
-				m_EditBox.GetSafeHwnd(),
-				x,
-				curY,
-				width,
-				height - (curY - y),
-				L"CountedTextPane::DeferWindowPos::editbox");
-		}
-
-		return hWinPosInfo;
-	}
-
 	void CountedTextPane::SetCount(size_t iCount)
 	{
 		m_iCount = iCount;
