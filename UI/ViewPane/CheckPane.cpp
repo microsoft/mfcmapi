@@ -45,13 +45,6 @@ namespace viewpane
 		const auto check = GetSystemMetrics(SM_CXMENUCHECK);
 		const auto edge = check / 5;
 		m_iLabelWidth = check + edge + sizeText.cx;
-		output::DebugPrint(
-			output::dbgLevel::Draw,
-			L"CheckPane::Initialize check:%d + edge:%d + sizeText.cx:%d = m_iLabelWidth:%d\n",
-			check,
-			edge,
-			sizeText.cx,
-			m_iLabelWidth);
 
 		m_bInitialized = true;
 	}

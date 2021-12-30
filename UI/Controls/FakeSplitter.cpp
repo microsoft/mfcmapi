@@ -143,14 +143,6 @@ namespace controls
 		_In_ const int width,
 		_In_ const int height)
 	{
-		output::DebugPrint(
-			output::dbgLevel::Draw,
-			L"CFakeSplitter::DeferWindowPos x:%d y:%d width:%d height:%d v:%d\n",
-			x,
-			y,
-			width,
-			height,
-			IsWindowVisible());
 		InvalidateRect(CRect(x, y, width, height), false);
 		if (m_PaneOne || m_ViewPaneOne)
 		{
@@ -166,18 +158,12 @@ namespace controls
 
 			if (m_PaneOne)
 			{
-				hWinPosInfo = ui::DeferWindowPos(hWinPosInfo, m_PaneOne, x, y, r1.Width(), r1.Height(), L"CFakeSplitter::DeferWindowPos pane 1");
+				hWinPosInfo = ui::DeferWindowPos(
+					hWinPosInfo, m_PaneOne, x, y, r1.Width(), r1.Height(), L"CFakeSplitter::DeferWindowPos pane 1");
 			}
 
 			if (m_ViewPaneOne)
 			{
-				output::DebugPrint(
-					output::dbgLevel::Draw,
-					L"CFakeSplitter::DeferWindowPos viewpane 1 x:%d y:%d width:%d height:%d\n",
-					x,
-					y,
-					width,
-					height);
 				hWinPosInfo = EC_D(HDWP, m_ViewPaneOne->DeferWindowPos(hWinPosInfo, x, y, r1.Width(), r1.Height()));
 			}
 		}
@@ -204,24 +190,23 @@ namespace controls
 
 			if (m_PaneTwo)
 			{
-				hWinPosInfo = ui::DeferWindowPos(hWinPosInfo, m_PaneTwo, r2.left, r2.top, r2.Width(), r2.Height(), L"CFakeSplitter::DeferWindowPos pane 2");
+				hWinPosInfo = ui::DeferWindowPos(
+					hWinPosInfo,
+					m_PaneTwo,
+					r2.left,
+					r2.top,
+					r2.Width(),
+					r2.Height(),
+					L"CFakeSplitter::DeferWindowPos pane 2");
 			}
 
 			if (m_ViewPaneTwo)
 			{
-				output::DebugPrint(
-					output::dbgLevel::Draw,
-					L"CFakeSplitter::DeferWindowPos view pane 2 x:%d y:%d width:%d height:%d\n",
-					x,
-					y,
-					width,
-					height);
 				hWinPosInfo =
 					EC_D(HDWP, m_ViewPaneTwo->DeferWindowPos(hWinPosInfo, r2.left, r2.top, r2.Width(), r2.Height()));
 			}
 		}
 
-		output::DebugPrint(output::dbgLevel::Draw, L"CFakeSplitter::DeferWindowPos end\n");
 		return hWinPosInfo;
 	}
 

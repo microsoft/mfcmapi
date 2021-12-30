@@ -153,8 +153,6 @@ namespace dialog::editor
 		{
 			const auto nCode = HIWORD(wParam);
 			const auto idFrom = LOWORD(wParam);
-			output::DebugPrint(
-				output::dbgLevel::Generic, L"WindowProc:WM_COMMAND 0x%08X 0x%08x 0x%08x!\n", m_hWnd, nCode, idFrom);
 			switch (nCode)
 			{
 			case EN_CHANGE:
@@ -308,8 +306,6 @@ namespace dialog::editor
 		{
 			const auto nCode = HIWORD(wParam);
 			const auto idFrom = LOWORD(wParam);
-			output::DebugPrint(
-				output::dbgLevel::Generic, L"WindowProc:WM_COMMAND 0x%08X 0x%08x 0x%08x!\n", hWnd, nCode, idFrom);
 			switch (nCode)
 			{
 			case BN_SETFOCUS:
