@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/Editors/restriction/RestrictEditor.h>
-#include <UI/Dialogs/Editors/restriction/CResCombinedEditor.h>
+#include <UI/Dialogs/Editors/restriction/ResCombinedEditor.h>
 #include <UI/Dialogs/Editors/propeditor/ipropeditor.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/utility/output.h>
@@ -11,7 +11,7 @@
 
 namespace dialog::editor
 {
-	CResCombinedEditor::CResCombinedEditor(
+	ResCombinedEditor::ResCombinedEditor(
 		_In_ CWnd* pParentWnd,
 		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 		ULONG ulResType,
@@ -79,7 +79,7 @@ namespace dialog::editor
 		AddPane(viewpane::TextPane::CreateMultiLinePane(7, IDS_LPPROPALTVIEW, szAltProp, true));
 	}
 
-	_Check_return_ ULONG CResCombinedEditor::HandleChange(UINT nID)
+	_Check_return_ ULONG ResCombinedEditor::HandleChange(UINT nID)
 	{
 		const auto paneID = CEditor::HandleChange(nID);
 
@@ -111,14 +111,14 @@ namespace dialog::editor
 		return paneID;
 	}
 
-	_Check_return_ LPSPropValue CResCombinedEditor::DetachModifiedSPropValue() noexcept
+	_Check_return_ LPSPropValue ResCombinedEditor::DetachModifiedSPropValue() noexcept
 	{
 		const auto lpRet = m_lpNewProp;
 		m_lpNewProp = nullptr;
 		return lpRet;
 	}
 
-	void CResCombinedEditor::OnEditAction1()
+	void ResCombinedEditor::OnEditAction1()
 	{
 		if (!m_lpAllocParent) return;
 

@@ -1,5 +1,5 @@
 #include <StdAfx.h>
-#include <UI/Dialogs/Editors/restriction/CResCompareEditor.h>
+#include <UI/Dialogs/Editors/restriction/ResCompareEditor.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/utility/output.h>
 #include <core/interpret/flags.h>
@@ -8,7 +8,7 @@
 
 namespace dialog::editor
 {
-	CResCompareEditor::CResCompareEditor(_In_ CWnd* pParentWnd, ULONG ulRelop, ULONG ulPropTag1, ULONG ulPropTag2)
+	ResCompareEditor::ResCompareEditor(_In_ CWnd* pParentWnd, ULONG ulRelop, ULONG ulPropTag1, ULONG ulPropTag2)
 		: CEditor(pParentWnd, IDS_RESED, IDS_RESEDCOMPPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)
 	{
 		TRACE_CONSTRUCTOR(COMPCLASS);
@@ -29,7 +29,7 @@ namespace dialog::editor
 			5, IDS_ULPROPTAG1, proptags::TagToString(ulPropTag2, nullptr, false, true), true));
 	}
 
-	_Check_return_ ULONG CResCompareEditor::HandleChange(UINT nID)
+	_Check_return_ ULONG ResCompareEditor::HandleChange(UINT nID)
 	{
 		const auto paneID = CEditor::HandleChange(nID);
 

@@ -1,5 +1,5 @@
 #include <StdAfx.h>
-#include <UI/Dialogs/Editors/restriction/CResBitmaskEditor.h>
+#include <UI/Dialogs/Editors/restriction/ResBitmaskEditor.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/utility/output.h>
 #include <core/interpret/flags.h>
@@ -8,7 +8,7 @@
 
 namespace dialog::editor
 {
-	CResBitmaskEditor::CResBitmaskEditor(_In_ CWnd* pParentWnd, ULONG relBMR, ULONG ulPropTag, ULONG ulMask)
+	ResBitmaskEditor::ResBitmaskEditor(_In_ CWnd* pParentWnd, ULONG relBMR, ULONG ulPropTag, ULONG ulMask)
 		: CEditor(pParentWnd, IDS_RESED, IDS_RESEDBITPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)
 	{
 		TRACE_CONSTRUCTOR(BITMASKCLASS);
@@ -27,7 +27,7 @@ namespace dialog::editor
 		SetHex(4, ulMask);
 	}
 
-	_Check_return_ ULONG CResBitmaskEditor::HandleChange(UINT nID)
+	_Check_return_ ULONG ResBitmaskEditor::HandleChange(UINT nID)
 	{
 		const auto paneID = CEditor::HandleChange(nID);
 

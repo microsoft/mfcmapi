@@ -1,13 +1,13 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/Editors/restriction/RestrictEditor.h>
-#include <UI/Dialogs/Editors/restriction/CResExistEditor.h>
+#include <UI/Dialogs/Editors/restriction/ResExistEditor.h>
 #include <core/utility/output.h>
 #include <core/interpret/proptags.h>
 #include <core/addin/mfcmapi.h>
 
 namespace dialog::editor
 {
-	CResExistEditor::CResExistEditor(_In_ CWnd* pParentWnd, ULONG ulPropTag)
+	ResExistEditor::ResExistEditor(_In_ CWnd* pParentWnd, ULONG ulPropTag)
 		: CEditor(pParentWnd, IDS_RESED, IDS_RESEDEXISTPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)
 	{
 		TRACE_CONSTRUCTOR(EXISTCLASS);
@@ -18,7 +18,7 @@ namespace dialog::editor
 			1, IDS_ULPROPTAG, proptags::TagToString(ulPropTag, nullptr, false, true), true));
 	}
 
-	_Check_return_ ULONG CResExistEditor::HandleChange(UINT nID)
+	_Check_return_ ULONG ResExistEditor::HandleChange(UINT nID)
 	{
 		const auto paneID = CEditor::HandleChange(nID);
 

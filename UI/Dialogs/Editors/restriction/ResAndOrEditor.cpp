@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/Editors/restriction/RestrictEditor.h>
-#include <UI/Dialogs/Editors/restriction/CResAndOrEditor.h>
+#include <UI/Dialogs/Editors/restriction/ResAndOrEditor.h>
 #include <UI/Dialogs/Editors/propeditor/ipropeditor.h>
 #include <core/sortlistdata/resData.h>
 #include <core/mapi/mapiMemory.h>
@@ -10,7 +10,7 @@
 
 namespace dialog::editor
 {
-	CResAndOrEditor::CResAndOrEditor(
+	ResAndOrEditor::ResAndOrEditor(
 		_In_ CWnd* pParentWnd,
 		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 		_In_ const _SRestriction* lpRes,
@@ -29,7 +29,7 @@ namespace dialog::editor
 	}
 
 	// Used to call functions which need to be called AFTER controls are created
-	BOOL CResAndOrEditor::OnInitDialog()
+	BOOL ResAndOrEditor::OnInitDialog()
 	{
 		const auto bRet = CEditor::OnInitDialog();
 
@@ -40,16 +40,16 @@ namespace dialog::editor
 		return bRet;
 	}
 
-	_Check_return_ LPSRestriction CResAndOrEditor::DetachModifiedSRestrictionArray() noexcept
+	_Check_return_ LPSRestriction ResAndOrEditor::DetachModifiedSRestrictionArray() noexcept
 	{
 		const auto lpRet = m_lpNewResArray;
 		m_lpNewResArray = nullptr;
 		return lpRet;
 	}
 
-	_Check_return_ ULONG CResAndOrEditor::GetResCount() const noexcept { return m_ulNewResCount; }
+	_Check_return_ ULONG ResAndOrEditor::GetResCount() const noexcept { return m_ulNewResCount; }
 
-	void CResAndOrEditor::InitListFromRestriction(ULONG ulListNum, _In_ const _SRestriction* lpRes) const
+	void ResAndOrEditor::InitListFromRestriction(ULONG ulListNum, _In_ const _SRestriction* lpRes) const
 	{
 		ClearList(ulListNum);
 		InsertColumn(ulListNum, 0, IDS_SHARP);
@@ -89,7 +89,7 @@ namespace dialog::editor
 		ResizeList(ulListNum, false);
 	}
 
-	_Check_return_ bool CResAndOrEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ sortlistdata::sortListData* lpData)
+	_Check_return_ bool ResAndOrEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ sortlistdata::sortListData* lpData)
 	{
 		if (!lpData) return false;
 		if (!lpData->cast<sortlistdata::resData>())
@@ -113,7 +113,7 @@ namespace dialog::editor
 	}
 
 	// Create our LPSRestriction array from the dialog here
-	void CResAndOrEditor::OnOK()
+	void ResAndOrEditor::OnOK()
 	{
 		CMyDialog::OnOK(); // don't need to call CEditor::OnOK
 

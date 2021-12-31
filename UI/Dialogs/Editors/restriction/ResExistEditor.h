@@ -3,11 +3,11 @@
 
 namespace dialog::editor
 {
-	static std::wstring EXISTCLASS = L"CResExistEditor"; // STRING_OK
-	class CResExistEditor : public CEditor
+	static std::wstring EXISTCLASS = L"ResExistEditor"; // STRING_OK
+	class ResExistEditor : public CEditor
 	{
 	public:
-		CResExistEditor(_In_ CWnd* pParentWnd, ULONG ulPropTag);
+		ResExistEditor(_In_ CWnd* pParentWnd, ULONG ulPropTag);
 
 	private:
 		_Check_return_ ULONG HandleChange(UINT nID) override;

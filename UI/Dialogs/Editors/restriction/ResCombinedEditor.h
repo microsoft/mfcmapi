@@ -5,11 +5,11 @@ namespace dialog::editor
 {
 	// This class is only invoked by CRestrictEditor. CRestrictEditor always passes an alloc parent.
 	// So all memory detached from this class is owned by a parent and must not be freed manually
-	static std::wstring CONTENTCLASS = L"CResCombinedEditor"; // STRING_OK
-	class CResCombinedEditor : public CEditor
+	static std::wstring CONTENTCLASS = L"ResCombinedEditor"; // STRING_OK
+	class ResCombinedEditor : public CEditor
 	{
 	public:
-		CResCombinedEditor(
+		ResCombinedEditor(
 			_In_ CWnd* pParentWnd,
 			_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 			ULONG ulResType,

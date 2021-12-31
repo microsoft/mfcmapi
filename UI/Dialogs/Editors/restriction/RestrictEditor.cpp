@@ -1,13 +1,13 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/Editors/restriction/RestrictEditor.h>
-#include <UI/Dialogs/Editors/restriction/CResAndOrEditor.h>
-#include <UI/Dialogs/Editors/restriction/CResCompareEditor.h>
-#include <UI/Dialogs/Editors/restriction/CResCombinedEditor.h>
-#include <UI/Dialogs/Editors/restriction/CResBitmaskEditor.h>
-#include <UI/Dialogs/Editors/restriction/CResSizeEditor.h>
-#include <UI/Dialogs/Editors/restriction/CResExistEditor.h>
-#include <UI/Dialogs/Editors/restriction/CResCommentEditor.h>
-#include <UI/Dialogs/Editors/restriction/CResSubResEditor.h>
+#include <UI/Dialogs/Editors/restriction/ResAndOrEditor.h>
+#include <UI/Dialogs/Editors/restriction/ResBitmaskEditor.h>
+#include <UI/Dialogs/Editors/restriction/ResCombinedEditor.h>
+#include <UI/Dialogs/Editors/restriction/ResCommentEditor.h>
+#include <UI/Dialogs/Editors/restriction/ResCompareEditor.h>
+#include <UI/Dialogs/Editors/restriction/ResExistEditor.h>
+#include <UI/Dialogs/Editors/restriction/ResSizeEditor.h>
+#include <UI/Dialogs/Editors/restriction/ResSubResEditor.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/mapi/mapiMemory.h>
 #include <core/utility/output.h>
@@ -218,7 +218,7 @@ namespace dialog::editor
 
 	HRESULT CRestrictEditor::EditCompare(const _SRestriction* lpSourceRes)
 	{
-		CResCompareEditor MyEditor(
+		ResCompareEditor MyEditor(
 			this,
 			lpSourceRes->res.resCompareProps.relop,
 			lpSourceRes->res.resCompareProps.ulPropTag1,
@@ -237,7 +237,7 @@ namespace dialog::editor
 
 	HRESULT CRestrictEditor::EditAndOr(const _SRestriction* lpSourceRes)
 	{
-		CResAndOrEditor MyResEditor(this, m_lpMapiObjects, lpSourceRes,
+		ResAndOrEditor MyResEditor(this, m_lpMapiObjects, lpSourceRes,
 									m_lpAllocParent); // pass source res into editor
 		if (MyResEditor.DisplayDialog())
 		{
@@ -279,7 +279,7 @@ namespace dialog::editor
 	HRESULT CRestrictEditor::EditCombined(const _SRestriction* lpSourceRes)
 	{
 		auto hRes = S_OK;
-		CResCombinedEditor MyEditor(
+		ResCombinedEditor MyEditor(
 			this,
 			m_lpMapiObjects,
 			lpSourceRes->rt,
@@ -317,7 +317,7 @@ namespace dialog::editor
 
 	HRESULT CRestrictEditor::EditBitmask(const _SRestriction* lpSourceRes)
 	{
-		CResBitmaskEditor MyEditor(
+		ResBitmaskEditor MyEditor(
 			this,
 			lpSourceRes->res.resBitMask.relBMR,
 			lpSourceRes->res.resBitMask.ulPropTag,
@@ -336,7 +336,7 @@ namespace dialog::editor
 
 	HRESULT CRestrictEditor::EditSize(const _SRestriction* lpSourceRes)
 	{
-		CResSizeEditor MyEditor(
+		ResSizeEditor MyEditor(
 			this, lpSourceRes->res.resSize.relop, lpSourceRes->res.resSize.ulPropTag, lpSourceRes->res.resSize.cb);
 		if (MyEditor.DisplayDialog())
 		{
@@ -352,7 +352,7 @@ namespace dialog::editor
 
 	HRESULT CRestrictEditor::EditExist(const _SRestriction* lpSourceRes)
 	{
-		CResExistEditor MyEditor(this, lpSourceRes->res.resExist.ulPropTag);
+		ResExistEditor MyEditor(this, lpSourceRes->res.resExist.ulPropTag);
 		if (MyEditor.DisplayDialog())
 		{
 			m_lpOutputRes->rt = lpSourceRes->rt;
@@ -367,7 +367,7 @@ namespace dialog::editor
 
 	HRESULT CRestrictEditor::EditSubrestriction(const _SRestriction* lpSourceRes)
 	{
-		CResSubResEditor MyEditor(
+		ResSubResEditor MyEditor(
 			this, m_lpMapiObjects, lpSourceRes->res.resSub.ulSubObject, lpSourceRes->res.resSub.lpRes, m_lpAllocParent);
 		if (MyEditor.DisplayDialog())
 		{
@@ -384,7 +384,7 @@ namespace dialog::editor
 
 	HRESULT CRestrictEditor::EditComment(const _SRestriction* lpSourceRes)
 	{
-		CResCommentEditor MyResEditor(
+		ResCommentEditor MyResEditor(
 			this,
 			m_lpMapiObjects,
 			lpSourceRes,

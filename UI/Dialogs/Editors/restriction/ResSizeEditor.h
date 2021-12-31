@@ -3,11 +3,11 @@
 
 namespace dialog::editor
 {
-	static std::wstring SIZECLASS = L"CResSizeEditor"; // STRING_OK
-	class CResSizeEditor : public CEditor
+	static std::wstring SIZECLASS = L"ResSizeEditor"; // STRING_OK
+	class ResSizeEditor : public CEditor
 	{
 	public:
-		CResSizeEditor(_In_ CWnd* pParentWnd, ULONG relop, ULONG ulPropTag, ULONG cb);
+		ResSizeEditor(_In_ CWnd* pParentWnd, ULONG relop, ULONG ulPropTag, ULONG cb);
 
 	private:
 		_Check_return_ ULONG HandleChange(UINT nID) override;

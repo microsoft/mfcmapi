@@ -1,5 +1,5 @@
 #include <StdAfx.h>
-#include <UI/Dialogs/Editors/restriction/CResSizeEditor.h>
+#include <UI/Dialogs/Editors/restriction/ResSizeEditor.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/utility/output.h>
 #include <core/interpret/flags.h>
@@ -8,7 +8,7 @@
 
 namespace dialog::editor
 {
-	CResSizeEditor::CResSizeEditor(_In_ CWnd* pParentWnd, ULONG relop, ULONG ulPropTag, ULONG cb)
+	ResSizeEditor::ResSizeEditor(_In_ CWnd* pParentWnd, ULONG relop, ULONG ulPropTag, ULONG cb)
 		: CEditor(pParentWnd, IDS_RESED, IDS_RESEDSIZEPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)
 	{
 		TRACE_CONSTRUCTOR(SIZECLASS);
@@ -28,7 +28,7 @@ namespace dialog::editor
 		SetHex(4, cb);
 	}
 
-	_Check_return_ ULONG CResSizeEditor::HandleChange(UINT nID)
+	_Check_return_ ULONG ResSizeEditor::HandleChange(UINT nID)
 	{
 		const auto paneID = CEditor::HandleChange(nID);
 

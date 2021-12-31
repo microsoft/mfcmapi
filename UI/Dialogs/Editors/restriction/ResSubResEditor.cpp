@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/Editors/restriction/RestrictEditor.h>
-#include <UI/Dialogs/Editors/restriction/CResSubResEditor.h>
+#include <UI/Dialogs/Editors/restriction/ResSubResEditor.h>
 #include <core/utility/output.h>
 #include <core/interpret/proptags.h>
 #include <core/addin/mfcmapi.h>
@@ -8,7 +8,7 @@
 
 namespace dialog::editor
 {
-	CResSubResEditor::CResSubResEditor(
+	ResSubResEditor::ResSubResEditor(
 		_In_ CWnd* pParentWnd,
 		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 		ULONG ulSubObject,
@@ -39,7 +39,7 @@ namespace dialog::editor
 			viewpane::TextPane::CreateMultiLinePane(2, IDS_LPRES, property::RestrictionToString(lpRes, nullptr), true));
 	}
 
-	_Check_return_ ULONG CResSubResEditor::HandleChange(UINT nID)
+	_Check_return_ ULONG ResSubResEditor::HandleChange(UINT nID)
 	{
 		const auto paneID = CEditor::HandleChange(nID);
 
@@ -51,14 +51,14 @@ namespace dialog::editor
 		return paneID;
 	}
 
-	_Check_return_ LPSRestriction CResSubResEditor::DetachModifiedSRestriction() noexcept
+	_Check_return_ LPSRestriction ResSubResEditor::DetachModifiedSRestriction() noexcept
 	{
 		const auto lpRet = m_lpNewRes;
 		m_lpNewRes = nullptr;
 		return lpRet;
 	}
 
-	void CResSubResEditor::OnEditAction1()
+	void ResSubResEditor::OnEditAction1()
 	{
 		CRestrictEditor ResEdit(this, m_lpMapiObjects, m_lpAllocParent, m_lpNewRes ? m_lpNewRes : m_lpOldRes);
 

@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/Editors/restriction/RestrictEditor.h>
-#include <UI/Dialogs/Editors/restriction/CResCommentEditor.h>
+#include <UI/Dialogs/Editors/restriction/ResCommentEditor.h>
 #include <UI/Dialogs/Editors/propeditor/ipropeditor.h>
 #include <core/sortlistdata/commentData.h>
 #include <core/mapi/mapiMemory.h>
@@ -11,7 +11,7 @@
 
 namespace dialog::editor
 {
-	CResCommentEditor::CResCommentEditor(
+	ResCommentEditor::ResCommentEditor(
 		_In_ CWnd* pParentWnd,
 		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 		_In_ const _SRestriction* lpRes,
@@ -41,7 +41,7 @@ namespace dialog::editor
 	}
 
 	// Used to call functions which need to be called AFTER controls are created
-	BOOL CResCommentEditor::OnInitDialog()
+	BOOL ResCommentEditor::OnInitDialog()
 	{
 		const auto bRet = CEditor::OnInitDialog();
 
@@ -52,30 +52,30 @@ namespace dialog::editor
 		return bRet;
 	}
 
-	_Check_return_ const _SRestriction* CResCommentEditor::GetSourceRes() const noexcept
+	_Check_return_ const _SRestriction* ResCommentEditor::GetSourceRes() const noexcept
 	{
 		if (m_lpNewCommentRes) return m_lpNewCommentRes;
 		if (m_lpSourceRes && m_lpSourceRes->res.resComment.lpRes) return m_lpSourceRes->res.resComment.lpRes;
 		return nullptr;
 	}
 
-	_Check_return_ LPSRestriction CResCommentEditor::DetachModifiedSRestriction() noexcept
+	_Check_return_ LPSRestriction ResCommentEditor::DetachModifiedSRestriction() noexcept
 	{
 		const auto lpRet = m_lpNewCommentRes;
 		m_lpNewCommentRes = nullptr;
 		return lpRet;
 	}
 
-	_Check_return_ LPSPropValue CResCommentEditor::DetachModifiedSPropValue() noexcept
+	_Check_return_ LPSPropValue ResCommentEditor::DetachModifiedSPropValue() noexcept
 	{
 		const auto lpRet = m_lpNewCommentProp;
 		m_lpNewCommentProp = nullptr;
 		return lpRet;
 	}
 
-	_Check_return_ ULONG CResCommentEditor::GetSPropValueCount() const noexcept { return m_ulNewCommentProp; }
+	_Check_return_ ULONG ResCommentEditor::GetSPropValueCount() const noexcept { return m_ulNewCommentProp; }
 
-	void CResCommentEditor::InitListFromPropArray(
+	void ResCommentEditor::InitListFromPropArray(
 		ULONG ulListNum,
 		ULONG cProps,
 		_In_count_(cProps) const _SPropValue* lpProps) const
@@ -106,7 +106,7 @@ namespace dialog::editor
 		ResizeList(ulListNum, false);
 	}
 
-	void CResCommentEditor::OnEditAction1()
+	void ResCommentEditor::OnEditAction1()
 	{
 		const auto lpSourceRes = GetSourceRes();
 
@@ -120,7 +120,7 @@ namespace dialog::editor
 	}
 
 	_Check_return_ bool
-	CResCommentEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ sortlistdata::sortListData* lpData)
+	ResCommentEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ sortlistdata::sortListData* lpData)
 	{
 		if (!m_lpAllocParent) return false;
 		if (!lpData) return false;
@@ -169,7 +169,7 @@ namespace dialog::editor
 		return false;
 	}
 
-	void CResCommentEditor::OnOK()
+	void ResCommentEditor::OnOK()
 	{
 		CMyDialog::OnOK(); // don't need to call CEditor::OnOK
 
