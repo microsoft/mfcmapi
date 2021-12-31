@@ -6,7 +6,7 @@
 #include <core/mapi/cache/mapiObjects.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>
-#include <UI/Dialogs/Editors/RestrictEditor.h>
+#include <UI/Dialogs/Editors/restriction/RestrictEditor.h>
 #include <UI/addinui.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>

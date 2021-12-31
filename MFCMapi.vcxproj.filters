@@ -420,10 +420,10 @@
     <ClInclude Include="UI\Dialogs\Editors\QSSpecialFolders.h">
       <Filter>Source Files\UI\Dialogs\Editors</Filter>
     </ClInclude>
-    <ClCompile Include="UI\Dialogs\Editors\RestrictEditor.cpp">
+    <ClCompile Include="UI\Dialogs\Editors\restriction\RestrictEditor.cpp">
       <Filter>Source Files\UI\Dialogs\Editors</Filter>
     </ClCompile>
-    <ClInclude Include="UI\Dialogs\Editors\RestrictEditor.h">
+    <ClInclude Include="UI\Dialogs\Editors\restriction\RestrictEditor.h">
       <Filter>Source Files\UI\Dialogs\Editors</Filter>
     </ClInclude>
     <ClCompile Include="UI\Dialogs\Editors\SearchEditor.cpp">

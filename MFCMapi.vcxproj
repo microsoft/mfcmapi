@@ -658,7 +658,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="UI\Dialogs\ContentsTable\PublicFolderTableDlg.h" />
     <ClInclude Include="UI\QuickStart.h" />
     <ClInclude Include="UI\Dialogs\ContentsTable\RecipientsDlg.h" />
-    <ClInclude Include="UI\Dialogs\Editors\RestrictEditor.h" />
+    <ClInclude Include="UI\Dialogs\Editors\restriction\RestrictEditor.h" />
     <ClInclude Include="UI\Dialogs\ContentsTable\RulesDlg.h" />
     <ClInclude Include="UI\Dialogs\propList\SingleMessageDialog.h" />
     <ClInclude Include="UI\Controls\SortList\SingleMAPIPropListCtrl.h" />
@@ -728,7 +728,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="UI\Dialogs\Editors\QSSpecialFolders.cpp" />
     <ClCompile Include="UI\QuickStart.cpp" />
     <ClCompile Include="UI\Dialogs\ContentsTable\RecipientsDlg.cpp" />
-    <ClCompile Include="UI\Dialogs\Editors\RestrictEditor.cpp" />
+    <ClCompile Include="UI\Dialogs\Editors\restriction\RestrictEditor.cpp" />
     <ClCompile Include="UI\RichEditOleCallback.cpp" />
     <ClCompile Include="UI\Dialogs\ContentsTable\RulesDlg.cpp" />
     <ClCompile Include="UI\Controls\SortList\SingleMAPIPropListCtrl.cpp" />
