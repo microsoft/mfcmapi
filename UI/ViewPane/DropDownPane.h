@@ -22,6 +22,7 @@ namespace viewpane
 		GUID GetSelectedGUID(bool bByteSwapped) const;
 		_Check_return_ int GetDropDown() const;
 		_Check_return_ DWORD_PTR GetDropDownValue() const;
+		bool containsWindow(HWND hWnd) const noexcept override;
 
 	protected:
 		void SetSelection(DWORD_PTR iSelection);

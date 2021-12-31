@@ -73,54 +73,37 @@ namespace viewpane
 		return max(ViewPane::GetMinWidth(), cxDropDown);
 	}
 
-	int DropDownPane::GetFixedHeight()
-	{
-		auto iHeight = 0;
-
-		if (0 != m_paneID) iHeight += m_iSmallHeightMargin; // Top margin
-
-		iHeight += GetLabelHeight();
-
-		iHeight += m_iEditHeight; // Height of the dropdown
-
-		iHeight += m_iLargeHeightMargin; // Bottom margin
-
-		return iHeight;
-	}
+	// DropDownPane Layout:
+	// Header: GetHeaderHeight
+	// Dropdown: m_iEditHeight
+	int DropDownPane::GetFixedHeight() { return GetHeaderHeight() + m_iEditHeight; }
 
 	HDWP DropDownPane::DeferWindowPos(
 		_In_ HDWP hWinPosInfo,
 		_In_ const int x,
 		_In_ const int y,
 		_In_ const int width,
-		_In_ const int /*height*/)
+		_In_ const int height)
 	{
 		auto curY = y;
-		const auto labelHeight = GetLabelHeight();
-		if (0 != m_paneID)
-		{
-			curY += m_iSmallHeightMargin;
-		}
 
-		if (!m_szLabel.empty())
-		{
-			hWinPosInfo = EC_D(
-				HDWP,
-				::DeferWindowPos(
-					hWinPosInfo, m_Label.GetSafeHwnd(), nullptr, x, curY, width, labelHeight, SWP_NOZORDER));
-			curY += labelHeight;
-		}
+		// Layout our label
+		hWinPosInfo = EC_D(HDWP, ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height));
+		curY += GetHeaderHeight();
 
 		// Note - Real height of a combo box is fixed at m_iEditHeight
 		// Height we set here influences the amount of dropdown entries we see
 		// This will give us something between 4 and 10 entries
 		const auto ulDrops = static_cast<int>(min(10, 1 + max(m_DropList.size(), 4)));
 
-		hWinPosInfo = EC_D(
-			HDWP,
-			::DeferWindowPos(
-				hWinPosInfo, m_DropDown.GetSafeHwnd(), nullptr, x, curY, width, m_iEditHeight * ulDrops, SWP_NOZORDER));
-
+		hWinPosInfo = ui::DeferWindowPos(
+			hWinPosInfo,
+			m_DropDown.GetSafeHwnd(),
+			x,
+			curY,
+			width,
+			m_iEditHeight * ulDrops,
+			L"DropDownPane::DeferWindowPos::dropdown");
 		return hWinPosInfo;
 	}
 
@@ -274,5 +257,11 @@ namespace viewpane
 		{
 			m_DropDown.SetCurSel(static_cast<int>(iSelection));
 		}
+	}
+
+	bool DropDownPane::containsWindow(HWND hWnd) const noexcept
+	{
+		if (m_DropDown.GetSafeHwnd() == hWnd) return true;
+		return m_Header.containsWindow(hWnd);
 	}
 } // namespace viewpane

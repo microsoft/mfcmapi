@@ -12,7 +12,8 @@ namespace viewpane
 		if (pane)
 		{
 			pane->m_bCheckValue = bVal;
-			pane->SetLabel(uidLabel);
+			pane->m_szLabel = strings::loadstring(uidLabel);
+
 			pane->SetReadOnly(bReadOnly);
 			pane->m_paneID = paneID;
 		}
@@ -23,19 +24,8 @@ namespace viewpane
 	int CheckPane::GetMinWidth()
 	{
 		const auto label = ViewPane::GetMinWidth();
-		const auto check = GetSystemMetrics(SM_CXMENUCHECK);
-		const auto edge = check / 5;
-		output::DebugPrint(
-			output::dbgLevel::Draw,
-			L"CheckPane::GetMinWidth Label:%d + check:%d + edge:%d = minwidth:%d\n",
-			label,
-			check,
-			edge,
-			label + edge + check);
-		return label + edge + check;
+		return max(label, m_iLabelWidth);
 	}
-
-	int CheckPane::GetFixedHeight() { return m_iButtonHeight; }
 
 	void CheckPane::Initialize(_In_ CWnd* pParent, _In_ HDC hdc)
 	{
@@ -43,26 +33,51 @@ namespace viewpane
 
 		EC_B_S(m_Check.Create(
 			nullptr,
-			WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE | BS_AUTOCHECKBOX | (m_bReadOnly ? WS_DISABLED : 0),
+			WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE | BS_AUTOCHECKBOX | (m_bReadOnly ? WS_DISABLED : 0) |
+				BS_NOTIFY,
 			CRect(0, 0, 0, 0),
 			pParent,
 			m_nID));
 		m_Check.SetCheck(m_bCheckValue);
 		::SetWindowTextW(m_Check.m_hWnd, m_szLabel.c_str());
 
+		const auto sizeText = ui::GetTextExtentPoint32(hdc, m_szLabel);
+		const auto check = GetSystemMetrics(SM_CXMENUCHECK);
+		const auto edge = check / 5;
+		m_iLabelWidth = check + edge + sizeText.cx;
+
 		m_bInitialized = true;
+	}
+
+	// CheckPane Layout:
+	// Top margin: m_iSmallHeightMargin if requested
+	// Header: none
+	// CheckPane: m_iButtonHeight
+	int CheckPane::GetFixedHeight()
+	{
+		auto height = m_iButtonHeight;
+		if (m_bTopMargin) height += m_iSmallHeightMargin;
+		return height;
 	}
 
 	HDWP CheckPane::DeferWindowPos(
 		_In_ HDWP hWinPosInfo,
 		_In_ const int x,
 		_In_ const int y,
-		_In_ const int width,
+		_In_ const int /*width*/,
 		_In_ const int height)
 	{
-		output::DebugPrint(output::dbgLevel::Draw, L"CheckPane::DeferWindowPos x:%d width:%d \n", x, width);
-		hWinPosInfo = EC_D(
-			HDWP, ::DeferWindowPos(hWinPosInfo, m_Check.GetSafeHwnd(), nullptr, x, y, width, height, SWP_NOZORDER));
+		auto curY = y;
+		if (m_bTopMargin) curY += m_iSmallHeightMargin;
+
+		hWinPosInfo = ui::DeferWindowPos(
+			hWinPosInfo,
+			m_Check.GetSafeHwnd(),
+			x,
+			curY,
+			m_iLabelWidth,
+			height - (curY - y),
+			L"CheckPane::DeferWindowPos");
 		return hWinPosInfo;
 	}
 
@@ -96,14 +111,24 @@ namespace viewpane
 		rcCheck.top = (rc.bottom - rc.top - lCheck) / 2;
 		rcCheck.bottom = rcCheck.top + lCheck;
 
-		FillRect(hDC, &rc, GetSysBrush(ui::uiColor::Background));
-		FrameRect(
-			hDC,
-			&rcCheck,
-			GetSysBrush(
-				bDisabled			? ui::uiColor::FrameUnselected
-				: bGlow || bFocused ? ui::uiColor::Glow
-									: ui::uiColor::FrameSelected));
+		WC_D_S(::FillRect(hDC, &rcCheck, GetSysBrush(ui::uiColor::Background)));
+		if (bFocused)
+		{
+			ui::FrameRect(hDC, rcCheck, 3, ui::uiColor::Glow);
+		}
+		else if (bGlow)
+		{
+			ui::FrameRect(hDC, rcCheck, 2, ui::uiColor::Glow);
+		}
+		else if (bDisabled)
+		{
+			ui::FrameRect(hDC, rcCheck, 1, ui::uiColor::FrameUnselected);
+		}
+		else
+		{
+			ui::FrameRect(hDC, rcCheck, 1, ui::uiColor::FrameSelected);
+		}
+
 		if (bChecked)
 		{
 			auto rcFill = rcCheck;
@@ -135,5 +160,11 @@ namespace viewpane
 			rcLabel,
 			false,
 			DT_SINGLELINE | DT_VCENTER);
+	}
+
+	bool CheckPane::containsWindow(HWND hWnd) const noexcept
+	{
+		if (m_Check.GetSafeHwnd() == hWnd) return true;
+		return m_Header.containsWindow(hWnd);
 	}
 } // namespace viewpane

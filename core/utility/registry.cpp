@@ -63,7 +63,7 @@ namespace registry
 	boolRegKey loadAddIns{L"LoadAddIns", true, false, IDS_REGKEY_LOADADDINS};
 	boolRegKey forceOutlookMAPI{L"ForceOutlookMAPI", false, false, IDS_REGKEY_FORCEOUTLOOKMAPI};
 	boolRegKey forceSystemMAPI{L"ForceSystemMAPI", false, false, IDS_REGKEY_FORCESYSTEMMAPI};
-	boolRegKey hexDialogDiag{L"HexDialogDiag", false, false, IDS_REGKEY_HEXDIALOGDIAG};
+	boolRegKey uiDiag{L"UIDiag", false, false, IDS_REGKEY_UIDIAG};
 	boolRegKey displayAboutDialog{L"DisplayAboutDialog", true, false, NULL};
 	wstringRegKey propertyColumnOrder{L"PropertyColumnOrder", L"", false, NULL};
 	dwordRegKey namedPropBatchSize{L"NamedPropBatchSize", regOptionType::stringDec, 400, false, NULL};
@@ -96,7 +96,7 @@ namespace registry
 		&loadAddIns,
 		&forceOutlookMAPI,
 		&forceSystemMAPI,
-		&hexDialogDiag,
+		&uiDiag,
 		&displayAboutDialog,
 		&propertyColumnOrder,
 		&namedPropBatchSize};

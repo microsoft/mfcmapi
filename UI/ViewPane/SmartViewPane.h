@@ -18,12 +18,15 @@ namespace viewpane
 		void Parse(const std::vector<BYTE>& myBin) { Parse(std::vector<std::vector<BYTE>>{myBin}); }
 		void Parse(const std::vector<std::vector<BYTE>>& myBins);
 		std::function<void(smartview::block*)> OnItemSelected = nullptr;
+		std::function<void(_In_ const SBinary& lpBin)> OnActionButton = nullptr;
+		bool containsWindow(HWND hWnd) const noexcept override;
 
 	private:
 		void Initialize(_In_ CWnd* pParent, _In_ HDC hdc) override;
 		HDWP DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height) override;
 		int GetFixedHeight() override;
 		int GetLines() override;
+		ULONG HandleChange(UINT nID) override;
 		void AddChildren(HTREEITEM parent, const std::shared_ptr<smartview::block>& data);
 		void ItemSelected(HTREEITEM hItem);
 		void OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* /*pResult*/, _In_ HTREEITEM hItemCurHover) const;
@@ -43,6 +46,5 @@ namespace viewpane
 		std::shared_ptr<SplitterPane> m_Splitter;
 		std::shared_ptr<TreePane> m_TreePane;
 		bool m_bHasData{false};
-		bool m_bDoDropDown{true};
 	};
 } // namespace viewpane

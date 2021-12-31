@@ -8,6 +8,7 @@
 #include <core/addin/mfcmapi.h>
 #include <core/interpret/proptags.h>
 #include <UI/ViewPane/getpane.h>
+#include <core/utility/registry.h>
 
 extern ui::CMyWinApp theApp;
 
@@ -152,12 +153,14 @@ namespace dialog::editor
 		{
 			const auto nCode = HIWORD(wParam);
 			const auto idFrom = LOWORD(wParam);
-			if (EN_CHANGE == nCode || CBN_SELCHANGE == nCode || CBN_EDITCHANGE == nCode)
+			switch (nCode)
 			{
+			case EN_CHANGE:
+			case CBN_SELCHANGE:
+			case CBN_EDITCHANGE:
 				static_cast<void>(HandleChange(idFrom));
-			}
-			else if (BN_CLICKED == nCode)
-			{
+				break;
+			case BN_CLICKED:
 				switch (idFrom)
 				{
 				case IDD_EDITACTION1:
@@ -176,14 +179,22 @@ namespace dialog::editor
 					static_cast<void>(HandleChange(idFrom));
 					break;
 				}
+				break;
+			case BN_SETFOCUS:
+			case EN_SETFOCUS:
+				EnsureVisible(reinterpret_cast<HWND>(lParam));
 			}
+
 			break;
 		}
 		case WM_ERASEBKGND:
 		{
 			auto rect = RECT{};
 			::GetClientRect(m_hWnd, &rect);
-			const auto hOld = SelectObject(reinterpret_cast<HDC>(wParam), GetSysBrush(ui::uiColor::Background));
+
+			const auto background =
+				registry::uiDiag ? GetSysBrush(ui::uiColor::TestLavender) : GetSysBrush(ui::uiColor::Background);
+			const auto hOld = SelectObject(reinterpret_cast<HDC>(wParam), background);
 			const auto bRet =
 				PatBlt(reinterpret_cast<HDC>(wParam), 0, 0, rect.right - rect.left, rect.bottom - rect.top, PATCOPY);
 			SelectObject(reinterpret_cast<HDC>(wParam), hOld);
@@ -280,22 +291,32 @@ namespace dialog::editor
 	void CEditor::SetAddInLabel(ULONG id, const std::wstring& szLabel) const
 	{
 		auto pane = GetPane(id);
-		if (pane) pane->SetAddInLabel(szLabel);
+		if (pane) pane->SetLabel(szLabel);
 	}
 
-	LRESULT CALLBACK DrawScrollProc(
-		_In_ HWND hWnd,
-		UINT uMsg,
-		WPARAM wParam,
-		LPARAM lParam,
-		UINT_PTR uIdSubclass,
-		DWORD_PTR /*dwRefData*/)
+	LRESULT CALLBACK
+	DrawScrollProc(_In_ HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData)
 	{
 		LRESULT lRes = 0;
 		if (ui::HandleControlUI(uMsg, wParam, lParam, &lRes)) return lRes;
 
 		switch (uMsg)
 		{
+		case WM_COMMAND:
+		{
+			const auto nCode = HIWORD(wParam);
+			const auto idFrom = LOWORD(wParam);
+			switch (nCode)
+			{
+			case BN_SETFOCUS:
+			case EN_SETFOCUS:
+				return ::SendMessage(reinterpret_cast<HWND>(dwRefData), uMsg, wParam, lParam);
+			}
+			break;
+		}
+		case WM_NEXTDLGCTL:
+			// Ensure tabs are handled by parent dialog
+			return ::SendMessage(reinterpret_cast<HWND>(dwRefData), uMsg, wParam, lParam);
 		case WM_NCDESTROY:
 			RemoveWindowSubclass(hWnd, DrawScrollProc, uIdSubclass);
 			return DefSubclassProc(hWnd, uMsg, wParam, lParam);
@@ -357,6 +378,10 @@ namespace dialog::editor
 				CRect(0, 0, 0, 0),
 				this,
 				NULL);
+			// Necessary for TAB to work. Without this, all TABS get stuck on the control
+			// instead of passing to the children.
+			EC_B_S(m_ScrollWindow.ModifyStyleEx(0, WS_EX_CONTROLPARENT));
+
 			m_hWndVertScroll = ::CreateWindowEx(
 				0,
 				_T("SCROLLBAR"), // STRING_OK
@@ -371,17 +396,31 @@ namespace dialog::editor
 				nullptr,
 				nullptr);
 			// Subclass static control so we can ensure we're drawing everything right
-			SetWindowSubclass(
-				m_ScrollWindow.m_hWnd, DrawScrollProc, 0, reinterpret_cast<DWORD_PTR>(m_ScrollWindow.m_hWnd));
+			SetWindowSubclass(m_ScrollWindow.m_hWnd, DrawScrollProc, 0, reinterpret_cast<DWORD_PTR>(m_hWnd));
 			pParent = &m_ScrollWindow;
 		}
 
 		SetMargins(); // Not all margins have been computed yet, but some have and we can use them during Initialize
+		bool previousPaneWasCheck = true; // Avoid margin at the top
 		for (const auto& pane : m_Panes)
 		{
 			if (pane)
 			{
 				pane->Initialize(pParent, hdc);
+				auto checkPane = std::dynamic_pointer_cast<viewpane::CheckPane>(pane);
+				if (checkPane)
+				{
+					if (!previousPaneWasCheck)
+					{
+						checkPane->EnableTopMargin();
+					}
+
+					previousPaneWasCheck = true;
+				}
+				else
+				{
+					previousPaneWasCheck = false;
+				}
 			}
 		}
 
@@ -566,7 +605,6 @@ namespace dialog::editor
 
 		lpPrompt->SetRectNP(OldRect); // restore the old edit rectangle
 
-		iPromptLineCount++; // Add one for an extra line of whitespace
 		if (iLineCount) *iLineCount = iPromptLineCount;
 		return cx;
 	}
@@ -639,7 +677,12 @@ namespace dialog::editor
 
 		// Figure a good height (cy)
 		auto cy = 2 * m_iMargin; // margins top and bottom
-		cy += iPromptLineCount * m_iTextHeight; // prompt text
+		if (iPromptLineCount)
+		{
+			cy += iPromptLineCount * m_iTextHeight; // prompt text
+			cy += m_iMargin; // Margin between prompt and panes
+		}
+
 		cy += m_iButtonHeight; // Button height
 		cy += m_iMargin; // add a little height between the buttons and our panes
 
@@ -749,11 +792,11 @@ namespace dialog::editor
 		auto iPromptLineCount = 0;
 		if (m_bHasPrompt)
 		{
-			iPromptLineCount = m_Prompt.GetLineCount() + 1; // we allow space for the prompt and one line of whitespace
+			iPromptLineCount = m_Prompt.GetLineCount();
 		}
 
 		auto iCYBottom = cy - m_iButtonHeight - m_iMargin; // Top of Buttons
-		auto iCYTop = m_iTextHeight * iPromptLineCount + m_iMargin; // Bottom of prompt
+		auto iCYTop = m_iMargin; // Top margin
 
 		if (m_bHasPrompt)
 		{
@@ -765,6 +808,8 @@ namespace dialog::editor
 				iFullWidth, // Full width
 				m_iTextHeight * iPromptLineCount,
 				SWP_NOZORDER));
+			iCYTop +=
+				m_iTextHeight * iPromptLineCount + m_iMargin; // Shift our top down past the prompt including a margin
 		}
 
 		if (m_cButtons)
@@ -858,25 +903,25 @@ namespace dialog::editor
 		auto iScrollPos = 0;
 		if (m_bEnableScroll)
 		{
+			auto iScrollWindowWidth = cx;
 			if (iCYBottom - iCYTop < m_iScrollClient)
 			{
-				const auto iScrollWidth = GetSystemMetrics(SM_CXVSCROLL);
-				iFullWidth -= iScrollWidth;
+				const auto iScrollBarWidth = GetSystemMetrics(SM_CXVSCROLL);
+				// This positions the scroll bar on the right just iCXMargin from the edge
+				iScrollWindowWidth -= iScrollBarWidth - iCXMargin;
 				output::DebugPrint(
 					output::dbgLevel::Draw,
-					L"CEditor::OnSize Scroll iScrollWidth=%d new iFullWidth=%d\n",
-					iScrollWidth,
+					L"CEditor::OnSize Scroll iScrollBarWidth =%d new iFullWidth=%d\n",
+					iScrollBarWidth,
 					iFullWidth);
 				output::DebugPrint(
-					output::dbgLevel::Draw,
-					L"CEditor::OnSize m_hWndVertScroll positioned at=%d\n",
-					iFullWidth + iCXMargin);
+					output::dbgLevel::Draw, L"CEditor::OnSize m_hWndVertScroll positioned at=%d\n", iScrollWindowWidth);
 				::SetWindowPos(
 					m_hWndVertScroll,
 					nullptr,
-					iFullWidth + iCXMargin,
+					iScrollWindowWidth,
 					iCYTop,
-					iScrollWidth,
+					iScrollBarWidth,
 					iCYBottom - iCYTop,
 					SWP_NOZORDER);
 				auto si = SCROLLINFO{};
@@ -901,9 +946,11 @@ namespace dialog::editor
 
 			output::DebugPrint(output::dbgLevel::Draw, L"CEditor::OnSize m_ScrollWindow positioned at=%d\n", iCXMargin);
 			::SetWindowPos(
-
-				m_ScrollWindow.m_hWnd, nullptr, iCXMargin, iCYTop, iFullWidth, iCYBottom - iCYTop, SWP_NOZORDER);
+				m_ScrollWindow.m_hWnd, nullptr, 0, iCYTop, iScrollWindowWidth, iCYBottom - iCYTop, SWP_NOZORDER);
 			iCYTop = -iScrollPos; // We get scrolling for free by adjusting our top
+
+			// Our pane width should now be the scroll width minus two margins
+			iFullWidth = iScrollWindowWidth - 2 * iCXMargin;
 		}
 
 		auto hdwp = WC_D(HDWP, BeginDeferWindowPos(2));
@@ -953,6 +1000,7 @@ namespace dialog::editor
 	void CEditor::AddPane(std::shared_ptr<viewpane::ViewPane> lpPane)
 	{
 		if (!lpPane) return;
+		if (m_Panes.empty()) lpPane->SetTop(); // First pane added is top
 		m_Panes.push_back(lpPane);
 	}
 
@@ -1276,5 +1324,78 @@ namespace dialog::editor
 		}
 
 		return false;
+	}
+
+	std::shared_ptr<viewpane::ViewPane> CEditor::PaneFromWindow(HWND hWnd) const noexcept
+	{
+		for (const auto& pane : m_Panes)
+		{
+			if (pane && pane->containsWindow(hWnd)) return pane;
+		}
+
+		return nullptr;
+	}
+
+	void CEditor::EnsureVisible(const HWND hWnd)
+	{
+		if (!m_bScrollVisible) return;
+		const auto pane = PaneFromWindow(hWnd);
+		if (!pane) return;
+
+		auto si = SCROLLINFO{};
+		si.cbSize = sizeof si;
+		si.fMask = SIF_POS;
+		::GetScrollInfo(m_hWndVertScroll, SB_CTL, &si);
+		output::DebugPrint(output::dbgLevel::Generic, L"si.nPos = %d\n", si.nPos);
+		auto rcScroll = RECT{};
+		::GetClientRect(m_ScrollWindow.GetSafeHwnd(), &rcScroll);
+		output::DebugPrint(
+			output::dbgLevel::Generic, L"Scroll: top = %d, bottom = %d\n", rcScroll.top, rcScroll.bottom);
+
+		auto rcPane = pane->GetWindowRect();
+		::MapWindowPoints(HWND_DESKTOP, m_ScrollWindow.GetSafeHwnd(), (LPPOINT) &rcPane, 2);
+		output::DebugPrint(output::dbgLevel::Generic, L"Pane: top = %d, bottom = %d\n", rcPane.top, rcPane.bottom);
+
+		auto iScroll = 0;
+		// Scroll down
+		// If top of our pane is above top of the window
+		// Or our pane is taller than the window
+		// Move the top of the pane to the top of the view
+		if (rcPane.top < rcScroll.top || rcPane.bottom - rcPane.top > rcScroll.bottom - rcScroll.top)
+		{
+			output::DebugPrint(output::dbgLevel::Generic, L"Scroll down\n");
+			iScroll = rcPane.top;
+		}
+		// Scroll up
+		// If the bottom of our pane is below the bottom of the window
+		// Move the pane up so the bottom of the pane aligns with the bottom of the view
+		// This will not send the top too far up as we covered that in the scroll down case
+		else if (rcPane.bottom > rcScroll.bottom)
+		{
+			output::DebugPrint(output::dbgLevel::Generic, L"Scroll up\n");
+			iScroll = rcPane.bottom - rcScroll.bottom;
+		}
+		else
+		{
+			output::DebugPrint(output::dbgLevel::Generic, L"No scroll\n");
+		}
+
+		if (iScroll == 0) return;
+		output::DebugPrint(output::dbgLevel::Generic, L"iscroll = %d, newPos = %d\n", iScroll, si.nPos + iScroll);
+		// Adjust scroll bar
+		si.fMask = SIF_POS;
+		si.nPos = si.nPos + iScroll;
+		::SetScrollInfo(m_hWndVertScroll, SB_CTL, &si, TRUE);
+
+		// Adjust view
+		::ScrollWindowEx(
+			m_ScrollWindow.GetSafeHwnd(),
+			0,
+			-iScroll,
+			nullptr,
+			nullptr,
+			nullptr,
+			nullptr,
+			SW_SCROLLCHILDREN | SW_INVALIDATE);
 	}
 } // namespace dialog::editor

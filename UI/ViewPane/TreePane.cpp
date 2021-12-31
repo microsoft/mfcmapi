@@ -2,6 +2,7 @@
 #include <UI/ViewPane/TreePane.h>
 #include <utility>
 #include <core/utility/output.h>
+#include <ui/UIFunctions.h>
 
 namespace viewpane
 {
@@ -13,7 +14,7 @@ namespace viewpane
 			if (uidLabel)
 			{
 				pane->SetLabel(uidLabel);
-				pane->m_bCollapsible = true;
+				pane->makeCollapsible();
 			}
 
 			pane->SetReadOnly(bReadOnly);
@@ -32,27 +33,11 @@ namespace viewpane
 		m_bInitialized = true;
 	}
 
-	int TreePane::GetFixedHeight()
-	{
-		auto iHeight = 0;
-		if (0 != m_paneID) iHeight += m_iSmallHeightMargin; // Top margin
-
-		const auto labelHeight = GetLabelHeight();
-
-		if (labelHeight)
-		{
-			iHeight += labelHeight;
-		}
-
-		if (m_bCollapsible && !m_bCollapsed)
-		{
-			iHeight += m_iSmallHeightMargin;
-		}
-
-		iHeight += m_iSmallHeightMargin;
-
-		return iHeight;
-	}
+	// TreePane Layout:
+	// Header: GetHeaderHeight
+	// Tree:
+	//    Tree: variable
+	int TreePane::GetFixedHeight() { return GetHeaderHeight(); }
 
 	HDWP TreePane::DeferWindowPos(
 		_In_ HDWP hWinPosInfo,
@@ -65,26 +50,21 @@ namespace viewpane
 			output::dbgLevel::Draw, L"TreePane::DeferWindowPos x:%d y:%d width:%d height:%d \n", x, y, width, height);
 
 		auto curY = y;
-		const auto labelHeight = GetLabelHeight();
-		if (0 != m_paneID)
-		{
-			curY += m_iSmallHeightMargin;
-		}
 
-		WC_B_S(m_Tree.ShowWindow(m_bCollapsed ? SW_HIDE : SW_SHOW));
 		// Layout our label
-		hWinPosInfo = EC_D(HDWP, ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y)));
+		hWinPosInfo = EC_D(HDWP, ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height));
+		curY += GetHeaderHeight();
 
-		if (labelHeight)
-		{
-			curY += labelHeight + m_iSmallHeightMargin;
-		}
-
-		auto treeHeight = height - (curY - y) - m_iSmallHeightMargin;
-
-		hWinPosInfo =
-			EC_D(HDWP, ::DeferWindowPos(hWinPosInfo, m_Tree.GetSafeHwnd(), nullptr, x, curY, width, treeHeight, SWP_NOZORDER));
+		WC_B_S(m_Tree.ShowWindow(collapsed() ? SW_HIDE : SW_SHOW));
+		hWinPosInfo = ui::DeferWindowPos(
+			hWinPosInfo, m_Tree.GetSafeHwnd(), x, curY, width, height - (curY - y), L"TreePane::DeferWindowPos::tree");
 
 		return hWinPosInfo;
+	}
+
+	bool TreePane::containsWindow(HWND hWnd) const noexcept
+	{
+		if (m_Tree.GetSafeHwnd() == hWnd) return true;
+		return m_Header.containsWindow(hWnd);
 	}
 } // namespace viewpane

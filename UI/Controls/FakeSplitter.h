@@ -29,6 +29,7 @@ namespace controls
 		void SetPaneOne(std::shared_ptr<viewpane::ViewPane> paneOne) noexcept
 		{
 			m_ViewPaneOne = paneOne;
+			m_ViewPaneOne->SetTop();
 			if (m_ViewPaneOne)
 			{
 				m_iSplitWidth = 7;
@@ -39,7 +40,11 @@ namespace controls
 			}
 		}
 
-		void SetPaneTwo(std::shared_ptr<viewpane::ViewPane> paneTwo) noexcept { m_ViewPaneTwo = paneTwo; }
+		void SetPaneTwo(std::shared_ptr<viewpane::ViewPane> paneTwo) noexcept
+		{
+			m_ViewPaneTwo = paneTwo;
+			m_ViewPaneTwo->SetTop();
+		}
 
 		void SetPercent(FLOAT iNewPercent);
 		void SetSplitType(splitType stSplitType) noexcept;

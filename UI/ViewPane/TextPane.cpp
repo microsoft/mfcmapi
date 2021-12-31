@@ -83,7 +83,7 @@ namespace viewpane
 			pane->SetMultiline();
 			pane->SetLabel(uidLabel);
 			pane->ViewPane::SetReadOnly(bReadOnly);
-			pane->m_bCollapsible = true;
+			pane->makeCollapsible();
 			pane->m_paneID = paneID;
 		}
 
@@ -132,26 +132,9 @@ namespace viewpane
 
 	bool TextPane::IsDirty() { return m_EditBox.m_hWnd && m_EditBox.GetModify(); }
 
-	int TextPane::GetFixedHeight()
-	{
-		auto iHeight = 0;
-		if (0 != m_paneID) iHeight += m_iSmallHeightMargin; // Top margin
-
-		iHeight += GetLabelHeight();
-
-		if (!m_bMultiline)
-		{
-			iHeight += m_iEditHeight;
-		}
-
-		iHeight += m_iSmallHeightMargin; // Bottom margin
-
-		return iHeight;
-	}
-
 	int TextPane::GetLines()
 	{
-		if (m_bCollapsed)
+		if (collapsed())
 		{
 			return 0;
 		}
@@ -164,6 +147,22 @@ namespace viewpane
 		return 0;
 	}
 
+	// TextPane Layout:
+	// Header: GetHeaderHeight
+	// Collapsible:
+	//    Edit box: variable
+	int TextPane::GetFixedHeight()
+	{
+		auto iHeight = GetHeaderHeight();
+
+		if (!m_bMultiline)
+		{
+			iHeight += m_iEditHeight;
+		}
+
+		return iHeight;
+	}
+
 	HDWP TextPane::DeferWindowPos(
 		_In_ HDWP hWinPosInfo,
 		_In_ const int x,
@@ -172,37 +171,30 @@ namespace viewpane
 		_In_ const int height)
 	{
 		auto curY = y;
-		const auto labelHeight = GetLabelHeight();
-		if (0 != m_paneID)
-		{
-			curY += m_iSmallHeightMargin;
-		}
 
 		// Layout our label
-		hWinPosInfo = EC_D(HDWP, ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y)));
+		hWinPosInfo = EC_D(HDWP, ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height));
+		curY += GetHeaderHeight();
 
-		if (m_bCollapsed)
+		if (collapsed())
 		{
 			WC_B_S(m_EditBox.ShowWindow(SW_HIDE));
 
-			hWinPosInfo = EC_D(
-				HDWP, ::DeferWindowPos(hWinPosInfo, m_EditBox.GetSafeHwnd(), nullptr, x, curY, 0, 0, SWP_NOZORDER));
+			hWinPosInfo = ui::DeferWindowPos(
+				hWinPosInfo, m_EditBox.GetSafeHwnd(), x, curY, width, 0, L"TextPane::DeferWindowPos::editbox");
 		}
 		else
 		{
-			auto editHeight = height - (curY - y) - m_iSmallHeightMargin;
-			if (labelHeight)
-			{
-				curY += labelHeight + m_iSmallHeightMargin;
-				editHeight -= labelHeight + m_iSmallHeightMargin;
-			}
-
 			WC_B_S(m_EditBox.ShowWindow(SW_SHOW));
 
-			hWinPosInfo = EC_D(
-				HDWP,
-				::DeferWindowPos(
-					hWinPosInfo, m_EditBox.GetSafeHwnd(), nullptr, x, curY, width, editHeight, SWP_NOZORDER));
+			hWinPosInfo = ui::DeferWindowPos(
+				hWinPosInfo,
+				m_EditBox.GetSafeHwnd(),
+				x,
+				curY,
+				width,
+				height - (curY - y),
+				L"TextPane::DeferWindowPos::editbox");
 		}
 
 		return hWinPosInfo;
@@ -504,5 +496,11 @@ namespace viewpane
 		::SendMessage(m_EditBox.GetSafeHwnd(), WM_SETREDRAW, true, 0);
 		InvalidateRect(m_EditBox.GetSafeHwnd(), nullptr, true);
 		::SendMessage(m_EditBox.GetSafeHwnd(), EM_SETEVENTMASK, 0, eventMask);
+	}
+
+	bool TextPane::containsWindow(HWND hWnd) const noexcept
+	{
+		if (m_EditBox.GetSafeHwnd() == hWnd) return true;
+		return m_Header.containsWindow(hWnd);
 	}
 } // namespace viewpane

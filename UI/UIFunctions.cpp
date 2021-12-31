@@ -9,6 +9,7 @@
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 #include <core/addin/mfcmapi.h>
+#include <core/utility/registry.h>
 
 namespace ui
 {
@@ -37,6 +38,9 @@ namespace ui
 		PaleBlue,
 		Pink,
 		Lavender,
+		Red,
+		Green,
+		Orange,
 		ColorEnd
 	};
 
@@ -54,6 +58,9 @@ namespace ui
 		RGB(0xE6, 0xF2, 0xFA), // cPaleBlue
 		RGB(0xFF, 0xC0, 0xCB), // cPink
 		RGB(0xE6, 0xE6, 0xFA), // cLavender
+		RGB(0xCD, 0x5C, 0x5C), // cRed
+		RGB(0x00, 0xFF, 0x00), // cGreen
+		RGB(0xFF, 0x7F, 0x50), // cOrange
 	};
 
 	// Fixed mapping of UI elements to colors
@@ -83,6 +90,9 @@ namespace ui
 		myColor::Black, // cTextHighlight,
 		myColor::Pink, // cTestPink,
 		myColor::Lavender, // cTestLavender,
+		myColor::Red, // cTestRed,
+		myColor::Green, // cTestGreen,
+		myColor::Orange, // cTestOrange,
 	};
 
 	// Mapping of UI elements to system colors
@@ -611,13 +621,13 @@ namespace ui
 		case uiPen::SolidPen:
 		{
 			lbr.lbColor = MyGetSysColor(uiColor::FrameSelected);
-			g_Pens[static_cast<int>(uiPen::SolidPen)] = ExtCreatePen(PS_SOLID, 1, &lbr, 0, nullptr);
+			g_Pens[static_cast<int>(uiPen::SolidPen)] = ExtCreatePen(PS_COSMETIC | PS_SOLID, 1, &lbr, 0, nullptr);
 			return g_Pens[static_cast<int>(uiPen::SolidPen)];
 		}
 		case uiPen::SolidGreyPen:
 		{
 			lbr.lbColor = MyGetSysColor(uiColor::FrameUnselected);
-			g_Pens[static_cast<int>(uiPen::SolidGreyPen)] = ExtCreatePen(PS_SOLID, 1, &lbr, 0, nullptr);
+			g_Pens[static_cast<int>(uiPen::SolidGreyPen)] = ExtCreatePen(PS_COSMETIC | PS_SOLID, 1, &lbr, 0, nullptr);
 			return g_Pens[static_cast<int>(uiPen::SolidGreyPen)];
 		}
 		case uiPen::DashedPen:
@@ -700,7 +710,7 @@ namespace ui
 		DrawTextW(hdc, lpchText.c_str(), -1, &drawRc, format);
 
 #ifdef SKIPBUFFER
-		FrameRect(hdc, &drawRc, GetSysBrush(bBold ? cBitmapTransFore : cBitmapTransBack));
+		::FrameRect(hdc, &drawRc, GetSysBrush(bBold ? cBitmapTransFore : cBitmapTransBack));
 #endif
 
 		SelectObject(hdc, hfontOld);
@@ -790,11 +800,21 @@ namespace ui
 		const UINT_PTR uIdSubclass,
 		DWORD_PTR /*dwRefData*/) noexcept
 	{
+		static auto borderWidth = 2;
 		switch (uMsg)
 		{
+		case WM_NCCALCSIZE:
+			InflateRect((LPRECT) lParam, -borderWidth, -borderWidth);
+			return 0;
+			break;
 		case WM_NCDESTROY:
 			RemoveWindowSubclass(hWnd, DrawEditProc, uIdSubclass);
 			return DefSubclassProc(hWnd, uMsg, wParam, lParam);
+		case WM_SETFOCUS:
+		case WM_KILLFOCUS:
+			// Trigger WM_NCPAINT so we can get an updated frame reflecting focus status
+			::RedrawWindow(hWnd, nullptr, nullptr, RDW_FRAME | RDW_INVALIDATE | RDW_ERASENOW);
+			break;
 		case WM_NCPAINT:
 		{
 			const auto hdc = GetWindowDC(hWnd);
@@ -803,7 +823,17 @@ namespace ui
 				auto rc = RECT{};
 				GetWindowRect(hWnd, &rc);
 				OffsetRect(&rc, -rc.left, -rc.top);
-				FrameRect(hdc, &rc, GetSysBrush(uiColor::FrameSelected));
+				if ((::GetFocus() == hWnd))
+				{
+					FrameRect(hdc, rc, borderWidth, uiColor::Glow);
+				}
+				else
+				{
+					// Clear out any previous border first
+					FrameRect(hdc, rc, borderWidth, uiColor::Background);
+					FrameRect(hdc, rc, 1, uiColor::FrameSelected);
+				}
+
 				ReleaseDC(hWnd, hdc);
 			}
 
@@ -820,6 +850,7 @@ namespace ui
 				::DefWindowProc(hWnd, WM_NCPAINT, reinterpret_cast<WPARAM>(hRgnCaption), NULL);
 				DeleteObject(hRgnCaption);
 			}
+
 			return 0;
 		}
 		}
@@ -828,7 +859,7 @@ namespace ui
 
 	void SubclassEdit(_In_ HWND hWnd, _In_opt_ HWND hWndParent, const bool bReadOnly)
 	{
-		SetWindowSubclass(hWnd, DrawEditProc, 0, 0);
+		SetWindowSubclass(hWnd, DrawEditProc, 0, reinterpret_cast<DWORD_PTR>(hWndParent));
 
 		auto lStyle = ::GetWindowLongPtr(hWnd, GWL_EXSTYLE);
 		lStyle &= ~WS_EX_CLIENTEDGE;
@@ -1084,7 +1115,7 @@ namespace ui
 		if (hdcBitmap) DeleteDC(hdcBitmap);
 
 #ifdef SKIPBUFFER
-		FrameRect(hdc, &rcTarget, GetSysBrush(bHover ? cBitmapTransFore : cBitmapTransBack));
+		::FrameRect(hdc, &rcTarget, GetSysBrush(bHover ? cBitmapTransFore : cBitmapTransBack));
 #endif
 	}
 
@@ -1313,7 +1344,7 @@ namespace ui
 		InflateRect(&rcHeader, 0, -1);
 		rcHeader.left = rcHeader.right - 2;
 		rcHeader.bottom -= 1;
-		FrameRect(hdc, &rcHeader, GetSysBrush(uiColor::FrameUnselected));
+		::FrameRect(hdc, &rcHeader, GetSysBrush(uiColor::FrameUnselected));
 
 		db.End(hdc);
 	}
@@ -1402,7 +1433,13 @@ namespace ui
 
 	void DrawButton(_In_ HWND hWnd, _In_ HDC hDC, _In_ const RECT& rc, const UINT itemState)
 	{
-		FillRect(hDC, &rc, GetSysBrush(uiColor::Background));
+		const auto background = registry::uiDiag ? GetSysBrush(uiColor::TestOrange) : GetSysBrush(uiColor::Background);
+		FillRect(hDC, &rc, background);
+
+		const auto iState = static_cast<int>(::SendMessage(hWnd, BM_GETSTATE, NULL, NULL));
+		const auto bGlow = (iState & BST_HOT) != 0;
+		const auto bPushed = (iState & BST_PUSHED) != 0;
+		const auto bFocused = (itemState & CDIS_FOCUS) != 0;
 
 		const auto bsStyle = static_cast<uiButtonStyle>(reinterpret_cast<intptr_t>(::GetProp(hWnd, BUTTON_STYLE)));
 		switch (bsStyle)
@@ -1411,17 +1448,7 @@ namespace ui
 		{
 			WCHAR szButton[255] = {0};
 			GetWindowTextW(hWnd, szButton, _countof(szButton));
-			const auto iState = static_cast<int>(::SendMessage(hWnd, BM_GETSTATE, NULL, NULL));
-			const auto bGlow = (iState & BST_HOT) != 0;
-			const auto bPushed = (iState & BST_PUSHED) != 0;
 			const auto bDisabled = (itemState & CDIS_DISABLED) != 0;
-			const auto bFocused = (itemState & CDIS_FOCUS) != 0;
-
-			FrameRect(
-				hDC,
-				&rc,
-				bFocused || bGlow || bPushed ? GetSysBrush(uiColor::FrameSelected)
-											 : GetSysBrush(uiColor::FrameUnselected));
 
 			DrawSegoeTextW(
 				hDC,
@@ -1439,6 +1466,11 @@ namespace ui
 			DrawTriangle(hWnd, hDC, rc, true, false);
 			break;
 		}
+
+		::FrameRect(
+			hDC,
+			&rc,
+			bFocused || bGlow || bPushed ? GetSysBrush(uiColor::FrameSelected) : GetSysBrush(uiColor::FrameUnselected));
 	}
 
 	bool CustomDrawButton(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
@@ -1636,7 +1668,7 @@ namespace ui
 				auto frameRect = rcItem;
 				frameRect.right = frameRect.left + nWidth;
 				frameRect.bottom = frameRect.top + nHeight;
-				FrameRect(hdc, &frameRect, GetSysBrush(cBitmapTransFore));
+				::FrameRect(hdc, &frameRect, GetSysBrush(cBitmapTransFore));
 #endif
 
 				DeleteDC(hdcMem);
@@ -2086,12 +2118,12 @@ namespace ui
 			const auto lsStyle = static_cast<uiLabelStyle>(
 				reinterpret_cast<intptr_t>(::GetProp(reinterpret_cast<HWND>(lParam), LABEL_STYLE)));
 			auto uiText = uiColor::Text;
-			auto uiBackground = uiColor::Background;
+			auto uiBackground = registry::uiDiag ? uiColor::TestPink : uiColor::Background;
 
 			if (lsStyle == uiLabelStyle::PaneHeaderLabel || lsStyle == uiLabelStyle::PaneHeaderText)
 			{
 				uiText = uiColor::PaneHeaderText;
-				uiBackground = uiColor::PaneHeaderBackground;
+				uiBackground = registry::uiDiag ? uiColor::TestRed : uiColor::PaneHeaderBackground;
 			}
 
 			const auto hdc = reinterpret_cast<HDC>(wParam);
@@ -2111,7 +2143,7 @@ namespace ui
 
 			switch (pHdr->code)
 			{
-				// Paint Buttons
+			// Paint Buttons
 			case NM_CUSTOMDRAW:
 				return CustomDrawButton(pHdr, lpResult);
 			}
@@ -2169,14 +2201,6 @@ namespace ui
 			return DefSubclassProc(hWnd, uMsg, wParam, lParam);
 		case WM_ERASEBKGND:
 			return true;
-		case WM_NCHITTEST:
-			if (static_cast<uiLabelStyle>(reinterpret_cast<intptr_t>(::GetProp(hWnd, LABEL_STYLE))) ==
-				uiLabelStyle::PaneHeaderLabel)
-			{
-				return HTTRANSPARENT;
-			}
-
-			break;
 		}
 
 		return DefSubclassProc(hWnd, uMsg, wParam, lParam);
@@ -2217,5 +2241,66 @@ namespace ui
 		EnumWindows(enumProc, reinterpret_cast<LPARAM>(&hwndRet));
 
 		return hwndRet;
+	}
+
+	HDWP WINAPI DeferWindowPos(
+		_In_ HDWP hWinPosInfo,
+		_In_ HWND hWnd,
+		_In_ int x,
+		_In_ int y,
+		_In_ int cx,
+		_In_ int cy,
+		_In_ const WCHAR* szName,
+		_In_opt_ const WCHAR* szLabel)
+	{
+		if (szLabel)
+		{
+			output::DebugPrint(
+				output::dbgLevel::Draw,
+				L"%ws x:%d y:%d width:%d height:%d v:%d label:\"%ws\"\n",
+				szName,
+				x,
+				y,
+				cx,
+				cy,
+				::IsWindowVisible(hWnd),
+				szLabel);
+		}
+		else
+		{
+			output::DebugPrint(
+				output::dbgLevel::Draw,
+				L"%ws x:%d y:%d cx:%d cy:%d v:%d\n",
+				szName,
+				x,
+				y,
+				cx,
+				cy,
+				::IsWindowVisible(hWnd));
+		}
+
+		return EC_D(HDWP, ::DeferWindowPos(hWinPosInfo, hWnd, nullptr, x, y, cx, cy, SWP_NOZORDER));
+	}
+
+	// Draw a frame but don't touch the inside of the frame
+	void WINAPI FrameRect(_In_ HDC hDC, _In_ RECT rect, _In_ int width, _In_ const uiColor color)
+	{
+		auto rcInnerFrame = rect;
+		WC_D_S(::InflateRect(&rcInnerFrame, -width, -width));
+		auto rgn = WC_D(HRGN, ::CreateRectRgn(0, 0, 0, 0));
+		if (GetClipRgn(hDC, rgn) != 1)
+		{
+			WC_B_S(::DeleteObject(rgn));
+			rgn = nullptr;
+		}
+
+		WC_D_S(::ExcludeClipRect(hDC, rcInnerFrame.left, rcInnerFrame.top, rcInnerFrame.right, rcInnerFrame.bottom));
+		WC_D_S(::FillRect(hDC, &rect, GetSysBrush(color)));
+
+		WC_D_S(::SelectClipRgn(hDC, rgn));
+		if (rgn != nullptr)
+		{
+			WC_B_S(::DeleteObject(rgn));
+		}
 	}
 } // namespace ui

@@ -916,6 +916,7 @@ namespace controls::sortlistctrl
 		output::outputRestriction(output::dbgLevel::Generic, nullptr, lpResIn, lpPropBag->GetMAPIProp());
 		dialog::editor::CRestrictEditor MyResEditor(
 			this,
+			m_lpMapiObjects, 
 			nullptr, // No alloc parent - we must MAPIFreeBuffer the result
 			lpResIn);
 		if (MyResEditor.DisplayDialog())
@@ -1035,7 +1036,7 @@ namespace controls::sortlistctrl
 			if (PROP_TYPE(ulPropTag) == PT_UNSPECIFIED && lpEditProp) ulPropTag = lpEditProp->ulPropTag;
 
 			const auto propEditor = dialog::editor::DisplayPropertyEditor(
-				this, IDS_PROPEDITOR, name, lpPropBag->IsAB(), lpSourceObj, ulPropTag, false, lpEditProp);
+				this, m_lpMapiObjects, IDS_PROPEDITOR, name, lpPropBag->IsAB(), lpSourceObj, ulPropTag, false, lpEditProp);
 			if (propEditor)
 			{
 				const auto lpModProp = propEditor->getValue();

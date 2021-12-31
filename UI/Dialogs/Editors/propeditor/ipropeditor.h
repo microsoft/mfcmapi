@@ -1,5 +1,6 @@
 #pragma once
 #include <UI/Dialogs/Editors/Editor.h>
+#include <core/mapi/cache/mapiObjects.h>
 
 namespace dialog::editor
 {
@@ -10,7 +11,7 @@ namespace dialog::editor
 			: CEditor(pParentWnd, uidTitle, uidPrompt, ulButtonFlags)
 		{
 		}
-		// Impleentations of getValue returns data owned completly by the object
+		// Implementations of getValue returns data owned completly by the object
 		// so there is nothing to free
 		// Callers CANNOT hold on to this data
 		// If they need it, they can use mapi::HrDupPropset
@@ -21,6 +22,7 @@ namespace dialog::editor
 	// Otherwise caller will need to ensure the SPropValue is properly freed
 	_Check_return_ std::shared_ptr<IPropEditor> DisplayPropertyEditor(
 		_In_ CWnd* pParentWnd,
+		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 		UINT uidTitle,
 		const std::wstring& name,
 		bool bIsAB,

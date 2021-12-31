@@ -95,7 +95,7 @@
     <ClInclude Include="UI\Controls\SortList\SingleMAPIPropListCtrl.h">
       <Filter>Source Files\UI\Controls\SortList</Filter>
     </ClInclude>
-    <ClInclude Include="UI\FakeSplitter.h">
+    <ClInclude Include="UI\Controls\FakeSplitter.h">
       <Filter>Source Files\UI</Filter>
     </ClInclude>
     <ClInclude Include="UI\file\FileDialogEx.h">
@@ -122,6 +122,7 @@
     <ClInclude Include="UI\Dialogs\propList\RegistryDialog.h">
       <Filter>Source Files\UI\Dialogs\propList</Filter>
     </ClInclude>
+    <ClInclude Include="UI\Controls\PaneHeader\PaneHeader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StdAfx.h">
@@ -171,7 +172,7 @@
     <ClCompile Include="UI\Controls\SortList\SingleMAPIPropListCtrl.cpp">
       <Filter>Source Files\UI\Controls\SortList</Filter>
     </ClCompile>
-    <ClCompile Include="UI\FakeSplitter.cpp">
+    <ClCompile Include="UI\Controls\FakeSplitter.cpp">
       <Filter>Source Files\UI</Filter>
     </ClCompile>
     <ClCompile Include="UI\file\FileDialogEx.cpp">
@@ -197,6 +198,9 @@
     </ClCompile>
     <ClCompile Include="UI\Dialogs\propList\RegistryDialog.cpp">
       <Filter>Source Files\UI\Dialogs\propList</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Controls\PaneHeader\PaneHeader.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

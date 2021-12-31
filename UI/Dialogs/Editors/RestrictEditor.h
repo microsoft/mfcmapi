@@ -1,12 +1,17 @@
 #pragma once
 #include <UI/Dialogs/Editors/Editor.h>
+#include <core/mapi/cache/mapiObjects.h>
 
 namespace dialog::editor
 {
 	class CRestrictEditor : public CEditor
 	{
 	public:
-		CRestrictEditor(_In_ CWnd* pParentWnd, _In_opt_ LPVOID lpAllocParent, _In_opt_ const _SRestriction* lpRes);
+		CRestrictEditor(
+			_In_ CWnd* pParentWnd,
+			_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
+			_In_opt_ LPVOID lpAllocParent,
+			_In_opt_ const _SRestriction* lpRes);
 		~CRestrictEditor();
 
 		_Check_return_ LPSRestriction DetachModifiedSRestriction() noexcept;
@@ -35,6 +40,7 @@ namespace dialog::editor
 		// output variable
 		LPSRestriction m_lpOutputRes;
 		bool m_bModified;
+		std::shared_ptr<cache::CMapiObjects> m_lpMapiObjects{};
 	};
 
 	class CCriteriaEditor : public CEditor
@@ -42,6 +48,7 @@ namespace dialog::editor
 	public:
 		CCriteriaEditor(
 			_In_ CWnd* pParentWnd,
+			_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 			_In_ const _SRestriction* lpRes,
 			_In_ LPENTRYLIST lpEntryList,
 			ULONG ulSearchState);
@@ -68,5 +75,6 @@ namespace dialog::editor
 		LPENTRYLIST m_lpNewEntryList{};
 
 		ULONG m_ulNewSearchFlags;
+		std::shared_ptr<cache::CMapiObjects> m_lpMapiObjects{};
 	};
 } // namespace dialog::editor

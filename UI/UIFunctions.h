@@ -29,6 +29,9 @@ namespace ui
 		TextHighlight,
 		TestPink,
 		TestLavender,
+		TestRed,
+		TestGreen,
+		TestOrange,
 		UIEnd
 	};
 
@@ -188,4 +191,16 @@ namespace ui
 		_In_ UINT format);
 
 	_Check_return_ HWND GetMainWindow() noexcept;
+
+	HDWP WINAPI DeferWindowPos(
+		_In_ HDWP hWinPosInfo,
+		_In_ HWND hWnd,
+		_In_ int x,
+		_In_ int y,
+		_In_ int cx,
+		_In_ int cy,
+		_In_ const WCHAR* szName,
+		_In_opt_ const WCHAR* szLabel = nullptr);
+
+	void WINAPI FrameRect(_In_ HDC hDC, _In_ RECT rect, _In_ int width, _In_ const uiColor color);
 } // namespace ui

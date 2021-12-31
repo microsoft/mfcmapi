@@ -1,5 +1,5 @@
 #include <StdAfx.h>
-#include <UI/FakeSplitter.h>
+#include <UI/Controls/FakeSplitter.h>
 #include <UI/UIFunctions.h>
 #include <UI/DoubleBuffer.h>
 #include <core/utility/output.h>
@@ -91,6 +91,9 @@ namespace controls
 			if (LOWORD(lParam) == HTCLIENT && reinterpret_cast<HWND>(wParam) == this->m_hWnd && !m_bTracking)
 				return true; // we will handle it in the mouse move
 			break;
+		case WM_NEXTDLGCTL:
+			// Ensure tabs are handled by parent dialog
+			return ::SendMessage(m_hwndParent, message, wParam, lParam);
 		case WM_COMMAND:
 		{
 			const auto nCode = HIWORD(wParam);
@@ -155,9 +158,8 @@ namespace controls
 
 			if (m_PaneOne)
 			{
-				hWinPosInfo = EC_D(
-					HDWP,
-					::DeferWindowPos(hWinPosInfo, m_PaneOne, nullptr, x, y, r1.Width(), r1.Height(), SWP_NOZORDER));
+				hWinPosInfo = ui::DeferWindowPos(
+					hWinPosInfo, m_PaneOne, x, y, r1.Width(), r1.Height(), L"CFakeSplitter::DeferWindowPos pane 1");
 			}
 
 			if (m_ViewPaneOne)
@@ -188,10 +190,14 @@ namespace controls
 
 			if (m_PaneTwo)
 			{
-				hWinPosInfo = EC_D(
-					HDWP,
-					::DeferWindowPos(
-						hWinPosInfo, m_PaneTwo, nullptr, r2.left, r2.top, r2.Width(), r2.Height(), SWP_NOZORDER));
+				hWinPosInfo = ui::DeferWindowPos(
+					hWinPosInfo,
+					m_PaneTwo,
+					r2.left,
+					r2.top,
+					r2.Width(),
+					r2.Height(),
+					L"CFakeSplitter::DeferWindowPos pane 2");
 			}
 
 			if (m_ViewPaneTwo)
@@ -246,6 +252,8 @@ namespace controls
 		{
 			m_iSplitPos = m_iSplitPos - m_iSplitWidth - 1;
 		}
+
+		if (m_iSplitPos < 0) m_iSplitPos = 0;
 	}
 
 	void CFakeSplitter::SetPercent(const FLOAT iNewPercent)

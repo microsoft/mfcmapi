@@ -43,7 +43,7 @@ namespace viewpane
 			pane->Setup(bAllowSort, std::move(callback));
 			pane->SetLabel(uidLabel);
 			pane->SetReadOnly(bReadOnly);
-			pane->m_bCollapsible = true;
+			pane->makeCollapsible();
 			pane->m_paneID = paneID;
 		}
 
@@ -95,35 +95,7 @@ namespace viewpane
 		return max(ViewPane::GetMinWidth(), (int) (NUMLISTBUTTONS * m_iButtonWidth + m_iMargin * (NUMLISTBUTTONS - 1)));
 	}
 
-	int ListPane::GetFixedHeight()
-	{
-		auto iHeight = 0;
-		if (0 != m_paneID) iHeight += m_iSmallHeightMargin; // Top margin
-
-		iHeight += GetLabelHeight();
-
-		if (!m_bCollapsed)
-		{
-			iHeight += m_iSmallHeightMargin;
-
-			if (!m_bReadOnly)
-			{
-				iHeight += m_iLargeHeightMargin + m_iButtonHeight;
-			}
-		}
-
-		return iHeight;
-	}
-
-	int ListPane::GetLines()
-	{
-		if (m_bCollapsed)
-		{
-			return 0;
-		}
-
-		return LINES_LIST;
-	}
+	int ListPane::GetLines() { return collapsed() ? 0 : LINES_LIST; }
 
 	ULONG ListPane::HandleChange(UINT nID)
 	{
@@ -157,6 +129,26 @@ namespace viewpane
 		return GetID();
 	}
 
+	// ListPane Layout:
+	// Header: GetHeaderHeight
+	// List: variable
+	// Margin: m_iLargeHeightMargin
+	// Buttons: m_iButtonHeight (if not read only)
+	int ListPane::GetFixedHeight()
+	{
+		auto iHeight = GetHeaderHeight();
+
+		if (!collapsed())
+		{
+			if (!m_bReadOnly)
+			{
+				iHeight += m_iLargeHeightMargin + m_iButtonHeight;
+			}
+		}
+
+		return iHeight;
+	}
+
 	HDWP ListPane::DeferWindowPos(
 		_In_ HDWP hWinPosInfo,
 		_In_ const int x,
@@ -165,23 +157,18 @@ namespace viewpane
 		_In_ const int height)
 	{
 		auto curY = y;
-		const auto labelHeight = GetLabelHeight();
-		if (0 != m_paneID)
-		{
-			curY += m_iSmallHeightMargin;
-		}
 
 		// Layout our label
-		hWinPosInfo = EC_D(HDWP, ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y)));
-		curY += labelHeight + m_iSmallHeightMargin;
+		hWinPosInfo = EC_D(HDWP, ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height));
+		curY += GetHeaderHeight();
 
-		const auto cmdShow = m_bCollapsed ? SW_HIDE : SW_SHOW;
+		const auto cmdShow = collapsed() ? SW_HIDE : SW_SHOW;
 		WC_B_S(m_List.ShowWindow(cmdShow));
 		auto listHeight = height - (curY - y);
+		// Space for buttons if needed
 		if (!m_bReadOnly) listHeight -= m_iLargeHeightMargin + m_iButtonHeight;
-		hWinPosInfo = EC_D(
-			HDWP,
-			::DeferWindowPos(hWinPosInfo, m_List.GetSafeHwnd(), nullptr, x, curY, width, listHeight, SWP_NOZORDER));
+		hWinPosInfo = ui::DeferWindowPos(
+			hWinPosInfo, m_List.GetSafeHwnd(), x, curY, width, listHeight, L"ListPane::DeferWindowPos::list");
 
 		if (!m_bReadOnly)
 		{
@@ -454,5 +441,11 @@ namespace viewpane
 	std::wstring ListPane::GetItemText(_In_ int nItem, _In_ int nSubItem) const
 	{
 		return m_List.GetItemText(nItem, nSubItem);
+	}
+
+	bool ListPane::containsWindow(HWND hWnd) const noexcept
+	{
+		if (m_List.GetSafeHwnd() == hWnd) return true;
+		return m_Header.containsWindow(hWnd);
 	}
 } // namespace viewpane

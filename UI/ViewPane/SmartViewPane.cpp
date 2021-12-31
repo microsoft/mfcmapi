@@ -11,10 +11,13 @@
 
 namespace viewpane
 {
-	enum __SmartViewFields
+	enum __SmartViewPanes
 	{
-		SV_TREE,
-		SV_TEXT
+		// Start the SmartViewPane sub panes at 50
+		// This means we can only have one SmartViewPane per editor
+		SV_TREE = 50,
+		SV_TEXT,
+		SV_ACTIONBUTTON
 	};
 
 	std::shared_ptr<SmartViewPane> SmartViewPane::Create(const int paneID, const UINT uidLabel)
@@ -24,8 +27,9 @@ namespace viewpane
 		{
 			pane->SetLabel(uidLabel);
 			pane->SetReadOnly(true);
-			pane->m_bCollapsible = true;
+			pane->makeCollapsible();
 			pane->m_paneID = paneID;
+			pane->m_Header.EnableActionButton(SV_ACTIONBUTTON);
 		}
 
 		return pane;
@@ -56,33 +60,51 @@ namespace viewpane
 		Parse(m_bins);
 	}
 
+	int SmartViewPane::GetLines()
+	{
+		if (!collapsed() && m_bHasData)
+		{
+			return m_Splitter->GetLines();
+		}
+
+		return 0;
+	}
+
+	ULONG SmartViewPane::HandleChange(const UINT nID)
+	{
+		if (nID == SV_ACTIONBUTTON)
+		{
+			if (OnActionButton && m_bins.size() == 1)
+			{
+				const auto bin = SBinary{static_cast<ULONG>(m_bins[0].size()), m_bins[0].data()};
+				OnActionButton(bin);
+			}
+
+			return nID;
+		}
+
+		auto paneID = m_Splitter->HandleChange(nID);
+		if (paneID != static_cast<ULONG>(-1)) return paneID;
+
+		return ViewPane::HandleChange(nID);
+	}
+
+	// SmartViewPane Layout:
+	// Header: GetHeaderHeight
+	// Collapsible:
+	//    Dropdown: m_iEditHeight
+	//    Splitter: variable
 	int SmartViewPane::GetFixedHeight()
 	{
-		if (!m_bDoDropDown && !m_bHasData) return 0;
+		auto iHeight = GetHeaderHeight();
 
-		auto iHeight = 0;
-
-		if (0 != m_paneID) iHeight += m_iSmallHeightMargin; // Top margin
-
-		iHeight += GetLabelHeight();
-
-		if (m_bDoDropDown && !m_bCollapsed)
+		if (!collapsed())
 		{
 			iHeight += m_iEditHeight; // Height of the dropdown
 			iHeight += m_Splitter->GetFixedHeight();
 		}
 
 		return iHeight;
-	}
-
-	int SmartViewPane::GetLines()
-	{
-		if (!m_bCollapsed && m_bHasData)
-		{
-			return m_Splitter->GetLines();
-		}
-
-		return 0;
 	}
 
 	HDWP SmartViewPane::DeferWindowPos(
@@ -92,47 +114,30 @@ namespace viewpane
 		_In_ const int width,
 		_In_ const int height)
 	{
-		const auto visibility = !m_bDoDropDown && !m_bHasData ? SW_HIDE : SW_SHOW;
-		WC_B_S(m_CollapseButton.ShowWindow(visibility));
-		WC_B_S(m_Label.ShowWindow(visibility));
-
 		auto curY = y;
-		const auto labelHeight = GetLabelHeight();
-		if (0 != m_paneID)
-		{
-			curY += m_iSmallHeightMargin;
-		}
 
 		// Layout our label
-		hWinPosInfo = EC_D(HDWP, ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y)));
+		hWinPosInfo = EC_D(HDWP, ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height));
+		curY += GetHeaderHeight();
 
-		curY += labelHeight + m_iSmallHeightMargin;
-
-		if (!m_bCollapsed)
+		if (!collapsed())
 		{
-			if (m_bDoDropDown)
-			{
-				hWinPosInfo = EC_D(
-					HDWP,
-					::DeferWindowPos(
-						hWinPosInfo,
-						m_DropDown.GetSafeHwnd(),
-						nullptr,
-						x,
-						curY,
-						width,
-						m_iEditHeight * 10,
-						SWP_NOZORDER));
+			hWinPosInfo = ui::DeferWindowPos(
+				hWinPosInfo,
+				m_DropDown.GetSafeHwnd(),
+				x,
+				curY,
+				width,
+				m_iEditHeight * 10, // 10 choices at a time in the dropdown
+				L"SmartViewPane::DeferWindowPos::dropdown");
 
-				curY += m_iEditHeight;
-			}
+			curY += m_iEditHeight;
 
 			hWinPosInfo = EC_D(HDWP, m_Splitter->DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y)));
 		}
 
-		WC_B_S(m_DropDown.ShowWindow(m_bCollapsed ? SW_HIDE : SW_SHOW));
-		m_Splitter->ShowWindow(m_bCollapsed || !m_bHasData ? SW_HIDE : SW_SHOW);
-
+		WC_B_S(m_DropDown.ShowWindow(collapsed() ? SW_HIDE : SW_SHOW));
+		m_Splitter->ShowWindow(collapsed() || !m_bHasData ? SW_HIDE : SW_SHOW);
 		return hWinPosInfo;
 	}
 
@@ -191,7 +196,15 @@ namespace viewpane
 		if (m_TreePane) m_TreePane->m_Tree.Refresh();
 
 		const auto iStructType = static_cast<parserType>(GetDropDownSelectionValue());
-		auto szSmartViewArray = std::vector<std::wstring>{};
+		if (OnActionButton && m_bins.size() == 1 && !m_bins[0].empty() && iStructType == parserType::ENTRYID)
+		{
+			m_Header.SetActionButton(L"Open");
+		}
+		else
+		{
+			m_Header.SetActionButton(L"");
+		}
+
 		treeData = smartview::block::create(m_bins.size() > 1 ? L"Multivalued Property" : L"");
 		auto source = 0;
 		for (auto& bin : m_bins)
@@ -256,7 +269,7 @@ namespace viewpane
 		const auto lpData = reinterpret_cast<smartview::block*>(tvi.lParam);
 		if (lpData)
 		{
-			if (registry::hexDialogDiag)
+			if (registry::uiDiag)
 			{
 				SetStringW(lpData->toString());
 			}
@@ -278,7 +291,7 @@ namespace viewpane
 		{
 		case CDDS_ITEMPOSTPAINT:
 		{
-			if (!registry::hexDialogDiag) return;
+			if (!registry::uiDiag) return;
 			const auto hItem = reinterpret_cast<HTREEITEM>(lvcd->nmcd.dwItemSpec);
 			if (hItem)
 			{
@@ -311,5 +324,12 @@ namespace viewpane
 			break;
 		}
 		}
+	}
+
+	bool SmartViewPane::containsWindow(HWND hWnd) const noexcept
+	{
+		if (m_Splitter && m_Splitter->containsWindow(hWnd)) return true;
+		if (m_TreePane && m_TreePane->containsWindow(hWnd)) return true;
+		return m_Header.containsWindow(hWnd);
 	}
 } // namespace viewpane

@@ -1,6 +1,5 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/BaseDialog.h>
-#include <UI/FakeSplitter.h>
 #include <core/mapi/cache/mapiObjects.h>
 #include <UI/ParentWnd.h>
 #include <UI/Controls/SortList/SingleMAPIPropListCtrl.h>
@@ -551,8 +550,7 @@ namespace dialog
 
 			if (m_lpFakeSplitter && m_lpFakeSplitter.m_hWnd)
 			{
-				hdwp =
-					EC_D(HDWP, DeferWindowPos(hdwp, m_lpFakeSplitter.m_hWnd, nullptr, 0, 0, cx, iNewCY, SWP_NOZORDER));
+				hdwp = ui::DeferWindowPos(hdwp, m_lpFakeSplitter.m_hWnd, 0, 0, cx, iNewCY, L"CBaseDialog::OnSize::fakesplitter");
 			}
 
 			WC_B_S(EndDeferWindowPos(hdwp));

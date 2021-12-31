@@ -4,6 +4,7 @@
 #define IDC_FOLDER_TREE 101
 #define IDC_LIST_CTRL 102
 #define IDC_FAKE_SPLITTER 105
+#define IDC_PANE_HEADER 106
 #define IDR_MAINFRAME 108
 #define IDB_ICONS 139
 #define IDB_MFCMAPILOGO 140
@@ -63,7 +64,7 @@
 #define IDD_EDITACTION1 220
 #define IDD_EDITACTION2 221
 #define IDD_RECALCLAYOUT 222
-#define IDD_COUNTLABEL 223
+#define IDD_RIGHTLABEL 223
 #define IDD_EDITACTION3 225
 // Collapsible controls will use this ID plus their 0 based control ID for uniqueness
 // Be careful that the next ID allocated is higher than the max number of collapsible controls that appear in a dialog.
@@ -1222,7 +1223,7 @@
 #define IDS_SEARCHFULLSTRING 35861
 #define IDS_EXPORTPROMPTLOCATION 35862
 #define IDS_TEXTANSIUNICODE 35863
-#define IDS_REGKEY_HEXDIALOGDIAG 35864
+#define IDS_REGKEY_UIDIAG 35864
 #define IDS_REGKEY_PREFER_UNICODE_PROPS 35865
 #define IDS_ACCOUNT_DIALOG 35866
 #define IDS_REGISTRY_DIALOG	35867

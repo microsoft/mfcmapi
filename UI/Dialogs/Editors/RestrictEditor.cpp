@@ -75,6 +75,7 @@ namespace dialog::editor
 	public:
 		CResCombinedEditor(
 			_In_ CWnd* pParentWnd,
+			_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 			ULONG ulResType,
 			ULONG ulCompare,
 			ULONG ulPropTag,
@@ -91,10 +92,12 @@ namespace dialog::editor
 		LPVOID m_lpAllocParent;
 		const _SPropValue* m_lpOldProp;
 		LPSPropValue m_lpNewProp;
+		std::shared_ptr<cache::CMapiObjects> m_lpMapiObjects{};
 	};
 
 	CResCombinedEditor::CResCombinedEditor(
 		_In_ CWnd* pParentWnd,
+		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 		ULONG ulResType,
 		ULONG ulCompare,
 		ULONG ulPropTag,
@@ -104,14 +107,16 @@ namespace dialog::editor
 			  pParentWnd,
 			  IDS_RESED,
 			  ulResType == RES_CONTENT ? IDS_RESEDCONTPROMPT : // Content case
-				  ulResType == RES_PROPERTY ? IDS_RESEDPROPPROMPT : // Property case
-					  0, // else case
+				  ulResType == RES_PROPERTY ? IDS_RESEDPROPPROMPT
+											: // Property case
+				  0, // else case
 			  CEDITOR_BUTTON_OK | CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_CANCEL,
 			  IDS_ACTIONEDITPROP,
 			  NULL,
 			  NULL)
 	{
 		TRACE_CONSTRUCTOR(CONTENTCLASS);
+		m_lpMapiObjects = lpMapiObjects;
 
 		m_ulResType = ulResType;
 		m_lpOldProp = lpProp;
@@ -204,8 +209,8 @@ namespace dialog::editor
 		auto lpEditProp = m_lpOldProp;
 		if (m_lpNewProp) lpEditProp = m_lpNewProp;
 
-		const auto propEditor =
-			DisplayPropertyEditor(this, IDS_PROPEDITOR, L"", false, nullptr, GetPropTag(4), false, lpEditProp);
+		const auto propEditor = DisplayPropertyEditor(
+			this, m_lpMapiObjects, IDS_PROPEDITOR, L"", false, nullptr, GetPropTag(4), false, lpEditProp);
 
 		if (propEditor)
 		{
@@ -352,6 +357,7 @@ namespace dialog::editor
 	public:
 		CResSubResEditor(
 			_In_ CWnd* pParentWnd,
+			_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 			ULONG ulSubObject,
 			_In_ const _SRestriction* lpRes,
 			_In_ LPVOID lpAllocParent);
@@ -365,10 +371,12 @@ namespace dialog::editor
 		LPVOID m_lpAllocParent;
 		const _SRestriction* m_lpOldRes;
 		LPSRestriction m_lpNewRes;
+		std::shared_ptr<cache::CMapiObjects> m_lpMapiObjects{};
 	};
 
 	CResSubResEditor::CResSubResEditor(
 		_In_ CWnd* pParentWnd,
+		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 		ULONG ulSubObject,
 		_In_ const _SRestriction* lpRes,
 		_In_ LPVOID lpAllocParent)
@@ -382,6 +390,7 @@ namespace dialog::editor
 			  NULL)
 	{
 		TRACE_CONSTRUCTOR(SUBRESCLASS);
+		m_lpMapiObjects = lpMapiObjects;
 
 		m_lpOldRes = lpRes;
 		m_lpNewRes = nullptr;
@@ -417,7 +426,7 @@ namespace dialog::editor
 
 	void CResSubResEditor::OnEditAction1()
 	{
-		CRestrictEditor ResEdit(this, m_lpAllocParent, m_lpNewRes ? m_lpNewRes : m_lpOldRes);
+		CRestrictEditor ResEdit(this, m_lpMapiObjects, m_lpAllocParent, m_lpNewRes ? m_lpNewRes : m_lpOldRes);
 
 		if (!ResEdit.DisplayDialog()) return;
 
@@ -433,7 +442,11 @@ namespace dialog::editor
 	class CResAndOrEditor : public CEditor
 	{
 	public:
-		CResAndOrEditor(_In_ CWnd* pParentWnd, _In_ const _SRestriction* lpRes, _In_ LPVOID lpAllocParent);
+		CResAndOrEditor(
+			_In_ CWnd* pParentWnd,
+			_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
+			_In_ const _SRestriction* lpRes,
+			_In_ LPVOID lpAllocParent);
 
 		_Check_return_ LPSRestriction DetachModifiedSRestrictionArray() noexcept;
 		_Check_return_ ULONG GetResCount() const noexcept;
@@ -448,12 +461,18 @@ namespace dialog::editor
 		const _SRestriction* m_lpRes;
 		LPSRestriction m_lpNewResArray;
 		ULONG m_ulNewResCount;
+		std::shared_ptr<cache::CMapiObjects> m_lpMapiObjects{};
 	};
 
-	CResAndOrEditor::CResAndOrEditor(_In_ CWnd* pParentWnd, _In_ const _SRestriction* lpRes, _In_ LPVOID lpAllocParent)
+	CResAndOrEditor::CResAndOrEditor(
+		_In_ CWnd* pParentWnd,
+		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
+		_In_ const _SRestriction* lpRes,
+		_In_ LPVOID lpAllocParent)
 		: CEditor(pParentWnd, IDS_RESED, IDS_RESEDANDORPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)
 	{
 		TRACE_CONSTRUCTOR(ANDORCLASS);
+		m_lpMapiObjects = lpMapiObjects;
 		m_lpRes = lpRes;
 		m_lpNewResArray = nullptr;
 		m_ulNewResCount = NULL;
@@ -537,7 +556,7 @@ namespace dialog::editor
 
 		const auto lpSourceRes = res->getCurrentRes();
 
-		CRestrictEditor MyResEditor(this, m_lpAllocParent,
+		CRestrictEditor MyResEditor(this, m_lpMapiObjects, m_lpAllocParent,
 									lpSourceRes); // pass source res into editor
 		if (!MyResEditor.DisplayDialog()) return false;
 		// Since lpData->data.Res.lpNewRes was owned by an m_lpAllocParent, we don't free it directly
@@ -582,7 +601,11 @@ namespace dialog::editor
 	class CResCommentEditor : public CEditor
 	{
 	public:
-		CResCommentEditor(_In_ CWnd* pParentWnd, _In_ const _SRestriction* lpRes, _In_ LPVOID lpAllocParent);
+		CResCommentEditor(
+			_In_ CWnd* pParentWnd,
+			_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
+			_In_ const _SRestriction* lpRes,
+			_In_ LPVOID lpAllocParent);
 
 		_Check_return_ LPSRestriction DetachModifiedSRestriction() noexcept;
 		_Check_return_ LPSPropValue DetachModifiedSPropValue() noexcept;
@@ -602,10 +625,12 @@ namespace dialog::editor
 		LPSRestriction m_lpNewCommentRes;
 		LPSPropValue m_lpNewCommentProp;
 		ULONG m_ulNewCommentProp{};
+		std::shared_ptr<cache::CMapiObjects> m_lpMapiObjects{};
 	};
 
 	CResCommentEditor::CResCommentEditor(
 		_In_ CWnd* pParentWnd,
+		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 		_In_ const _SRestriction* lpRes,
 		_In_ LPVOID lpAllocParent)
 		: CEditor(
@@ -618,6 +643,7 @@ namespace dialog::editor
 			  NULL)
 	{
 		TRACE_CONSTRUCTOR(COMMENTCLASS);
+		m_lpMapiObjects = lpMapiObjects;
 
 		m_lpSourceRes = lpRes;
 		m_lpNewCommentRes = nullptr;
@@ -701,7 +727,7 @@ namespace dialog::editor
 	{
 		const auto lpSourceRes = GetSourceRes();
 
-		CRestrictEditor MyResEditor(this, m_lpAllocParent,
+		CRestrictEditor MyResEditor(this, m_lpMapiObjects, m_lpAllocParent,
 									lpSourceRes); // pass source res into editor
 		if (!MyResEditor.DisplayDialog()) return;
 
@@ -738,8 +764,8 @@ namespace dialog::editor
 			lpSourceProp = &sProp;
 		}
 
-		const auto propEditor =
-			DisplayPropertyEditor(this, IDS_PROPEDITOR, L"", false, nullptr, NULL, false, lpSourceProp);
+		const auto propEditor = DisplayPropertyEditor(
+			this, m_lpMapiObjects, IDS_PROPEDITOR, L"", false, nullptr, NULL, false, lpSourceProp);
 
 		if (propEditor)
 		{
@@ -807,6 +833,7 @@ namespace dialog::editor
 	// Takes LPSRestriction lpRes as input
 	CRestrictEditor::CRestrictEditor(
 		_In_ CWnd* pParentWnd,
+		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 		_In_opt_ LPVOID lpAllocParent,
 		_In_opt_ const _SRestriction* lpRes)
 		: CEditor(
@@ -819,6 +846,7 @@ namespace dialog::editor
 			  NULL)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
+		m_lpMapiObjects = lpMapiObjects;
 
 		// Not copying the source restriction, but since we're modal it won't matter
 		m_lpRes = lpRes;
@@ -1017,7 +1045,7 @@ namespace dialog::editor
 
 	HRESULT CRestrictEditor::EditAndOr(const _SRestriction* lpSourceRes)
 	{
-		CResAndOrEditor MyResEditor(this, lpSourceRes,
+		CResAndOrEditor MyResEditor(this, m_lpMapiObjects, lpSourceRes,
 									m_lpAllocParent); // pass source res into editor
 		if (MyResEditor.DisplayDialog())
 		{
@@ -1042,6 +1070,7 @@ namespace dialog::editor
 	{
 		CRestrictEditor MyResEditor(
 			this,
+			m_lpMapiObjects,
 			m_lpAllocParent,
 			lpSourceRes->res.resNot.lpRes); // pass source res into editor
 		if (MyResEditor.DisplayDialog())
@@ -1060,6 +1089,7 @@ namespace dialog::editor
 		auto hRes = S_OK;
 		CResCombinedEditor MyEditor(
 			this,
+			m_lpMapiObjects,
 			lpSourceRes->rt,
 			lpSourceRes->res.resContent.ulFuzzyLevel,
 			lpSourceRes->res.resContent.ulPropTag,
@@ -1146,7 +1176,7 @@ namespace dialog::editor
 	HRESULT CRestrictEditor::EditSubrestriction(const _SRestriction* lpSourceRes)
 	{
 		CResSubResEditor MyEditor(
-			this, lpSourceRes->res.resSub.ulSubObject, lpSourceRes->res.resSub.lpRes, m_lpAllocParent);
+			this, m_lpMapiObjects, lpSourceRes->res.resSub.ulSubObject, lpSourceRes->res.resSub.lpRes, m_lpAllocParent);
 		if (MyEditor.DisplayDialog())
 		{
 			m_lpOutputRes->rt = lpSourceRes->rt;
@@ -1162,8 +1192,11 @@ namespace dialog::editor
 
 	HRESULT CRestrictEditor::EditComment(const _SRestriction* lpSourceRes)
 	{
-		CResCommentEditor MyResEditor(this, lpSourceRes,
-									  m_lpAllocParent); // pass source res into editor
+		CResCommentEditor MyResEditor(
+			this,
+			m_lpMapiObjects,
+			lpSourceRes,
+			m_lpAllocParent); // pass source res into editor
 		if (MyResEditor.DisplayDialog())
 		{
 			m_lpOutputRes->rt = lpSourceRes->rt;
@@ -1190,6 +1223,7 @@ namespace dialog::editor
 #define LISTNUM 4
 	CCriteriaEditor::CCriteriaEditor(
 		_In_ CWnd* pParentWnd,
+		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 		_In_ const _SRestriction* lpRes,
 		_In_ LPENTRYLIST lpEntryList,
 		ULONG ulSearchState)
@@ -1203,6 +1237,7 @@ namespace dialog::editor
 			  NULL)
 	{
 		TRACE_CONSTRUCTOR(CRITERIACLASS);
+		m_lpMapiObjects = lpMapiObjects;
 
 		m_lpSourceRes = lpRes;
 		m_lpNewRes = nullptr;
@@ -1314,7 +1349,7 @@ namespace dialog::editor
 	{
 		const auto lpSourceRes = GetSourceRes();
 
-		CRestrictEditor MyResEditor(this, nullptr,
+		CRestrictEditor MyResEditor(this, m_lpMapiObjects, nullptr,
 									lpSourceRes); // pass source res into editor
 		if (MyResEditor.DisplayDialog())
 		{

@@ -10,6 +10,7 @@ namespace viewpane
 		static std::shared_ptr<TreePane> Create(int paneID, UINT uidLabel, bool bReadOnly);
 
 		std::function<void(controls::StyleTreeCtrl& tree)> InitializeCallback = nullptr;
+		bool containsWindow(HWND hWnd) const noexcept override;
 
 		controls::StyleTreeCtrl m_Tree;
 
@@ -18,6 +19,6 @@ namespace viewpane
 		HDWP DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height) override;
 		void CommitUIValues() override{};
 		int GetFixedHeight() override;
-		int GetLines() override { return m_bCollapsed ? 0 : 4; }
+		int GetLines() override { return collapsed() ? 0 : 4; }
 	};
 } // namespace viewpane

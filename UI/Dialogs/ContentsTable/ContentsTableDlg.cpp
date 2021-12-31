@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/ContentsTable/ContentsTableDlg.h>
 #include <UI/Controls/SortList/ContentsTableListCtrl.h>
-#include <UI/FakeSplitter.h>
+#include <UI/Controls/FakeSplitter.h>
 #include <UI/file/FileDialogEx.h>
 #include <UI/Controls/SortList/SingleMAPIPropListCtrl.h>
 #include <core/mapi/cache/mapiObjects.h>
@@ -356,6 +356,7 @@ namespace dialog
 
 		editor::CRestrictEditor MyRestrict(
 			this,
+			m_lpMapiObjects,
 			nullptr, // No alloc parent - we must MAPIFreeBuffer the result
 			m_lpContentsTableListCtrl->GetRestriction());
 

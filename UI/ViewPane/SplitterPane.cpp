@@ -1,6 +1,7 @@
 #include <StdAfx.h>
 #include <UI/ViewPane/SplitterPane.h>
 #include <core/utility/output.h>
+#include <UI/UIFunctions.h>
 
 namespace viewpane
 {
@@ -20,7 +21,7 @@ namespace viewpane
 			pane->SetLabel(uidLabel);
 			if (uidLabel)
 			{
-				pane->m_bCollapsible = true;
+				pane->makeCollapsible();
 			}
 
 			pane->m_paneID = paneID;
@@ -42,43 +43,9 @@ namespace viewpane
 		}
 	}
 
-	int SplitterPane::GetFixedHeight()
-	{
-		auto iHeight = 0;
-		// TODO: Better way to find the top pane
-		if (0 != m_paneID) iHeight += m_iSmallHeightMargin; // Top margin
-
-		iHeight += GetLabelHeight();
-
-		if (m_bCollapsed)
-		{
-			iHeight += m_iSmallHeightMargin; // Bottom margin
-		}
-		else
-		{
-			// A small margin between our button and the splitter control, if we're collapsible and not collapsed
-			if (m_bCollapsible)
-			{
-				iHeight += m_iSmallHeightMargin;
-			}
-
-			if (m_bVertical)
-			{
-				iHeight += m_PaneOne->GetFixedHeight() + m_PaneTwo->GetFixedHeight() +
-						   (m_lpSplitter ? m_lpSplitter->GetSplitWidth() : 0);
-			}
-			else
-			{
-				iHeight += max(m_PaneOne->GetFixedHeight(), m_PaneTwo->GetFixedHeight());
-			}
-		}
-
-		return iHeight;
-	}
-
 	int SplitterPane::GetLines()
 	{
-		if (!m_bCollapsed)
+		if (!collapsed())
 		{
 			if (m_bVertical)
 			{
@@ -96,11 +63,17 @@ namespace viewpane
 	ULONG SplitterPane::HandleChange(const UINT nID)
 	{
 		// See if the panes can handle the change first
-		auto paneID = m_PaneOne->HandleChange(nID);
-		if (paneID != static_cast<ULONG>(-1)) return paneID;
+		if (m_PaneOne)
+		{
+			auto paneID = m_PaneOne->HandleChange(nID);
+			if (paneID != static_cast<ULONG>(-1)) return paneID;
+		}
 
-		paneID = m_PaneTwo->HandleChange(nID);
-		if (paneID != static_cast<ULONG>(-1)) return paneID;
+		if (m_PaneTwo)
+		{
+			auto paneID = m_PaneTwo->HandleChange(nID);
+			if (paneID != static_cast<ULONG>(-1)) return paneID;
+		}
 
 		return ViewPane::HandleChange(nID);
 	}
@@ -141,7 +114,9 @@ namespace viewpane
 			m_lpSplitter->Init(pParent->GetSafeHwnd());
 			m_lpSplitter->SetSplitType(m_bVertical ? controls::splitType::vertical : controls::splitType::horizontal);
 			m_PaneOne->Initialize(m_lpSplitter.get(), hdc);
+			m_PaneOne->SetTop();
 			m_PaneTwo->Initialize(m_lpSplitter.get(), hdc);
+			m_PaneTwo->SetTop();
 			m_lpSplitter->SetPaneOne(m_PaneOne);
 			m_lpSplitter->SetPaneTwo(m_PaneTwo);
 			if (m_bVertical)
@@ -157,6 +132,31 @@ namespace viewpane
 		}
 
 		m_bInitialized = true;
+	}
+
+	// SplitterPaneLayout:
+	// Header: GetHeaderHeight
+	// Collapsible:
+	//    margin: m_iSmallHeightMargin
+	//    variable to fit panes
+	int SplitterPane::GetFixedHeight()
+	{
+		auto iHeight = GetHeaderHeight();
+
+		if (!collapsed())
+		{
+			if (m_bVertical)
+			{
+				iHeight += m_PaneOne->GetFixedHeight() + m_PaneTwo->GetFixedHeight() +
+						   (m_lpSplitter ? m_lpSplitter->GetSplitWidth() : 0);
+			}
+			else
+			{
+				iHeight += max(m_PaneOne->GetFixedHeight(), m_PaneTwo->GetFixedHeight());
+			}
+		}
+
+		return iHeight;
 	}
 
 	HDWP SplitterPane::DeferWindowPos(
@@ -175,41 +175,37 @@ namespace viewpane
 			height);
 
 		auto curY = y;
-		const auto labelHeight = GetLabelHeight();
-		if (0 != m_paneID)
-		{
-			curY += m_iSmallHeightMargin;
-		}
 
 		// Layout our label
-		hWinPosInfo = EC_D(HDWP, ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y)));
+		hWinPosInfo = EC_D(HDWP, ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height));
+		curY += GetHeaderHeight();
 
-		if (m_bCollapsed)
+		if (collapsed())
 		{
 			WC_B_S(m_lpSplitter->ShowWindow(SW_HIDE));
 		}
 		else
 		{
-			if (m_bCollapsible)
-			{
-				curY += labelHeight + m_iSmallHeightMargin;
-			}
-
 			WC_B_S(m_lpSplitter->ShowWindow(SW_SHOW));
-			hWinPosInfo = EC_D(
-				HDWP,
-				::DeferWindowPos(
-					hWinPosInfo,
-					m_lpSplitter->GetSafeHwnd(),
-					nullptr,
-					x,
-					curY,
-					width,
-					height - (curY - y),
-					SWP_NOZORDER));
+			hWinPosInfo = ui::DeferWindowPos(
+				hWinPosInfo,
+				m_lpSplitter->GetSafeHwnd(),
+				x,
+				curY,
+				width,
+				height - (curY - y),
+				L"SplitterPane::DeferWindowPos::splitter");
 			m_lpSplitter->OnSize(NULL, width, height - (curY - y));
 		}
 
 		return hWinPosInfo;
+	}
+
+	bool SplitterPane::containsWindow(HWND hWnd) const noexcept
+	{
+		if (m_lpSplitter && m_lpSplitter->GetSafeHwnd()) return true;
+		if (m_PaneOne && m_PaneOne->containsWindow(hWnd)) return true;
+		if (m_PaneTwo && m_PaneTwo->containsWindow(hWnd)) return true;
+		return m_Header.containsWindow(hWnd);
 	}
 } // namespace viewpane

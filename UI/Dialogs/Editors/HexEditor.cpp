@@ -8,6 +8,7 @@
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 #include <core/mapi/mapiFile.h>
+#include <UI/Dialogs/MFCUtilityFunctions.h>
 
 namespace dialog ::editor
 {
@@ -45,6 +46,7 @@ namespace dialog ::editor
 		AddPane(viewpane::CountedTextPane::Create(HEXED_HEX, IDS_HEX, false, IDS_CB));
 		auto smartViewPane = viewpane::SmartViewPane::Create(HEXED_SMARTVIEW, IDS_SMARTVIEW);
 		smartViewPane->OnItemSelected = [&](auto _1) { return HighlightHex(HEXED_HEX, _1); };
+		smartViewPane->OnActionButton = [&](auto _1) { return OpenEntry(_1); };
 		AddPane(smartViewPane);
 
 		DisplayParentedDialog(1000);
@@ -251,5 +253,25 @@ namespace dialog ::editor
 	{
 		SetBinary(HEXED_HEX, lpb, cb);
 		ClearHighlight(HEXED_HEX);
+	}
+
+	void CHexEditor::OpenEntry(_In_ const SBinary& bin)
+	{
+		ULONG ulObjType = NULL;
+		auto obj = mapi::CallOpenEntry<LPMAPIPROP>(
+			m_lpMapiObjects->GetMDB(),
+			m_lpMapiObjects->GetAddrBook(false),
+			nullptr,
+			m_lpMapiObjects->GetSession(),
+			&bin,
+			nullptr,
+			MAPI_BEST_ACCESS,
+			&ulObjType);
+
+		if (obj)
+		{
+			WC_H_S(dialog::DisplayObject(obj, ulObjType, dialog::objectType::otDefault, nullptr, m_lpMapiObjects));
+			obj->Release();
+		}
 	}
 } // namespace dialog::editor

@@ -28,16 +28,14 @@
 
 namespace dialog
 {
-	_Check_return_ HRESULT
-	DisplayObject(_In_ LPMAPIPROP lpUnk, ULONG ulObjType, objectType tType, _In_ CBaseDialog* lpHostDlg)
+	_Check_return_ HRESULT DisplayObject(
+		_In_ LPMAPIPROP lpUnk,
+		ULONG ulObjType,
+		objectType tType,
+		_In_opt_ CBaseDialog* lpHostDlg,
+		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects)
 	{
-		if (!lpHostDlg || !lpUnk) return MAPI_E_INVALID_PARAMETER;
-
-		auto lpMapiObjects = lpHostDlg->GetMapiObjects(); // do not release
-		if (!lpMapiObjects) return MAPI_E_INVALID_PARAMETER;
-
-		const auto lpParentWnd = ui::GetParentWnd(); // do not release
-		if (!lpParentWnd) return MAPI_E_INVALID_PARAMETER;
+		if (!lpMapiObjects || !lpUnk) return MAPI_E_INVALID_PARAMETER;
 
 		// If we weren't passed an object type, go get one - careful! Some objects lie!
 		if (!ulObjType)
@@ -60,7 +58,11 @@ namespace dialog
 			// #define MAPI_STORE ((ULONG) 0x00000001) /* Message Store */
 		case MAPI_STORE:
 		{
-			lpHostDlg->OnUpdateSingleMAPIPropListCtrl(lpUnk, nullptr);
+			if (lpHostDlg)
+			{
+				lpHostDlg->OnUpdateSingleMAPIPropListCtrl(lpUnk, nullptr);
+			}
+
 			auto lpTempMDB = mapi::safe_cast<LPMDB>(lpUnk);
 
 			auto lpMDB = lpMapiObjects->GetMDB(); // do not release
@@ -83,7 +85,7 @@ namespace dialog
 		case MAPI_FOLDER:
 		{
 			// There are two ways to display a folder...either the contents table or the hierarchy table.
-			if (tType == objectType::hierarchy)
+			if (tType == objectType::hierarchy || tType == objectType::otDefault)
 			{
 				const auto lpMDB = lpMapiObjects->GetMDB(); // do not release
 				if (lpMDB)
@@ -143,7 +145,10 @@ namespace dialog
 			// #define MAPI_SESSION ((ULONG) 0x0000000B) /* Session */
 			// #define MAPI_FORMINFO ((ULONG) 0x0000000C) /* Form Information */
 		default:
-			lpHostDlg->OnUpdateSingleMAPIPropListCtrl(lpUnk, nullptr);
+			if (lpHostDlg)
+			{
+				lpHostDlg->OnUpdateSingleMAPIPropListCtrl(lpUnk, nullptr);
+			}
 
 			szFlags = smartview::InterpretNumberAsStringProp(ulObjType, PR_OBJECT_TYPE);
 			output::DebugPrint(
@@ -157,6 +162,17 @@ namespace dialog
 		}
 
 		return S_OK;
+	}
+
+	_Check_return_ HRESULT
+	DisplayObject(_In_ LPMAPIPROP lpUnk, ULONG ulObjType, objectType tType, _In_ CBaseDialog* lpHostDlg)
+	{
+		if (!lpHostDlg || !lpUnk) return MAPI_E_INVALID_PARAMETER;
+
+		auto lpMapiObjects = lpHostDlg->GetMapiObjects(); // do not release
+		if (!lpMapiObjects) return MAPI_E_INVALID_PARAMETER;
+
+		return DisplayObject(lpUnk, ulObjType, tType, lpHostDlg, lpMapiObjects);
 	}
 
 	_Check_return_ HRESULT DisplayTable(_In_ LPMAPITABLE lpTable, objectType tType, _In_ CBaseDialog* lpHostDlg)

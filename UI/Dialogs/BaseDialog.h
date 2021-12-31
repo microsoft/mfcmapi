@@ -3,7 +3,7 @@
 #include <UI/enums.h>
 #include <core/sortlistdata/sortListData.h>
 #include <core/addin/mfcmapi.h>
-#include <UI/FakeSplitter.h>
+#include <UI/Controls/FakeSplitter.h>
 
 namespace controls::sortlistctrl
 {
