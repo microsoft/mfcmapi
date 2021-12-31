@@ -354,7 +354,7 @@ namespace dialog
 	{
 		if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
 
-		editor::CRestrictEditor MyRestrict(
+		editor::RestrictEditor MyRestrict(
 			this,
 			m_lpMapiObjects,
 			nullptr, // No alloc parent - we must MAPIFreeBuffer the result

@@ -143,14 +143,14 @@ namespace dialog::editor
 	{
 		const auto lpSourceRes = GetSourceRes();
 
-		CRestrictEditor MyResEditor(this, m_lpMapiObjects, nullptr,
+		RestrictEditor MyResEditor(this, m_lpMapiObjects, nullptr,
 									lpSourceRes); // pass source res into editor
 		if (MyResEditor.DisplayDialog())
 		{
 			const auto lpModRes = MyResEditor.DetachModifiedSRestriction();
 			if (lpModRes)
 			{
-				// We didn't pass an alloc parent to CRestrictEditor, so we must free what came back
+				// We didn't pass an alloc parent to RestrictEditor, so we must free what came back
 				MAPIFreeBuffer(m_lpNewRes);
 				m_lpNewRes = lpModRes;
 				SetStringW(5, property::RestrictionToString(m_lpNewRes, nullptr));

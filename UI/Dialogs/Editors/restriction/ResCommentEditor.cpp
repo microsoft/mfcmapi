@@ -110,7 +110,7 @@ namespace dialog::editor
 	{
 		const auto lpSourceRes = GetSourceRes();
 
-		CRestrictEditor MyResEditor(this, m_lpMapiObjects, m_lpAllocParent,
+		RestrictEditor MyResEditor(this, m_lpMapiObjects, m_lpAllocParent,
 									lpSourceRes); // pass source res into editor
 		if (!MyResEditor.DisplayDialog()) return;
 

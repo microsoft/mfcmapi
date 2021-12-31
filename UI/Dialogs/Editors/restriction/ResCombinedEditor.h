@@ -3,7 +3,7 @@
 
 namespace dialog::editor
 {
-	// This class is only invoked by CRestrictEditor. CRestrictEditor always passes an alloc parent.
+	// This class is only invoked by RestrictEditor. RestrictEditor always passes an alloc parent.
 	// So all memory detached from this class is owned by a parent and must not be freed manually
 	static std::wstring CONTENTCLASS = L"ResCombinedEditor"; // STRING_OK
 	class ResCombinedEditor : public CEditor

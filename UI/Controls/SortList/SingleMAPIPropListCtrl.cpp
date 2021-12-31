@@ -914,7 +914,7 @@ namespace controls::sortlistctrl
 
 		output::DebugPrint(output::dbgLevel::Generic, L"Source restriction before editing:\n");
 		output::outputRestriction(output::dbgLevel::Generic, nullptr, lpResIn, lpPropBag->GetMAPIProp());
-		dialog::editor::CRestrictEditor MyResEditor(
+		dialog::editor::RestrictEditor MyResEditor(
 			this,
 			m_lpMapiObjects, 
 			nullptr, // No alloc parent - we must MAPIFreeBuffer the result
@@ -927,7 +927,7 @@ namespace controls::sortlistctrl
 				output::DebugPrint(output::dbgLevel::Generic, L"Modified restriction:\n");
 				output::outputRestriction(output::dbgLevel::Generic, nullptr, lpModRes, lpPropBag->GetMAPIProp());
 
-				// need to merge the data we got back from the CRestrictEditor with our current prop set
+				// need to merge the data we got back from the RestrictEditor with our current prop set
 				// so that we can free lpModRes
 				SPropValue ResProp = {};
 				if (lpEditProp)

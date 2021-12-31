@@ -60,7 +60,7 @@ namespace dialog::editor
 
 	void ResSubResEditor::OnEditAction1()
 	{
-		CRestrictEditor ResEdit(this, m_lpMapiObjects, m_lpAllocParent, m_lpNewRes ? m_lpNewRes : m_lpOldRes);
+		RestrictEditor ResEdit(this, m_lpMapiObjects, m_lpAllocParent, m_lpNewRes ? m_lpNewRes : m_lpOldRes);
 
 		if (!ResEdit.DisplayDialog()) return;
 

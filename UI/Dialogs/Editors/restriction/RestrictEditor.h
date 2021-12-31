@@ -4,15 +4,15 @@
 
 namespace dialog::editor
 {
-	class CRestrictEditor : public CEditor
+	class RestrictEditor : public CEditor
 	{
 	public:
-		CRestrictEditor(
+		RestrictEditor(
 			_In_ CWnd* pParentWnd,
 			_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 			_In_opt_ LPVOID lpAllocParent,
 			_In_opt_ const _SRestriction* lpRes);
-		~CRestrictEditor();
+		~RestrictEditor();
 
 		_Check_return_ LPSRestriction DetachModifiedSRestriction() noexcept;
 

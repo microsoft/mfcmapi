@@ -17,13 +17,13 @@
 
 namespace dialog::editor
 {
-	// Note that an alloc parent is passed in to CRestrictEditor. If a parent isn't passed, we allocate one ourselves.
-	// All other memory allocated in CRestrictEditor is owned by the parent and must not be freed manually
+	// Note that an alloc parent is passed in to RestrictEditor. If a parent isn't passed, we allocate one ourselves.
+	// All other memory allocated in RestrictEditor is owned by the parent and must not be freed manually
 	// If we return (detach) memory to a caller, they must MAPIFreeBuffer only if they did not pass in a parent
-	static std::wstring CLASS = L"CRestrictEditor"; // STRING_OK
+	static std::wstring CLASS = L"RestrictEditor"; // STRING_OK
 	// Create an editor for a restriction
 	// Takes LPSRestriction lpRes as input
-	CRestrictEditor::CRestrictEditor(
+	RestrictEditor::RestrictEditor(
 		_In_ CWnd* pParentWnd,
 		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 		_In_opt_ LPVOID lpAllocParent,
@@ -70,7 +70,7 @@ namespace dialog::editor
 			2, IDS_RESTRICTIONTEXT, property::RestrictionToString(GetSourceRes(), nullptr), true));
 	}
 
-	CRestrictEditor::~CRestrictEditor()
+	RestrictEditor::~RestrictEditor()
 	{
 		TRACE_DESTRUCTOR(CLASS);
 		// Only if we self allocated m_lpOutputRes and did not detach it can we free it
@@ -81,7 +81,7 @@ namespace dialog::editor
 	}
 
 	// Used to call functions which need to be called AFTER controls are created
-	BOOL CRestrictEditor::OnInitDialog()
+	BOOL RestrictEditor::OnInitDialog()
 	{
 		const auto bRet = CEditor::OnInitDialog();
 
@@ -96,19 +96,19 @@ namespace dialog::editor
 		return bRet;
 	}
 
-	_Check_return_ const _SRestriction* CRestrictEditor::GetSourceRes() const noexcept
+	_Check_return_ const _SRestriction* RestrictEditor::GetSourceRes() const noexcept
 	{
 		if (m_lpRes && !m_bModified) return m_lpRes;
 		return m_lpOutputRes;
 	}
 
 	// Create our LPSRestriction from the dialog here
-	void CRestrictEditor::OnOK()
+	void RestrictEditor::OnOK()
 	{
 		CMyDialog::OnOK(); // don't need to call CEditor::OnOK
 	}
 
-	_Check_return_ LPSRestriction CRestrictEditor::DetachModifiedSRestriction() noexcept
+	_Check_return_ LPSRestriction RestrictEditor::DetachModifiedSRestriction() noexcept
 	{
 		if (!m_bModified) return nullptr;
 		const auto lpRet = m_lpOutputRes;
@@ -118,7 +118,7 @@ namespace dialog::editor
 
 	// CEditor::HandleChange will return the control number of what changed
 	// so I can react to it if I need to
-	_Check_return_ ULONG CRestrictEditor::HandleChange(UINT nID)
+	_Check_return_ ULONG RestrictEditor::HandleChange(UINT nID)
 	{
 		const auto paneID = CEditor::HandleChange(nID);
 
@@ -164,7 +164,7 @@ namespace dialog::editor
 		return paneID;
 	}
 
-	void CRestrictEditor::OnEditAction1()
+	void RestrictEditor::OnEditAction1()
 	{
 		auto hRes = S_OK;
 		const auto lpSourceRes = GetSourceRes();
@@ -216,7 +216,7 @@ namespace dialog::editor
 		}
 	}
 
-	HRESULT CRestrictEditor::EditCompare(const _SRestriction* lpSourceRes)
+	HRESULT RestrictEditor::EditCompare(const _SRestriction* lpSourceRes)
 	{
 		ResCompareEditor MyEditor(
 			this,
@@ -235,7 +235,7 @@ namespace dialog::editor
 		return S_FALSE;
 	}
 
-	HRESULT CRestrictEditor::EditAndOr(const _SRestriction* lpSourceRes)
+	HRESULT RestrictEditor::EditAndOr(const _SRestriction* lpSourceRes)
 	{
 		ResAndOrEditor MyResEditor(this, m_lpMapiObjects, lpSourceRes,
 									m_lpAllocParent); // pass source res into editor
@@ -258,9 +258,9 @@ namespace dialog::editor
 		return S_FALSE;
 	}
 
-	HRESULT CRestrictEditor::EditRestrict(const _SRestriction* lpSourceRes)
+	HRESULT RestrictEditor::EditRestrict(const _SRestriction* lpSourceRes)
 	{
-		CRestrictEditor MyResEditor(
+		RestrictEditor MyResEditor(
 			this,
 			m_lpMapiObjects,
 			m_lpAllocParent,
@@ -276,7 +276,7 @@ namespace dialog::editor
 		return S_FALSE;
 	}
 
-	HRESULT CRestrictEditor::EditCombined(const _SRestriction* lpSourceRes)
+	HRESULT RestrictEditor::EditCombined(const _SRestriction* lpSourceRes)
 	{
 		auto hRes = S_OK;
 		ResCombinedEditor MyEditor(
@@ -315,7 +315,7 @@ namespace dialog::editor
 		return hRes;
 	}
 
-	HRESULT CRestrictEditor::EditBitmask(const _SRestriction* lpSourceRes)
+	HRESULT RestrictEditor::EditBitmask(const _SRestriction* lpSourceRes)
 	{
 		ResBitmaskEditor MyEditor(
 			this,
@@ -334,7 +334,7 @@ namespace dialog::editor
 		return S_FALSE;
 	}
 
-	HRESULT CRestrictEditor::EditSize(const _SRestriction* lpSourceRes)
+	HRESULT RestrictEditor::EditSize(const _SRestriction* lpSourceRes)
 	{
 		ResSizeEditor MyEditor(
 			this, lpSourceRes->res.resSize.relop, lpSourceRes->res.resSize.ulPropTag, lpSourceRes->res.resSize.cb);
@@ -350,7 +350,7 @@ namespace dialog::editor
 		return S_FALSE;
 	}
 
-	HRESULT CRestrictEditor::EditExist(const _SRestriction* lpSourceRes)
+	HRESULT RestrictEditor::EditExist(const _SRestriction* lpSourceRes)
 	{
 		ResExistEditor MyEditor(this, lpSourceRes->res.resExist.ulPropTag);
 		if (MyEditor.DisplayDialog())
@@ -365,7 +365,7 @@ namespace dialog::editor
 		return S_FALSE;
 	}
 
-	HRESULT CRestrictEditor::EditSubrestriction(const _SRestriction* lpSourceRes)
+	HRESULT RestrictEditor::EditSubrestriction(const _SRestriction* lpSourceRes)
 	{
 		ResSubResEditor MyEditor(
 			this, m_lpMapiObjects, lpSourceRes->res.resSub.ulSubObject, lpSourceRes->res.resSub.lpRes, m_lpAllocParent);
@@ -382,7 +382,7 @@ namespace dialog::editor
 		return S_FALSE;
 	}
 
-	HRESULT CRestrictEditor::EditComment(const _SRestriction* lpSourceRes)
+	HRESULT RestrictEditor::EditComment(const _SRestriction* lpSourceRes)
 	{
 		ResCommentEditor MyResEditor(
 			this,
