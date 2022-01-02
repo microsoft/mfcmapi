@@ -14,7 +14,17 @@ namespace dialog::editor
 	// Note that no alloc parent is passed in to CriteriaEditor. So we're completely responsible for freeing any memory we allocate.
 	// If we return (detach) memory to a caller, they must MAPIFreeBuffer
 	static std::wstring CRITERIACLASS = L"CriteriaEditor"; // STRING_OK
-#define LISTNUM 4
+
+	enum __CriteriaEditorFields
+	{
+		CRITERIA_SEARCHSTATEHEX,
+		CRITERIA_SEARCHSTATESTRING,
+		CRITERIA_SEARCHFLAGSHEX,
+		CRITERIA_SEARCHFLAGSSTRING,
+		CRITERIA_ENTRYLIST,
+		CRITERIA_RESTRICTIONSTRING
+	};
+
 	CriteriaEditor::CriteriaEditor(
 		_In_ CWnd* pParentWnd,
 		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
@@ -42,17 +52,21 @@ namespace dialog::editor
 		m_ulNewSearchFlags = NULL;
 
 		SetPromptPostFix(flags::AllFlagsToString(flagSearchFlag, true));
-		AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_SEARCHSTATE, true));
-		SetHex(0, ulSearchState);
+		AddPane(viewpane::TextPane::CreateSingleLinePane(CRITERIA_SEARCHSTATEHEX, IDS_SEARCHSTATE, true));
+		SetHex(CRITERIA_SEARCHSTATEHEX, ulSearchState);
 		const auto szFlags = flags::InterpretFlags(flagSearchState, ulSearchState);
-		AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_SEARCHSTATE, szFlags, true));
-		AddPane(viewpane::TextPane::CreateSingleLinePane(2, IDS_SEARCHFLAGS, false));
-		SetHex(2, 0);
-		AddPane(viewpane::TextPane::CreateSingleLinePane(3, IDS_SEARCHFLAGS, true));
-		AddPane(viewpane::ListPane::CreateCollapsibleListPane(4, IDS_EIDLIST, false, false, ListEditCallBack(this)));
-		SetListID(4);
+		AddPane(viewpane::TextPane::CreateSingleLinePane(CRITERIA_SEARCHSTATESTRING, IDS_SEARCHSTATE, szFlags, true));
+		AddPane(viewpane::TextPane::CreateSingleLinePane(CRITERIA_SEARCHFLAGSHEX, IDS_SEARCHFLAGS, false));
+		SetHex(CRITERIA_SEARCHFLAGSHEX, 0);
+		AddPane(viewpane::TextPane::CreateSingleLinePane(CRITERIA_SEARCHFLAGSSTRING, IDS_SEARCHFLAGS, true));
+		AddPane(viewpane::ListPane::CreateCollapsibleListPane(
+			CRITERIA_ENTRYLIST, IDS_EIDLIST, false, false, ListEditCallBack(this)));
+		SetListID(CRITERIA_ENTRYLIST);
 		AddPane(viewpane::TextPane::CreateMultiLinePane(
-			5, IDS_RESTRICTIONTEXT, property::RestrictionToString(m_lpSourceRes, nullptr), true));
+			CRITERIA_RESTRICTIONSTRING,
+			IDS_RESTRICTIONTEXT,
+			property::RestrictionToString(m_lpSourceRes, nullptr),
+			true));
 	}
 
 	CriteriaEditor::~CriteriaEditor()
@@ -67,7 +81,7 @@ namespace dialog::editor
 	{
 		const auto bRet = CEditor::OnInitDialog();
 
-		InitListFromEntryList(LISTNUM, m_lpSourceEntryList);
+		InitListFromEntryList(CRITERIA_ENTRYLIST, m_lpSourceEntryList);
 
 		UpdateButtons();
 
@@ -84,9 +98,9 @@ namespace dialog::editor
 	{
 		const auto paneID = CEditor::HandleChange(nID);
 
-		if (paneID == 2)
+		if (paneID == CRITERIA_SEARCHFLAGSHEX)
 		{
-			SetStringW(3, flags::InterpretFlags(flagSearchFlag, GetHex(paneID)));
+			SetStringW(CRITERIA_SEARCHFLAGSSTRING, flags::InterpretFlags(flagSearchFlag, GetHex(paneID)));
 		}
 
 		return paneID;
@@ -144,7 +158,7 @@ namespace dialog::editor
 		const auto lpSourceRes = GetSourceRes();
 
 		RestrictEditor MyResEditor(this, m_lpMapiObjects, nullptr,
-									lpSourceRes); // pass source res into editor
+								   lpSourceRes); // pass source res into editor
 		if (MyResEditor.DisplayDialog())
 		{
 			const auto lpModRes = MyResEditor.DetachModifiedSRestriction();
@@ -153,7 +167,7 @@ namespace dialog::editor
 				// We didn't pass an alloc parent to RestrictEditor, so we must free what came back
 				MAPIFreeBuffer(m_lpNewRes);
 				m_lpNewRes = lpModRes;
-				SetStringW(5, property::RestrictionToString(m_lpNewRes, nullptr));
+				SetStringW(CRITERIA_RESTRICTIONSTRING, property::RestrictionToString(m_lpNewRes, nullptr));
 			}
 		}
 	}
@@ -200,7 +214,7 @@ namespace dialog::editor
 	void CriteriaEditor::OnOK()
 	{
 		CMyDialog::OnOK(); // don't need to call CEditor::OnOK
-		const auto ulValues = GetListCount(LISTNUM);
+		const auto ulValues = GetListCount(CRITERIA_ENTRYLIST);
 
 		if (m_lpNewEntryList && ulValues < ULONG_MAX / sizeof(SBinary))
 		{
@@ -210,7 +224,7 @@ namespace dialog::editor
 
 			for (ULONG paneID = 0; paneID < m_lpNewEntryList->cValues; paneID++)
 			{
-				const auto lpData = GetListRowData(LISTNUM, paneID);
+				const auto lpData = GetListRowData(CRITERIA_ENTRYLIST, paneID);
 				if (lpData)
 				{
 					const auto binary = lpData->cast<sortlistdata::binaryData>();
@@ -227,6 +241,6 @@ namespace dialog::editor
 			EC_H_S(mapi::HrCopyRestriction(m_lpSourceRes, nullptr, &m_lpNewRes));
 		}
 
-		m_ulNewSearchFlags = GetHex(2);
+		m_ulNewSearchFlags = GetHex(CRITERIA_SEARCHFLAGSHEX);
 	}
 } // namespace dialog::editor
