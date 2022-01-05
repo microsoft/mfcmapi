@@ -6,7 +6,7 @@
 #include <core/mapi/cache/mapiObjects.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>
-#include <UI/Dialogs/Editors/RestrictEditor.h>
+#include <UI/Dialogs/Editors/restriction/CriteriaEditor.h>
 #include <UI/addinui.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
@@ -173,7 +173,7 @@ namespace dialog
 			else
 				CHECKHRESMSG(hRes, IDS_GETSEARCHCRITERIAFAILED);
 
-			editor::CCriteriaEditor MyCriteria(this, m_lpMapiObjects, lpRes, lpEntryList, ulSearchState);
+			editor::CriteriaEditor MyCriteria(this, m_lpMapiObjects, lpRes, lpEntryList, ulSearchState);
 
 			if (MyCriteria.DisplayDialog())
 			{

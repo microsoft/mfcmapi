@@ -123,6 +123,15 @@
       <Filter>Source Files\UI\Dialogs\propList</Filter>
     </ClInclude>
     <ClInclude Include="UI\Controls\PaneHeader\PaneHeader.h" />
+    <ClInclude Include="UI\Dialogs\Editors\restriction\CriteriaEditor.h" />
+    <ClInclude Include="UI\Dialogs\Editors\restriction\ResCompareEditor.h" />
+    <ClInclude Include="UI\Dialogs\Editors\restriction\ResCombinedEditor.h" />
+    <ClInclude Include="UI\Dialogs\Editors\restriction\ResBitmaskEditor.h" />
+    <ClInclude Include="UI\Dialogs\Editors\restriction\ResSizeEditor.h" />
+    <ClInclude Include="UI\Dialogs\Editors\restriction\ResAndOrEditor.h" />
+    <ClInclude Include="UI\Dialogs\Editors\restriction\ResCommentEditor.h" />
+    <ClInclude Include="UI\Dialogs\Editors\restriction\ResSubResEditor.h" />
+    <ClInclude Include="UI\Dialogs\Editors\restriction\ResExistEditor.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StdAfx.h">
@@ -200,6 +209,33 @@
       <Filter>Source Files\UI\Dialogs\propList</Filter>
     </ClCompile>
     <ClCompile Include="UI\Controls\PaneHeader\PaneHeader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Dialogs\Editors\restriction\CriteriaEditor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Dialogs\Editors\restriction\ResCompareEditor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Dialogs\Editors\restriction\ResCombinedEditor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Dialogs\Editors\restriction\ResBitmaskEditor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Dialogs\Editors\restriction\ResSizeEditor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Dialogs\Editors\restriction\ResSubResEditor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Dialogs\Editors\restriction\ResAndOrEditor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Dialogs\Editors\restriction\ResCommentEditor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Dialogs\Editors\restriction\ResExistEditor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -420,10 +456,10 @@
     <ClInclude Include="UI\Dialogs\Editors\QSSpecialFolders.h">
       <Filter>Source Files\UI\Dialogs\Editors</Filter>
     </ClInclude>
-    <ClCompile Include="UI\Dialogs\Editors\RestrictEditor.cpp">
+    <ClCompile Include="UI\Dialogs\Editors\restriction\RestrictEditor.cpp">
       <Filter>Source Files\UI\Dialogs\Editors</Filter>
     </ClCompile>
-    <ClInclude Include="UI\Dialogs\Editors\RestrictEditor.h">
+    <ClInclude Include="UI\Dialogs\Editors\restriction\RestrictEditor.h">
       <Filter>Source Files\UI\Dialogs\Editors</Filter>
     </ClInclude>
     <ClCompile Include="UI\Dialogs\Editors\SearchEditor.cpp">

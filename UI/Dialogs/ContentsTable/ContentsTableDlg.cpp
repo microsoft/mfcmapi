@@ -7,7 +7,7 @@
 #include <core/mapi/cache/mapiObjects.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>
-#include <UI/Dialogs/Editors/RestrictEditor.h>
+#include <UI/Dialogs/Editors/restriction/RestrictEditor.h>
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
 #include <UI/Dialogs/Editors/SearchEditor.h>
 #include <core/mapi/mapiMemory.h>
@@ -354,7 +354,7 @@ namespace dialog
 	{
 		if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
 
-		editor::CRestrictEditor MyRestrict(
+		editor::RestrictEditor MyRestrict(
 			this,
 			m_lpMapiObjects,
 			nullptr, // No alloc parent - we must MAPIFreeBuffer the result
