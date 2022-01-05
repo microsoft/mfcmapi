@@ -1,6 +1,7 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/Editors/restriction/CriteriaEditor.h>
 #include <UI/Dialogs/Editors/restriction/RestrictEditor.h>
+#include <UI/ViewPane/SplitterPane.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/sortlistdata/binaryData.h>
 #include <core/mapi/mapiMemory.h>
@@ -17,8 +18,11 @@ namespace dialog::editor
 
 	enum __CriteriaEditorFields
 	{
+		CRITERIA_SEARCH,
+		CRITERIA_SEARCHSTATE,
 		CRITERIA_SEARCHSTATEHEX,
 		CRITERIA_SEARCHSTATESTRING,
+		CRITERIA_SEARCHFLAGS,
 		CRITERIA_SEARCHFLAGSHEX,
 		CRITERIA_SEARCHFLAGSSTRING,
 		CRITERIA_ENTRYLIST,
@@ -51,22 +55,28 @@ namespace dialog::editor
 
 		m_ulNewSearchFlags = NULL;
 
+		auto splitter = viewpane::SplitterPane::CreateHorizontalPane(CRITERIA_SEARCH, 0);
+		AddPane(splitter);
+		auto splitterState = viewpane::SplitterPane::CreateHorizontalPane(CRITERIA_SEARCHSTATE, IDS_SEARCHSTATE);
+		splitter->SetPaneOne(splitterState);
 		SetPromptPostFix(flags::AllFlagsToString(flagSearchFlag, true));
-		AddPane(viewpane::TextPane::CreateSingleLinePane(CRITERIA_SEARCHSTATEHEX, IDS_SEARCHSTATE, true));
+		splitterState->SetPaneOne(viewpane::TextPane::CreateSingleLinePane(CRITERIA_SEARCHSTATEHEX, NULL, true));
 		SetHex(CRITERIA_SEARCHSTATEHEX, ulSearchState);
 		const auto szFlags = flags::InterpretFlags(flagSearchState, ulSearchState);
-		AddPane(viewpane::TextPane::CreateSingleLinePane(CRITERIA_SEARCHSTATESTRING, IDS_SEARCHSTATE, szFlags, true));
-		AddPane(viewpane::TextPane::CreateSingleLinePane(CRITERIA_SEARCHFLAGSHEX, IDS_SEARCHFLAGS, false));
+		splitterState->SetPaneTwo(
+			viewpane::TextPane::CreateSingleLinePane(CRITERIA_SEARCHSTATESTRING, NULL, szFlags, true));
+
+		auto splitterFlags = viewpane::SplitterPane::CreateHorizontalPane(CRITERIA_SEARCHFLAGS, IDS_SEARCHFLAGS);
+		splitter->SetPaneTwo(splitterFlags);
+		splitterFlags->SetPaneOne(viewpane::TextPane::CreateSingleLinePane(CRITERIA_SEARCHFLAGSHEX, NULL, false));
 		SetHex(CRITERIA_SEARCHFLAGSHEX, 0);
-		AddPane(viewpane::TextPane::CreateSingleLinePane(CRITERIA_SEARCHFLAGSSTRING, IDS_SEARCHFLAGS, true));
+		splitterFlags->SetPaneTwo(viewpane::TextPane::CreateSingleLinePane(CRITERIA_SEARCHFLAGSSTRING, NULL, true));
+
 		AddPane(viewpane::ListPane::CreateCollapsibleListPane(
 			CRITERIA_ENTRYLIST, IDS_EIDLIST, false, false, ListEditCallBack(this)));
 		SetListID(CRITERIA_ENTRYLIST);
-		AddPane(viewpane::TextPane::CreateMultiLinePane(
-			CRITERIA_RESTRICTIONSTRING,
-			IDS_RESTRICTIONTEXT,
-			property::RestrictionToString(m_lpSourceRes, nullptr),
-			true));
+		AddPane(viewpane::TextPane::CreateCollapsibleTextPane(CRITERIA_RESTRICTIONSTRING, IDS_RESTRICTIONTEXT, true));
+		SetStringW(CRITERIA_RESTRICTIONSTRING, property::RestrictionToString(m_lpSourceRes, nullptr));
 	}
 
 	CriteriaEditor::~CriteriaEditor()
