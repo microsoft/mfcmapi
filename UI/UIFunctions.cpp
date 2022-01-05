@@ -804,9 +804,11 @@ namespace ui
 		switch (uMsg)
 		{
 		case WM_NCCALCSIZE:
+		{
+			const auto ret = DefSubclassProc(hWnd, uMsg, wParam, lParam);
 			InflateRect((LPRECT) lParam, -borderWidth, -borderWidth);
-			return 0;
-			break;
+			return ret;
+		}
 		case WM_NCDESTROY:
 			RemoveWindowSubclass(hWnd, DrawEditProc, uIdSubclass);
 			return DefSubclassProc(hWnd, uMsg, wParam, lParam);
@@ -829,8 +831,8 @@ namespace ui
 				}
 				else
 				{
-					// Clear out any previous border first
-					FrameRect(hdc, rc, borderWidth, uiColor::Background);
+					// Clear out any previous border first, plus 1 for the built in border
+					FrameRect(hdc, rc, borderWidth + 1, uiColor::Background);
 					FrameRect(hdc, rc, 1, uiColor::FrameSelected);
 				}
 
@@ -854,6 +856,7 @@ namespace ui
 			return 0;
 		}
 		}
+
 		return DefSubclassProc(hWnd, uMsg, wParam, lParam);
 	}
 
