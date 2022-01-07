@@ -71,6 +71,7 @@ typedef ULONG(STDAPICALLTYPE FREEBUFFER)(LPVOID lpBuffer);
 #include <TNEF.h>
 #include <MAPIAux.h>
 #include <actMgmt.h>
+#include <IMSCapabilities.h>
 
 // For import procs
 #include <AclUI.h>
