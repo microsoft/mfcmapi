@@ -39,6 +39,7 @@
 #define USES_IID_IOlkAccountHelper
 #define USES_IID_IOlkAccountManager
 #define USES_IID_IOlkAccount
+#define USES_IID_IMSCapabilities
 
 #pragma endregion
 
@@ -46,6 +47,7 @@
 #include <MAPIGuid.h>
 #include <MAPIAux.h>
 #include <actMgmt.h>
+#include <IMSCapabilities.h>
 
 #ifdef EDKGUID_INCLUDED
 #undef EDKGUID_INCLUDED

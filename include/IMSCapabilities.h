@@ -14,10 +14,6 @@ DEFINE_OLEGUID(IID_IMSCapabilities, 0x00020393, 0, 0);
 #ifndef IMSCAPABILITIES_H
 #define IMSCAPABILITIES_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif
-
 #ifdef __cplusplus
 extern "C"
 {

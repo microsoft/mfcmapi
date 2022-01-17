@@ -67,6 +67,7 @@ enum __NonPropFlag
 	flagEidMagic,
 	flagEidVersion,
 	flagToDoSwapFlag,
+	flagCapabilities,
 };
 
 #define PR_FREEBUSY_NT_SECURITY_DESCRIPTOR (PROP_TAG(PT_BINARY, 0x0F00))

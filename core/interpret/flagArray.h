@@ -1419,6 +1419,9 @@ FLAG_ARRAY_ENTRY g_FlagArray[] = {
 	NON_PROP_FLAG_ENTRY(flagToDoSwapFlag, TDP_REMINDER_FLAG, flagFLAG)
 	NON_PROP_FLAG_ENTRY(flagToDoSwapFlag, TDP_REMINDER_TIME, flagFLAG)
 
+	NON_PROP_FLAG_ENTRY(flagCapabilities, MSCAP_RES_ANNOTATION, flagFLAG)
+	NON_PROP_FLAG_ENTRY(flagCapabilities, MSCAP_SECURE_FOLDER_HOMEPAGES, flagFLAG)
+
 	NAMEDPROP_FLAG_ENTRY(dispidClientIntent, PSETID_Common, ciNone, flagVALUE) // NULL Value
 	NAMEDPROP_FLAG_ENTRY(dispidClientIntent, PSETID_Common, ciManager, flagVALUE)
 	NAMEDPROP_FLAG_ENTRY(dispidClientIntent, PSETID_Common, ciDelegate, flagVALUE)

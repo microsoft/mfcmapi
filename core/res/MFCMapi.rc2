@@ -1652,6 +1652,12 @@ IDS_OPENBODY "Body: Open to view"
 IDS_OPENSTREAM "Stream: Open to view"
 IDS_ROW "row"
 
+IDS_CAPABILITIES_DIALOG "Capabilities"
+IDS_CAPABILITIES_PROMPT "Store capabilities"
+IDS_CAPABILITIES_FOLDER "MSCAP_SEL_FOLDER (2)"
+IDS_CAPABILITIES_RESTRICTION "MSCAP_SEL_RESTRICTION (4)"
+IDS_RESERVED "Reserved (%1!d!)"
+
 // All strings above this point use FormatMessage style formatting
 
 // ErrDialog errors - use printf style formatting

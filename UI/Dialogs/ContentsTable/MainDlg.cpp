@@ -77,6 +77,7 @@ namespace dialog
 	ON_COMMAND(ID_DUMPSTORECONTENTS, OnDumpStoreContents)
 	ON_COMMAND(ID_DUMPSERVERCONTENTSTOTEXT, OnDumpServerContents)
 	ON_COMMAND(ID_FASTSHUTDOWN, OnFastShutdown)
+	ON_COMMAND(ID_GETCAPABILITIES, OnGetCapabilities)
 	ON_COMMAND(ID_ISATTACHMENTBLOCKED, OnIsAttachmentBlocked)
 	ON_COMMAND(ID_LOADMAPI, OnLoadMAPI)
 	ON_COMMAND(ID_LOGOFF, OnLogoff)
@@ -240,6 +241,7 @@ namespace dialog
 				pMenu->EnableMenuItem(ID_SETDEFAULTSTORE, DIM(lpMAPISession && 1 == iNumSel));
 				pMenu->EnableMenuItem(ID_DUMPSTORECONTENTS, DIM(lpMAPISession && 1 == iNumSel));
 				pMenu->EnableMenuItem(ID_COMPUTEGIVENSTOREHASH, DIM(lpMAPISession && 1 == iNumSel));
+				pMenu->EnableMenuItem(ID_GETCAPABILITIES, DIM(1 == iNumSel));
 			}
 
 			pMenu->EnableMenuItem(ID_OPENADDRESSBOOK, DIM(lpMAPISession && !lpAddrBook));
@@ -1016,6 +1018,91 @@ namespace dialog
 		}
 
 		if (lpClientShutdown) lpClientShutdown->Release();
+	}
+
+	void CMainDlg::OnGetCapabilities()
+	{
+		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
+
+		if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return;
+
+		const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
+		if (!lpMAPISession) return;
+
+		auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
+		for (const auto& lpListData : items)
+		{
+			if (lpListData)
+			{
+				const auto contents = lpListData->cast<sortlistdata::contentsData>();
+				if (contents)
+				{
+					const auto lpItemEID = contents->getEntryID();
+					if (lpItemEID)
+					{
+						auto lpMDB = mapi::store::CallOpenMsgStore(
+							lpMAPISession, reinterpret_cast<ULONG_PTR>(m_hWnd), lpItemEID, NULL);
+
+						if (lpMDB)
+						{
+							auto caps = mapi::safe_cast<LPMSCAPABILITIES>(lpMDB);
+							if (caps)
+							{
+								editor::CEditor MyData(
+									this, IDS_CAPABILITIES_DIALOG, IDS_CAPABILITIES_PROMPT, CEDITOR_BUTTON_OK);
+
+								const auto res1 = caps->GetCapabilities(MSCAP_SELECTOR::MSCAP_SEL_RESERVED1);
+								MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(
+									0,
+									strings::formatmessage(IDS_RESERVED, 0),
+									flags::InterpretFlags(flagCapabilities, res1),
+									true));
+
+								const auto res2 = caps->GetCapabilities(MSCAP_SELECTOR::MSCAP_SEL_RESERVED2);
+								MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(
+									1,
+									strings::formatmessage(IDS_RESERVED, 1),
+									flags::InterpretFlags(flagCapabilities, res2),
+									true));
+
+								const auto folder = caps->GetCapabilities(MSCAP_SELECTOR::MSCAP_SEL_FOLDER);
+								MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(
+									2, IDS_CAPABILITIES_FOLDER, flags::InterpretFlags(flagCapabilities, folder), true));
+
+								const auto res3 = caps->GetCapabilities(MSCAP_SELECTOR::MSCAP_SEL_RESERVED3);
+								MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(
+									3,
+									strings::formatmessage(IDS_RESERVED, 3),
+									flags::InterpretFlags(flagCapabilities, res3),
+									true));
+
+								const auto rest = caps->GetCapabilities(MSCAP_SELECTOR::MSCAP_SEL_RESTRICTION);
+								MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(
+									4,
+									IDS_CAPABILITIES_RESTRICTION,
+									flags::InterpretFlags(flagCapabilities, res2),
+									true));
+
+								for (auto iCap = 5; iCap <= 12; iCap++)
+								{
+									const auto res = caps->GetCapabilities(static_cast<MSCAP_SELECTOR>(iCap));
+									MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(
+										iCap,
+										strings::formatmessage(IDS_RESERVED, iCap + 1),
+										flags::InterpretFlags(flagCapabilities, res),
+										true));
+								}
+
+								caps->Release();
+								static_cast<void>(MyData.DisplayDialog());
+							}
+
+							lpMDB->Release();
+						}
+					}
+				}
+			}
+		}
 	}
 
 	void CMainDlg::OnQueryDefaultMessageOpt()
