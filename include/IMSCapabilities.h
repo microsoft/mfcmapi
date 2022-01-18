@@ -23,42 +23,41 @@ extern "C"
 #define BEGIN_INTERFACE
 #endif
 
-/* Forward interface declarations */
+// IMSCapabilities - advertises capabilities of the given store provider
 
-DECLARE_MAPI_INTERFACE_PTR(IMSCapabilities, LPMSCAPABILITIES);
-
-// Constants
-
-/* Return values for IMSCapabilities::GetCapabilities */
-#define MSCAP_RES_ANNOTATION ((ULONG) 0x00000001)
-#define MSCAP_SECURE_FOLDER_HOMEPAGES ((ULONG) 0x00000020)
-
+/* Selector values for GetCapabilities() */
 enum class MSCAP_SELECTOR
 {
-	MSCAP_SEL_RESERVED1 = 0,
-	MSCAP_SEL_RESERVED2,
-	MSCAP_SEL_FOLDER,
-	MSCAP_SEL_RESERVED3,
-	MSCAP_SEL_RESTRICTION,
+	MSCAP_SEL_RESERVED1   = 0,
+	MSCAP_SEL_RESERVED2   = 1,
+	MSCAP_SEL_FOLDER      = 2,
+	MSCAP_SEL_RESERVED3   = 3,
+	MSCAP_SEL_RESTRICTION = 4,
 };
 
-// Interface declarations
+/* Return values for GetCapabilities */
+/* Values based on selector used to query */
 
-/*------------------------------------------------------------------------
- *
- *	"IMSCapabilities" Interface Declaration
- *
- *	Provides information about what a store can support.
- *
- *-----------------------------------------------------------------------*/
+// MSCAP_SEL_FOLDER
+// Support for folder homepages in non-default stores
+#define MSCAP_SECURE_FOLDER_HOMEPAGES ((ULONG) 0x00000020) // TODO: Change this to 0x00000001
 
-#define EXCHANGE_IMSCAPABILITIES_METHODS(IPURE) \
-	MAPIMETHOD_(ULONG, GetCapabilities) \
-	(THIS_ MSCAP_SELECTOR mscapSelector) IPURE;
+// MSCAP_SEL_RESTRICTION
+// Support for RES_ANNOTATION restrictions
+#define MSCAP_RES_ANNOTATION ((ULONG) 0x00000001)
+
+#define MAPI_IMSCAPABILITIES_METHODS(IPURE) \
+	MAPIMETHOD_(ULONG, GetCapabilities) (THIS_ MSCAP_SELECTOR mscapSelector);
 
 #undef INTERFACE
 #define INTERFACE IMSCapabilities
-DECLARE_MAPI_INTERFACE_(IMSCapabilities, IUnknown){MAPI_IUNKNOWN_METHODS(PURE) EXCHANGE_IMSCAPABILITIES_METHODS(PURE)};
+DECLARE_MAPI_INTERFACE_(IMSCapabilities, IUnknown)
+{
+	MAPI_IUNKNOWN_METHODS(PURE)
+	MAPI_IMSCAPABILITIES_METHODS(PURE)
+};
+
+DECLARE_MAPI_INTERFACE_PTR(IMSCapabilities, LPMSCAPABILITIES);
 
 #ifdef __cplusplus
 } /*	extern "C" */
