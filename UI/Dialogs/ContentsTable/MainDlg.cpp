@@ -1086,7 +1086,7 @@ namespace dialog
 									flags::InterpretFlags(flagCapabilitiesRestriction, rest),
 									true));
 
-								for (auto iCap = 5; iCap <= 12; iCap++)
+								for (auto iCap = 5; iCap <= 11; iCap++)
 								{
 									const auto res = caps->GetCapabilities(static_cast<MSCAP_SELECTOR>(iCap));
 									MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(
