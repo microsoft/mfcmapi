@@ -39,6 +39,26 @@ namespace viewpane
 
 	std::shared_ptr<TextPane> TextPane::CreateSingleLinePane(
 		const int paneID,
+		_In_ const std::wstring& szLabel,
+		_In_ const std::wstring& szVal,
+		const bool bReadOnly,
+		const bool bMultiLine)
+	{
+		auto pane = std::make_shared<TextPane>();
+		if (pane)
+		{
+			pane->m_bMultiline = bMultiLine;
+			pane->SetLabel(szLabel);
+			pane->ViewPane::SetReadOnly(bReadOnly);
+			pane->SetStringW(szVal);
+			pane->m_paneID = paneID;
+		}
+
+		return pane;
+	}
+
+	std::shared_ptr<TextPane> TextPane::CreateSingleLinePane(
+		const int paneID,
 		const UINT uidLabel,
 		_In_ const std::wstring& szVal,
 		const bool bReadOnly,

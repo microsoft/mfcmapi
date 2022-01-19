@@ -38,7 +38,7 @@ namespace mapi
 		else if (std::is_same_v<T, LPMAPIFORMINFO>) iid = IID_IMAPIFormInfo;
 		else if (std::is_same_v<T, LPMAPIPROP>) iid = IID_IMAPIProp;
 		else if (std::is_same_v<T, LPMAPIFORM>) iid = IID_IMAPIForm;
-		else if (std::is_same_v<T, LPPERSISTMESSAGE>) iid = IID_IPersistMessage;
+		else if (std::is_same_v<T, LPPERSISTMESSAGE>) iid =		IID_IPersistMessage;
 		else if (std::is_same_v<T, IAttachmentSecurity*>) iid = guid::IID_IAttachmentSecurity;
 		else if (std::is_same_v<T, LPSERVICEADMIN2>) iid = IID_IMsgServiceAdmin2;
 		else if (std::is_same_v<T, LPEXCHANGEMANAGESTORE>) iid = IID_IExchangeManageStore;
@@ -51,6 +51,7 @@ namespace mapi
 		else if (std::is_same_v<T, LPPROFSECT>) iid = IID_IProfSect;
 		else if (std::is_same_v<T, LPATTACH>) iid = IID_IAttachment;
 		else if (std::is_same_v<T, LPOLKACCOUNT>) iid = IID_IOlkAccount;
+		else if (std::is_same_v<T, LPMSCAPABILITIES>) iid = IID_IMSCapabilities;
 		else assert(false);
 		// clang-format on
 
@@ -90,6 +91,7 @@ namespace mapi
 	template LPPROFSECT safe_cast<LPPROFSECT>(IUnknown* src);
 	template LPATTACH safe_cast<LPATTACH>(IUnknown* src);
 	template LPOLKACCOUNT safe_cast<LPOLKACCOUNT>(IUnknown* src);
+	template LPMSCAPABILITIES safe_cast<LPMSCAPABILITIES>(IUnknown* src);
 
 	LPUNKNOWN CallOpenEntry(
 		_In_opt_ LPMDB lpMDB,
