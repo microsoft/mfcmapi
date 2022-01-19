@@ -40,7 +40,7 @@ enum class MSCAP_SELECTOR
 
 // MSCAP_SEL_FOLDER
 // Support for folder homepages in non-default stores
-#define MSCAP_SECURE_FOLDER_HOMEPAGES ((ULONG) 0x00000020) // TODO: Change this to 0x00000001
+#define MSCAP_SECURE_FOLDER_HOMEPAGES ((ULONG) 0x00000001)
 
 // MSCAP_SEL_RESTRICTION
 // Support for RES_ANNOTATION restrictions
