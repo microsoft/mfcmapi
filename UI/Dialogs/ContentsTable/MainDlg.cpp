@@ -1055,32 +1055,35 @@ namespace dialog
 								MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(
 									0,
 									strings::formatmessage(IDS_RESERVED, 0),
-									flags::InterpretFlags(flagCapabilities, res1),
+									strings::format(L"0x%08X", res1),
 									true));
 
 								const auto res2 = caps->GetCapabilities(MSCAP_SELECTOR::MSCAP_SEL_RESERVED2);
 								MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(
 									1,
 									strings::formatmessage(IDS_RESERVED, 1),
-									flags::InterpretFlags(flagCapabilities, res2),
+									strings::format(L"0x%08X", res2),
 									true));
 
 								const auto folder = caps->GetCapabilities(MSCAP_SELECTOR::MSCAP_SEL_FOLDER);
 								MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(
-									2, IDS_CAPABILITIES_FOLDER, flags::InterpretFlags(flagCapabilities, folder), true));
+									2,
+									IDS_CAPABILITIES_FOLDER,
+									flags::InterpretFlags(flagCapabilitiesFolder, folder),
+									true));
 
 								const auto res3 = caps->GetCapabilities(MSCAP_SELECTOR::MSCAP_SEL_RESERVED3);
 								MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(
 									3,
 									strings::formatmessage(IDS_RESERVED, 3),
-									flags::InterpretFlags(flagCapabilities, res3),
+									strings::format(L"0x%08X", res3),
 									true));
 
 								const auto rest = caps->GetCapabilities(MSCAP_SELECTOR::MSCAP_SEL_RESTRICTION);
 								MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(
 									4,
 									IDS_CAPABILITIES_RESTRICTION,
-									flags::InterpretFlags(flagCapabilities, res2),
+									flags::InterpretFlags(flagCapabilitiesRestriction, rest),
 									true));
 
 								for (auto iCap = 5; iCap <= 12; iCap++)
@@ -1089,7 +1092,7 @@ namespace dialog
 									MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(
 										iCap,
 										strings::formatmessage(IDS_RESERVED, iCap + 1),
-										flags::InterpretFlags(flagCapabilities, res),
+										strings::format(L"0x%08X", res),
 										true));
 								}
 
