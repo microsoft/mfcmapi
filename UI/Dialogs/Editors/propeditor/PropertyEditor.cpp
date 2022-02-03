@@ -31,8 +31,8 @@ namespace dialog::editor
 		ULONG ulPropTag,
 		_In_opt_ const _SPropValue* lpsPropValue)
 		: IPropEditor(pParentWnd, uidTitle, NULL, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL), m_bIsAB(bIsAB),
-		  m_bMVRow(bMVRow),
-		  m_lpMAPIProp(lpMAPIProp), m_ulPropTag(ulPropTag), m_lpsInputValue(lpsPropValue), m_name(name)
+		  m_bMVRow(bMVRow), m_lpMAPIProp(lpMAPIProp), m_ulPropTag(ulPropTag), m_lpsInputValue(lpsPropValue),
+		  m_name(name)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
 		m_lpMapiObjects = lpMapiObjects;
@@ -243,7 +243,7 @@ namespace dialog::editor
 			auto smartViewPane = viewpane::SmartViewPane::Create(2, IDS_SMARTVIEW);
 			AddPane(smartViewPane);
 
-			if (m_lpsInputValue)
+			if (m_lpsInputValue && PROP_TYPE(m_lpsInputValue->ulPropTag) == PT_BINARY)
 			{
 				const auto bin = mapi::getBin(m_lpsInputValue);
 				if (lpPane)
@@ -253,22 +253,31 @@ namespace dialog::editor
 					{
 						lpPane->SetStringW(strings::BinToHexString(&bin, false));
 					}
-
-					SetStringA(1, std::string(reinterpret_cast<LPCSTR>(bin.lpb), bin.cb));
 				}
 
 				lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(GetPane(1));
-				if (lpPane) lpPane->SetCount(bin.cb);
+				if (lpPane)
+				{
+					lpPane->SetCount(bin.cb);
+					if (bin.cb != 0)
+					{
+						SetStringA(1, std::string(reinterpret_cast<LPCSTR>(bin.lpb), bin.cb));
+					}
+				}
+
+				if (smartViewPane)
+				{
+					smartViewPane->Parse(std::vector<BYTE>(
+						m_lpsInputValue ? mapi::getBin(m_lpsInputValue).lpb : nullptr,
+						m_lpsInputValue ? mapi::getBin(m_lpsInputValue).lpb + mapi::getBin(m_lpsInputValue).cb
+										: nullptr));
+				}
 			}
 
 			if (smartViewPane)
 			{
 				smartViewPane->SetParser(smartview::FindSmartViewParserForProp(
-					m_lpsInputValue, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, m_bMVRow));
-
-				smartViewPane->Parse(std::vector<BYTE>(
-					m_lpsInputValue ? mapi::getBin(m_lpsInputValue).lpb : nullptr,
-					m_lpsInputValue ? mapi::getBin(m_lpsInputValue).lpb + mapi::getBin(m_lpsInputValue).cb : nullptr));
+					m_ulPropTag, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, m_bMVRow));
 
 				smartViewPane->OnItemSelected = [&](auto _1) { return HighlightHex(0, _1); };
 				smartViewPane->OnActionButton = [&](auto _1) { return OpenEntry(_1); };
