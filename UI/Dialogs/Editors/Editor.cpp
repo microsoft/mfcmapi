@@ -305,6 +305,7 @@ namespace dialog::editor
 		case WM_COMMAND:
 		{
 			const auto nCode = HIWORD(wParam);
+			const auto idFrom = LOWORD(wParam);
 			switch (nCode)
 			{
 			case BN_SETFOCUS:
