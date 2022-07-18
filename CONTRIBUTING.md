@@ -10,9 +10,9 @@ When contributing to this repository, please first discuss the change by creatin
 
 ## MAKING CHANGES
 *	Create branch topic for the work you will do, this is where you want to base your work.
-  *	This is usually the master branch.
-  * To quickly create a topic branch based on master, run git checkout -b fix/master/my_contribution master. 
-		* Note: Please avoid working directly on the master branch.
+  *	This is usually the main branch.
+  * To quickly create a topic branch based on main, run git checkout -b fix/main/my_contribution main. 
+		* Note: Please avoid working directly on the main branch.
 *	Once you have a branch, make your changes and commit them to the local branch.
 * All submissions require a review and pull requests are how those happen. Consult
 [GitHub Help](https://help.github.com/articles/about-pull-requests/) for more
