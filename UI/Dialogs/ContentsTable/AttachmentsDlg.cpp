@@ -59,6 +59,8 @@ namespace dialog
 	ON_COMMAND(ID_SAVETOFILE, OnSaveToFile)
 	ON_COMMAND(ID_VIEWEMBEDDEDMESSAGEPROPERTIES, OnViewEmbeddedMessageProps)
 	ON_COMMAND(ID_ADDATTACHMENT, OnAddAttachment)
+	ON_COMMAND(ID_ATTACHMENTPROPERTIES, OnAttachmentProperties)
+	ON_COMMAND(ID_RECIPIENTPROPERTIES, OnRecipientProperties)
 	END_MESSAGE_MAP()
 
 	void CAttachmentsDlg::OnInitMenu(_In_ CMenu* pMenu)
@@ -76,6 +78,9 @@ namespace dialog
 				pMenu->EnableMenuItem(ID_MODIFYSELECTEDITEM, DIMMSOK(1 == iNumSel));
 				pMenu->EnableMenuItem(ID_SAVETOFILE, DIMMSOK(iNumSel));
 				pMenu->EnableMenuItem(ID_DISPLAYSELECTEDITEM, DIM(1 == iNumSel));
+
+				pMenu->EnableMenuItem(ID_RECIPIENTPROPERTIES, DIM(1 == iNumSel && m_bDisplayAttachAsEmbeddedMessage));
+				pMenu->EnableMenuItem(ID_ATTACHMENTPROPERTIES, DIM(1 == iNumSel && m_bDisplayAttachAsEmbeddedMessage));
 			}
 
 			pMenu->CheckMenuItem(ID_VIEWEMBEDDEDMESSAGEPROPERTIES, CHECK(m_bDisplayAttachAsEmbeddedMessage));
@@ -434,7 +439,7 @@ namespace dialog
 
 			if (SUCCEEDED(hRes) && lpAttachment)
 			{
-				SPropValue spvAttach[4];
+				SPropValue spvAttach[4] = {};
 				spvAttach[0].ulPropTag = PR_ATTACH_METHOD;
 				spvAttach[0].Value.l = ATTACH_BY_VALUE;
 				spvAttach[1].ulPropTag = PR_RENDERING_POSITION;
@@ -497,6 +502,30 @@ namespace dialog
 			if (lpAttachment) lpAttachment->Release();
 
 			OnRefreshView();
+		}
+	}
+
+	void CAttachmentsDlg::OnAttachmentProperties()
+	{
+		if (!m_lpAttach || !m_bDisplayAttachAsEmbeddedMessage) return;
+
+		auto lpMessage = OpenEmbeddedMessage(m_lpAttach);
+		if (lpMessage)
+		{
+			EC_H_S(DisplayTable(lpMessage, PR_MESSAGE_ATTACHMENTS, objectType::otDefault, this));
+			lpMessage->Release();
+		}
+	}
+
+	void CAttachmentsDlg::OnRecipientProperties()
+	{
+		if (!m_bDisplayAttachAsEmbeddedMessage) return;
+
+		auto lpMessage = OpenEmbeddedMessage(m_lpAttach);
+		if (lpMessage)
+		{
+			EC_H_S(DisplayTable(lpMessage, PR_MESSAGE_RECIPIENTS, objectType::otDefault, this));
+			lpMessage->Release();
 		}
 	}
 
