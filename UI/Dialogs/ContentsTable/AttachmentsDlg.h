@@ -33,6 +33,8 @@ namespace dialog
 		void OnSaveToFile();
 		void OnViewEmbeddedMessageProps();
 		void OnAddAttachment();
+		void OnAttachmentProperties();
+		void OnRecipientProperties();
 
 		LPATTACH m_lpAttach{}; // Currently opened attachment
 		ULONG m_ulAttachNum{static_cast<ULONG>(-1)}; // Currently opened attachment number
