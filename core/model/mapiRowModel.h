@@ -38,6 +38,20 @@ namespace model
 
 		const std::wstring propType() { return proptype::TypeToString(PROP_TYPE(_ulPropTag)); }
 
+		const std::wstring ToString() noexcept
+		{
+			std::wstring str = {};
+			if (!_name.empty()) str += L"name: " + _name + L"\r\n";
+			if (!_otherName.empty()) str += L"otherName: " + _otherName + L"\r\n";
+			if (!_tag.empty()) str += L"tag: " + _tag + L"\r\n";
+			if (!_value.empty()) str += L"value: " + _value + L"\r\n";
+			if (!_altValue.empty()) str += L"altValue: " + _altValue + L"\r\n";
+			if (!_smartView.empty()) str += L"smartView: " + _smartView + L"\r\n";
+			if (!_namedPropName.empty()) str += L"namedPropName: " + _namedPropName + L"\r\n";
+			if (!_namedPropGuid.empty()) str += L"namedPropGuid: " + _namedPropGuid + L"\r\n";
+			return str;
+		}
+
 	private:
 		std::wstring _name;
 		std::wstring _otherName;
