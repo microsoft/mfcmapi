@@ -40,7 +40,9 @@ namespace controls::sortlistctrl
 		SetContentsTable(_In_opt_ LPMAPITABLE lpContentsTable, tableDisplayFlags displayFlags, ULONG ulContainerType);
 
 		// Selected item accessors
-		_Check_return_ LPENTRYLIST GetSelectedItemEIDs() const;
+		_Check_return_ void CopyRows() const;
+		_Check_return_ LPENTRYLIST
+			GetSelectedItemEIDs() const;
 		_Check_return_ sortlistdata::sortListData* GetSortListData(int iItem) const;
 		_Check_return_ LPMAPIPROP OpenNextSelectedItemProp(_Inout_opt_ int* iCurItem, modifyType bModify) const;
 		_Check_return_ std::vector<int> GetSelectedItemNums() const;

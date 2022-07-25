@@ -21,6 +21,7 @@
 #include <core/mapi/mapiOutput.h>
 #include <core/mapi/mapiFunctions.h>
 #include <core/property/parseProperty.h>
+#include <core/utility/clipboard.h>
 
 namespace controls::sortlistctrl
 {
@@ -378,6 +379,7 @@ namespace controls::sortlistctrl
 				lpHeaderData->ulTagArrayRow = ulCurTagArrayRow;
 				lpHeaderData->ulPropTag = ulPropTag;
 				lpHeaderData->bIsAB = m_bIsAB;
+				lpHeaderData->szHeaderString = szHeaderString;
 				lpHeaderData->szTipString = proptags::TagToString(ulPropTag, lpMDB, m_bIsAB, false);
 
 				hdItem.lParam = reinterpret_cast<LPARAM>(lpHeaderData);
@@ -923,6 +925,15 @@ namespace controls::sortlistctrl
 
 		if (!bMenuPressed)
 		{
+			if ('C' == nChar && bCtrlPressed && !bShiftPressed)
+			{
+				// Handle copy to clipboard here
+				CopyRows();
+			}
+		}
+
+		if (!bMenuPressed)
+		{
 			if ('A' == nChar && bCtrlPressed)
 			{
 				SelectAll();
@@ -937,6 +948,41 @@ namespace controls::sortlistctrl
 				CSortListCtrl::OnKeyDown(nChar, nRepCnt, nFlags);
 			}
 		}
+	}
+
+	_Check_return_ void CContentsTableListCtrl::CopyRows() const
+	{
+		const auto iNumItems = GetSelectedCount();
+
+		if (!iNumItems) return;
+		auto iSelectedItem = -1;
+		const auto lpMyHeader = GetHeaderCtrl();
+		auto str = std::wstring{};
+
+		for (UINT iArrayPos = 0; iArrayPos < iNumItems; iArrayPos++)
+		{
+			iSelectedItem = GetNextItem(iSelectedItem, LVNI_SELECTED);
+			if (-1 != iSelectedItem)
+			{
+				str += strings::format(L"Row: %d\r\n", iSelectedItem);
+
+				for (ULONG iColumn = 0; iColumn < m_ulHeaderColumns; iColumn++)
+				{
+					auto hdItem = HDITEM{};
+					hdItem.mask = HDI_LPARAM;
+					EC_B_S(lpMyHeader->GetItem(iColumn, &hdItem));
+
+					if (hdItem.lParam)
+					{
+						const auto headerData = reinterpret_cast<LPHEADERDATA>(hdItem.lParam);
+						const auto prop = GetItemText(iSelectedItem, iColumn);
+						str += headerData->szHeaderString + L"::" + prop + L"\r\n";
+					}
+				}
+			}
+		}
+
+		clipboard::CopyTo(str);
 	}
 
 	_Check_return_ LPENTRYLIST CContentsTableListCtrl::GetSelectedItemEIDs() const

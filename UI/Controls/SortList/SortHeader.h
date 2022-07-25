@@ -8,6 +8,7 @@ namespace controls::sortlistctrl
 		ULONG ulTagArrayRow{};
 		ULONG ulPropTag{};
 		bool bIsAB{};
+		std::wstring szHeaderString;
 		std::wstring szTipString;
 	};
 	typedef HeaderData* LPHEADERDATA;
