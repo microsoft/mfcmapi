@@ -2,6 +2,7 @@
 #include <core/mapi/cache/globalCache.h>
 #include <core/utility/output.h>
 #include <core/utility/error.h>
+#include <core/utility/clipboard.h>
 
 namespace cache
 {
@@ -110,6 +111,7 @@ namespace cache
 		EmptyBuffer();
 		m_propToCopy = prop;
 		m_sourcePropBag = propBag;
+		clipboard::CopyTo(m_propToCopy->ToString());
 	}
 
 	_Check_return_ std::shared_ptr<sortlistdata::propModelData> CGlobalCache::GetPropertyToCopy() const noexcept

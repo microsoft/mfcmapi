@@ -564,6 +564,7 @@
     <ClInclude Include="mapi\columnTags.h" />
     <ClInclude Include="mapi\exportProfile.h" />
     <ClInclude Include="mapi\extraPropTags.h" />
+    <ClInclude Include="utility\clipboard.h" />
     <ClInclude Include="mapi\interfaces.h" />
     <ClInclude Include="mapi\mapiABFunctions.h" />
     <ClInclude Include="mapi\mapiFile.h" />
@@ -666,6 +667,7 @@
     <ClCompile Include="mapi\cache\mapiObjects.cpp" />
     <ClCompile Include="mapi\cache\namedProps.cpp" />
     <ClCompile Include="mapi\exportProfile.cpp" />
+    <ClCompile Include="utility\clipboard.cpp" />
     <ClCompile Include="mapi\mapiABFunctions.cpp" />
     <ClCompile Include="mapi\mapiFile.cpp" />
     <ClCompile Include="mapi\mapiFunctions.cpp" />
