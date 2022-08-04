@@ -11,7 +11,7 @@ namespace cache
 			_In_ LPMAPIPROP lpMAPIProp,
 			_In_opt_ LPSPropTagArray lpPropTags,
 			ULONG ulFlags,
-			std::vector<std::shared_ptr<namedPropCacheEntry>> &names);
+			std::vector<std::shared_ptr<namedPropCacheEntry>>& names);
 
 		// Returns a vector of tags for the input names
 		// Sourced directly from MAPI
@@ -19,7 +19,7 @@ namespace cache
 		GetIDsFromNames(_In_ LPMAPIPROP lpMAPIProp, std::vector<MAPINAMEID> nameIDs, ULONG ulFlags);
 
 		template <typename TMapiObj>
-		inline HRESULT GetRootFolder(TMapiObj* pMapiObj, LPMAPIFOLDER *lppMAPIFolder) noexcept
+		inline HRESULT GetRootFolder(TMapiObj* pMapiObj, LPMAPIFOLDER* lppMAPIFolder) noexcept
 		{
 			ULONG objt = 0;
 			return pMapiObj->OpenEntry(

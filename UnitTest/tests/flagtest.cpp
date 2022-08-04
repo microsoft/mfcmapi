@@ -38,7 +38,8 @@ namespace flagtest
 			unittest::AreEqualEx(
 				L"MAPI_SUBMITTED | 0x5", flags::InterpretFlags(PROP_ID(PR_RECIPIENT_TYPE), MAPI_SUBMITTED | 0x5));
 			unittest::AreEqualEx(
-				L"MAPI_SUBMITTED | 0x20000000 | 0x5", flags::InterpretFlags(PROP_ID(PR_RECIPIENT_TYPE), MAPI_SUBMITTED | 0x20000005));
+				L"MAPI_SUBMITTED | 0x20000000 | 0x5",
+				flags::InterpretFlags(PROP_ID(PR_RECIPIENT_TYPE), MAPI_SUBMITTED | 0x20000005));
 
 			// flagFLAG with no null
 			unittest::AreEqualEx(L"0x0", flags::InterpretFlags(PROP_ID(PR_SUBMIT_FLAGS), 0));

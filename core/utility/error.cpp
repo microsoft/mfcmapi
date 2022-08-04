@@ -34,8 +34,9 @@ namespace error
 		if (!(bShowDialog && displayError) && !fIsSet(output::dbgLevel::HRes)) return;
 
 		// Get our error message if we have one
-		const auto szErrorMsg =
-			bSystemCall ? strings::formatmessagesys(uidErrorMsg) : uidErrorMsg ? strings::loadstring(uidErrorMsg) : L"";
+		const auto szErrorMsg = bSystemCall	  ? strings::formatmessagesys(uidErrorMsg)
+								: uidErrorMsg ? strings::loadstring(uidErrorMsg)
+											  : L"";
 
 		const auto szErrString = strings::formatmessage(
 			FAILED(hRes) ? IDS_ERRFORMATSTRING : IDS_WARNFORMATSTRING,

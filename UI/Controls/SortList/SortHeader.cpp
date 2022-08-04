@@ -26,8 +26,7 @@ namespace controls::sortlistctrl
 
 		if (!SubclassWindow(pHeader->GetSafeHwnd()))
 		{
-			output::DebugPrint(
-				output::dbgLevel::UI, L"CSortHeader::Init Unable to subclass existing header!\n");
+			output::DebugPrint(output::dbgLevel::UI, L"CSortHeader::Init Unable to subclass existing header!\n");
 			return false;
 		}
 		m_hwndParent = hwndParent;

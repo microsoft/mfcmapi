@@ -111,7 +111,7 @@ namespace dialog::editor
 		const auto lpSourceRes = GetSourceRes();
 
 		RestrictEditor MyResEditor(this, m_lpMapiObjects, m_lpAllocParent,
-									lpSourceRes); // pass source res into editor
+								   lpSourceRes); // pass source res into editor
 		if (!MyResEditor.DisplayDialog()) return;
 
 		// Since m_lpNewCommentRes was owned by an m_lpAllocParent, we don't free it directly

@@ -53,10 +53,8 @@ namespace propertybag
 
 	// Convert an ACCT_VARIANT to SPropValue allocated off of pParent
 	// Frees any memory associated with the ACCT_VARIANT
-	SPropValue accountPropertyBag::varToMAPI(
-		_In_ ULONG ulPropTag,
-		_In_ const ACCT_VARIANT& var,
-		_In_opt_ const VOID* pParent)
+	SPropValue
+	accountPropertyBag::varToMAPI(_In_ ULONG ulPropTag, _In_ const ACCT_VARIANT& var, _In_opt_ const VOID* pParent)
 	{
 		auto sProp = SPropValue{ulPropTag, 0};
 		switch (var.dwType)

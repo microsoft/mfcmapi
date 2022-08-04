@@ -180,7 +180,8 @@ namespace cli
 		output::DebugPrint(output::dbgLevel::Generic, L"Mode = %d\n", ProgOpts.mode);
 		output::DebugPrint(output::dbgLevel::Generic, L"options = 0x%08X\n", ProgOpts.flags);
 		if (!cli::switchUnswitched.empty())
-			output::DebugPrint(output::dbgLevel::Generic, L"lpszUnswitchedOption = %ws\n", cli::switchUnswitched[0].c_str());
+			output::DebugPrint(
+				output::dbgLevel::Generic, L"lpszUnswitchedOption = %ws\n", cli::switchUnswitched[0].c_str());
 
 		for (const auto& option : optionsArray)
 		{

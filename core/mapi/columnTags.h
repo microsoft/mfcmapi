@@ -52,10 +52,11 @@ namespace columns
 		 PR_OBJECT_TYPE},
 	};
 
-	static std::vector<TagNames> DEFColumns = {{deftagPR_INSTANCE_KEY, IDS_COLINSTANCEKEY},
-											   {deftagPR_DISPLAY_NAME, IDS_COLDISPLAYNAME},
-											   {deftagPR_ROW_TYPE, IDS_COLROWTYPE},
-											   {deftagPR_DEPTH, IDS_COLDEPTH}};
+	static std::vector<TagNames> DEFColumns = {
+		{deftagPR_INSTANCE_KEY, IDS_COLINSTANCEKEY},
+		{deftagPR_DISPLAY_NAME, IDS_COLDISPLAYNAME},
+		{deftagPR_ROW_TYPE, IDS_COLROWTYPE},
+		{deftagPR_DEPTH, IDS_COLDEPTH}};
 
 	// Message store properties and columns
 	enum
@@ -155,24 +156,25 @@ namespace columns
 		 PR_CONTENT_FILTER_SCL},
 	};
 
-	static std::vector<TagNames> MSGColumns = {{msgtagPR_INSTANCE_KEY, IDS_COLINSTANCEKEY},
-											   {msgtagPR_HASATTACH, IDS_COLATT},
-											   {msgtagPR_SENT_REPRESENTING_NAME, IDS_COLFROM},
-											   {msgtagPR_DISPLAY_TO, IDS_COLTO},
-											   {msgtagPR_SUBJECT, IDS_COLSUBJECT},
-											   {msgtagPR_CONVERSATION_ID, IDS_COLCONVERSATIONID},
-											   {msgtagPR_ROW_TYPE, IDS_COLROWTYPE},
-											   {msgtagPR_CONTENT_COUNT, IDS_COLCONTENTCOUNT},
-											   {msgtagPR_CONTENT_UNREAD, IDS_COLCONTENTUNREAD},
-											   {msgtagPR_DEPTH, IDS_COLDEPTH},
-											   {msgtagPR_MESSAGE_DELIVERY_TIME, IDS_COLRECEIVED},
-											   {msgtagPR_CLIENT_SUBMIT_TIME, IDS_COLSUBMITTED},
-											   {msgtagPR_MESSAGE_CLASS, IDS_COLMESSAGECLASS},
-											   {msgtagPR_MESSAGE_SIZE, IDS_COLSIZE},
-											   {msgtagPR_MESSAGE_FLAGS, IDS_COLMSGFLAGS},
-											   {msgtagPR_ENTRYID, IDS_COLEID},
-											   {msgtagPR_LONGTERM_ENTRYID_FROM_TABLE, IDS_COLLONGTERMEID},
-											   {msgtagPR_CONTENT_FILTER_SCL, IDS_COLCONTENTSCL}};
+	static std::vector<TagNames> MSGColumns = {
+		{msgtagPR_INSTANCE_KEY, IDS_COLINSTANCEKEY},
+		{msgtagPR_HASATTACH, IDS_COLATT},
+		{msgtagPR_SENT_REPRESENTING_NAME, IDS_COLFROM},
+		{msgtagPR_DISPLAY_TO, IDS_COLTO},
+		{msgtagPR_SUBJECT, IDS_COLSUBJECT},
+		{msgtagPR_CONVERSATION_ID, IDS_COLCONVERSATIONID},
+		{msgtagPR_ROW_TYPE, IDS_COLROWTYPE},
+		{msgtagPR_CONTENT_COUNT, IDS_COLCONTENTCOUNT},
+		{msgtagPR_CONTENT_UNREAD, IDS_COLCONTENTUNREAD},
+		{msgtagPR_DEPTH, IDS_COLDEPTH},
+		{msgtagPR_MESSAGE_DELIVERY_TIME, IDS_COLRECEIVED},
+		{msgtagPR_CLIENT_SUBMIT_TIME, IDS_COLSUBMITTED},
+		{msgtagPR_MESSAGE_CLASS, IDS_COLMESSAGECLASS},
+		{msgtagPR_MESSAGE_SIZE, IDS_COLSIZE},
+		{msgtagPR_MESSAGE_FLAGS, IDS_COLMSGFLAGS},
+		{msgtagPR_ENTRYID, IDS_COLEID},
+		{msgtagPR_LONGTERM_ENTRYID_FROM_TABLE, IDS_COLLONGTERMEID},
+		{msgtagPR_CONTENT_FILTER_SCL, IDS_COLCONTENTSCL}};
 
 	// Address Book entry properties and columns
 	enum
@@ -392,10 +394,11 @@ namespace columns
 		PR_SORT_LOCALE_ID,
 	};
 
-	static std::vector<TagNames> PFColumns = {{pftagPR_INSTANCE_KEY, IDS_COLINSTANCEKEY},
-											  {pftagPR_DISPLAY_NAME, IDS_COLDISPLAYNAME},
-											  {pftagPR_CONTENT_COUNT, IDS_COLCONTENTCOUNT},
-											  {pftagPR_MESSAGE_SIZE, IDS_COLMESSAGESIZE}};
+	static std::vector<TagNames> PFColumns = {
+		{pftagPR_INSTANCE_KEY, IDS_COLINSTANCEKEY},
+		{pftagPR_DISPLAY_NAME, IDS_COLDISPLAYNAME},
+		{pftagPR_CONTENT_COUNT, IDS_COLCONTENTCOUNT},
+		{pftagPR_MESSAGE_SIZE, IDS_COLMESSAGESIZE}};
 
 	// Status table properties and columns
 	enum
@@ -432,15 +435,16 @@ namespace columns
 		PR_OBJECT_TYPE,
 	};
 
-	static std::vector<TagNames> STATUSColumns = {{statustagPR_INSTANCE_KEY, IDS_COLINSTANCEKEY},
-												  {statustagPR_DISPLAY_NAME, IDS_COLDISPLAYNAME},
-												  {statustagPR_IDENTITY_DISPLAY, IDS_COLIDENTITY},
-												  {statustagPR_PROVIDER_DLL_NAME, IDS_COLPROVIDERDLL},
-												  {statustagPR_RESOURCE_METHODS, IDS_COLRESOURCEMETHODS},
-												  {statustagPR_RESOURCE_FLAGS, IDS_COLRESOURCEFLAGS},
-												  {statustagPR_RESOURCE_TYPE, IDS_COLRESOURCETYPE},
-												  {statustagPR_STATUS_CODE, IDS_COLSTATUSCODE},
-												  {statustagPR_OBJECT_TYPE, IDS_COLOBJECTTYPE}};
+	static std::vector<TagNames> STATUSColumns = {
+		{statustagPR_INSTANCE_KEY, IDS_COLINSTANCEKEY},
+		{statustagPR_DISPLAY_NAME, IDS_COLDISPLAYNAME},
+		{statustagPR_IDENTITY_DISPLAY, IDS_COLIDENTITY},
+		{statustagPR_PROVIDER_DLL_NAME, IDS_COLPROVIDERDLL},
+		{statustagPR_RESOURCE_METHODS, IDS_COLRESOURCEMETHODS},
+		{statustagPR_RESOURCE_FLAGS, IDS_COLRESOURCEFLAGS},
+		{statustagPR_RESOURCE_TYPE, IDS_COLRESOURCETYPE},
+		{statustagPR_STATUS_CODE, IDS_COLSTATUSCODE},
+		{statustagPR_OBJECT_TYPE, IDS_COLOBJECTTYPE}};
 
 	// Receive table properties and columns
 	enum
@@ -461,8 +465,9 @@ namespace columns
 		PR_OBJECT_TYPE,
 	};
 
-	static std::vector<TagNames> RECEIVEColumns = {{receivetagPR_INSTANCE_KEY, IDS_COLINSTANCEKEY},
-												   {receivetagPR_MESSAGE_CLASS, IDS_COLMESSAGECLASS}};
+	static std::vector<TagNames> RECEIVEColumns = {
+		{receivetagPR_INSTANCE_KEY, IDS_COLINSTANCEKEY},
+		{receivetagPR_MESSAGE_CLASS, IDS_COLMESSAGECLASS}};
 
 	// Hierarchy table properties and columns
 	enum
@@ -510,8 +515,9 @@ namespace columns
 		PR_DISPLAY_NAME_A,
 	};
 
-	static std::vector<TagNames> PROFLISTColumns = {{proflisttagPR_INSTANCE_KEY, IDS_COLINSTANCEKEY},
-													{proflisttagPR_DISPLAY_NAME, IDS_COLDISPLAYNAME}};
+	static std::vector<TagNames> PROFLISTColumns = {
+		{proflisttagPR_INSTANCE_KEY, IDS_COLINSTANCEKEY},
+		{proflisttagPR_DISPLAY_NAME, IDS_COLDISPLAYNAME}};
 
 	// Service list properties and columns
 	enum
@@ -528,8 +534,9 @@ namespace columns
 		PR_DISPLAY_NAME_W,
 	};
 
-	static std::vector<TagNames> SERVICEColumns = {{servicetagPR_INSTANCE_KEY, IDS_COLINSTANCEKEY},
-												   {servicetagPR_DISPLAY_NAME, IDS_COLDISPLAYNAME}};
+	static std::vector<TagNames> SERVICEColumns = {
+		{servicetagPR_INSTANCE_KEY, IDS_COLINSTANCEKEY},
+		{servicetagPR_DISPLAY_NAME, IDS_COLDISPLAYNAME}};
 
 	// Provider list properties and columns
 	enum
@@ -546,8 +553,9 @@ namespace columns
 		PR_DISPLAY_NAME_A,
 	};
 
-	static std::vector<TagNames> PROVIDERColumns = {{providertagPR_INSTANCE_KEY, IDS_COLINSTANCEKEY},
-													{providertagPR_DISPLAY_NAME, IDS_COLDISPLAYNAME}};
+	static std::vector<TagNames> PROVIDERColumns = {
+		{providertagPR_INSTANCE_KEY, IDS_COLINSTANCEKEY},
+		{providertagPR_DISPLAY_NAME, IDS_COLDISPLAYNAME}};
 
 	// Rules properties and columns
 	enum
@@ -560,8 +568,9 @@ namespace columns
 	// These tags represent the rules information we would like to pick up
 	static SizedSPropTagArray2(RULETAGS_NUM_COLS, sptRULECols) = {RULETAGS_NUM_COLS, PR_INSTANCE_KEY, PR_RULE_NAME};
 
-	static std::vector<TagNames> RULEColumns = {{ruletagPR_INSTANCE_KEY, IDS_COLINSTANCEKEY},
-												{ruletagPR_RULE_NAME, IDS_COLRULENAME}};
+	static std::vector<TagNames> RULEColumns = {
+		{ruletagPR_INSTANCE_KEY, IDS_COLINSTANCEKEY},
+		{ruletagPR_RULE_NAME, IDS_COLRULENAME}};
 
 	// ACL properties and columns
 	enum
@@ -574,8 +583,9 @@ namespace columns
 	// These tags represent the ACL information we would like to pick up
 	static SizedSPropTagArray2(ACLTAGS_NUM_COLS, sptACLCols) = {ACLTAGS_NUM_COLS, PR_MEMBER_ID, PR_MEMBER_RIGHTS};
 
-	static std::vector<TagNames> ACLColumns = {{acltagPR_MEMBER_ID, IDS_COLMEMBERID},
-											   {acltagPR_MEMBER_RIGHTS, IDS_COLMEMBERRIGHTS}};
+	static std::vector<TagNames> ACLColumns = {
+		{acltagPR_MEMBER_ID, IDS_COLMEMBERID},
+		{acltagPR_MEMBER_RIGHTS, IDS_COLMEMBERRIGHTS}};
 
 	// These structures define the columns used in SingleMAPIPropListCtrl
 	enum

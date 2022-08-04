@@ -44,12 +44,13 @@ int ListStoresTable(IMAPISession* pSession)
 		cCols // End marker
 	};
 
-	static const SizedSPropTagArray(cCols, mcols) = {cCols,
-													 {
-														 PR_ENTRYID,
-														 PR_DISPLAY_NAME_W,
-														 PR_DISPLAY_NAME_A,
-													 }};
+	static const SizedSPropTagArray(cCols, mcols) = {
+		cCols,
+		{
+			PR_ENTRYID,
+			PR_DISPLAY_NAME_W,
+			PR_DISPLAY_NAME_A,
+		}};
 
 	CORg(pSession->GetMsgStoresTable(0, &spTable));
 

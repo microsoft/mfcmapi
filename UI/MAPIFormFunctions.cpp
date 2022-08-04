@@ -123,8 +123,8 @@ namespace mapi::mapiui
 			EID,
 			NUM_COLS
 		};
-		static const SizedSPropTagArray(NUM_COLS, sptaShowForm) = {NUM_COLS,
-																   {PR_MESSAGE_FLAGS, PR_MESSAGE_CLASS_A, PR_ENTRYID}};
+		static const SizedSPropTagArray(NUM_COLS, sptaShowForm) = {
+			NUM_COLS, {PR_MESSAGE_FLAGS, PR_MESSAGE_CLASS_A, PR_ENTRYID}};
 
 		if (!lpMessage || !lpMAPISession || !lpSourceFolder) return MAPI_E_INVALID_PARAMETER;
 

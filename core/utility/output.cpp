@@ -313,7 +313,7 @@ namespace output
 					bBuf[ulNumBytes + 1] = 0; // In case we are in Unicode
 
 					const auto bOutputBuf = bUnicode ? std::wstring((LPWSTR) bBuf)
-											   : strings::LPCSTRToWstring(reinterpret_cast<CHAR*>(bBuf));
+													 : strings::LPCSTRToWstring(reinterpret_cast<CHAR*>(bBuf));
 
 					Output(ulDbgLvl, fFile, true, strings::StripCarriage(bOutputBuf));
 				}

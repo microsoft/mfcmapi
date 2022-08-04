@@ -35,7 +35,8 @@ namespace mapi ::profile
 
 	_Check_return_ LPPROFSECT OpenProfileSection(_In_ LPSERVICEADMIN lpServiceAdmin, _In_ const SBinary* lpServiceUID);
 
-	_Check_return_ LPPROFSECT OpenProfileSection(_In_ LPPROVIDERADMIN lpProviderAdmin, _In_ const SBinary* lpProviderUID);
+	_Check_return_ LPPROFSECT
+	OpenProfileSection(_In_ LPPROVIDERADMIN lpProviderAdmin, _In_ const SBinary* lpProviderUID);
 
 	// http://msdn2.microsoft.com/en-us/library/bb820969.aspx
 	struct EXCHANGE_STORE_VERSION_NUM
