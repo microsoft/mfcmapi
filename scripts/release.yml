@@ -112,7 +112,7 @@ jobs:
         *The 64 bit builds will only work on a machine with 64 bit Outlook installed. All other machines should use the 32 bit builds, regardless of the operating system.*
 
         [![Facebook Badge](http://badge.facebook.com/badge/26764016480.2776.1538253884.png)](http://www.facebook.com/MFCMAPI)
-        [Download stats](https://www.somsubhra.com/github-release-stats/?username=stephenegriffin&repository=mfcmapi&search=0)
+        [Download stats](https://hanadigital.github.io/grev/?user=stephenegriffin&repo=mfcmapi)
       isDraft: true
       isPreRelease: ${{ parameters.prerelease }}
       changeLogCompareToRelease: 'lastFullRelease'
