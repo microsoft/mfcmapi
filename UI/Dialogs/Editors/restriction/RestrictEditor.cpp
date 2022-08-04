@@ -238,7 +238,7 @@ namespace dialog::editor
 	HRESULT RestrictEditor::EditAndOr(const _SRestriction* lpSourceRes)
 	{
 		ResAndOrEditor MyResEditor(this, m_lpMapiObjects, lpSourceRes,
-									m_lpAllocParent); // pass source res into editor
+								   m_lpAllocParent); // pass source res into editor
 		if (MyResEditor.DisplayDialog())
 		{
 			m_lpOutputRes->rt = lpSourceRes->rt;

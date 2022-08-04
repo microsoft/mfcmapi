@@ -49,8 +49,7 @@ namespace smartview
 			bIsAB, // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
 		bool bMVRow); // did the row come from a MV prop?
 
-	std::wstring
-		InterpretMVLongAsString(
+	std::wstring InterpretMVLongAsString(
 		std::vector<LONG> rows,
 		_In_opt_ ULONG ulPropTag,
 		_In_opt_ ULONG ulPropNameID,

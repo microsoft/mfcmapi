@@ -49,8 +49,8 @@ namespace smartview
 			if (cbBytes && parser->checkSize(cbBytes) &&
 				(cbMaxBytes == static_cast<size_t>(-1) || cbBytes <= cbMaxBytes))
 			{
-				_data = std::vector<BYTE>{const_cast<LPBYTE>(parser->getAddress()),
-										  const_cast<LPBYTE>(parser->getAddress() + cbBytes)};
+				_data = std::vector<BYTE>{
+					const_cast<LPBYTE>(parser->getAddress()), const_cast<LPBYTE>(parser->getAddress() + cbBytes)};
 				parser->advance(cbBytes);
 				setText(toHexString(true));
 				parsed = true;

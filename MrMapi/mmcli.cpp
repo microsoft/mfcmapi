@@ -264,7 +264,11 @@ namespace cli
 			switchSearchState.name(),
 			switchFolder.name(),
 			switchProfile.name());
-		wprintf(L"   MrMAPI -%ws [-%ws <profile>] [-%ws <path to output file>]\n", switchNamedProps.name(), switchProfile.name(), switchOutput.name());
+		wprintf(
+			L"   MrMAPI -%ws [-%ws <profile>] [-%ws <path to output file>]\n",
+			switchNamedProps.name(),
+			switchProfile.name(),
+			switchOutput.name());
 		wprintf(
 			L"   MrMAPI -%ws [-%ws] [-%ws <profile>]\n",
 			switchAccounts.name(),

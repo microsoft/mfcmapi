@@ -103,7 +103,7 @@ namespace dialog::editor
 		const auto lpSourceRes = res->getCurrentRes();
 
 		RestrictEditor MyResEditor(this, m_lpMapiObjects, m_lpAllocParent,
-									lpSourceRes); // pass source res into editor
+								   lpSourceRes); // pass source res into editor
 		if (!MyResEditor.DisplayDialog()) return false;
 		// Since lpData->data.Res.lpNewRes was owned by an m_lpAllocParent, we don't free it directly
 		const auto newRes = MyResEditor.DetachModifiedSRestriction();

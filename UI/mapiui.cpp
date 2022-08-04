@@ -67,13 +67,14 @@ namespace ui::mapiui
 
 		const auto progress = hWnd ? mapi::mapiui::GetMAPIProgress(L"CopyTo", hWnd) : LPMAPIPROGRESS{};
 
-		return {true,
-				MyData.GetHex(1) | (progress ? MAPI_DIALOG : 0),
-				guid::StringToGUID(MyData.GetStringW(0)),
-				progress,
-				progress ? reinterpret_cast<ULONG_PTR>(hWnd) : NULL,
-				GetExcludedTags(lpTagArray, lpSource, bIsAB),
-				true};
+		return {
+			true,
+			MyData.GetHex(1) | (progress ? MAPI_DIALOG : 0),
+			guid::StringToGUID(MyData.GetStringW(0)),
+			progress,
+			progress ? reinterpret_cast<ULONG_PTR>(hWnd) : NULL,
+			GetExcludedTags(lpTagArray, lpSource, bIsAB),
+			true};
 	}
 
 	void ExportMessages(_In_ LPMAPIFOLDER lpFolder, HWND hWnd)
@@ -113,8 +114,8 @@ namespace ui::mapiui
 						fldNUM_COLS
 					};
 
-					static const SizedSPropTagArray(fldNUM_COLS, fldCols) = {fldNUM_COLS,
-																			 {PR_ENTRYID, PR_SUBJECT_W, PR_RECORD_KEY}};
+					static const SizedSPropTagArray(fldNUM_COLS, fldCols) = {
+						fldNUM_COLS, {PR_ENTRYID, PR_SUBJECT_W, PR_RECORD_KEY}};
 
 					hRes = WC_MAPI(lpTable->SetColumns(LPSPropTagArray(&fldCols), TBL_ASYNC));
 

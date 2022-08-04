@@ -25,10 +25,12 @@ void DumpContentsTable(
 		output::DebugPrint(output::dbgLevel::Generic, L"DumpContentsTable: Outputting Contents\n");
 	if (cli::switchAssociatedContents.isSet())
 		output::DebugPrint(output::dbgLevel::Generic, L"DumpContentsTable: Outputting Associated Contents\n");
-	if (cli::switchMSG.isSet()) output::DebugPrint(output::dbgLevel::Generic, L"DumpContentsTable: Outputting as MSG\n");
+	if (cli::switchMSG.isSet())
+		output::DebugPrint(output::dbgLevel::Generic, L"DumpContentsTable: Outputting as MSG\n");
 	if (cli::switchMoreProperties.isSet())
 		output::DebugPrint(output::dbgLevel::Generic, L"DumpContentsTable: Will retry stream properties\n");
-	if (cli::switchSkip.isSet()) output::DebugPrint(output::dbgLevel::Generic, L"DumpContentsTable: Will skip attachments\n");
+	if (cli::switchSkip.isSet())
+		output::DebugPrint(output::dbgLevel::Generic, L"DumpContentsTable: Will skip attachments\n");
 	if (cli::switchList.isSet()) output::DebugPrint(output::dbgLevel::Generic, L"DumpContentsTable: List only mode\n");
 	if (ulCount)
 		output::DebugPrint(output::dbgLevel::Generic, L"DumpContentsTable: Limiting output to %u messages.\n", ulCount);

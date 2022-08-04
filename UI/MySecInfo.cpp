@@ -46,10 +46,8 @@ namespace mapi::mapiui
 
 	GENERIC_MAPPING gmFolders = {frightsReadAny, frightsEditOwned | frightsDeleteOwned, rightsNone, rightsAll};
 
-	GENERIC_MAPPING gmMessages = {msgrightsGenericRead,
-								  msgrightsGenericWrite,
-								  msgrightsGenericExecute,
-								  msgrightsGenericAll};
+	GENERIC_MAPPING gmMessages =
+		{msgrightsGenericRead, msgrightsGenericWrite, msgrightsGenericExecute, msgrightsGenericAll};
 
 	CMySecInfo::CMySecInfo(_In_ const LPMAPIPROP lpMAPIProp, const ULONG ulPropTag)
 	{

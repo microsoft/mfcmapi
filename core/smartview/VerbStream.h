@@ -31,7 +31,7 @@ namespace smartview
 		std::shared_ptr<blockT<DWORD>> Internal6 = emptyT<DWORD>();
 	};
 
-	class VerbExtraData:public block
+	class VerbExtraData : public block
 	{
 	private:
 		void parse() override;

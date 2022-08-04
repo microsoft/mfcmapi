@@ -84,7 +84,8 @@ namespace version
 
 		if (rc != ERROR_INSUFFICIENT_BUFFER)
 		{
-			output::DebugPrint(output::dbgLevel::Generic, L"LookupFamilyName: Error %ld in FindPackagesByPackageFamily\n", rc);
+			output::DebugPrint(
+				output::dbgLevel::Generic, L"LookupFamilyName: Error %ld in FindPackagesByPackageFamily\n", rc);
 			return L"";
 		}
 
@@ -98,7 +99,9 @@ namespace version
 			if (rc != ERROR_SUCCESS)
 			{
 				output::DebugPrint(
-					output::dbgLevel::Generic, L"LookupFamilyName: Error %d looking up Full Names from Family Names\n", rc);
+					output::dbgLevel::Generic,
+					L"LookupFamilyName: Error %d looking up Full Names from Family Names\n",
+					rc);
 			}
 		}
 

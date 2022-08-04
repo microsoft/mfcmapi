@@ -269,18 +269,13 @@ namespace cache
 		return cache;
 	}
 
-	_Check_return_ std::shared_ptr<namedPropCacheEntry> namedPropCache::find(
-		const std::shared_ptr<cache::namedPropCacheEntry>& entry,
-		bool bMatchID,
-		bool bMatchName)
+	_Check_return_ std::shared_ptr<namedPropCacheEntry>
+	namedPropCache::find(const std::shared_ptr<cache::namedPropCacheEntry>& entry, bool bMatchID, bool bMatchName)
 	{
 		if (fIsSet(output::dbgLevel::NamedPropCache))
 		{
 			output::DebugPrint(
-				output::dbgLevel::NamedPropCache,
-				L"find: bMatchID=%d, bMatchName=%d\n",
-				bMatchID,
-				bMatchName);
+				output::dbgLevel::NamedPropCache, L"find: bMatchID=%d, bMatchName=%d\n", bMatchID, bMatchName);
 			entry->output();
 		}
 

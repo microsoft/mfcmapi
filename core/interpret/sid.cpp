@@ -114,8 +114,8 @@ namespace sid
 		if (cchSidName && sidNameBuf.back() == L'\0') sidNameBuf.pop_back();
 		if (cchSidDomain && sidDomainBuf.back() == L'\0') sidDomainBuf.pop_back();
 
-		return SidAccount{std::wstring(sidDomainBuf.begin(), sidDomainBuf.end()),
-						  std::wstring(sidNameBuf.begin(), sidNameBuf.end())};
+		return SidAccount{
+			std::wstring(sidDomainBuf.begin(), sidDomainBuf.end()), std::wstring(sidNameBuf.begin(), sidNameBuf.end())};
 	}
 
 	_Check_return_ SidAccount LookupAccountSid(std::vector<BYTE> buf)
@@ -250,7 +250,8 @@ namespace sid
 			}
 		}
 
-		return SecurityDescriptor{strings::join(sdString, L"\r\n"),
-								  flags::InterpretFlags(flagSecurityInfo, SECURITY_INFORMATION_OF(buf.data()))};
+		return SecurityDescriptor{
+			strings::join(sdString, L"\r\n"),
+			flags::InterpretFlags(flagSecurityInfo, SECURITY_INFORMATION_OF(buf.data()))};
 	}
 } // namespace sid
