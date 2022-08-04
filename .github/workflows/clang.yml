@@ -24,8 +24,9 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
-      - name: Run a one-line script
-        run: echo Running clang-format
+      - name: Scan headers
+        run: for /r %%g in (*.h) do "%VCINSTALLDIR%\Tools\Llvm\bin\clang-format.exee" -i %%g
 
-      - name: C/C++ code linter (clang-tidy, clang-format, and cppcheck)
-        uses: ArtificialAmateur/cpp-linter-action@0.01
+      - name: Scan cpp
+        run: for /r %%g in (*.cpp) do "%VCINSTALLDIR%\Tools\Llvm\bin\clang-format.exe" -i %%g
+
