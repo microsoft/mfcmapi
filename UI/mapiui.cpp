@@ -25,19 +25,6 @@
 
 namespace ui::mapiui
 {
-	void initCallbacks()
-	{
-		mapi::GetCopyDetails = [](auto _1, auto _2, auto _3, auto _4, auto _5) -> mapi::CopyDetails {
-			return GetCopyDetails(_1, _2, _3, _4, _5);
-		};
-		error::displayError = [](auto _1) { displayError(_1); };
-		mapi::mapiui::getMAPIProgress = [](auto _1, auto _2) -> LPMAPIPROGRESS { return ui::GetMAPIProgress(_1, _2); };
-		output::outputToDbgView = [](auto _1) { OutputToDbgView(_1); };
-		mapi::store::promptServerName = []() { return PromptServerName(); };
-		mapi::onNotifyCallback = [](auto _1, auto _2, auto _3, auto _4) { mapi::mapiui::OnNotify(_1, _2, _3, _4); };
-		output::initStubCallbacks();
-	}
-
 	// Takes a tag array (and optional MAPIProp) and displays UI prompting to build an exclusion array
 	// Must be freed with MAPIFreeBuffer
 	LPSPropTagArray GetExcludedTags(_In_opt_ LPSPropTagArray lpTagArray, _In_opt_ LPMAPIPROP lpProp, bool bIsAB)
@@ -555,4 +542,17 @@ namespace ui::mapiui
 
 		return std::wstring{};
 	};
+
+	void initCallbacks()
+	{
+		mapi::GetCopyDetails = [](auto _1, auto _2, auto _3, auto _4, auto _5) -> mapi::CopyDetails {
+			return GetCopyDetails(_1, _2, _3, _4, _5);
+		};
+		error::displayError = [](auto _1) { displayError(_1); };
+		mapi::mapiui::getMAPIProgress = [](auto _1, auto _2) -> LPMAPIPROGRESS { return ui::GetMAPIProgress(_1, _2); };
+		output::outputToDbgView = [](auto _1) { OutputToDbgView(_1); };
+		mapi::store::promptServerName = []() { return PromptServerName(); };
+		mapi::onNotifyCallback = [](auto _1, auto _2, auto _3, auto _4) { mapi::mapiui::OnNotify(_1, _2, _3, _4); };
+		output::initStubCallbacks();
+	}
 } // namespace ui::mapiui
