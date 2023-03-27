@@ -422,13 +422,28 @@ namespace mapi::processor
 		m_namedProperties = namedProperties;
 	}
 
+	static const SizedSPropTagArray(3, boringProps) = {3, {PR_SUBJECT_W, PR_ENTRYID, PR_PARENT_DISPLAY_W}};
+
+	bool PropIsBoring(ULONG ulPropTag) noexcept
+	{
+		for (ULONG iBoring = 0; iBoring < boringProps.cValues; iBoring++)
+		{
+			if (ulPropTag == boringProps.aulPropTag[iBoring])
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	void dumpStore::InitializeInterestingTagArray()
 	{
 		auto count = static_cast<ULONG>(m_properties.size() + m_namedProperties.size());
 		if (!m_lpFolder || count == 0) return;
 
 		wprintf(L"Filtering for one of %lu interesting properties\n", count);
-		count += 2; // We're going to at PR_SUBJECT and PR_ENTRYID but they're not "interesting"
+		count += boringProps.cValues; // We're going to add some boring properties we'll use later for display
 
 		auto lpTag = mapi::allocate<LPSPropTagArray>(CbNewSPropTagArray(count));
 		if (lpTag)
@@ -436,8 +451,10 @@ namespace mapi::processor
 			// Populate the array
 			lpTag->cValues = count;
 			auto i = ULONG{0};
-			mapi::setTag(lpTag, i++) = PR_SUBJECT_W;
-			mapi::setTag(lpTag, i++) = PR_ENTRYID;
+			for (ULONG iBoring = 0; iBoring < boringProps.cValues; iBoring++)
+			{
+				mapi::setTag(lpTag, i++) = boringProps.aulPropTag[iBoring];
+			}
 
 			// Add regular properties to tag array
 			for (auto& property : m_properties)
@@ -531,7 +548,8 @@ namespace mapi::processor
 					continue;
 				}
 
-				if (lpProps[i].ulPropTag == PR_ENTRYID) continue;
+				if (PropIsBoring(lpProps[i].ulPropTag)) continue;
+
 				if (PROP_TYPE(lpProps[i].ulPropTag) == PT_ERROR) continue;
 				if (PROP_TYPE(lpProps[i].ulPropTag) == PT_UNSPECIFIED) continue;
 				output::DebugPrint(
