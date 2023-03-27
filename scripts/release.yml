@@ -28,6 +28,11 @@ jobs:
       artifactName: 'drop'
       downloadPath: '$(System.ArtifactsDirectory)'
 
+  - task: UseDotNet@2
+    displayName: 'Install .NetCore 2.1'
+    inputs:
+      version: '2.1'
+
   - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
     condition: ${{ parameters.sign }}
     displayName: 'ESRP CodeSigning'
