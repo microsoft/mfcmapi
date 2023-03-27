@@ -195,11 +195,13 @@ namespace cli
 			switchProfile.name(),
 			switchFolder.name());
 		wprintf(
-			L"   MrMAPI -%ws | -%ws [-%ws <profile>] [-%ws <folder>] [-%ws <output directory>]\n",
+			L"   MrMAPI -%ws | -%ws [-%ws <profile>] [-%ws <folder>] [-%ws <property names>] [-%ws <dispid names>] [-%ws <output directory>]\n",
 			switchContents.name(),
 			switchAssociatedContents.name(),
 			switchProfile.name(),
 			switchFolder.name(),
+			switchFindProperty.name(),
+			switchFindNamedProperty.name(),
 			switchOutput.name());
 		wprintf(
 			L"          [-%ws <subject>] [-%ws <message class>] [-%ws] [-%ws] [-%ws <count>] [-%ws]\n",
@@ -284,13 +286,6 @@ namespace cli
 			switchWizard.name(),
 			switchFlag.name(),
 			switchProfile.name());
-		wprintf(
-			L"   MrMAPI -%ws [-%ws <property names>] [-%ws <dispid names>] [-%ws <folder>] [-%ws <output directory>]\n",
-			switchContents.name(),
-			switchFindProperty.name(),
-			switchFindNamedProperty.name(),
-			switchFolder.name(),
-			switchOutput.name());
 
 		if (bFull)
 		{
