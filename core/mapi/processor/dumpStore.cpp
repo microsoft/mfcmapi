@@ -647,9 +647,8 @@ namespace mapi::processor
 				recordKey = mapi::getBin(lpRecordKey);
 			}
 
-			MAPIFreeBuffer(lpRecordKey);
-
 			lpMsgData->szFilePath = file::BuildFileNameAndPath(L".xml", szSubj, szFolderPath, &recordKey); // STRING_OK
+			MAPIFreeBuffer(lpRecordKey);
 		}
 	}
 
