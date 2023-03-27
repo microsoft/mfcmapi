@@ -4,91 +4,11 @@
 #include <core/interpret/guid.h>
 #include <core/smartview/SmartView.h>
 #include <core/utility/strings.h>
-#include <core/addin/addin.h>
 #include <core/addin/mfcmapi.h>
 #include <core/utility/output.h>
 #include <core/interpret/proptags.h>
 #include <core/interpret/proptype.h>
-
-// Searches a NAMEID_ARRAY_ENTRY array for a target dispid.
-// Exact matches are those that match
-// If no hits, then ulNoMatch should be returned for lpulFirstExact
-void FindNameIDArrayMatches(
-	_In_ LONG lTarget,
-	_In_count_(ulMyArray) NAMEID_ARRAY_ENTRY* MyArray,
-	_In_ ULONG ulMyArray,
-	_Out_ ULONG* lpulNumExacts,
-	_Out_ ULONG* lpulFirstExact) noexcept
-{
-	ULONG ulLowerBound = 0;
-	auto ulUpperBound = ulMyArray - 1; // ulMyArray-1 is the last entry
-	auto ulMidPoint = (ulUpperBound + ulLowerBound) / 2;
-	ULONG ulFirstMatch = cache::ulNoMatch;
-	ULONG ulLastMatch = cache::ulNoMatch;
-
-	if (lpulNumExacts) *lpulNumExacts = 0;
-	if (lpulFirstExact) *lpulFirstExact = cache::ulNoMatch;
-
-	// find A match
-	while (ulUpperBound - ulLowerBound > 1)
-	{
-		if (lTarget == MyArray[ulMidPoint].lValue)
-		{
-			ulFirstMatch = ulMidPoint;
-			break;
-		}
-
-		if (lTarget < MyArray[ulMidPoint].lValue)
-		{
-			ulUpperBound = ulMidPoint;
-		}
-		else if (lTarget > MyArray[ulMidPoint].lValue)
-		{
-			ulLowerBound = ulMidPoint;
-		}
-		ulMidPoint = (ulUpperBound + ulLowerBound) / 2;
-	}
-
-	// When we get down to two points, we may have only checked one of them
-	// Make sure we've checked the other
-	if (lTarget == MyArray[ulUpperBound].lValue)
-	{
-		ulFirstMatch = ulUpperBound;
-	}
-	else if (lTarget == MyArray[ulLowerBound].lValue)
-	{
-		ulFirstMatch = ulLowerBound;
-	}
-
-	// Check that we got a match
-	if (cache::ulNoMatch != ulFirstMatch)
-	{
-		ulLastMatch = ulFirstMatch; // Remember the last match we've found so far
-
-		// Scan backwards to find the first match
-		while (ulFirstMatch > 0 && lTarget == MyArray[ulFirstMatch - 1].lValue)
-		{
-			ulFirstMatch = ulFirstMatch - 1;
-		}
-
-		// Scan forwards to find the real last match
-		// Last entry in the array is ulPropTagArray-1
-		while (ulLastMatch + 1 < ulMyArray && lTarget == MyArray[ulLastMatch + 1].lValue)
-		{
-			ulLastMatch = ulLastMatch + 1;
-		}
-
-		ULONG ulNumMatches = 0;
-
-		if (cache::ulNoMatch != ulFirstMatch)
-		{
-			ulNumMatches = ulLastMatch - ulFirstMatch + 1;
-		}
-
-		if (lpulNumExacts) *lpulNumExacts = ulNumMatches;
-		if (lpulFirstExact) *lpulFirstExact = ulFirstMatch;
-	}
-}
+#include <core/mapi/cache/namedProps.h>
 
 // prints the type of a prop tag
 // no pretty stuff or \n - calling function gets to do that
@@ -382,8 +302,7 @@ void PrintDispIDFromNum(_In_ ULONG ulDispID) noexcept
 
 	wprintf(L"Dispid tag 0x%04lX:\n", ulDispID);
 
-	FindNameIDArrayMatches(
-		ulDispID, NameIDArray.data(), static_cast<ULONG>(NameIDArray.size()), &ulNumExacts, &ulFirstExactMatch);
+	cache::FindNameIDArrayMatches(ulDispID, &ulNumExacts, &ulFirstExactMatch);
 
 	if (ulNumExacts > 0 && cache::ulNoMatch != ulFirstExactMatch)
 	{
@@ -412,12 +331,7 @@ void PrintDispIDFromName(_In_opt_z_ LPCWSTR lpszDispIDName) noexcept
 			ULONG ulNumExacts = NULL;
 			ULONG ulFirstExactMatch = cache::ulNoMatch;
 
-			FindNameIDArrayMatches(
-				NameIDArray[ulExactMatch].lValue,
-				NameIDArray.data(),
-				static_cast<ULONG>(NameIDArray.size()),
-				&ulNumExacts,
-				&ulFirstExactMatch);
+			cache::FindNameIDArrayMatches(NameIDArray[ulExactMatch].lValue, &ulNumExacts, &ulFirstExactMatch);
 
 			// We're gonna skip at least one, so only print if we have more than one
 			if (ulNumExacts > 1)

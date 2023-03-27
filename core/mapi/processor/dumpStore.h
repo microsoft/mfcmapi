@@ -29,6 +29,8 @@ namespace mapi::processor
 		void InitMessagePath(_In_ const std::wstring& szMessageFileName);
 		void InitFolderPathRoot(_In_ const std::wstring& szFolderPathRoot);
 		void InitMailboxTablePathRoot(_In_ const std::wstring& szMailboxTablePathRoot);
+		void InitProperties(const std::vector<std::wstring>& properties);
+		void InitNamedProperties(const std::vector<std::wstring>& namedProperties);
 		void EnableMSG() noexcept;
 		void EnableList() noexcept;
 		void DisableStreamRetry() noexcept;
@@ -70,6 +72,9 @@ namespace mapi::processor
 		void EndAttachmentWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData) override;
 		void EndMessageWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData) override;
 
+		void InitializeInterestingTagArray();
+		bool MessageHasInterestingProperties(_In_ LPMESSAGE lpMessage);
+
 		std::wstring m_szMailboxTablePathRoot;
 		std::wstring m_szFolderPathRoot;
 		std::wstring m_szMessageFileName;
@@ -83,5 +88,9 @@ namespace mapi::processor
 		bool m_bOutputList;
 		bool m_bRetryStreamProps;
 		bool m_bOutputAttachments;
+
+		std::vector<std::wstring> m_properties;
+		std::vector<std::wstring> m_namedProperties;
+		LPSPropTagArray m_lpInterestingPropTags = nullptr;
 	};
 } // namespace mapi::processor

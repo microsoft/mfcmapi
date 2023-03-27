@@ -33,6 +33,7 @@ namespace output
 		LoadMAPI = 0x00080000,
 		Hierarchy = 0x00100000,
 		NamedPropCache = 0x00200000,
+		Console = 0x00400000, // used in MrMAPI to print to console
 		Draw = 0x10000000,
 		UI = 0x20000000,
 		MAPIFunctions = 0x40000000,

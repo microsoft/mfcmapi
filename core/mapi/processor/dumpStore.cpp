@@ -12,7 +12,10 @@
 #include <core/utility/output.h>
 #include <core/mapi/mapiFile.h>
 #include <core/mapi/mapiFunctions.h>
+#include <core/mapi/cache/namedProps.h>
 #include <core/utility/error.h>
+#include <core/interpret/proptags.h>
+#include <core/mapi/mapiMemory.h>
 
 namespace mapi::processor
 {
@@ -194,6 +197,8 @@ namespace mapi::processor
 		}
 
 		output::OutputToFile(m_fFolderProps, L"<HierarchyTable>\n");
+
+		InitializeInterestingTagArray();
 	}
 
 	void dumpStore::DoFolderPerHierarchyTableRowWork(_In_ const _SRow* lpSRow)
@@ -207,6 +212,7 @@ namespace mapi::processor
 
 	void dumpStore::EndFolderWork()
 	{
+		MAPIFreeBuffer(m_lpInterestingPropTags);
 		if (m_bOutputList) return;
 		if (m_fFolderProps)
 		{
@@ -407,6 +413,149 @@ namespace mapi::processor
 
 		if (lpRTFUncompressed) lpRTFUncompressed->Release();
 		if (lpStream) lpStream->Release();
+	}
+
+	void dumpStore::InitProperties(const std::vector<std::wstring>& properties) { m_properties = properties; }
+
+	void dumpStore::InitNamedProperties(const std::vector<std::wstring>& namedProperties)
+	{
+		m_namedProperties = namedProperties;
+	}
+
+	void dumpStore::InitializeInterestingTagArray()
+	{
+		auto count = static_cast<ULONG>(m_properties.size() + m_namedProperties.size());
+		if (!m_lpFolder || count == 0) return;
+
+		wprintf(L"Filtering for one of %lu interesting properties\n", count);
+		count += 2; // We're going to at PR_SUBJECT and PR_ENTRYID but they're not "interesting"
+
+		auto lpTag = mapi::allocate<LPSPropTagArray>(CbNewSPropTagArray(count));
+		if (lpTag)
+		{
+			// Populate the array
+			lpTag->cValues = count;
+			auto i = ULONG{0};
+			mapi::setTag(lpTag, i++) = PR_SUBJECT_W;
+			mapi::setTag(lpTag, i++) = PR_ENTRYID;
+
+			// Add regular properties to tag array
+			for (auto& property : m_properties)
+			{
+				auto ulPropTag = proptags::LookupPropName(property.c_str());
+				if (ulPropTag != 0)
+				{
+					if (i < count) mapi::setTag(lpTag, i++) = ulPropTag;
+				}
+
+				wprintf(L"Looking for %ws = 0x%08X\n", property.c_str(), ulPropTag);
+			}
+
+			// Add named properties to tag array
+			for (auto& namedProperty : m_namedProperties)
+			{
+				MAPINAMEID NamedID = {};
+				auto ulPropType = PT_UNSPECIFIED;
+				// Check if that string is a known dispid
+				const auto lpNameIDEntry = cache::GetDispIDFromName(namedProperty.c_str());
+
+				// If we matched on a dispid name, use that for our lookup
+				if (lpNameIDEntry)
+				{
+					NamedID.ulKind = MNID_ID;
+					NamedID.Kind.lID = lpNameIDEntry->lValue;
+					NamedID.lpguid = const_cast<LPGUID>(lpNameIDEntry->lpGuid);
+					ulPropType = lpNameIDEntry->ulType;
+				}
+				else
+				{
+					NamedID.ulKind = MNID_STRING;
+					NamedID.Kind.lID = strings::wstringToUlong(namedProperty, 16);
+				}
+
+				if (NamedID.lpguid && (MNID_ID == NamedID.ulKind && NamedID.Kind.lID ||
+									   MNID_STRING == NamedID.ulKind && NamedID.Kind.lpwstrName))
+				{
+					const auto lpNamedPropTags = cache::GetIDsFromNames(m_lpFolder, {NamedID}, 0);
+					if (lpNamedPropTags && lpNamedPropTags->cValues == 1)
+					{
+						auto ulPropTag = CHANGE_PROP_TYPE(mapi::getTag(lpNamedPropTags, 0), ulPropType);
+						if (ulPropTag != 0)
+						{
+							if (i < count) mapi::setTag(lpTag, i++) = ulPropTag;
+							switch (NamedID.ulKind)
+							{
+							case MNID_ID:
+								wprintf(
+									L"Looking for %ws = 0x%04X @ 0x%08X\n",
+									namedProperty.c_str(),
+									NamedID.Kind.lID,
+									ulPropTag);
+								break;
+							case MNID_STRING:
+							default:
+								wprintf(L"Looking for %ws @ 0x%08X\n", namedProperty.c_str(), ulPropTag);
+							}
+						}
+					}
+
+					MAPIFreeBuffer(lpNamedPropTags);
+				}
+			}
+
+			m_lpInterestingPropTags = lpTag;
+		}
+	}
+
+	bool dumpStore::MessageHasInterestingProperties(_In_ LPMESSAGE lpMessage)
+	{
+		if (!lpMessage || !m_lpInterestingPropTags) return true;
+
+		output::DebugPrint(
+			output::dbgLevel::Generic,
+			L"MessageHasInterestingProperties: Looking for any 1 of %d properties\n",
+			m_lpInterestingPropTags->cValues);
+		auto fInteresting = false;
+
+		LPSPropValue lpProps = nullptr;
+		ULONG cVals = 0;
+		WC_H_GETPROPS_S(lpMessage->GetProps(m_lpInterestingPropTags, fMapiUnicode, &cVals, &lpProps));
+		if (lpProps)
+		{
+			for (ULONG i = 0; i < cVals; i++)
+			{
+				if (lpProps[i].ulPropTag == PR_SUBJECT_W)
+				{
+					if (lpProps[i].Value.lpszW)
+						output::DebugPrint(output::dbgLevel::Generic, L"Examining %ws\n", lpProps[i].Value.lpszW);
+					continue;
+				}
+
+				if (lpProps[i].ulPropTag == PR_ENTRYID) continue;
+				if (PROP_TYPE(lpProps[i].ulPropTag) == PT_ERROR) continue;
+				if (PROP_TYPE(lpProps[i].ulPropTag) == PT_UNSPECIFIED) continue;
+				output::DebugPrint(
+					output::dbgLevel::Generic,
+					L"MessageHasInterestingProperties: Found interesting property 0x%08X\n",
+					lpProps[i].ulPropTag);
+				fInteresting = true;
+				break;
+			}
+
+			if (fInteresting)
+			{
+				output::DebugPrint(output::dbgLevel::Console, L"Found interesting message:\n");
+				output::outputProperties(output::dbgLevel::Console, nullptr, cVals, lpProps, lpMessage, false);
+			}
+
+			MAPIFreeBuffer(lpProps);
+		}
+
+		output::DebugPrint(
+			output::dbgLevel::Generic,
+			L"MessageHasInterestingProperties: message %ws interesting\n",
+			(fInteresting ? L"was" : L"was not"));
+		return fInteresting;
 	}
 
 	void OutputMessageXML(
@@ -633,6 +782,8 @@ namespace mapi::processor
 			OutputMessageMSG(lpMessage, m_szFolderPath);
 			return false; // no more work necessary
 		}
+
+		if (!MessageHasInterestingProperties(lpMessage)) return false;
 
 		OutputMessageXML(
 			lpMessage, lpParentMessageData, m_szMessageFileName, m_szFolderPath, m_bRetryStreamProps, lpData);

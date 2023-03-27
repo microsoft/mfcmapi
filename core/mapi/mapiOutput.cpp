@@ -697,5 +697,6 @@ namespace output
 		}
 
 		Output(ulDbgLvl, fFile, true, strings::StripCarriage(property::RestrictionToString(lpRes, lpObj)));
+		Output(ulDbgLvl, fFile, true, L"\n");
 	}
 } // namespace output

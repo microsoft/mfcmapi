@@ -143,7 +143,8 @@ int wmain(_In_ int argc, _In_count_(argc) wchar_t* argv[])
 	registry::useGetPropList = true;
 	registry::parseNamedProps = true;
 	registry::cacheNamedProps = true;
-	registry::debugTag = 0;
+	registry::debugTag = static_cast<DWORD>(output::dbgLevel::Console); // Any debug logging with Console will print to the console now
+
 	output::initStubCallbacks();
 
 	SetDllDirectory(_T(""));

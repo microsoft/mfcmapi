@@ -16,24 +16,24 @@ void DumpContentsTable(
 	_In_opt_ LPSRestriction lpRes)
 {
 	output::DebugPrint(
-		output::dbgLevel::Generic,
+		output::dbgLevel::Console,
 		L"DumpContentsTable: Outputting folder %ws from profile %ws to %ws\n",
 		lpszFolder,
 		lpszProfile,
 		lpszDir);
 	if (cli::switchContents.isSet())
-		output::DebugPrint(output::dbgLevel::Generic, L"DumpContentsTable: Outputting Contents\n");
+		output::DebugPrint(output::dbgLevel::Console, L"DumpContentsTable: Outputting Contents\n");
 	if (cli::switchAssociatedContents.isSet())
-		output::DebugPrint(output::dbgLevel::Generic, L"DumpContentsTable: Outputting Associated Contents\n");
+		output::DebugPrint(output::dbgLevel::Console, L"DumpContentsTable: Outputting Associated Contents\n");
 	if (cli::switchMSG.isSet())
-		output::DebugPrint(output::dbgLevel::Generic, L"DumpContentsTable: Outputting as MSG\n");
+		output::DebugPrint(output::dbgLevel::Console, L"DumpContentsTable: Outputting as MSG\n");
 	if (cli::switchMoreProperties.isSet())
-		output::DebugPrint(output::dbgLevel::Generic, L"DumpContentsTable: Will retry stream properties\n");
+		output::DebugPrint(output::dbgLevel::Console, L"DumpContentsTable: Will retry stream properties\n");
 	if (cli::switchSkip.isSet())
-		output::DebugPrint(output::dbgLevel::Generic, L"DumpContentsTable: Will skip attachments\n");
-	if (cli::switchList.isSet()) output::DebugPrint(output::dbgLevel::Generic, L"DumpContentsTable: List only mode\n");
+		output::DebugPrint(output::dbgLevel::Console, L"DumpContentsTable: Will skip attachments\n");
+	if (cli::switchList.isSet()) output::DebugPrint(output::dbgLevel::Console, L"DumpContentsTable: List only mode\n");
 	if (ulCount)
-		output::DebugPrint(output::dbgLevel::Generic, L"DumpContentsTable: Limiting output to %u messages.\n", ulCount);
+		output::DebugPrint(output::dbgLevel::Console, L"DumpContentsTable: Limiting output to %u messages.\n", ulCount);
 
 	if (lpFolder)
 	{
@@ -43,6 +43,17 @@ void DumpContentsTable(
 		MyDumpStore.InitFolder(lpFolder);
 		MyDumpStore.InitFolderPathRoot(lpszDir);
 		MyDumpStore.InitFolderContentsRestriction(lpRes);
+		// If any properties passed in, pass them along.
+		if (cli::switchFindProperty.size() != 0)
+		{
+			MyDumpStore.InitProperties(cli::switchFindProperty);
+		}
+
+		if (cli::switchFindNamedProperty.size() != 0)
+		{
+			MyDumpStore.InitNamedProperties(cli::switchFindNamedProperty);
+		}
+
 		if (cli::switchMSG.isSet()) MyDumpStore.EnableMSG();
 		if (cli::switchList.isSet()) MyDumpStore.EnableList();
 		if (ulCount)
