@@ -576,12 +576,11 @@ namespace mapi::processor
 		return fInteresting;
 	}
 
-	void OutputMessageXML(
+	void InitMessageData(
 		_In_ LPMESSAGE lpMessage,
 		_In_ LPVOID lpParentMessageData,
 		_In_ const std::wstring& szMessageFileName,
 		_In_ const std::wstring& szFolderPath,
-		bool bRetryStreamProps,
 		_Deref_out_opt_ LPVOID* lpData)
 	{
 		if (!lpMessage || !lpData) return;
@@ -590,17 +589,6 @@ namespace mapi::processor
 		if (!*lpData) return;
 
 		auto lpMsgData = static_cast<LPMESSAGEDATA>(*lpData);
-
-		LPSPropValue lpAllProps = nullptr;
-		ULONG cValues = 0L;
-
-		// Get all props, asking for UNICODE string properties
-		const auto hRes = WC_H_GETPROPS(mapi::GetPropsNULL(lpMessage, MAPI_UNICODE, &cValues, &lpAllProps));
-		if (hRes == MAPI_E_BAD_CHARWIDTH)
-		{
-			// Didn't like MAPI_UNICODE - fall back
-			WC_H_GETPROPS_S(mapi::GetPropsNULL(lpMessage, NULL, &cValues, &lpAllProps));
-		}
 
 		// If we've got a parent message, we're an attachment - use attachment filename logic
 		if (lpParentMessageData)
@@ -632,27 +620,54 @@ namespace mapi::processor
 			std::wstring szSubj; // BuildFileNameAndPath will substitute a subject if we don't find one
 			SBinary recordKey = {};
 
-			auto lpTemp = PpropFindProp(lpAllProps, cValues, PR_SUBJECT_W);
-			if (lpTemp && strings::CheckStringProp(lpTemp, PT_UNICODE))
+			auto lpSubjectW = LPSPropValue{};
+			WC_MAPI_S(mapi::HrGetOnePropEx(lpMessage, PR_SUBJECT_W, fMapiUnicode, &lpSubjectW));
+			if (lpSubjectW && strings::CheckStringProp(lpSubjectW, PT_UNICODE))
 			{
-				szSubj = lpTemp->Value.lpszW;
+				szSubj = lpSubjectW->Value.lpszW;
 			}
 			else
 			{
-				lpTemp = PpropFindProp(lpAllProps, cValues, PR_SUBJECT_A);
-				if (lpTemp && strings::CheckStringProp(lpTemp, PT_STRING8))
+				auto lpSubjectA = LPSPropValue{};
+				WC_MAPI_S(mapi::HrGetOnePropEx(lpMessage, PR_SUBJECT_A, fMapiUnicode, &lpSubjectA));
+				if (lpSubjectA && strings::CheckStringProp(lpSubjectA, PT_STRING8))
 				{
-					szSubj = strings::stringTowstring(lpTemp->Value.lpszA);
+					szSubj = strings::stringTowstring(lpSubjectA->Value.lpszA);
 				}
+
+				MAPIFreeBuffer(lpSubjectA);
 			}
 
-			lpTemp = PpropFindProp(lpAllProps, cValues, PR_RECORD_KEY);
-			if (lpTemp && PR_RECORD_KEY == lpTemp->ulPropTag)
+			MAPIFreeBuffer(lpSubjectW);
+
+			auto lpRecordKey = LPSPropValue{};
+			WC_MAPI_S(mapi::HrGetOnePropEx(lpMessage, PR_RECORD_KEY, fMapiUnicode, &lpRecordKey));
+			if (lpRecordKey && PR_RECORD_KEY == lpRecordKey->ulPropTag)
 			{
-				recordKey = mapi::getBin(lpTemp);
+				recordKey = mapi::getBin(lpRecordKey);
 			}
+
+			MAPIFreeBuffer(lpRecordKey);
 
 			lpMsgData->szFilePath = file::BuildFileNameAndPath(L".xml", szSubj, szFolderPath, &recordKey); // STRING_OK
+		}
+	}
+
+	void OutputMessageXML(_In_ LPMESSAGE lpMessage, bool bRetryStreamProps, _Deref_out_opt_ LPVOID* lpData)
+	{
+		if (!lpMessage || !lpData) return;
+
+		auto lpMsgData = static_cast<LPMESSAGEDATA>(*lpData);
+
+		LPSPropValue lpAllProps = nullptr;
+		ULONG cValues = 0L;
+
+		// Get all props, asking for UNICODE string properties
+		const auto hRes = WC_H_GETPROPS(mapi::GetPropsNULL(lpMessage, MAPI_UNICODE, &cValues, &lpAllProps));
+		if (hRes == MAPI_E_BAD_CHARWIDTH)
+		{
+			// Didn't like MAPI_UNICODE - fall back
+			WC_H_GETPROPS_S(mapi::GetPropsNULL(lpMessage, NULL, &cValues, &lpAllProps));
 		}
 
 		if (!lpMsgData->szFilePath.empty())
@@ -801,10 +816,11 @@ namespace mapi::processor
 			return false; // no more work necessary
 		}
 
-		if (!MessageHasInterestingProperties(lpMessage)) return false;
+		InitMessageData(lpMessage, lpParentMessageData, m_szMessageFileName, m_szFolderPath, lpData);
 
-		OutputMessageXML(
-			lpMessage, lpParentMessageData, m_szMessageFileName, m_szFolderPath, m_bRetryStreamProps, lpData);
+		if (!MessageHasInterestingProperties(lpMessage)) return true;
+
+		OutputMessageXML(lpMessage, m_bRetryStreamProps, lpData);
 		return true;
 	}
 
@@ -813,7 +829,13 @@ namespace mapi::processor
 		if (!lpData) return false;
 		if (m_bOutputMSG) return false; // When outputting message files, no recipient work is needed
 		if (m_bOutputList) return false;
-		output::OutputToFile(static_cast<LPMESSAGEDATA>(lpData)->fMessageProps, L"<recipients>\n");
+
+		const auto lpMsgData = static_cast<LPMESSAGEDATA>(lpData);
+		if (lpMsgData && lpMsgData->fMessageProps)
+		{
+			output::OutputToFile(lpMsgData->fMessageProps, L"<recipients>\n");
+		}
+
 		return true;
 	}
 
@@ -829,11 +851,14 @@ namespace mapi::processor
 
 		const auto lpMsgData = static_cast<LPMESSAGEDATA>(lpData);
 
-		output::OutputToFilef(lpMsgData->fMessageProps, L"<recipient num=\"0x%08X\">\n", ulCurRow);
+		if (lpMsgData && lpMsgData->fMessageProps)
+		{
+			output::OutputToFilef(lpMsgData->fMessageProps, L"<recipient num=\"0x%08X\">\n", ulCurRow);
 
-		output::outputSRow(output::dbgLevel::NoDebug, lpMsgData->fMessageProps, lpSRow, lpMessage);
+			output::outputSRow(output::dbgLevel::NoDebug, lpMsgData->fMessageProps, lpSRow, lpMessage);
 
-		output::OutputToFile(lpMsgData->fMessageProps, L"</recipient>\n");
+			output::OutputToFile(lpMsgData->fMessageProps, L"</recipient>\n");
+		}
 	}
 
 	void dumpStore::EndRecipientWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID lpData)
@@ -841,15 +866,25 @@ namespace mapi::processor
 		if (!lpData) return;
 		if (m_bOutputMSG) return; // When outputting message files, no recipient work is needed
 		if (m_bOutputList) return;
-		output::OutputToFile(static_cast<LPMESSAGEDATA>(lpData)->fMessageProps, L"</recipients>\n");
+		const auto lpMsgData = static_cast<LPMESSAGEDATA>(lpData);
+
+		if (lpMsgData && lpMsgData->fMessageProps)
+		{
+			output::OutputToFile(lpMsgData->fMessageProps, L"</recipients>\n");
+		}
 	}
 
 	bool dumpStore::BeginAttachmentWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID lpData)
 	{
-		if (!lpData) return false;
 		if (m_bOutputMSG) return false; // When outputting message files, no attachment work is needed
 		if (m_bOutputList) return false;
-		output::OutputToFile(static_cast<LPMESSAGEDATA>(lpData)->fMessageProps, L"<attachments>\n");
+		const auto lpMsgData = static_cast<LPMESSAGEDATA>(lpData);
+
+		if (lpMsgData && lpMsgData->fMessageProps)
+		{
+			output::OutputToFile(lpMsgData->fMessageProps, L"<attachments>\n");
+		}
+
 		return true;
 	}
 
@@ -867,6 +902,7 @@ namespace mapi::processor
 		const auto lpMsgData = static_cast<LPMESSAGEDATA>(lpData);
 
 		lpMsgData->ulCurAttNum = ulCurRow; // set this so we can pull it if this is an embedded message
+		if (!lpMsgData->fMessageProps) return;
 
 		output::OutputToFilef(lpMsgData->fMessageProps, L"<attachment num=\"0x%08X\" filename=\"", ulCurRow);
 
@@ -920,7 +956,11 @@ namespace mapi::processor
 		if (!lpData) return;
 		if (m_bOutputMSG) return; // When outputting message files, no attachment work is needed
 		if (m_bOutputList) return;
-		output::OutputToFile(static_cast<LPMESSAGEDATA>(lpData)->fMessageProps, L"</attachments>\n");
+		const auto lpMsgData = static_cast<LPMESSAGEDATA>(lpData);
+		if (lpMsgData && lpMsgData->fMessageProps)
+		{
+			output::OutputToFile(lpMsgData->fMessageProps, L"</attachments>\n");
+		}
 	}
 
 	void dumpStore::EndMessageWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID lpData)
@@ -929,11 +969,15 @@ namespace mapi::processor
 		if (m_bOutputList) return;
 		const auto lpMsgData = static_cast<LPMESSAGEDATA>(lpData);
 
-		if (lpMsgData->fMessageProps)
+		if (lpMsgData)
 		{
-			output::OutputToFile(lpMsgData->fMessageProps, L"</message>\n");
-			output::CloseFile(lpMsgData->fMessageProps);
+			if (lpMsgData->fMessageProps)
+			{
+				output::OutputToFile(lpMsgData->fMessageProps, L"</message>\n");
+				output::CloseFile(lpMsgData->fMessageProps);
+			}
+
+			delete lpMsgData;
 		}
-		delete lpMsgData;
 	}
 } // namespace mapi::processor
