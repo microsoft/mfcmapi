@@ -29,9 +29,9 @@ jobs:
       downloadPath: '$(System.ArtifactsDirectory)'
 
   - task: UseDotNet@2
-    displayName: 'Install .NetCore 2.1'
+    displayName: 'Install .NetCore 2.x'
     inputs:
-      version: '2.1'
+      version: '2.x'
 
   - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
     condition: ${{ parameters.sign }}
