@@ -12,7 +12,10 @@
 #include <core/utility/output.h>
 #include <core/mapi/mapiFile.h>
 #include <core/mapi/mapiFunctions.h>
+#include <core/mapi/cache/namedProps.h>
 #include <core/utility/error.h>
+#include <core/interpret/proptags.h>
+#include <core/mapi/mapiMemory.h>
 
 namespace mapi::processor
 {
@@ -194,6 +197,8 @@ namespace mapi::processor
 		}
 
 		output::OutputToFile(m_fFolderProps, L"<HierarchyTable>\n");
+
+		InitializeInterestingTagArray();
 	}
 
 	void dumpStore::DoFolderPerHierarchyTableRowWork(_In_ const _SRow* lpSRow)
@@ -207,6 +212,7 @@ namespace mapi::processor
 
 	void dumpStore::EndFolderWork()
 	{
+		MAPIFreeBuffer(m_lpInterestingPropTags);
 		if (m_bOutputList) return;
 		if (m_fFolderProps)
 		{
@@ -409,12 +415,172 @@ namespace mapi::processor
 		if (lpStream) lpStream->Release();
 	}
 
-	void OutputMessageXML(
+	void dumpStore::InitProperties(const std::vector<std::wstring>& properties) { m_properties = properties; }
+
+	void dumpStore::InitNamedProperties(const std::vector<std::wstring>& namedProperties)
+	{
+		m_namedProperties = namedProperties;
+	}
+
+	static const SizedSPropTagArray(3, boringProps) = {3, {PR_SUBJECT_W, PR_ENTRYID, PR_PARENT_DISPLAY_W}};
+
+	bool PropIsBoring(ULONG ulPropTag) noexcept
+	{
+		for (ULONG iBoring = 0; iBoring < boringProps.cValues; iBoring++)
+		{
+			if (ulPropTag == boringProps.aulPropTag[iBoring])
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	void dumpStore::InitializeInterestingTagArray()
+	{
+		auto count = static_cast<ULONG>(m_properties.size() + m_namedProperties.size());
+		if (!m_lpFolder || count == 0) return;
+
+		wprintf(L"Filtering for one of %lu interesting properties\n", count);
+		count += boringProps.cValues; // We're going to add some boring properties we'll use later for display
+
+		auto lpTag = mapi::allocate<LPSPropTagArray>(CbNewSPropTagArray(count));
+		if (lpTag)
+		{
+			// Populate the array
+			lpTag->cValues = count;
+			auto i = ULONG{0};
+			for (ULONG iBoring = 0; iBoring < boringProps.cValues; iBoring++)
+			{
+				mapi::setTag(lpTag, i++) = boringProps.aulPropTag[iBoring];
+			}
+
+			// Add regular properties to tag array
+			for (auto& property : m_properties)
+			{
+				auto ulPropTag = proptags::LookupPropName(property.c_str());
+				if (ulPropTag != 0)
+				{
+					if (i < count) mapi::setTag(lpTag, i++) = ulPropTag;
+				}
+
+				wprintf(L"Looking for %ws = 0x%08X\n", property.c_str(), ulPropTag);
+			}
+
+			// Add named properties to tag array
+			for (auto& namedProperty : m_namedProperties)
+			{
+				MAPINAMEID NamedID = {};
+				auto ulPropType = PT_UNSPECIFIED;
+				// Check if that string is a known dispid
+				const auto lpNameIDEntry = cache::GetDispIDFromName(namedProperty.c_str());
+
+				// If we matched on a dispid name, use that for our lookup
+				if (lpNameIDEntry)
+				{
+					NamedID.ulKind = MNID_ID;
+					NamedID.Kind.lID = lpNameIDEntry->lValue;
+					NamedID.lpguid = const_cast<LPGUID>(lpNameIDEntry->lpGuid);
+					ulPropType = lpNameIDEntry->ulType;
+				}
+				else
+				{
+					NamedID.ulKind = MNID_STRING;
+					NamedID.Kind.lID = strings::wstringToUlong(namedProperty, 16);
+				}
+
+				if (NamedID.lpguid && (MNID_ID == NamedID.ulKind && NamedID.Kind.lID ||
+									   MNID_STRING == NamedID.ulKind && NamedID.Kind.lpwstrName))
+				{
+					const auto lpNamedPropTags = cache::GetIDsFromNames(m_lpFolder, {NamedID}, 0);
+					if (lpNamedPropTags && lpNamedPropTags->cValues == 1)
+					{
+						auto ulPropTag = CHANGE_PROP_TYPE(mapi::getTag(lpNamedPropTags, 0), ulPropType);
+						if (ulPropTag != 0)
+						{
+							if (i < count) mapi::setTag(lpTag, i++) = ulPropTag;
+							switch (NamedID.ulKind)
+							{
+							case MNID_ID:
+								wprintf(
+									L"Looking for %ws = 0x%04X @ 0x%08X\n",
+									namedProperty.c_str(),
+									NamedID.Kind.lID,
+									ulPropTag);
+								break;
+							case MNID_STRING:
+							default:
+								wprintf(L"Looking for %ws @ 0x%08X\n", namedProperty.c_str(), ulPropTag);
+							}
+						}
+					}
+
+					MAPIFreeBuffer(lpNamedPropTags);
+				}
+			}
+
+			m_lpInterestingPropTags = lpTag;
+		}
+	}
+
+	bool dumpStore::MessageHasInterestingProperties(_In_ LPMESSAGE lpMessage)
+	{
+		if (!lpMessage || !m_lpInterestingPropTags) return true;
+
+		output::DebugPrint(
+			output::dbgLevel::Generic,
+			L"MessageHasInterestingProperties: Looking for any 1 of %d properties\n",
+			m_lpInterestingPropTags->cValues);
+		auto fInteresting = false;
+
+		LPSPropValue lpProps = nullptr;
+		ULONG cVals = 0;
+		WC_H_GETPROPS_S(lpMessage->GetProps(m_lpInterestingPropTags, fMapiUnicode, &cVals, &lpProps));
+		if (lpProps)
+		{
+			for (ULONG i = 0; i < cVals; i++)
+			{
+				if (lpProps[i].ulPropTag == PR_SUBJECT_W)
+				{
+					if (lpProps[i].Value.lpszW)
+						output::DebugPrint(output::dbgLevel::Generic, L"Examining %ws\n", lpProps[i].Value.lpszW);
+					continue;
+				}
+
+				if (PropIsBoring(lpProps[i].ulPropTag)) continue;
+
+				if (PROP_TYPE(lpProps[i].ulPropTag) == PT_ERROR) continue;
+				if (PROP_TYPE(lpProps[i].ulPropTag) == PT_UNSPECIFIED) continue;
+				output::DebugPrint(
+					output::dbgLevel::Generic,
+					L"MessageHasInterestingProperties: Found interesting property 0x%08X\n",
+					lpProps[i].ulPropTag);
+				fInteresting = true;
+				break;
+			}
+
+			if (fInteresting)
+			{
+				output::DebugPrint(output::dbgLevel::Console, L"Found interesting message:\n");
+				output::outputProperties(output::dbgLevel::Console, nullptr, cVals, lpProps, lpMessage, false);
+			}
+
+			MAPIFreeBuffer(lpProps);
+		}
+
+		output::DebugPrint(
+			output::dbgLevel::Generic,
+			L"MessageHasInterestingProperties: message %ws interesting\n",
+			(fInteresting ? L"was" : L"was not"));
+		return fInteresting;
+	}
+
+	void InitMessageData(
 		_In_ LPMESSAGE lpMessage,
 		_In_ LPVOID lpParentMessageData,
 		_In_ const std::wstring& szMessageFileName,
 		_In_ const std::wstring& szFolderPath,
-		bool bRetryStreamProps,
 		_Deref_out_opt_ LPVOID* lpData)
 	{
 		if (!lpMessage || !lpData) return;
@@ -423,17 +589,6 @@ namespace mapi::processor
 		if (!*lpData) return;
 
 		auto lpMsgData = static_cast<LPMESSAGEDATA>(*lpData);
-
-		LPSPropValue lpAllProps = nullptr;
-		ULONG cValues = 0L;
-
-		// Get all props, asking for UNICODE string properties
-		const auto hRes = WC_H_GETPROPS(mapi::GetPropsNULL(lpMessage, MAPI_UNICODE, &cValues, &lpAllProps));
-		if (hRes == MAPI_E_BAD_CHARWIDTH)
-		{
-			// Didn't like MAPI_UNICODE - fall back
-			WC_H_GETPROPS_S(mapi::GetPropsNULL(lpMessage, NULL, &cValues, &lpAllProps));
-		}
 
 		// If we've got a parent message, we're an attachment - use attachment filename logic
 		if (lpParentMessageData)
@@ -465,27 +620,53 @@ namespace mapi::processor
 			std::wstring szSubj; // BuildFileNameAndPath will substitute a subject if we don't find one
 			SBinary recordKey = {};
 
-			auto lpTemp = PpropFindProp(lpAllProps, cValues, PR_SUBJECT_W);
-			if (lpTemp && strings::CheckStringProp(lpTemp, PT_UNICODE))
+			auto lpSubjectW = LPSPropValue{};
+			WC_MAPI_S(mapi::HrGetOnePropEx(lpMessage, PR_SUBJECT_W, fMapiUnicode, &lpSubjectW));
+			if (lpSubjectW && strings::CheckStringProp(lpSubjectW, PT_UNICODE))
 			{
-				szSubj = lpTemp->Value.lpszW;
+				szSubj = lpSubjectW->Value.lpszW;
 			}
 			else
 			{
-				lpTemp = PpropFindProp(lpAllProps, cValues, PR_SUBJECT_A);
-				if (lpTemp && strings::CheckStringProp(lpTemp, PT_STRING8))
+				auto lpSubjectA = LPSPropValue{};
+				WC_MAPI_S(mapi::HrGetOnePropEx(lpMessage, PR_SUBJECT_A, fMapiUnicode, &lpSubjectA));
+				if (lpSubjectA && strings::CheckStringProp(lpSubjectA, PT_STRING8))
 				{
-					szSubj = strings::stringTowstring(lpTemp->Value.lpszA);
+					szSubj = strings::stringTowstring(lpSubjectA->Value.lpszA);
 				}
+
+				MAPIFreeBuffer(lpSubjectA);
 			}
 
-			lpTemp = PpropFindProp(lpAllProps, cValues, PR_RECORD_KEY);
-			if (lpTemp && PR_RECORD_KEY == lpTemp->ulPropTag)
+			MAPIFreeBuffer(lpSubjectW);
+
+			auto lpRecordKey = LPSPropValue{};
+			WC_MAPI_S(mapi::HrGetOnePropEx(lpMessage, PR_RECORD_KEY, fMapiUnicode, &lpRecordKey));
+			if (lpRecordKey && PR_RECORD_KEY == lpRecordKey->ulPropTag)
 			{
-				recordKey = mapi::getBin(lpTemp);
+				recordKey = mapi::getBin(lpRecordKey);
 			}
 
 			lpMsgData->szFilePath = file::BuildFileNameAndPath(L".xml", szSubj, szFolderPath, &recordKey); // STRING_OK
+			MAPIFreeBuffer(lpRecordKey);
+		}
+	}
+
+	void OutputMessageXML(_In_ LPMESSAGE lpMessage, bool bRetryStreamProps, _Deref_out_opt_ LPVOID* lpData)
+	{
+		if (!lpMessage || !lpData) return;
+
+		auto lpMsgData = static_cast<LPMESSAGEDATA>(*lpData);
+
+		LPSPropValue lpAllProps = nullptr;
+		ULONG cValues = 0L;
+
+		// Get all props, asking for UNICODE string properties
+		const auto hRes = WC_H_GETPROPS(mapi::GetPropsNULL(lpMessage, MAPI_UNICODE, &cValues, &lpAllProps));
+		if (hRes == MAPI_E_BAD_CHARWIDTH)
+		{
+			// Didn't like MAPI_UNICODE - fall back
+			WC_H_GETPROPS_S(mapi::GetPropsNULL(lpMessage, NULL, &cValues, &lpAllProps));
 		}
 
 		if (!lpMsgData->szFilePath.empty())
@@ -634,8 +815,11 @@ namespace mapi::processor
 			return false; // no more work necessary
 		}
 
-		OutputMessageXML(
-			lpMessage, lpParentMessageData, m_szMessageFileName, m_szFolderPath, m_bRetryStreamProps, lpData);
+		InitMessageData(lpMessage, lpParentMessageData, m_szMessageFileName, m_szFolderPath, lpData);
+
+		if (!MessageHasInterestingProperties(lpMessage)) return true;
+
+		OutputMessageXML(lpMessage, m_bRetryStreamProps, lpData);
 		return true;
 	}
 
@@ -644,7 +828,13 @@ namespace mapi::processor
 		if (!lpData) return false;
 		if (m_bOutputMSG) return false; // When outputting message files, no recipient work is needed
 		if (m_bOutputList) return false;
-		output::OutputToFile(static_cast<LPMESSAGEDATA>(lpData)->fMessageProps, L"<recipients>\n");
+
+		const auto lpMsgData = static_cast<LPMESSAGEDATA>(lpData);
+		if (lpMsgData && lpMsgData->fMessageProps)
+		{
+			output::OutputToFile(lpMsgData->fMessageProps, L"<recipients>\n");
+		}
+
 		return true;
 	}
 
@@ -660,11 +850,14 @@ namespace mapi::processor
 
 		const auto lpMsgData = static_cast<LPMESSAGEDATA>(lpData);
 
-		output::OutputToFilef(lpMsgData->fMessageProps, L"<recipient num=\"0x%08X\">\n", ulCurRow);
+		if (lpMsgData && lpMsgData->fMessageProps)
+		{
+			output::OutputToFilef(lpMsgData->fMessageProps, L"<recipient num=\"0x%08X\">\n", ulCurRow);
 
-		output::outputSRow(output::dbgLevel::NoDebug, lpMsgData->fMessageProps, lpSRow, lpMessage);
+			output::outputSRow(output::dbgLevel::NoDebug, lpMsgData->fMessageProps, lpSRow, lpMessage);
 
-		output::OutputToFile(lpMsgData->fMessageProps, L"</recipient>\n");
+			output::OutputToFile(lpMsgData->fMessageProps, L"</recipient>\n");
+		}
 	}
 
 	void dumpStore::EndRecipientWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID lpData)
@@ -672,15 +865,25 @@ namespace mapi::processor
 		if (!lpData) return;
 		if (m_bOutputMSG) return; // When outputting message files, no recipient work is needed
 		if (m_bOutputList) return;
-		output::OutputToFile(static_cast<LPMESSAGEDATA>(lpData)->fMessageProps, L"</recipients>\n");
+		const auto lpMsgData = static_cast<LPMESSAGEDATA>(lpData);
+
+		if (lpMsgData && lpMsgData->fMessageProps)
+		{
+			output::OutputToFile(lpMsgData->fMessageProps, L"</recipients>\n");
+		}
 	}
 
 	bool dumpStore::BeginAttachmentWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID lpData)
 	{
-		if (!lpData) return false;
 		if (m_bOutputMSG) return false; // When outputting message files, no attachment work is needed
 		if (m_bOutputList) return false;
-		output::OutputToFile(static_cast<LPMESSAGEDATA>(lpData)->fMessageProps, L"<attachments>\n");
+		const auto lpMsgData = static_cast<LPMESSAGEDATA>(lpData);
+
+		if (lpMsgData && lpMsgData->fMessageProps)
+		{
+			output::OutputToFile(lpMsgData->fMessageProps, L"<attachments>\n");
+		}
+
 		return true;
 	}
 
@@ -698,6 +901,7 @@ namespace mapi::processor
 		const auto lpMsgData = static_cast<LPMESSAGEDATA>(lpData);
 
 		lpMsgData->ulCurAttNum = ulCurRow; // set this so we can pull it if this is an embedded message
+		if (!lpMsgData->fMessageProps) return;
 
 		output::OutputToFilef(lpMsgData->fMessageProps, L"<attachment num=\"0x%08X\" filename=\"", ulCurRow);
 
@@ -751,7 +955,11 @@ namespace mapi::processor
 		if (!lpData) return;
 		if (m_bOutputMSG) return; // When outputting message files, no attachment work is needed
 		if (m_bOutputList) return;
-		output::OutputToFile(static_cast<LPMESSAGEDATA>(lpData)->fMessageProps, L"</attachments>\n");
+		const auto lpMsgData = static_cast<LPMESSAGEDATA>(lpData);
+		if (lpMsgData && lpMsgData->fMessageProps)
+		{
+			output::OutputToFile(lpMsgData->fMessageProps, L"</attachments>\n");
+		}
 	}
 
 	void dumpStore::EndMessageWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID lpData)
@@ -760,11 +968,15 @@ namespace mapi::processor
 		if (m_bOutputList) return;
 		const auto lpMsgData = static_cast<LPMESSAGEDATA>(lpData);
 
-		if (lpMsgData->fMessageProps)
+		if (lpMsgData)
 		{
-			output::OutputToFile(lpMsgData->fMessageProps, L"</message>\n");
-			output::CloseFile(lpMsgData->fMessageProps);
+			if (lpMsgData->fMessageProps)
+			{
+				output::OutputToFile(lpMsgData->fMessageProps, L"</message>\n");
+				output::CloseFile(lpMsgData->fMessageProps);
+			}
+
+			delete lpMsgData;
 		}
-		delete lpMsgData;
 	}
 } // namespace mapi::processor

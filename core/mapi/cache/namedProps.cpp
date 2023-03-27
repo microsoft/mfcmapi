@@ -243,6 +243,12 @@ namespace cache
 
 		MAPIFreeBuffer(lpProp);
 
+		// If we don't have a signature, bypass the cache
+		if (sig.empty())
+		{
+			return directMapi::GetIDsFromNames(lpMAPIProp, nameIDs, ulFlags);
+		}
+
 		return namedPropCache::GetIDsFromNames(lpMAPIProp, sig, nameIDs, ulFlags);
 	}
 
@@ -502,5 +508,109 @@ namespace cache
 			output::DebugPrint(output::dbgLevel::NamedPropCache, L"find: no match\n");
 			return namedPropCacheEntry::empty();
 		}
+	}
+
+	// Searches a NAMEID_ARRAY_ENTRY array for a target dispid.
+	// Exact matches are those that match
+	// If no hits, then ulNoMatch should be returned for lpulFirstExact
+	void FindNameIDArrayMatches(
+		_In_ LONG lTarget,
+		_In_count_(ulMyArray) NAMEID_ARRAY_ENTRY* MyArray,
+		_In_ ULONG ulMyArray,
+		_Out_ ULONG* lpulNumExacts,
+		_Out_ ULONG* lpulFirstExact) noexcept
+	{
+		ULONG ulLowerBound = 0;
+		auto ulUpperBound = ulMyArray - 1; // ulMyArray-1 is the last entry
+		auto ulMidPoint = (ulUpperBound + ulLowerBound) / 2;
+		ULONG ulFirstMatch = cache::ulNoMatch;
+		ULONG ulLastMatch = cache::ulNoMatch;
+
+		if (lpulNumExacts) *lpulNumExacts = 0;
+		if (lpulFirstExact) *lpulFirstExact = cache::ulNoMatch;
+
+		// find A match
+		while (ulUpperBound - ulLowerBound > 1)
+		{
+			if (lTarget == MyArray[ulMidPoint].lValue)
+			{
+				ulFirstMatch = ulMidPoint;
+				break;
+			}
+
+			if (lTarget < MyArray[ulMidPoint].lValue)
+			{
+				ulUpperBound = ulMidPoint;
+			}
+			else if (lTarget > MyArray[ulMidPoint].lValue)
+			{
+				ulLowerBound = ulMidPoint;
+			}
+			ulMidPoint = (ulUpperBound + ulLowerBound) / 2;
+		}
+
+		// When we get down to two points, we may have only checked one of them
+		// Make sure we've checked the other
+		if (lTarget == MyArray[ulUpperBound].lValue)
+		{
+			ulFirstMatch = ulUpperBound;
+		}
+		else if (lTarget == MyArray[ulLowerBound].lValue)
+		{
+			ulFirstMatch = ulLowerBound;
+		}
+
+		// Check that we got a match
+		if (cache::ulNoMatch != ulFirstMatch)
+		{
+			ulLastMatch = ulFirstMatch; // Remember the last match we've found so far
+
+			// Scan backwards to find the first match
+			while (ulFirstMatch > 0 && lTarget == MyArray[ulFirstMatch - 1].lValue)
+			{
+				ulFirstMatch = ulFirstMatch - 1;
+			}
+
+			// Scan forwards to find the real last match
+			// Last entry in the array is ulPropTagArray-1
+			while (ulLastMatch + 1 < ulMyArray && lTarget == MyArray[ulLastMatch + 1].lValue)
+			{
+				ulLastMatch = ulLastMatch + 1;
+			}
+
+			ULONG ulNumMatches = 0;
+
+			if (cache::ulNoMatch != ulFirstMatch)
+			{
+				ulNumMatches = ulLastMatch - ulFirstMatch + 1;
+			}
+
+			if (lpulNumExacts) *lpulNumExacts = ulNumMatches;
+			if (lpulFirstExact) *lpulFirstExact = ulFirstMatch;
+		}
+	}
+
+	void FindNameIDArrayMatches(_In_ LONG lTarget, _Out_ ULONG* lpulNumExacts, _Out_ ULONG* lpulFirstExact) noexcept
+	{
+		FindNameIDArrayMatches(
+			lTarget, NameIDArray.data(), static_cast<ULONG>(NameIDArray.size()), lpulNumExacts, lpulFirstExact);
+	}
+
+	// Search for properties matching lpszDispIDName on a substring
+	_Check_return_ LPNAMEID_ARRAY_ENTRY GetDispIDFromName(_In_z_ LPCWSTR lpszDispIDName)
+	{
+		if (!lpszDispIDName) return nullptr;
+
+		const auto entry = find_if(begin(NameIDArray), end(NameIDArray), [&](NAMEID_ARRAY_ENTRY& nameID) noexcept {
+			if (0 == wcscmp(nameID.lpszName, lpszDispIDName))
+			{
+				// PSUNKNOWN is used as a placeholder in NameIDArray - don't return matching entries
+				if (!IsEqualGUID(*nameID.lpGuid, guid::PSUNKNOWN)) return true;
+			}
+
+			return false;
+		});
+
+		return entry != end(NameIDArray) ? &(*entry) : nullptr;
 	}
 } // namespace cache

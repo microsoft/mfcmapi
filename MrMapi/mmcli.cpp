@@ -70,6 +70,8 @@ namespace cli
 	option switchAccounts{L"Accounts", cmdmodeEnumAccounts, 0, 0, OPT_INITALL | OPT_PROFILE};
 	option switchIterate{L"Iterate", cmdmodeEnumAccounts, 0, 0, OPT_NOOPT};
 	option switchWizard{L"Wizard", cmdmodeEnumAccounts, 0, 0, OPT_NOOPT};
+	option switchFindProperty{L"FindProperty", cmdmodeContents, 1, USHRT_MAX, OPT_INITALL};
+	option switchFindNamedProperty{L"FindNamedProperty", cmdmodeContents, 1, USHRT_MAX, OPT_INITALL};
 
 	// If we want to add aliases for any switches, add them here
 	option switchHelpAlias{L"Help", cmdmodeHelpFull, 0, 0, OPT_INITMFC};
@@ -129,6 +131,8 @@ namespace cli
 		&switchAccounts,
 		&switchIterate,
 		&switchWizard,
+		&switchFindProperty,
+		&switchFindNamedProperty,
 		// If we want to add aliases for any switches, add them here
 		&switchHelpAlias,
 	};
@@ -191,11 +195,14 @@ namespace cli
 			switchProfile.name(),
 			switchFolder.name());
 		wprintf(
-			L"   MrMAPI -%ws | -%ws [-%ws <profile>] [-%ws <folder>] [-%ws <output directory>]\n",
+			L"   MrMAPI -%ws | -%ws [-%ws <profile>] [-%ws <folder>] [-%ws <property names>] [-%ws <dispid names>] "
+			L"[-%ws <output directory>]\n",
 			switchContents.name(),
 			switchAssociatedContents.name(),
 			switchProfile.name(),
 			switchFolder.name(),
+			switchFindProperty.name(),
+			switchFindNamedProperty.name(),
 			switchOutput.name());
 		wprintf(
 			L"          [-%ws <subject>] [-%ws <message class>] [-%ws] [-%ws] [-%ws <count>] [-%ws]\n",
@@ -336,6 +343,12 @@ namespace cli
 			wprintf(L"   -Ms  (or -%ws) Output as .MSG instead of XML.\n", switchMSG.name());
 			wprintf(L"   -L   (or -%ws) List details to screen and do not output files.\n", switchList.name());
 			wprintf(L"   -Re  (or -%ws) Restrict output to the 'count' most recent messages.\n", switchRecent.name());
+			wprintf(
+				L"   -FindP  (or -%ws) Restrict output to messages which contain given properties.\n",
+				switchFindProperty.name());
+			wprintf(
+				L"   -FindN  (or -%ws) Restrict output to messages which contain given named properties.\n",
+				switchFindNamedProperty.name());
 			wprintf(L"\n");
 			wprintf(L"   Child Folders:\n");
 			wprintf(L"   -Chi (or -%ws) Display child folders of selected folder.\n", switchChildFolders.name());

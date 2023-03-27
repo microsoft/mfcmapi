@@ -54,6 +54,8 @@ namespace cli
 	extern option switchAccounts;
 	extern option switchIterate;
 	extern option switchWizard;
+	extern option switchFindProperty;
+	extern option switchFindNamedProperty;
 
 	extern std::vector<option*> g_options;
 

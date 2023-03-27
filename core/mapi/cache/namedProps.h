@@ -1,5 +1,7 @@
 #pragma once
 // Named Property Cache
+#include <core/addin/addin.h>
+#include <core/addin/MFCMAPI.h>
 
 namespace cache
 {
@@ -108,4 +110,7 @@ namespace cache
 	_Check_return_ std::shared_ptr<namedPropCacheEntry> find(
 		const std::vector<std::shared_ptr<namedPropCacheEntry>>& list,
 		const std::function<bool(const std::shared_ptr<namedPropCacheEntry>&)>& compare);
+
+	void FindNameIDArrayMatches(_In_ LONG lTarget, _Out_ ULONG* lpulNumExacts, _Out_ ULONG* lpulFirstExact) noexcept;
+	_Check_return_ LPNAMEID_ARRAY_ENTRY GetDispIDFromName(_In_z_ LPCWSTR lpszDispIDName);
 } // namespace cache
