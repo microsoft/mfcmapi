@@ -285,14 +285,9 @@ namespace cli
 			switchFlag.name(),
 			switchProfile.name());
 		wprintf(
-			L"   MrMAPI -%ws [-%ws <property names>] [-%ws <folder>] [-%ws <output directory>]\n",
+			L"   MrMAPI -%ws [-%ws <property names>] [-%ws <dispid names>] [-%ws <folder>] [-%ws <output directory>]\n",
 			switchContents.name(),
 			switchFindProperty.name(),
-			switchFolder.name(),
-			switchOutput.name());
-		wprintf(
-			L"   MrMAPI -%ws [-%ws <dispid names>] [-%ws <folder>] [-%ws <output directory>]\n",
-			switchContents.name(),
 			switchFindNamedProperty.name(),
 			switchFolder.name(),
 			switchOutput.name());
