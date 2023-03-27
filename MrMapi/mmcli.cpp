@@ -195,7 +195,8 @@ namespace cli
 			switchProfile.name(),
 			switchFolder.name());
 		wprintf(
-			L"   MrMAPI -%ws | -%ws [-%ws <profile>] [-%ws <folder>] [-%ws <property names>] [-%ws <dispid names>] [-%ws <output directory>]\n",
+			L"   MrMAPI -%ws | -%ws [-%ws <profile>] [-%ws <folder>] [-%ws <property names>] [-%ws <dispid names>] "
+			L"[-%ws <output directory>]\n",
 			switchContents.name(),
 			switchAssociatedContents.name(),
 			switchProfile.name(),
