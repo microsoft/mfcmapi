@@ -213,6 +213,7 @@ namespace mapi::processor
 	void dumpStore::EndFolderWork()
 	{
 		MAPIFreeBuffer(m_lpInterestingPropTags);
+		m_lpInterestingPropTags = nullptr;
 		if (m_bOutputList) return;
 		if (m_fFolderProps)
 		{
@@ -528,11 +529,6 @@ namespace mapi::processor
 
 					MAPIFreeBuffer(lpNamedPropTags);
 				}
-			}
-
-			if (m_lpInterestingPropTags)
-			{
-				MAPIFreeBuffer(m_lpInterestingPropTags);
 			}
 
 			m_lpInterestingPropTags = lpTag;
