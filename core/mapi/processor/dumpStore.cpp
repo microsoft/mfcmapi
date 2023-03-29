@@ -439,7 +439,6 @@ namespace mapi::processor
 
 	void dumpStore::InitializeInterestingTagArray()
 	{
-
 		auto count = static_cast<ULONG>(m_properties.size() + m_namedProperties.size());
 		if (!m_lpFolder || count == 0) return;
 
