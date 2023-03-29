@@ -32,6 +32,8 @@ void DumpContentsTable(
 	if (cli::switchSkip.isSet())
 		output::DebugPrint(output::dbgLevel::Console, L"DumpContentsTable: Will skip attachments\n");
 	if (cli::switchList.isSet()) output::DebugPrint(output::dbgLevel::Console, L"DumpContentsTable: List only mode\n");
+	if (cli::switchRecurse.isSet())
+		output::DebugPrint(output::dbgLevel::Console, L"DumpContentsTable: Recurse into subfolders\n");
 	if (ulCount)
 		output::DebugPrint(output::dbgLevel::Console, L"DumpContentsTable: Limiting output to %u messages.\n", ulCount);
 
@@ -70,7 +72,8 @@ void DumpContentsTable(
 		if (!cli::switchMoreProperties.isSet()) MyDumpStore.DisableStreamRetry();
 		if (cli::switchSkip.isSet()) MyDumpStore.DisableEmbeddedAttachments();
 
-		MyDumpStore.ProcessFolders(cli::switchContents.isSet(), cli::switchAssociatedContents.isSet(), false);
+		MyDumpStore.ProcessFolders(
+			cli::switchContents.isSet(), cli::switchAssociatedContents.isSet(), cli::switchRecurse.isSet());
 	}
 }
 

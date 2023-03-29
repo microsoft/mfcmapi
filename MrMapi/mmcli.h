@@ -56,6 +56,7 @@ namespace cli
 	extern option switchWizard;
 	extern option switchFindProperty;
 	extern option switchFindNamedProperty;
+	extern option switchRecurse;
 
 	extern std::vector<option*> g_options;
 

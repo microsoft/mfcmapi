@@ -72,6 +72,7 @@ namespace cli
 	option switchWizard{L"Wizard", cmdmodeEnumAccounts, 0, 0, OPT_NOOPT};
 	option switchFindProperty{L"FindProperty", cmdmodeContents, 1, USHRT_MAX, OPT_INITALL};
 	option switchFindNamedProperty{L"FindNamedProperty", cmdmodeContents, 1, USHRT_MAX, OPT_INITALL};
+	option switchRecurse{L"Recurse", cmdmodeContents, 0, 0, OPT_NOOPT};
 
 	// If we want to add aliases for any switches, add them here
 	option switchHelpAlias{L"Help", cmdmodeHelpFull, 0, 0, OPT_INITMFC};
@@ -133,6 +134,7 @@ namespace cli
 		&switchWizard,
 		&switchFindProperty,
 		&switchFindNamedProperty,
+		&switchRecurse,
 		// If we want to add aliases for any switches, add them here
 		&switchHelpAlias,
 	};
@@ -195,14 +197,11 @@ namespace cli
 			switchProfile.name(),
 			switchFolder.name());
 		wprintf(
-			L"   MrMAPI -%ws | -%ws [-%ws <profile>] [-%ws <folder>] [-%ws <property names>] [-%ws <dispid names>] "
-			L"[-%ws <output directory>]\n",
+			L"   MrMAPI -%ws | -%ws [-%ws <profile>] [-%ws <folder>] [-%ws <output directory>]\n",
 			switchContents.name(),
 			switchAssociatedContents.name(),
 			switchProfile.name(),
 			switchFolder.name(),
-			switchFindProperty.name(),
-			switchFindNamedProperty.name(),
 			switchOutput.name());
 		wprintf(
 			L"          [-%ws <subject>] [-%ws <message class>] [-%ws] [-%ws] [-%ws <count>] [-%ws]\n",
@@ -212,6 +211,11 @@ namespace cli
 			switchList.name(),
 			switchRecent.name(),
 			switchSkip.name());
+		wprintf(
+			L"          [-%ws <property names>] [-%ws <dispid names>] [-%ws]\n",
+			switchFindProperty.name(),
+			switchFindNamedProperty.name(),
+			switchRecurse.name());
 		wprintf(
 			L"   MrMAPI -%ws [-%ws <profile>] [-%ws <folder>]\n",
 			switchChildFolders.name(),
@@ -338,20 +342,22 @@ namespace cli
 			wprintf(
 				L"   -H   (or -%ws) Output associated contents table. May be combined with -C. Profile optional\n",
 				switchAssociatedContents.name());
+			wprintf(L"   -Chi (or -%ws) Recurse into child folders of selected folder.\n", switchChildFolders.name());
 			wprintf(L"   -Su  (or -%ws) Subject of messages to output.\n", switchSubject.name());
 			wprintf(L"   -Me  (or -%ws) Message class of messages to output.\n", switchMessageClass.name());
 			wprintf(L"   -Ms  (or -%ws) Output as .MSG instead of XML.\n", switchMSG.name());
 			wprintf(L"   -L   (or -%ws) List details to screen and do not output files.\n", switchList.name());
-			wprintf(L"   -Re  (or -%ws) Restrict output to the 'count' most recent messages.\n", switchRecent.name());
+			wprintf(L"   -Res (or -%ws) Restrict output to the 'count' most recent messages.\n", switchRecent.name());
 			wprintf(
 				L"   -FindP  (or -%ws) Restrict output to messages which contain given properties.\n",
 				switchFindProperty.name());
 			wprintf(
 				L"   -FindN  (or -%ws) Restrict output to messages which contain given named properties.\n",
 				switchFindNamedProperty.name());
+			wprintf(L"   -Recur  (or -%ws) Recurse into subfolders.\n", switchRecurse.name());
 			wprintf(L"\n");
 			wprintf(L"   Child Folders:\n");
-			wprintf(L"   -Chi (or -%ws) Display child folders of selected folder.\n", switchChildFolders.name());
+			wprintf(L"   -Chi (or -%ws) List child folders of selected folder.\n", switchChildFolders.name());
 			wprintf(L"\n");
 			wprintf(L"   MSG File Properties\n");
 			wprintf(L"   -X   (or -%ws) Output properties of an MSG file as XML.\n", switchXML.name());
