@@ -213,6 +213,7 @@ namespace mapi::processor
 	void dumpStore::EndFolderWork()
 	{
 		MAPIFreeBuffer(m_lpInterestingPropTags);
+		m_lpInterestingPropTags = nullptr;
 		if (m_bOutputList) return;
 		if (m_fFolderProps)
 		{
@@ -442,7 +443,17 @@ namespace mapi::processor
 		auto count = static_cast<ULONG>(m_properties.size() + m_namedProperties.size());
 		if (!m_lpFolder || count == 0) return;
 
-		wprintf(L"Filtering for one of %lu interesting properties\n", count);
+		auto lpDisplayNameW = LPSPropValue{};
+		std::wstring szDisplayName;
+		WC_MAPI_S(mapi::HrGetOnePropEx(m_lpFolder, PR_DISPLAY_NAME_W, fMapiUnicode, &lpDisplayNameW));
+		if (lpDisplayNameW && strings::CheckStringProp(lpDisplayNameW, PT_UNICODE))
+		{
+			szDisplayName = lpDisplayNameW->Value.lpszW;
+		}
+
+		MAPIFreeBuffer(lpDisplayNameW);
+
+		wprintf(L"Filtering %ws for one of %lu interesting properties\n", szDisplayName.c_str(), count);
 		count += boringProps.cValues; // We're going to add some boring properties we'll use later for display
 
 		auto lpTag = mapi::allocate<LPSPropTagArray>(CbNewSPropTagArray(count));
