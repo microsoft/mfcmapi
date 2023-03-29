@@ -530,13 +530,18 @@ namespace mapi::processor
 				}
 			}
 
-			//			if (m_lpInterestingPropTags) MAPIFreeBuffer(m_lpInterestingPropTags);
+			if (m_lpInterestingPropTags)
+			{
+				MAPIFreeBuffer(m_lpInterestingPropTags);
+			}
+
 			m_lpInterestingPropTags = lpTag;
 		}
 	}
 
 	bool dumpStore::MessageHasInterestingProperties(_In_ LPMESSAGE lpMessage)
 	{
+		return false;
 		if (!lpMessage || !m_lpInterestingPropTags) return true;
 
 		output::DebugPrint(
