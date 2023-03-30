@@ -97,12 +97,11 @@ HRESULT HrMAPIOpenStoreAndFolder(
 				LPWSTR szEndPtr = nullptr;
 				const auto ulStore = wcstoul(root.c_str(), &szEndPtr, 10);
 
-				// Only '\' and NULL are acceptable next characters after our store number
-				if (szEndPtr && (szEndPtr[0] == L'\\' || szEndPtr[0] == L'\0'))
+				// Only NULL is an acceptable next character after our store number
+				if (szEndPtr && szEndPtr[0] == L'\0')
 				{
 					// We have a store. Let's open it
 					lpMDB = OpenStore(lpMAPISession, ulStore);
-					lpszFolderPath = szEndPtr;
 				}
 				else
 				{
