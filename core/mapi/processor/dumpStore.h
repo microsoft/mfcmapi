@@ -88,6 +88,7 @@ namespace mapi::processor
 		bool m_bOutputList;
 		bool m_bRetryStreamProps;
 		bool m_bOutputAttachments;
+		int m_nOutputFileCount;
 
 		std::vector<std::wstring> m_properties;
 		std::vector<std::wstring> m_namedProperties;

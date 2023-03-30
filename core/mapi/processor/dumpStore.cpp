@@ -49,10 +49,17 @@ namespace mapi::processor
 		m_bOutputAttachments = true;
 		m_bOutputMSG = false;
 		m_bOutputList = false;
+		m_nOutputFileCount = 0;
 	}
 
 	dumpStore::~dumpStore()
 	{
+		output::DebugPrint(
+			output::dbgLevel::Console,
+			L"Output messages (%ws files) count: %d\n",
+			(m_bOutputMSG ? L"MSG" : L"XML"),
+			m_nOutputFileCount);
+
 		if (m_fFolderProps) output::CloseFile(m_fFolderProps);
 		if (m_fFolderContents) output::CloseFile(m_fFolderContents);
 		if (m_fMailboxTable) output::CloseFile(m_fMailboxTable);
@@ -453,7 +460,11 @@ namespace mapi::processor
 
 		MAPIFreeBuffer(lpDisplayNameW);
 
-		wprintf(L"Filtering %ws for one of %lu interesting properties\n", szDisplayName.c_str(), count);
+		output::DebugPrint(
+			output::dbgLevel::Generic,
+			L"Filtering %ws for one of %lu interesting properties\n",
+			szDisplayName.c_str(),
+			count);
 		count += boringProps.cValues; // We're going to add some boring properties we'll use later for display
 
 		auto lpTag = mapi::allocate<LPSPropTagArray>(CbNewSPropTagArray(count));
@@ -476,7 +487,8 @@ namespace mapi::processor
 					if (i < count) mapi::setTag(lpTag, i++) = ulPropTag;
 				}
 
-				wprintf(L"Looking for %ws = 0x%08X\n", property.c_str(), ulPropTag);
+				output::DebugPrint(
+					output::dbgLevel::Generic, L"Looking for %ws = 0x%08X\n", property.c_str(), ulPropTag);
 			}
 
 			// Add named properties to tag array
@@ -514,7 +526,8 @@ namespace mapi::processor
 							switch (NamedID.ulKind)
 							{
 							case MNID_ID:
-								wprintf(
+								output::DebugPrint(
+									output::dbgLevel::Generic,
 									L"Looking for %ws = 0x%04X @ 0x%08X\n",
 									namedProperty.c_str(),
 									NamedID.Kind.lID,
@@ -522,7 +535,11 @@ namespace mapi::processor
 								break;
 							case MNID_STRING:
 							default:
-								wprintf(L"Looking for %ws @ 0x%08X\n", namedProperty.c_str(), ulPropTag);
+								output::DebugPrint(
+									output::dbgLevel::Generic,
+									L"Looking for %ws @ 0x%08X\n",
+									namedProperty.c_str(),
+									ulPropTag);
 							}
 						}
 					}
@@ -573,8 +590,8 @@ namespace mapi::processor
 
 			if (fInteresting)
 			{
-				output::DebugPrint(output::dbgLevel::Console, L"Found interesting message:\n");
-				output::outputProperties(output::dbgLevel::Console, nullptr, cVals, lpProps, lpMessage, false);
+				output::DebugPrint(output::dbgLevel::Generic, L"Found interesting message:\n");
+				output::outputProperties(output::dbgLevel::Generic, nullptr, cVals, lpProps, lpMessage, false);
 			}
 
 			MAPIFreeBuffer(lpProps);
@@ -683,9 +700,7 @@ namespace mapi::processor
 		if (!lpMsgData->szFilePath.empty())
 		{
 			output::DebugPrint(
-				output::dbgLevel::Generic,
-				L"OutputMessagePropertiesToFile: Saving to \"%ws\"\n",
-				lpMsgData->szFilePath.c_str());
+				output::dbgLevel::Console, L"Exporting message properties to \"%ws\"\n", lpMsgData->szFilePath.c_str());
 			lpMsgData->fMessageProps = output::MyOpenFile(lpMsgData->szFilePath, true);
 
 			if (lpMsgData->fMessageProps)
@@ -779,9 +794,6 @@ namespace mapi::processor
 
 		if (!lpMessage || szFolderPath.empty()) return;
 
-		output::DebugPrint(
-			output::dbgLevel::Generic, L"OutputMessageMSG: Saving message to \"%ws\"\n", szFolderPath.c_str());
-
 		std::wstring szSubj;
 
 		ULONG cProps = 0;
@@ -805,7 +817,8 @@ namespace mapi::processor
 		auto szFileName = file::BuildFileNameAndPath(L".msg", szSubj, szFolderPath, &recordKey); // STRING_OK
 		if (!szFileName.empty())
 		{
-			output::DebugPrint(output::dbgLevel::Generic, L"Saving to = \"%ws\"\n", szFileName.c_str());
+			output::DebugPrint(
+				output::dbgLevel::Console, L"Exporting message properties to \"%ws\"\n", szFileName.c_str());
 
 			WC_H_S(file::SaveToMSG(lpMessage, szFileName, fMapiUnicode != 0, nullptr, false));
 		}
@@ -820,17 +833,20 @@ namespace mapi::processor
 		if (lpParentMessageData && !m_bOutputAttachments) return false;
 		if (m_bOutputList) return false;
 
-		if (m_bOutputMSG)
-		{
-			OutputMessageMSG(lpMessage, m_szFolderPath);
-			return false; // no more work necessary
-		}
-
 		InitMessageData(lpMessage, lpParentMessageData, m_szMessageFileName, m_szFolderPath, lpData);
 
 		if (!MessageHasInterestingProperties(lpMessage)) return true;
 
-		OutputMessageXML(lpMessage, m_bRetryStreamProps, lpData);
+		if (m_bOutputMSG)
+		{
+			OutputMessageMSG(lpMessage, m_szFolderPath);
+		}
+		else
+		{
+			OutputMessageXML(lpMessage, m_bRetryStreamProps, lpData);
+		}
+
+		m_nOutputFileCount++;
 		return true;
 	}
 
@@ -975,8 +991,6 @@ namespace mapi::processor
 
 	void dumpStore::EndMessageWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID lpData)
 	{
-		if (m_bOutputMSG) return; // When outputting message files, no end message work is needed
-		if (m_bOutputList) return;
 		const auto lpMsgData = static_cast<LPMESSAGEDATA>(lpData);
 
 		if (lpMsgData)
