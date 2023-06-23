@@ -7,8 +7,6 @@ namespace smartview
 {
 	void SPropValueStruct::parse()
 	{
-		const auto ulCurrOffset = parser->getOffset(); 
-
 		PropType = blockT<WORD>::parse(parser);
 		PropID = blockT<WORD>::parse(parser);
 
