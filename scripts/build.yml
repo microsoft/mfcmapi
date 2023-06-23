@@ -32,7 +32,6 @@ jobs:
 
   - task: CredScan@3
     displayName: Run CredScan
-    condition: and(succeeded(), eq(variables.RunScans, true))
     inputs:
       outputFormat: pre
       verboseOutput: true
@@ -41,14 +40,12 @@ jobs:
 
   - task: PoliCheck@2
     displayName: Run PoliCheck
-    condition: and(succeeded(), eq(variables.RunScans, true))
     inputs:
       targetType: F
       result: PoliCheck.xml
 
   - task: AntiMalware@4
     displayName: Run MpCmdRun.exe
-    condition: and(succeeded(), eq(variables.RunScans, true))
     inputs:
       FileDirPath: $(Build.SourcesDirectory)
       EnableServices: true
@@ -98,7 +95,6 @@ jobs:
       OverWrite: true
 
   - task: RoslynAnalyzers@3
-    condition: and(succeeded(), eq(variables.RunScans, true))
     displayName: Run Roslyn Analyzers
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
@@ -108,7 +104,6 @@ jobs:
   
   - task: BinSkim@4
     displayName: Run BinSkim Assemblies
-    condition: and(succeeded(), eq(variables.RunScans, true))
     continueOnError: True
     inputs:
       AnalyzeTargetGlob: $(build.artifactstagingdirectory).exe
@@ -117,7 +112,6 @@ jobs:
       AnalyzeVerbose: true
 
   - task: SdtReport@2
-    condition: and(succeeded(), eq(variables.RunScans, true))
     displayName: Create Security Analysis Report
     continueOnError: true
     inputs:
@@ -125,7 +119,6 @@ jobs:
       GdnExportHtmlFile: true
 
   - task: PublishSecurityAnalysisLogs@3
-    condition: and(succeeded(), eq(variables.RunScans, true))
     displayName: Publish Security Analysis Logs
     inputs:
       ArtifactName: CodeAnalysisLogs
