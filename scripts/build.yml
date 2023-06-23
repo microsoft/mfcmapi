@@ -30,6 +30,31 @@ jobs:
       }
     displayName: 'Add Version'
 
+  - task: CredScan@3
+    displayName: Run CredScan
+    condition: and(succeeded(), eq(variables.RunScans, true))
+    inputs:
+      outputFormat: pre
+      verboseOutput: true
+      debugMode: false
+      folderSuppression: false
+
+  - task: PoliCheck@2
+    displayName: Run PoliCheck
+    condition: and(succeeded(), eq(variables.RunScans, true))
+    inputs:
+      targetType: F
+      result: PoliCheck.xml
+
+  - task: AntiMalware@4
+    displayName: Run MpCmdRun.exe
+    condition: and(succeeded(), eq(variables.RunScans, true))
+    inputs:
+      FileDirPath: $(Build.SourcesDirectory)
+      EnableServices: true
+      InitialWaitIntervalInSecondsForSignatureUpdateRetry: 30
+    retryCountOnTaskFailure: 1
+    
   - task: VSBuild@1
     displayName: Build
     inputs:
@@ -72,5 +97,38 @@ jobs:
       CleanTargetFolder: true
       OverWrite: true
 
+  - task: RoslynAnalyzers@3
+    condition: and(succeeded(), eq(variables.RunScans, true))
+    displayName: Run Roslyn Analyzers
+    env:
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+    inputs:
+      userProvideBuildInfo: auto
+      msBuildArchitecture: x64
+  
+  - task: BinSkim@4
+    displayName: Run BinSkim Assemblies
+    condition: and(succeeded(), eq(variables.RunScans, true))
+    continueOnError: True
+    inputs:
+      AnalyzeTargetGlob: $(build.artifactstagingdirectory).exe
+      AnalyzeSymPath: $(build.artifactstagingdirectory))\**.pdb
+      AnalyzeRecurse: true
+      AnalyzeVerbose: true
+
+  - task: SdtReport@2
+    condition: and(succeeded(), eq(variables.RunScans, true))
+    displayName: Create Security Analysis Report
+    continueOnError: true
+    inputs:
+      GdnExportTsvFile: true
+      GdnExportHtmlFile: true
+
+  - task: PublishSecurityAnalysisLogs@3
+    condition: and(succeeded(), eq(variables.RunScans, true))
+    displayName: Publish Security Analysis Logs
+    inputs:
+      ArtifactName: CodeAnalysisLogs
+          
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: drop'
