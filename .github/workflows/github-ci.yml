@@ -74,7 +74,7 @@ jobs:
     - name: Run tests
       uses: microsoft/vstest-action@v1.0.0
       with:
-        testAssembly: **/UnitTest.dll
+        testAssembly: '**\\UnitTest.dll'
         searchFolder: ./bin
         runInParallel: true
         codeCoverageEnabled: true
