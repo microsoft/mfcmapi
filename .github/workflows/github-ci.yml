@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  job:
+  build-everything:
     runs-on: windows-latest
     strategy:
       matrix:
