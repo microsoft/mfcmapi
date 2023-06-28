@@ -44,7 +44,7 @@ jobs:
         $build = "$year.2.$year$dayOfYear.${{ github.run_number }}";
         $build -match "(\d+)\.(\d+)\.(\d+)\.(\d+)"
         $m = $matches
-        $file = gci "$Env:GITHUB_WORKSPACE \core\res\bldver.rc"
+        $file = gci "$Env:GITHUB_WORKSPACE\core\res\bldver.rc"
         if($file)
         {
           attrib $file -r
