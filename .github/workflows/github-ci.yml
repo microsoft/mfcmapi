@@ -78,4 +78,3 @@ jobs:
 #        searchFolder: ./tests/
         runInParallel: true
         codeCoverageEnabled: true
-        diagnosticsEnabled: true
