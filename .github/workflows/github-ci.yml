@@ -32,17 +32,17 @@ jobs:
         gci | ft
         tree /A
 
-    - name: Get current date
-      id: date
-      run: |
-        echo "{date}={$(date +'%Y-%m-%d')}" >> $GITHUB_STATE
-
     - name: 'Add Version'
       shell: pwsh
       run: |
-        # run-name: $(Year:yy).2.$(date:yy)$(DayOfYear)$(rev:.rr)
-        gci env:GITHUB_STATE
-        $Env:GITHUB_STATE -match "(\d+)\.(\d+)\.(\d+)\.(\d+)"
+        $now = Get-Date
+        $year = $now.ToString("yy")
+        $dayOfYear = $now.DayOfYear
+
+        Write-Host "Year: $year"
+        Write-Host "Day of the Year: $dayOfYear"
+        $build = "$year.2.$year$dayOfYear.${{ github.run_number }}";
+        $build -match "(\d+)\.(\d+)\.(\d+)\.(\d+)"
         $m = $matches
         $file = gci "$Env:GITHUB_WORKSPACE \core\res\bldver.rc"
         if($file)
