@@ -1,0 +1,81 @@
+# Common build script
+on:
+  workflow_call:
+    inputs:
+      name:
+        description: 'Name of the job'
+        required: true
+        type: string
+        default: 'Build'
+      platform:
+        description: 'Platform to build'
+        required: true
+        type: string
+        default: 'x64'
+      configuration:
+        description: 'Configuration to build'
+        required: true
+        type: string
+        default: 'Release'
+
+jobs:
+  reusable_workflow_job: #${{ inputs.name }}
+    runs-on: windows-latest
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+        with:
+          submodules: 'recursive' 
+
+      - name: 'Add Version'
+        uses: powershell@7f3e3b22dfe3e6e350a8e4c7b5e5df8cf7b8a662 # v2.2.0
+        with:
+          script: |
+            gci env:BUILD_BUILDNUMBER
+            $Env:BUILD_BUILDNUMBER -match "(\d+)\.(\d+)\.(\d+)\.(\d+)"
+            $m = $matches
+            $file = gci "$Env:BUILD_SOURCESDIRECTORY\core\res\bldver.rc"
+            if($file)
+            {
+            attrib $file -r
+            $fc = Get-Content($file)
+            $fc = $fc -replace "#define rmj (\d+)", ("#define rmj "+$m[1])
+            $fc = $fc -replace "#define rmm (\d+)", ("#define rmm "+$m[2])
+            $fc = $fc -replace "#define rup (\d+)", ("#define rup "+$m[3])
+            $fc = $fc -replace "#define rmn (\d+)", ("#define rmn "+$m[4])
+            $fc | Out-File $file
+            }
+
+      - name: Add MSBuild to PATH
+        uses: microsoft/setup-msbuild@v1.0.2
+
+      - name: Restore NuGet packages
+        working-directory: ${{env.GITHUB_WORKSPACE}}
+        run: nuget restore ${{env.SOLUTION_FILE_PATH}}
+
+      - name: Build
+        working-directory: ${{env.GITHUB_WORKSPACE}}
+        # Add additional options to the MSBuild command line here (like platform or verbosity level).
+        # See https://docs.microsoft.com/visualstudio/msbuild/msbuild-command-line-reference
+        run: msbuild /m /p:Configuration=${{inputs.configuration}} /p:Platform=${{inputs.platform}}
+
+          #   - name: Build
+          # uses: VSBuild@1
+          # with:
+          #   solution: '**/*.sln'
+          #   vsVersion: latest
+          #   msbuildArgs: '/p:SourceLinkCreate=true'
+          #   platform: ${{ parameters.platform }}
+          #   configuration: ${{ parameters.configuration }}
+          #   clean: true
+          #   maximumCpuCount: true
+          #   msbuildArchitecture: x64
+          #   createLogFile: true
+    
+      # - task: VSTest@2
+      #   displayName: 'VsTest - UnitTests'
+      #   inputs:
+      #     runInParallel: true
+      #     codeCoverageEnabled: true
+      #     diagnosticsEnabled: True

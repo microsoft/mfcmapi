@@ -1,0 +1,60 @@
+# Continuous integration
+name: github-continuous-integration
+run-name: $(Year:yy).2.$(date:yy)$(DayOfYear)$(rev:.rr)
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+  workflow_dispatch:
+
+jobs:
+  Release_Win32:
+    uses: ./.github/workflows/build.yml
+    with:
+      name: Release_Win32
+      configuration: Release
+      platform: Win32
+  Debug_Win32:
+    uses: ./.github/workflows/build.yml
+    with:
+      name: Debug_Win32
+      configuration: Debug
+      platform: Win32
+  Release_Unicode_Win32:
+    uses: ./.github/workflows/build.yml
+    with:
+      name: Release_Unicode_Win32
+      configuration: Release Unicode
+      platform: Win32
+  Debug_Unicode_Win32:
+    uses: ./.github/workflows/build.yml
+    with:
+      name: Debug_Unicode_Win32
+      configuration: Debug Unicode
+      platform: Win32
+  Release_x64:
+    uses: ./.github/workflows/build.yml
+    with:
+      name: Release_x64
+      configuration: Release
+      platform: x64
+  Debug_x64:
+    uses: ./.github/workflows/build.yml
+    with:
+      name: Debug_x64
+      configuration: Debug
+      platform: x64
+  Release_Unicode_x64:
+    uses: ./.github/workflows/build.yml
+    with:
+      name: Release_Unicode_x64
+      configuration: Release Unicode
+      platform: x64
+  Debug_Unicode_x64:
+    uses: ./.github/workflows/build.yml
+    with:
+      name: Debug_Unicode_x64
+      configuration: Debug Unicode
+      platform: x64
