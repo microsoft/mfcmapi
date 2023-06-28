@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  reusable_workflow_job: #${{ inputs.name }}
+  job:
     runs-on: windows-latest
     strategy:
       matrix:
