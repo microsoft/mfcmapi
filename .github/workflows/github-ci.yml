@@ -61,7 +61,7 @@ jobs:
 
     - name: Restore NuGet packages
       working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: nuget restore ${{env.GITHUB_WORKSPACE}}\mfcmapi.sln
+      run: nuget restore mfcmapi.sln
 
     - name: Build
       working-directory: ${{env.GITHUB_WORKSPACE}}
