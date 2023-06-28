@@ -19,6 +19,8 @@ jobs:
           egress-policy: audit
 
       - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+        with:
+          submodules: 'recursive'
 
       - name: clang-format (w/ diff)
         uses: egor-tensin/clang-format@5ee263e007725df60d02ef2e6fd3d0dd92f048a0 # v1.0.1
