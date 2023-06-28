@@ -8,10 +8,6 @@ on:
   pull_request:
     branches: [ "main" ]
 
-env:
-  # Path to the solution file relative to the root of the project.
-  SOLUTION_FILE_PATH: .\mfcmapi.sln
-
 permissions:
   contents: read
 
@@ -33,7 +29,7 @@ jobs:
       shell: pwsh
       run: |
         gci env:
-        ls
+        gci | ft
         tree
 
     - name: 'Add Version'
@@ -42,7 +38,7 @@ jobs:
         gci env:BUILD_BUILDNUMBER
         $Env:BUILD_BUILDNUMBER -match "(\d+)\.(\d+)\.(\d+)\.(\d+)"
         $m = $matches
-        $file = gci "$Env:BUILD_SOURCESDIRECTORY\core\res\bldver.rc"
+        $file = gci "$Env:GITHUB_WORKSPACE \core\res\bldver.rc"
         if($file)
         {
           attrib $file -r
@@ -59,7 +55,7 @@ jobs:
 
     - name: Restore NuGet packages
       working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: nuget restore ${{env.SOLUTION_FILE_PATH}}
+      run: nuget restore ${{env.GITHUB_WORKSPACE}}\mfcmapi.sln
 
     - name: Build
       working-directory: ${{env.GITHUB_WORKSPACE}}
