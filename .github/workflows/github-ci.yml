@@ -30,63 +30,74 @@ jobs:
     - name: "Debug Output"
       shell: pwsh
       run: |
+        gci env:
+        gci | ft
+        tree /A
+        Write-Host $env_var
         $root = $env.GITHUB_WORKSPACE
         Write-Host env.GITHUB_WORKSPACE = $root
         Write-Host Path? = $root\bin\${{matrix.platform}}\UnitTest\${{matrix.configuration}}
 
+
+    - name: 'Add Version'
+      shell: pwsh
+      run: |
+        $now = Get-Date
+        $year = $now.ToString("yy")
+        $dayOfYear = $now.DayOfYear
+
+        Write-Host "Year: $year"
+        Write-Host "Day of the Year: $dayOfYear"
+        $build = "$year.2.$year$dayOfYear.${{ github.run_number }}";
+        $build -match "(\d+)\.(\d+)\.(\d+)\.(\d+)"
+        $m = $matches
+        $file = gci "$Env:GITHUB_WORKSPACE\core\res\bldver.rc"
+        if($file)
+        {
+          attrib $file -r
+          $fc = Get-Content($file)
+          $fc = $fc -replace "#define rmj (\d+)", ("#define rmj "+$m[1])
+          $fc = $fc -replace "#define rmm (\d+)", ("#define rmm "+$m[2])
+          $fc = $fc -replace "#define rup (\d+)", ("#define rup "+$m[3])
+          $fc = $fc -replace "#define rmn (\d+)", ("#define rmn "+$m[4])
+          $fc | Out-File $file
+        }
+
+    - name: Add MSBuild to PATH
+      uses: microsoft/setup-msbuild@v1.0.2
+
+    - name: Restore NuGet packages
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: nuget restore mfcmapi.sln
+
+    - name: Build
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      # Add additional options to the MSBuild command line here (like platform or verbosity level).
+      # See https://docs.microsoft.com/visualstudio/msbuild/msbuild-command-line-reference
+      run: msbuild /m /p:Configuration="${{matrix.configuration}}" /p:Platform="${{matrix.platform}}" mfcmapi.sln
+
+    - name: "Find unittests"
+      shell: pwsh
+      run: |
+        gci -Filter unittest.dll -Recurse
+        Write-Host 'env.GITHUB_WORKSPACE = ${{env.GITHUB_WORKSPACE}}'
+        Write-Host 'Path? = ${{env.GITHUB_WORKSPACE}}\\bin\\${{matrix.platform}}\\UnitTest\\${{matrix.configuration}}'
+
     - name: "Debug Output2"
       shell: pwsh
       run: |
-        Write-Host 'env.GITHUB_WORKSPACE = $root'
+        gci env:
+        gci | ft
+        tree /A
+        Write-Host $env_var
+        $root = $env.GITHUB_WORKSPACE
+        Write-Host env.GITHUB_WORKSPACE = $root
+        Write-Host Path? = $root\bin\${{matrix.platform}}\UnitTest\${{matrix.configuration}}
 
-    # - name: 'Add Version'
-    #   shell: pwsh
-    #   run: |
-    #     $now = Get-Date
-    #     $year = $now.ToString("yy")
-    #     $dayOfYear = $now.DayOfYear
-
-    #     Write-Host "Year: $year"
-    #     Write-Host "Day of the Year: $dayOfYear"
-    #     $build = "$year.2.$year$dayOfYear.${{ github.run_number }}";
-    #     $build -match "(\d+)\.(\d+)\.(\d+)\.(\d+)"
-    #     $m = $matches
-    #     $file = gci "$Env:GITHUB_WORKSPACE\core\res\bldver.rc"
-    #     if($file)
-    #     {
-    #       attrib $file -r
-    #       $fc = Get-Content($file)
-    #       $fc = $fc -replace "#define rmj (\d+)", ("#define rmj "+$m[1])
-    #       $fc = $fc -replace "#define rmm (\d+)", ("#define rmm "+$m[2])
-    #       $fc = $fc -replace "#define rup (\d+)", ("#define rup "+$m[3])
-    #       $fc = $fc -replace "#define rmn (\d+)", ("#define rmn "+$m[4])
-    #       $fc | Out-File $file
-    #     }
-
-    # - name: Add MSBuild to PATH
-    #   uses: microsoft/setup-msbuild@v1.0.2
-
-    # - name: Restore NuGet packages
-    #   working-directory: ${{env.GITHUB_WORKSPACE}}
-    #   run: nuget restore mfcmapi.sln
-
-    # - name: Build
-    #   working-directory: ${{env.GITHUB_WORKSPACE}}
-    #   # Add additional options to the MSBuild command line here (like platform or verbosity level).
-    #   # See https://docs.microsoft.com/visualstudio/msbuild/msbuild-command-line-reference
-    #   run: msbuild /m /p:Configuration="${{matrix.configuration}}" /p:Platform="${{matrix.platform}}" mfcmapi.sln
-
-    # - name: "Find unittests"
-    #   shell: pwsh
-    #   run: |
-    #     gci -Filter unittest.dll -Recurse
-    #     Write-Host 'env.GITHUB_WORKSPACE = ${{env.GITHUB_WORKSPACE}}'
-    #     Write-Host 'Path? = ${{env.GITHUB_WORKSPACE}}\\bin\\${{matrix.platform}}\\UnitTest\\${{matrix.configuration}}'
-
-    # - name: Run tests
-    #   uses: microsoft/vstest-action@v1.0.0
-    #   with:
-    #     testAssembly: 'UnitTest.dll'
-    #     searchFolder: 'bin\\${{matrix.platform}}\\UnitTest\\${{matrix.configuration}}'
-    #     runInParallel: true
-    #     codeCoverageEnabled: true
+    - name: Run tests
+      uses: microsoft/vstest-action@v1.0.0
+      with:
+        testAssembly: 'UnitTest.dll'
+        searchFolder: 'bin\\${{matrix.platform}}\\UnitTest\\${{matrix.configuration}}'
+        runInParallel: true
+        codeCoverageEnabled: true
