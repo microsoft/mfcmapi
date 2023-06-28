@@ -71,10 +71,17 @@ jobs:
       # See https://docs.microsoft.com/visualstudio/msbuild/msbuild-command-line-reference
       run: msbuild /m /p:Configuration="${{matrix.configuration}}" /p:Platform="${{matrix.platform}}" mfcmapi.sln
 
+    - name: "Find unittests"
+      shell: pwsh
+      run: |
+        gci -Filter unittest.dll -Recurse
+        Write-Host 'env.GITHUB_WORKSPACE = ${{env.GITHUB_WORKSPACE}}'
+        Write-Host 'Path? = ${{env.GITHUB_WORKSPACE}}\\bin\\${{matrix.platform}}\\UnitTest\\${{matrix.configuration}}'
+
     - name: Run tests
       uses: microsoft/vstest-action@v1.0.0
       with:
         #testAssembly: '**\\UnitTest.dll'
-        searchFolder: '${{env.GITHUB_WORKSPACE}}\\bin'
+        searchFolder: 'bin'
         runInParallel: true
         codeCoverageEnabled: true
