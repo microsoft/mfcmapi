@@ -79,7 +79,8 @@ jobs:
     - name: "Run unittests"
       shell: pwsh
       run: |
-        vstest.console.exe "bin\${{matrix.platform}}\UnitTest\${{matrix.configuration}}\UnitTest.dll" /Parallel /Enablecodecoverage /logger:trx
+        $path = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
+        & $path\Common7/IDE/CommonExtensions/Microsoft/TestWindow/vstest.console.exe "bin\${{matrix.platform}}\UnitTest\${{matrix.configuration}}\UnitTest.dll" /Parallel /Enablecodecoverage /logger:trx
 
     - name: Publish test results
       uses: actions/upload-artifact@v2
