@@ -37,18 +37,12 @@ jobs:
       run: |
         echo "{date}={$(date +'%Y-%m-%d')}" >> $GITHUB_STATE
 
-    - name: Test with environment variables
-      run: echo $TAG_NAME - $RELEASE_NAME
-      env:
-        TAG_NAME: nightly-tag-${{ env.date }}
-        RELEASE_NAME: nightly-release-${{ env.date }}
-   
     - name: 'Add Version'
       shell: pwsh
       run: |
         # run-name: $(Year:yy).2.$(date:yy)$(DayOfYear)$(rev:.rr)
-        gci env:date
-        $Env:BUILD_BUILDNUMBER -match "(\d+)\.(\d+)\.(\d+)\.(\d+)"
+        gci env:GITHUB_STATE
+        $Env:GITHUB_STATE -match "(\d+)\.(\d+)\.(\d+)\.(\d+)"
         $m = $matches
         $file = gci "$Env:GITHUB_WORKSPACE \core\res\bldver.rc"
         if($file)
