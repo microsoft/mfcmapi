@@ -76,7 +76,7 @@ jobs:
       # See https://docs.microsoft.com/visualstudio/msbuild/msbuild-command-line-reference
       run: msbuild /m /p:Configuration="${{matrix.configuration}}" /p:Platform="${{matrix.platform}}" mfcmapi.sln
 
-    - name: "Find unittests"
+    - name: "Run unittests"
       shell: pwsh
       run: |
         vstest.console.exe "bin\${{matrix.platform}}\UnitTest\${{matrix.configuration}}\UnitTest.dll" /Parallel /Enablecodecoverage /logger:trx
@@ -88,6 +88,6 @@ jobs:
         path: TestResults
 
     - name: Convert test results to SARIF
-      uses: actions/upload-sarif@v1
+      uses: github/codeql-action/upload-sarif@v2
       with:
         sarif_file: TestResults/*.trx
