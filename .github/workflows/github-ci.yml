@@ -22,10 +22,10 @@ jobs:
         platform: [ 'x64' ]
         
     steps:
-    # - name: Checkout repository
-    #   uses: actions/checkout@v3
-    #   with:
-    #     submodules: 'recursive'
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        submodules: 'recursive'
     
     - name: "Debug Output"
       shell: pwsh
