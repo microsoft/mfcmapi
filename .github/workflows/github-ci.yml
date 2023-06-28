@@ -25,12 +25,12 @@ jobs:
         
     steps:
     - name: Checkout repository
-      uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+      uses: actions/checkout@v3
       with:
         submodules: 'recursive'
 
     - name: 'Add Version'
-      uses: powershell@7f3e3b22dfe3e6e350a8e4c7b5e5df8cf7b8a662 # v2.2.0
+      uses: powershell@v2
       with:
         script: |
           gci env:BUILD_BUILDNUMBER
