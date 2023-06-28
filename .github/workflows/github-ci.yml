@@ -22,20 +22,22 @@ jobs:
         platform: [ 'x64' ]
         
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
-      with:
-        submodules: 'recursive'
+    # - name: Checkout repository
+    #   uses: actions/checkout@v3
+    #   with:
+    #     submodules: 'recursive'
     
     - name: "Debug Output"
       shell: pwsh
       run: |
-        gci env:
-        gci | ft
-        tree /A
         $root = $env.GITHUB_WORKSPACE
+        Write-Host env.GITHUB_WORKSPACE = $root
+        Write-Host Path? = $root\bin\${{matrix.platform}}\UnitTest\${{matrix.configuration}}
+
+    - name: "Debug Output2"
+      shell: pwsh
+      run: |
         Write-Host 'env.GITHUB_WORKSPACE = $root'
-        Write-Host 'Path? = $root\\bin\\${{matrix.platform}}\\UnitTest\\${{matrix.configuration}}'
 
     # - name: 'Add Version'
     #   shell: pwsh
