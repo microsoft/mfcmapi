@@ -72,7 +72,7 @@ jobs:
       run: msbuild /m /p:Configuration="${{matrix.configuration}}" /p:Platform="${{matrix.platform}}" mfcmapi.sln
 
     - name: Run tests
-      uses: microsoft/vstest-action@1.0.0
+      uses: microsoft/vstest-action@v1.0.0
       with:
 #        testAssembly: UnitTest.dll
 #        searchFolder: ./tests/
