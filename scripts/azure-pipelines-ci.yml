@@ -29,12 +29,12 @@ stages:
     - template: build.yml
       parameters:
         name: Release_Unicode_Win32
-        configuration: Release Unicode
+        configuration: Release_Unicode
         platform: Win32
     - template: build.yml
       parameters:
         name: Debug_Unicode_Win32
-        configuration: Debug Unicode
+        configuration: Debug_Unicode
         platform: Win32
     - template: build.yml
       parameters:
@@ -49,12 +49,12 @@ stages:
     - template: build.yml
       parameters:
         name: Release_Unicode_x64
-        configuration: Release Unicode
+        configuration: Release_Unicode
         platform: x64
     - template: build.yml
       parameters:
         name: Debug_Unicode_x64
-        configuration: Debug Unicode
+        configuration: Debug_Unicode
         platform: x64
 
 - stage: Release

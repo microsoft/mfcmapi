@@ -67,35 +67,35 @@ jobs:
 
   - task: ArchiveFiles@2
     inputs:
-      rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/Win32/MrMAPI/Release Unicode/MrMAPI.exe'
+      rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/Win32/MrMAPI/Release_Unicode/MrMAPI.exe'
       archiveFile: '$(Build.ArtifactStagingDirectory)/MrMAPI.exe.$(Build.BuildNumber).zip'
   - task: ArchiveFiles@2
     inputs:
-      rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/Win32/MrMAPI/Release Unicode/MrMAPI.pdb'
+      rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/Win32/MrMAPI/Release_Unicode/MrMAPI.pdb'
       archiveFile: '$(Build.ArtifactStagingDirectory)/MrMAPI.pdb.$(Build.BuildNumber).zip'
   - task: ArchiveFiles@2
     inputs:
-      rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/x64/MrMAPI/Release Unicode/MrMAPI.exe'
+      rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/x64/MrMAPI/Release_Unicode/MrMAPI.exe'
       archiveFile: '$(Build.ArtifactStagingDirectory)/MrMAPI.x64.exe.$(Build.BuildNumber).zip'
   - task: ArchiveFiles@2
     inputs:
-      rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/x64/MrMAPI/Release Unicode/MrMAPI.pdb'
+      rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/x64/MrMAPI/Release_Unicode/MrMAPI.pdb'
       archiveFile: '$(Build.ArtifactStagingDirectory)/MrMAPI.x64.pdb.$(Build.BuildNumber).zip'
   - task: ArchiveFiles@2
     inputs:
-      rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/Win32/Release Unicode/MFCMapi.exe'
+      rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/Win32/Release_Unicode/MFCMapi.exe'
       archiveFile: '$(Build.ArtifactStagingDirectory)/MFCMAPI.exe.$(Build.BuildNumber).zip'
   - task: ArchiveFiles@2
     inputs:
-      rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/Win32/Release Unicode/MFCMapi.pdb'
+      rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/Win32/Release_Unicode/MFCMapi.pdb'
       archiveFile: '$(Build.ArtifactStagingDirectory)/MFCMAPI.pdb.$(Build.BuildNumber).zip'
   - task: ArchiveFiles@2
     inputs:
-      rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/x64/Release Unicode/MFCMapi.exe'
+      rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/x64/Release_Unicode/MFCMapi.exe'
       archiveFile: '$(Build.ArtifactStagingDirectory)/MFCMAPI.x64.exe.$(Build.BuildNumber).zip'
   - task: ArchiveFiles@2
     inputs:
-      rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/x64/Release Unicode/MFCMapi.pdb'
+      rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/x64/Release_Unicode/MFCMapi.pdb'
       archiveFile: '$(Build.ArtifactStagingDirectory)/MFCMAPI.x64.pdb.$(Build.BuildNumber).zip'
 
   - task: GitHubRelease@1
