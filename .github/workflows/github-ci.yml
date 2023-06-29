@@ -15,7 +15,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        configuration: [ 'Release', 'Debug', 'Release Unicode', 'Debug Unicode' ]
+        configuration: [ 'Release', 'Debug', 'Release_Unicode', 'Debug_Unicode' ]
         platform: [ 'Win32', 'x64' ]
 
     steps:
