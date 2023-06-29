@@ -13,6 +13,11 @@ For assistance using MFCMAPI, developing add-ins, or general MAPI development, c
 
 Interested in Exchange Web Services (EWS)? Try [EWSEditor](https://github.com/dseph/EwsEditor)!
 
-Build status:  
-Release: [![Release](https://dev.azure.com/mrmapi/MFCMAPI/_apis/build/status/Release/MFCMAPI%20Build?branchName=main)](https://dev.azure.com/mrmapi/MFCMAPI/_build/latest?definitionId=13&branchName=master)  
-CI: [![CI](https://dev.azure.com/mrmapi/MFCMAPI/_apis/build/status/Continuous%20Integration/ci?branchName=main)](https://dev.azure.com/mrmapi/MFCMAPI/_build/latest?definitionId=14&branchName=master)  
+Badges:  
+[![Release](https://dev.azure.com/mrmapi/MFCMAPI/_apis/build/status/Release/MFCMAPI%20Build?branchName=main)](https://dev.azure.com/mrmapi/MFCMAPI/_build/latest?definitionId=13&branchName=main)  
+[![continuous-integration](https://github.com/stephenegriffin/mfcmapi/actions/workflows/github-ci.yml/badge.svg)](https://github.com/stephenegriffin/mfcmapi/actions/workflows/github-ci.yml)  
+[![CodeQL](https://github.com/stephenegriffin/mfcmapi/actions/workflows/codeql.yml/badge.svg)](https://github.com/stephenegriffin/mfcmapi/actions/workflows/codeql.yml)  
+[![Clang-format](https://github.com/stephenegriffin/mfcmapi/actions/workflows/clang.yml/badge.svg)](https://github.com/stephenegriffin/mfcmapi/actions/workflows/clang.yml)  
+[![Dependency Review](https://github.com/stephenegriffin/mfcmapi/actions/workflows/dependency-review.yml/badge.svg)](https://github.com/stephenegriffin/mfcmapi/actions/workflows/dependency-review.yml)  
+[![OpenSSF
+Scorecard](https://api.securityscorecards.dev/projects/github.com/stephenegriffin/mfcmapi/badge)](https://api.securityscorecards.dev/projects/github.com/{owner}/{repo})  
