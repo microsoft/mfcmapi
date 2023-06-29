@@ -82,7 +82,7 @@ jobs:
         testAssembly: '**\\UnitTest.dll'
         searchFolder: ${{ github.workspace }}\bin\${{matrix.platform}}\UnitTest\${{matrix.configuration}}
         runInParallel: true
-        codeCoverageEnabled: true      
+        # codeCoverageEnabled: true
 
     # - name: "Run unittests"
     #   shell: pwsh
