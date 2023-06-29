@@ -1,0 +1,43 @@
+# Continuous integration
+name: github-continuous-integration
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        configuration: [ 'Release', 'Debug', 'Release_Unicode', 'Debug_Unicode' ]
+        platform: [ 'Win32', 'x64' ]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        submodules: 'recursive'
+
+    - name: Restore NuGet packages
+      working-directory: ${{ github.workspace }}
+      run: nuget restore mfcmapi.sln
+
+    - name: "Build"
+      shell: pwsh
+      run: |
+        $path = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
+        & $path\MSBuild\Current\Bin\amd64\msbuild.exe /m /p:Configuration="${{matrix.configuration}}" /p:Platform="${{matrix.platform}}" mfcmapi.sln
+
+    - name: Run tests
+      uses: microsoft/vstest-action@v1.0.0
+      with:
+        testAssembly: '**\\UnitTest.dll'
+        searchFolder: "${{ github.workspace }}\\bin\\${{matrix.platform}}\\UnitTest\\${{matrix.configuration}}"
+        runInParallel: true
+        # codeCoverageEnabled: true
