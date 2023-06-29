@@ -20,4 +20,4 @@ Badges:
 [![Clang-format](https://github.com/stephenegriffin/mfcmapi/actions/workflows/clang.yml/badge.svg)](https://github.com/stephenegriffin/mfcmapi/actions/workflows/clang.yml)  
 [![Dependency Review](https://github.com/stephenegriffin/mfcmapi/actions/workflows/dependency-review.yml/badge.svg)](https://github.com/stephenegriffin/mfcmapi/actions/workflows/dependency-review.yml)  
 [![OpenSSF
-Scorecard](https://api.securityscorecards.dev/projects/github.com/stephenegriffin/mfcmapi/badge)](https://api.securityscorecards.dev/projects/github.com/{owner}/{repo})  
+Scorecard](https://api.securityscorecards.dev/projects/github.com/stephenegriffin/mfcmapi/badge)](https://api.securityscorecards.dev/projects/github.com/stephenegriffin/mfcmapi)  
