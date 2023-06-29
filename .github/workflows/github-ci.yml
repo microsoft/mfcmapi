@@ -64,8 +64,8 @@ jobs:
     - name: Run tests
       uses: microsoft/vstest-action@v1.0.0
       with:
-        testAssembly: '**\\UnitTest.dll'
-        # searchFolder: ${{ github.workspace }}\bin\${{matrix.platform}}\UnitTest\${{matrix.configuration}}
-        searchFolder: ${{ github.workspace }}\bin
+        # testAssembly: '**\\UnitTest.dll'
+        searchFolder: ${{ github.workspace }}\bin\${{matrix.platform}}\UnitTest\${{matrix.configuration}}
+        # searchFolder: ${{ github.workspace }}\bin
         runInParallel: true
         # codeCoverageEnabled: true
