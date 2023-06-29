@@ -90,5 +90,6 @@ jobs:
 
     - name: Convert test results to SARIF
       uses: github/codeql-action/upload-sarif@v2
+      working-directory: ${{env.GITHUB_WORKSPACE}}
       with:
         sarif_file: TestResults\*.trx
