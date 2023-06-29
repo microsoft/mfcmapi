@@ -24,16 +24,15 @@ jobs:
       with:
         submodules: 'recursive'
 
-    - name: Add MSBuild to PATH
-      uses: microsoft/setup-msbuild@v1.0.2
-
     - name: Restore NuGet packages
       working-directory: ${{ github.workspace }}
       run: nuget restore mfcmapi.sln
 
-    - name: Build
-      working-directory: ${{ github.workspace }}
-      run: msbuild /m /p:Configuration="${{matrix.configuration}}" /p:Platform="${{matrix.platform}}" mfcmapi.sln
+    - name: "Build"
+      shell: pwsh
+      run: |
+        $path = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
+        & $path\MSBuild\Current\Bin\amd64\msbuild.exe /m /p:Configuration="${{matrix.configuration}}" /p:Platform="${{matrix.platform}}" mfcmapi.sln
 
     - name: Run tests
       uses: microsoft/vstest-action@v1.0.0
