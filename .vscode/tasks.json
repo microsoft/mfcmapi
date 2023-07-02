@@ -1,0 +1,133 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Batch Build",
+            "dependsOn": [
+                "Debug x64",
+                "Debug x86",
+                "Debug_Unicode x64",
+                "Debug_Unicode x86",
+                "Release x64",
+                "Release x86",
+                "Release_Unicode x64",
+                "Release_Unicode x86"
+            ],
+            "dependsOrder": "parallel",
+            "group": "build",
+            "isBackground": true
+        },
+        {
+            "label": "Debug x64",
+            "type": "shell",
+            "command": "msbuild MFCMAPI.sln /property:Configuration=Debug /property:Platform=x64",
+            "group": { "kind": "build", "isDefault": true }
+        },
+        {
+            "label": "Release x64",
+            "type": "shell",
+            "command": "msbuild MFCMAPI.sln /property:Configuration=Release /property:Platform=x64",
+            "group": { "kind": "build" }
+        },
+        {
+            "label": "Debug x86",
+            "type": "shell",
+            "command": "msbuild MFCMAPI.sln /property:Configuration=Debug /property:Platform=Win32",
+            "group": { "kind": "build", "isDefault": true }
+        },
+        {
+            "label": "Release x86",
+            "type": "shell",
+            "command": "msbuild MFCMAPI.sln /property:Configuration=Release /property:Platform=Win32",
+            "group": { "kind": "build" }
+        },
+        {
+            "label": "Debug_Unicode x64",
+            "type": "shell",
+            "command": "msbuild MFCMAPI.sln /property:Configuration=Debug_Unicode /property:Platform=x64",
+            "group": { "kind": "build" }
+        },
+        {
+            "label": "Release_Unicode x64",
+            "type": "shell",
+            "command": "msbuild MFCMAPI.sln /property:Configuration=Release_Unicode /property:Platform=x64",
+            "group": { "kind": "build" }
+        },
+        {
+            "label": "Debug_Unicode x86",
+            "type": "shell",
+            "command": "msbuild MFCMAPI.sln /property:Configuration=Debug_Unicode /property:Platform=Win32",
+            "group": { "kind": "build", "isDefault": true }
+        },
+        {
+            "label": "Release_Unicode x86",
+            "type": "shell",
+            "command": "msbuild MFCMAPI.sln /property:Configuration=Release_Unicode /property:Platform=Win32",
+            "group": { "kind": "build" }
+        },
+        {
+            "label": "Batch Clean",
+            "dependsOn": [
+                "Clean Debug x64",
+                "Clean Debug x86",
+                "Clean Debug_Unicode x64",
+                "Clean Debug_Unicode x86",
+                "Clean Release x64",
+                "Clean Release x86",
+                "Clean Release_Unicode x64",
+                "Clean Release_Unicode x86"
+            ],
+            "dependsOrder": "parallel",
+            "group": "build",
+            "isBackground": true
+        },
+        {
+            "label": "Clean Debug x64",
+            "type": "shell",
+            "command": "msbuild MFCMAPI.sln /target:Clean /property:Configuration=Debug /property:Platform=x64",
+            "group": { "kind": "build" }
+        },
+        {
+            "label": "Clean Release x64",
+            "type": "shell",
+            "command": "msbuild MFCMAPI.sln /target:Clean /property:Configuration=Release /property:Platform=x64",
+            "group": { "kind": "build" }
+        },
+        {
+            "label": "Clean Debug x86",
+            "type": "shell",
+            "command": "msbuild MFCMAPI.sln /target:Clean /property:Configuration=Debug /property:Platform=Win32",
+            "group": { "kind": "build" }
+        },
+        {
+            "label": "Clean Release x86",
+            "type": "shell",
+            "command": "msbuild MFCMAPI.sln /target:Clean /property:Configuration=Release /property:Platform=Win32",
+            "group": { "kind": "build" }
+        },
+        {
+            "label": "Clean Debug_Unicode x64",
+            "type": "shell",
+            "command": "msbuild MFCMAPI.sln /target:Clean /property:Configuration=Debug_Unicode /property:Platform=x64",
+            "group": { "kind": "build" }
+        },
+        {
+            "label": "Clean Release_Unicode x64",
+            "type": "shell",
+            "command": "msbuild MFCMAPI.sln /target:Clean /property:Configuration=Release_Unicode /property:Platform=x64",
+            "group": { "kind": "build" }
+        },
+        {
+            "label": "Clean Debug_Unicode x86",
+            "type": "shell",
+            "command": "msbuild MFCMAPI.sln /target:Clean /property:Configuration=Debug_Unicode /property:Platform=Win32",
+            "group": { "kind": "build" }
+        },
+        {
+            "label": "Clean Release_Unicode x86",
+            "type": "shell",
+            "command": "msbuild MFCMAPI.sln /target:Clean /property:Configuration=Release_Unicode /property:Platform=Win32",
+            "group": { "kind": "build" }
+        },
+     ]
+}
