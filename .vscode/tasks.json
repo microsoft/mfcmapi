@@ -66,6 +66,29 @@
             "group": { "kind": "build" }
         },
         {
+            "label": "Batch Prefast Build",
+            "dependsOn": [
+                "Prefast x64",
+                "Prefast x86",
+            ],
+            "dependsOrder": "parallel",
+            "group": "build",
+            "isBackground": true
+        },
+        {
+            "label": "Prefast x64",
+            "type": "shell",
+            "command": "msbuild MFCMAPI.sln /property:Configuration=Prefast /property:Platform=x64",
+            "group": { "kind": "build", "isDefault": true },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Prefast x86",
+            "type": "shell",
+            "command": "msbuild MFCMAPI.sln /property:Configuration=Prefast /property:Platform=Win32",
+            "group": { "kind": "build" }
+        },
+        {
             "label": "Batch Clean",
             "dependsOn": [
                 "Clean Debug x64",
@@ -75,7 +98,9 @@
                 "Clean Release x64",
                 "Clean Release x86",
                 "Clean Release_Unicode x64",
-                "Clean Release_Unicode x86"
+                "Clean Release_Unicode x86",
+                "Clean Prefast x64",
+                "Clean Prefast x86"
             ],
             "dependsOrder": "parallel",
             "group": "build",
@@ -127,6 +152,18 @@
             "label": "Clean Release_Unicode x86",
             "type": "shell",
             "command": "msbuild MFCMAPI.sln /target:Clean /property:Configuration=Release_Unicode /property:Platform=Win32",
+            "group": { "kind": "build" }
+        },
+        {
+            "label": "Clean Prefast x64",
+            "type": "shell",
+            "command": "msbuild MFCMAPI.sln /target:Clean /property:Configuration=Prefast /property:Platform=x64",
+            "group": { "kind": "build" }
+        },
+        {
+            "label": "Clean Prefast x86",
+            "type": "shell",
+            "command": "msbuild MFCMAPI.sln /target:Clean /property:Configuration=Prefast /property:Platform=Win32",
             "group": { "kind": "build" }
         },
         {
