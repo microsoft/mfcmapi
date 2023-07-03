@@ -33,6 +33,11 @@ jobs:
       working-directory: ${{ github.workspace }}
       run: nuget restore mfcmapi.sln
 
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@004c5de30b6423267685b897a3d595e944f7fed5 # v2.20.2
+      with:
+        languages: "cpp"
+
     - name: "Build"
       shell: pwsh
       run: |
@@ -46,3 +51,8 @@ jobs:
         searchFolder: "${{ github.workspace }}\\bin\\${{matrix.platform}}\\UnitTest\\${{matrix.configuration}}"
         runInParallel: true
         # codeCoverageEnabled: true
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@004c5de30b6423267685b897a3d595e944f7fed5 # v2.20.2
+      with:
+        category: "/language:cpp"
