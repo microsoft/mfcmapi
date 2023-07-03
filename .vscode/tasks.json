@@ -27,7 +27,7 @@
             "label": "Release x64",
             "type": "shell",
             "command": "msbuild /property:Configuration=Release /property:Platform=x64",
-            "group": { "kind": "build" }
+            "group": "build"
         },
         {
             "label": "Debug x86",
@@ -39,19 +39,19 @@
             "label": "Release x86",
             "type": "shell",
             "command": "msbuild /property:Configuration=Release /property:Platform=Win32",
-            "group": { "kind": "build" }
+            "group": "build"
         },
         {
             "label": "Debug_Unicode x64",
             "type": "shell",
             "command": "msbuild /property:Configuration=Debug_Unicode /property:Platform=x64",
-            "group": { "kind": "build" }
+            "group": "build"
         },
         {
             "label": "Release_Unicode x64",
             "type": "shell",
             "command": "msbuild /property:Configuration=Release_Unicode /property:Platform=x64",
-            "group": { "kind": "build" }
+            "group": "build"
         },
         {
             "label": "Debug_Unicode x86",
@@ -63,7 +63,7 @@
             "label": "Release_Unicode x86",
             "type": "shell",
             "command": "msbuild /property:Configuration=Release_Unicode /property:Platform=Win32",
-            "group": { "kind": "build" }
+            "group": "build"
         },
         {
             "label": "Batch Prefast Build",
@@ -86,7 +86,7 @@
             "label": "Prefast x86",
             "type": "shell",
             "command": "msbuild /property:Configuration=Prefast /property:Platform=Win32",
-            "group": { "kind": "build" }
+            "group": "build"
         },
         {
             "label": "Batch Clean",
@@ -110,61 +110,61 @@
             "label": "Clean Debug x64",
             "type": "shell",
             "command": "msbuild /target:Clean /property:Configuration=Debug /property:Platform=x64",
-            "group": { "kind": "build" }
+            "group": "build"
         },
         {
             "label": "Clean Release x64",
             "type": "shell",
             "command": "msbuild /target:Clean /property:Configuration=Release /property:Platform=x64",
-            "group": { "kind": "build" }
+            "group": "build"
         },
         {
             "label": "Clean Debug x86",
             "type": "shell",
             "command": "msbuild /target:Clean /property:Configuration=Debug /property:Platform=Win32",
-            "group": { "kind": "build" }
+            "group": "build"
         },
         {
             "label": "Clean Release x86",
             "type": "shell",
             "command": "msbuild /target:Clean /property:Configuration=Release /property:Platform=Win32",
-            "group": { "kind": "build" }
+            "group": "build"
         },
         {
             "label": "Clean Debug_Unicode x64",
             "type": "shell",
             "command": "msbuild /target:Clean /property:Configuration=Debug_Unicode /property:Platform=x64",
-            "group": { "kind": "build" }
+            "group": "build"
         },
         {
             "label": "Clean Release_Unicode x64",
             "type": "shell",
             "command": "msbuild /target:Clean /property:Configuration=Release_Unicode /property:Platform=x64",
-            "group": { "kind": "build" }
+            "group": "build"
         },
         {
             "label": "Clean Debug_Unicode x86",
             "type": "shell",
             "command": "msbuild /target:Clean /property:Configuration=Debug_Unicode /property:Platform=Win32",
-            "group": { "kind": "build" }
+            "group": "build"
         },
         {
             "label": "Clean Release_Unicode x86",
             "type": "shell",
             "command": "msbuild /target:Clean /property:Configuration=Release_Unicode /property:Platform=Win32",
-            "group": { "kind": "build" }
+            "group": "build"
         },
         {
             "label": "Clean Prefast x64",
             "type": "shell",
             "command": "msbuild /target:Clean /property:Configuration=Prefast /property:Platform=x64",
-            "group": { "kind": "build" }
+            "group": "build"
         },
         {
             "label": "Clean Prefast x86",
             "type": "shell",
             "command": "msbuild /target:Clean /property:Configuration=Prefast /property:Platform=Win32",
-            "group": { "kind": "build" }
+            "group": "build"
         },
         {
             "label": "Batch unit test",
@@ -194,49 +194,49 @@
             "dependsOn": [ "Release x64" ],
             "type": "shell",
             "command": "vstest.console.exe ${workspaceFolder}/bin/x64/UnitTest/Release/UnitTest.dll /logger:console /logger:trx",
-            "group": { "kind": "test" },
+            "group": "test"
         },
         {
             "label": "Unit test Debug x86",
             "dependsOn": [ "Debug x86" ],
             "type": "shell",
             "command": "vstest.console.exe ${workspaceFolder}/bin/Win32/UnitTest/Debug/UnitTest.dll /logger:console /logger:trx",
-            "group": { "kind": "test", "isDefault": true },
+            "group": "test"
         },
         {
             "label": "Unit test Release x86",
             "dependsOn": [ "Release x86" ],
             "type": "shell",
             "command": "vstest.console.exe ${workspaceFolder}/bin/Win32/UnitTest/Release/UnitTest.dll /logger:console /logger:trx",
-            "group": { "kind": "test" },
+            "group": "test"
         },
         {
             "label": "Unit test Debug_Unicode x64",
             "dependsOn": [ "Debug_Unicode x64" ],
             "type": "shell",
             "command": "vstest.console.exe ${workspaceFolder}/bin/x64/UnitTest/Debug_Unicode/UnitTest.dll /logger:console /logger:trx",
-            "group": { "kind": "test", "isDefault": true },
+            "group": "test"
         },
         {
             "label": "Unit test Release_Unicode x64",
             "dependsOn": [ "Release_Unicode x64" ],
             "type": "shell",
             "command": "vstest.console.exe ${workspaceFolder}/bin/x64/UnitTest/Release_Unicode/UnitTest.dll /logger:console /logger:trx",
-            "group": { "kind": "test" },
+            "group": "test"
         },
         {
             "label": "Unit test Debug_Unicode x86",
             "dependsOn": [ "Debug_Unicode x86" ],
             "type": "shell",
             "command": "vstest.console.exe ${workspaceFolder}/bin/Win32/UnitTest/Debug_Unicode/UnitTest.dll /logger:console /logger:trx",
-            "group": { "kind": "test", "isDefault": true },
+            "group": "test"
         },
         {
             "label": "Unit test Release_Unicode x86",
             "dependsOn": [ "Release_Unicode x86" ],
             "type": "shell",
             "command": "vstest.console.exe ${workspaceFolder}/bin/Win32/UnitTest/Release_Unicode/UnitTest.dll /logger:console /logger:trx",
-            "group": { "kind": "test" },
+            "group": "test"
         },
     ]
 }
