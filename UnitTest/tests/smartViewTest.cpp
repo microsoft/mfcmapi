@@ -8,10 +8,7 @@
 namespace SmartViewTest
 {
 #define TEST(PARSERTYPE, NAME, NUM) \
-	TEST_METHOD(PARSERTYPE##_##NUM) \
-	{ \
-		test(parserType::PARSERTYPE, IDR_SV##NAME##NUM##IN, IDR_SV##NAME##NUM##OUT); \
-	}
+	TEST_METHOD(PARSERTYPE##_##NUM) { test(parserType::PARSERTYPE, IDR_SV##NAME##NUM##IN, IDR_SV##NAME##NUM##OUT); }
 
 	TEST_CLASS(SmartViewTest)
 	{
