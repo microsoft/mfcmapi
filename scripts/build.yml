@@ -72,5 +72,12 @@ jobs:
       CleanTargetFolder: true
       OverWrite: true
 
+  - task: BinSkim@4
+    inputs:
+      InputType: 'Basic'
+      Function: 'analyze'
+      TargetPattern: 'guardianGlob'
+      AnalyzeTargetGlob: '$(Build.ArtifactStagingDirectory)/**.dll;$(Build.ArtifactStagingDirectory)/**.exe;'
+
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: drop'
