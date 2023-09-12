@@ -100,7 +100,7 @@ jobs:
 
   - task: GitHubRelease@1
     inputs:
-      gitHubConnection: 'MFCMAPI'
+      gitHubConnection: 'Github MFCMAPI'
       repositoryName: '$(Build.Repository.Name)'
       action: 'create'
       target: '$(Build.SourceVersion)'
