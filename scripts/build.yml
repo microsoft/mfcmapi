@@ -109,7 +109,6 @@ jobs:
   - task: PostAnalysis@2
     displayName: Post Analysis
     inputs:
-      GdnBreakSuppressionFiles: $(Build.SourcesDirectory)\build\.gdn\.gdnsuppress
       GdnBreakSuppressionSets: default
 
   - task: PublishBuildArtifacts@1
