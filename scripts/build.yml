@@ -30,6 +30,20 @@ jobs:
       }
     displayName: 'Add Version'
 
+  - task: CredScan@3
+    displayName: Run CredScan
+    inputs:
+      outputFormat: pre
+      verboseOutput: true
+      debugMode: false
+      folderSuppression: false
+
+  - task: PoliCheck@2
+    displayName: Run PoliCheck
+    inputs:
+      targetType: F
+      result: PoliCheck.xml
+
   - task: VSBuild@1
     displayName: Build
     inputs:
@@ -71,6 +85,31 @@ jobs:
       TargetFolder: '$(build.artifactstagingdirectory)'
       CleanTargetFolder: true
       OverWrite: true
+
+  - task: BinSkim@4
+    inputs:
+      InputType: 'Basic'
+      Function: 'analyze'
+      TargetPattern: 'guardianGlob'
+      AnalyzeTargetGlob: '$(Build.ArtifactStagingDirectory)/**.dll;$(Build.ArtifactStagingDirectory)/**.exe;'
+
+  - task: SdtReport@2
+    displayName: Create Security Analysis Report
+    continueOnError: true
+    inputs:
+      GdnExportTsvFile: true
+      GdnExportHtmlFile: true
+      GdnExportOutputSuppressionSet: default
+
+  - task: PublishSecurityAnalysisLogs@3
+    displayName: Publish Security Analysis Logs
+    inputs:
+      ArtifactName: CodeAnalysisLogs
+
+  - task: PostAnalysis@2
+    displayName: Post Analysis
+    inputs:
+      GdnBreakSuppressionSets: default
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: drop'
