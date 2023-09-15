@@ -28,18 +28,18 @@ namespace dialog
 		SetTitle(szProductName);
 
 		RECT rcClient = {0};
-		::GetClientRect(m_hWnd, &rcClient);
+		if (!::GetClientRect(m_hWnd, &rcClient)) return false;
 
 		const auto hWndIcon = ::GetDlgItem(m_hWnd, IDC_STATIC);
 		RECT rcIcon = {0};
-		::GetWindowRect(hWndIcon, &rcIcon);
+		if (!::GetWindowRect(hWndIcon, &rcIcon)) return false;
 		const auto iMargin = GetSystemMetrics(SM_CXHSCROLL) / 2 + 1;
 		OffsetRect(&rcIcon, iMargin - rcIcon.left, iMargin - rcIcon.top);
 		::MoveWindow(hWndIcon, rcIcon.left, rcIcon.top, rcIcon.right - rcIcon.left, rcIcon.bottom - rcIcon.top, false);
 
 		const auto hWndButton = ::GetDlgItem(m_hWnd, IDOK);
 		RECT rcButton = {0};
-		::GetWindowRect(hWndButton, &rcButton);
+		if (!::GetWindowRect(hWndButton, &rcButton)) return false;
 		const auto iTextHeight = ui::GetTextHeight(m_hWnd);
 		const auto iCheckHeight = iTextHeight + GetSystemMetrics(SM_CYEDGE) * 2;
 		OffsetRect(
@@ -153,12 +153,17 @@ namespace dialog
 		case WM_ERASEBKGND:
 		{
 			RECT rect = {0};
-			::GetClientRect(m_hWnd, &rect);
-			const auto hOld = SelectObject(reinterpret_cast<HDC>(wParam), GetSysBrush(ui::uiColor::Background));
-			const auto bRet =
-				PatBlt(reinterpret_cast<HDC>(wParam), 0, 0, rect.right - rect.left, rect.bottom - rect.top, PATCOPY);
-			SelectObject(reinterpret_cast<HDC>(wParam), hOld);
-			return bRet;
+			if (::GetClientRect(m_hWnd, &rect))
+			{
+
+				const auto hOld = SelectObject(reinterpret_cast<HDC>(wParam), GetSysBrush(ui::uiColor::Background));
+				const auto bRet = PatBlt(
+					reinterpret_cast<HDC>(wParam), 0, 0, rect.right - rect.left, rect.bottom - rect.top, PATCOPY);
+				SelectObject(reinterpret_cast<HDC>(wParam), hOld);
+				return bRet;
+			}
+
+			return 0;
 		}
 		}
 

@@ -106,11 +106,13 @@ namespace controls::sortlistctrl
 		RECT rcHeader = {0};
 		if (!pNMHDR) return;
 		const auto pHdr = reinterpret_cast<LPNMHEADER>(pNMHDR);
-		Header_GetItemRect(pHdr->hdr.hwndFrom, pHdr->iItem, &rcHeader);
-		s_bInTrack = true;
-		s_iTrack = rcHeader.right;
-		s_iHeaderHeight = rcHeader.bottom - rcHeader.top;
-		ui::DrawTrackingBar(pHdr->hdr.hwndFrom, hWndParent, s_iTrack, s_iHeaderHeight, false);
+		if (Header_GetItemRect(pHdr->hdr.hwndFrom, pHdr->iItem, &rcHeader))
+		{
+			s_bInTrack = true;
+			s_iTrack = rcHeader.right;
+			s_iHeaderHeight = rcHeader.bottom - rcHeader.top;
+			ui::DrawTrackingBar(pHdr->hdr.hwndFrom, hWndParent, s_iTrack, s_iHeaderHeight, false);
+		}
 	}
 
 	void OnEndTrack(_In_ NMHDR* pNMHDR, _In_ HWND hWndParent) noexcept
@@ -128,8 +130,7 @@ namespace controls::sortlistctrl
 		{
 			RECT rcHeader = {0};
 			const auto pHdr = reinterpret_cast<LPNMHEADER>(pNMHDR);
-			Header_GetItemRect(pHdr->hdr.hwndFrom, pHdr->iItem, &rcHeader);
-			if (s_iTrack != rcHeader.right)
+			if (Header_GetItemRect(pHdr->hdr.hwndFrom, pHdr->iItem, &rcHeader) && s_iTrack != rcHeader.right)
 			{
 				ui::DrawTrackingBar(pHdr->hdr.hwndFrom, hWndParent, s_iTrack, s_iHeaderHeight, true);
 				s_iTrack = rcHeader.right;

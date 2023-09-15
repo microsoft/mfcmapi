@@ -117,8 +117,10 @@ namespace controls::sortlistctrl
 			POINT point = {};
 			const auto iItem = GetNextItem(-1, LVNI_SELECTED);
 			GetItemPosition(iItem, &point);
-			::ClientToScreen(pWnd->m_hWnd, &point);
-			pos = point;
+			if (::ClientToScreen(pWnd->m_hWnd, &point))
+			{
+				pos = point;
+			}
 		}
 
 		ui::DisplayContextMenu(m_nIDContextMenu, IDR_MENU_TABLE, m_lpHostDlg->m_hWnd, pos.x, pos.y);

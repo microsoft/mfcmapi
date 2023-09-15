@@ -6,6 +6,7 @@
 #pragma warning(disable : 26481) // Warning C26481 Don't use pointer arithmetic. Use span instead (bounds.1).
 #pragma warning(disable : 26485) // Warning C26485 Expression '': No array to pointer decay (bounds.3).
 #pragma warning(disable : 26487) // Warning C26487 Don't return a pointer '' that may be invalid (lifetime.4).
+#pragma warning(disable : 26438) // Avoid 'goto'
 // clang-format on
 
 #include <mapix.h>

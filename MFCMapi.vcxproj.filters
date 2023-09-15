@@ -41,6 +41,12 @@
     <Filter Include="Source Files\UI\Dialogs\Editors\propeditor">
       <UniqueIdentifier>{90fe9cb7-8963-4e00-803b-9acecdbdcde0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\UI\Dialogs\Editors\restriction">
+      <UniqueIdentifier>{40afc840-276d-47b7-8020-15a3addc36cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\UI\Controls\PaneHeader">
+      <UniqueIdentifier>{903023f1-9e01-4c14-a5e9-e129b5c7f8a9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />
@@ -122,16 +128,36 @@
     <ClInclude Include="UI\Dialogs\propList\RegistryDialog.h">
       <Filter>Source Files\UI\Dialogs\propList</Filter>
     </ClInclude>
-    <ClInclude Include="UI\Controls\PaneHeader\PaneHeader.h" />
-    <ClInclude Include="UI\Dialogs\Editors\restriction\CriteriaEditor.h" />
-    <ClInclude Include="UI\Dialogs\Editors\restriction\ResCompareEditor.h" />
-    <ClInclude Include="UI\Dialogs\Editors\restriction\ResCombinedEditor.h" />
-    <ClInclude Include="UI\Dialogs\Editors\restriction\ResBitmaskEditor.h" />
-    <ClInclude Include="UI\Dialogs\Editors\restriction\ResSizeEditor.h" />
-    <ClInclude Include="UI\Dialogs\Editors\restriction\ResAndOrEditor.h" />
-    <ClInclude Include="UI\Dialogs\Editors\restriction\ResCommentEditor.h" />
-    <ClInclude Include="UI\Dialogs\Editors\restriction\ResSubResEditor.h" />
-    <ClInclude Include="UI\Dialogs\Editors\restriction\ResExistEditor.h" />
+    <ClInclude Include="UI\Dialogs\Editors\restriction\ResAndOrEditor.h">
+      <Filter>Source Files\UI\Dialogs\Editors\restriction</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Dialogs\Editors\restriction\ResBitmaskEditor.h">
+      <Filter>Source Files\UI\Dialogs\Editors\restriction</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Dialogs\Editors\restriction\ResCombinedEditor.h">
+      <Filter>Source Files\UI\Dialogs\Editors\restriction</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Dialogs\Editors\restriction\ResCommentEditor.h">
+      <Filter>Source Files\UI\Dialogs\Editors\restriction</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Dialogs\Editors\restriction\ResCompareEditor.h">
+      <Filter>Source Files\UI\Dialogs\Editors\restriction</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Dialogs\Editors\restriction\ResExistEditor.h">
+      <Filter>Source Files\UI\Dialogs\Editors\restriction</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Dialogs\Editors\restriction\ResSizeEditor.h">
+      <Filter>Source Files\UI\Dialogs\Editors\restriction</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Dialogs\Editors\restriction\ResSubResEditor.h">
+      <Filter>Source Files\UI\Dialogs\Editors\restriction</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Dialogs\Editors\restriction\CriteriaEditor.h">
+      <Filter>Source Files\UI\Dialogs\Editors\restriction</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Controls\PaneHeader\PaneHeader.h">
+      <Filter>Source Files\UI\Controls\PaneHeader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StdAfx.h">
@@ -208,35 +234,35 @@
     <ClCompile Include="UI\Dialogs\propList\RegistryDialog.cpp">
       <Filter>Source Files\UI\Dialogs\propList</Filter>
     </ClCompile>
-    <ClCompile Include="UI\Controls\PaneHeader\PaneHeader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Dialogs\Editors\restriction\CriteriaEditor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Dialogs\Editors\restriction\ResCompareEditor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Dialogs\Editors\restriction\ResCombinedEditor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Dialogs\Editors\restriction\ResBitmaskEditor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Dialogs\Editors\restriction\ResSizeEditor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="UI\Dialogs\Editors\restriction\ResSubResEditor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\UI\Dialogs\Editors\restriction</Filter>
     </ClCompile>
     <ClCompile Include="UI\Dialogs\Editors\restriction\ResAndOrEditor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\UI\Dialogs\Editors\restriction</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Dialogs\Editors\restriction\ResBitmaskEditor.cpp">
+      <Filter>Source Files\UI\Dialogs\Editors\restriction</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Dialogs\Editors\restriction\ResCombinedEditor.cpp">
+      <Filter>Source Files\UI\Dialogs\Editors\restriction</Filter>
     </ClCompile>
     <ClCompile Include="UI\Dialogs\Editors\restriction\ResCommentEditor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\UI\Dialogs\Editors\restriction</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Dialogs\Editors\restriction\ResCompareEditor.cpp">
+      <Filter>Source Files\UI\Dialogs\Editors\restriction</Filter>
     </ClCompile>
     <ClCompile Include="UI\Dialogs\Editors\restriction\ResExistEditor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\UI\Dialogs\Editors\restriction</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Dialogs\Editors\restriction\ResSizeEditor.cpp">
+      <Filter>Source Files\UI\Dialogs\Editors\restriction</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Dialogs\Editors\restriction\CriteriaEditor.cpp">
+      <Filter>Source Files\UI\Dialogs\Editors\restriction</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Controls\PaneHeader\PaneHeader.cpp">
+      <Filter>Source Files\UI\Controls\PaneHeader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
