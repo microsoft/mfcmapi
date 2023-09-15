@@ -20,7 +20,7 @@ namespace ui
 		auto bTerminateOnCorruption = true;
 
 		// Remove current working directory from DLL search path
-		(void)::SetDllDirectoryW(L"");
+		(void) ::SetDllDirectoryW(L"");
 
 		HKEY hRootKey = nullptr;
 		auto lStatus = RegOpenKeyExW(HKEY_CURRENT_USER, registry::RKEY_ROOT, NULL, KEY_READ, &hRootKey);
