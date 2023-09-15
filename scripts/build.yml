@@ -101,6 +101,14 @@ jobs:
       GdnExportHtmlFile: true
       GdnExportOutputSuppressionSet: default
 
+  - task: DevSkimScan@3
+    displayName: Run DevSkim
+    inputs:
+      outputFormat: pre
+      verboseOutput: true
+      debugMode: false
+      folderSuppression: false
+
   - task: PublishSecurityAnalysisLogs@3
     displayName: Publish Security Analysis Logs
     inputs:
