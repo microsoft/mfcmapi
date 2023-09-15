@@ -261,6 +261,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <CETCompat>true</CETCompat>
     </Link>
     <Lib>
       <TargetMachine>MachineX86</TargetMachine>
@@ -289,6 +290,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <CETCompat>true</CETCompat>
     </Link>
     <Lib>
       <TargetMachine>MachineX86</TargetMachine>
@@ -319,6 +321,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <CETCompat>true</CETCompat>
     </Link>
     <Lib>
       <TargetMachine>MachineX86</TargetMachine>
@@ -345,6 +348,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <CETCompat>true</CETCompat>
     </Link>
     <Lib>
       <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
@@ -372,6 +376,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <CETCompat>true</CETCompat>
     </Link>
     <Lib>
       <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
@@ -398,6 +403,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <CETCompat>true</CETCompat>
     </Link>
     <Lib>
       <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
@@ -425,6 +431,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <CETCompat>true</CETCompat>
     </Link>
     <Lib>
       <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
@@ -455,6 +462,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <CETCompat>true</CETCompat>
     </Link>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;NDEBUG;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -482,6 +490,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <CETCompat>true</CETCompat>
     </Link>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;NDEBUG;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -512,6 +521,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <CETCompat>true</CETCompat>
     </Link>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;_DEBUG;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>

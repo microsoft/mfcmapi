@@ -245,6 +245,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <CETCompat>true</CETCompat>
     </Link>
     <PostBuildEvent>
       <Message>Copy Release build</Message>
@@ -292,6 +293,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <OptimizeReferences>true</OptimizeReferences>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <CETCompat>true</CETCompat>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mfcmapi.exe.manifest</AdditionalManifestFiles>
@@ -334,6 +336,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <OptimizeReferences>true</OptimizeReferences>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <CETCompat>true</CETCompat>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mfcmapi.exe.manifest</AdditionalManifestFiles>
@@ -381,6 +384,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <OptimizeReferences>true</OptimizeReferences>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <CETCompat>true</CETCompat>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mfcmapi.exe.manifest</AdditionalManifestFiles>
@@ -419,6 +423,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <SetChecksum>true</SetChecksum>
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <CETCompat>true</CETCompat>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mfcmapi.exe.manifest</AdditionalManifestFiles>
@@ -456,6 +461,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <SetChecksum>true</SetChecksum>
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <CETCompat>true</CETCompat>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mfcmapi.exe.manifest</AdditionalManifestFiles>
@@ -493,6 +499,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <SetChecksum>true</SetChecksum>
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <CETCompat>true</CETCompat>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mfcmapi.exe.manifest</AdditionalManifestFiles>
@@ -530,6 +537,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <SetChecksum>true</SetChecksum>
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <CETCompat>true</CETCompat>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mfcmapi.exe.manifest</AdditionalManifestFiles>
@@ -568,6 +576,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <SetChecksum>true</SetChecksum>
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <CETCompat>true</CETCompat>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mfcmapi.exe.manifest</AdditionalManifestFiles>
@@ -605,6 +614,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <SetChecksum>true</SetChecksum>
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <CETCompat>true</CETCompat>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mfcmapi.exe.manifest</AdditionalManifestFiles>

@@ -245,6 +245,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <CETCompat>true</CETCompat>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mrmapi.exe.manifest</AdditionalManifestFiles>
@@ -286,6 +287,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <CETCompat>true</CETCompat>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mrmapi.exe.manifest</AdditionalManifestFiles>
@@ -328,6 +330,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <CETCompat>true</CETCompat>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mrmapi.exe.manifest</AdditionalManifestFiles>
@@ -369,6 +372,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <CETCompat>true</CETCompat>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mrmapi.exe.manifest</AdditionalManifestFiles>
@@ -407,6 +411,7 @@
       <SetChecksum>true</SetChecksum>
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <CETCompat>true</CETCompat>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mrmapi.exe.manifest</AdditionalManifestFiles>
@@ -444,6 +449,7 @@
       <SetChecksum>true</SetChecksum>
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <CETCompat>true</CETCompat>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mrmapi.exe.manifest</AdditionalManifestFiles>
@@ -481,6 +487,7 @@
       <SetChecksum>true</SetChecksum>
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <CETCompat>true</CETCompat>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mrmapi.exe.manifest</AdditionalManifestFiles>
@@ -518,6 +525,7 @@
       <SetChecksum>true</SetChecksum>
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <CETCompat>true</CETCompat>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mrmapi.exe.manifest</AdditionalManifestFiles>
@@ -556,6 +564,7 @@
       <SetChecksum>true</SetChecksum>
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <CETCompat>true</CETCompat>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mrmapi.exe.manifest</AdditionalManifestFiles>
@@ -593,6 +602,7 @@
       <SetChecksum>true</SetChecksum>
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <CETCompat>true</CETCompat>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mrmapi.exe.manifest</AdditionalManifestFiles>
