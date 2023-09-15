@@ -763,9 +763,10 @@ namespace controls::sortlistctrl
 		{
 			POINT point = {0};
 			const auto iItem = GetNextItem(-1, LVNI_SELECTED);
-			GetItemPosition(iItem, &point);
-			::ClientToScreen(pWnd->m_hWnd, &point);
-			pos = point;
+			if (GetItemPosition(iItem, &point) && ::ClientToScreen(pWnd->m_hWnd, &point))
+			{
+				pos = point;
+			}
 		}
 
 		ui::DisplayContextMenu(IDR_MENU_PROPERTY_POPUP, IDR_MENU_MESSAGE_POPUP, m_lpHostDlg->m_hWnd, pos.x, pos.y);
@@ -1518,9 +1519,12 @@ namespace controls::sortlistctrl
 			if (lpRowPropBag)
 			{
 				SRow MyRow = {0};
-				static_cast<void>(lpRowPropBag->GetAllProps(&MyRow.cValues, &MyRow.lpProps)); // No need to free
-				MyAddInMenuParams.lpRow = &MyRow;
-				MyAddInMenuParams.ulCurrentFlags |= MENU_FLAGS_ROW;
+				auto hRes = WC_H(lpRowPropBag->GetAllProps(&MyRow.cValues, &MyRow.lpProps)); // No need to free
+				if (SUCCEEDED(hRes))
+				{
+					MyAddInMenuParams.lpRow = &MyRow;
+					MyAddInMenuParams.ulCurrentFlags |= MENU_FLAGS_ROW;
+				}
 			}
 		}
 

@@ -443,43 +443,43 @@ namespace dialog
 						output::dbgLevel::Generic, L"Folder Source Name = \"%ws\"\n", lpProps[NAME].Value.lpszW);
 					MyData.SetStringW(0, lpProps[NAME].Value.lpszW);
 				}
-			}
 
-			auto lpCopyRoot = lpSrcParentFolder;
-			if (!lpSrcParentFolder) lpCopyRoot = lpMAPIDestFolder;
+				auto lpCopyRoot = lpSrcParentFolder;
+				if (!lpSrcParentFolder) lpCopyRoot = lpMAPIDestFolder;
 
-			if (MyData.DisplayDialog())
-			{
-				CWaitCursor Wait; // Change the mouse to an hourglass while we work.
-
-				auto lpProgress = mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::CopyFolder", m_hWnd); // STRING_OK
-
-				auto ulCopyFlags = MAPI_UNICODE;
-				if (MyData.GetCheck(1)) ulCopyFlags |= COPY_SUBFOLDERS;
-				if (MyData.GetCheck(2)) ulCopyFlags |= FOLDER_MOVE;
-				if (lpProgress) ulCopyFlags |= FOLDER_DIALOG;
-
-				const auto bin = mapi::getBin(lpProps[EID]);
-				hRes = WC_MAPI(lpCopyRoot->CopyFolder(
-					bin.cb,
-					reinterpret_cast<LPENTRYID>(bin.lpb),
-					&IID_IMAPIFolder,
-					lpMAPIDestFolder,
-					LPTSTR(MyData.GetStringW(0).c_str()),
-					lpProgress ? reinterpret_cast<ULONG_PTR>(m_hWnd) : NULL,
-					lpProgress, // Progress
-					ulCopyFlags));
-				if (hRes == MAPI_E_COLLISION)
+				if (MyData.DisplayDialog())
 				{
-					error::ErrDialog(__FILE__, __LINE__, IDS_EDDUPEFOLDER);
+					CWaitCursor Wait; // Change the mouse to an hourglass while we work.
+
+					auto lpProgress = mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::CopyFolder", m_hWnd); // STRING_OK
+
+					auto ulCopyFlags = MAPI_UNICODE;
+					if (MyData.GetCheck(1)) ulCopyFlags |= COPY_SUBFOLDERS;
+					if (MyData.GetCheck(2)) ulCopyFlags |= FOLDER_MOVE;
+					if (lpProgress) ulCopyFlags |= FOLDER_DIALOG;
+
+					const auto bin = mapi::getBin(lpProps[EID]);
+					hRes = WC_MAPI(lpCopyRoot->CopyFolder(
+						bin.cb,
+						reinterpret_cast<LPENTRYID>(bin.lpb),
+						&IID_IMAPIFolder,
+						lpMAPIDestFolder,
+						LPTSTR(MyData.GetStringW(0).c_str()),
+						lpProgress ? reinterpret_cast<ULONG_PTR>(m_hWnd) : NULL,
+						lpProgress, // Progress
+						ulCopyFlags));
+					if (hRes == MAPI_E_COLLISION)
+					{
+						error::ErrDialog(__FILE__, __LINE__, IDS_EDDUPEFOLDER);
+					}
+					else
+						CHECKHRESMSG(hRes, IDS_COPYFOLDERFAILED);
+
+					if (lpProgress) lpProgress->Release();
 				}
-				else
-					CHECKHRESMSG(hRes, IDS_COPYFOLDERFAILED);
 
-				if (lpProgress) lpProgress->Release();
+				MAPIFreeBuffer(lpProps);
 			}
-
-			MAPIFreeBuffer(lpProps);
 		}
 
 		if (lpMAPIDestFolder) lpMAPIDestFolder->Release();
@@ -987,49 +987,50 @@ namespace dialog
 						output::dbgLevel::Generic, L"Folder Source Name = \"%ws\"\n", lpProps[NAME].Value.lpszW);
 					MyData.SetStringW(0, lpProps[NAME].Value.lpszW);
 				}
+
+				if (MyData.DisplayDialog())
+				{
+					// Restore the folder up under m_lpContainer
+					CWaitCursor Wait; // Change the mouse to an hourglass while we work.
+
+					output::DebugPrint(
+						output::dbgLevel::Generic, L"Restoring %p to %p as \n", lpSrcFolder, GetRootContainer());
+
+					if (!lpSrcParentFolder) lpSrcParentFolder = mapi::safe_cast<LPMAPIFOLDER>(GetRootContainer());
+
+					auto lpProgress = mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::CopyFolder", m_hWnd); // STRING_OK
+
+					auto ulCopyFlags = MAPI_UNICODE | (MyData.GetCheck(1) ? COPY_SUBFOLDERS : 0);
+
+					if (lpProgress) ulCopyFlags |= FOLDER_DIALOG;
+
+					const auto bin = mapi::getBin(lpProps[EID]);
+					const auto hRes = WC_MAPI(lpSrcParentFolder->CopyFolder(
+						bin.cb,
+						reinterpret_cast<LPENTRYID>(bin.lpb),
+						&IID_IMAPIFolder,
+						GetRootContainer(),
+						LPTSTR(MyData.GetStringW(0).c_str()),
+						lpProgress ? reinterpret_cast<ULONG_PTR>(m_hWnd) : NULL,
+						lpProgress,
+						ulCopyFlags));
+					if (hRes == MAPI_E_COLLISION)
+					{
+						error::ErrDialog(__FILE__, __LINE__, IDS_EDDUPEFOLDER);
+					}
+					else if (hRes == MAPI_W_PARTIAL_COMPLETION)
+					{
+						error::ErrDialog(__FILE__, __LINE__, IDS_EDRESTOREFAILED);
+					}
+					else
+						CHECKHRESMSG(hRes, IDS_COPYFOLDERFAILED);
+
+					if (lpProgress) lpProgress->Release();
+				}
+
+				MAPIFreeBuffer(lpProps);
 			}
 
-			if (MyData.DisplayDialog())
-			{
-				// Restore the folder up under m_lpContainer
-				CWaitCursor Wait; // Change the mouse to an hourglass while we work.
-
-				output::DebugPrint(
-					output::dbgLevel::Generic, L"Restoring %p to %p as \n", lpSrcFolder, GetRootContainer());
-
-				if (!lpSrcParentFolder) lpSrcParentFolder = mapi::safe_cast<LPMAPIFOLDER>(GetRootContainer());
-
-				auto lpProgress = mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::CopyFolder", m_hWnd); // STRING_OK
-
-				auto ulCopyFlags = MAPI_UNICODE | (MyData.GetCheck(1) ? COPY_SUBFOLDERS : 0);
-
-				if (lpProgress) ulCopyFlags |= FOLDER_DIALOG;
-
-				const auto bin = mapi::getBin(lpProps[EID]);
-				const auto hRes = WC_MAPI(lpSrcParentFolder->CopyFolder(
-					bin.cb,
-					reinterpret_cast<LPENTRYID>(bin.lpb),
-					&IID_IMAPIFolder,
-					GetRootContainer(),
-					LPTSTR(MyData.GetStringW(0).c_str()),
-					lpProgress ? reinterpret_cast<ULONG_PTR>(m_hWnd) : NULL,
-					lpProgress,
-					ulCopyFlags));
-				if (hRes == MAPI_E_COLLISION)
-				{
-					error::ErrDialog(__FILE__, __LINE__, IDS_EDDUPEFOLDER);
-				}
-				else if (hRes == MAPI_W_PARTIAL_COMPLETION)
-				{
-					error::ErrDialog(__FILE__, __LINE__, IDS_EDRESTOREFAILED);
-				}
-				else
-					CHECKHRESMSG(hRes, IDS_COPYFOLDERFAILED);
-
-				if (lpProgress) lpProgress->Release();
-			}
-
-			MAPIFreeBuffer(lpProps);
 			if (lpSrcParentFolder) lpSrcParentFolder->Release();
 			lpSrcFolder->Release();
 		}

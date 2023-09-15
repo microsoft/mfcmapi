@@ -87,7 +87,7 @@ namespace blocktest
 			auto block1 = std::make_shared<smartview::blockStringW>();
 			Assert::AreEqual(block1->isSet(), false);
 			auto block2 = smartview::blockStringW::parse(std::wstring(L"test"), 4, 5);
-			Assert::AreEqual(block2->length(), size_t(4));
+			Assert::AreEqual(block2->length(), size_t{4});
 		}
 	};
 } // namespace blocktest
