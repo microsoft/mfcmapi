@@ -94,7 +94,6 @@ jobs:
       AnalyzeTargetGlob: '$(Build.ArtifactStagingDirectory)/**.dll;$(Build.ArtifactStagingDirectory)/**.exe;'
 
   - task: SdtReport@2
-    condition: and(succeeded(), eq(variables.RunScans, true))
     displayName: Create Security Analysis Report
     continueOnError: true
     inputs:
@@ -103,13 +102,11 @@ jobs:
       GdnExportOutputSuppressionSet: default
 
   - task: PublishSecurityAnalysisLogs@3
-    condition: and(succeeded(), eq(variables.RunScans, true))
     displayName: Publish Security Analysis Logs
     inputs:
       ArtifactName: CodeAnalysisLogs
 
   - task: PostAnalysis@2
-    condition: and(succeeded(), eq(variables.RunScans, true))
     displayName: Post Analysis
     inputs:
       GdnBreakSuppressionFiles: $(Build.SourcesDirectory)\build\.gdn\.gdnsuppress
