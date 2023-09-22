@@ -72,15 +72,16 @@ jobs:
       CleanTargetFolder: true
       OverWrite: true
 
-  - task: APIScan@2
-    displayName: Run APIScan
-    continueOnError: true
-    inputs:
-      softwareFolder: '$(Build.StagingDirectory)'
-      softwareBuildNum: '$(Build.BuildId)'
-      symbolsFolder: '$(Build.StagingDirectory)'
-      softwareName: 'MFCMAPI'
-      softwareVersionNum: '$(Build.BuildNumber)'
+  # setting this up requres some sort of auth token - figure it out later
+  # - task: APIScan@2
+  #   displayName: Run APIScan
+  #   continueOnError: true
+  #   inputs:
+  #     softwareFolder: '$(Build.StagingDirectory)'
+  #     softwareBuildNum: '$(Build.BuildId)'
+  #     symbolsFolder: '$(Build.StagingDirectory)'
+  #     softwareName: 'MFCMAPI'
+  #     softwareVersionNum: '$(Build.BuildNumber)'
 
   - task: AntiMalware@4
     displayName: Run AntiMalware
@@ -139,7 +140,7 @@ jobs:
     inputs:
       userProvideBuildInfo: 'auto'
 
-      # This takes far too long to run - disable for now
+  # This takes far too long to run - disable for now
   # - task: Semmle@1
   #   displayName: Run Semmle
   #   continueOnError: true
