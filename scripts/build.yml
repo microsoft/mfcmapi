@@ -86,12 +86,57 @@ jobs:
       CleanTargetFolder: true
       OverWrite: true
 
+  - task: APIScan@2
+    inputs:
+      softwareFolder: '$(Build.StagingDirectory)'
+      softwareBuildNum: '$(Build.BuildId)'
+      symbolsFolder: '$(Build.StagingDirectory)'
+
+  - task: AntiMalware@4
+    inputs:
+      InputType: 'Basic'
+      ScanType: 'CustomScan'
+      FileDirPath: '$(Build.StagingDirectory)'
+      TreatSignatureUpdateFailureAs: 'Warning'
+      SignatureFreshness: 'UpToDate'
+      TreatStaleSignatureAs: 'Error'
+
+  - task: AutoApplicability@1
+    inputs:
+
   - task: BinSkim@4
     inputs:
       InputType: 'Basic'
       Function: 'analyze'
       TargetPattern: 'guardianGlob'
       AnalyzeTargetGlob: '$(Build.ArtifactStagingDirectory)/**.dll;$(Build.ArtifactStagingDirectory)/**.exe;'
+
+  - task: CredScan@3
+    inputs:
+
+  - task: ComponentGovernanceComponentDetection@0
+    inputs:
+      scanType: 'Register'
+      verbosity: 'Verbose'
+      alertWarningLevel: 'High'
+
+- task: PoliCheck@2
+  inputs:
+    targetType: 'F'
+    targetArgument: '$(Build.SourcesDirectory)'
+
+  - task: SDLNativeRules@2
+    inputs:
+      userProvideBuildInfo: 'auto'
+
+  - task: Semmle@1
+    inputs:
+      sourceCodeDirectory: '$(Build.SourcesDirectory)'
+      language: 'cpp'
+      querySuite: 'Recommended'
+      timeout: '1800'
+      ram: '16384'
+      addProjectDirToScanningExclusionList: true
 
   - task: SdtReport@2
     displayName: Create Security Analysis Report
