@@ -80,6 +80,7 @@ jobs:
       softwareBuildNum: '$(Build.BuildId)'
       symbolsFolder: '$(Build.StagingDirectory)'
       softwareName: 'MFCMAPI'
+      softwareVersionNum: '$(Build.BuildNumber)'
 
   - task: AntiMalware@4
     displayName: Run AntiMalware
@@ -138,16 +139,17 @@ jobs:
     inputs:
       userProvideBuildInfo: 'auto'
 
-  - task: Semmle@1
-    displayName: Run Semmle
-    continueOnError: true
-    inputs:
-      sourceCodeDirectory: '$(Build.SourcesDirectory)'
-      language: 'cpp'
-      querySuite: 'Recommended'
-      timeout: '1800'
-      ram: '16384'
-      addProjectDirToScanningExclusionList: true
+      # This takes far too long to run - disable for now
+  # - task: Semmle@1
+  #   displayName: Run Semmle
+  #   continueOnError: true
+  #   inputs:
+  #     sourceCodeDirectory: '$(Build.SourcesDirectory)'
+  #     language: 'cpp'
+  #     querySuite: 'Recommended'
+  #     timeout: '1800'
+  #     ram: '16384'
+  #     addProjectDirToScanningExclusionList: true
 
   - task: SdtReport@2
     displayName: Create Security Analysis Report
