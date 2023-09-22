@@ -103,6 +103,8 @@ jobs:
 
   - task: AutoApplicability@1
     inputs:
+      ExternalRelease: true
+      IsCodeSigner: true
 
   - task: BinSkim@4
     inputs:
@@ -112,7 +114,6 @@ jobs:
       AnalyzeTargetGlob: '$(Build.ArtifactStagingDirectory)/**.dll;$(Build.ArtifactStagingDirectory)/**.exe;'
 
   - task: CredScan@3
-    inputs:
 
   - task: ComponentGovernanceComponentDetection@0
     inputs:
@@ -120,10 +121,10 @@ jobs:
       verbosity: 'Verbose'
       alertWarningLevel: 'High'
 
-- task: PoliCheck@2
-  inputs:
-    targetType: 'F'
-    targetArgument: '$(Build.SourcesDirectory)'
+  - task: PoliCheck@2
+    inputs:
+      targetType: 'F'
+      targetArgument: '$(Build.SourcesDirectory)'
 
   - task: SDLNativeRules@2
     inputs:
