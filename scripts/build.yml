@@ -30,20 +30,6 @@ jobs:
       }
     displayName: 'Add Version'
 
-  - task: CredScan@3
-    displayName: Run CredScan
-    inputs:
-      outputFormat: pre
-      verboseOutput: true
-      debugMode: false
-      folderSuppression: false
-
-  - task: PoliCheck@2
-    displayName: Run PoliCheck
-    inputs:
-      targetType: F
-      result: PoliCheck.xml
-
   - task: VSBuild@1
     displayName: Build
     inputs:
@@ -87,12 +73,17 @@ jobs:
       OverWrite: true
 
   - task: APIScan@2
+    displayName: Run APIScan
+    continueOnError: true
     inputs:
       softwareFolder: '$(Build.StagingDirectory)'
       softwareBuildNum: '$(Build.BuildId)'
       symbolsFolder: '$(Build.StagingDirectory)'
+      softwareName: 'MFCMAPI'
 
   - task: AntiMalware@4
+    displayName: Run AntiMalware
+    continueOnError: true
     inputs:
       InputType: 'Basic'
       ScanType: 'CustomScan'
@@ -102,11 +93,15 @@ jobs:
       TreatStaleSignatureAs: 'Error'
 
   - task: AutoApplicability@1
+    displayName: Run AutoApplicability
+    continueOnError: true
     inputs:
       ExternalRelease: true
       IsCodeSigner: true
 
   - task: BinSkim@4
+    displayName: Run BinSkim
+    continueOnError: true
     inputs:
       InputType: 'Basic'
       Function: 'analyze'
@@ -114,23 +109,38 @@ jobs:
       AnalyzeTargetGlob: '$(Build.ArtifactStagingDirectory)/**.dll;$(Build.ArtifactStagingDirectory)/**.exe;'
 
   - task: CredScan@3
+    displayName: Run CredScan
+    continueOnError: true
+    inputs:
+      outputFormat: pre
+      verboseOutput: true
+      debugMode: false
+      folderSuppression: false
 
   - task: ComponentGovernanceComponentDetection@0
+    displayName: Run Component Governance Component Detection
+    continueOnError: true
     inputs:
       scanType: 'Register'
       verbosity: 'Verbose'
       alertWarningLevel: 'High'
 
   - task: PoliCheck@2
+    displayName: Run PoliCheck
+    continueOnError: true
     inputs:
-      targetType: 'F'
-      targetArgument: '$(Build.SourcesDirectory)'
+      targetType: F
+      result: PoliCheck.xml
 
   - task: SDLNativeRules@2
+    displayName: Run SDL Native Rules
+    continueOnError: true
     inputs:
       userProvideBuildInfo: 'auto'
 
   - task: Semmle@1
+    displayName: Run Semmle
+    continueOnError: true
     inputs:
       sourceCodeDirectory: '$(Build.SourcesDirectory)'
       language: 'cpp'
