@@ -94,13 +94,6 @@ jobs:
       SignatureFreshness: 'UpToDate'
       TreatStaleSignatureAs: 'Error'
 
-  - task: AutoApplicability@1
-    displayName: Run AutoApplicability
-    continueOnError: true
-    inputs:
-      ExternalRelease: true
-      IsCodeSigner: true
-
   - task: BinSkim@4
     displayName: Run BinSkim
     continueOnError: true
@@ -109,6 +102,24 @@ jobs:
       Function: 'analyze'
       TargetPattern: 'guardianGlob'
       AnalyzeTargetGlob: '$(Build.ArtifactStagingDirectory)/**.dll;$(Build.ArtifactStagingDirectory)/**.exe;'
+
+  - task: CodeSign@1
+    displayName: 'Run Codesign Validation'
+    continueOnError: true
+
+  - task: CodeInspector@2
+    displayName: 'Run Code Inspector'
+    continueOnError: true
+    inputs:
+      ProductId: 0
+
+  - task: ComponentGovernanceComponentDetection@0
+    displayName: Run Component Governance Component Detection
+    continueOnError: true
+    inputs:
+      scanType: 'Register'
+      verbosity: 'Verbose'
+      alertWarningLevel: 'High'
 
   - task: CredScan@3
     displayName: Run CredScan
@@ -119,14 +130,6 @@ jobs:
       debugMode: false
       folderSuppression: false
 
-  - task: ComponentGovernanceComponentDetection@0
-    displayName: Run Component Governance Component Detection
-    continueOnError: true
-    inputs:
-      scanType: 'Register'
-      verbosity: 'Verbose'
-      alertWarningLevel: 'High'
-
   - task: PoliCheck@2
     displayName: Run PoliCheck
     continueOnError: true
@@ -134,11 +137,13 @@ jobs:
       targetType: F
       result: PoliCheck.xml
 
-  - task: SDLNativeRules@2
-    displayName: Run SDL Native Rules
-    continueOnError: true
+  - task: SDLNativeRules@3
+    displayName: 'Run the PREfast SDL Native Rules for MSBuild'
     inputs:
-      userProvideBuildInfo: 'auto'
+      publishXML: false
+      userProvideBuildInfo: auto
+      # excludedPaths: 'path/to/exclude'
+      rulesetName: Recommended
 
   # This takes far too long to run - disable for now
   # - task: Semmle@1
