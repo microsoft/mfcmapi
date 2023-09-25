@@ -144,6 +144,8 @@ jobs:
       userProvideBuildInfo: auto
       # excludedPaths: 'path/to/exclude'
       rulesetName: Recommended
+    env:
+      system_accesstoken: $(System.AccessToken)
 
   # This takes far too long to run - disable for now
   # - task: Semmle@1
