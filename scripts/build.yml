@@ -89,7 +89,7 @@ jobs:
     inputs:
       InputType: 'Basic'
       ScanType: 'CustomScan'
-      FileDirPath: '$(Build.StagingDirectory)'
+      FileDirPath: '$(build.artifactstagingdirectory)'
       TreatSignatureUpdateFailureAs: 'Warning'
       SignatureFreshness: 'UpToDate'
       TreatStaleSignatureAs: 'Error'
@@ -102,10 +102,6 @@ jobs:
       Function: 'analyze'
       TargetPattern: 'guardianGlob'
       AnalyzeTargetGlob: '$(Build.ArtifactStagingDirectory)/**.dll;$(Build.ArtifactStagingDirectory)/**.exe;'
-
-  - task: CodeSign@1
-    displayName: 'Run Codesign Validation'
-    continueOnError: true
 
   - task: CodeInspector@2
     displayName: 'Run Code Inspector'
@@ -193,13 +189,6 @@ jobs:
     displayName: Publish Security Analysis Logs
     inputs:
       ArtifactName: CodeAnalysisLogs
-
-  - task: TSAUpload@2
-    displayName: 'TSA upload to Codebase: TSATest_1ES Stamp: TSA'
-    inputs:
-      GdnPublishTsaOnboard: true
-      GdnPublishTsaConfigFile: '$(Build.sourcesDirectory)\.gdn\.gdntsa'
-    continueOnError: true
 
   - task: PostAnalysis@2
     displayName: Post Analysis
