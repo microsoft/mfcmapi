@@ -166,24 +166,14 @@ jobs:
       GdnExportOutputSuppressionFile: mySuppressions
       GdnExportOutputSuppressionSet: mySuppressionSet
       GdnExportPolicyMinSev: Warning
-      GdnExportGdnToolApiScanSeverity: Warning
+      # GdnExportGdnToolApiScanSeverity: Warning
       GdnExportGdnToolArmorySeverity: Warning
-      GdnExportGdnToolBanditSeverity: Warning
       GdnExportGdnToolBinSkimSeverity: Warning
-      GdnExportGdnToolCodesignValidationSeverity: Warning
+      # GdnExportGdnToolCodesignValidationSeverity: Warning
       GdnExportGdnToolCredScanSeverity: Warning
-      GdnExportGdnToolESLintSeverity: Warning
-      GdnExportGdnToolFlawfinderSeverity: Warning
-      GdnExportGdnToolFortifyScaSeverity: Warning
-      GdnExportGdnToolFxCopSeverity: Warning
-      GdnExportGdnToolGosecSeverity: Warning
-      GdnExportGdnToolModernCopSeverity: Warning
       GdnExportGdnToolPoliCheckSeverity: Warning
-      GdnExportGdnToolRoslynAnalyzersSeverity: Warning
       GdnExportGdnToolSDLNativeRulesSeverity: Warning
-      GdnExportGdnToolSemmleSeverity: Warning
-      GdnExportGdnToolSpotBugsSeverity: Warning
-      GdnExportGdnToolTSLintSeverity: Warning
+      # GdnExportGdnToolSemmleSeverity: Warning
 
   - task: PublishSecurityAnalysisLogs@3
     displayName: Publish Security Analysis Logs
