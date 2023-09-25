@@ -60,7 +60,7 @@ jobs:
   #     DetailedLog: true
 
   - task: CopyFiles@2
-    displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
+    displayName: 'Copy Files to: artifactstagingdirectory'
     inputs:
       SourceFolder: '$(Build.SourcesDirectory)\bin'
       Contents: |
