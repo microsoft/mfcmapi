@@ -165,12 +165,41 @@ jobs:
     inputs:
       GdnExportTsvFile: true
       GdnExportHtmlFile: true
-      GdnExportOutputSuppressionSet: default
+      GdnExportOutputBaselineFile: myBaseline
+      GdnExportOutputBaseline: myBaselinedResults
+      GdnExportOutputSuppressionFile: mySuppressions
+      GdnExportOutputSuppressionSet: mySuppressionSet
+      GdnExportPolicyMinSev: Warning
+      GdnExportGdnToolApiScanSeverity: Warning
+      GdnExportGdnToolArmorySeverity: Warning
+      GdnExportGdnToolBanditSeverity: Warning
+      GdnExportGdnToolBinSkimSeverity: Warning
+      GdnExportGdnToolCodesignValidationSeverity: Warning
+      GdnExportGdnToolCredScanSeverity: Warning
+      GdnExportGdnToolESLintSeverity: Warning
+      GdnExportGdnToolFlawfinderSeverity: Warning
+      GdnExportGdnToolFortifyScaSeverity: Warning
+      GdnExportGdnToolFxCopSeverity: Warning
+      GdnExportGdnToolGosecSeverity: Warning
+      GdnExportGdnToolModernCopSeverity: Warning
+      GdnExportGdnToolPoliCheckSeverity: Warning
+      GdnExportGdnToolRoslynAnalyzersSeverity: Warning
+      GdnExportGdnToolSDLNativeRulesSeverity: Warning
+      GdnExportGdnToolSemmleSeverity: Warning
+      GdnExportGdnToolSpotBugsSeverity: Warning
+      GdnExportGdnToolTSLintSeverity: Warning
 
   - task: PublishSecurityAnalysisLogs@3
     displayName: Publish Security Analysis Logs
     inputs:
       ArtifactName: CodeAnalysisLogs
+
+  - task: TSAUpload@2
+    displayName: 'TSA upload to Codebase: TSATest_1ES Stamp: TSA'
+    inputs:
+      GdnPublishTsaOnboard: true
+      GdnPublishTsaConfigFile: '$(Build.sourcesDirectory)\.gdn\.gdntsa'
+    continueOnError: true
 
   - task: PostAnalysis@2
     displayName: Post Analysis
