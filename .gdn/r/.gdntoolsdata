@@ -220,7 +220,7 @@
           "version": "1.9.5.0",
           "semanticVersion": "1.9.5",
           "properties": {
-            "RawName": "BinSkim"
+            "RawName": "binskim"
           }
         }
       },
@@ -236,6 +236,41 @@
           "repositoryUri": "https://github.com/microsoft/mfcmapi.git",
           "revisionId": "20621fee71264c8360ed671434241b936bf6dc77",
           "branch": "u/sgriffin/security",
+          "properties": {
+            "RepositoryRoot": "C:\\src\\mfcmapi"
+          }
+        }
+      ],
+      "results": [],
+      "columnKind": "utf16CodeUnits",
+      "properties": {
+        "toolInfoId": "binskim>>0>>202309270805"
+      }
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "binskim",
+          "fullName": "BinSkim 1.9.5.0",
+          "version": "1.9.5.0",
+          "semanticVersion": "1.9.5",
+          "properties": {
+            "RawName": "BinSkim"
+          }
+        }
+      },
+      "invocations": [
+        {
+          "startTimeUtc": "2023-09-27T19:13:33.051Z",
+          "endTimeUtc": "2023-09-27T19:13:37.233Z",
+          "executionSuccessful": true
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "https://github.com/microsoft/mfcmapi.git",
+          "revisionId": "59fcc071c38e1180f2f58085961552b68ca9eb90",
+          "branch": "u/sgriffin/security",
           
           "properties": {
             "RepositoryRoot": "C:\\src\\mfcmapi"
@@ -246,7 +281,7 @@
       "results": [],
       "columnKind": "utf16CodeUnits",
       "properties": {
-        "toolInfoId": "binskim>>0>>202309270805"
+        "toolInfoId": "binskim>>0>>202309271513"
       }
     }
   ]
