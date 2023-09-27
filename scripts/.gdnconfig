@@ -1,5 +1,39 @@
 {
+  "fileVersion": "1.0.0",
+  "jobs": [],
+  "commands": [],
   "tools": [
+    {
+      "fileVersion": "1.0.0",
+      "tool": {
+        "name": "prefast",
+        "version": "1.6.0"
+      },
+      "arguments": {
+        "Function": "analyze",
+        "BuildArchitecture": "x64",
+        "BuildCommandlines": "MSBuild.exe /m mfcmapi.sln /p:Configuration=Release_Unicode /p:Platform=x64",
+        "MSBuildVersion": "16.0",
+        "RulesetPath": "$(SDLRecommendedRuleset)",
+        "SetupCommandlines": "$(VS2022DefaultSetupCommandLine)",
+        "SourcesDirectory": "$(Folders.SourceRepo)",
+        "LoggerLevel": "Standard",
+        "ScanMode": "TargetsInjection"
+      },
+      "outputExtension": "sarif",
+      "successfulExitCodes": [
+        0
+      ],
+      "errorExitCodes": {
+        "1": "MSBuild failed to build.",
+        "9": "MSBuild detected conflicting User Extension.",
+        "257": "MSBuild failed to rerun build.",
+        "512": "MSBuild is missing argument(s).",
+        "513": "MSBuild has invalid argument.",
+        "32769": "No build commands were provided."
+      },
+      "outputPaths": []
+    },
     {
       "tool": {
         "name": "BinSkim",
