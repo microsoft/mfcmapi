@@ -1,0 +1,23 @@
+{
+  "tools": [
+    {
+      "tool": {
+        "name": "BinSkim",
+        "version": "Latest"
+      },
+      "arguments": {
+        "Function": "analyze",
+        "Target": "bin\\Win32\\MrMAPI\\Release\\MrMAPI.exe;bin\\Win32\\MrMAPI\\Release_Unicode\\MrMAPI.exe;bin\\Win32\\Release\\MFCMapi.exe;bin\\Win32\\Release_Unicode\\MFCMapi.exe;bin\\Win32\\exampleMapiConsoleApp\\Release\\exampleMapiConsoleApp.exe;bin\\Win32\\exampleMapiConsoleApp\\Release_Unicode\\exampleMapiConsoleApp.exe;bin\\x64\\MrMAPI\\Release\\MrMAPI.exe;bin\\x64\\MrMAPI\\Release_Unicode\\MrMAPI.exe;bin\\x64\\Release\\MFCMapi.exe;bin\\x64\\Release_Unicode\\MFCMapi.exe;bin\\x64\\exampleMapiConsoleApp\\Release\\exampleMapiConsoleApp.exe;bin\\x64\\exampleMapiConsoleApp\\Release_Unicode\\exampleMapiConsoleApp.exe",
+        "ConfigPath": "default",
+        "IgnorePdbLoadError": "false",
+        "Recurse": "true",
+        "Verbose": "false",
+        "Quiet": "false",
+        "Optimize": "false",
+        "PrettyPrint": "false",
+        "Minify": "false",
+        "SarifOutputVersion": "OneZeroZero"
+      }
+    }
+  ]
+}

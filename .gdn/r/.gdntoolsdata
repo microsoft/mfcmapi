@@ -1,0 +1,253 @@
+{
+  "$schema": "https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0-rtm.5.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "binskim",
+          "fullName": "BinSkim 1.9.5.0",
+          "version": "1.9.5.0",
+          "semanticVersion": "1.9.5",
+          "properties": {
+            "RawName": "binskim"
+          }
+        }
+      },
+      "invocations": [
+        {
+          "startTimeUtc": "2023-09-26T21:31:55.920Z",
+          "endTimeUtc": "2023-09-26T21:31:59.172Z",
+          "executionSuccessful": true
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "https://github.com/microsoft/mfcmapi.git",
+          "revisionId": "20621fee71264c8360ed671434241b936bf6dc77",
+          "branch": "u/sgriffin/security",
+          "properties": {
+            "RepositoryRoot": "C:\\src\\mfcmapi"
+          }
+        }
+      ],
+      "results": [],
+      "columnKind": "utf16CodeUnits",
+      "properties": {
+        "toolInfoId": "binskim>>0>>202309261731"
+      }
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "binskim",
+          "fullName": "BinSkim 1.9.5.0",
+          "version": "1.9.5.0",
+          "semanticVersion": "1.9.5",
+          "properties": {
+            "RawName": "binskim"
+          }
+        }
+      },
+      "invocations": [
+        {
+          "startTimeUtc": "2023-09-26T21:33:04.088Z",
+          "endTimeUtc": "2023-09-26T21:33:05.195Z",
+          "executionSuccessful": true
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "https://github.com/microsoft/mfcmapi.git",
+          "revisionId": "20621fee71264c8360ed671434241b936bf6dc77",
+          "branch": "u/sgriffin/security",
+          "properties": {
+            "RepositoryRoot": "C:\\src\\mfcmapi"
+          }
+        }
+      ],
+      "results": [],
+      "columnKind": "utf16CodeUnits",
+      "properties": {
+        "toolInfoId": "binskim>>0>>202309261733"
+      }
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "binskim",
+          "fullName": "BinSkim 1.9.5.0",
+          "version": "1.9.5.0",
+          "semanticVersion": "1.9.5",
+          "properties": {
+            "RawName": "binskim"
+          }
+        }
+      },
+      "invocations": [
+        {
+          "startTimeUtc": "2023-09-27T12:00:31.317Z",
+          "endTimeUtc": "2023-09-27T12:00:34.499Z",
+          "executionSuccessful": true
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "https://github.com/microsoft/mfcmapi.git",
+          "revisionId": "20621fee71264c8360ed671434241b936bf6dc77",
+          "branch": "u/sgriffin/security",
+          "properties": {
+            "RepositoryRoot": "C:\\src\\mfcmapi"
+          }
+        }
+      ],
+      "results": [],
+      "columnKind": "utf16CodeUnits",
+      "properties": {
+        "toolInfoId": "binskim>>0>>202309270800"
+      }
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "binskim",
+          "fullName": "BinSkim 1.9.5.0",
+          "version": "1.9.5.0",
+          "semanticVersion": "1.9.5",
+          "properties": {
+            "RawName": "binskim"
+          }
+        }
+      },
+      "invocations": [
+        {
+          "startTimeUtc": "2023-09-27T12:01:36.225Z",
+          "endTimeUtc": "2023-09-27T12:01:37.371Z",
+          "executionSuccessful": true
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "https://github.com/microsoft/mfcmapi.git",
+          "revisionId": "20621fee71264c8360ed671434241b936bf6dc77",
+          "branch": "u/sgriffin/security",
+          "properties": {
+            "RepositoryRoot": "C:\\src\\mfcmapi"
+          }
+        }
+      ],
+      "results": [],
+      "columnKind": "utf16CodeUnits",
+      "properties": {
+        "toolInfoId": "binskim>>0>>202309270801"
+      }
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "binskim",
+          "fullName": "BinSkim 1.9.5.0",
+          "version": "1.9.5.0",
+          "semanticVersion": "1.9.5",
+          "properties": {
+            "RawName": "binskim"
+          }
+        }
+      },
+      "invocations": [
+        {
+          "startTimeUtc": "2023-09-27T12:02:41.890Z",
+          "endTimeUtc": "2023-09-27T12:02:45.492Z",
+          "executionSuccessful": true
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "https://github.com/microsoft/mfcmapi.git",
+          "revisionId": "20621fee71264c8360ed671434241b936bf6dc77",
+          "branch": "u/sgriffin/security",
+          "properties": {
+            "RepositoryRoot": "C:\\src\\mfcmapi"
+          }
+        }
+      ],
+      "results": [],
+      "columnKind": "utf16CodeUnits",
+      "properties": {
+        "toolInfoId": "binskim>>0>>202309270802"
+      }
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "binskim",
+          "fullName": "BinSkim 1.9.5.0",
+          "version": "1.9.5.0",
+          "semanticVersion": "1.9.5",
+          "properties": {
+            "RawName": "binskim"
+          }
+        }
+      },
+      "invocations": [
+        {
+          "startTimeUtc": "2023-09-27T12:04:29.359Z",
+          "endTimeUtc": "2023-09-27T12:04:32.672Z",
+          "executionSuccessful": true
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "https://github.com/microsoft/mfcmapi.git",
+          "revisionId": "20621fee71264c8360ed671434241b936bf6dc77",
+          "branch": "u/sgriffin/security",
+          "properties": {
+            "RepositoryRoot": "C:\\src\\mfcmapi"
+          }
+        }
+      ],
+      "results": [],
+      "columnKind": "utf16CodeUnits",
+      "properties": {
+        "toolInfoId": "binskim>>0>>202309270804"
+      }
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "binskim",
+          "fullName": "BinSkim 1.9.5.0",
+          "version": "1.9.5.0",
+          "semanticVersion": "1.9.5",
+          "properties": {
+            "RawName": "BinSkim"
+          }
+        }
+      },
+      "invocations": [
+        {
+          "startTimeUtc": "2023-09-27T12:05:21.455Z",
+          "endTimeUtc": "2023-09-27T12:05:25.572Z",
+          "executionSuccessful": true
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "https://github.com/microsoft/mfcmapi.git",
+          "revisionId": "20621fee71264c8360ed671434241b936bf6dc77",
+          "branch": "u/sgriffin/security",
+          
+          "properties": {
+            "RepositoryRoot": "C:\\src\\mfcmapi"
+          }
+        }
+      ],
+      
+      "results": [],
+      "columnKind": "utf16CodeUnits",
+      "properties": {
+        "toolInfoId": "binskim>>0>>202309270805"
+      }
+    }
+  ]
+}
