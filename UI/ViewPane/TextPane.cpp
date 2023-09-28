@@ -129,7 +129,7 @@ namespace viewpane
 		EC_MAPI_S(stmData->Read(buffer.data(), cbTemp, &cbTempRead));
 		output::DebugPrint(output::dbgLevel::Stream, L"EditStreamReadCallBack: read %u bytes\n", cbTempRead);
 
-		memset(pbBuff, 0, cbTempRead * 2);
+		memset(pbBuff, 0, (size_t) cbTempRead * 2);
 		ULONG iBinPos = 0;
 		for (ULONG i = 0; i < cbTempRead && i < cbTemp; i++)
 		{

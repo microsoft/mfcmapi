@@ -593,7 +593,7 @@ namespace dialog::editor
 			const auto len = lpPrompt->LineLength(lpPrompt->LineIndex(i));
 			if (len)
 			{
-				auto szLine = std::basic_string<TCHAR>(len + 1, '\0');
+				auto szLine = std::basic_string<TCHAR>((size_t) len + 1, '\0');
 
 				static_cast<void>(lpPrompt->GetLine(i, const_cast<TCHAR*>(szLine.c_str()), len));
 

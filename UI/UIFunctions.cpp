@@ -1379,7 +1379,7 @@ namespace ui
 			if (iCount)
 			{
 				// Find the index of the last item in the header
-				const auto iIndex = Header_OrderToIndex(lvcd->hdr.hwndFrom, iCount - 1);
+				const auto iIndex = Header_OrderToIndex(lvcd->hdr.hwndFrom, (UINT_PTR) iCount - 1);
 
 				auto rcRight = RECT{};
 				// Compute the right edge of the last item
