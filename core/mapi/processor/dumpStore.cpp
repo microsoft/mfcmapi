@@ -680,7 +680,7 @@ namespace mapi::processor
 		}
 	}
 
-	void OutputMessageXML(_In_ LPMESSAGE lpMessage, bool bRetryStreamProps, _Deref_out_opt_ LPVOID* lpData)
+	void OutputMessageXML(_In_ LPMESSAGE lpMessage, bool bRetryStreamProps, _In_opt_ LPVOID* lpData)
 	{
 		if (!lpMessage || !lpData) return;
 
