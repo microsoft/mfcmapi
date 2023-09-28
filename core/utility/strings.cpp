@@ -14,7 +14,7 @@ namespace strings
 		{
 			auto buffer =
 				std::wstring((size_t) len + 1, '\0'); // Include extra since _vsnwprintf_s writes a null terminator
-			if (_vsnwprintf_s(const_cast<wchar_t*>(buffer.c_str()), len + 1, _TRUNCATE, szMsg, argList) > 0)
+			if (_vsnwprintf_s(const_cast<wchar_t*>(buffer.c_str()), (size_t) len + 1, _TRUNCATE, szMsg, argList) > 0)
 			{
 				buffer.resize(len); // Resize to exact length before returning
 				return buffer;

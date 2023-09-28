@@ -138,7 +138,7 @@ namespace controls::sortlistctrl
 							m_hwndTip,
 							TTM_TRACKPOSITION,
 							0,
-							MAKELPARAM(hdHitTestInfo.pt.x + 10, (int) hdHitTestInfo.pt.y + 20)));
+							MAKELPARAM((int) hdHitTestInfo.pt.x + 10, (int) hdHitTestInfo.pt.y + 20)));
 
 						m_ti.lpszText = const_cast<LPWSTR>(lpHeaderData->szTipString.c_str());
 						EC_B_S(::SendMessage(m_hwndTip, TTM_SETTOOLINFOW, true, reinterpret_cast<LPARAM>(&m_ti)));

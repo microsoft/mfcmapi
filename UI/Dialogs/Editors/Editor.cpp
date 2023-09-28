@@ -758,7 +758,7 @@ namespace dialog::editor
 			m_hWnd,
 			WM_SIZE,
 			static_cast<WPARAM>(SIZE_RESTORED),
-			static_cast<LPARAM>(MAKELPARAM(rc.right - rc.left, rc.bottom - rc.top))));
+			static_cast<LPARAM>(MAKELPARAM((int) rc.right - (int) rc.left, (int) rc.bottom - (int) rc.top))));
 	}
 
 	// Artificially expand our gripper region to make it easier to expand dialogs
