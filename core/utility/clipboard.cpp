@@ -16,7 +16,14 @@ namespace clipboard
 			return;
 		}
 
-		memcpy(GlobalLock(hg), str.c_str(), cb);
+		const auto mem = GlobalLock(hg);
+		if (!mem)
+		{
+			CloseClipboard();
+			return;
+		}
+
+		memcpy(mem, str.c_str(), cb);
 		GlobalUnlock(hg);
 		SetClipboardData(CF_UNICODETEXT, hg);
 		CloseClipboard();

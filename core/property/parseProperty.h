@@ -8,7 +8,7 @@ namespace property
 		_In_opt_ std::wstring* PropString,
 		_In_opt_ std::wstring* AltPropString);
 
-	Property parseProperty(_In_ const _SPropValue* lpProp);
+	Property parseProperty(_In_opt_ const _SPropValue* lpProp);
 
 	std::wstring RestrictionToString(_In_ const _SRestriction* lpRes, _In_opt_ LPMAPIPROP lpObj);
 	std::wstring ActionsToString(_In_ const ACTIONS& actions);
