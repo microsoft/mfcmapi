@@ -156,7 +156,7 @@ namespace registry
 		_In_ HKEY hKey,
 		_In_ const std::wstring& szValueName,
 		_In_ const std::vector<BYTE>& binValue_In_,
-		const bool bSecure = false);
+		_In_ const bool bSecure = false);
 	inline void WriteBinToRegistry(
 		_In_ HKEY hKey,
 		_In_ const std::wstring& szValueName,

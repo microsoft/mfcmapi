@@ -1172,7 +1172,7 @@ namespace controls::sortlistctrl
 			// If we don't have a source prop object, try setting the prop back to the prop bag
 			const auto sourceName = sourceProp->getName();
 			const auto lpSourceProp = sourcePropBag->GetOneProp(ulSourcePropTag, sourceName);
-			EC_H(lpPropBag->SetProp(lpSourceProp, ulSourcePropTag, sourceName));
+			EC_H_S(lpPropBag->SetProp(lpSourceProp, ulSourcePropTag, sourceName));
 			this->RefreshMAPIPropList();
 			return;
 		}

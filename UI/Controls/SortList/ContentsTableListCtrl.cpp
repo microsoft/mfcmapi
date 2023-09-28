@@ -952,7 +952,7 @@ namespace controls::sortlistctrl
 		}
 	}
 
-	_Check_return_ void CContentsTableListCtrl::CopyRows() const
+	void CContentsTableListCtrl::CopyRows() const
 	{
 		const auto iNumItems = GetSelectedCount();
 
