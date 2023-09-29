@@ -12,7 +12,7 @@
       "arguments": {
         "Function": "analyze",
         "BuildArchitecture": "x64",
-        "BuildCommandlines": "MSBuild.exe /m mfcmapi.sln /p:Configuration=Release_Unicode /p:Platform=x64",
+        "BuildCommandlines": "MSBuild.exe /m scripts/prefast.proj",
         "MSBuildVersion": "16.0",
         "RulesetPath": "$(SDLRecommendedRuleset)",
         "SetupCommandlines": "$(VS2022DefaultSetupCommandLine)",

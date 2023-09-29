@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <ItemGroup>
+        <ProjectToBuild Include="..\mfcmapi.sln">
+            <Properties>Configuration=Release_Unicode;Platform=x64</Properties>
+        </ProjectToBuild>
+        <ProjectToBuild Include="..\mfcmapi.sln">
+            <Properties>Configuration=Release;Platform=x64</Properties>
+        </ProjectToBuild>
+    </ItemGroup>
+    <Target Name="Build">
+        <MSBuild Projects="@(ProjectToBuild)" BuildInParallel="true" />
+    </Target>
+</Project>
