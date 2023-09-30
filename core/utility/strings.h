@@ -22,6 +22,7 @@ namespace strings
 	std::wstring formatmessage(LPCWSTR szMsg, ...);
 	std::basic_string<TCHAR> wstringTotstring(const std::wstring& src);
 	std::string wstringTostring(const std::wstring& src);
+	LPTSTR LPCSTRToLPTSTR(const LPCSTR src);
 	std::wstring stringTowstring(const std::string& src);
 	std::wstring LPCTSTRToWstring(LPCTSTR src);
 	std::wstring LPCSTRToWstring(LPCSTR src);

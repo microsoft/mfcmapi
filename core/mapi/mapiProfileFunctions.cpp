@@ -162,7 +162,11 @@ namespace mapi::profile
 
 		LPSERVICEADMIN lpServiceAdmin = nullptr;
 		hRes = EC_MAPI(lpProfAdmin->AdminServices(
-			LPTSTR(strings::wstringTostring(lpszProfileName).c_str()), LPTSTR(""), 0, 0, &lpServiceAdmin));
+			strings::LPCSTRToLPTSTR(strings::wstringTostring(lpszProfileName).c_str()),
+			strings::LPCSTRToLPTSTR(""),
+			0,
+			0,
+			&lpServiceAdmin));
 
 		auto lpszServiceNameA = strings::wstringTostring(lpszServiceName);
 		if (lpServiceAdmin)
@@ -176,8 +180,8 @@ namespace mapi::profile
 				hRes = EC_H_MSG(
 					IDS_CREATEMSGSERVICEFAILED,
 					lpServiceAdmin2->CreateMsgServiceEx(
-						LPTSTR(lpszServiceNameA.c_str()),
-						LPTSTR(lpszServiceNameA.c_str()),
+						strings::LPCSTRToLPTSTR(lpszServiceNameA.c_str()),
+						strings::LPCSTRToLPTSTR(lpszServiceNameA.c_str()),
 						ulUIParam,
 						ulFlags,
 						&uidService));
@@ -477,7 +481,11 @@ namespace mapi::profile
 		if (!lpProfAdmin) return hRes;
 
 		hRes = EC_MAPI(lpProfAdmin->AdminServices(
-			LPTSTR(strings::wstringTostring(lpszProfileName).c_str()), LPTSTR(""), 0, 0, &lpServiceAdmin));
+			strings::LPCSTRToLPTSTR(strings::wstringTostring(lpszProfileName).c_str()),
+			strings::LPCSTRToLPTSTR(""),
+			0,
+			0,
+			&lpServiceAdmin));
 
 		if (lpServiceAdmin)
 		{

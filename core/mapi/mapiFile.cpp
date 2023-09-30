@@ -156,8 +156,7 @@ namespace file
 			hRes = EC_H(OpenTnefStreamEx(
 				nullptr,
 				lpStream,
-				reinterpret_cast<LPTSTR>(
-					const_cast<LPSTR>("winmail.dat")), // STRING_OK - despite its signature, this function is ANSI only
+				strings::LPCSTRToLPTSTR("winmail.dat"), // STRING_OK - despite its signature, this function is ANSI only
 				TNEF_DECODE,
 				lpMessage,
 				wKeyVal,
@@ -595,8 +594,7 @@ namespace file
 			hRes = EC_H(OpenTnefStreamEx(
 				nullptr,
 				lpStream,
-				reinterpret_cast<LPTSTR>(
-					const_cast<LPSTR>("winmail.dat")), // STRING_OK - despite its signature, this function is ANSI only
+				strings::LPCSTRToLPTSTR("winmail.dat"), // STRING_OK - despite its signature, this function is ANSI only
 				TNEF_ENCODE,
 				lpMessage,
 				wKeyVal,
