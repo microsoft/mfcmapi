@@ -19,7 +19,7 @@ namespace cache
 		// But some folks get it wrong and stuff ANSI data in there
 		// So we check the string length both ways to make our best guess
 #pragma warning(push)
-#pragma warning(disable : 26490) // warning C26490: Don't use reinterpret_cast (type.1).
+#pragma warning(disable : 26490) // Warning C26490 Don't use reinterpret_cast (type.1).
 		const auto cchShortLen = strnlen_s(reinterpret_cast<LPCSTR>(lpwstrName), RSIZE_MAX);
 #pragma warning(pop)
 		const auto cchWideLen = wcsnlen_s(lpwstrName, RSIZE_MAX);

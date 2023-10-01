@@ -22,7 +22,7 @@ enum CmdMode
 };
 
 #pragma warning(push)
-#pragma warning(disable : 5054) // warning C5054: operator '|': deprecated between enumerations of different types
+#pragma warning(disable : 5054) // Warning C5054 operator '|': deprecated between enumerations of different types
 cli::option switchMode1{L"mode1", cmdmode1, 0, 1, cli::OPT_NEEDNUM | OPT_10};
 cli::option switchMode2{L"mode2", cmdmode2, 2, 2, OPT_20};
 #pragma warning(pop)
