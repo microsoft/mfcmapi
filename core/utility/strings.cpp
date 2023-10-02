@@ -142,7 +142,7 @@ namespace strings
 
 	// Some MAPI functions only accept an ansi string but the signature says LPTSTR
 	// This function encapsulates that.
-	LPTSTR LPCSTRToLPTSTR(const LPCSTR src) { return LPTSTR(src); }
+	LPTSTR LPCSTRToLPTSTR(const LPCSTR src) { return LPTSTR((void*) src); }
 
 	std::wstring stringTowstring(const std::string& src)
 	{
