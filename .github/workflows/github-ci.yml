@@ -28,6 +28,10 @@ jobs:
       with:
         submodules: 'recursive'
 
+    - name: Add Guardian nuget source
+      working-directory: ${{ github.workspace }}
+      run: nuget sources -Name "Guardian" -Source "https://securitytools.pkgs.visualstudio.com/_packaging/Guardian/nuget/v3/index.json"
+
     - name: Restore NuGet packages
       working-directory: ${{ github.workspace }}
       run: nuget restore mfcmapi.sln
