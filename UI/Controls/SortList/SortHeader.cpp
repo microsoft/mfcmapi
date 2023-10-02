@@ -15,7 +15,8 @@ namespace controls::sortlistctrl
 	BEGIN_MESSAGE_MAP(CSortHeader, CHeaderCtrl)
 	ON_MESSAGE(WM_MFCMAPI_SAVECOLUMNORDERHEADER, msgOnSaveColumnOrder)
 #pragma warning(push)
-#pragma warning(disable : 26454) // Warning C26454 Arithmetic overflow: 'operator' operation produces a negative unsigned result at compile time
+#pragma warning( \
+		disable : 26454) // Warning C26454 Arithmetic overflow: 'operator' operation produces a negative unsigned result at compile time
 	ON_NOTIFY_REFLECT(NM_CUSTOMDRAW, OnCustomDraw)
 #pragma warning(pop)
 	END_MESSAGE_MAP()
