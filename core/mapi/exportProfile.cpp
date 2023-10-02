@@ -163,7 +163,11 @@ namespace output
 		{
 			LPSERVICEADMIN lpServiceAdmin = nullptr;
 			EC_MAPI_S(lpProfAdmin->AdminServices(
-				LPTSTR(strings::wstringTostring(szProfile).c_str()), LPTSTR(""), NULL, MAPI_DIALOG, &lpServiceAdmin));
+				strings::LPCSTRToLPTSTR(strings::wstringTostring(szProfile).c_str()),
+				strings::LPCSTRToLPTSTR(""),
+				NULL,
+				MAPI_DIALOG,
+				&lpServiceAdmin));
 			if (lpServiceAdmin)
 			{
 				if (!szProfileSection.empty())

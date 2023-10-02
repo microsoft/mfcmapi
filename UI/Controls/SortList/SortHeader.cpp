@@ -15,7 +15,8 @@ namespace controls::sortlistctrl
 	BEGIN_MESSAGE_MAP(CSortHeader, CHeaderCtrl)
 	ON_MESSAGE(WM_MFCMAPI_SAVECOLUMNORDERHEADER, msgOnSaveColumnOrder)
 #pragma warning(push)
-#pragma warning(disable : 26454)
+#pragma warning( \
+		disable : 26454) // Warning C26454 Arithmetic overflow: 'operator' operation produces a negative unsigned result at compile time
 	ON_NOTIFY_REFLECT(NM_CUSTOMDRAW, OnCustomDraw)
 #pragma warning(pop)
 	END_MESSAGE_MAP()
@@ -138,7 +139,7 @@ namespace controls::sortlistctrl
 							m_hwndTip,
 							TTM_TRACKPOSITION,
 							0,
-							MAKELPARAM(hdHitTestInfo.pt.x + 10, hdHitTestInfo.pt.y + 20)));
+							MAKELPARAM((DWORD_PTR) hdHitTestInfo.pt.x + 10, (DWORD_PTR) hdHitTestInfo.pt.y + 20)));
 
 						m_ti.lpszText = const_cast<LPWSTR>(lpHeaderData->szTipString.c_str());
 						EC_B_S(::SendMessage(m_hwndTip, TTM_SETTOOLINFOW, true, reinterpret_cast<LPARAM>(&m_ti)));

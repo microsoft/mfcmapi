@@ -11,7 +11,7 @@
 #define VC_EXTRALEAN // Exclude rarely-used stuff from Windows headers
 
 #pragma warning(push)
-#pragma warning(disable : 4995)
+#pragma warning(disable : 4995) // Warning C4995 'function': name was marked as #pragma deprecated
 #include <cstdio>
 #include <cstring>
 #include <cwchar>
@@ -40,13 +40,14 @@
 #include <sal.h>
 // A bug in annotations in shobjidl.h forces us to disable 6387 to include afxwin.h
 #pragma warning(push)
-#pragma warning(disable : 6387)
+#pragma warning( \
+		disable : 6387) // Warning C6387 'argument' may be 'value': this does not adhere to the specification for the function 'function name': Lines: x, y
 #include <afxwin.h> // MFC core and standard components
 #pragma warning(pop)
 #include <afxcmn.h> // MFC support for Windows Common Controls
 
 #pragma warning(push)
-#pragma warning(disable : 4091)
+#pragma warning(disable : 4091) // Warning C4091 'keyword' : ignored on left of 'type' when no variable is declared
 #include <ShlObj.h>
 #pragma warning(pop)
 
@@ -82,7 +83,10 @@ typedef ULONG(STDAPICALLTYPE FREEBUFFER)(LPVOID lpBuffer);
 #ifdef UNICODE
 #undef CHARFORMAT
 #endif
+#pragma warning(push)
+#pragma warning(disable : 28251) // Warning C28251 Inconsistent annotation for function: this instance has an error
 #include <mimeole.h>
+#pragma warning(pop)
 #ifdef UNICODE
 #undef CHARFORMAT
 #define CHARFORMAT CHARFORMATW

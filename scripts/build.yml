@@ -30,20 +30,6 @@ jobs:
       }
     displayName: 'Add Version'
 
-  - task: CredScan@3
-    displayName: Run CredScan
-    inputs:
-      outputFormat: pre
-      verboseOutput: true
-      debugMode: false
-      folderSuppression: false
-
-  - task: PoliCheck@2
-    displayName: Run PoliCheck
-    inputs:
-      targetType: F
-      result: PoliCheck.xml
-
   - task: VSBuild@1
     displayName: Build
     inputs:
@@ -74,7 +60,7 @@ jobs:
   #     DetailedLog: true
 
   - task: CopyFiles@2
-    displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
+    displayName: 'Copy Files to: artifactstagingdirectory'
     inputs:
       SourceFolder: '$(Build.SourcesDirectory)\bin'
       Contents: |
@@ -86,12 +72,88 @@ jobs:
       CleanTargetFolder: true
       OverWrite: true
 
+  # setting this up requres some sort of auth token - figure it out later
+  # - task: APIScan@2
+  #   displayName: Run APIScan
+  #   continueOnError: true
+  #   inputs:
+  #     softwareFolder: '$(Build.StagingDirectory)'
+  #     softwareBuildNum: '$(Build.BuildId)'
+  #     symbolsFolder: '$(Build.StagingDirectory)'
+  #     softwareName: 'MFCMAPI'
+  #     softwareVersionNum: '$(Build.BuildNumber)'
+
+  - task: AntiMalware@4
+    displayName: Run AntiMalware
+    continueOnError: true
+    inputs:
+      InputType: 'Basic'
+      ScanType: 'CustomScan'
+      FileDirPath: '$(build.artifactstagingdirectory)'
+      TreatSignatureUpdateFailureAs: 'Warning'
+      SignatureFreshness: 'UpToDate'
+      TreatStaleSignatureAs: 'Error'
+
   - task: BinSkim@4
+    displayName: Run BinSkim
+    continueOnError: true
     inputs:
       InputType: 'Basic'
       Function: 'analyze'
       TargetPattern: 'guardianGlob'
       AnalyzeTargetGlob: '$(Build.ArtifactStagingDirectory)/**.dll;$(Build.ArtifactStagingDirectory)/**.exe;'
+
+  - task: CodeInspector@2
+    displayName: 'Run Code Inspector'
+    continueOnError: true
+    inputs:
+      ProductId: 0
+
+  - task: ComponentGovernanceComponentDetection@0
+    displayName: Run Component Governance Component Detection
+    continueOnError: true
+    inputs:
+      scanType: 'Register'
+      verbosity: 'Verbose'
+      alertWarningLevel: 'High'
+
+  - task: CredScan@3
+    displayName: Run CredScan
+    continueOnError: true
+    inputs:
+      outputFormat: pre
+      verboseOutput: true
+      debugMode: false
+      folderSuppression: false
+
+  - task: PoliCheck@2
+    displayName: Run PoliCheck
+    continueOnError: true
+    inputs:
+      targetType: F
+      result: PoliCheck.xml
+
+  - task: SDLNativeRules@3
+    displayName: 'Run the PREfast SDL Native Rules for MSBuild'
+    inputs:
+      publishXML: false
+      userProvideBuildInfo: auto
+      # excludedPaths: 'path/to/exclude'
+      rulesetName: Recommended
+    env:
+      system_accesstoken: $(System.AccessToken)
+
+  # This takes far too long to run - disable for now
+  # - task: Semmle@1
+  #   displayName: Run Semmle
+  #   continueOnError: true
+  #   inputs:
+  #     sourceCodeDirectory: '$(Build.SourcesDirectory)'
+  #     language: 'cpp'
+  #     querySuite: 'Recommended'
+  #     timeout: '1800'
+  #     ram: '16384'
+  #     addProjectDirToScanningExclusionList: true
 
   - task: SdtReport@2
     displayName: Create Security Analysis Report
@@ -99,7 +161,19 @@ jobs:
     inputs:
       GdnExportTsvFile: true
       GdnExportHtmlFile: true
-      GdnExportOutputSuppressionSet: default
+      GdnExportOutputBaselineFile: myBaseline
+      GdnExportOutputBaseline: myBaselinedResults
+      GdnExportOutputSuppressionFile: mySuppressions
+      GdnExportOutputSuppressionSet: mySuppressionSet
+      GdnExportPolicyMinSev: Warning
+      # GdnExportGdnToolApiScanSeverity: Warning
+      GdnExportGdnToolArmorySeverity: Warning
+      GdnExportGdnToolBinSkimSeverity: Warning
+      # GdnExportGdnToolCodesignValidationSeverity: Warning
+      GdnExportGdnToolCredScanSeverity: Warning
+      GdnExportGdnToolPoliCheckSeverity: Warning
+      GdnExportGdnToolSDLNativeRulesSeverity: Warning
+      # GdnExportGdnToolSemmleSeverity: Warning
 
   - task: PublishSecurityAnalysisLogs@3
     displayName: Publish Security Analysis Logs
@@ -110,7 +184,8 @@ jobs:
     displayName: Post Analysis
     inputs:
       GdnBreakSuppressionSets: default
-
+      GdnBreakPolicyMinSev: Warning
+ 
   - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
     displayName: 'Generation Task'
     inputs:

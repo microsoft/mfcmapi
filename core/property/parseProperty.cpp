@@ -116,7 +116,7 @@ namespace property
 		return parseProperty(&sProp);
 	}
 
-	Property parseProperty(_In_ const _SPropValue* lpProp)
+	Property parseProperty(_In_opt_ const _SPropValue* lpProp)
 	{
 		Property properties;
 		if (!lpProp) return properties;

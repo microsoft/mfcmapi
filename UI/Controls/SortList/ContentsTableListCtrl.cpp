@@ -59,7 +59,8 @@ namespace controls::sortlistctrl
 
 	BEGIN_MESSAGE_MAP(CContentsTableListCtrl, CSortListCtrl)
 #pragma warning(push)
-#pragma warning(disable : 26454)
+#pragma warning( \
+		disable : 26454) // Warning C26454 Arithmetic overflow: 'operator' operation produces a negative unsigned result at compile time
 	ON_NOTIFY_REFLECT(LVN_ITEMCHANGED, OnItemChanged)
 #pragma warning(pop)
 	ON_WM_KEYDOWN()
@@ -952,7 +953,7 @@ namespace controls::sortlistctrl
 		}
 	}
 
-	_Check_return_ void CContentsTableListCtrl::CopyRows() const
+	void CContentsTableListCtrl::CopyRows() const
 	{
 		const auto iNumItems = GetSelectedCount();
 

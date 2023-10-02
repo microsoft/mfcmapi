@@ -28,10 +28,6 @@ jobs:
       with:
         submodules: 'recursive'
 
-    - name: Restore NuGet packages
-      working-directory: ${{ github.workspace }}
-      run: nuget restore mfcmapi.sln
-
     - name: Initialize CodeQL
       uses: github/codeql-action/init@04daf014b50eaf774287bf3f0f1869d4b4c4b913 # v2.21.7
       with:

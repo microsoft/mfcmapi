@@ -97,7 +97,8 @@ namespace controls::sortlistctrl
 
 	BEGIN_MESSAGE_MAP(CSingleMAPIPropListCtrl, CSortListCtrl)
 #pragma warning(push)
-#pragma warning(disable : 26454)
+#pragma warning( \
+		disable : 26454) // Warning C26454 Arithmetic overflow: 'operator' operation produces a negative unsigned result at compile time
 	ON_NOTIFY_REFLECT(NM_DBLCLK, OnDblclk)
 #pragma warning(pop)
 	ON_WM_KEYDOWN()
@@ -1172,7 +1173,7 @@ namespace controls::sortlistctrl
 			// If we don't have a source prop object, try setting the prop back to the prop bag
 			const auto sourceName = sourceProp->getName();
 			const auto lpSourceProp = sourcePropBag->GetOneProp(ulSourcePropTag, sourceName);
-			EC_H(lpPropBag->SetProp(lpSourceProp, ulSourcePropTag, sourceName));
+			EC_H_S(lpPropBag->SetProp(lpSourceProp, ulSourcePropTag, sourceName));
 			this->RefreshMAPIPropList();
 			return;
 		}

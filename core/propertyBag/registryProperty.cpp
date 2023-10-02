@@ -388,7 +388,8 @@ namespace propertybag
 				case PT_MV_BINARY:
 				{
 					// Allocate the header portion, which is a fixed size based on the number of binaries to pack
-					cb = sizeof(LONG) * (1 + 2 * newValue->Value.MVbin.cValues); //  count and array of size/offset
+					cb = sizeof(LONG) *
+						 (1 + 2 * (size_t) newValue->Value.MVbin.cValues); //  count and array of size/offset
 					m_binVal = std::vector<BYTE>(cb); // Ok to use this since we're gonna wipe it anyway
 
 					// Count up our additional needs for reserve
@@ -425,7 +426,7 @@ namespace propertybag
 				case PT_MV_UNICODE:
 				{
 					// Allocate the header portion, which is a fixed size based on the number of strings to pack
-					cb = sizeof(LONG) * (1 + newValue->Value.MVszW.cValues); //  count and array of offset
+					cb = sizeof(LONG) * (1 + (size_t) newValue->Value.MVszW.cValues); //  count and array of offset
 					m_binVal = std::vector<BYTE>(cb); // Ok to use this since we're gonna wipe it anyway
 
 					// Count up our additional needs for reserve
@@ -457,7 +458,7 @@ namespace propertybag
 				case PT_MV_STRING8:
 				{
 					// Allocate the header portion, which is a fixed size based on the number of strings to pack
-					cb = sizeof(LONG) * (1 + newValue->Value.MVszA.cValues); //  count and array of offset
+					cb = sizeof(LONG) * (1 + (size_t) newValue->Value.MVszA.cValues); //  count and array of offset
 					m_binVal = std::vector<BYTE>(cb); // Ok to use this since we're gonna wipe it anyway
 
 					// Count up our additional needs for reserve

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26730.12
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34031.279
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MFCMapi", "MFCMapi.vcxproj", "{466117D5-278C-46E6-BC2E-4FA7B25C0B3F}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -36,6 +36,10 @@ Global
 		Debug_Unicode|x64 = Debug_Unicode|x64
 		Debug|Win32 = Debug|Win32
 		Debug|x64 = Debug|x64
+		Prefast_Unicode|Win32 = Prefast_Unicode|Win32
+		Prefast_Unicode|x64 = Prefast_Unicode|x64
+		Prefast_Unicode|Win32 = Prefast_Unicode|Win32
+		Prefast_Unicode|x64 = Prefast_Unicode|x64
 		Prefast|Win32 = Prefast|Win32
 		Prefast|x64 = Prefast|x64
 		Release_Unicode|Win32 = Release_Unicode|Win32
@@ -52,6 +56,14 @@ Global
 		{466117D5-278C-46E6-BC2E-4FA7B25C0B3F}.Debug|Win32.Build.0 = Debug|Win32
 		{466117D5-278C-46E6-BC2E-4FA7B25C0B3F}.Debug|x64.ActiveCfg = Debug|x64
 		{466117D5-278C-46E6-BC2E-4FA7B25C0B3F}.Debug|x64.Build.0 = Debug|x64
+		{466117D5-278C-46E6-BC2E-4FA7B25C0B3F}.Prefast_Unicode|Win32.ActiveCfg = Prefast_Unicode|Win32
+		{466117D5-278C-46E6-BC2E-4FA7B25C0B3F}.Prefast_Unicode|Win32.Build.0 = Prefast_Unicode|Win32
+		{466117D5-278C-46E6-BC2E-4FA7B25C0B3F}.Prefast_Unicode|x64.ActiveCfg = Debug|x64
+		{466117D5-278C-46E6-BC2E-4FA7B25C0B3F}.Prefast_Unicode|x64.Build.0 = Debug|x64
+		{466117D5-278C-46E6-BC2E-4FA7B25C0B3F}.Prefast_Unicode|Win32.ActiveCfg = Prefast_Unicode|Win32
+		{466117D5-278C-46E6-BC2E-4FA7B25C0B3F}.Prefast_Unicode|Win32.Build.0 = Prefast_Unicode|Win32
+		{466117D5-278C-46E6-BC2E-4FA7B25C0B3F}.Prefast_Unicode|x64.ActiveCfg = Prefast_Unicode|x64
+		{466117D5-278C-46E6-BC2E-4FA7B25C0B3F}.Prefast_Unicode|x64.Build.0 = Prefast_Unicode|x64
 		{466117D5-278C-46E6-BC2E-4FA7B25C0B3F}.Prefast|Win32.ActiveCfg = Prefast|Win32
 		{466117D5-278C-46E6-BC2E-4FA7B25C0B3F}.Prefast|Win32.Build.0 = Prefast|Win32
 		{466117D5-278C-46E6-BC2E-4FA7B25C0B3F}.Prefast|x64.ActiveCfg = Prefast|x64
@@ -72,6 +84,14 @@ Global
 		{7AFE5655-71D0-4390-A4E0-BA915DFC18C4}.Debug|Win32.Build.0 = Debug|Win32
 		{7AFE5655-71D0-4390-A4E0-BA915DFC18C4}.Debug|x64.ActiveCfg = Debug|x64
 		{7AFE5655-71D0-4390-A4E0-BA915DFC18C4}.Debug|x64.Build.0 = Debug|x64
+		{7AFE5655-71D0-4390-A4E0-BA915DFC18C4}.Prefast_Unicode|Win32.ActiveCfg = Prefast_Unicode|Win32
+		{7AFE5655-71D0-4390-A4E0-BA915DFC18C4}.Prefast_Unicode|Win32.Build.0 = Prefast_Unicode|Win32
+		{7AFE5655-71D0-4390-A4E0-BA915DFC18C4}.Prefast_Unicode|x64.ActiveCfg = Prefast_Unicode|x64
+		{7AFE5655-71D0-4390-A4E0-BA915DFC18C4}.Prefast_Unicode|x64.Build.0 = Prefast_Unicode|x64
+		{7AFE5655-71D0-4390-A4E0-BA915DFC18C4}.Prefast_Unicode|Win32.ActiveCfg = Prefast_Unicode|Win32
+		{7AFE5655-71D0-4390-A4E0-BA915DFC18C4}.Prefast_Unicode|Win32.Build.0 = Prefast_Unicode|Win32
+		{7AFE5655-71D0-4390-A4E0-BA915DFC18C4}.Prefast_Unicode|x64.ActiveCfg = Prefast_Unicode|x64
+		{7AFE5655-71D0-4390-A4E0-BA915DFC18C4}.Prefast_Unicode|x64.Build.0 = Prefast_Unicode|x64
 		{7AFE5655-71D0-4390-A4E0-BA915DFC18C4}.Prefast|Win32.ActiveCfg = Prefast|Win32
 		{7AFE5655-71D0-4390-A4E0-BA915DFC18C4}.Prefast|Win32.Build.0 = Prefast|Win32
 		{7AFE5655-71D0-4390-A4E0-BA915DFC18C4}.Prefast|x64.ActiveCfg = Prefast|x64
@@ -92,6 +112,14 @@ Global
 		{B8B4C7F7-682E-40EF-B5AC-054187818E23}.Debug|Win32.Build.0 = Debug|Win32
 		{B8B4C7F7-682E-40EF-B5AC-054187818E23}.Debug|x64.ActiveCfg = Debug|x64
 		{B8B4C7F7-682E-40EF-B5AC-054187818E23}.Debug|x64.Build.0 = Debug|x64
+		{B8B4C7F7-682E-40EF-B5AC-054187818E23}.Prefast_Unicode|Win32.ActiveCfg = Prefast_Unicode|Win32
+		{B8B4C7F7-682E-40EF-B5AC-054187818E23}.Prefast_Unicode|Win32.Build.0 = Prefast_Unicode|Win32
+		{B8B4C7F7-682E-40EF-B5AC-054187818E23}.Prefast_Unicode|x64.ActiveCfg = Prefast_Unicode|x64
+		{B8B4C7F7-682E-40EF-B5AC-054187818E23}.Prefast_Unicode|x64.Build.0 = Prefast_Unicode|x64
+		{B8B4C7F7-682E-40EF-B5AC-054187818E23}.Prefast_Unicode|Win32.ActiveCfg = Prefast_Unicode|Win32
+		{B8B4C7F7-682E-40EF-B5AC-054187818E23}.Prefast_Unicode|Win32.Build.0 = Prefast_Unicode|Win32
+		{B8B4C7F7-682E-40EF-B5AC-054187818E23}.Prefast_Unicode|x64.ActiveCfg = Prefast_Unicode|x64
+		{B8B4C7F7-682E-40EF-B5AC-054187818E23}.Prefast_Unicode|x64.Build.0 = Prefast_Unicode|x64
 		{B8B4C7F7-682E-40EF-B5AC-054187818E23}.Prefast|Win32.ActiveCfg = Prefast|Win32
 		{B8B4C7F7-682E-40EF-B5AC-054187818E23}.Prefast|Win32.Build.0 = Prefast|Win32
 		{B8B4C7F7-682E-40EF-B5AC-054187818E23}.Prefast|x64.ActiveCfg = Prefast|x64
@@ -112,6 +140,14 @@ Global
 		{D2390ABA-E7B0-476D-BB38-089FEAB5357D}.Debug|Win32.Build.0 = Debug|Win32
 		{D2390ABA-E7B0-476D-BB38-089FEAB5357D}.Debug|x64.ActiveCfg = Debug|x64
 		{D2390ABA-E7B0-476D-BB38-089FEAB5357D}.Debug|x64.Build.0 = Debug|x64
+		{D2390ABA-E7B0-476D-BB38-089FEAB5357D}.Prefast_Unicode|Win32.ActiveCfg = Prefast_Unicode|Win32
+		{D2390ABA-E7B0-476D-BB38-089FEAB5357D}.Prefast_Unicode|Win32.Build.0 = Prefast_Unicode|Win32
+		{D2390ABA-E7B0-476D-BB38-089FEAB5357D}.Prefast_Unicode|x64.ActiveCfg = Prefast_Unicode|x64
+		{D2390ABA-E7B0-476D-BB38-089FEAB5357D}.Prefast_Unicode|x64.Build.0 = Prefast_Unicode|x64
+		{D2390ABA-E7B0-476D-BB38-089FEAB5357D}.Prefast_Unicode|Win32.ActiveCfg = Prefast_Unicode|Win32
+		{D2390ABA-E7B0-476D-BB38-089FEAB5357D}.Prefast_Unicode|Win32.Build.0 = Prefast_Unicode|Win32
+		{D2390ABA-E7B0-476D-BB38-089FEAB5357D}.Prefast_Unicode|x64.ActiveCfg = Prefast_Unicode|x64
+		{D2390ABA-E7B0-476D-BB38-089FEAB5357D}.Prefast_Unicode|x64.Build.0 = Prefast_Unicode|x64
 		{D2390ABA-E7B0-476D-BB38-089FEAB5357D}.Prefast|Win32.ActiveCfg = Prefast|Win32
 		{D2390ABA-E7B0-476D-BB38-089FEAB5357D}.Prefast|Win32.Build.0 = Prefast|Win32
 		{D2390ABA-E7B0-476D-BB38-089FEAB5357D}.Prefast|x64.ActiveCfg = Prefast|x64
@@ -132,6 +168,14 @@ Global
 		{ACD4DD9F-0FB8-42C8-BC1C-25A5A29CB40C}.Debug|Win32.Build.0 = Debug|Win32
 		{ACD4DD9F-0FB8-42C8-BC1C-25A5A29CB40C}.Debug|x64.ActiveCfg = Debug|x64
 		{ACD4DD9F-0FB8-42C8-BC1C-25A5A29CB40C}.Debug|x64.Build.0 = Debug|x64
+		{ACD4DD9F-0FB8-42C8-BC1C-25A5A29CB40C}.Prefast_Unicode|Win32.ActiveCfg = Prefast_Unicode|Win32
+		{ACD4DD9F-0FB8-42C8-BC1C-25A5A29CB40C}.Prefast_Unicode|Win32.Build.0 = Prefast_Unicode|Win32
+		{ACD4DD9F-0FB8-42C8-BC1C-25A5A29CB40C}.Prefast_Unicode|x64.ActiveCfg = Prefast_Unicode|x64
+		{ACD4DD9F-0FB8-42C8-BC1C-25A5A29CB40C}.Prefast_Unicode|x64.Build.0 = Prefast_Unicode|x64
+		{ACD4DD9F-0FB8-42C8-BC1C-25A5A29CB40C}.Prefast_Unicode|Win32.ActiveCfg = Prefast_Unicode|Win32
+		{ACD4DD9F-0FB8-42C8-BC1C-25A5A29CB40C}.Prefast_Unicode|Win32.Build.0 = Prefast_Unicode|Win32
+		{ACD4DD9F-0FB8-42C8-BC1C-25A5A29CB40C}.Prefast_Unicode|x64.ActiveCfg = Prefast_Unicode|x64
+		{ACD4DD9F-0FB8-42C8-BC1C-25A5A29CB40C}.Prefast_Unicode|x64.Build.0 = Prefast_Unicode|x64
 		{ACD4DD9F-0FB8-42C8-BC1C-25A5A29CB40C}.Prefast|Win32.ActiveCfg = Prefast|Win32
 		{ACD4DD9F-0FB8-42C8-BC1C-25A5A29CB40C}.Prefast|Win32.Build.0 = Prefast|Win32
 		{ACD4DD9F-0FB8-42C8-BC1C-25A5A29CB40C}.Prefast|x64.ActiveCfg = Prefast|x64
@@ -152,6 +196,14 @@ Global
 		{0E30B8F5-4480-4130-BC46-BABA613B983F}.Debug|Win32.Build.0 = Debug|Win32
 		{0E30B8F5-4480-4130-BC46-BABA613B983F}.Debug|x64.ActiveCfg = Debug|x64
 		{0E30B8F5-4480-4130-BC46-BABA613B983F}.Debug|x64.Build.0 = Debug|x64
+		{0E30B8F5-4480-4130-BC46-BABA613B983F}.Prefast_Unicode|Win32.ActiveCfg = Prefast_Unicode|Win32
+		{0E30B8F5-4480-4130-BC46-BABA613B983F}.Prefast_Unicode|Win32.Build.0 = Prefast_Unicode|Win32
+		{0E30B8F5-4480-4130-BC46-BABA613B983F}.Prefast_Unicode|x64.ActiveCfg = Prefast_Unicode|x64
+		{0E30B8F5-4480-4130-BC46-BABA613B983F}.Prefast_Unicode|x64.Build.0 = Prefast_Unicode|x64
+		{0E30B8F5-4480-4130-BC46-BABA613B983F}.Prefast_Unicode|Win32.ActiveCfg = Prefast_Unicode|Win32
+		{0E30B8F5-4480-4130-BC46-BABA613B983F}.Prefast_Unicode|Win32.Build.0 = Prefast_Unicode|Win32
+		{0E30B8F5-4480-4130-BC46-BABA613B983F}.Prefast_Unicode|x64.ActiveCfg = Prefast_Unicode|x64
+		{0E30B8F5-4480-4130-BC46-BABA613B983F}.Prefast_Unicode|x64.Build.0 = Prefast_Unicode|x64
 		{0E30B8F5-4480-4130-BC46-BABA613B983F}.Prefast|Win32.ActiveCfg = Prefast|Win32
 		{0E30B8F5-4480-4130-BC46-BABA613B983F}.Prefast|Win32.Build.0 = Prefast|Win32
 		{0E30B8F5-4480-4130-BC46-BABA613B983F}.Prefast|x64.ActiveCfg = Prefast|x64

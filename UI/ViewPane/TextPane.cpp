@@ -129,7 +129,7 @@ namespace viewpane
 		EC_MAPI_S(stmData->Read(buffer.data(), cbTemp, &cbTempRead));
 		output::DebugPrint(output::dbgLevel::Stream, L"EditStreamReadCallBack: read %u bytes\n", cbTempRead);
 
-		memset(pbBuff, 0, cbTempRead * 2);
+		memset(pbBuff, 0, (size_t) cbTempRead * 2);
 		ULONG iBinPos = 0;
 		for (ULONG i = 0; i < cbTempRead && i < cbTemp; i++)
 		{
@@ -252,7 +252,7 @@ namespace viewpane
 			if (m_bMultiline)
 			{
 				LONG stops = 16; // 16 dialog template units. Default is 32.
-				EC_B(::SendMessage(m_EditBox.m_hWnd, EM_SETTABSTOPS, WPARAM{1}, reinterpret_cast<LPARAM>(&stops)));
+				EC_B_S(::SendMessage(m_EditBox.m_hWnd, EM_SETTABSTOPS, WPARAM{1}, reinterpret_cast<LPARAM>(&stops)));
 
 				// Remove the awful autoselect of the edit control that scrolls to the end of multiline text
 				::PostMessage(m_EditBox.m_hWnd, EM_SETSEL, static_cast<WPARAM>(0), static_cast<LPARAM>(0));

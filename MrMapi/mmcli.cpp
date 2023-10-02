@@ -18,7 +18,7 @@ namespace error
 namespace cli
 {
 #pragma warning(push)
-#pragma warning(disable : 5054) // warning C5054: operator '|': deprecated between enumerations of different types
+#pragma warning(disable : 5054) // Warning C5054 operator '|': deprecated between enumerations of different types
 	option switchSearch{L"Search", cmdmodeUnknown, 0, 0, OPT_NOOPT};
 	option switchDecimal{L"Number", cmdmodeUnknown, 0, 0, OPT_NOOPT};
 	option switchFolder{L"Folder", cmdmodeUnknown, 1, 1, OPT_INITALL | OPT_NEEDFOLDER};
@@ -572,7 +572,7 @@ namespace cli
 		{
 			options.mode = cmdmodeProfile;
 #pragma warning(push)
-#pragma warning(disable : 5054) // warning C5054: operator '|': deprecated between enumerations of different types
+#pragma warning(disable : 5054) // Warning C5054 operator '|': deprecated between enumerations of different types
 			options.flags |= OPT_NEEDMAPIINIT | OPT_INITMFC;
 #pragma warning(pop)
 		}

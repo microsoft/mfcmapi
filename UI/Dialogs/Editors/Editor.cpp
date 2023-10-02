@@ -593,7 +593,7 @@ namespace dialog::editor
 			const auto len = lpPrompt->LineLength(lpPrompt->LineIndex(i));
 			if (len)
 			{
-				auto szLine = std::basic_string<TCHAR>(len + 1, '\0');
+				auto szLine = std::basic_string<TCHAR>((size_t) len + 1, '\0');
 
 				static_cast<void>(lpPrompt->GetLine(i, const_cast<TCHAR*>(szLine.c_str()), len));
 
@@ -758,7 +758,8 @@ namespace dialog::editor
 			m_hWnd,
 			WM_SIZE,
 			static_cast<WPARAM>(SIZE_RESTORED),
-			static_cast<LPARAM>(MAKELPARAM(rc.right - rc.left, rc.bottom - rc.top))));
+			static_cast<LPARAM>(
+				MAKELPARAM((DWORD_PTR) rc.right - (DWORD_PTR) rc.left, (DWORD_PTR) rc.bottom - (DWORD_PTR) rc.top))));
 	}
 
 	// Artificially expand our gripper region to make it easier to expand dialogs

@@ -95,8 +95,8 @@ namespace dialog
 		if (lpProfAdmin)
 		{
 			EC_MAPI_S(lpProfAdmin->AdminServices(
-				LPTSTR(strings::wstringTostring(m_szProfileName).c_str()),
-				LPTSTR(""),
+				strings::LPCSTRToLPTSTR(strings::wstringTostring(m_szProfileName).c_str()),
+				strings::LPCSTRToLPTSTR(""),
 				NULL,
 				MAPI_DIALOG,
 				&m_lpServiceAdmin));

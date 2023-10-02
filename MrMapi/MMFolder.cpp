@@ -104,7 +104,7 @@ LPSBinary MAPIFindSubfolderExW(
 		if (!eid) break;
 
 		// Only OpenEntry if needed for next tier of folder path.
-		if (i + 1 < FolderList.size())
+		if ((size_t) i + 1 < FolderList.size())
 		{
 			WC_MAPI_S(lpParentFolder->OpenEntry(
 				eid->cb,

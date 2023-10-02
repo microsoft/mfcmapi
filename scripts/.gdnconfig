@@ -1,0 +1,57 @@
+{
+  "fileVersion": "1.0.0",
+  "jobs": [],
+  "commands": [],
+  "tools": [
+    {
+      "fileVersion": "1.0.0",
+      "tool": {
+        "name": "prefast",
+        "version": "1.6.0"
+      },
+      "arguments": {
+        "Function": "analyze",
+        "BuildArchitecture": "x64",
+        "BuildCommandlines": "MSBuild.exe /m scripts/prefast.proj",
+        "MSBuildVersion": "16.0",
+        "RulesetPath": "$(SDLRecommendedRuleset)",
+        "SetupCommandlines": "$(VS2022DefaultSetupCommandLine)",
+        "SourcesDirectory": "$(Folders.SourceRepo)",
+        "LoggerLevel": "Standard",
+        "ScanMode": "TargetsInjection"
+      },
+      "outputExtension": "sarif",
+      "successfulExitCodes": [
+        0
+      ],
+      "errorExitCodes": {
+        "1": "MSBuild failed to build.",
+        "9": "MSBuild detected conflicting User Extension.",
+        "257": "MSBuild failed to rerun build.",
+        "512": "MSBuild is missing argument(s).",
+        "513": "MSBuild has invalid argument.",
+        "32769": "No build commands were provided."
+      },
+      "outputPaths": []
+    },
+    {
+      "tool": {
+        "name": "BinSkim",
+        "version": "Latest"
+      },
+      "arguments": {
+        "Function": "analyze",
+        "Target": "bin\\Win32\\MrMAPI\\Release\\MrMAPI.exe;bin\\Win32\\MrMAPI\\Release_Unicode\\MrMAPI.exe;bin\\Win32\\Release\\MFCMapi.exe;bin\\Win32\\Release_Unicode\\MFCMapi.exe;bin\\Win32\\exampleMapiConsoleApp\\Release\\exampleMapiConsoleApp.exe;bin\\Win32\\exampleMapiConsoleApp\\Release_Unicode\\exampleMapiConsoleApp.exe;bin\\x64\\MrMAPI\\Release\\MrMAPI.exe;bin\\x64\\MrMAPI\\Release_Unicode\\MrMAPI.exe;bin\\x64\\Release\\MFCMapi.exe;bin\\x64\\Release_Unicode\\MFCMapi.exe;bin\\x64\\exampleMapiConsoleApp\\Release\\exampleMapiConsoleApp.exe;bin\\x64\\exampleMapiConsoleApp\\Release_Unicode\\exampleMapiConsoleApp.exe",
+        "ConfigPath": "default",
+        "IgnorePdbLoadError": "false",
+        "Recurse": "true",
+        "Verbose": "false",
+        "Quiet": "false",
+        "Optimize": "false",
+        "PrettyPrint": "false",
+        "Minify": "false",
+        "SarifOutputVersion": "OneZeroZero"
+      }
+    }
+  ]
+}

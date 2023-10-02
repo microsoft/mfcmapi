@@ -65,6 +65,12 @@ jobs:
                 }
             ]
 
+  - task: CodeSign@1
+    displayName: 'Run Codesign Validation'
+    continueOnError: true
+    inputs:
+      rootDirectory: '$(System.ArtifactsDirectory)/drop'
+
   - task: ArchiveFiles@2
     inputs:
       rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/Win32/MrMAPI/Release_Unicode/MrMAPI.exe'

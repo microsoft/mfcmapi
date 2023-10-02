@@ -56,7 +56,10 @@
 #ifdef UNICODE
 #undef CHARFORMAT
 #endif
+#pragma warning(push)
+#pragma warning(disable : 28251) // Warning C28251 Inconsistent annotation for function: this instance has an error
 #include <mimeole.h>
+#pragma warning(pop)
 #ifdef UNICODE
 #undef CHARFORMAT
 #define CHARFORMAT CHARFORMATW

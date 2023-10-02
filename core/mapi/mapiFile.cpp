@@ -149,15 +149,16 @@ namespace file
 		{
 			LPITNEF lpTNEF = nullptr;
 #pragma warning(push)
-#pragma warning(disable : 28159) // GetTickCount is OK for what we're doing
+#pragma warning( \
+		disable : 28159) // Warning C28159 Consider using *function_name_1* instead of *function_name_2*. Reason: reason
+			//GetTickCount is OK for what we're doing
 			static auto wKeyVal = static_cast<WORD>(GetTickCount() + 1);
 #pragma warning(pop)
 
 			hRes = EC_H(OpenTnefStreamEx(
 				nullptr,
 				lpStream,
-				reinterpret_cast<LPTSTR>(
-					const_cast<LPSTR>("winmail.dat")), // STRING_OK - despite its signature, this function is ANSI only
+				strings::LPCSTRToLPTSTR("winmail.dat"), // STRING_OK - despite its signature, this function is ANSI only
 				TNEF_DECODE,
 				lpMessage,
 				wKeyVal,
@@ -581,7 +582,9 @@ namespace file
 		LPITNEF lpTNEF = nullptr;
 
 #pragma warning(push)
-#pragma warning(disable : 28159) // GetTickCount is OK for what we're doing
+#pragma warning( \
+		disable : 28159) // Warning C28159 Consider using *function_name_1* instead of *function_name_2*. Reason: reason
+		//GetTickCount is OK for what we're doing
 		static auto wKeyVal = static_cast<WORD>(GetTickCount() + 1);
 #pragma warning(pop)
 
@@ -595,8 +598,7 @@ namespace file
 			hRes = EC_H(OpenTnefStreamEx(
 				nullptr,
 				lpStream,
-				reinterpret_cast<LPTSTR>(
-					const_cast<LPSTR>("winmail.dat")), // STRING_OK - despite its signature, this function is ANSI only
+				strings::LPCSTRToLPTSTR("winmail.dat"), // STRING_OK - despite its signature, this function is ANSI only
 				TNEF_ENCODE,
 				lpMessage,
 				wKeyVal,

@@ -38,7 +38,7 @@ void DoSmartView()
 			const auto iDesc = _fileno(fIn);
 			const auto iLength = _filelength(iDesc);
 
-			auto inBytes = std::vector<BYTE>(iLength + 1); // +1 for NULL
+			auto inBytes = std::vector<BYTE>((size_t) iLength + 1); // +1 for NULL
 			fread(inBytes.data(), sizeof(BYTE), iLength, fIn);
 			auto sBin = SBinary{};
 			auto bin = std::vector<BYTE>{};

@@ -2865,7 +2865,7 @@ namespace mapi
 		if (!lpProp) return false;
 
 		auto lpPropVal = LPSPropValue{};
-		WC_H(HrGetOneProp(lpProp, PR_OBJECT_TYPE, &lpPropVal));
+		WC_H_S(HrGetOneProp(lpProp, PR_OBJECT_TYPE, &lpPropVal));
 
 		const auto ret = IsABObject(1, lpPropVal);
 		MAPIFreeBuffer(lpPropVal);

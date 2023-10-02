@@ -12,8 +12,9 @@ namespace strings
 		const auto len = _vscwprintf(szMsg, argList);
 		if (0 != len)
 		{
-			auto buffer = std::wstring(len + 1, '\0'); // Include extra since _vsnwprintf_s writes a null terminator
-			if (_vsnwprintf_s(const_cast<wchar_t*>(buffer.c_str()), len + 1, _TRUNCATE, szMsg, argList) > 0)
+			auto buffer =
+				std::wstring((size_t) len + 1, '\0'); // Include extra since _vsnwprintf_s writes a null terminator
+			if (_vsnwprintf_s(const_cast<wchar_t*>(buffer.c_str()), (size_t) len + 1, _TRUNCATE, szMsg, argList) > 0)
 			{
 				buffer.resize(len); // Resize to exact length before returning
 				return buffer;
@@ -138,6 +139,10 @@ namespace strings
 		std::transform(src.begin(), src.end(), std::back_inserter(dst), [](auto c) { return static_cast<char>(c); });
 		return dst;
 	}
+
+	// Some MAPI functions only accept an ansi string but the signature says LPTSTR
+	// This function encapsulates that.
+	LPTSTR LPCSTRToLPTSTR(const LPCSTR src) { return LPTSTR((void*) src); }
 
 	std::wstring stringTowstring(const std::string& src)
 	{
