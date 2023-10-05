@@ -21,3 +21,4 @@ Badges:
 [![Dependency Review](https://github.com/stephenegriffin/mfcmapi/actions/workflows/dependency-review.yml/badge.svg)](https://github.com/stephenegriffin/mfcmapi/actions/workflows/dependency-review.yml)  
 [![OpenSSF
 Scorecard](https://api.securityscorecards.dev/projects/github.com/stephenegriffin/mfcmapi/badge)](https://api.securityscorecards.dev/projects/github.com/stephenegriffin/mfcmapi)  
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/7901/badge)](https://www.bestpractices.dev/projects/7901)
