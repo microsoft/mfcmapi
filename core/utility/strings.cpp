@@ -142,6 +142,7 @@ namespace strings
 
 	// Some MAPI functions only accept an ansi string but the signature says LPTSTR
 	// This function encapsulates that.
+	// Does NOT convert the string. Just hides the casting of the pointer.
 	LPTSTR LPCSTRToLPTSTR(const LPCSTR src) { return LPTSTR((void*) src); }
 
 	std::wstring stringTowstring(const std::string& src)
@@ -188,7 +189,7 @@ namespace strings
 
 	std::wstring wstringToLower(const std::wstring& src)
 	{
-		auto dst = src;
+		std::wstring dst = src;
 		std::transform(src.begin(), src.end(), dst.begin(), towlower);
 		return dst;
 	}
@@ -887,7 +888,7 @@ namespace strings
 		// Look for a token that ends in :
 		// Then pair that with the next token and add to the return
 		std::wstring label;
-		for (const auto token : tokens)
+		for (const std::wstring token : tokens)
 		{
 			if (label.empty())
 			{

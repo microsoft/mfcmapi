@@ -30,4 +30,4 @@ if (Test-Path -Path $db) {
 & $codeql database create $db --overwrite --language=cpp --command="powershell $scriptroot\build.ps1"
 
 Write-Host "Running analysis..."
-& $codeql database analyze $db --threads=4 -v --format sarif-latest -o $scriptroot\codeql.sarif
+& $codeql database analyze $db --threads=4 -v --format sarif-latest -o $srcRoot\.sarif\codeql.sarif
