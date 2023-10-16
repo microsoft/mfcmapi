@@ -24,3 +24,5 @@
 /mfcmapitest
 /packages
 scripts/codeql/*
+vc140.pdb
+/.sarif/codeql.sarif
