@@ -881,7 +881,7 @@ namespace mapi
 								{
 									if (lpRows->aRow[iArrayPos].lpProps[ulSrc].ulPropTag == PR_RULE_PROVIDER_DATA)
 									{
-										const auto bin = mapi::getBin(lpRows->aRow[iArrayPos].lpProps[ulSrc]);
+										const auto& bin = mapi::getBin(lpRows->aRow[iArrayPos].lpProps[ulSrc]);
 										if (!bin.cb || !bin.lpb)
 										{
 											// PR_RULE_PROVIDER_DATA was NULL - we don't want this
@@ -1230,7 +1230,7 @@ namespace mapi
 		EC_H_GETPROPS_S(lpChildFolder->GetProps(&tag, fMapiUnicode, &cProps, &lpProps));
 		if (lpProps && PT_ERROR != PROP_TYPE(lpProps[0].ulPropTag))
 		{
-			const auto bin = mapi::getBin(lpProps[0]);
+			const auto& bin = mapi::getBin(lpProps[0]);
 			lpParentFolder = CallOpenEntry<LPMAPIFOLDER>(
 				lpMDB,
 				nullptr,
@@ -1548,7 +1548,7 @@ namespace mapi
 				{
 					for (ULONG i = 0; i < pRows->cRows; i++)
 					{
-						const auto bin = mapi::getBin(pRows->aRow[i].lpProps[ePR_ENTRYID]);
+						const auto& bin = mapi::getBin(pRows->aRow[i].lpProps[ePR_ENTRYID]);
 						auto lpMessage = CallOpenEntry<LPMESSAGE>(
 							nullptr,
 							nullptr,
@@ -1860,7 +1860,7 @@ namespace mapi
 						for (ULONG iCurPropRow = 0; iCurPropRow < pRows->cRows; iCurPropRow++)
 						{
 							if (lpMessage) lpMessage->Release();
-							const auto bin = mapi::getBin(pRows->aRow[iCurPropRow].lpProps[eidPR_ENTRYID]);
+							const auto& bin = mapi::getBin(pRows->aRow[iCurPropRow].lpProps[eidPR_ENTRYID]);
 							lpMessage = CallOpenEntry<LPMESSAGE>(
 								lpMDB,
 								nullptr,
@@ -2074,7 +2074,7 @@ namespace mapi
 			if (!names.empty())
 			{
 				ULONG ulNumProps = 0; // count of props that match our guid
-				for (const auto name : names)
+				for (const auto& name : names)
 				{
 					if (cache::namedPropCacheEntry::valid(name) && name->getPropID() > 0x7FFF &&
 						::IsEqualGUID(*name->getMapiNameId()->lpguid, *lpPropSetGUID))
@@ -2088,7 +2088,7 @@ namespace mapi
 				{
 					lpFilteredProps->cValues = 0;
 
-					for (const auto name : names)
+					for (const auto& name : names)
 					{
 						if (cache::namedPropCacheEntry::valid(name) && name->getPropID() > 0x7FFF &&
 							::IsEqualGUID(*name->getMapiNameId()->lpguid, *lpPropSetGUID))
@@ -2231,7 +2231,7 @@ namespace mapi
 
 					if (pEmsmdbUID && pRow)
 					{
-						const auto bin = mapi::getBin(pRow->lpProps[eSectionUid]);
+						const auto& bin = mapi::getBin(pRow->lpProps[eSectionUid]);
 						if (PR_EMSMDB_SECTION_UID == pRow->lpProps[eSectionUid].ulPropTag &&
 							bin.cb == sizeof *pEmsmdbUID)
 						{
