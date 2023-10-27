@@ -460,7 +460,7 @@ namespace dialog::editor
 				case EDITOR_RTF_UNICODE:
 				case EDITOR_STREAM_UNICODE:
 					SetStringW(
-						m_iTextBox, std::wstring(reinterpret_cast<LPWSTR>(bin.data()), bin.size() / sizeof(WCHAR)));
+						m_iTextBox, std::wstring(strings::LPCBYTEToLPCWSTR(bin.data()), bin.size() / sizeof(WCHAR)));
 					if (lpBinPane) lpBinPane->SetCount(bin.size());
 					break;
 				}

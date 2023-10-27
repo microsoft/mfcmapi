@@ -1126,7 +1126,7 @@ namespace dialog
 		auto adrType = strings::wstringTostring(MyData.GetStringW(0));
 
 		EC_MAPI_S(lpMAPISession->QueryDefaultMessageOpt(
-			reinterpret_cast<LPTSTR>(const_cast<LPSTR>(adrType.c_str())),
+			strings::LPCSTRToLPTSTR(adrType.c_str()),
 			NULL, // API doesn't like Unicode
 			&cValues,
 			&lpOptions));
@@ -1179,7 +1179,7 @@ namespace dialog
 		auto adrType = strings::wstringTostring(MyData.GetStringW(0));
 
 		EC_MAPI_S(lpAddrBook->QueryDefaultRecipOpt(
-			reinterpret_cast<LPTSTR>(const_cast<LPSTR>(adrType.c_str())),
+			strings::LPCSTRToLPTSTR(adrType.c_str()),
 			NULL, // API doesn't like Unicode
 			&cValues,
 			&lpOptions));

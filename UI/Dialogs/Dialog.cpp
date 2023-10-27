@@ -151,7 +151,7 @@ namespace dialog
 		// These are client coordinates - we need to translate them to screen coordinates
 		POINT pt = {GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)};
 		output::DebugPrint(output::dbgLevel::UI, L"NCHitTestMouse: pt = %d %d", pt.x, pt.y);
-		static_cast<void>(MapWindowPoints(hWnd, nullptr, &pt, 1)); // Map our client point to the screen
+		if (::MapWindowPoints(hWnd, nullptr, &pt, 1) == 0) return HTNOWHERE; // Map our client point to the screen
 		output::Outputf(output::dbgLevel::UI, nullptr, false, L" mapped = %d %d\r\n", pt.x, pt.y);
 
 		const auto ht = CheckButtons(hWnd, pt);

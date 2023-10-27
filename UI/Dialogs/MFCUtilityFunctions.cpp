@@ -702,7 +702,7 @@ namespace dialog
 			EC_H_CANCEL_S(lpMAPIFormMgr->SelectForm(
 				reinterpret_cast<ULONG_PTR>(hWnd),
 				0, // fMapiUnicode,
-				LPCTSTR(szTitle.c_str()),
+				strings::LPCSTRToLPTSTR(szTitle.c_str()),
 				lpMAPIFolder,
 				&lpMAPIFormInfo));
 

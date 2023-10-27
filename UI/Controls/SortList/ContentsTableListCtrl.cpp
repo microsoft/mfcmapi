@@ -117,10 +117,12 @@ namespace controls::sortlistctrl
 		{
 			POINT point = {};
 			const auto iItem = GetNextItem(-1, LVNI_SELECTED);
-			GetItemPosition(iItem, &point);
-			if (::ClientToScreen(pWnd->m_hWnd, &point))
+			if (GetItemPosition(iItem, &point))
 			{
-				pos = point;
+				if (::ClientToScreen(pWnd->m_hWnd, &point))
+				{
+					pos = point;
+				}
 			}
 		}
 

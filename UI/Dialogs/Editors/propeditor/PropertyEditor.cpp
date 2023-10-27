@@ -245,7 +245,7 @@ namespace dialog::editor
 
 			if (m_lpsInputValue && PROP_TYPE(m_lpsInputValue->ulPropTag) == PT_BINARY)
 			{
-				const auto bin = mapi::getBin(m_lpsInputValue);
+				const auto& bin = mapi::getBin(m_lpsInputValue);
 				if (lpPane)
 				{
 					lpPane->SetCount(bin.cb);
@@ -419,7 +419,7 @@ namespace dialog::editor
 			m_bin = strings::HexStringToBin(GetStringW(1));
 			m_bin.push_back(0); // Add null terminator
 			m_bin.push_back(0); // Add null terminator
-			m_sOutputValue.Value.lpszW = reinterpret_cast<LPWSTR>(m_bin.data());
+			m_sOutputValue.Value.lpszW = strings::LPCBYTEToLPWSTR(m_bin.data());
 			break;
 		case PT_SYSTIME:
 			m_sOutputValue.Value.ft.dwLowDateTime = strings::wstringToUlong(GetStringW(0), 16);
@@ -627,7 +627,7 @@ namespace dialog::editor
 				const auto bin = GetBinary(1);
 				if (!(bin.size() % sizeof(WCHAR)))
 				{
-					SetStringW(0, std::wstring(reinterpret_cast<LPCWSTR>(bin.data()), bin.size() / sizeof(WCHAR)));
+					SetStringW(0, std::wstring(strings::LPCBYTEToLPCWSTR(bin.data()), bin.size() / sizeof(WCHAR)));
 					if (lpPane) lpPane->SetCount(bin.size() / sizeof(WCHAR));
 				}
 				else

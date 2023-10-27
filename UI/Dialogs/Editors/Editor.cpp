@@ -1353,7 +1353,7 @@ namespace dialog::editor
 			output::dbgLevel::Generic, L"Scroll: top = %d, bottom = %d\n", rcScroll.top, rcScroll.bottom);
 
 		auto rcPane = pane->GetWindowRect();
-		::MapWindowPoints(HWND_DESKTOP, m_ScrollWindow.GetSafeHwnd(), (LPPOINT) &rcPane, 2);
+		if (::MapWindowPoints(HWND_DESKTOP, m_ScrollWindow.GetSafeHwnd(), (LPPOINT) &rcPane, 2) == 0) return;
 		output::DebugPrint(output::dbgLevel::Generic, L"Pane: top = %d, bottom = %d\n", rcPane.top, rcPane.bottom);
 
 		auto iScroll = 0;

@@ -400,7 +400,7 @@ namespace viewpane
 				reinterpret_cast<LPARAM>(buffer.data()));
 			if (cchW != 0)
 			{
-				return std::wstring(reinterpret_cast<LPWSTR>(buffer.data()), cchText);
+				return std::wstring(strings::LPCBYTEToLPCWSTR(buffer.data()), cchText);
 			}
 			else
 			{
@@ -493,7 +493,7 @@ namespace viewpane
 
 		// Clear out CFE_AUTOCOLOR and CFE_AUTOBACKCOLOR so we can change color
 		charformat.dwEffects = 0;
-		for (const auto range : m_highlights)
+		for (const auto& range : m_highlights)
 		{
 			if (static_cast<LONG>(range.start) == -1 || static_cast<LONG>(range.end) == -1) continue;
 			auto charrange = CHARRANGE{static_cast<LONG>(range.start), static_cast<LONG>(range.end)};

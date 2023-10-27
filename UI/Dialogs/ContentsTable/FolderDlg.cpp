@@ -982,7 +982,7 @@ namespace dialog
 					hRes = EC_H_CANCEL(lpMAPIFormMgr->SelectForm(
 						reinterpret_cast<ULONG_PTR>(m_hWnd),
 						0,
-						reinterpret_cast<LPCTSTR>(strings::wstringTostring(szTitle).c_str()),
+						strings::LPCSTRToLPTSTR(strings::wstringTostring(szTitle).c_str()),
 						lpFormSource,
 						&lpMAPIFormInfo));
 
@@ -1582,7 +1582,7 @@ namespace dialog
 				hRes = EC_MAPI(lpMAPISession->MessageOptions(
 					reinterpret_cast<ULONG_PTR>(m_hWnd),
 					NULL, // API doesn't like Unicode
-					LPTSTR(strings::wstringTostring(MyAddress.GetStringW(0)).c_str()),
+					strings::LPCSTRToLPTSTR(strings::wstringTostring(MyAddress.GetStringW(0)).c_str()),
 					lpMessage));
 
 				lpMessage->Release();

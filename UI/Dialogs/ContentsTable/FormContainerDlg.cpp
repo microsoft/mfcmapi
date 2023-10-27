@@ -229,8 +229,9 @@ namespace dialog
 					hwnd,
 					ulFlags,
 					lpszPath.c_str()); // STRING_OK
+				const auto ansiPath = strings::wstringTostring(lpszPath);
 				hRes = WC_MAPI(m_lpFormContainer->InstallForm(
-					reinterpret_cast<ULONG_PTR>(hwnd), ulFlags, LPCTSTR(strings::wstringTostring(lpszPath).c_str())));
+					reinterpret_cast<ULONG_PTR>(hwnd), ulFlags, strings::LPCSTRToLPTSTR(ansiPath.c_str())));
 				error::CheckExtendedError(hRes, m_lpFormContainer);
 
 				if (bShouldCancel(this, hRes)) break;

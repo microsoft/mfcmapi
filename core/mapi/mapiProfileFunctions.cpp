@@ -46,7 +46,7 @@ namespace mapi::profile
 						{
 							if (bAddMark)
 							{
-								SPropValue PropVal;
+								SPropValue PropVal{};
 								PropVal.ulPropTag = PR_MARKER;
 								PropVal.Value.lpszA = MARKER_STRING;
 								EC_MAPI_S(lpSect->SetProps(1, &PropVal, nullptr));
@@ -200,7 +200,10 @@ namespace mapi::profile
 					hRes = EC_H_MSG(
 						IDS_CREATEMSGSERVICEFAILED,
 						lpServiceAdmin->CreateMsgService(
-							LPTSTR(lpszServiceNameA.c_str()), LPTSTR(lpszServiceNameA.c_str()), ulUIParam, ulFlags));
+							strings::LPCSTRToLPTSTR(lpszServiceNameA.c_str()),
+							strings::LPCSTRToLPTSTR(lpszServiceNameA.c_str()),
+							ulUIParam,
+							ulFlags));
 				}
 
 				if (lpPropVals)
@@ -259,7 +262,7 @@ namespace mapi::profile
 			return MAPI_E_INVALID_PARAMETER;
 
 #define NUMEXCHANGEPROPS 2
-		SPropValue PropVal[NUMEXCHANGEPROPS];
+		SPropValue PropVal[NUMEXCHANGEPROPS]{};
 		PropVal[0].ulPropTag = PR_PROFILE_UNRESOLVED_SERVER;
 		auto lpszServerNameA = strings::wstringTostring(lpszServerName);
 		PropVal[0].Value.lpszA = const_cast<LPSTR>(lpszServerNameA.c_str());
@@ -296,7 +299,7 @@ namespace mapi::profile
 		auto lpszPasswordA = strings::wstringTostring(lpszPassword);
 		if (bUnicodePST)
 		{
-			SPropValue PropVal[3];
+			SPropValue PropVal[3]{};
 			PropVal[0].ulPropTag = CHANGE_PROP_TYPE(PR_PST_PATH, PT_UNICODE);
 			PropVal[0].Value.lpszW = const_cast<LPWSTR>(lpszPSTPath.c_str());
 			PropVal[1].ulPropTag = PR_PST_CONFIG_FLAGS;
@@ -309,7 +312,7 @@ namespace mapi::profile
 		}
 		else
 		{
-			SPropValue PropVal[2];
+			SPropValue PropVal[2]{};
 			PropVal[0].ulPropTag = CHANGE_PROP_TYPE(PR_PST_PATH, PT_UNICODE);
 			PropVal[0].Value.lpszW = const_cast<LPWSTR>(lpszPSTPath.c_str());
 			PropVal[1].ulPropTag = PR_PST_PW_SZ_OLD;
@@ -337,7 +340,7 @@ namespace mapi::profile
 
 		// Create the profile
 		hRes = WC_MAPI(lpProfAdmin->CreateProfile(
-			LPTSTR(strings::wstringTostring(lpszProfileName).c_str()),
+			strings::LPCSTRToLPTSTR(strings::wstringTostring(lpszProfileName).c_str()),
 			nullptr,
 			0,
 			NULL)); // fMapiUnicode is not supported!
@@ -364,7 +367,8 @@ namespace mapi::profile
 		auto hRes = EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
 		if (!lpProfAdmin) return hRes;
 
-		hRes = EC_MAPI(lpProfAdmin->DeleteProfile(LPTSTR(strings::wstringTostring(lpszProfileName).c_str()), 0));
+		hRes = EC_MAPI(
+			lpProfAdmin->DeleteProfile(strings::LPCSTRToLPTSTR(strings::wstringTostring(lpszProfileName).c_str()), 0));
 
 		lpProfAdmin->Release();
 
@@ -385,7 +389,8 @@ namespace mapi::profile
 		auto hRes = EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
 		if (!lpProfAdmin) return hRes;
 
-		hRes = EC_MAPI(lpProfAdmin->SetDefaultProfile(LPTSTR(strings::wstringTostring(lpszProfileName).c_str()), 0));
+		hRes = EC_MAPI(lpProfAdmin->SetDefaultProfile(
+			strings::LPCSTRToLPTSTR(strings::wstringTostring(lpszProfileName).c_str()), 0));
 
 		lpProfAdmin->Release();
 
@@ -511,7 +516,7 @@ namespace mapi::profile
 					PR_PROFILE_SERVER_FULL_VERSION == lpServerFullVersion->ulPropTag &&
 					sizeof(EXCHANGE_STORE_VERSION_NUM) == mapi::getBin(lpServerFullVersion).cb)
 				{
-					const auto bin = mapi::getBin(lpServerFullVersion);
+					const SBinary& bin = mapi::getBin(lpServerFullVersion);
 					output::DebugPrint(output::dbgLevel::Generic, L"PR_PROFILE_SERVER_FULL_VERSION = ");
 					output::outputBinary(output::dbgLevel::Generic, nullptr, bin);
 					output::DebugPrint(output::dbgLevel::Generic, L"\n");
@@ -553,9 +558,9 @@ namespace mapi::profile
 		if (!lpProfAdmin) return hRes;
 
 		hRes = EC_MAPI(lpProfAdmin->CopyProfile(
-			LPTSTR(strings::wstringTostring(lpszOldProfileName).c_str()),
+			strings::LPCSTRToLPTSTR(strings::wstringTostring(lpszOldProfileName).c_str()),
 			nullptr,
-			LPTSTR(strings::wstringTostring(lpszNewProfileName).c_str()),
+			strings::LPCSTRToLPTSTR(strings::wstringTostring(lpszNewProfileName).c_str()),
 			NULL,
 			NULL));
 

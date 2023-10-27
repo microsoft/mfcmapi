@@ -117,7 +117,7 @@ namespace dialog ::editor
 			SetStringA(HEXED_ANSI, std::string(reinterpret_cast<LPCSTR>(lpb), cb));
 			if (!(cb % 2)) // Set Unicode String
 			{
-				SetStringW(HEXED_UNICODE, std::wstring(reinterpret_cast<LPWSTR>(lpb), cb / sizeof(WCHAR)));
+				SetStringW(HEXED_UNICODE, std::wstring(strings::LPCBYTEToLPCWSTR(lpb), cb / sizeof(WCHAR)));
 			}
 			else
 			{
@@ -137,7 +137,7 @@ namespace dialog ::editor
 
 			if (!(cb % 2)) // Set Unicode String
 			{
-				SetStringW(HEXED_UNICODE, std::wstring(reinterpret_cast<LPWSTR>(lpb), cb / sizeof(WCHAR)));
+				SetStringW(HEXED_UNICODE, std::wstring(strings::LPCBYTEToLPCWSTR(lpb), cb / sizeof(WCHAR)));
 			}
 			else
 			{
