@@ -13,7 +13,7 @@ namespace smartview
 		lpDecoded.reserve(cbDecodedBuffer);
 
 		// Subtract kwBaseOffset from every character and place result in lpDecoded
-		auto lpwzSrc = reinterpret_cast<LPCWSTR>(lpbBuffer);
+		auto lpwzSrc = strings::LPCBYTEToLPCWSTR(lpbBuffer);
 		for (size_t i = 0; i < cbDecodedBuffer; i++, lpwzSrc++)
 		{
 			lpDecoded.push_back(static_cast<BYTE>(*lpwzSrc - kwBaseOffset));

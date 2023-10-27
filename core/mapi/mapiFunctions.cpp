@@ -376,7 +376,7 @@ namespace mapi
 										lpPropArray->Value.lpszA = reinterpret_cast<LPSTR>(lpBuffer);
 										break;
 									case PT_UNICODE:
-										lpPropArray->Value.lpszW = reinterpret_cast<LPWSTR>(lpBuffer);
+										lpPropArray->Value.lpszW = strings::LPCBYTEToLPWSTR(lpBuffer);
 										break;
 									case PT_BINARY:
 										mapi::setBin(lpPropArray) = {ulBufferSize, lpBuffer};

@@ -22,11 +22,18 @@ namespace strings
 	std::wstring formatmessage(LPCWSTR szMsg, ...);
 	std::basic_string<TCHAR> wstringTotstring(const std::wstring& src);
 	std::string wstringTostring(const std::wstring& src);
-	LPTSTR LPCSTRToLPTSTR(const LPCSTR src);
 	std::wstring stringTowstring(const std::string& src);
 	std::wstring LPCTSTRToWstring(LPCTSTR src);
 	std::wstring LPCSTRToWstring(LPCSTR src);
 	LPCWSTR wstringToLPCWSTR(const std::wstring& src) noexcept;
+
+	// Functions to cast pointers to memory to strings
+	// These are cast only and do not allocate anything
+	// We use these functions to avoid compiler warnings with MAPI structures and functions
+	LPTSTR LPCSTRToLPTSTR(const LPCSTR src);
+	LPCWSTR LPCBYTEToLPCWSTR(const BYTE* src);
+	LPWSTR LPCBYTEToLPWSTR(const BYTE* src);
+
 	std::wstring wstringToLower(const std::wstring& src);
 	inline bool compareInsensitive(const std::wstring& lhs, const std::wstring& rhs) noexcept
 	{

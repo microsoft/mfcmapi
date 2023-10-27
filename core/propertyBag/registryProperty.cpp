@@ -28,7 +28,7 @@ namespace propertybag
 		// With no name we build a name from the prop tag
 		if (!m_name.empty())
 		{
-			auto str = m_name;
+			auto& str = m_name;
 			// If we pass a name, but it's has S:: prefix, it's secure and name is likely a prop tag name
 			// After strip, we can parse the name with proptags::PropNameToPropTag
 			if (strings::stripPrefix(str, L"S::"))
@@ -122,7 +122,7 @@ namespace propertybag
 					m_unicodeVal = m_binVal;
 					m_unicodeVal.push_back(0); // Add some null terminators just in case
 					m_unicodeVal.push_back(0);
-					m_prop.Value.lpszW = reinterpret_cast<LPWSTR>(const_cast<LPBYTE>(m_unicodeVal.data()));
+					m_prop.Value.lpszW = strings::LPCBYTEToLPWSTR(m_unicodeVal.data());
 					break;
 				case PT_MV_LONG:
 				{

@@ -140,11 +140,6 @@ namespace strings
 		return dst;
 	}
 
-	// Some MAPI functions only accept an ansi string but the signature says LPTSTR
-	// This function encapsulates that.
-	// Does NOT convert the string. Just hides the casting of the pointer.
-	LPTSTR LPCSTRToLPTSTR(const LPCSTR src) { return LPTSTR((void*) src); }
-
 	std::wstring stringTowstring(const std::string& src)
 	{
 		std::wstring dst;
@@ -186,6 +181,13 @@ namespace strings
 
 		return lpBin;
 	}
+
+	// Functions to cast pointers to memory to strings
+	// These are cast only and do not allocate anything
+	// We use these functions to avoid compiler warnings with MAPI structures and functions
+	LPTSTR LPCSTRToLPTSTR(const LPCSTR src) { return LPTSTR((void*) src); }
+	LPCWSTR LPCBYTEToLPCWSTR(const BYTE* src) { return LPCWSTR((void*) src); }
+	LPWSTR LPCBYTEToLPWSTR(const BYTE* src) { return LPWSTR((void*) src); }
 
 	std::wstring wstringToLower(const std::wstring& src)
 	{
