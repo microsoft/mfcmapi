@@ -706,7 +706,7 @@ namespace ui
 		const auto hfontOld = SelectObject(hdc, bBold ? GetSegoeFontBold() : GetSegoeFont());
 		const auto crText = SetTextColor(hdc, color);
 		SetBkMode(hdc, TRANSPARENT);
-		auto drawRc = rc;
+		RECT drawRc = rc;
 		DrawTextW(hdc, lpchText.c_str(), -1, &drawRc, format);
 
 #ifdef SKIPBUFFER
@@ -1318,7 +1318,7 @@ namespace ui
 		CDoubleBuffer db;
 		db.Begin(hdc, rc);
 
-		auto rcHeader = rc;
+		RECT rcHeader = rc;
 		FillRect(hdc, &rcHeader, GetSysBrush(uiColor::Background));
 
 		if (bSorted)
@@ -1416,14 +1416,16 @@ namespace ui
 		rcTracker.top += iHeaderHeight;
 		rcTracker.left = x - 1; // this lines us up under the splitter line we drew in the header
 		rcTracker.right = x;
-		MapWindowPoints(hWndHeader, hWndList, reinterpret_cast<LPPOINT>(&rcTracker), 2);
-		if (bRedraw)
+		if (::MapWindowPoints(hWndHeader, hWndList, reinterpret_cast<LPPOINT>(&rcTracker), 2) != 0)
 		{
-			InvalidateRect(hWndList, &rcTracker, true);
-		}
-		else
-		{
-			FillRect(hdc, &rcTracker, GetSysBrush(uiColor::FrameSelected));
+			if (bRedraw)
+			{
+				InvalidateRect(hWndList, &rcTracker, true);
+			}
+			else
+			{
+				FillRect(hdc, &rcTracker, GetSysBrush(uiColor::FrameSelected));
+			}
 		}
 
 		ReleaseDC(hWndList, hdc);
@@ -1933,7 +1935,8 @@ namespace ui
 		auto rcClient = RECT{};
 		GetWindowRect(hWnd, &rcWindow); // Get our non-client size
 		GetClientRect(hWnd, &rcClient); // Get our client size
-		MapWindowPoints(hWnd, nullptr, reinterpret_cast<LPPOINT>(&rcClient), 2); // locate our client rect on the screen
+		// locate our client rect on the screen
+		if (::MapWindowPoints(hWnd, nullptr, reinterpret_cast<LPPOINT>(&rcClient), 2) == 0) return;
 
 		// Before we fiddle with our client and window rects further, paint the menu
 		// This must be in window coordinates for WM_NCPAINT to work!!!
