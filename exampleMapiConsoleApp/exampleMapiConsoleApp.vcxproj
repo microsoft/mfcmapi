@@ -293,7 +293,6 @@
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalOptions>/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
     <ResourceCompile>
@@ -435,7 +434,7 @@
       <PreprocessorDefinitions>_AFXDLL;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <AdditionalOptions>/safeseh %(AdditionalOptions)</AdditionalOptions>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
@@ -529,7 +528,6 @@
       <SDLCheck>true</SDLCheck>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalOptions>/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
     <ResourceCompile>
@@ -562,7 +560,6 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalOptions>/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
     <ResourceCompile>
@@ -627,7 +624,6 @@
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalOptions>/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
     <ResourceCompile>

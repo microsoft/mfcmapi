@@ -479,6 +479,7 @@
       <PreprocessorDefinitions>_AFXDLL;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
+      <AdditionalOptions>/safeseh %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -689,7 +690,6 @@
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      
       <BuildStlModules>false</BuildStlModules>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>

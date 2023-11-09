@@ -445,6 +445,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
+      <AdditionalOptions>/safeseh %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>user32.lib;shell32.lib;advapi32.lib;version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
       <Profile>true</Profile>
