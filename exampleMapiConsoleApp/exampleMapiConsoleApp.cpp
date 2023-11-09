@@ -87,11 +87,12 @@ void TestSimpleMapi() noexcept
 	MapiRecipDesc recip = {0};
 
 	recip.ulRecipClass = MAPI_TO;
-	recip.lpszName = "John Doe";
-	recip.lpszAddress = "johndoe@example.com";
+	recip.lpszName = const_cast<LPSTR>("John Doe");
+	recip.lpszName = const_cast<LPSTR>("John Doe");
+	recip.lpszAddress = const_cast<LPSTR>("johndoe@example.com");
 
-	msg.lpszSubject = "Hello World";
-	msg.lpszNoteText = "Test Body";
+	msg.lpszSubject = const_cast<LPSTR>("Hello World");
+	msg.lpszNoteText = const_cast<LPSTR>("Test Body");
 	msg.lpRecips = &recip;
 	msg.nRecipCount = 1;
 

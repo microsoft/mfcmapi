@@ -255,6 +255,7 @@
       <SDLCheck>true</SDLCheck>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <WholeProgramOptimization>true</WholeProgramOptimization>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
     <ResourceCompile>
@@ -287,6 +288,7 @@
       <SDLCheck>true</SDLCheck>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <WholeProgramOptimization>true</WholeProgramOptimization>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <AdditionalOptions>/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
@@ -317,6 +319,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <SDLCheck>true</SDLCheck>
       <IntrinsicFunctions>true</IntrinsicFunctions>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
     <ResourceCompile>
@@ -348,6 +351,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <SDLCheck>true</SDLCheck>
       <IntrinsicFunctions>true</IntrinsicFunctions>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
     <ResourceCompile>
@@ -377,6 +381,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <SDLCheck>true</SDLCheck>
       <WholeProgramOptimization>false</WholeProgramOptimization>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
     <ResourceCompile>
@@ -409,6 +414,7 @@
       <EnablePREfast>true</EnablePREfast>
       <SDLCheck>true</SDLCheck>
       <WholeProgramOptimization>false</WholeProgramOptimization>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
     <ResourceCompile>
@@ -441,6 +447,7 @@
       <EnablePREfast>true</EnablePREfast>
       <SDLCheck>true</SDLCheck>
       <WholeProgramOptimization>false</WholeProgramOptimization>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
     <ResourceCompile>
@@ -472,6 +479,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <SDLCheck>true</SDLCheck>
       <WholeProgramOptimization>false</WholeProgramOptimization>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
     <ResourceCompile>
@@ -502,6 +510,7 @@
       <EnablePREfast>true</EnablePREfast>
       <SDLCheck>true</SDLCheck>
       <WholeProgramOptimization>false</WholeProgramOptimization>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <AdditionalOptions>/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
@@ -533,6 +542,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <WholeProgramOptimization>false</WholeProgramOptimization>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <AdditionalOptions>/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
@@ -563,6 +573,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <WholeProgramOptimization>false</WholeProgramOptimization>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
     <ResourceCompile>
@@ -592,6 +603,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <WholeProgramOptimization>false</WholeProgramOptimization>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <AdditionalOptions>/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
