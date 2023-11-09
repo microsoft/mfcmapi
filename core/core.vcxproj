@@ -270,7 +270,7 @@
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <PrecompiledHeaderFile>core/stdafx.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalOptions>/Zm200 %(AdditionalOptions)</AdditionalOptions>
+      
       <BuildStlModules>false</BuildStlModules>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
@@ -306,7 +306,7 @@
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <PrecompiledHeaderFile>core/stdafx.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalOptions>/Zm200 %(AdditionalOptions)</AdditionalOptions>
+      
       <BuildStlModules>false</BuildStlModules>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
@@ -335,7 +335,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalOptions>/Zm200 %(AdditionalOptions)</AdditionalOptions>
+      
       <BuildStlModules>false</BuildStlModules>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
@@ -369,7 +369,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalOptions>/Zm200 %(AdditionalOptions)</AdditionalOptions>
+      
       <BuildStlModules>false</BuildStlModules>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
@@ -399,7 +399,7 @@
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <PrecompiledHeaderFile>core/stdafx.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalOptions>/Zm200 %(AdditionalOptions)</AdditionalOptions>
+      
       <BuildStlModules>false</BuildStlModules>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
@@ -435,7 +435,7 @@
       <SDLCheck>true</SDLCheck>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalOptions>/Zm200 %(AdditionalOptions)</AdditionalOptions>
+      
       <BuildStlModules>false</BuildStlModules>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
@@ -471,7 +471,7 @@
       <SDLCheck>true</SDLCheck>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalOptions>/Zm200 %(AdditionalOptions)</AdditionalOptions>
+      
       <BuildStlModules>false</BuildStlModules>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
@@ -506,7 +506,7 @@
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <PrecompiledHeaderFile>core/stdafx.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalOptions>/Zm200 %(AdditionalOptions)</AdditionalOptions>
+      
       <BuildStlModules>false</BuildStlModules>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
@@ -540,7 +540,7 @@
       <SDLCheck>true</SDLCheck>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalOptions>/Zm200 %(AdditionalOptions)</AdditionalOptions>
+      
       <BuildStlModules>false</BuildStlModules>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
@@ -575,7 +575,7 @@
       <SDLCheck>true</SDLCheck>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalOptions>/Zm200 %(AdditionalOptions)</AdditionalOptions>
+      
       <BuildStlModules>false</BuildStlModules>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
@@ -608,7 +608,7 @@
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <PrecompiledHeaderFile>core/stdafx.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalOptions>/Zm200 %(AdditionalOptions)</AdditionalOptions>
+      
       <BuildStlModules>false</BuildStlModules>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
@@ -642,7 +642,7 @@
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <PrecompiledHeaderFile>core/stdafx.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalOptions>/Zm200 %(AdditionalOptions)</AdditionalOptions>
+      
       <BuildStlModules>false</BuildStlModules>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
