@@ -475,7 +475,7 @@ namespace addin
 		_In_ int(_cdecl* Comparison)(const void*, const void*))
 	{
 		// Sort the source array
-		qsort(Source, cSource, sizeof T, Comparison);
+		qsort(Source, cSource, sizeof(T), Comparison);
 
 		// Append any entries in the source not already in the target to the target
 		for (ULONG i = 0; i < cSource; i++)
