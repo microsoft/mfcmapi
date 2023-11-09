@@ -264,6 +264,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <SDLCheck>true</SDLCheck>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -271,7 +272,6 @@
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <PrecompiledHeaderFile>core/stdafx.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      
       <BuildStlModules>false</BuildStlModules>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
@@ -301,6 +301,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <SDLCheck>true</SDLCheck>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -308,7 +309,6 @@
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <PrecompiledHeaderFile>core/stdafx.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      
       <BuildStlModules>false</BuildStlModules>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
@@ -333,12 +333,12 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <SDLCheck>true</SDLCheck>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      
       <BuildStlModules>false</BuildStlModules>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
@@ -368,12 +368,12 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <SDLCheck>true</SDLCheck>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      
       <BuildStlModules>false</BuildStlModules>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
@@ -404,7 +404,6 @@
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <PrecompiledHeaderFile>core/stdafx.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      
       <BuildStlModules>false</BuildStlModules>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
@@ -436,11 +435,11 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <EnablePREfast>true</EnablePREfast>
       <SDLCheck>true</SDLCheck>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      
       <BuildStlModules>false</BuildStlModules>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
@@ -473,11 +472,11 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <EnablePREfast>true</EnablePREfast>
       <SDLCheck>true</SDLCheck>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      
       <BuildStlModules>false</BuildStlModules>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
@@ -513,7 +512,6 @@
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <PrecompiledHeaderFile>core/stdafx.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      
       <BuildStlModules>false</BuildStlModules>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
@@ -544,11 +542,11 @@
       <PrecompiledHeaderFile>core/stdafx.h</PrecompiledHeaderFile>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <EnablePREfast>true</EnablePREfast>
       <SDLCheck>true</SDLCheck>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      
       <BuildStlModules>false</BuildStlModules>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
@@ -579,6 +577,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <EnablePREfast>true</EnablePREfast>
       <SDLCheck>true</SDLCheck>
       <WholeProgramOptimization>false</WholeProgramOptimization>
@@ -652,7 +651,6 @@
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <PrecompiledHeaderFile>core/stdafx.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      
       <BuildStlModules>false</BuildStlModules>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
