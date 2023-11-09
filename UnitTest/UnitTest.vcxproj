@@ -390,7 +390,6 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <PrecompiledHeaderFile>UnitTest\stdafx.h</PrecompiledHeaderFile>
-      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <AdditionalOptions>/Zm200 %(AdditionalOptions)</AdditionalOptions>
       <BuildStlModules>false</BuildStlModules>
@@ -425,7 +424,6 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <EnablePREfast>true</EnablePREfast>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <AdditionalOptions>/Zm200 %(AdditionalOptions)</AdditionalOptions>
       <BuildStlModules>false</BuildStlModules>
@@ -458,7 +456,6 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <EnablePREfast>true</EnablePREfast>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <AdditionalOptions>/Zm200 %(AdditionalOptions)</AdditionalOptions>
       <BuildStlModules>false</BuildStlModules>
@@ -488,7 +485,6 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <PrecompiledHeaderFile>UnitTest\stdafx.h</PrecompiledHeaderFile>
-      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <AdditionalOptions>/Zm200 %(AdditionalOptions)</AdditionalOptions>
       <BuildStlModules>false</BuildStlModules>
@@ -522,7 +518,6 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <EnablePREfast>true</EnablePREfast>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <AdditionalOptions>/Zm200 %(AdditionalOptions)</AdditionalOptions>
       <BuildStlModules>false</BuildStlModules>
@@ -557,7 +552,6 @@
       <PrecompiledHeaderFile>UnitTest\stdafx.h</PrecompiledHeaderFile>
       <EnablePREfast>true</EnablePREfast>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <AdditionalOptions>/Zm200 %(AdditionalOptions)</AdditionalOptions>
       <BuildStlModules>false</BuildStlModules>
@@ -579,7 +573,6 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Unicode|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)\include;$(VCInstallDir)UnitTest\include;$(WindowsSdkDir)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
@@ -610,7 +603,6 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Unicode|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)\include;$(VCInstallDir)UnitTest\include;$(WindowsSdkDir)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;NO_WARN_MBCS_MFC_DEPRECATION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
