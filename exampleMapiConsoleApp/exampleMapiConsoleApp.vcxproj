@@ -266,6 +266,8 @@
       <AdditionalOptions>/safeseh %(AdditionalOptions)</AdditionalOptions>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
+      <SwapRunFromNET>true</SwapRunFromNET>
+      <SetChecksum>true</SetChecksum>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <CETCompat>true</CETCompat>
@@ -300,6 +302,8 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
+      <SwapRunFromNET>true</SwapRunFromNET>
+      <SetChecksum>true</SetChecksum>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <CETCompat>true</CETCompat>
@@ -332,6 +336,8 @@
       <AdditionalOptions>/safeseh %(AdditionalOptions)</AdditionalOptions>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
+      <SwapRunFromNET>true</SwapRunFromNET>
+      <SetChecksum>true</SetChecksum>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <CETCompat>true</CETCompat>
@@ -364,6 +370,8 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
+      <SwapRunFromNET>true</SwapRunFromNET>
+      <SetChecksum>true</SetChecksum>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <CETCompat>true</CETCompat>
@@ -396,6 +404,7 @@
       <AdditionalOptions>/safeseh %(AdditionalOptions)</AdditionalOptions>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SwapRunFromNET>true</SwapRunFromNET>
       <CETCompat>true</CETCompat>
     </Link>
     <Lib>
@@ -430,6 +439,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
+      <SwapRunFromNET>true</SwapRunFromNET>
       <CETCompat>true</CETCompat>
     </Link>
     <Lib>
@@ -464,6 +474,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
+      <SwapRunFromNET>true</SwapRunFromNET>
       <CETCompat>true</CETCompat>
     </Link>
     <Lib>
@@ -494,6 +505,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
+      <SwapRunFromNET>true</SwapRunFromNET>
       <CETCompat>true</CETCompat>
     </Link>
     <Lib>
@@ -528,6 +540,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
+      <SwapRunFromNET>true</SwapRunFromNET>
       <CETCompat>true</CETCompat>
     </Link>
     <Lib>
@@ -560,6 +573,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
+      <SwapRunFromNET>true</SwapRunFromNET>
       <CETCompat>true</CETCompat>
     </Link>
     <Lib>
@@ -590,6 +604,7 @@
       <AdditionalOptions>/safeseh %(AdditionalOptions)</AdditionalOptions>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
+      <SwapRunFromNET>true</SwapRunFromNET>
       <CETCompat>true</CETCompat>
     </Link>
     <Lib>
@@ -621,6 +636,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
+      <SwapRunFromNET>true</SwapRunFromNET>
       <CETCompat>true</CETCompat>
     </Link>
     <Lib>
