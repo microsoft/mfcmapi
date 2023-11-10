@@ -202,7 +202,11 @@ void DoNamedProps(_In_opt_ LPMAPISESSION lpSession, _In_opt_ LPMDB lpMDB)
 
 	// Print the name of the profile and the parsed store entry-id so we can tell which mailbox this is
 	const auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-	WriteOutput(fOut, L"Timestamp: %hs\n", ctime(&now));
+	const size_t TIMESIZE = 26;
+	wchar_t buf[TIMESIZE];
+
+	WC_W32_S(_wctime_s(buf, TIMESIZE, &now));
+	WriteOutput(fOut, L"Timestamp: %ws\n", buf);
 	WriteOutput(fOut, L"Profile Name: %ws\n", mapi::GetProfileName(lpSession).c_str());
 	LPSPropValue lpStoreEntryId = nullptr;
 	const auto result = WC_H(HrGetOneProp(lpMDB, PR_STORE_ENTRYID, &lpStoreEntryId));
