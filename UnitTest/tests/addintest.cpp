@@ -6,10 +6,10 @@
 namespace addin
 {
 	// imports for testing
-	int _cdecl compareTypes(_In_ const void* a1, _In_ const void* a2) noexcept;
-	int _cdecl compareTags(_In_ const void* a1, _In_ const void* a2) noexcept;
-	int _cdecl compareNameID(_In_ const void* a1, _In_ const void* a2) noexcept;
-	int _cdecl compareSmartViewParser(_In_ const void* a1, _In_ const void* a2) noexcept;
+	int _cdecl compareTypes(_In_ void* /*pvlocale*/, _In_ const void* a1, _In_ const void* a2) noexcept;
+	int _cdecl compareTags(_In_ void* /*pvlocale*/, _In_ const void* a1, _In_ const void* a2) noexcept;
+	int _cdecl compareNameID(_In_ void* /*pvlocale*/, _In_ const void* a1, _In_ const void* a2) noexcept;
+	int _cdecl compareSmartViewParser(_In_ void* /*pvlocale*/, _In_ const void* a1, _In_ const void* a2) noexcept;
 
 	std::wstring AddInStructTypeToString(parserType parser);
 
@@ -23,24 +23,24 @@ namespace addintest
 {
 	int _cdecl testCompareTypes(_In_ const NAME_ARRAY_ENTRY& a1, _In_ const NAME_ARRAY_ENTRY& a2) noexcept
 	{
-		return addin::compareTypes(reinterpret_cast<LPCVOID>(&a1), reinterpret_cast<LPCVOID>(&a2));
+		return addin::compareTypes(nullptr, reinterpret_cast<LPCVOID>(&a1), reinterpret_cast<LPCVOID>(&a2));
 	}
 
 	int _cdecl testCompareTags(_In_ const NAME_ARRAY_ENTRY_V2& a1, _In_ const NAME_ARRAY_ENTRY_V2& a2) noexcept
 	{
-		return addin::compareTags(reinterpret_cast<LPCVOID>(&a1), reinterpret_cast<LPCVOID>(&a2));
+		return addin::compareTags(nullptr, reinterpret_cast<LPCVOID>(&a1), reinterpret_cast<LPCVOID>(&a2));
 	}
 
 	int _cdecl testCompareNameID(_In_ const NAMEID_ARRAY_ENTRY& a1, _In_ const NAMEID_ARRAY_ENTRY& a2) noexcept
 	{
-		return addin::compareNameID(reinterpret_cast<LPCVOID>(&a1), reinterpret_cast<LPCVOID>(&a2));
+		return addin::compareNameID(nullptr, reinterpret_cast<LPCVOID>(&a1), reinterpret_cast<LPCVOID>(&a2));
 	}
 
 	int _cdecl testCompareSmartViewParser(
 		_In_ const SMARTVIEW_PARSER_ARRAY_ENTRY& a1,
 		_In_ const SMARTVIEW_PARSER_ARRAY_ENTRY& a2) noexcept
 	{
-		return addin::compareSmartViewParser(reinterpret_cast<LPCVOID>(&a1), reinterpret_cast<LPCVOID>(&a2));
+		return addin::compareSmartViewParser(nullptr, reinterpret_cast<LPCVOID>(&a1), reinterpret_cast<LPCVOID>(&a2));
 	}
 
 	TEST_CLASS(addinTest)
