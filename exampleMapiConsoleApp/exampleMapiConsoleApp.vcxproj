@@ -262,7 +262,6 @@
       <SetChecksum>true</SetChecksum>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <CETCompat>true</CETCompat>
     </Link>
@@ -296,7 +295,6 @@
       <SetChecksum>true</SetChecksum>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <CETCompat>true</CETCompat>
     </Link>
@@ -331,7 +329,6 @@
       <SetChecksum>true</SetChecksum>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <CETCompat>true</CETCompat>
     </Link>
@@ -365,7 +362,6 @@
       <SetChecksum>true</SetChecksum>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <CETCompat>true</CETCompat>
     </Link>
@@ -397,7 +393,6 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SwapRunFromNET>true</SwapRunFromNET>
-      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <CETCompat>true</CETCompat>
     </Link>
@@ -430,7 +425,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
-      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <CETCompat>true</CETCompat>
     </Link>
@@ -464,7 +458,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
-      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <CETCompat>true</CETCompat>
     </Link>
@@ -495,7 +488,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
-      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <CETCompat>true</CETCompat>
     </Link>
@@ -528,7 +520,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
-      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <CETCompat>true</CETCompat>
     </Link>
@@ -560,7 +551,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
-      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <CETCompat>true</CETCompat>
     </Link>
@@ -592,7 +582,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
-      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <CETCompat>true</CETCompat>
     </Link>
@@ -623,7 +612,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
-      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <CETCompat>true</CETCompat>
     </Link>
