@@ -421,7 +421,6 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/safeseh %(AdditionalOptions)</AdditionalOptions>
-      <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
@@ -453,8 +452,6 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/safeseh %(AdditionalOptions)</AdditionalOptions>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
@@ -515,8 +512,6 @@
       <PreprocessorDefinitions>_AFXDLL;_DEBUG;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
@@ -546,8 +541,6 @@
       <PreprocessorDefinitions>_AFXDLL;_DEBUG;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>

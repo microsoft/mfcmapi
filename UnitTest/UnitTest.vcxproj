@@ -579,8 +579,6 @@
       <AdditionalDependencies>user32.lib;shell32.lib;advapi32.lib;version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
-      <EnableCOMDATFolding>false</EnableCOMDATFolding>
-      <OptimizeReferences>false</OptimizeReferences>
       <Profile>true</Profile>
       <AdditionalLibraryDirectories>$(VCInstallDir)Auxiliary\VS\UnitTest\lib;$(WindowsSdkDir)\lib;$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
@@ -617,8 +615,6 @@
       <AdditionalDependencies>user32.lib;shell32.lib;advapi32.lib;version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
-      <EnableCOMDATFolding>false</EnableCOMDATFolding>
-      <OptimizeReferences>false</OptimizeReferences>
       <Profile>true</Profile>
       <AdditionalLibraryDirectories>$(VCInstallDir)Auxiliary\VS\UnitTest\lib;$(WindowsSdkDir)\lib;$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
