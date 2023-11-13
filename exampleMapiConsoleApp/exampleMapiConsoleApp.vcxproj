@@ -262,14 +262,10 @@
       <SetChecksum>true</SetChecksum>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <CETCompat>true</CETCompat>
-      <TargetMachine>NotSet</TargetMachine>
     </Link>
-    <Lib>
-      <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\mapistub\$(Configuration);</AdditionalLibraryDirectories>
-    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -300,13 +296,10 @@
       <SetChecksum>true</SetChecksum>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <CETCompat>true</CETCompat>
-      <TargetMachine>NotSet</TargetMachine>
     </Link>
-    <Lib>
-      <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\mapistub\$(Configuration);</AdditionalLibraryDirectories>
-    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_Unicode|Win32'">
     <ClCompile>
@@ -338,14 +331,10 @@
       <SetChecksum>true</SetChecksum>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <CETCompat>true</CETCompat>
-      <TargetMachine>NotSet</TargetMachine>
     </Link>
-    <Lib>
-      <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\mapistub\$(Configuration);</AdditionalLibraryDirectories>
-    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_Unicode|x64'">
     <ClCompile>
@@ -376,13 +365,10 @@
       <SetChecksum>true</SetChecksum>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <CETCompat>true</CETCompat>
-      <TargetMachine>NotSet</TargetMachine>
     </Link>
-    <Lib>
-      <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\mapistub\$(Configuration);</AdditionalLibraryDirectories>
-    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -411,15 +397,10 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SwapRunFromNET>true</SwapRunFromNET>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <CETCompat>true</CETCompat>
-      <TargetMachine>NotSet</TargetMachine>
     </Link>
-    <Lib>
-      <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
-      <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\mapistub\$(Configuration);</AdditionalLibraryDirectories>
-    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Prefast|Win32'">
     <ClCompile>
@@ -449,14 +430,10 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <CETCompat>true</CETCompat>
-      <TargetMachine>NotSet</TargetMachine>
     </Link>
-    <Lib>
-      <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\mapistub\$(Configuration);</AdditionalLibraryDirectories>
-    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Prefast_Unicode|Win32'">
     <ClCompile>
@@ -487,14 +464,10 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <CETCompat>true</CETCompat>
-      <TargetMachine>NotSet</TargetMachine>
     </Link>
-    <Lib>
-      <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\mapistub\$(Configuration);</AdditionalLibraryDirectories>
-    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -522,14 +495,10 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <CETCompat>true</CETCompat>
-      <TargetMachine>NotSet</TargetMachine>
     </Link>
-    <Lib>
-      <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
-      <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\mapistub\$(Configuration);</AdditionalLibraryDirectories>
-    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Prefast|x64'">
     <ClCompile>
@@ -559,13 +528,10 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <CETCompat>true</CETCompat>
-      <TargetMachine>NotSet</TargetMachine>
     </Link>
-    <Lib>
-      <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\mapistub\$(Configuration);</AdditionalLibraryDirectories>
-    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Prefast_Unicode|x64'">
     <ClCompile>
@@ -594,13 +560,10 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <CETCompat>true</CETCompat>
-      <TargetMachine>NotSet</TargetMachine>
     </Link>
-    <Lib>
-      <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\mapistub\$(Configuration);</AdditionalLibraryDirectories>
-    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Unicode|Win32'">
     <ClCompile>
@@ -629,14 +592,10 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <CETCompat>true</CETCompat>
-      <TargetMachine>NotSet</TargetMachine>
     </Link>
-    <Lib>
-      <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
-      <TargetMachine>MachineX86</TargetMachine>
-    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Unicode|x64'">
     <ClCompile>
@@ -664,14 +623,10 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <CETCompat>true</CETCompat>
-      <TargetMachine>NotSet</TargetMachine>
     </Link>
-    <Lib>
-      <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
-      <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\mapistub\$(Configuration);</AdditionalLibraryDirectories>
-    </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="exampleMapiConsoleApp.cpp" />
