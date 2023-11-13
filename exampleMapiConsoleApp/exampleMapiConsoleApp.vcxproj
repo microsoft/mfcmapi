@@ -202,17 +202,12 @@
     <OutDir>$(SolutionDir)bin\$(Platform)\exampleMapiConsoleApp\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)obj\$(Platform)\exampleMapiConsoleApp\$(Configuration)\</IntDir>
     <IncludePath>$(VC_IncludePath);$(WindowsSdk_IncludePath);$(SolutionDir)\</IncludePath>
-    <LinkIncremental>false</LinkIncremental>
     <CodeAnalysisRuleSet>BasicCorrectnessRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Unicode|Win32'">
-    <LinkIncremental>true</LinkIncremental>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LinkIncremental>true</LinkIncremental>
-  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Unicode|Win32'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Prefast|Win32'">
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <CodeAnalysisRuleSet>..\.gdn\i\nuget\Microsoft.Security.CodeAnalysis.PREfast.Cli.win-x64.1.6.0\tools\Sdl.Recommended.Warning.ruleset</CodeAnalysisRuleSet>
@@ -223,12 +218,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Unicode|Win32'">
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Unicode|x64'">
-    <LinkIncremental>true</LinkIncremental>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LinkIncremental>true</LinkIncremental>
-  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Unicode|x64'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Prefast|x64'">
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <CodeAnalysisRuleSet>..\.gdn\i\nuget\Microsoft.Security.CodeAnalysis.PREfast.Cli.win-x64.1.6.0\tools\Sdl.Recommended.Warning.ruleset</CodeAnalysisRuleSet>
@@ -273,6 +264,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <CETCompat>true</CETCompat>
+      <TargetMachine>NotSet</TargetMachine>
     </Link>
     <Lib>
       <TargetMachine>MachineX86</TargetMachine>
@@ -310,6 +302,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <CETCompat>true</CETCompat>
+      <TargetMachine>NotSet</TargetMachine>
     </Link>
     <Lib>
       <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\mapistub\$(Configuration);</AdditionalLibraryDirectories>
@@ -347,6 +340,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <CETCompat>true</CETCompat>
+      <TargetMachine>NotSet</TargetMachine>
     </Link>
     <Lib>
       <TargetMachine>MachineX86</TargetMachine>
@@ -384,6 +378,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <CETCompat>true</CETCompat>
+      <TargetMachine>NotSet</TargetMachine>
     </Link>
     <Lib>
       <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\mapistub\$(Configuration);</AdditionalLibraryDirectories>
@@ -418,6 +413,7 @@
       <SwapRunFromNET>true</SwapRunFromNET>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <CETCompat>true</CETCompat>
+      <TargetMachine>NotSet</TargetMachine>
     </Link>
     <Lib>
       <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
@@ -455,6 +451,7 @@
       <SwapRunFromNET>true</SwapRunFromNET>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <CETCompat>true</CETCompat>
+      <TargetMachine>NotSet</TargetMachine>
     </Link>
     <Lib>
       <TargetMachine>MachineX86</TargetMachine>
@@ -492,6 +489,7 @@
       <SwapRunFromNET>true</SwapRunFromNET>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <CETCompat>true</CETCompat>
+      <TargetMachine>NotSet</TargetMachine>
     </Link>
     <Lib>
       <TargetMachine>MachineX86</TargetMachine>
@@ -526,6 +524,7 @@
       <SwapRunFromNET>true</SwapRunFromNET>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <CETCompat>true</CETCompat>
+      <TargetMachine>NotSet</TargetMachine>
     </Link>
     <Lib>
       <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
@@ -562,6 +561,7 @@
       <SwapRunFromNET>true</SwapRunFromNET>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <CETCompat>true</CETCompat>
+      <TargetMachine>NotSet</TargetMachine>
     </Link>
     <Lib>
       <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\mapistub\$(Configuration);</AdditionalLibraryDirectories>
@@ -596,6 +596,7 @@
       <SwapRunFromNET>true</SwapRunFromNET>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <CETCompat>true</CETCompat>
+      <TargetMachine>NotSet</TargetMachine>
     </Link>
     <Lib>
       <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\mapistub\$(Configuration);</AdditionalLibraryDirectories>
@@ -630,6 +631,7 @@
       <SwapRunFromNET>true</SwapRunFromNET>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <CETCompat>true</CETCompat>
+      <TargetMachine>NotSet</TargetMachine>
     </Link>
     <Lib>
       <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
@@ -664,13 +666,13 @@
       <SwapRunFromNET>true</SwapRunFromNET>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <CETCompat>true</CETCompat>
+      <TargetMachine>NotSet</TargetMachine>
     </Link>
     <Lib>
       <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
       <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\mapistub\$(Configuration);</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
-
   <ItemGroup>
     <ClCompile Include="exampleMapiConsoleApp.cpp" />
   </ItemGroup>
