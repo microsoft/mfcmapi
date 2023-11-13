@@ -402,7 +402,7 @@ namespace addin
 	}
 
 	// Compare type arrays.
-	int _cdecl compareTypes(_In_ const void* a1, _In_ const void* a2) noexcept
+	int _cdecl compareTypes(_In_ void* /*pvlocale*/, _In_ const void* a1, _In_ const void* a2) noexcept
 	{
 		const auto lpType1 = static_cast<const NAME_ARRAY_ENTRY*>(a1);
 		const auto lpType2 = static_cast<const NAME_ARRAY_ENTRY*>(a2);
@@ -417,7 +417,7 @@ namespace addin
 	}
 
 	// Compare tag arrays. Pay no attention to sort order - we'll sort on sort order during output.
-	int _cdecl compareTags(_In_ const void* a1, _In_ const void* a2) noexcept
+	int _cdecl compareTags(_In_ void* /*pvlocale*/, _In_ const void* a1, _In_ const void* a2) noexcept
 	{
 		const auto lpTag1 = static_cast<const NAME_ARRAY_ENTRY_V2*>(a1);
 		const auto lpTag2 = static_cast<const NAME_ARRAY_ENTRY_V2*>(a2);
@@ -431,7 +431,7 @@ namespace addin
 		return -1;
 	}
 
-	int _cdecl compareNameID(_In_ const void* a1, _In_ const void* a2) noexcept
+	int _cdecl compareNameID(_In_ void* /*pvlocale*/, _In_ const void* a1, _In_ const void* a2) noexcept
 	{
 		const auto lpID1 = static_cast<const NAMEID_ARRAY_ENTRY*>(a1);
 		const auto lpID2 = static_cast<const NAMEID_ARRAY_ENTRY*>(a2);
@@ -447,7 +447,7 @@ namespace addin
 		return -1;
 	}
 
-	int _cdecl compareSmartViewParser(_In_ const void* a1, _In_ const void* a2) noexcept
+	int _cdecl compareSmartViewParser(_In_ void* /*pvlocale*/, _In_ const void* a1, _In_ const void* a2) noexcept
 	{
 		const auto lpParser1 = static_cast<const SMARTVIEW_PARSER_ARRAY_ENTRY*>(a1);
 		const auto lpParser2 = static_cast<const SMARTVIEW_PARSER_ARRAY_ENTRY*>(a2);
@@ -472,16 +472,17 @@ namespace addin
 		std::vector<T>& Target,
 		_Inout_bytecap_x_(cSource* width) T* Source,
 		_In_ size_t cSource,
-		_In_ int(_cdecl* Comparison)(const void*, const void*))
+		_In_ _CoreCrtSecureSearchSortCompareFunction Comparison)
 	{
 		// Sort the source array
-		qsort(Source, cSource, sizeof T, Comparison);
+		qsort_s(Source, cSource, sizeof(T), Comparison, nullptr);
 
 		// Append any entries in the source not already in the target to the target
 		for (ULONG i = 0; i < cSource; i++)
 		{
-			if (end(Target) ==
-				find_if(begin(Target), end(Target), [&](T& entry) { return Comparison(&Source[i], &entry) == 0; }))
+			if (end(Target) == find_if(begin(Target), end(Target), [&](T& entry) {
+					return Comparison(nullptr, &Source[i], &entry) == 0;
+				}))
 			{
 				Target.push_back(Source[i]);
 			}
@@ -489,7 +490,7 @@ namespace addin
 
 		// Stable sort the resulting array
 		std::stable_sort(begin(Target), end(Target), [Comparison](const T& a, const T& b) -> bool {
-			return Comparison(&a, &b) < 0;
+			return Comparison(nullptr, &a, &b) < 0;
 		});
 	}
 
