@@ -160,9 +160,6 @@ enum __NonPropFlag
 // Therefore, we need to skip it when enum through sf* special folders.
 #define PR_ADDITIONAL_REN_ENTRYIDS PROP_TAG(PT_MV_BINARY, 0x36D8)
 
-// http://msdn2.microsoft.com/en-us/library/bb820966.aspx
-#define PR_PROFILE_SERVER_FULL_VERSION PROP_TAG(PT_BINARY, pidProfileMin + 0x3b)
-
 // [MS-NSPI].pdf
 #define DT_CONTAINER ((ULONG) 0x00000100)
 #define DT_TEMPLATE ((ULONG) 0x00000101)
@@ -275,9 +272,6 @@ enum Gender
 #define TDIP_Active 0x00000001 // Object is time flagged
 #define TDIP_ActiveRecip \
 	0x00000008 // SHOULD only be set on a draft message object, and means that the object is flagged for recipients.
-
-// [MS-OXORule].pdf
-#define PR_RULE_MSG_STATE PROP_TAG(PT_LONG, 0x65e9)
 
 // [MS-OXOSRCH].pdf
 #define PR_WB_SF_STORAGE_TYPE PROP_TAG(PT_LONG, 0x6846)
@@ -748,8 +742,6 @@ enum iTypeEnum
 #define PR_CONTAB_STORE_SUPPORT_MASKS PROP_TAG(PT_MV_LONG, 0x6621)
 #define PR_DELEGATE_FLAGS PROP_TAG(PT_MV_LONG, 0x686b)
 
-#define PR_EXTENDED_RULE_MSG_CONDITION PROP_TAG(PT_BINARY, 0x0E9A)
-
 // [MS-OXOCNTC].pdf
 #define dispidDLOneOffMembers 0x8054
 #define dispidDLMembers 0x8055
@@ -846,7 +838,6 @@ enum NBI
 #define PR_NT_USER_NAME_W CHANGE_PROP_TYPE(PR_NT_USER_NAME, PT_UNICODE)
 
 #define PR_PROFILE_OFFLINE_STORE_PATH_A PROP_TAG(PT_STRING8, 0x6610)
-#define PR_PROFILE_OFFLINE_STORE_PATH_W PROP_TAG(PT_UNICODE, 0x6610)
 
 // Documented via widely shipped mapisvc.inf files.
 #define CONFIG_USE_SMTP_ADDRESSES ((ULONG) 0x00000040)
@@ -993,7 +984,6 @@ enum CCSFLAGS
 
 #define PR_ROAMING_BINARYSTREAM PROP_TAG(PT_BINARY, 0x7C09)
 
-#define PR_PROHIBIT_RECEIVE_QUOTA PROP_TAG(PT_LONG, 0x666A)
 #define PR_QUOTA_WARNING PROP_TAG(PT_LONG, 0x341A)
 #define PR_QUOTA_SEND PROP_TAG(PT_LONG, 0x341B)
 #define PR_QUOTA_RECEIVE PROP_TAG(PT_LONG, 0x341C)
@@ -1054,24 +1044,13 @@ enum WLinkType
 #define dispidConvActionMoveFolderEid 0x85C6
 #define dispidConvActionMoveStoreEid 0x85C7
 
-#define PR_RETENTION_FLAGS PROP_TAG(PT_LONG, 0x301D)
-#define RETENTION_FLAGS_EXPLICIT ((ULONG) 0x00000001)
-#define RETENTION_FLAGS_TAG_CHANGED ((ULONG) 0x00000002)
-#define RETENTION_FLAGS_AUTOTAG ((ULONG) 0x00000004)
-#define RETENTION_FLAGS_PERSONAL ((ULONG) 0x00000008)
-#define RETENTION_FLAGS_EXPLICIT_ARCHIVE ((ULONG) 0x00000010)
 #define RETENTION_FLAGS_KEEP_IN_PLACE ((ULONG) 0x00000020)
 #define RETENTION_FLAGS_SYSTEM_DATA ((ULONG) 0X00000040)
 #define RETENTION_FLAGS_NEEDS_RESCAN ((ULONG) 0X00000080)
 #define RETENTION_FLAGS_PENDING_RESCAN ((ULONG) 0X00000100)
 
-#define PR_SORT_POSITION PROP_TAG(PT_BINARY, 0x3020)
-#define PR_SORT_PARENTID PROP_TAG(PT_BINARY, 0x3021)
-
 #define PR_PROFILE_MDB_DN PROP_TAG(PT_STRING8, 0x7CFF)
 #define PR_FORCE_USE_ENTRYID_SERVER PROP_TAG(PT_BOOLEAN, 0x7CFE)
-
-#define PR_PROFILE_USER_SMTP_EMAIL_ADDRESS_W PROP_TAG(PT_UNICODE, 0x6641)
 
 #define PR_EMS_AB_THUMBNAIL_PHOTO PROP_TAG(PT_BINARY, 0x8C9E)
 
@@ -1122,22 +1101,6 @@ enum WLinkType
 // http://blogs.msdn.com/stephen_griffin/archive/2007/03/19/mapi-and-exchange-2007.aspx
 #define CONNECT_IGNORE_NO_PF ((ULONG) 0x8000)
 
-#if !defined frightsFreeBusySimple
-#define frightsFreeBusySimple 0x0000800L
-#endif // frightsFreeBusySimple
-
-#if !defined frightsFreeBusyDetailed
-#define frightsFreeBusyDetailed 0x0001000L
-#endif // frightsFreeBusyDetailed
-
-#if !defined fsdrightFreeBusySimple
-#define fsdrightFreeBusySimple 0x00000001
-#endif // fsdrightFreeBusySimple
-
-#if !defined fsdrightFreeBusyDetailed
-#define fsdrightFreeBusyDetailed 0x00000002
-#endif // fsdrightFreeBusyDetailed
-
 #define MAPI_NATIVE_BODY 0x00010000
 
 /* out param type infomation for WrapCompressedRTFStreamEx */
@@ -1171,10 +1134,6 @@ constexpr WORD TZRULE_FLAG_EFFECTIVE_TZREG = 0x0002;
 #define INSP_ONEOFFFLAGS 0xD000000
 #define INSP_PROPDEFINITION 0x2000000
 
-#if !defined ACLTABLE_FREEBUSY
-#define ACLTABLE_FREEBUSY ((ULONG) 0x00000002)
-#endif // ACLTABLE_FREEBUSY
-
 #define TABLE_SORT_CATEG_MAX ((ULONG) 0x00000004)
 #define TABLE_SORT_CATEG_MIN ((ULONG) 0x00000008)
 
@@ -1188,10 +1147,6 @@ struct INDEX_SEARCH_PUSHER_PROCESS
 };
 
 #define MAPI_FORCE_ACCESS 0x00080000
-
-#ifndef AB_UNICODEUI
-#define AB_UNICODEUI ((ULONG) 0x00000040)
-#endif
 
 // This declaration is missing from the MAPI headers
 STDAPI STDAPICALLTYPE LaunchWizard(

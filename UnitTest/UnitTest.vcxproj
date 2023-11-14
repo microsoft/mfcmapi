@@ -215,7 +215,7 @@
   <PropertyGroup>
     <OutDir>$(SolutionDir)bin\$(Platform)\UnitTest\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)obj\$(Platform)\UnitTest\$(Configuration)\</IntDir>
-    <IncludePath>$(VC_IncludePath);$(WindowsSdk_IncludePath);$(VCInstallDir)Auxiliary\VS\UnitTest\include</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSdk_IncludePath);$(VCInstallDir)Auxiliary\VS\UnitTest\include;$(SolutionDir)mapistub\include</IncludePath>
     <LinkIncremental>false</LinkIncremental>
     <CodeAnalysisRuleSet>BasicCorrectnessRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>

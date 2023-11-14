@@ -1,1 +1,0 @@
-Only including MAPI and EDK headers here.

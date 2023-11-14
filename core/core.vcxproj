@@ -213,7 +213,7 @@
   <PropertyGroup>
     <OutDir>$(SolutionDir)bin\$(Platform)\core\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)obj\$(Platform)\core\$(Configuration)\</IntDir>
-    <IncludePath>$(VC_IncludePath);$(WindowsSdk_IncludePath);$(SolutionDir)\</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir);$(SolutionDir)mapistub\include</IncludePath>
     <LinkIncremental>false</LinkIncremental>
     <CodeAnalysisRuleSet>BasicCorrectnessRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
