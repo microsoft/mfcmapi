@@ -17,7 +17,7 @@ Badges:
 [![Release](https://dev.azure.com/mrmapi/MFCMAPI/_apis/build/status/Release/MFCMAPI%20Build?branchName=main)](https://dev.azure.com/mrmapi/MFCMAPI/_build/latest?definitionId=13&branchName=main)  
 [![continuous-integration](https://github.com/stephenegriffin/mfcmapi/actions/workflows/github-ci.yml/badge.svg)](https://github.com/stephenegriffin/mfcmapi/actions/workflows/github-ci.yml)  
 [![CodeQL](https://github.com/stephenegriffin/mfcmapi/actions/workflows/codeql.yml/badge.svg)](https://github.com/stephenegriffin/mfcmapi/actions/workflows/codeql.yml)  
-[![Clang-format](https://github.com/stephenegriffin/mfcmapi/actions/workflows/clang.yml/badge.svg)](https://github.com/stephenegriffin/mfcmapi/actions/workflows/clang.yml)  
+[![Clang-format](https://github.com/microsoft/mfcmapi/actions/workflows/clang.yml/badge.svg)](https://github.com/stephenegriffin/mfcmapi/actions/workflows/clang.yml)  
 [![Dependency Review](https://github.com/stephenegriffin/mfcmapi/actions/workflows/dependency-review.yml/badge.svg)](https://github.com/stephenegriffin/mfcmapi/actions/workflows/dependency-review.yml)  
 [![OpenSSF
 Scorecard](https://api.securityscorecards.dev/projects/github.com/stephenegriffin/mfcmapi/badge)](https://api.securityscorecards.dev/projects/github.com/stephenegriffin/mfcmapi)  
