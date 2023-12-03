@@ -2559,7 +2559,7 @@ static NAME_ARRAY_ENTRY_V2 g_PropTagArray[] = {
 	{ 0x6723000b, 0x1, L"PR_PF_DISALLOW_MDB_WIDE_EXPIRY" },
 	{ 0x674000fb, 0x2, L"PidTagSentMailSvrEID" },
 	{ 0x674000fb, 0x1, L"ptagSentMailSvrEID" },
-	{ 0x6741000b, 0x3, L"PR_DAM_ORIG_MSG_SVREID" },
+	{ 0x674100fb, 0x3, L"PR_DAM_ORIG_MSG_SVREID" },
 	{ 0x674100fb, 0x2, L"PidTagDeferredActionMessageOriginalEntryId" },
 	{ 0x674100fb, 0x1, L"ptagDamOrgMsgSvrEID" },
 	{ 0x67460003, 0x2, L"PR_MIME_SIZE" },
