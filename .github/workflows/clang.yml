@@ -18,7 +18,7 @@ jobs:
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
 
       - name: clang-format (w/ diff)
         uses: egor-tensin/clang-format@5ee263e007725df60d02ef2e6fd3d0dd92f048a0 # v1.0.1
