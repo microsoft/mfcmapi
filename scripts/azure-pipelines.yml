@@ -26,11 +26,11 @@ stages:
         configuration: Release_Unicode
         platform: x64
 
-- stage: Release
-  jobs:
-    - template: release.yml
-      parameters:
-        name: signed
-        sign: true
-        title: MFCMAPI Month Year
-        prerelease: false
+# - stage: Release
+#   jobs:
+#     - template: release.yml
+#       parameters:
+#         name: signed
+#         sign: true
+#         title: MFCMAPI Month Year
+#         prerelease: false
