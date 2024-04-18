@@ -1,5 +1,5 @@
 # MFCMAPI's 'Official' sites
-[MFCMAPI - Home](https://stephenegriffin.github.io/mfcmapi)<br/>
+[MFCMAPI - Home](https://microsoft.github.io/mfcmapi)<br/>
 [MFCMAPI | Facebook](http://www.facebook.com/MFCMAPI)<br/>
 [MFCMAPI demonstrates MAPI client code - Microsoft Support](http://web.archive.org/web/20190125181540/https://support.microsoft.com/en-us/help/291794/mfcmapi-demonstrates-mapi-client-code)<br/>
 [SGriffin's MAPI Internals](https://docs.microsoft.com/en-us/archive/blogs/stephen_griffin/)<br/>

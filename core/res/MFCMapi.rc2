@@ -1090,7 +1090,7 @@ IDS_HELPTEXTNOPROPS "Select an item to display properties."
 
 IDS_HELPTEXT "%1 Usage notes\n\
 \n\
-Visit https://github.com/stephenegriffin/mfcmapi for more information, bug reports, and the latest builds.\n\
+Visit https://github.com/microsoft/mfcmapi for more information, bug reports, and the latest builds.\n\
 For the latest blog entries, visit http://blogs.msdn.com/b/stephen_griffin/archive/tags/mfcmapi.\n\
 \n\
 Become a fan on Facebook! http://www.facebook.com/MFCMAPI.\n\
@@ -1707,7 +1707,7 @@ IDS_EDMAPIINITIALIZEFAILED "MAPIInitialize failed with error 0x%08X == %ws.\r\n\
 \r\n\
 Here are some known causes for this.\r\n\
 1 - A 64 bit version of Outlook is not installed. The 64 bit version of MFCMAPI only works with a 64 bit version of Outlook.\r\n\
-\tSee https://github.com/stephenegriffin/mfcmapifor the latest 32 bit bit build of MFCMAPI.\r\n\
+\tSee https://github.com/microsoft/mfcmapifor the latest 32 bit bit build of MFCMAPI.\r\n\
 2 - Windows Mail is registered as the Default Mail Client.\r\n\
 \tSee http://msdn.microsoft.com/en-gb/library/dd162409.aspx for information on setting the Default Mail Client."
 #else
@@ -1716,7 +1716,7 @@ IDS_EDMAPIINITIALIZEFAILED "MAPIInitialize failed with error 0x%08X == %ws.\r\n\
 Here are some known causes for this.\r\n\
 1 - No version of Extended MAPI is installed. Outlook must be installed.\r\n\
 2 - A 64 bit version of Outlook is installed. A 64 bit version of Outlook requires the 64 bit build of MFCMAPI.\r\n\
-\tSee https://github.com/stephenegriffin/mfcmapi for the latest 64 bit build of MFCMAPI.\r\n\
+\tSee https://github.com/microsoft/mfcmapi for the latest 64 bit build of MFCMAPI.\r\n\
 3 - Windows Mail is registered as the Default Mail Client.\r\n\
 \tSee http://msdn.microsoft.com/en-gb/library/dd162409.aspx for information on setting the Default Mail Client."
 IDS_EDPATHTOOLONG "Chosen path is too long (%d).\r\n\
