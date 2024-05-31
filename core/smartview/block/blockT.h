@@ -36,12 +36,12 @@ namespace smartview
 		// Usage: std::shared_ptr<blockT<T>> tmp = blockT<T>::parser<U>(parser);
 		template <typename U> static std::shared_ptr<blockT<T>> parse(const std::shared_ptr<binaryParser>& parser)
 		{
-			if (!parser->checkSize(sizeof U)) return std::make_shared<blockT<T>>();
+			if (!parser->checkSize(sizeof(U))) return std::make_shared<blockT<T>>();
 
 			const U _data = *reinterpret_cast<const U*>(parser->getAddress());
 			const auto offset = parser->getOffset();
-			parser->advance(sizeof U);
-			return create(_data, sizeof U, offset);
+			parser->advance(sizeof(U));
+			return create(_data, sizeof(U), offset);
 		}
 
 		static std::shared_ptr<blockT<T>> create(const T& _data, size_t _size, size_t _offset)
@@ -55,10 +55,10 @@ namespace smartview
 		void parse() override
 		{
 			parsed = false;
-			if (!parser->checkSize(sizeof T)) return;
+			if (!parser->checkSize(sizeof(T))) return;
 
 			data = *reinterpret_cast<const T*>(parser->getAddress());
-			parser->advance(sizeof T);
+			parser->advance(sizeof(T));
 			parsed = true;
 		};
 
