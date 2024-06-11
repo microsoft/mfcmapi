@@ -2,12 +2,15 @@
 name: github-continuous-integration
 
 on:
+  push:
+    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
   workflow_dispatch:
 
 permissions:
   contents: read
+  security-events: write
 
 jobs:
   build:
@@ -39,15 +42,51 @@ jobs:
         $path = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
         & $path\MSBuild\Current\Bin\amd64\msbuild.exe /m /p:Configuration="${{matrix.configuration}}" /p:Platform="${{matrix.platform}}" mfcmapi.sln
 
-    - name: Run tests
-      uses: microsoft/vstest-action@6ef4755ea07a3144e3da36f10d76187086eee5e6 # v1.0.0
+    - name: Find vstest.console.exe
+      run: |
+        $VSDevTestCmd = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere" -latest -prerelease -products * -find Common7\IDE\Extensions\TestPlatform\vstest.console.exe
+        if (!$VSDevTestCmd) { exit 1 }
+        echo "Using VSDevTestCmd: ${VSDevTestCmd}"
+        Add-Content $env:GITHUB_ENV "VSDevTestCmd=$VSDevTestCmd"
+
+    - name: MFCMAPI UnitTests
+      run: cmd /c "$env:VSDevTestCmd" /Parallel /EnableCodeCoverage /Logger:trx "${{github.workspace}}\\bin\\${{matrix.platform}}\\UnitTest\\${{matrix.configuration}}\\UnitTest.dll"
+
+    # - name: Upload Event File
+    #   uses: actions/upload-artifact@v4
+    #   with:
+    #     name: Event File (${{ matrix.platform }} - ${{ matrix.configuration }})
+    #     path: ${{ github.event_path }}
+ 
+    - name: Upload Test Result Files
+      uses: actions/upload-artifact@v4
+      if: always()
       with:
-        testAssembly: '**\\UnitTest.dll'
-        searchFolder: "${{ github.workspace }}\\bin\\${{matrix.platform}}\\UnitTest\\${{matrix.configuration}}"
-        runInParallel: true
-        # codeCoverageEnabled: true
+        name: Test Results (${{ matrix.platform }} - ${{ matrix.configuration }})
+        path: ${{github.workspace}}/**/TestResults/**/*
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@2e230e8fe0ad3a14a340ad0815ddb96d599d2aff # v3.25.8
       with:
         category: "/language:cpp"
+
+  publish-test-results:
+    name: "Publish Tests Results"
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      # only needed unless run with comment_mode: off
+      pull-requests: write
+    if: always()
+
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2.16.1
+        with:
+          files: "artifacts/**/*.trx"
