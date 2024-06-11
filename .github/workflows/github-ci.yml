@@ -47,17 +47,24 @@ jobs:
         Add-Content $env:GITHUB_ENV "VSDevTestCmd=$VSDevTestCmd"
 
     - name: MFCMAPI UnitTests
-      run: cmd /c "$env:VSDevTestCmd" /Platform:${{ matrix.platform }} "${{github.workspace}}\\bin\\${{matrix.platform}}\\UnitTest\\${{matrix.configuration}}\\UnitTest.dll"
-
-    # - name: Run tests
-    #   uses: microsoft/vstest-action@6ef4755ea07a3144e3da36f10d76187086eee5e6 # v1.0.0
-    #   with:
-    #     testAssembly: '**\\UnitTest.dll'
-    #     searchFolder: "${{github.workspace}}\\bin\\${{matrix.platform}}\\UnitTest\\${{matrix.configuration}}"
-    #     runInParallel: true
-    #     # codeCoverageEnabled: true
+      run: cmd /c "$env:VSDevTestCmd" /Parallel /EnableCodeCoverage /Logger:trx "${{github.workspace}}\\bin\\${{matrix.platform}}\\UnitTest\\${{matrix.configuration}}\\UnitTest.dll"
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@2e230e8fe0ad3a14a340ad0815ddb96d599d2aff # v3.25.8
       with:
         category: "/language:cpp"
+
+    - name: Upload Test Result Files
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results
+        path: ${{ github.workspace }}/**/TestResults/**/*
+        retention-days: 5
+
+    - name: Publish Test Results
+      uses: EnricoMi/publish-unit-test-result-action@v2.16.1
+      if: always()
+      with:
+        files: |
+          ${{github.workspace}}/**/*.trx
