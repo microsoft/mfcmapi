@@ -49,7 +49,7 @@ jobs:
     - name: MFCMAPI UnitTests
       run: cmd /c "$env:VSDevTestCmd" /Parallel /EnableCodeCoverage /Logger:trx "${{github.workspace}}\\bin\\${{matrix.platform}}\\UnitTest\\${{matrix.configuration}}\\UnitTest.dll"
 
-    - name: Upload
+    - name: Upload Event File
       uses: actions/upload-artifact@v4
       with:
         name: Event File (${{ matrix.platform }} - ${{ matrix.configuration }})
