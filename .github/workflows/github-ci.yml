@@ -49,22 +49,45 @@ jobs:
     - name: MFCMAPI UnitTests
       run: cmd /c "$env:VSDevTestCmd" /Parallel /EnableCodeCoverage /Logger:trx "${{github.workspace}}\\bin\\${{matrix.platform}}\\UnitTest\\${{matrix.configuration}}\\UnitTest.dll"
 
+    - name: Upload
+      uses: actions/upload-artifact@v4
+      with:
+        name: Event File
+        path: ${{ github.event_path }}
+ 
+    - name: Upload Test Result Files
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: Test Results (${{ matrix.platform }} - ${{ matrix.configuration }})
+        path: ${{github.workspace}}/**/TestResults/**/*
+
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@2e230e8fe0ad3a14a340ad0815ddb96d599d2aff # v3.25.8
       with:
         category: "/language:cpp"
 
-    - name: Upload Test Result Files
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: test-results
-        path: ${{ github.workspace }}/**/TestResults/**/*
-        retention-days: 5
+  publish-test-results:
+    name: "Publish Tests Results"
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      # only needed unless run with comment_mode: off
+      pull-requests: write
+      # only needed for private repository
+      contents: read
+      # only needed for private repository
+      issues: read
+    if: always()
 
-    - name: Publish Test Results
-      uses: EnricoMi/publish-unit-test-result-action@v2.16.1
-      if: always()
-      with:
-        files: |
-          ${{github.workspace}}/**/*.trx
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2.16.1
+        with:
+          files: "artifacts/**/*.trx"
