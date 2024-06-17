@@ -41,7 +41,7 @@
 // A bug in annotations in shobjidl.h forces us to disable 6387 to include afxwin.h
 #pragma warning(push)
 #pragma warning( \
-	disable : 6387) // Warning C6387 'argument' may be 'value': this does not adhere to the specification for the function 'function name': Lines: x, y
+		disable : 6387) // Warning C6387 'argument' may be 'value': this does not adhere to the specification for the function 'function name': Lines: x, y
 #include <afxwin.h> // MFC core and standard components
 #pragma warning(pop)
 #include <afxcmn.h> // MFC support for Windows Common Controls
