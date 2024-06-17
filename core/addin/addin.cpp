@@ -17,7 +17,7 @@
 #include <core/interpret/propTypeArray.h>
 #include <core/interpret/smartViewParsers.h>
 
-std::vector<NAME_ARRAY_ENTRY_V2> PropTagArray;
+std::vector<NAME_ARRAY_ENTRY_V2> PropTagArray    ;
 std::vector<NAME_ARRAY_ENTRY> PropTypeArray;
 std::vector<GUID_ARRAY_ENTRY> PropGuidArray;
 std::vector<NAMEID_ARRAY_ENTRY> NameIDArray;
