@@ -98,7 +98,7 @@ namespace controls::sortlistctrl
 	BEGIN_MESSAGE_MAP(CSingleMAPIPropListCtrl, CSortListCtrl)
 #pragma warning(push)
 #pragma warning( \
-		disable : 26454) // Warning C26454 Arithmetic overflow: 'operator' operation produces a negative unsigned result at compile time
+	disable : 26454) // Warning C26454 Arithmetic overflow: 'operator' operation produces a negative unsigned result at compile time
 	ON_NOTIFY_REFLECT(NM_DBLCLK, OnDblclk)
 #pragma warning(pop)
 	ON_WM_KEYDOWN()
