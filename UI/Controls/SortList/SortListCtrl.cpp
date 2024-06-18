@@ -49,7 +49,7 @@ namespace controls::sortlistctrl
 	ON_WM_DRAWITEM()
 #pragma warning(push)
 #pragma warning( \
-		disable : 26454) // Warning C26454 Arithmetic overflow: 'operator' operation produces a negative unsigned result at compile time
+	disable : 26454) // Warning C26454 Arithmetic overflow: 'operator' operation produces a negative unsigned result at compile time
 	ON_NOTIFY_REFLECT(LVN_DELETEALLITEMS, OnDeleteAllItems)
 	ON_NOTIFY_REFLECT(LVN_DELETEITEM, OnDeleteItem)
 	ON_NOTIFY_REFLECT(NM_CUSTOMDRAW, OnCustomDraw)

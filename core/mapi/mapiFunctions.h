@@ -361,7 +361,7 @@ namespace mapi
 
 #pragma warning(push)
 #pragma warning( \
-		disable : 26476) // Warning C26476 Expression/symbol '' uses a naked union '' with multiple type pointers: Use variant instead (type.7).
+	disable : 26476) // Warning C26476 Expression/symbol '' uses a naked union '' with multiple type pointers: Use variant instead (type.7).
 	inline const SBinary& getBin(_In_ const _SPropValue* prop) noexcept
 	{
 		if (!prop) assert(false);

@@ -24,7 +24,7 @@ namespace controls
 	BEGIN_MESSAGE_MAP(StyleTreeCtrl, CTreeCtrl)
 #pragma warning(push)
 #pragma warning( \
-		disable : 26454) // Warning C26454 Arithmetic overflow: 'operator' operation produces a negative unsigned result at compile time
+	disable : 26454) // Warning C26454 Arithmetic overflow: 'operator' operation produces a negative unsigned result at compile time
 	ON_NOTIFY_REFLECT(NM_CUSTOMDRAW, OnCustomDraw)
 	ON_NOTIFY_REFLECT(NM_RCLICK, OnRightClick)
 	ON_NOTIFY_REFLECT(TVN_GETDISPINFO, OnGetDispInfo)

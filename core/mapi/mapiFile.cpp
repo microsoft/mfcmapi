@@ -150,7 +150,7 @@ namespace file
 			LPITNEF lpTNEF = nullptr;
 #pragma warning(push)
 #pragma warning( \
-		disable : 28159) // Warning C28159 Consider using *function_name_1* instead of *function_name_2*. Reason: reason
+	disable : 28159) // Warning C28159 Consider using *function_name_1* instead of *function_name_2*. Reason: reason
 			//GetTickCount is OK for what we're doing
 			static auto wKeyVal = static_cast<WORD>(GetTickCount() + 1);
 #pragma warning(pop)
@@ -583,7 +583,7 @@ namespace file
 
 #pragma warning(push)
 #pragma warning( \
-		disable : 28159) // Warning C28159 Consider using *function_name_1* instead of *function_name_2*. Reason: reason
+	disable : 28159) // Warning C28159 Consider using *function_name_1* instead of *function_name_2*. Reason: reason
 		//GetTickCount is OK for what we're doing
 		static auto wKeyVal = static_cast<WORD>(GetTickCount() + 1);
 #pragma warning(pop)
