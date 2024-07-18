@@ -796,6 +796,7 @@ POPUP "Entry ID"
 BEGIN
 MENUITEM "Open given entry ID...", ID_OPENENTRYID
 MENUITEM "Compare entry IDs...", ID_COMPAREENTRYIDS
+MENUITEM "Compute store hash...", ID_COMPUTESTOREHASH
 END
 POPUP "Notifications"
 BEGIN
