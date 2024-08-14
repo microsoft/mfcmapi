@@ -18,9 +18,9 @@ jobs:
       with:
         egress-policy: audit
 
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
     - name: Run clang-format style check for C/C++ programs.
-      uses: jidicula/clang-format-action@v4.13.0
+      uses: jidicula/clang-format-action@c74383674bf5f7c69f60ce562019c1c94bc1421a # v4.13.0
       with:
         clang-format-version: '17'
         exclude-regex: 'mapistub/*'
