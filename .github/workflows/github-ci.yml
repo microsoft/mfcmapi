@@ -14,6 +14,8 @@ permissions:
 jobs:
   build:
     runs-on: windows-latest
+    permissions:
+      security-events: write
     strategy:
       matrix:
         configuration: [ 'Release', 'Debug', 'Release_Unicode', 'Debug_Unicode' ]
