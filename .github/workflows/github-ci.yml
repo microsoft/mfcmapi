@@ -10,7 +10,6 @@ on:
 
 permissions:
   contents: read
-  security-events: write
 
 jobs:
   build:
@@ -78,6 +77,7 @@ jobs:
       checks: write
       # only needed unless run with comment_mode: off
       pull-requests: write
+      security-events: write
     if: always()
 
     steps:
