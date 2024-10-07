@@ -32,7 +32,7 @@ jobs:
         submodules: 'recursive'
 
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@461ef6c76dfe95d5c364de2f431ddbd31a417628 # v3.26.9
+      uses: github/codeql-action/init@c36620d31ac7c881962c3d9dd939c40ec9434f2b # v3.26.12
       with:
         languages: "cpp"
 
@@ -66,7 +66,7 @@ jobs:
         path: ${{github.workspace}}/**/TestResults/**/*
 
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@461ef6c76dfe95d5c364de2f431ddbd31a417628 # v3.26.9
+      uses: github/codeql-action/analyze@c36620d31ac7c881962c3d9dd939c40ec9434f2b # v3.26.12
       with:
         category: "/language:cpp"
 
