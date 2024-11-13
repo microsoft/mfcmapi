@@ -74,21 +74,13 @@ enum __NonPropFlag
 #define PR_FREEBUSY_NT_SECURITY_DESCRIPTOR (PROP_TAG(PT_BINARY, 0x0F00))
 
 // http://support.microsoft.com/kb/171670
-// Entry ID for the Calendar
-#define PR_IPM_APPOINTMENT_ENTRYID (PROP_TAG(PT_BINARY, 0x36D0))
-// Entry ID for the Contact Folder
-#define PR_IPM_CONTACT_ENTRYID (PROP_TAG(PT_BINARY, 0x36D1))
 // Entry ID for the Journal Folder
 #define PR_IPM_JOURNAL_ENTRYID (PROP_TAG(PT_BINARY, 0x36D2))
 // Entry ID for the Notes Folder
 #define PR_IPM_NOTE_ENTRYID (PROP_TAG(PT_BINARY, 0x36D3))
-// Entry ID for the Task Folder
-#define PR_IPM_TASK_ENTRYID (PROP_TAG(PT_BINARY, 0x36D4))
 // Entry IDs for the Reminders Folder
 #define PR_REM_ONLINE_ENTRYID (PROP_TAG(PT_BINARY, 0x36D5))
 #define PR_REM_OFFLINE_ENTRYID PROP_TAG(PT_BINARY, 0x36D6)
-// Entry ID for the Drafts Folder
-#define PR_IPM_DRAFTS_ENTRYID (PROP_TAG(PT_BINARY, 0x36D7))
 
 #define PR_FREEBUSY_ENTRYIDS PROP_TAG(PT_MV_BINARY, 0x36E4)
 #ifndef PR_RECIPIENT_TRACKSTATUS
@@ -96,7 +88,6 @@ enum __NonPropFlag
 #endif
 #define PR_RECIPIENT_FLAGS PROP_TAG(PT_LONG, 0x5FFD)
 #define PR_RECIPIENT_ENTRYID PROP_TAG(PT_BINARY, 0x5FF7)
-#define PR_ICON_INDEX PROP_TAG(PT_LONG, 0x1080)
 
 #ifndef PR_NT_SECURITY_DESCRIPTOR
 #define PR_NT_SECURITY_DESCRIPTOR (PROP_TAG(PT_BINARY, 0x0E27))
@@ -167,7 +158,7 @@ enum __NonPropFlag
 #define DT_SEARCH ((ULONG) 0x00000200)
 
 // http://msdn2.microsoft.com/en-us/library/bb821036.aspx
-#define PR_FLAG_STATUS PROP_TAG(PT_LONG, 0x1090)
+// #define PR_FLAG_STATUS PROP_TAG(PT_LONG, 0x1090)
 enum FollowUpStatus
 {
 	flwupNone = 0,
@@ -748,7 +739,6 @@ enum iTypeEnum
 #define dispidABPEmailList 0x8028
 #define dispidABPArrayType 0x8029
 
-#define PR_CONVERSATION_ID PROP_TAG(PT_BINARY, 0x3013)
 #define PR_FOLDER_WEBVIEWINFO PROP_TAG(PT_BINARY, 0x36DF)
 
 #define WEBVIEW_PERSISTENCE_VERSION 0x000000002
@@ -761,7 +751,7 @@ enum iTypeEnum
 #define dispidForwardNotificationRecipients 0x8261
 
 // http://msdn.microsoft.com/en-us/library/ee218029(EXCHG.80).aspx
-#define PR_NATIVE_BODY_INFO PROP_TAG(PT_LONG, 0x1016)
+// #define PR_NATIVE_BODY_INFO PROP_TAG(PT_LONG, 0x1016)
 enum NBI
 {
 	nbiUndefined = 0,
