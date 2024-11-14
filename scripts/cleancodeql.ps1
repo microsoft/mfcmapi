@@ -10,13 +10,6 @@ function Delete-CodeQLAnalysisLoop {
 
     Write-Host "Request: $analysisUrl"
 
-    # Create the headers for the API request
-    $headers = @{
-        "Authorization" = "token $token"
-        "Accept" = "application/vnd.github+json"
-        "X-GitHub-Api-Version" = "2022-11-28"
-    }
-
     # Send the DELETE request to the GitHub API
     $response = gh api --method DELETE -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" $analysisUrl
 
@@ -46,7 +39,7 @@ function Delete-CodeQLAnalysis {
 }
 
 # Fetch the analyses using the GitHub CLI
-$analyses = gh api -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /repos/microsoft/mfcmapi/code-scanning/analyses --paginate
+$analyses = gh api -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /repos/$owner/$repo/code-scanning/analyses --paginate
 
 # Convert the response to JSON
 $analysesJson = $analyses | ConvertFrom-Json
@@ -54,7 +47,7 @@ $analysesJson = $analyses | ConvertFrom-Json
 # Loop over the analyses and write the ID when deletable is true
 foreach ($analysis in $analysesJson) {
     if ($analysis.deletable -eq $true) {
-        Write-Output "Deletable analysis ID: $($analysis.id)"
+        Write-Output "Deletable analysis url: $($analysis.url)"
         Delete-CodeQLAnalysis -analysisUrl "$($analysis.url)?confirm_delete"
     }
 }
