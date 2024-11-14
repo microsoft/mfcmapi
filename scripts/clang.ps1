@@ -1,11 +1,7 @@
-$vsRoot = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
-$vcInstallDir = Join-Path $vsRoot "VC"
-$clang = Join-Path $vcInstallDir "Tools\Llvm\bin\clang-format.exe"
-
-# Check if VC install directory was found
-if ($null -eq $vcInstallDir) {
-    Write-Host "Visual C++ installation directory not found."
-}
+# find clang-format under node-modules and run it on all C++ files in the project
+$projectRoot = Join-Path $PSScriptRoot ".."
+$clang = Join-Path $projectRoot "\node_modules\.bin\clang-format.ps1"
+$style = Join-Path $projectRoot ".clang-format"
 
 if ($null -eq $clang) {
     Write-Host "clang not found."
@@ -13,16 +9,18 @@ if ($null -eq $clang) {
 Write-Host "clang-format found at $clang"
 & $clang --version
 
-Push-Location ..
+Write-Host "Style file found at $style"
+
+Push-Location $projectRoot
 
 Write-Host "Formatting C++ headers"
 Get-ChildItem -Recurse -Filter *.h | Where-Object { $_.DirectoryName -notlike "*include*" } | ForEach-Object {
-    & $clang -i $_.FullName
+        & $clang --style=file:$style --verbose -i $_.FullName
 }
 
 Write-Host "Formatting C++ sources"
 Get-ChildItem -Recurse -Filter *.cpp | ForEach-Object {
-    & $clang -i $_.FullName
+    & $clang --style=file:$style --verbose -i $_.FullName
 }
 
 Pop-Location

@@ -1,0 +1,5 @@
+{
+  "devDependencies": {
+    "clang-format": "^1.8.0"
+  }
+}
