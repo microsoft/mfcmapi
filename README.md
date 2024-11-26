@@ -22,6 +22,6 @@ For assistance using MFCMAPI, developing add-ins, or general MAPI development, c
 [![Dependency Review](https://github.com/microsoft/mfcmapi/actions/workflows/dependency-review.yml/badge.svg)](https://github.com/microsoft/mfcmapi/actions/workflows/dependency-review.yml)  
 [![DevSkim](https://github.com/microsoft/mfcmapi/actions/workflows/devskim.yml/badge.svg)](https://github.com/microsoft/mfcmapi/actions/workflows/devskim.yml)  
 [![OpenSSF
-Scorecard](https://api.securityscorecards.dev/projects/github.com/microsoft/mfcmapi/badge)](https://api.securityscorecards.dev/projects/github.com/microsoft/mfcmapi)  
+Scorecard](https://api.securityscorecards.dev/projects/github.com/microsoft/mfcmapi/badge)](https://scorecard.dev/viewer/?uri=github.com%2Fmicrosoft%2Fmfcmapi)  
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/7901/badge)](https://www.bestpractices.dev/projects/7901)  
 [![Facebook](https://badge.facebook.com/badge/26764016480.2776.1538253884.png)](https://www.facebook.com/MFCMAPI)
