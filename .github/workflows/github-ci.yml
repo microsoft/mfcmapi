@@ -49,13 +49,13 @@ jobs:
       run: cmd /c "$env:VSDevTestCmd" /Parallel /EnableCodeCoverage /Logger:trx "${{github.workspace}}\\bin\\${{matrix.platform}}\\UnitTest\\${{matrix.configuration}}\\UnitTest.dll"
 
     # - name: Upload Event File
-    #   uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+    #   uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4.5.0
     #   with:
     #     name: Event File (${{ matrix.platform }} - ${{ matrix.configuration }})
     #     path: ${{ github.event_path }}
  
     - name: Upload Test Result Files
-      uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+      uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4.5.0
       if: always()
       with:
         name: Test Results (${{ matrix.platform }} - ${{ matrix.configuration }})
