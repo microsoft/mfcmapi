@@ -2,8 +2,9 @@
 # https://github.com/microsoft/winget-create?tab=readme-ov-file
 name: Update Winget $(Year:yy).0.$(date:yy)$(DayOfYear)$(rev:.rr)
 
-on: workflow_dispatch
-
+on:
+  workflow_dispatch:
+  
 jobs:
     build:
         runs-on: windows-latest
