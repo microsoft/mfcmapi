@@ -6,14 +6,12 @@ on:
   workflow_dispatch:
   release:
     types: [published]
-  push:
-    branches:
-        - "u/sgriffin/winget"
+
 jobs:
     build:
         runs-on: windows-latest
 
-        steps:       
+        steps:
         - name: '📫🚀 Publish Latest MFCMAPI Release to Winget'
           run: |
             $wingetPackage = "Microsoft.MFCMAPI"
