@@ -4,6 +4,8 @@ name: Update Winget $(Year:yy).0.$(date:yy)$(DayOfYear)$(rev:.rr)
 
 on:
   workflow_dispatch:
+  release:
+    types: [published]
   
 jobs:
     build:
