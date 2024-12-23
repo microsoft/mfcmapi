@@ -6,7 +6,9 @@ on:
   workflow_dispatch:
   release:
     types: [published]
-  
+  push:
+    branches:
+        - "u/sgriffin/winget"
 jobs:
     build:
         runs-on: windows-latest
