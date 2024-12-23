@@ -13,8 +13,7 @@ jobs:
         - name: '📫🚀 Publish Latest MFCMAPI Release to Winget'
           run: |
             $wingetPackage = "Microsoft.MFCMAPI"
-            #$gitToken = "${{ secrets.PT_WINGET }}"
-            $gitToken = "foobar"
+            $gitToken = "${{ secrets.MFCMAPI_WINGET }}"
 
             $github = Invoke-RestMethod -uri "https://api.github.com/repos/Microsoft/MFCMAPI/releases" 
 
