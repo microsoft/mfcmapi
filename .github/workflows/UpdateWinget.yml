@@ -1,7 +1,7 @@
 # Publishes the latest MFCMAPI release to the Windows Package Manager (Winget)
 # https://github.com/microsoft/winget-create?tab=readme-ov-file
 name: Update Winget
-run-name: Really Update Winget $(Year:yy).0.$(date:yy)$(DayOfYear)$(rev:.rr)
+run-name: Update Winget ${{ inputs.deploy_target }} by @${{ github.actor }} $(Year:yy).0.$(date:yy)$(DayOfYear)$(rev:.rr)
 
 on:
   workflow_dispatch:
