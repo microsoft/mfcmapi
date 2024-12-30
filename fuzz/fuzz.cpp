@@ -22,7 +22,7 @@ void test(std::vector<BYTE> hex)
 	for (const auto parser : SmartViewParserTypeArray)
 	{
 		if (parser.type == parserType::NOPARSING) continue;
-		wprintf(L"Testing %ws\r\n", addin::AddInStructTypeToString(parser.type).c_str());
+		//wprintf(L"Testing %ws\r\n", addin::AddInStructTypeToString(parser.type).c_str());
 		(void) smartview::InterpretBinary({static_cast<ULONG>(hex.size()), hex.data()}, parser.type, nullptr);
 	}
 }
@@ -63,18 +63,18 @@ FUZZ_EXPORT int __cdecl LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
 	if (input.empty())
 	{
 		// Print hex encoding of input so we can see what was wrong with it
-		wprintf(L"Invalid input: %ws\r\n", strings::BinToHexString(inputVector, true).c_str());
+		//wprintf(L"Invalid input: %ws\r\n", strings::BinToHexString(inputVector, true).c_str());
 		return -1; // ignore invalid hex strings
 	}
 
 	auto hex = strings::HexStringToBin(input);
 	if (hex.empty())
 	{
-		wprintf(L"Invalid hex: %ws\r\n", input.c_str());
+		//wprintf(L"Invalid hex: %ws\r\n", input.c_str());
 		return -1; // ignore invalid hex strings
 	}
 
-	wprintf(L"Fuzzing: %ws\r\n", input.c_str());
+	//wprintf(L"Fuzzing: %ws\r\n", input.c_str());
 	test(hex);
 	return 0;
 }
