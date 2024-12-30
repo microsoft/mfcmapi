@@ -453,8 +453,10 @@ namespace smartview
 
 		const void getProp(SPropValue& prop) noexcept override
 		{
-			auto guid = lpguid->getData();
-			prop.Value.lpguid = &guid;
+			// If we use getData, we create a stack copy of the GUID, which goes away.
+			// So we need to use getDataAddress to get a pointer to the GUID.
+			auto guid = lpguid->getDataAddress();
+			prop.Value.lpguid = const_cast<LPGUID>(guid);
 		}
 		std::shared_ptr<blockT<GUID>> lpguid = emptyT<GUID>();
 	};

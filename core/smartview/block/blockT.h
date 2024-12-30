@@ -21,6 +21,7 @@ namespace smartview
 		// Mimic type T
 		void setData(const T& _data) noexcept { data = _data; }
 		T getData() const noexcept { return data; }
+		const T* getDataAddress() const noexcept { return &data; }
 		operator T&() noexcept { return data; }
 		operator T() const noexcept { return data; }
 
