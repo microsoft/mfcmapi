@@ -220,6 +220,7 @@ namespace sid
 	_Check_return_ SecurityDescriptor SDToString(const std::vector<BYTE>& buf, aceType acetype)
 	{
 		if (buf.empty()) return {};
+		if (CbSecurityDescriptorHeader(buf.data()) >= buf.size()) return {};
 
 		const auto pSecurityDescriptor = SECURITY_DESCRIPTOR_OF(buf.data());
 
