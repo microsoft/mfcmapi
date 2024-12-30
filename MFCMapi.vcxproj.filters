@@ -47,6 +47,9 @@
     <Filter Include="Source Files\UI\Controls\PaneHeader">
       <UniqueIdentifier>{903023f1-9e01-4c14-a5e9-e129b5c7f8a9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\fuzz">
+      <UniqueIdentifier>{56bd509d-6bf7-4d82-baca-407d35286b90}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />
@@ -263,6 +266,9 @@
     </ClCompile>
     <ClCompile Include="UI\Controls\PaneHeader\PaneHeader.cpp">
       <Filter>Source Files\UI\Controls\PaneHeader</Filter>
+    </ClCompile>
+    <ClCompile Include="fuzz\fuzz.cpp">
+      <Filter>Source Files\fuzz</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
