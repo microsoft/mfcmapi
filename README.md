@@ -10,6 +10,18 @@ MFCMAPI provides access to MAPI stores to facilitate investigation of Exchange a
 
 MFCMAPI depends on the [MAPI Stub Library](https://github.com/microsoft/MAPIStubLibrary). When cloning, make sure to clone submodules. See [Contributing](CONTRIBUTING.md) for more details.
 
+## Fuzzing
+
+To enable fuzzing for this project, follow these steps:
+1. **Switch Solution Configuration**:
+   - Open MFCMAPI.sln in Visual Studio.
+   - In the toolbar, locate the **Solution Configurations** dropdown.
+   - Select **Fuzz** from the list of configurations.
+
+2. **Debug Command Line Parameters**:
+   - When running the fuzzing tests, use the following command line parameters:  
+`$(ProjectDir)fuzz\corpus $(ProjectDir)UnitTest\SmartViewTestData\In -artifact_prefix=fuzz\artifacts\`
+
 ## Help/Feedback
 
 For assistance using MFCMAPI, developing add-ins, or general MAPI development, consult the [documentation](docs/Documentation.md). Find a bug? Need help? Have a suggestion? Report your issues through the [issues tab](https://github.com/microsoft/mfcmapi/issues).  
