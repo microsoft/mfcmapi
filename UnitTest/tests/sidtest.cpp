@@ -132,7 +132,7 @@ namespace sidtest
 		TEST_METHOD(Test_SDToString)
 		{
 			const auto nullsd = SDToString({}, sid::aceType::Container);
-			Assert::AreEqual(std::wstring{L""}, nullsd.dacl);
+			Assert::AreEqual(std::wstring{L"This is not a valid security descriptor."}, nullsd.dacl);
 			Assert::AreEqual(std::wstring{L""}, nullsd.info);
 
 			const auto invalid =
