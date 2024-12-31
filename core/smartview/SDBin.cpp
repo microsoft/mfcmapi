@@ -39,9 +39,13 @@ namespace smartview
 				si->addChild(m_SDbin, sd.info);
 			}
 
-			const auto sdVersion = SECURITY_DESCRIPTOR_VERSION(m_SDbin->data());
-			auto szFlags = flags::InterpretFlags(flagSecurityVersion, sdVersion);
-			addHeader(L"Security Version: 0x%1!04X! = %2!ws!", sdVersion, szFlags.c_str());
+			if (m_SDbin->size() >= 2 * sizeof(WORD))
+			{
+				const auto sdVersion = SECURITY_DESCRIPTOR_VERSION(m_SDbin->data());
+				auto szFlags = flags::InterpretFlags(flagSecurityVersion, sdVersion);
+				addHeader(L"Security Version: 0x%1!04X! = %2!ws!", sdVersion, szFlags.c_str());
+			}
+
 			addHeader(L"Descriptor");
 			addHeader(sd.dacl);
 		}

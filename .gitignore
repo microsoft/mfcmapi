@@ -8,3 +8,5 @@
 /.vs
 /node_modules
 /packages
+/fuzz/corpus/
+/fuzz/artifacts/

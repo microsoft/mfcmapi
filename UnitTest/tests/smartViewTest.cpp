@@ -28,6 +28,7 @@ namespace SmartViewTest
 			{
 				for (const auto parser : SmartViewParserTypeArray)
 				{
+					if (parser.type == parserType::NOPARSING) continue;
 					try
 					{
 						actual = smartview::InterpretBinary(
