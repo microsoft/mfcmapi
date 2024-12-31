@@ -217,17 +217,25 @@ namespace sid
 		return strings::join(aceString, L"\r\n");
 	}
 
+	_Check_return_ bool IsValidSecurityDescriptorEx(const std::vector<BYTE>& buf) noexcept
+	{
+		try
+		{
+			if (buf.empty() || buf.size() < 2 * sizeof(DWORD)) return false;
+			if (CbSecurityDescriptorHeader(buf.data()) >= buf.size()) return false;
+			const auto pSecurityDescriptor = SECURITY_DESCRIPTOR_OF(buf.data());
+			return IsValidSecurityDescriptor(pSecurityDescriptor);
+		} catch (...)
+		{
+			return false;
+		}
+	}
+
 	_Check_return_ SecurityDescriptor SDToString(const std::vector<BYTE>& buf, aceType acetype)
 	{
-		if (buf.empty() || buf.size() < sizeof WORD) return {};
-		if (CbSecurityDescriptorHeader(buf.data()) >= buf.size()) return {};
-
-		const auto pSecurityDescriptor = SECURITY_DESCRIPTOR_OF(buf.data());
-
-		if (CbSecurityDescriptorHeader(buf.data()) > buf.size() || !IsValidSecurityDescriptor(pSecurityDescriptor))
-		{
+		if (!IsValidSecurityDescriptorEx(buf))
 			return SecurityDescriptor{strings::formatmessage(IDS_INVALIDSD), strings::emptystring};
-		}
+		const auto pSecurityDescriptor = SECURITY_DESCRIPTOR_OF(buf.data());
 
 		auto bValidDACL = static_cast<BOOL>(false);
 		auto pACL = PACL{};
