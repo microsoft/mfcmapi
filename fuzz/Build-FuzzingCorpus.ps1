@@ -71,4 +71,8 @@ function Build-FuzzingCorpus {
 # Example usage
 $inputDirectory = "$PSScriptRoot\..\UnitTest\SmartViewTestData\In"
 $outputDirectory = "$PSScriptRoot\corpus"
+$artifactsDirectory = "$PSScriptRoot\artifacts"
+if (-not (Test-Path -Path $artifactsDirectory)) {
+    New-Item -ItemType Directory -Path $artifactsDirectory
+}
 Build-FuzzingCorpus -InputDir $inputDirectory -OutputDir $outputDirectory
