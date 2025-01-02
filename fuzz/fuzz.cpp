@@ -14,7 +14,7 @@ void EnsureInit()
 	registry::useGetPropList = true;
 	registry::parseNamedProps = true;
 	registry::cacheNamedProps = true;
-	strings::setTestInstance(GetModuleHandleW(L"fuzz.exe"));
+	strings::setTestInstance(GetModuleHandleW(L"mfcmapi.exe"));
 }
 
 void test(const SBinary hex)
