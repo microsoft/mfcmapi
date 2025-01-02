@@ -12,16 +12,20 @@ MFCMAPI depends on the [MAPI Stub Library](https://github.com/microsoft/MAPIStub
 
 ## Fuzzing
 
-MFCMAPI supports fuzzing with [libFuzzer](https://llvm.org/docs/LibFuzzer.html) and the [fsanitize](https://learn.microsoft.com/en-us/cpp/build/reference/fsanitize?view=msvc-170) switch in Visual Studio. See [fuzz.cpp](https://github.com/microsoft/mfcmapi/blob/main/fuzz/fuzz.cpp) for details.  
+MFCMAPI supports fuzzing with [libFuzzer](https://llvm.org/docs/LibFuzzer.html) and the [fsanitize](https://learn.microsoft.com/en-us/cpp/build/reference/fsanitize?view=msvc-170) switch in Visual Studio. See [fuzz.cpp](fuzz/fuzz.cpp) for details.  
 To run fuzzing for this project, follow these steps:
+1. **Build Fuzzing Corpus**: 
+   - Open Powershell prompt
+   - Run [fuzz\Build-FuzzingCorpus.ps1](fuzz\Build-FuzzingCorpus.ps1) to generate a fuzzing corpus in [fuzz/corpus](fuzz/corpus) from Smart View unit test data.
+
 1. **Switch Solution Configuration**:
    - Open MFCMAPI.sln in Visual Studio.
    - In the toolbar, locate the **Solution Configurations** dropdown.
    - Select **Fuzz** from the list of configurations.
 
-2. **Debug Command Line Parameters**:
+1. **Debug Command Line Parameters**:
    - When running the fuzzing tests, use the following command line parameters:  
-`$(ProjectDir)fuzz\corpus $(ProjectDir)UnitTest\SmartViewTestData\In -artifact_prefix=fuzz\artifacts\`
+`$(ProjectDir)fuzz\corpus -artifact_prefix=fuzz\artifacts\`
 
 ## Help/Feedback
 
