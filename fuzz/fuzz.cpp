@@ -17,17 +17,15 @@ void EnsureInit()
 	strings::setTestInstance(GetModuleHandleW(L"fuzz.exe"));
 }
 
-void test(std::vector<BYTE> hex)
+void test(const SBinary hex)
 {
 	for (const auto parser : SmartViewParserTypeArray)
 	{
 		if (parser.type == parserType::NOPARSING) continue;
 		//wprintf(L"Testing %ws\r\n", addin::AddInStructTypeToString(parser.type).c_str());
-		(void) smartview::InterpretBinary({static_cast<ULONG>(hex.size()), hex.data()}, parser.type, nullptr);
+		(void) smartview::InterpretBinary(hex, parser.type, nullptr);
 	}
 }
-
-
 
 #ifdef __cplusplus
 #define FUZZ_EXPORT extern "C" __declspec(dllexport)
@@ -37,9 +35,9 @@ void test(std::vector<BYTE> hex)
 FUZZ_EXPORT int __cdecl LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
 {
 	std::call_once(_initFlag, EnsureInit);
-	const auto inputVector = std::vector<BYTE>(data, data + size);
-	//wprintf(L"Fuzzing: %ws\r\n", strings::BinToHexString(inputVector, true).c_str());
-	test(inputVector);
+	const SBinary input = {static_cast<ULONG>(size), (LPBYTE) (data)};
+	//wprintf(L"Fuzzing: %ws\r\n", strings::BinToHexString(&input, true).c_str());
+	test(input);
 	return 0;
 }
 #endif // FUZZ
