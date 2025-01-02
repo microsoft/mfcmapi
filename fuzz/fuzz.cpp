@@ -27,26 +27,7 @@ void test(std::vector<BYTE> hex)
 	}
 }
 
-std::wstring LoadDataToString(const uint8_t* Data, size_t Size)
-{
-	const auto cb = Size;
-	const LPVOID bytes = (LPVOID) Data;
-	const auto data = static_cast<const BYTE*>(bytes);
 
-	// UTF 16 LE
-	// In Notepad++, this is UCS-2 LE BOM encoding
-	// WARNING: Editing files in Visual Studio Code can alter this encoding
-	if (cb >= 2 && data[0] == 0xff && data[1] == 0xfe)
-	{
-		// Skip the byte order mark
-		const auto wstr = static_cast<const wchar_t*>(bytes);
-		const auto cch = cb / sizeof(wchar_t);
-		return std::wstring(wstr + 1, cch - 1);
-	}
-
-	const auto str = std::string(static_cast<const char*>(bytes), cb);
-	return strings::stringTowstring(str);
-}
 
 #ifdef __cplusplus
 #define FUZZ_EXPORT extern "C" __declspec(dllexport)
@@ -56,26 +37,9 @@ std::wstring LoadDataToString(const uint8_t* Data, size_t Size)
 FUZZ_EXPORT int __cdecl LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
 {
 	std::call_once(_initFlag, EnsureInit);
-	// convert data to vector byte
-
 	const auto inputVector = std::vector<BYTE>(data, data + size);
-	const auto input = LoadDataToString(data, size);
-	if (input.empty())
-	{
-		// Print hex encoding of input so we can see what was wrong with it
-		//wprintf(L"Invalid input: %ws\r\n", strings::BinToHexString(inputVector, true).c_str());
-		return -1; // ignore invalid hex strings
-	}
-
-	auto hex = strings::HexStringToBin(input);
-	if (hex.empty())
-	{
-		//wprintf(L"Invalid hex: %ws\r\n", input.c_str());
-		return -1; // ignore invalid hex strings
-	}
-
-	//wprintf(L"Fuzzing: %ws\r\n", input.c_str());
-	test(hex);
+	//wprintf(L"Fuzzing: %ws\r\n", strings::BinToHexString(inputVector, true).c_str());
+	test(inputVector);
 	return 0;
 }
 #endif // FUZZ
