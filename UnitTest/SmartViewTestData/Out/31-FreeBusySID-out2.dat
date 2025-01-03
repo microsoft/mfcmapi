@@ -4,12 +4,14 @@ Security Descriptor
 	Security Version: 0x0003 = SECURITY_DESCRIPTOR_TRANSFER_VERSION
 	Descriptor
 	Account: (no domain)\(no name)
+ACE Type: 0x00 = ACCESS_ALLOWED_ACE_TYPE
+ACE Flags: 0x02 = CONTAINER_INHERIT_ACE
+ACE Mask: 0x00000003 = fsdrightFreeBusySimple | fsdrightFreeBusyDetailed
+ACE Size: 0x0024
 SID: S-1-5-21-1148560623-1742210193-3263613743-3181487
-Access Type: 0x00000000 = ACCESS_ALLOWED_ACE_TYPE
-Access Flags: 0x00000002 = CONTAINER_INHERIT_ACE
-Access Mask: 0x00000003 = fsdrightFreeBusySimple | fsdrightFreeBusyDetailed
 Account: \Everyone
+ACE Type: 0x00 = ACCESS_ALLOWED_ACE_TYPE
+ACE Flags: 0x02 = CONTAINER_INHERIT_ACE
+ACE Mask: 0x00000001 = fsdrightFreeBusySimple
+ACE Size: 0x0014
 SID: S-1-1-0
-Access Type: 0x00000000 = ACCESS_ALLOWED_ACE_TYPE
-Access Flags: 0x00000002 = CONTAINER_INHERIT_ACE
-Access Mask: 0x00000001 = fsdrightFreeBusySimple

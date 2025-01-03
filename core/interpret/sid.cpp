@@ -129,6 +129,7 @@ namespace sid
 	std::wstring ACEToString(_In_opt_ void* pACE, aceType acetype)
 	{
 		std::vector<std::wstring> aceString;
+		PACE_HEADER pAceHeader = static_cast<PACE_HEADER>(pACE);
 		ACCESS_MASK Mask = 0;
 		DWORD Flags = 0;
 		GUID ObjectType = {};
@@ -138,11 +139,8 @@ namespace sid
 
 		if (!pACE) return L"";
 
-		const auto AceType = static_cast<PACE_HEADER>(pACE)->AceType;
-		const auto AceFlags = static_cast<PACE_HEADER>(pACE)->AceFlags;
-
 		/* Check type of ACE */
-		switch (AceType)
+		switch (pAceHeader->AceType)
 		{
 		case ACCESS_ALLOWED_ACE_TYPE:
 			Mask = static_cast<ACCESS_ALLOWED_ACE*>(pACE)->Mask;
@@ -171,8 +169,8 @@ namespace sid
 		}
 
 		auto lpStringSid = GetTextualSid(SidStart);
-		auto szAceType = flags::InterpretFlags(flagACEType, AceType);
-		auto szAceFlags = flags::InterpretFlags(flagACEFlag, AceFlags);
+		auto szAceType = flags::InterpretFlags(flagACEType, pAceHeader->AceType);
+		auto szAceFlags = flags::InterpretFlags(flagACEFlag, pAceHeader->AceFlags);
 		auto szAceMask = std::wstring{};
 
 		switch (acetype)
@@ -197,13 +195,14 @@ namespace sid
 			IDS_SIDACCOUNT,
 			sidAccount.getDomain().c_str(),
 			sidAccount.getName().c_str(),
-			szSID.c_str(),
-			AceType,
+			pAceHeader->AceType,
 			szAceType.c_str(),
-			AceFlags,
+			pAceHeader->AceFlags,
 			szAceFlags.c_str(),
 			Mask,
-			szAceMask.c_str()));
+			szAceMask.c_str(),
+			pAceHeader->AceSize,
+			szSID.c_str()));
 
 		if (bObjectFound)
 		{
