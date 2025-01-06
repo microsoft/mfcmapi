@@ -3,6 +3,7 @@
 #include <core/addin/addin.h>
 #include <core/utility/registry.h>
 #include <core/utility/strings.h>
+#include <core/smartview/SmartView.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -117,5 +118,45 @@ namespace unittest
 
 		const auto str = std::string(static_cast<const char*>(bytes), cb);
 		return strings::stringTowstring(str);
+	}
+
+	void test(const std::wstring testName, parserType structType, std::vector<BYTE> hex, const std::wstring expected)
+	{
+		auto actual =
+			smartview::InterpretBinary({static_cast<ULONG>(hex.size()), hex.data()}, structType, nullptr)->toString();
+		unittest::AreEqualEx(expected, actual, testName.c_str());
+
+		if (unittest::parse_all)
+		{
+			for (const auto parser : SmartViewParserTypeArray)
+			{
+				if (parser.type == parserType::NOPARSING) continue;
+				try
+				{
+					actual =
+						smartview::InterpretBinary({static_cast<ULONG>(hex.size()), hex.data()}, parser.type, nullptr)
+							->toString();
+				} catch (const int exception)
+				{
+					Logger::WriteMessage(strings::format(
+											 L"Testing %ws failed at %ws with error 0x%08X\n",
+											 testName.c_str(),
+											 addin::AddInStructTypeToString(parser.type).c_str(),
+											 exception)
+											 .c_str());
+					Assert::Fail();
+				}
+			}
+		}
+	}
+
+	void test(parserType structType, DWORD hexNum, DWORD expectedNum)
+	{
+		static auto handle = GetModuleHandleW(L"UnitTest.dll");
+		// See comments on loadfile for best file encoding strategies for test data
+		const auto testName = strings::format(L"%d/%d", hexNum, expectedNum);
+		auto hex = strings::HexStringToBin(unittest::loadfile(handle, hexNum));
+		const auto expected = unittest::loadfile(handle, expectedNum);
+		test(testName, structType, hex, expected);
 	}
 } // namespace unittest

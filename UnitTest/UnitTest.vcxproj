@@ -694,6 +694,16 @@
       <CETCompat>true</CETCompat>
     </Link>
   </ItemDefinitionGroup>
+  <PropertyGroup>
+    <PowerShellExe Condition=" '$(PowerShellExe)'=='' ">%WINDIR%\System32\WindowsPowerShell\v1.0\powershell.exe</PowerShellExe>
+    <BuildSmartViewTests Condition=" '$(BuildSmartViewTests)'=='' ">$(MSBuildThisFileDirectory)\scripts\Build-SmartViewTests.ps1</BuildSmartViewTests>
+    <SVInDir Condition=" '$(SVInDir)'=='' ">$(MSBuildThisFileDirectory)\SmartViewTestData\In</SVInDir>
+    <SVOutDir Condition=" '$(SVOutDir)'=='' ">$(MSBuildThisFileDirectory)\SmartViewTestData\Out</SVOutDir>
+    <SVOutHeader Condition=" '$(SVOutHeader)'=='' ">$(MSBuildThisFileDirectory)res\SmartViewTests.h</SVOutHeader>
+    <SVOutRC Condition=" '$(SVOutRC)'=='' ">$(MSBuildThisFileDirectory)\res\SmartViewTests.rc</SVOutRC>
+    <SVOutCPP Condition=" '$(SVOutCPP)'=='' ">$(MSBuildThisFileDirectory)\tests\smartViewTest.cpp</SVOutCPP>
+    <CommandString Condition=" '$(CommandString)'=='' ">$(PowerShellExe) -ExecutionPolicy Bypass -File $(BuildSmartViewTests) $(SVInDir) $(SVOutDir) $(SVOutHeader) $(SVOutRC) $(SVOutCPP)</CommandString>
+  </PropertyGroup>
   <ItemGroup>
     <ClInclude Include="res\resource.h" />
     <ClInclude Include="stdafx.h" />
@@ -714,9 +724,11 @@
     <ClCompile Include="tests\namedproptest.cpp" />
     <ClCompile Include="tests\propertytest.cpp" />
     <ClCompile Include="tests\sidtest.cpp" />
-    <ClCompile Include="tests\smartViewTest.cpp" />
     <ClCompile Include="tests\stringtest.cpp" />
     <ClCompile Include="UnitTest.cpp" />
+    <None Include="$(SVOutHeader)" />
+    <None Include="$(SVOutCPP)" />
+    <None Include="$(SVOutRC)" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\core\core.vcxproj">
@@ -730,6 +742,19 @@
     <ResourceCompile Include="res\UnitTest.rc" />
   </ItemGroup>
   <ItemGroup>
+    <InputFiles Include="$(SVInDir)\**\*.*" />
+    <InputFiles Include="$(SVOutDir)\**\*.*" />
+    <InputFiles Include="$(BuildSmartViewTests)" />
+  </ItemGroup>
+  <ItemGroup>
+    <OutputFiles Include="$(SVOutHeader)" />
+    <OutputFiles Include="$(SVOutRC)" />
+    <OutputFiles Include="$(SVOutCPP)" />
+  </ItemGroup>
+  <PropertyGroup>
+    <BeforeBuildGenerateSourcesTargets>$(BeforeBuildGenerateSourcesTargets);BuildSmartViewTests</BeforeBuildGenerateSourcesTargets>
+  </PropertyGroup>
+  <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
@@ -738,4 +763,27 @@
     <Import Project="..\packages\Microsoft.SourceLink.Common.1.0.0\build\Microsoft.SourceLink.Common.targets" Condition="Exists('..\packages\Microsoft.SourceLink.Common.1.0.0\build\Microsoft.SourceLink.Common.targets')" />
     <Import Project="..\packages\Microsoft.SourceLink.GitHub.1.0.0\build\Microsoft.SourceLink.GitHub.targets" Condition="Exists('..\packages\Microsoft.SourceLink.GitHub.1.0.0\build\Microsoft.SourceLink.GitHub.targets')" />
   </ImportGroup>
+  <Target
+    Name="BuildSmartViewTests"
+    Inputs="@(InputFiles)"
+    Outputs="@(OutputFiles)">
+    <Message Text="Rebuilding Smart View Tests" Importance="High" />
+    <Message Importance="High" Text="PowerShellExe:       $(PowerShellExe)" />
+    <Message Importance="High" Text="BuildSmartViewTests: $(BuildSmartViewTests)" />
+    <Message Importance="High" Text="SVInDir:             $(SVInDir)" />
+    <Message Importance="High" Text="SVOutDir:            $(SVOutDir)" />
+    <Message Importance="High" Text="SVOutHeader          $(SVOutHeader)" />
+    <Message Importance="High" Text="SVOutRC              $(SVOutRC)" />
+    <Message Importance="High" Text="SVOutCPP             $(SVOutCPP)" />
+    <Message Importance="High" Text="CommandString:       $(CommandString)" />
+    <Message Importance="High" Text="InputFiles:          @(InputFiles)" />
+    <Message Importance="High" Text="OutputFiles:         @(OutputFiles)" />
+    <Exec Command= "$(CommandString)" />
+    <ItemGroup>
+      <ClCompile Include="$(SVOutHeader)" />
+      <ClCompile Include="$(SVOutCPP)" />
+      <ResourceCompile Include="$(SVOutRC)" />
+      <FileWrites Include="@OutputFiles" />
+    </ItemGroup>
+  </Target>
 </Project>
