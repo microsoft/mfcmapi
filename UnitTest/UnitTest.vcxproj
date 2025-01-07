@@ -702,7 +702,7 @@
     <SVOutHeader Condition=" '$(SVOutHeader)'=='' ">$(MSBuildThisFileDirectory)res\SmartViewTests.h</SVOutHeader>
     <SVOutRC Condition=" '$(SVOutRC)'=='' ">$(MSBuildThisFileDirectory)\res\SmartViewTests.rc</SVOutRC>
     <SVOutCPP Condition=" '$(SVOutCPP)'=='' ">$(MSBuildThisFileDirectory)\tests\smartViewTest.cpp</SVOutCPP>
-    <CommandString Condition=" '$(CommandString)'=='' ">$(PowerShellExe) -ExecutionPolicy Bypass -File $(BuildSmartViewTests) $(SVInDir) $(SVOutDir) $(SVOutHeader) $(SVOutRC) $(SVOutCPP)</CommandString>
+    <CommandString Condition=" '$(CommandString)'=='' ">$(PowerShellExe) -ExecutionPolicy Bypass -File $(BuildSmartViewTests)</CommandString>
   </PropertyGroup>
   <ItemGroup>
     <ClInclude Include="res\resource.h" />
@@ -780,7 +780,7 @@
     <Message Importance="High" Text="OutputFiles:         @(OutputFiles)" />
     <Exec Command= "$(CommandString)" />
     <ItemGroup>
-      <ClCompile Include="$(SVOutHeader)" />
+      <!-- <ClCompile Include="$(SVOutHeader)" /> -->
       <ClCompile Include="$(SVOutCPP)" />
       <ResourceCompile Include="$(SVOutRC)" />
       <FileWrites Include="@OutputFiles" />
