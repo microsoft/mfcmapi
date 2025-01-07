@@ -695,14 +695,14 @@
     </Link>
   </ItemDefinitionGroup>
   <PropertyGroup>
-    <PowerShellExe Condition=" '$(PowerShellExe)'=='' ">%WINDIR%\System32\WindowsPowerShell\v1.0\powershell.exe</PowerShellExe>
-    <BuildSmartViewTests Condition=" '$(BuildSmartViewTests)'=='' ">$(MSBuildThisFileDirectory)\scripts\Build-SmartViewTests.ps1</BuildSmartViewTests>
-    <SVInDir Condition=" '$(SVInDir)'=='' ">$(MSBuildThisFileDirectory)\SmartViewTestData\In</SVInDir>
-    <SVOutDir Condition=" '$(SVOutDir)'=='' ">$(MSBuildThisFileDirectory)\SmartViewTestData\Out</SVOutDir>
-    <SVOutHeader Condition=" '$(SVOutHeader)'=='' ">$(MSBuildThisFileDirectory)res\SmartViewTests.h</SVOutHeader>
-    <SVOutRC Condition=" '$(SVOutRC)'=='' ">$(MSBuildThisFileDirectory)\res\SmartViewTests.rc</SVOutRC>
-    <SVOutCPP Condition=" '$(SVOutCPP)'=='' ">$(MSBuildThisFileDirectory)\tests\smartViewTest.cpp</SVOutCPP>
-    <CommandString Condition=" '$(CommandString)'=='' ">$(PowerShellExe) -ExecutionPolicy Bypass -File $(BuildSmartViewTests)</CommandString>
+    <PowerShellExe>%WINDIR%\System32\WindowsPowerShell\v1.0\powershell.exe</PowerShellExe>
+    <BuildSmartViewTests>$(MSBuildThisFileDirectory)\scripts\Build-SmartViewTests.ps1</BuildSmartViewTests>
+    <SVInDir>$(MSBuildThisFileDirectory)\SmartViewTestData\In</SVInDir>
+    <SVOutDir>$(MSBuildThisFileDirectory)\SmartViewTestData\Out</SVOutDir>
+    <SVOutHeader>$(MSBuildThisFileDirectory)res\SmartViewTests.h</SVOutHeader>
+    <SVOutRC>$(MSBuildThisFileDirectory)\res\SmartViewTests.rc</SVOutRC>
+    <SVOutCPP>$(MSBuildThisFileDirectory)\tests\smartViewTest.cpp</SVOutCPP>
+    <CommandString>$(PowerShellExe) -ExecutionPolicy Bypass -File $(BuildSmartViewTests)</CommandString>
   </PropertyGroup>
   <ItemGroup>
     <ClInclude Include="res\resource.h" />
@@ -764,11 +764,8 @@
     <Import Project="..\packages\Microsoft.SourceLink.Common.1.0.0\build\Microsoft.SourceLink.Common.targets" Condition="Exists('..\packages\Microsoft.SourceLink.Common.1.0.0\build\Microsoft.SourceLink.Common.targets')" />
     <Import Project="..\packages\Microsoft.SourceLink.GitHub.1.0.0\build\Microsoft.SourceLink.GitHub.targets" Condition="Exists('..\packages\Microsoft.SourceLink.GitHub.1.0.0\build\Microsoft.SourceLink.GitHub.targets')" />
   </ImportGroup>
-  <Target
-    Name="BuildSmartViewTests"
-    Inputs="@(InputFiles)"
-    Outputs="@(OutputFiles)">
-    <Message Text="Rebuilding Smart View Tests" Importance="High" />
+  <Target Name="BuildSmartViewTests" Inputs="@(InputFiles)" Outputs="@(OutputFiles)">
+    <Message Importance="High" Text="Rebuilding Smart View Tests" />
     <Message Importance="High" Text="PowerShellExe:       $(PowerShellExe)" />
     <Message Importance="High" Text="BuildSmartViewTests: $(BuildSmartViewTests)" />
     <Message Importance="High" Text="SVInDir:             $(SVInDir)" />

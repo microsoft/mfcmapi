@@ -7,11 +7,11 @@ $outputHeaderFile = "$rootDir\res\SmartViewTests.h"
 $outputRCFile = "$rootDir\res\SmartViewTests.rc"
 $outputCPPFile = "$rootDir\tests\smartViewTest.cpp"
 
-Write-Host "inDir: $inDir"
-Write-Host "outDir: $outDir"
+Write-Host "inDir:            $inDir"
+Write-Host "outDir:           $outDir"
 Write-Host "outputHeaderFile: $outputHeaderFile"
-Write-Host "outputRCFile: $outputRCFile"
-Write-Host "outputCPPFile: $outputCPPFile"
+Write-Host "outputRCFile:     $outputRCFile"
+Write-Host "outputCPPFile:    $outputCPPFile"
 
 if (-Not (Test-Path -Path $inDir)) {
     Write-Error "Smartview In directory does not exist: $inDir"
