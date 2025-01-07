@@ -729,6 +729,7 @@
     <None Include="$(SVOutHeader)" />
     <None Include="$(SVOutCPP)" />
     <None Include="$(SVOutRC)" />
+    <None Include="scripts\Build-SmartViewTests.ps1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\core\core.vcxproj">

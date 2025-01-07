@@ -7,4 +7,4 @@ Report Tag
 	MessageSearchKey
 		cb: 16 lpb: E866555BC88F2E4AB665769B02770F90
 	cchAnsiText = 0x00000001
-	AnsiText
+	AnsiText = ""

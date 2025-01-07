@@ -32,7 +32,7 @@ $inDirPattern = "(\d+)-(.*?)(\d+)"
 foreach ($file in $inDirfiles) {
     $name = $file.BaseName
 
-    if ($name -match $inDirPattern) { 
+    if ($name -match $inDirPattern) {
         $testNum = [int]$matches[1]
         $testName = $matches[2].ToUpper()
         $subIndex = [int]$matches[3]
