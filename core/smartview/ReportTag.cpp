@@ -62,7 +62,7 @@ namespace smartview
 		if (m_cchAnsiText)
 		{
 			addChild(m_cchAnsiText, L"cchAnsiText = 0x%1!08X!", m_cchAnsiText->getData());
-			addChild(m_lpszAnsiText, L"AnsiText = %1!hs!", m_lpszAnsiText->c_str());
+			addChild(m_lpszAnsiText, L"AnsiText = \"%1!hs!\"", m_lpszAnsiText->c_str());
 		}
 	}
 } // namespace smartview

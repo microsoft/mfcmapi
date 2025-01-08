@@ -38,9 +38,6 @@
     <ClCompile Include="tests\stringtest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="tests\smartViewTest.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -79,5 +76,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="$(SVOutHeader)" />
+    <None Include="$(SVOutCPP)" />
+    <None Include="$(SVOutRC)" />
+    <None Include="scripts\Build-SmartViewTests.ps1" />
   </ItemGroup>
 </Project>

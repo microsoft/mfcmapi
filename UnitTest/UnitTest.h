@@ -2,6 +2,7 @@
 #include <CppUnitTest.h>
 #include <core/interpret/guid.h>
 #include <core/utility/strings.h>
+#include <core/addin/mfcmapi.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -38,4 +39,7 @@ namespace unittest
 		const __LineInfo* pLineInfo = nullptr);
 
 	std::wstring loadfile(HMODULE handle, int name);
+
+	void test(const std::wstring testName, parserType structType, std::vector<BYTE> hex, const std::wstring expected);
+	void test(parserType structType, DWORD hexNum, DWORD expectedNum);
 } // namespace unittest
