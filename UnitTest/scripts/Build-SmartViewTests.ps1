@@ -56,15 +56,15 @@ $resources = @()
 $tests = @()
 
 $inDirfiles = Get-ChildItem -Path $inDir -File
-$inDirPattern = "(\d+)-(.*?)(\d+)"
+$inDirPattern = "(.*?)-(\d+)"
 
 $index = 1000
 foreach ($file in $inDirfiles) {
     $name = $file.BaseName
 
     if ($name -match $inDirPattern) {
-        $parserName = $matches[2].ToUpper()
-        $subIndex = [int]$matches[3]
+        $parserName = $matches[1].ToUpper()
+        $subIndex = [int]$matches[2]
         $nameIn = "IDR_SV_$($parserName)_$($subIndex)_IN"
         $nameIn = $nameIn.ToUpper()
         $nameOut = "IDR_SV_$($parserName)_$($subIndex)_OUT"
@@ -83,18 +83,17 @@ foreach ($file in $inDirfiles) {
 }
 
 $outDirFiles = Get-ChildItem -Path $outDir -File
-$outDirPattern = "(\d+)-(.*?)-(.*?)(\d+)"
+$outDirPattern = "(.*?)-OUT-(\d+)"
 
 foreach ($file in $outDirFiles) {
     $name = $file.BaseName
 
     if ($name -match $outDirPattern) {
-        $testNum = [int]$matches[1]
-        $testName = $matches[2]
-        $subIndex = [int]$matches[4]
-        $name = "IDR_SV$($testNum)$($testName)$($subIndex)OUT"
-        $name = $name.ToUpper()
-        $resource = "$name TEXTFILE ""$outSubDir\$($file.Name)"""
+        $parserName = $matches[1]
+        $subIndex = [int]$matches[2]
+        $nameOut = "IDR_SV_$($parserName)_$($subIndex)_OUT"
+        $nameOut = $nameOut.ToUpper()
+        $resource = "$nameOut TEXTFILE ""$outSubDir\$($file.Name)"""
         $resource = $resource -replace '\\', '/'
         $resources += $resource
     }
