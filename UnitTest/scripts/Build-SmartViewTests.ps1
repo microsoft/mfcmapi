@@ -140,8 +140,9 @@ namespace SmartViewTest
                 std::wstring(L"SmartViewAddInTest1"),
                 parserType::END,
                 std::vector<BYTE>{1, 2, 3, 4},
-                std::wstring(L"Unknown Parser 39\r\n"
-                             L"\tcb: 4 lpb: 01020304"));
+                strings::formatmessage(L"Unknown Parser %1!d!\r\n"
+                             L"\tcb: 4 lpb: 01020304",
+                             parserType::END));
         }
 
 $tests
