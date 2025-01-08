@@ -699,10 +699,10 @@
     <BuildSmartViewTests>$(MSBuildThisFileDirectory)\scripts\Build-SmartViewTests.ps1</BuildSmartViewTests>
     <SVInDir>$(MSBuildThisFileDirectory)\SmartViewTestData\In</SVInDir>
     <SVOutDir>$(MSBuildThisFileDirectory)\SmartViewTestData\Out</SVOutDir>
-    <SVOutHeader>$(MSBuildThisFileDirectory)res\SmartViewTests.h</SVOutHeader>
-    <SVOutRC>$(MSBuildThisFileDirectory)\res\SmartViewTests.rc</SVOutRC>
-    <SVOutCPP>$(MSBuildThisFileDirectory)\tests\smartViewTest.cpp</SVOutCPP>
-    <CommandString>$(PowerShellExe) -ExecutionPolicy Bypass -File $(BuildSmartViewTests)</CommandString>
+    <SVOutHeader>$(IntDir)SmartViewTests.h</SVOutHeader>
+    <SVOutRC>$(IntDir)\SmartViewTests.rc</SVOutRC>
+    <SVOutCPP>$(IntDir)\smartViewTest.cpp</SVOutCPP>
+    <CommandString>$(PowerShellExe) -ExecutionPolicy Bypass -File $(BuildSmartViewTests) $(IntDir)</CommandString>
   </PropertyGroup>
   <ItemGroup>
     <ClInclude Include="res\resource.h" />
@@ -783,5 +783,8 @@
       <ResourceCompile Include="$(SVOutRC)" />
       <FileWrites Include="@OutputFiles" />
     </ItemGroup>
+  </Target>
+  <Target Name="CustomClean" BeforeTargets="Clean">
+    <Delete Files="@(OutputFiles)" />
   </Target>
 </Project>
