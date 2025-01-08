@@ -701,7 +701,7 @@
     <SVOutDir>$(MSBuildThisFileDirectory)\SmartViewTestData\Out</SVOutDir>
     <SVOutHeader>$(IntDir)SmartViewTests.h</SVOutHeader>
     <SVOutRC>$(IntDir)\SmartViewTests.rc</SVOutRC>
-    <SVOutCPP>$(IntDir)\smartViewTest.cpp</SVOutCPP>
+    <SVOutCPP>$(IntDir)\SmartViewTests.cpp</SVOutCPP>
     <CommandString>$(PowerShellExe) -ExecutionPolicy Bypass -File $(BuildSmartViewTests) $(IntDir)</CommandString>
   </PropertyGroup>
   <ItemGroup>
