@@ -1,30 +1,54 @@
+<#
+.SYNOPSIS
+    This script processes SmartView test data files and generates corresponding header, resource, and CPP files.
+
+.DESCRIPTION
+    The script takes an input directory parameter and processes files in the SmartViewTestData\In and SmartViewTestData\Out directories.
+    It generates defines, resources, and tests based on the file names and writes the output to header, resource, and CPP files.
+
+.PARAMETER IntDir
+    The directory where the output header, resource, and CPP files will be saved.
+
+.NOTES
+    Author: sgriffin
+    Date: 01/08/2025
+    Version: 1.0
+
+.EXAMPLE
+    .\Build-SmartViewTests.ps1 -IntDir "C:\OutputDirectory"
+#>
+
 param (
     [string]$IntDir
 )
 
+Write-Output "Running script: $PSScriptRoot\$(Split-Path -Path $MyInvocation.MyCommand.Definition -Leaf)"
+
+if (-not $IntDir) {
+    throw "IntDir parameter is required."
+}
+
 $rootDir = Split-Path -Path $PSScriptRoot -Parent
 $inSubDir = "SmartViewTestData\In"
 $outSubDir = "SmartViewTestData\Out"
-$inDir = "$rootDir\$inSubDir"
-$outDir = "$rootDir\$outSubDir"
-$outputHeaderFile = "$intDir\SmartViewTests.h"
-$outputRCFile = "$intDir\SmartViewTests.rc"
-$outputCPPFile = "$intDir\smartViewTest.cpp"
+$inDir = Join-Path -Path $rootDir -ChildPath $inSubDir
+$outDir = Join-Path -Path $rootDir -ChildPath $outSubDir
+$outputHeaderFile = Join-Path -Path $IntDir -ChildPath "SmartViewTests.h"
+$outputRCFile = Join-Path -Path $IntDir -ChildPath "SmartViewTests.rc"
+$outputCPPFile = Join-Path -Path $IntDir -ChildPath "SmartViewTests.cpp"
 
-Write-Host "IntDir:           $IntDir"
-Write-Host "inDir:            $inDir"
-Write-Host "outDir:           $outDir"
-Write-Host "outputHeaderFile: $outputHeaderFile"
-Write-Host "outputRCFile:     $outputRCFile"
-Write-Host "outputCPPFile:    $outputCPPFile"
+Write-Output "IntDir:             $IntDir"
+Write-Output "inDir:              $inDir"
+Write-Output "outDir:             $outDir"
+Write-Output "outputHeaderFile:   $outputHeaderFile"
+Write-Output "outputRCFile:       $outputRCFile"
+Write-Output "outputCPPFile:      $outputCPPFile"
 
 if (-Not (Test-Path -Path $inDir)) {
-    Write-Error "Smartview In directory does not exist: $inDir"
-    exit 1
+    throw "SmartView In directory does not exist: $inDir"
 }
 if (-Not (Test-Path -Path $outDir)) {
-    Write-Error "Smartview Out directory does not exist: $outDir"
-    exit 1
+    throw "SmartView Out directory does not exist: $outDir"
 }
 
 $defines = @()
@@ -106,33 +130,33 @@ $cppContent = @"
 namespace SmartViewTest
 {
 #define TEST(PARSERTYPE, NAME, NUM) \
-	TEST_METHOD(SV##NAME##PARSERTYPE##_##NUM) { unittest::test(static_cast<parserType>(##PARSERTYPE), IDR_SV##NAME##NUM##IN, IDR_SV##NAME##NUM##OUT); }
+    TEST_METHOD(SV##NAME##PARSERTYPE##_##NUM) { unittest::test(static_cast<parserType>(##PARSERTYPE), IDR_SV##NAME##NUM##IN, IDR_SV##NAME##NUM##OUT); }
 
-	TEST_CLASS(SmartViewTest)
-	{
-	public:
-		TEST_CLASS_INITIALIZE(initialize) { unittest::init(); }
+    TEST_CLASS(SmartViewTest)
+    {
+    public:
+        TEST_CLASS_INITIALIZE(initialize) { unittest::init(); }
 
-		TEST_METHOD(SmartViewAddInTest1)
-		{
-			unittest::test(
-				std::wstring(L"SmartViewAddInTest1"),
-				parserType::END,
-				std::vector<BYTE>{1, 2, 3, 4},
-				std::wstring(L"Unknown Parser 39\r\n"
-							 L"\tcb: 4 lpb: 01020304"));
-		}
+        TEST_METHOD(SmartViewAddInTest1)
+        {
+            unittest::test(
+                std::wstring(L"SmartViewAddInTest1"),
+                parserType::END,
+                std::vector<BYTE>{1, 2, 3, 4},
+                std::wstring(L"Unknown Parser 39\r\n"
+                             L"\tcb: 4 lpb: 01020304"));
+        }
 
 $tests
-	};
+    };
 } // namespace SmartViewTest
 "@
 
 $rcContent | Out-File -FilePath $outputRCFile -Encoding ASCII
-Write-Host "$outputRCFile length = $($(Get-Item $outputRCFile).length)"
+Write-Output "$outputRCFile length = $($(Get-Item $outputRCFile).length)"
 $headerContent | Out-File -FilePath $outputHeaderFile -Encoding ASCII
-Write-Host "$outputHeaderFile length = $($(Get-Item $outputHeaderFile).length)"
+Write-Output "$outputHeaderFile length = $($(Get-Item $outputHeaderFile).length)"
 $cppContent | Out-File -FilePath $outputCPPFile -Encoding ASCII
-Write-Host "$outputCPPFile length = $($(Get-Item $outputCPPFile).length)"
+Write-Output "$outputCPPFile length = $($(Get-Item $outputCPPFile).length)"
 
 Write-Output "Script completed successfully."
