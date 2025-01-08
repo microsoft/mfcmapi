@@ -776,7 +776,7 @@
     <Message Importance="High" Text="CommandString:       $(CommandString)" />
     <Message Importance="High" Text="InputFiles:          @(InputFiles)" />
     <Message Importance="High" Text="OutputFiles:         @(OutputFiles)" />
-    <Exec Command= "$(CommandString)" />
+    <Exec Command="$(CommandString)" />
     <ItemGroup>
       <!-- <ClCompile Include="$(SVOutHeader)" /> -->
       <ClCompile Include="$(SVOutCPP)" />
