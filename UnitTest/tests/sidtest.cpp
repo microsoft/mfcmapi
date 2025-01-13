@@ -134,25 +134,25 @@ namespace sidtest
 				ACEToString(aceDenyObjectBin.data(), sid::aceType::FreeBusy));
 		}
 
-		TEST_METHOD(Test_SDToString)
+		TEST_METHOD(Test_NTSDToString)
 		{
-			const auto nullsd = SDToString({}, sid::aceType::Container);
+			const auto nullsd = NTSDToString({}, sid::aceType::Container);
 			Assert::AreEqual(std::wstring{L"This is not a valid security descriptor."}, nullsd.dacl);
 			Assert::AreEqual(std::wstring{L""}, nullsd.info);
 
 			const auto invalid =
-				SDToString(strings::HexStringToBin(L"B606B07ABB6079AB2082C760"), sid::aceType::Container);
+				NTSDToString(strings::HexStringToBin(L"B606B07ABB6079AB2082C760"), sid::aceType::Container);
 			Assert::AreEqual(std::wstring{L"This is not a valid security descriptor."}, invalid.dacl);
 			Assert::AreEqual(std::wstring{L""}, invalid.info);
 
-			const auto sd = SDToString(
+			const auto sd = NTSDToString(
 				strings::HexStringToBin(L"0800030000000000010007801C000000280000000000000014000000020008000000000001010"
 										L"000000000051200000001020000000000052000000020020000"),
 				sid::aceType::Container);
 			Assert::AreEqual(std::wstring{L""}, sd.dacl);
 			Assert::AreEqual(std::wstring{L"0x0"}, sd.info);
 
-			const auto sd1 = SDToString(
+			const auto sd1 = NTSDToString(
 				strings::HexStringToBin(
 					L"08000300000000000100078064000000700000000000000014000000020050000200000001092400BF0F1F00010500000"
 					L"000000515000000271A6C07352F372AAD20FA5BAA830B0001022400BFC91F00010500000000000515000000271A6C0735"

@@ -149,6 +149,7 @@ enum class parserType
 	PTI8,
 	SFIDMID,
 	SWAPPEDTODO,
+	NTSD,
 	END // This must be the end of the enum
 };
 

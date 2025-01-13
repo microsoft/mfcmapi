@@ -39,6 +39,7 @@
 #include <core/smartview/RecurrencePattern.h>
 #include <core/smartview/SD/SIDBin.h>
 #include <core/smartview/SD/SDBin.h>
+#include <core/smartview/SD/NTSD.h>
 #include <core/smartview/XID.h>
 #include <core/smartview/decodeEntryID.h>
 #include <core/smartview/encodeEntryID.h>
@@ -137,11 +138,13 @@ namespace smartview
 		case parserType::SECURITYDESCRIPTOR:
 			return std::make_shared<SDBin>(lpMAPIProp, false);
 		case parserType::FBSECURITYDESCRIPTOR:
-			return std::make_shared<SDBin>(lpMAPIProp, true);
+			return std::make_shared<NTSD>(lpMAPIProp, true);
 		case parserType::XID:
 			return std::make_shared<XID>();
 		case parserType::SWAPPEDTODO:
 			return std::make_shared<swappedToDo>();
+		case parserType::NTSD:
+			return std::make_shared<NTSD>(lpMAPIProp, false);
 		default:
 			// Any other case is either handled by an add-in or not at all
 			return std::make_shared<addinParser>(type);

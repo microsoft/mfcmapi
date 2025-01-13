@@ -230,11 +230,23 @@ namespace sid
 		}
 	}
 
-	_Check_return_ SecurityDescriptor SDToString(const std::vector<BYTE>& buf, aceType acetype)
+	_Check_return_ SecurityDescriptor NTSDToString(const std::vector<BYTE>& buf, aceType acetype)
 	{
 		if (!IsValidSecurityDescriptorEx(buf))
 			return SecurityDescriptor{strings::formatmessage(IDS_INVALIDSD), strings::emptystring};
 		const auto pSecurityDescriptor = SECURITY_DESCRIPTOR_OF(buf.data());
+		const auto cbSecurityDescriptor = buf.size() - CbSecurityDescriptorHeader(buf.data());
+		const auto sdVector = std::vector<BYTE>(pSecurityDescriptor, pSecurityDescriptor + cbSecurityDescriptor);
+		const auto sdString = SDToString(sdVector, acetype);
+
+		return SecurityDescriptor{
+			sdString, flags::InterpretFlags(flagSecurityInfo, SECURITY_INFORMATION_OF(buf.data()))};
+	}
+
+	_Check_return_ std::wstring SDToString(const std::vector<BYTE>& buf, aceType acetype)
+	{
+		const auto pSecurityDescriptor = const_cast<LPBYTE>(buf.data());
+		if (!IsValidSecurityDescriptor(pSecurityDescriptor)) return {};
 
 		auto bValidDACL = static_cast<BOOL>(false);
 		auto pACL = PACL{};
@@ -258,8 +270,6 @@ namespace sid
 			}
 		}
 
-		return SecurityDescriptor{
-			strings::join(sdString, L"\r\n"),
-			flags::InterpretFlags(flagSecurityInfo, SECURITY_INFORMATION_OF(buf.data()))};
+		return strings::join(sdString, L"\r\n");
 	}
 } // namespace sid

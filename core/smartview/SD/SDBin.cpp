@@ -32,22 +32,9 @@ namespace smartview
 
 			// TODO: more accurately break this parsing into blocks with proper offsets
 			const auto sd = SDToString(*m_SDbin, acetype);
-			auto si = create(L"Security Info");
-			addChild(si);
-			if (!sd.info.empty())
-			{
-				si->addChild(m_SDbin, sd.info);
-			}
-
-			if (m_SDbin->size() >= 2 * sizeof(WORD))
-			{
-				const auto sdVersion = SECURITY_DESCRIPTOR_VERSION(m_SDbin->data());
-				auto szFlags = flags::InterpretFlags(flagSecurityVersion, sdVersion);
-				addHeader(L"Security Version: 0x%1!04X! = %2!ws!", sdVersion, szFlags.c_str());
-			}
 
 			addHeader(L"Descriptor");
-			addHeader(sd.dacl);
+			addHeader(sd);
 		}
 	}
 } // namespace smartview
