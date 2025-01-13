@@ -1,0 +1,16 @@
+ACE
+	Type: 0x05 = ACCESS_ALLOWED_OBJECT_ACE_TYPE
+	Flags: 0x1F = OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE | NO_PROPAGATE_INHERIT_ACE | INHERIT_ONLY_ACE | INHERITED_ACE
+	Size: 0x0038
+	Mask: 0x001208A9 = fsdrightReadBody | fsdrightReadProperty | fsdrightExecute | fsdrightReadAttributes | fsdrightViewItem | fsdrightReadControl | fsdrightSynchronize
+	Flags: 0xFFFFFFFF
+	ObjectType: {00020D0A-0000-0000-C000-000000000046} = IID_CAPONE_PROF
+	InheritedObjectType: {53BC2EC0-D953-11CD-9752-00AA004AE40E} = GUID_Dilkie
+	SID
+		User: (no domain)\(no name)
+		Textual SID: (no SID)
+			Revision: 0xFF
+			SubAuthorityCount: 0x01
+			IdentifierAuthority: SECURITY_NT_AUTHORITY
+			SubAuthority[0]
+				11 = 0x0000000B
