@@ -5,6 +5,8 @@
 #include <core/interpret/guid.h>
 #include <core/utility/strings.h>
 #include <core/utility/error.h>
+#include <core/smartview/SmartView.h>
+#include <core/addin/mfcmapi.h>
 
 namespace sid
 {
@@ -16,6 +18,28 @@ namespace sid
 	_Check_return_ std::wstring SidAccount::getName() const
 	{
 		return !name.empty() ? name : strings::formatmessage(IDS_NONAME);
+	}
+
+	_Check_return_ std::wstring IdentifierAuthorityToString(const SID_IDENTIFIER_AUTHORITY& authority)
+	{
+		if (authority.Value[0] != 0 || authority.Value[1] != 0)
+		{
+			return strings::format(
+				L"%02hx%02hx%02hx%02hx%02hx%02hx", // STRING_OK
+				static_cast<USHORT>(authority.Value[0]),
+				static_cast<USHORT>(authority.Value[1]),
+				static_cast<USHORT>(authority.Value[2]),
+				static_cast<USHORT>(authority.Value[3]),
+				static_cast<USHORT>(authority.Value[4]),
+				static_cast<USHORT>(authority.Value[5]));
+		}
+		else
+		{
+			return strings::format(
+				L"%lu", // STRING_OK
+				static_cast<ULONG>(authority.Value[4] << 8) + static_cast<ULONG>(authority.Value[5]) +
+					static_cast<ULONG>(authority.Value[3] << 16) + static_cast<ULONG>(authority.Value[2] << 24));
+		}
 	}
 
 	// [MS-DTYP] 2.4.2.2 SID--Packet Representation
@@ -37,24 +61,7 @@ namespace sid
 		auto TextualSid = strings::format(L"S-%lu-", SID_REVISION); // STRING_OK
 
 		// Add SID identifier authority to the string.
-		if (psia->Value[0] != 0 || psia->Value[1] != 0)
-		{
-			TextualSid += strings::format(
-				L"%02hx%02hx%02hx%02hx%02hx%02hx", // STRING_OK
-				static_cast<USHORT>(psia->Value[0]),
-				static_cast<USHORT>(psia->Value[1]),
-				static_cast<USHORT>(psia->Value[2]),
-				static_cast<USHORT>(psia->Value[3]),
-				static_cast<USHORT>(psia->Value[4]),
-				static_cast<USHORT>(psia->Value[5]));
-		}
-		else
-		{
-			TextualSid += strings::format(
-				L"%lu", // STRING_OK
-				static_cast<ULONG>(psia->Value[4] << 8) + static_cast<ULONG>(psia->Value[5]) +
-					static_cast<ULONG>(psia->Value[3] << 16) + static_cast<ULONG>(psia->Value[2] << 24));
-		}
+		TextualSid += IdentifierAuthorityToString(*psia);
 
 		// Add SID subauthorities to the string.
 		if (lpSubAuthoritiesCount)
@@ -124,6 +131,27 @@ namespace sid
 		if (buf.size() < sizeof(SID) - sizeof(DWORD) + sizeof(DWORD) * subAuthorityCount) return {};
 
 		return LookupAccountSid(buf.data());
+	}
+
+	std::wstring ACEToString(const std::vector<BYTE>& buf, aceType acetype)
+	{
+		parserType parser = parserType::ACEMESSAGE;
+		switch (acetype)
+		{
+		case aceType::Container:
+			parser = parserType::ACECONTAINER;
+			break;
+		case aceType::Message:
+			parser = parserType::ACEMESSAGE;
+			break;
+		case aceType::FreeBusy:
+			parser = parserType::ACEFB;
+			break;
+		}
+
+		return smartview::InterpretBinary(
+				   {static_cast<ULONG>(buf.size()), const_cast<LPBYTE>(buf.data())}, parser, nullptr)
+			->toString();
 	}
 
 	std::wstring ACEToString(_In_opt_ void* pACE, aceType acetype)
@@ -253,6 +281,7 @@ namespace sid
 				WC_B_S(GetAce(pACL, i, &pACE));
 				if (pACE)
 				{
+					// TODO: Replace this with the counted buffer variant
 					sdString.push_back(ACEToString(pACE, acetype));
 				}
 			}

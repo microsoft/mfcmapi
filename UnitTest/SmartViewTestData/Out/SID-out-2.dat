@@ -1,3 +1,16 @@
 SID
 	User: (no domain)\(no name)
 	Textual SID: S-1-5-21-2127521184-1604012920-1887927527-2066407
+		Revision: 0x01
+		SubAuthorityCount: 0x05
+		IdentifierAuthority: SECURITY_NT_AUTHORITY
+		SubAuthority[0]
+			21 = 0x00000015
+		SubAuthority[1]
+			2127521184 = 0x7ECF65A0
+		SubAuthority[2]
+			1604012920 = 0x5F9B4B78
+		SubAuthority[3]
+			1887927527 = 0x70877CE7
+		SubAuthority[4]
+			2066407 = 0x001F87E7
