@@ -37,6 +37,7 @@
 #include <core/smartview/ExtendedFlags.h>
 #include <core/smartview/AppointmentRecurrencePattern.h>
 #include <core/smartview/RecurrencePattern.h>
+#include <core/smartview/SD/ACEBin.h>
 #include <core/smartview/SD/SIDBin.h>
 #include <core/smartview/SD/SDBin.h>
 #include <core/smartview/XID.h>
@@ -44,6 +45,7 @@
 #include <core/smartview/encodeEntryID.h>
 #include <core/smartview/addinParser.h>
 #include <core/smartview/swappedToDo.h>
+#include <core/smartview/SD/NTSD.h>
 
 namespace smartview
 {
@@ -142,6 +144,16 @@ namespace smartview
 			return std::make_shared<XID>();
 		case parserType::SWAPPEDTODO:
 			return std::make_shared<swappedToDo>();
+		case parserType::ACL:
+			return std::make_shared<ACLBin>();
+		case parserType::ACECONTAINER:
+			return std::make_shared<ACEBin>(sid::aceType::Container);
+		case parserType::ACEMESSAGE:
+			return std::make_shared<ACEBin>(sid::aceType::Message);
+		case parserType::ACEFB:
+			return std::make_shared<ACEBin>(sid::aceType::FreeBusy);
+		case parserType::NTSD:
+			return std::make_shared<NTSD>();
 		default:
 			// Any other case is either handled by an add-in or not at all
 			return std::make_shared<addinParser>(type);

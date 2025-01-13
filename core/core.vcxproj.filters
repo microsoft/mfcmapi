@@ -348,6 +348,15 @@
     <ClInclude Include="utility\clipboard.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="smartview\SD\ACLBin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\SD\ACEBin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\SD\NTSD.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="utility\strings.cpp">
@@ -612,6 +621,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="utility\clipboard.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\SD\ACLBin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\SD\ACEBin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\SD\NTSD.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

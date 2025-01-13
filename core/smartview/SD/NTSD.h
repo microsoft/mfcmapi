@@ -31,6 +31,9 @@ namespace smartview
 	//		Actual Security Descriptor
 	class NTSD : public block
 	{
+	public:
+		NTSD(_In_opt_ LPMAPIPROP lpMAPIProp, bool bFB);
+
 	private:
 		void parse() override;
 		void parseBlocks() override;

@@ -22,14 +22,52 @@ namespace smartview
 		if (bFB) acetype = sid::aceType::FreeBusy;
 	}
 
-	void SDBin::parse() { m_SDbin = blockBytes::parse(parser, parser->getSize()); }
+
+		{
+		{
+			const auto originalOffset = parser->getOffset();
+			parser->setOffset(newOffset);
+			block::parse<SIDBin>(parser, false);
+			parser->setOffset(originalOffset);
+		}
+
+		OffsetSacl = blockT<DWORD>::parse(parser);
+		newOffset = OffsetSacl->getData();
+		if (newOffset && newOffset < m_SDbin->size())
+		{
+			const auto originalOffset = parser->getOffset();
+			parser->setOffset(newOffset);
+			Sacl = block::parse<ACLBin>(parser, false);
+			parser->setOffset(originalOffset);
+		}
+
+		OffsetDacl = blockT<DWORD>::parse(parser);
+		newOffset = OffsetDacl->getData();
+		if (newOffset && newOffset < m_SDbin->size())
+		{
+			const auto originalOffset = parser->getOffset();
+			parser->setOffset(newOffset);
+			Dacl = block::parse<ACLBin>(parser, false);
+			parser->setOffset(originalOffset);
+		}
+	}
 
 	void SDBin::parseBlocks()
 	{
+		setText(L"Security Descriptor");
+
+		addChild(Revision, L"Revision: 0x%1!02X!", Revision->getData());
+		addChild(Sbz1, L"Sbz1: 0x%1!02X!", Sbz1->getData());
+		addChild(Control, L"Control: 0x%1!04X!", Control->getData());
+		addChild(OffsetOwner, L"OffsetOwner: 0x%1!08X!", OffsetOwner->getData());
+		addChild(OffsetGroup, L"OffsetGroup: 0x%1!08X!", OffsetGroup->getData());
+		addChild(OffsetSacl, L"OffsetSacl: 0x%1!08X!", OffsetSacl->getData());
+		if (Sacl) addChild(Sacl);
+		addChild(OffsetDacl, L"OffsetDacl: 0x%1!08X!", OffsetDacl->getData());
+		if (Dacl) addChild(Dacl);
+
 		if (m_SDbin)
 		{
-			setText(L"Security Descriptor");
-
 			// TODO: more accurately break this parsing into blocks with proper offsets
 			const auto sd = SDToString(*m_SDbin, acetype);
 			auto si = create(L"Security Info");
