@@ -1,5 +1,5 @@
 #include <core/stdafx.h>
-#include <core/smartview/SIDBin.h>
+#include <core/smartview/SD/SIDBin.h>
 #include <core/utility/strings.h>
 #include <core/interpret/sid.h>
 

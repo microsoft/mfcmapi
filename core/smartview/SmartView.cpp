@@ -37,8 +37,8 @@
 #include <core/smartview/ExtendedFlags.h>
 #include <core/smartview/AppointmentRecurrencePattern.h>
 #include <core/smartview/RecurrencePattern.h>
-#include <core/smartview/SIDBin.h>
-#include <core/smartview/SDBin.h>
+#include <core/smartview/SD/SIDBin.h>
+#include <core/smartview/SD/SDBin.h>
 #include <core/smartview/XID.h>
 #include <core/smartview/decodeEntryID.h>
 #include <core/smartview/encodeEntryID.h>

@@ -1,5 +1,5 @@
 #include <core/stdafx.h>
-#include <core/smartview/SDBin.h>
+#include <core/smartview/SD/SDBin.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/interpret/flags.h>
 #include <core/interpret/sid.h>

@@ -824,9 +824,9 @@
     <ClInclude Include="smartview\ReportTag.h" />
     <ClInclude Include="smartview\RestrictionStruct.h" />
     <ClInclude Include="smartview\RuleCondition.h" />
-    <ClInclude Include="smartview\SDBin.h" />
+    <ClInclude Include="smartview\SD\SDBin.h" />
     <ClInclude Include="smartview\SearchFolderDefinition.h" />
-    <ClInclude Include="smartview\SIDBin.h" />
+    <ClInclude Include="smartview\SD\SIDBin.h" />
     <ClInclude Include="smartview\SmartView.h" />
     <ClInclude Include="smartview\TaskAssigners.h" />
     <ClInclude Include="smartview\TimeZone.h" />
@@ -914,9 +914,9 @@
     <ClCompile Include="smartview\ReportTag.cpp" />
     <ClCompile Include="smartview\RestrictionStruct.cpp" />
     <ClCompile Include="smartview\RuleCondition.cpp" />
-    <ClCompile Include="smartview\SDBin.cpp" />
+    <ClCompile Include="smartview\SD\SDBin.cpp" />
     <ClCompile Include="smartview\SearchFolderDefinition.cpp" />
-    <ClCompile Include="smartview\SIDBin.cpp" />
+    <ClCompile Include="smartview\SD\SIDBin.cpp" />
     <ClCompile Include="smartview\SmartView.cpp" />
     <ClCompile Include="smartview\block\block.cpp" />
     <ClCompile Include="smartview\TaskAssigners.cpp" />
