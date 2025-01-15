@@ -20,6 +20,34 @@ namespace sid
 		return !name.empty() ? name : strings::formatmessage(IDS_NONAME);
 	}
 
+	_Check_return_ std::wstring LookupIdentifierAuthority(const SID_IDENTIFIER_AUTHORITY& authority)
+	{
+		static const auto authorityLookupTable = std::vector<std::pair<SID_IDENTIFIER_AUTHORITY, std::wstring>>{
+			{SECURITY_NULL_SID_AUTHORITY, L"SECURITY_NULL_SID_AUTHORITY"},
+			{SECURITY_WORLD_SID_AUTHORITY, L"SECURITY_WORLD_SID_AUTHORITY"},
+			{SECURITY_LOCAL_SID_AUTHORITY, L"SECURITY_LOCAL_SID_AUTHORITY"},
+			{SECURITY_CREATOR_SID_AUTHORITY, L"SECURITY_CREATOR_SID_AUTHORITY"},
+			{SECURITY_NON_UNIQUE_AUTHORITY, L"SECURITY_NON_UNIQUE_AUTHORITY"},
+			{SECURITY_RESOURCE_MANAGER_AUTHORITY, L"SECURITY_RESOURCE_MANAGER_AUTHORITY"},
+			{SECURITY_NT_AUTHORITY, L"SECURITY_NT_AUTHORITY"},
+			{SECURITY_APP_PACKAGE_AUTHORITY, L"SECURITY_APP_PACKAGE_AUTHORITY"},
+			{SECURITY_MANDATORY_LABEL_AUTHORITY, L"SECURITY_MANDATORY_LABEL_AUTHORITY"},
+			{SECURITY_SCOPED_POLICY_ID_AUTHORITY, L"SECURITY_SCOPED_POLICY_ID_AUTHORITY"},
+			{SECURITY_AUTHENTICATION_AUTHORITY, L"SECURITY_AUTHENTICATION_AUTHORITY"},
+			{SECURITY_PROCESS_TRUST_AUTHORITY, L"SECURITY_PROCESS_TRUST_AUTHORITY"},
+		};
+
+		for (const auto& entry : authorityLookupTable)
+		{
+			if (std::memcmp(&authority, &entry.first, sizeof(SID_IDENTIFIER_AUTHORITY)) == 0)
+			{
+				return entry.second;
+			}
+		}
+
+		return IdentifierAuthorityToString(authority);
+	}
+
 	_Check_return_ std::wstring IdentifierAuthorityToString(const SID_IDENTIFIER_AUTHORITY& authority)
 	{
 		if (authority.Value[0] != 0 || authority.Value[1] != 0)

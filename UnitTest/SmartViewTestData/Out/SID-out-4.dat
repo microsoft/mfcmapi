@@ -3,5 +3,4 @@ SID
 	Textual SID: (no SID)
 		Revision: 0x01
 		SubAuthorityCount: 0x04
-		SubAuthority[0]
-			1736704 = 0x001A8000
+		SubAuthority[0]: 1736704 = 0x001A8000

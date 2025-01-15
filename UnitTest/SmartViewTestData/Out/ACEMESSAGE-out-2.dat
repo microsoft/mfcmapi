@@ -9,5 +9,4 @@ ACE
 			Revision: 0x01
 			SubAuthorityCount: 0x01
 			IdentifierAuthority: SECURITY_NT_AUTHORITY
-			SubAuthority[0]
-				11 = 0x0000000B
+			SubAuthority[0]: 11 = 0x0000000B

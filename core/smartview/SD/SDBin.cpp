@@ -4,6 +4,7 @@
 #include <core/interpret/flags.h>
 #include <core/interpret/sid.h>
 #include <core/mapi/mapiFunctions.h>
+#include <core/smartview/SD/SidBin.h>
 
 namespace smartview
 {
@@ -22,34 +23,60 @@ namespace smartview
 		if (bFB) acetype = sid::aceType::FreeBusy;
 	}
 
+	void SDBin::parse()
+	{
+		auto originalOffset = size_t{};
+		auto postSdOffset = size_t{};
+		const auto sdSize = parser->getSize();
 
+		Revision = blockT<BYTE>::parse(parser);
+		Sbz1 = blockT<BYTE>::parse(parser);
+		Control = blockT<WORD>::parse(parser);
+		OffsetOwner = blockT<DWORD>::parse(parser);
+		auto newOffset = OffsetOwner->getData();
+		if (newOffset && newOffset < sdSize)
 		{
-		{
-			const auto originalOffset = parser->getOffset();
+			originalOffset = parser->getOffset();
 			parser->setOffset(newOffset);
-			block::parse<SIDBin>(parser, false);
+			OwnerSid = block::parse<SIDBin>(parser, false);
+			postSdOffset = max(postSdOffset, parser->getOffset());
+			parser->setOffset(originalOffset);
+		}
+
+		OffsetGroup = blockT<DWORD>::parse(parser);
+		newOffset = OffsetGroup->getData();
+		if (newOffset && newOffset < sdSize)
+		{
+			originalOffset = parser->getOffset();
+			parser->setOffset(newOffset);
+			GroupSid = block::parse<SIDBin>(parser, false);
+			postSdOffset = max(postSdOffset, parser->getOffset());
 			parser->setOffset(originalOffset);
 		}
 
 		OffsetSacl = blockT<DWORD>::parse(parser);
 		newOffset = OffsetSacl->getData();
-		if (newOffset && newOffset < m_SDbin->size())
+		if (newOffset && newOffset < sdSize)
 		{
-			const auto originalOffset = parser->getOffset();
+			originalOffset = parser->getOffset();
 			parser->setOffset(newOffset);
 			Sacl = block::parse<ACLBin>(parser, false);
+			postSdOffset = max(postSdOffset, parser->getOffset());
 			parser->setOffset(originalOffset);
 		}
 
 		OffsetDacl = blockT<DWORD>::parse(parser);
 		newOffset = OffsetDacl->getData();
-		if (newOffset && newOffset < m_SDbin->size())
+		if (newOffset && newOffset < sdSize)
 		{
-			const auto originalOffset = parser->getOffset();
+			originalOffset = parser->getOffset();
 			parser->setOffset(newOffset);
 			Dacl = block::parse<ACLBin>(parser, false);
+			postSdOffset = max(postSdOffset, parser->getOffset());
 			parser->setOffset(originalOffset);
 		}
+
+		parser->setOffset(postSdOffset);
 	}
 
 	void SDBin::parseBlocks()
@@ -62,30 +89,10 @@ namespace smartview
 		addChild(OffsetOwner, L"OffsetOwner: 0x%1!08X!", OffsetOwner->getData());
 		addChild(OffsetGroup, L"OffsetGroup: 0x%1!08X!", OffsetGroup->getData());
 		addChild(OffsetSacl, L"OffsetSacl: 0x%1!08X!", OffsetSacl->getData());
-		if (Sacl) addChild(Sacl);
 		addChild(OffsetDacl, L"OffsetDacl: 0x%1!08X!", OffsetDacl->getData());
-		if (Dacl) addChild(Dacl);
-
-		if (m_SDbin)
-		{
-			// TODO: more accurately break this parsing into blocks with proper offsets
-			const auto sd = SDToString(*m_SDbin, acetype);
-			auto si = create(L"Security Info");
-			addChild(si);
-			if (!sd.info.empty())
-			{
-				si->addChild(m_SDbin, sd.info);
-			}
-
-			if (m_SDbin->size() >= 2 * sizeof(WORD))
-			{
-				const auto sdVersion = SECURITY_DESCRIPTOR_VERSION(m_SDbin->data());
-				auto szFlags = flags::InterpretFlags(flagSecurityVersion, sdVersion);
-				addHeader(L"Security Version: 0x%1!04X! = %2!ws!", sdVersion, szFlags.c_str());
-			}
-
-			addHeader(L"Descriptor");
-			addHeader(sd.dacl);
-		}
+		if (OwnerSid) addLabeledChild(L"OwnerSid", OwnerSid);
+		if (GroupSid) addLabeledChild(L"GroupSid", GroupSid);
+		if (Sacl) addLabeledChild(L"Sacl", Sacl);
+		if (Dacl) addLabeledChild(L"Dacl", Dacl);
 	}
 } // namespace smartview

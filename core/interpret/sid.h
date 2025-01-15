@@ -29,6 +29,7 @@ namespace sid
 		std::wstring info;
 	};
 
+	_Check_return_ std::wstring LookupIdentifierAuthority(const SID_IDENTIFIER_AUTHORITY& authority);
 	_Check_return_ std::wstring IdentifierAuthorityToString(const SID_IDENTIFIER_AUTHORITY& authority);
 	_Check_return_ std::wstring GetTextualSid(_In_opt_ PSID pSid);
 	_Check_return_ std::wstring GetTextualSid(std::vector<BYTE> buf);

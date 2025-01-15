@@ -16,7 +16,7 @@ namespace smartview
 		std::shared_ptr<blockT<WORD>> AclSize = emptyT<WORD>();
 		std::shared_ptr<blockT<WORD>> AceCount = emptyT<WORD>();
 		std::shared_ptr<blockT<WORD>> Sbz2 = emptyT<WORD>();
-		std::vector<std::shared_ptr<ACEBin>> ace;
+		std::vector<std::shared_ptr<ACEBin>> aces;
 
 		void parse() override;
 		void parseBlocks() override;

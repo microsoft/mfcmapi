@@ -8,9 +8,8 @@ ACE
 	InheritedObjectType: {53BC2EC0-D953-11CD-9752-00AA004AE40E} = GUID_Dilkie
 	SID
 		User: (no domain)\(no name)
-		Textual SID: (no SID)
+		Textual SID: S-255-5-11
 			Revision: 0xFF
 			SubAuthorityCount: 0x01
 			IdentifierAuthority: SECURITY_NT_AUTHORITY
-			SubAuthority[0]
-				11 = 0x0000000B
+			SubAuthority[0]: 11 = 0x0000000B

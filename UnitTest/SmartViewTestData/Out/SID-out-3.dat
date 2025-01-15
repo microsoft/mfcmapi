@@ -4,5 +4,4 @@ SID
 		Revision: 0x01
 		SubAuthorityCount: 0x01
 		IdentifierAuthority: SECURITY_NT_AUTHORITY
-		SubAuthority[0]
-			18 = 0x00000012
+		SubAuthority[0]: 18 = 0x00000012

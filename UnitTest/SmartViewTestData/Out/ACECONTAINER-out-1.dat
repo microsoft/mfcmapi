@@ -9,13 +9,8 @@ ACE
 			Revision: 0x01
 			SubAuthorityCount: 0x05
 			IdentifierAuthority: SECURITY_NT_AUTHORITY
-			SubAuthority[0]
-				21 = 0x00000015
-			SubAuthority[1]
-				124525111 = 0x076C1A37
-			SubAuthority[2]
-				708259637 = 0x2A372F35
-			SubAuthority[3]
-				1543119021 = 0x5BFA20AD
-			SubAuthority[4]
-				103169 = 0x00019301
+			SubAuthority[0]: 21 = 0x00000015
+			SubAuthority[1]: 124525111 = 0x076C1A37
+			SubAuthority[2]: 708259637 = 0x2A372F35
+			SubAuthority[3]: 1543119021 = 0x5BFA20AD
+			SubAuthority[4]: 103169 = 0x00019301

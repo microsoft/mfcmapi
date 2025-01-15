@@ -1,7 +1,6 @@
 #pragma once
 #include <core/smartview/block/block.h>
 #include <core/smartview/block/blockBytes.h>
-//#include <core/smartview/block/blockStringW.h>
 #include <core/smartview/block/blockT.h>
 #include <core/interpret/sid.h>
 #include <core/smartview/SD/NTSD.h>
@@ -40,15 +39,5 @@ namespace smartview
 
 		sid::aceType acetype{sid::aceType::Message};
 		std::shared_ptr<blockBytes> m_SDbin = emptyBB();
-
-		std::shared_ptr<blockT<BYTE>> Revision = emptyT<BYTE>();
-		std::shared_ptr<blockT<BYTE>> Sbz1 = emptyT<BYTE>();
-		std::shared_ptr<blockT<WORD>> Control = emptyT<WORD>();
-		std::shared_ptr<blockT<DWORD>> OffsetOwner = emptyT<DWORD>();
-		std::shared_ptr<blockT<DWORD>> OffsetGroup = emptyT<DWORD>();
-		std::shared_ptr<blockT<DWORD>> OffsetSacl = emptyT<DWORD>();
-		std::shared_ptr<ACLBin> Sacl;
-		std::shared_ptr<blockT<DWORD>> OffsetDacl = emptyT<DWORD>();
-		std::shared_ptr<ACLBin> Dacl;
 	};
 } // namespace smartview
