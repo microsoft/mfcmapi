@@ -205,8 +205,7 @@ namespace mapi::mapiui
 
 				// Dump our SD
 				auto sd = NTSDToString(std::vector<BYTE>(lpSDBuffer, lpSDBuffer + cbSBBuffer), m_acetype);
-				output::DebugPrint(
-					output::dbgLevel::Generic, L"sdInfo: %ws\nszDACL: %ws\n", sd.info.c_str(), sd.dacl.c_str());
+				output::DebugPrint(output::dbgLevel::Generic, L"sd: %ws", sd.c_str());
 			}
 		}
 

@@ -7,6 +7,7 @@
 #include <core/utility/error.h>
 #include <core/smartview/SmartView.h>
 #include <core/addin/mfcmapi.h>
+#include <core/smartview/SD/NTSD.h>
 
 namespace sid
 {
@@ -286,17 +287,16 @@ namespace sid
 		}
 	}
 
-	_Check_return_ SecurityDescriptor NTSDToString(const std::vector<BYTE>& buf, aceType acetype)
+	_Check_return_ std::wstring NTSDToString(const std::vector<BYTE>& buf, aceType acetype)
 	{
-		if (!IsValidSecurityDescriptorEx(buf))
-			return SecurityDescriptor{strings::formatmessage(IDS_INVALIDSD), strings::emptystring};
-		const auto pSecurityDescriptor = SECURITY_DESCRIPTOR_OF(buf.data());
-		const auto cbSecurityDescriptor = buf.size() - CbSecurityDescriptorHeader(buf.data());
-		const auto sdVector = std::vector<BYTE>(pSecurityDescriptor, pSecurityDescriptor + cbSecurityDescriptor);
-		const auto sdString = SDToString(sdVector, acetype);
+		const std::shared_ptr<smartview::block> svp = std::make_shared<smartview::NTSD>(acetype);
+		if (svp)
+		{
+			svp->parse(std::make_shared<smartview::binaryParser>(buf), true);
+			return svp->toString();
+		}
 
-		return SecurityDescriptor{
-			sdString, flags::InterpretFlags(flagSecurityInfo, SECURITY_INFORMATION_OF(buf.data()))};
+		return {};
 	}
 
 	_Check_return_ std::wstring SDToString(const std::vector<BYTE>& buf, aceType acetype)

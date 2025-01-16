@@ -46,6 +46,7 @@ namespace smartview
 	{
 	public:
 		NTSD(_In_opt_ LPMAPIPROP lpMAPIProp, bool bFB);
+		NTSD(_In_ sid::aceType _acetype) : acetype(_acetype) {};
 
 	private:
 		void parse() override;
