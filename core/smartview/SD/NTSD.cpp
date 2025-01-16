@@ -48,24 +48,14 @@ namespace smartview
 
 	void NTSD::parse()
 	{
-		// Layout:
-		// X padding value
-		// X+2 version value
-		// X+4 security information value
-		// X+8 <0 or more named properties>
-		// X+padding value <actual security descriptor>
-		// X = getOffset at start
-		// X+8 = getOffset after SecurityInformation read
-		// X+8 < x+padding value => we have named props
-		// size will be x+padding - (x+8) = padding -  8
 		const auto baseOffset = parser->getOffset();
 		const auto bufferSize = parser->getSize();
 		Padding = blockT<WORD>::parse(parser);
 		Version = blockT<WORD>::parse(parser);
 		SecurityInformation = blockT<DWORD>::parse(parser);
 		const auto bytesConsumed = parser->getOffset() - baseOffset;
-		const auto bytesLeft = bufferSize - bytesConsumed;
-		const auto namedPropSize = (*Padding < bufferSize && *Padding >= bytesConsumed) ? *Padding - bytesConsumed : bytesLeft;
+		const auto namedPropSize =
+			(bufferSize > *Padding && *Padding >= bytesConsumed) ? *Padding - bytesConsumed : parser->getSize();
 
 		if (namedPropSize > 0)
 		{
