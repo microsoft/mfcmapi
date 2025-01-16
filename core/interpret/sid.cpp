@@ -112,27 +112,6 @@ namespace sid
 			std::wstring(sidDomainBuf.begin(), sidDomainBuf.end()), std::wstring(sidNameBuf.begin(), sidNameBuf.end())};
 	}
 
-	std::wstring ACEToString(const std::vector<BYTE>& buf, aceType acetype)
-	{
-		parserType parser = parserType::ACEMESSAGE;
-		switch (acetype)
-		{
-		case aceType::Container:
-			parser = parserType::ACECONTAINER;
-			break;
-		case aceType::Message:
-			parser = parserType::ACEMESSAGE;
-			break;
-		case aceType::FreeBusy:
-			parser = parserType::ACEFB;
-			break;
-		}
-
-		return smartview::InterpretBinary(
-				   {static_cast<ULONG>(buf.size()), const_cast<LPBYTE>(buf.data())}, parser, nullptr)
-			->toString();
-	}
-
 	_Check_return_ std::wstring NTSDToString(const std::vector<BYTE>& buf, aceType acetype)
 	{
 		const std::shared_ptr<smartview::block> svp = std::make_shared<smartview::NTSD>(acetype);
