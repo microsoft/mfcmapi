@@ -1,0 +1,7 @@
+SID
+	User: (no domain)\(no name)
+	Textual SID: S-255-5-11
+		Revision: 0xFF
+		SubAuthorityCount: 0x01
+		IdentifierAuthority: SECURITY_NT_AUTHORITY
+		SubAuthority[0]: 11 = 0x0000000B

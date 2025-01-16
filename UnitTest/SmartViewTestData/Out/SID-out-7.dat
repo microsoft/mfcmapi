@@ -9,3 +9,5 @@ SID
 		SubAuthority[2]: 1604012920 = 0x5F9B4B78
 		SubAuthority[3]: 1887927527 = 0x70877CE7
 		SubAuthority[4]: 2066407 = 0x001F87E7
+	Unparsed data size = 0x00000003
+		cb: 3 lpb: 123456

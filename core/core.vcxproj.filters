@@ -183,13 +183,13 @@
     <ClInclude Include="smartview\RuleCondition.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="smartview\SDBin.h">
+    <ClInclude Include="smartview\SD\SDBin.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="smartview\SearchFolderDefinition.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="smartview\SIDBin.h">
+    <ClInclude Include="smartview\SD\SIDBin.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="smartview\SmartView.h">
@@ -348,6 +348,15 @@
     <ClInclude Include="utility\clipboard.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="smartview\SD\ACLBin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\SD\ACEBin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\SD\NTSD.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="utility\strings.cpp">
@@ -464,13 +473,13 @@
     <ClCompile Include="smartview\RuleCondition.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="smartview\SDBin.cpp">
+    <ClCompile Include="smartview\SD\SDBin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="smartview\SearchFolderDefinition.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="smartview\SIDBin.cpp">
+    <ClCompile Include="smartview\SD\SIDBin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="smartview\SmartView.cpp">
@@ -612,6 +621,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="utility\clipboard.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\SD\ACLBin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\SD\ACEBin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\SD\NTSD.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

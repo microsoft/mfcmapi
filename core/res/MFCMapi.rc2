@@ -1474,10 +1474,11 @@ IDS_ACCESSSIMPLEFREEBUSY "Simple FreeBusy"
 IDS_ACCESSDETAILEDFREEBUSY "Detailed FreeBusy"
 
 IDS_SIDACCOUNT "Account: %1!ws!\\%2!ws!\r\n\
-SID: %3!ws!\r\n\
-Access Type: 0x%4!08X! = %5!ws!\r\n\
-Access Flags: 0x%6!08X! = %7!ws!\r\n\
-Access Mask: 0x%8!08X! = %9!ws!"
+ACE Type: 0x%3!02X! = %4!ws!\r\n\
+ACE Flags: 0x%5!02X! = %6!ws!\r\n\
+ACE Mask: 0x%7!08X! = %8!ws!\r\n\
+ACE Size: 0x%9!04X!\r\n\
+SID: %10!ws!"
 IDS_SIDOBJECTYPE "ObjectType: "
 IDS_SIDINHERITEDOBJECTYPE "InheritedObjectType: "
 IDS_SIDFLAGS "Flags: 0x%1!08X!"

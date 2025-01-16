@@ -1,0 +1,16 @@
+ACE
+	Type: 0x00 = ACCESS_ALLOWED_ACE_TYPE
+	Flags: 0x09 = OBJECT_INHERIT_ACE | INHERIT_ONLY_ACE
+	Size: 0x0024
+	Mask: 0x001208A9 = fsdrightListContents | fsdrightReadProperty | fsdrightExecute | fsdrightReadAttributes | fsdrightViewItem | fsdrightReadControl | fsdrightSynchronize
+	SID
+		User: (no domain)\(no name)
+		Textual SID: S-1-5-21-124525111-708259637-1543119021-103169
+			Revision: 0x01
+			SubAuthorityCount: 0x05
+			IdentifierAuthority: SECURITY_NT_AUTHORITY
+			SubAuthority[0]: 21 = 0x00000015
+			SubAuthority[1]: 124525111 = 0x076C1A37
+			SubAuthority[2]: 708259637 = 0x2A372F35
+			SubAuthority[3]: 1543119021 = 0x5BFA20AD
+			SubAuthority[4]: 103169 = 0x00019301

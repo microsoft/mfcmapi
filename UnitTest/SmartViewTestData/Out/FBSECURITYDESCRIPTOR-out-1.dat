@@ -1,10 +1,47 @@
-Security Descriptor
-	Security Info
-		0x0
-	Security Version: 0x0003 = SECURITY_DESCRIPTOR_TRANSFER_VERSION
-	Descriptor
-	Account: \Everyone
-SID: S-1-1-0
-Access Type: 0x00000000 = ACCESS_ALLOWED_ACE_TYPE
-Access Flags: 0x00000002 = CONTAINER_INHERIT_ACE
-Access Mask: 0x00000001 = fsdrightFreeBusySimple
+PR_NT_SECURITY_DESCRIPTOR
+	Padding: 0x0008
+	Version: 0x0003 = SECURITY_DESCRIPTOR_TRANSFER_VERSION
+	Security Information: 0x00000000 = 0x0
+	Security Descriptor
+		Revision: 0x01
+		Sbz1: 0x00
+		Control: 0x8004
+		OffsetOwner: 0x00000014
+		OffsetGroup: 0x00000020
+		OffsetSacl: 0x00000000
+		OffsetDacl: 0x0000002C
+		OwnerSid
+			SID
+				User: NT AUTHORITY\SYSTEM
+				Textual SID: S-1-5-18
+					Revision: 0x01
+					SubAuthorityCount: 0x01
+					IdentifierAuthority: SECURITY_NT_AUTHORITY
+					SubAuthority[0]: 18 = 0x00000012
+		GroupSid
+			SID
+				User: NT AUTHORITY\SYSTEM
+				Textual SID: S-1-5-18
+					Revision: 0x01
+					SubAuthorityCount: 0x01
+					IdentifierAuthority: SECURITY_NT_AUTHORITY
+					SubAuthority[0]: 18 = 0x00000012
+		Dacl
+			ACL
+				Revision: 0x02
+				Sbz1: 0x00
+				AclSize: 0x001C
+				AceCount: 0x0001
+				Sbz2: 0x0000
+				ACE
+					Type: 0x00 = ACCESS_ALLOWED_ACE_TYPE
+					Flags: 0x02 = CONTAINER_INHERIT_ACE
+					Size: 0x0014
+					Mask: 0x00000001 = fsdrightReadBody
+					SID
+						User: \Everyone
+						Textual SID: S-1-1-0
+							Revision: 0x01
+							SubAuthorityCount: 0x01
+							IdentifierAuthority: SECURITY_WORLD_SID_AUTHORITY
+							SubAuthority[0]: 0 = 0x00000000

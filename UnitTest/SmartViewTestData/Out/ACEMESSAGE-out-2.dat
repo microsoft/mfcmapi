@@ -1,0 +1,12 @@
+ACE
+	Type: 0x01 = ACCESS_DENIED_ACE_TYPE
+	Flags: 0x09 = OBJECT_INHERIT_ACE | INHERIT_ONLY_ACE
+	Size: 0x0014
+	Mask: 0x001208A9 = fsdrightReadBody | fsdrightReadProperty | fsdrightExecute | fsdrightReadAttributes | fsdrightViewItem | fsdrightReadControl | fsdrightSynchronize
+	SID
+		User: NT AUTHORITY\Authenticated Users
+		Textual SID: S-1-5-11
+			Revision: 0x01
+			SubAuthorityCount: 0x01
+			IdentifierAuthority: SECURITY_NT_AUTHORITY
+			SubAuthority[0]: 11 = 0x0000000B

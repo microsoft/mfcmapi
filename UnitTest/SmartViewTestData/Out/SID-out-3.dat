@@ -1,3 +1,7 @@
 SID
 	User: NT AUTHORITY\SYSTEM
 	Textual SID: S-1-5-18
+		Revision: 0x01
+		SubAuthorityCount: 0x01
+		IdentifierAuthority: SECURITY_NT_AUTHORITY
+		SubAuthority[0]: 18 = 0x00000012

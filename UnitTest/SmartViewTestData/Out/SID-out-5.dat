@@ -1,3 +1,7 @@
 SID
 	User: (no domain)\(no name)
 	Textual SID: (no SID)
+		Revision: 0x01
+		SubAuthorityCount: 0x04
+		IdentifierAuthority: 268436996
+		SubAuthority[0]: 3 = 0x00000003
