@@ -1,5 +1,36 @@
 PR_NT_SECURITY_DESCRIPTOR
-	Security Info
-		0x0
-	Security Version: 0x0003 = SECURITY_DESCRIPTOR_TRANSFER_VERSION
-	Descriptor
+	Padding: 0x0008
+	Version: 0x0003 = SECURITY_DESCRIPTOR_TRANSFER_VERSION
+	Security Information: 0x00000000 = 0x0
+	Security Descriptor
+		Revision: 0x01
+		Sbz1: 0x00
+		Control: 0x8007
+		OffsetOwner: 0x0000001C
+		OffsetGroup: 0x00000028
+		OffsetSacl: 0x00000000
+		OffsetDacl: 0x00000014
+		OwnerSid
+			SID
+				User: NT AUTHORITY\SYSTEM
+				Textual SID: S-1-5-18
+					Revision: 0x01
+					SubAuthorityCount: 0x01
+					IdentifierAuthority: SECURITY_NT_AUTHORITY
+					SubAuthority[0]: 18 = 0x00000012
+		GroupSid
+			SID
+				User: BUILTIN\Administrators
+				Textual SID: S-1-5-32-544
+					Revision: 0x01
+					SubAuthorityCount: 0x02
+					IdentifierAuthority: SECURITY_NT_AUTHORITY
+					SubAuthority[0]: 32 = 0x00000020
+					SubAuthority[1]: 544 = 0x00000220
+		Dacl
+			ACL
+				Revision: 0x02
+				Sbz1: 0x00
+				AclSize: 0x0008
+				AceCount: 0x0000
+				Sbz2: 0x0000

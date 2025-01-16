@@ -2,12 +2,26 @@
 #include <core/smartview/block/block.h>
 #include <core/smartview/block/blockBytes.h>
 #include <core/smartview/block/blockT.h>
-#include <core/interpret/sid.h>
+#include <core/smartview/block/blockStringW.h>
 #include <core/smartview/SD/NTSD.h>
-#include <core/smartview/SD/ACLBin.h>
+#include <core/smartview/SD/SDBin.h>
 
 namespace smartview
 {
+	class NamedProp : public block
+	{
+	private:
+		void parse() override;
+		void parseBlocks() override;
+
+		std::shared_ptr<blockT<WORD>> tag = emptyT<WORD>();
+		std::shared_ptr<blockT<GUID>> guid = emptyT<GUID>();
+		std::shared_ptr<blockT<BYTE>> kind = emptyT<BYTE>();
+		std::shared_ptr<blockT<DWORD>> id = emptyT<DWORD>();
+		std::shared_ptr<blockStringW> name = emptySW();
+	};
+
+
 	// PR_NT_SECURITY_DESCRIPTOR
 	// https://github.com/microsoft/MAPIStubLibrary/blob/main/include/EdkMdb.h
 	//
@@ -37,7 +51,12 @@ namespace smartview
 		void parse() override;
 		void parseBlocks() override;
 
+		std::shared_ptr<blockT<WORD>> Padding = emptyT<WORD>();
+		std::shared_ptr<blockT<WORD>> Version = emptyT<WORD>();
+		std::shared_ptr<blockT<DWORD>> SecurityInformation = emptyT<DWORD>();
+		std::vector<std::shared_ptr<NamedProp>> NamedProperties;
+		std::shared_ptr<SDBin> SD;
+
 		sid::aceType acetype{sid::aceType::Message};
-		std::shared_ptr<blockBytes> m_SDbin = emptyBB();
 	};
 } // namespace smartview

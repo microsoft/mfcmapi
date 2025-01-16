@@ -25,16 +25,20 @@ namespace smartview
 
 	void SDBin::parse()
 	{
+		const auto baseOffset = parser->getOffset();
 		auto originalOffset = size_t{};
-		auto postSdOffset = size_t{};
 		const auto sdSize = parser->getSize();
 
 		Revision = blockT<BYTE>::parse(parser);
 		Sbz1 = blockT<BYTE>::parse(parser);
 		Control = blockT<WORD>::parse(parser);
 		OffsetOwner = blockT<DWORD>::parse(parser);
-		auto newOffset = OffsetOwner->getData();
-		if (newOffset && newOffset < sdSize)
+
+		// Read from offsets now - first remember where we are
+		// We'll consider anything after our last read to be junk
+		auto postSdOffset = parser->getOffset();
+		auto newOffset = *OffsetOwner + baseOffset;
+		if (*OffsetOwner && newOffset < sdSize)
 		{
 			originalOffset = parser->getOffset();
 			parser->setOffset(newOffset);
@@ -44,8 +48,8 @@ namespace smartview
 		}
 
 		OffsetGroup = blockT<DWORD>::parse(parser);
-		newOffset = OffsetGroup->getData();
-		if (newOffset && newOffset < sdSize)
+		newOffset = *OffsetGroup + baseOffset;
+		if (*OffsetGroup && newOffset < sdSize)
 		{
 			originalOffset = parser->getOffset();
 			parser->setOffset(newOffset);
@@ -55,8 +59,8 @@ namespace smartview
 		}
 
 		OffsetSacl = blockT<DWORD>::parse(parser);
-		newOffset = OffsetSacl->getData();
-		if (newOffset && newOffset < sdSize)
+		newOffset = *OffsetSacl + baseOffset;
+		if (*OffsetSacl && newOffset < sdSize)
 		{
 			originalOffset = parser->getOffset();
 			parser->setOffset(newOffset);
@@ -66,8 +70,8 @@ namespace smartview
 		}
 
 		OffsetDacl = blockT<DWORD>::parse(parser);
-		newOffset = OffsetDacl->getData();
-		if (newOffset && newOffset < sdSize)
+		newOffset = *OffsetDacl + baseOffset;
+		if (*OffsetDacl && newOffset < sdSize)
 		{
 			originalOffset = parser->getOffset();
 			parser->setOffset(newOffset);
@@ -76,6 +80,7 @@ namespace smartview
 			parser->setOffset(originalOffset);
 		}
 
+		// Having read everything, set our offset to the end of the SD
 		parser->setOffset(postSdOffset);
 	}
 

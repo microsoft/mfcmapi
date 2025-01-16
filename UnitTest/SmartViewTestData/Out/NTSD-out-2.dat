@@ -1,17 +1,68 @@
 PR_NT_SECURITY_DESCRIPTOR
-	Security Info
-		0x0
-	Security Version: 0x0003 = SECURITY_DESCRIPTOR_TRANSFER_VERSION
-	Descriptor
-	Account: (no domain)\(no name)
-ACE Type: 0x01 = ACCESS_DENIED_ACE_TYPE
-ACE Flags: 0x09 = OBJECT_INHERIT_ACE | INHERIT_ONLY_ACE
-ACE Mask: 0x001F0FBF = fsdrightReadBody | fsdrightWriteBody | fsdrightAppendMsg | fsdrightReadProperty | fsdrightWriteProperty | fsdrightExecute | fsdrightReadAttributes | fsdrightWriteAttributes | fsdrightWriteOwnProperty | fsdrightDeleteOwnItem | fsdrightViewItem | fsdrightWriteSD | fsdrightDelete | fsdrightWriteOwner | fsdrightReadControl | fsdrightSynchronize
-ACE Size: 0x0024
-SID: S-1-5-21-124525095-708259637-1543119021-754602
-Account: (no domain)\(no name)
-ACE Type: 0x01 = ACCESS_DENIED_ACE_TYPE
-ACE Flags: 0x02 = CONTAINER_INHERIT_ACE
-ACE Mask: 0x001FC9BF = fsdrightReadBody | fsdrightWriteBody | fsdrightAppendMsg | fsdrightReadProperty | fsdrightWriteProperty | fsdrightExecute | fsdrightReadAttributes | fsdrightWriteAttributes | fsdrightViewItem | fsdrightWriteSD | fsdrightDelete | fsdrightWriteOwner | fsdrightReadControl | fsdrightSynchronize | 0xC000
-ACE Size: 0x0024
-SID: S-1-5-21-124525095-708259637-1543119021-754602
+	Padding: 0x0008
+	Version: 0x0003 = SECURITY_DESCRIPTOR_TRANSFER_VERSION
+	Security Information: 0x00000000 = 0x0
+	Security Descriptor
+		Revision: 0x01
+		Sbz1: 0x00
+		Control: 0x8007
+		OffsetOwner: 0x00000064
+		OffsetGroup: 0x00000070
+		OffsetSacl: 0x00000000
+		OffsetDacl: 0x00000014
+		OwnerSid
+			SID
+				User: NT AUTHORITY\SYSTEM
+				Textual SID: S-1-5-18
+					Revision: 0x01
+					SubAuthorityCount: 0x01
+					IdentifierAuthority: SECURITY_NT_AUTHORITY
+					SubAuthority[0]: 18 = 0x00000012
+		GroupSid
+			SID
+				User: BUILTIN\Administrators
+				Textual SID: S-1-5-32-544
+					Revision: 0x01
+					SubAuthorityCount: 0x02
+					IdentifierAuthority: SECURITY_NT_AUTHORITY
+					SubAuthority[0]: 32 = 0x00000020
+					SubAuthority[1]: 544 = 0x00000220
+		Dacl
+			ACL
+				Revision: 0x02
+				Sbz1: 0x00
+				AclSize: 0x0050
+				AceCount: 0x0002
+				Sbz2: 0x0000
+				ACE
+					Type: 0x01 = ACCESS_DENIED_ACE_TYPE
+					Flags: 0x09 = OBJECT_INHERIT_ACE | INHERIT_ONLY_ACE
+					Size: 0x0024
+					Mask: 0x001F0FBF = fsdrightReadBody | fsdrightWriteBody | fsdrightAppendMsg | fsdrightReadProperty | fsdrightWriteProperty | fsdrightExecute | fsdrightReadAttributes | fsdrightWriteAttributes | fsdrightWriteOwnProperty | fsdrightDeleteOwnItem | fsdrightViewItem | fsdrightWriteSD | fsdrightDelete | fsdrightWriteOwner | fsdrightReadControl | fsdrightSynchronize
+					SID
+						User: (no domain)\(no name)
+						Textual SID: S-1-5-21-124525095-708259637-1543119021-754602
+							Revision: 0x01
+							SubAuthorityCount: 0x05
+							IdentifierAuthority: SECURITY_NT_AUTHORITY
+							SubAuthority[0]: 21 = 0x00000015
+							SubAuthority[1]: 124525095 = 0x076C1A27
+							SubAuthority[2]: 708259637 = 0x2A372F35
+							SubAuthority[3]: 1543119021 = 0x5BFA20AD
+							SubAuthority[4]: 754602 = 0x000B83AA
+				ACE
+					Type: 0x01 = ACCESS_DENIED_ACE_TYPE
+					Flags: 0x02 = CONTAINER_INHERIT_ACE
+					Size: 0x0024
+					Mask: 0x001FC9BF = fsdrightReadBody | fsdrightWriteBody | fsdrightAppendMsg | fsdrightReadProperty | fsdrightWriteProperty | fsdrightExecute | fsdrightReadAttributes | fsdrightWriteAttributes | fsdrightViewItem | fsdrightWriteSD | fsdrightDelete | fsdrightWriteOwner | fsdrightReadControl | fsdrightSynchronize | 0xC000
+					SID
+						User: (no domain)\(no name)
+						Textual SID: S-1-5-21-124525095-708259637-1543119021-754602
+							Revision: 0x01
+							SubAuthorityCount: 0x05
+							IdentifierAuthority: SECURITY_NT_AUTHORITY
+							SubAuthority[0]: 21 = 0x00000015
+							SubAuthority[1]: 124525095 = 0x076C1A27
+							SubAuthority[2]: 708259637 = 0x2A372F35
+							SubAuthority[3]: 1543119021 = 0x5BFA20AD
+							SubAuthority[4]: 754602 = 0x000B83AA
