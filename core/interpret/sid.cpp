@@ -71,8 +71,12 @@ namespace sid
 		}
 	}
 
-	_Check_return_ SidAccount LookupAccountSid(PSID SidStart)
+	_Check_return_ SidAccount LookupAccountSid(std::vector<BYTE> buf)
 	{
+		const auto subAuthorityCount = buf.size() >= 2 ? buf[1] : 0;
+		if (buf.size() < sizeof(SID) - sizeof(DWORD) + sizeof(DWORD) * subAuthorityCount) return {};
+
+		PSID SidStart = buf.data();
 		if (!IsValidSid(SidStart)) return {};
 
 		// TODO: Make use of SidNameUse information
@@ -108,14 +112,6 @@ namespace sid
 			std::wstring(sidDomainBuf.begin(), sidDomainBuf.end()), std::wstring(sidNameBuf.begin(), sidNameBuf.end())};
 	}
 
-	_Check_return_ SidAccount LookupAccountSid(std::vector<BYTE> buf)
-	{
-		const auto subAuthorityCount = buf.size() >= 2 ? buf[1] : 0;
-		if (buf.size() < sizeof(SID) - sizeof(DWORD) + sizeof(DWORD) * subAuthorityCount) return {};
-
-		return LookupAccountSid(buf.data());
-	}
-
 	std::wstring ACEToString(const std::vector<BYTE>& buf, aceType acetype)
 	{
 		parserType parser = parserType::ACEMESSAGE;
@@ -135,20 +131,6 @@ namespace sid
 		return smartview::InterpretBinary(
 				   {static_cast<ULONG>(buf.size()), const_cast<LPBYTE>(buf.data())}, parser, nullptr)
 			->toString();
-	}
-
-	_Check_return_ bool IsValidSecurityDescriptorEx(const std::vector<BYTE>& buf) noexcept
-	{
-		try
-		{
-			if (buf.empty() || buf.size() < 2 * sizeof(DWORD)) return false;
-			if (CbSecurityDescriptorHeader(buf.data()) >= buf.size()) return false;
-			const auto pSecurityDescriptor = SECURITY_DESCRIPTOR_OF(buf.data());
-			return IsValidSecurityDescriptor(pSecurityDescriptor);
-		} catch (...)
-		{
-			return false;
-		}
 	}
 
 	_Check_return_ std::wstring NTSDToString(const std::vector<BYTE>& buf, aceType acetype)
