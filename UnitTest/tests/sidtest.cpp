@@ -69,53 +69,5 @@ namespace sidtest
 			// test ACEToString with a zero length vector
 			unittest::AreEqualEx(std::wstring{L""}, ACEToString({}, sid::aceType::Container));
 		}
-
-		TEST_METHOD(Test_NTSDToString)
-		{
-			const auto nullsd = NTSDToString({}, sid::aceType::Container);
-			Assert::AreEqual(std::wstring{L"This is not a valid security descriptor."}, nullsd.dacl);
-			Assert::AreEqual(std::wstring{L""}, nullsd.info);
-
-			const auto invalid =
-				NTSDToString(strings::HexStringToBin(L"B606B07ABB6079AB2082C760"), sid::aceType::Container);
-			Assert::AreEqual(std::wstring{L"This is not a valid security descriptor."}, invalid.dacl);
-			Assert::AreEqual(std::wstring{L""}, invalid.info);
-
-			const auto sd = NTSDToString(
-				strings::HexStringToBin(L"0800030000000000010007801C000000280000000000000014000000020008000000000001010"
-										L"000000000051200000001020000000000052000000020020000"),
-				sid::aceType::Container);
-			Assert::AreEqual(std::wstring{L""}, sd.dacl);
-			Assert::AreEqual(std::wstring{L"0x0"}, sd.info);
-
-			const auto sd1 = NTSDToString(
-				strings::HexStringToBin(
-					L"08000300000000000100078064000000700000000000000014000000020050000200000001092400BF0F1F00010500000"
-					L"000000515000000271A6C07352F372AAD20FA5BAA830B0001022400BFC91F00010500000000000515000000271A6C0735"
-					L"2F372AAD20FA5BAA830B0001010000000000051200000001020000000000052000000020020000"),
-				sid::aceType::Container);
-			unittest::AreEqualEx(
-				std::wstring{
-					L"Account: (no domain)\\(no name)\r\n"
-					L"ACE Type: 0x01 = ACCESS_DENIED_ACE_TYPE\r\n"
-					L"ACE Flags: 0x09 = OBJECT_INHERIT_ACE | INHERIT_ONLY_ACE\r\n"
-					L"ACE Mask: 0x001F0FBF = fsdrightListContents | fsdrightCreateItem | fsdrightCreateContainer | "
-					L"fsdrightReadProperty | fsdrightWriteProperty | fsdrightExecute | fsdrightReadAttributes | "
-					L"fsdrightWriteAttributes | fsdrightViewItem | fsdrightWriteSD | fsdrightDelete | "
-					L"fsdrightWriteOwner | fsdrightReadControl | fsdrightSynchronize | 0x600\r\n"
-					L"ACE Size: 0x0024\r\n"
-					L"SID: S-1-5-21-124525095-708259637-1543119021-754602\r\n"
-					L"Account: (no domain)\\(no name)\r\n"
-					L"ACE Type: 0x01 = ACCESS_DENIED_ACE_TYPE\r\n"
-					L"ACE Flags: 0x02 = CONTAINER_INHERIT_ACE\r\n"
-					L"ACE Mask: 0x001FC9BF = fsdrightListContents | fsdrightCreateItem | fsdrightCreateContainer | "
-					L"fsdrightReadProperty | fsdrightWriteProperty | fsdrightExecute | fsdrightReadAttributes | "
-					L"fsdrightWriteAttributes | fsdrightViewItem | fsdrightOwner | fsdrightContact | fsdrightWriteSD | "
-					L"fsdrightDelete | fsdrightWriteOwner | fsdrightReadControl | fsdrightSynchronize\r\n"
-					L"ACE Size: 0x0024\r\n"
-					L"SID: S-1-5-21-124525095-708259637-1543119021-754602"},
-				sd1.dacl);
-			unittest::AreEqualEx(std::wstring{L"0x0"}, sd1.info);
-		}
 	};
 } // namespace sidtest

@@ -298,35 +298,4 @@ namespace sid
 
 		return {};
 	}
-
-	_Check_return_ std::wstring SDToString(const std::vector<BYTE>& buf, aceType acetype)
-	{
-		const auto pSecurityDescriptor = const_cast<LPBYTE>(buf.data());
-		if (!IsValidSecurityDescriptor(pSecurityDescriptor)) return {};
-
-		auto bValidDACL = static_cast<BOOL>(false);
-		auto pACL = PACL{};
-		auto bDACLDefaulted = static_cast<BOOL>(false);
-		auto sdString = std::vector<std::wstring>{};
-		EC_B_S(GetSecurityDescriptorDacl(pSecurityDescriptor, &bValidDACL, &pACL, &bDACLDefaulted));
-		if (bValidDACL && pACL)
-		{
-			auto ACLSizeInfo = ACL_SIZE_INFORMATION{};
-			EC_B_S(GetAclInformation(pACL, &ACLSizeInfo, sizeof ACLSizeInfo, AclSizeInformation));
-
-			for (DWORD i = 0; i < ACLSizeInfo.AceCount; i++)
-			{
-				auto pACE = LPVOID{};
-
-				WC_B_S(GetAce(pACL, i, &pACE));
-				if (pACE)
-				{
-					// TODO: Replace this with the counted buffer variant
-					sdString.push_back(ACEToString(pACE, acetype));
-				}
-			}
-		}
-
-		return strings::join(sdString, L"\r\n");
-	}
 } // namespace sid
