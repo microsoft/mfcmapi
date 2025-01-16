@@ -21,7 +21,6 @@ namespace smartview
 		std::shared_ptr<blockStringW> name = emptySW();
 	};
 
-
 	// PR_NT_SECURITY_DESCRIPTOR
 	// https://github.com/microsoft/MAPIStubLibrary/blob/main/include/EdkMdb.h
 	//
@@ -46,7 +45,7 @@ namespace smartview
 	{
 	public:
 		NTSD(_In_opt_ LPMAPIPROP lpMAPIProp, bool bFB);
-		NTSD(_In_ sid::aceType _acetype) : acetype(_acetype) {};
+		NTSD(_In_ sid::aceType _acetype) : acetype(_acetype){};
 
 	private:
 		void parse() override;

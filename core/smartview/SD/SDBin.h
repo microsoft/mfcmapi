@@ -14,7 +14,7 @@ namespace smartview
 	{
 	public:
 		SDBin(_In_opt_ LPMAPIPROP lpMAPIProp, bool bFB);
-		SDBin(_In_ sid::aceType _acetype) : acetype(_acetype) {};
+		SDBin(_In_ sid::aceType _acetype) : acetype(_acetype){};
 
 	private:
 		void parse() override;
