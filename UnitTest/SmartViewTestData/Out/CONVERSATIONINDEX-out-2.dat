@@ -1,7 +1,7 @@
 Conversation Index
 	Unnamed byte = 0x01 = 1
 	Current FILETIME: (Low = 0x06360000, High = 0x01CB8689) = 06:55:38.303 PM 11/17/2010
-	GUID = {77A2CE55-DFB0-4D19-9A5F-3C0723B540DB}
+	GUID = {55CEA277-B0DF-194D-9A5F-3C0723B540DB}
 	ResponseLevel[0]
 		DeltaCode = 0
 		TimeDelta = 0x00005D40 = 23872

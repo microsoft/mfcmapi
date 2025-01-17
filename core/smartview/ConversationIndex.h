@@ -4,6 +4,9 @@
 
 namespace smartview
 {
+	// [MS-OXOMSG] 2.2.1.3 PidTagConversationIndex Property
+	// https://learn.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxomsg/9e994fbb-b839-495f-84e3-2c8c02c7dd9b
+
 	class ResponseLevel : public block
 	{
 	private:
@@ -16,8 +19,6 @@ namespace smartview
 		std::shared_ptr<blockT<BYTE>> Level = emptyT<BYTE>();
 	};
 
-	// [MS-OXOMSG] 2.2.1.3 PidTagConversationIndex Property
-	// https://learn.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxomsg/9e994fbb-b839-495f-84e3-2c8c02c7dd9b
 	class ConversationIndex : public block
 	{
 	private:

@@ -56,31 +56,7 @@ namespace smartview
 		currentFileTime = blockT<FILETIME>::create(
 			ft, h1->getSize() + h2->getSize() + h3->getSize() + l1->getSize() + l2->getSize(), h1->getOffset());
 
-		auto guid = GUID{};
-		const auto g1 = blockT<BYTE>::parse(parser);
-		const auto g2 = blockT<BYTE>::parse(parser);
-		const auto g3 = blockT<BYTE>::parse(parser);
-		const auto g4 = blockT<BYTE>::parse(parser);
-		guid.Data1 = *g1 << 24 | *g2 << 16 | *g3 << 8 | *g4;
-
-		const auto g5 = blockT<BYTE>::parse(parser);
-		const auto g6 = blockT<BYTE>::parse(parser);
-		guid.Data2 = static_cast<unsigned short>(*g5 << 8 | *g6);
-
-		const auto g7 = blockT<BYTE>::parse(parser);
-		const auto g8 = blockT<BYTE>::parse(parser);
-		guid.Data3 = static_cast<unsigned short>(*g7 << 8 | *g8);
-
-		auto size = g1->getSize() + g2->getSize() + g3->getSize() + g4->getSize() + g5->getSize() + g6->getSize() +
-					g7->getSize() + g8->getSize();
-		for (auto& i : guid.Data4)
-		{
-			const auto d = blockT<BYTE>::parse(parser);
-			i = *d;
-			size += d->getSize();
-		}
-
-		threadGuid = blockT<GUID>::create(guid, size, g1->getOffset());
+		threadGuid = blockT<GUID>::parse(parser);
 		auto ulResponseLevels = ULONG{};
 		if (parser->getSize() > 0)
 		{
