@@ -6,7 +6,8 @@
 
 namespace smartview
 {
-	// [MS-OXOMSG].pdf
+	// [MS-OXOMSG] 2.2.2.22 PidTagReportTag Property
+	// https://learn.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxomsg/b90b2c88-fe59-4fd9-a6a7-ec18833654d6
 	class ReportTag : public block
 	{
 	private:

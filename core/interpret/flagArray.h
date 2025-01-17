@@ -1182,7 +1182,7 @@ FLAG_ARRAY_ENTRY g_FlagArray[] = {
 	NON_PROP_FLAG_ENTRY(flagOverrideFlags, ARO_APPTCOLOR, flagFLAG)
 	NON_PROP_FLAG_ENTRY(flagOverrideFlags, ARO_EXCEPTIONAL_BODY, flagFLAG)
 
-	NON_PROP_FLAG_ENTRY_NAMED(flagReportTagVersion, 0x00010002, L"CurrentVersion", flagVALUE) // STRING_OK
+	NON_PROP_FLAG_ENTRY_NAMED(flagReportTagVersion, 0x00020001, L"CurrentVersion", flagVALUE) // STRING_OK
 	NON_PROP_FLAG_ENTRY_NAMED(flagReportTagVersion, 0x00010001, L"NoSearchFolderVersion", flagVALUE) // STRING_OK
 
 	NON_PROP_FLAG_ENTRY_NAMED(flagGlobalObjectIdMonth, 0x01, L"January", flagVALUE) // STRING_OK
