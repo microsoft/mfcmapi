@@ -41,23 +41,16 @@ namespace smartview
 	{
 		addChild(DeltaCode, L"DeltaCode = %1!d!", DeltaCode->getData());
 		auto ft = FILETIME{};
-		unsigned char b1 = (TimeDelta->getData() >> 24) & 0x7F;
-		unsigned char b2 = (TimeDelta->getData() >> 16) & 0xFF;
-		unsigned char b3 = (TimeDelta->getData() >> 8) & 0xFF;
-		unsigned char b4 = TimeDelta->getData() & 0xFF;
+		unsigned int td = *TimeDelta;
 		if (*DeltaCode)
 		{
-			ft.dwHighDateTime |= b1 << 15;
-			ft.dwHighDateTime |= b2 << 7;
-			ft.dwHighDateTime |= b3 >> 1;
-			ft.dwLowDateTime = (((DWORD) (b3)) << 31) | (((DWORD) (b4)) << 23);
+			ft.dwHighDateTime |= ((td >> 24) & 0x7F) << 15 | ((td >> 16) & 0xFF) << 7 | ((td >> 8) & 0xFF) >> 1;
+			ft.dwLowDateTime = (static_cast<DWORD>((td >> 8) & 0xFF) << 31) | (static_cast<DWORD>(td & 0xFF) << 23);
 		}
 		else
 		{
-			ft.dwHighDateTime |= b1 << 10;
-			ft.dwHighDateTime |= b2 << 2;
-			ft.dwHighDateTime |= b3 >> 6;
-			ft.dwLowDateTime = (((DWORD) (b3)) << 26) | (((DWORD) (b4)) << 18);
+			ft.dwHighDateTime |= ((td >> 24) & 0x7F) << 10 | ((td >> 16) & 0xFF) << 2 | ((td >> 8) & 0xFF) >> 6;
+			ft.dwLowDateTime = (static_cast<DWORD>((td >> 8) & 0xFF) << 26) | (static_cast<DWORD>(td & 0xFF) << 18);
 		}
 
 		ft = AddFileTime(currentFileTime, ft);
@@ -65,8 +58,7 @@ namespace smartview
 		std::wstring PropString;
 		std::wstring AltPropString;
 		strings::FileTimeToString(ft, PropString, AltPropString);
-		const auto ftBlock = blockT<FILETIME>::create(ft, TimeDelta->getSize(), 
-			TimeDelta->getOffset());
+		const auto ftBlock = blockT<FILETIME>::create(ft, TimeDelta->getSize(), TimeDelta->getOffset());
 		addChild(ftBlock, L"Time = %1!ws!", PropString.c_str());
 
 		ftBlock->addChild(TimeDelta, L"TimeDelta = 0x%1!08X! = %1!d!", TimeDelta->getData());
