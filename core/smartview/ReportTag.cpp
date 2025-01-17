@@ -10,6 +10,7 @@ namespace smartview
 		m_Cookie = blockBytes::parse(parser, 9);
 
 		// Version is big endian, so we have to read individual bytes
+		// TODO: Rewrite with byteswap
 		const auto hiWord = blockT<WORD>::parse(parser);
 		const auto loWord = blockT<WORD>::parse(parser);
 		m_Version =

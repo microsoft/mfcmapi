@@ -7,17 +7,10 @@ namespace smartview
 {
 	void ResponseLevel::parse()
 	{
-		const auto r1 = blockT<BYTE>::parse(parser);
-		const auto r2 = blockT<BYTE>::parse(parser);
-		const auto r3 = blockT<BYTE>::parse(parser);
-		const auto r4 = blockT<BYTE>::parse(parser);
+		TimeDelta = blockT<DWORD>::parse(parser);
+		TimeDelta->setData(std::byteswap(TimeDelta->getData()));
 
-		TimeDelta = blockT<DWORD>::create(
-			static_cast<DWORD>(*r1 << 24 | *r2 << 16 | *r3 << 8 | *r4),
-			r1->getSize() + r2->getSize() + r3->getSize() + r4->getSize(),
-			r1->getOffset());
-
-		DeltaCode = blockT<bool>::create(false, TimeDelta->getSize(), TimeDelta->getOffset());
+		DeltaCode = blockT<bool>::create(false, 1, TimeDelta->getOffset());
 		if (*TimeDelta & 0x80000000)
 		{
 			TimeDelta->setData(*TimeDelta & ~0x80000000);
@@ -29,32 +22,68 @@ namespace smartview
 		Level = blockT<BYTE>::create(static_cast<BYTE>(*r5 & 0xf), r5->getSize(), r5->getOffset());
 	}
 
+	_Check_return_ FILETIME AddFileTime(const FILETIME& ft, const FILETIME& dwDelta)
+	{
+		auto ftResult = FILETIME{};
+		auto li = LARGE_INTEGER{};
+		li.LowPart = ft.dwLowDateTime;
+		li.HighPart = ft.dwHighDateTime;
+		auto liDelta = LARGE_INTEGER{};
+		liDelta.LowPart = dwDelta.dwLowDateTime;
+		liDelta.HighPart = dwDelta.dwHighDateTime;
+		li.QuadPart += liDelta.QuadPart;
+		ftResult.dwLowDateTime = li.LowPart;
+		ftResult.dwHighDateTime = li.HighPart;
+		return ftResult;
+	}
+
 	void ResponseLevel::parseBlocks()
 	{
 		addChild(DeltaCode, L"DeltaCode = %1!d!", DeltaCode->getData());
-		addChild(TimeDelta, L"TimeDelta = 0x%1!08X! = %1!d!", TimeDelta->getData());
+		auto ft = FILETIME{};
+		unsigned char b1 = (TimeDelta->getData() >> 24) & 0x7F;
+		unsigned char b2 = (TimeDelta->getData() >> 16) & 0xFF;
+		unsigned char b3 = (TimeDelta->getData() >> 8) & 0xFF;
+		unsigned char b4 = TimeDelta->getData() & 0xFF;
+		if (*DeltaCode)
+		{
+			ft.dwHighDateTime |= b1 << 15;
+			ft.dwHighDateTime |= b2 << 7;
+			ft.dwHighDateTime |= b3 >> 1;
+			ft.dwLowDateTime = (((DWORD) (b3)) << 31) | (((DWORD) (b4)) << 23);
+		}
+		else
+		{
+			ft.dwHighDateTime |= b1 << 10;
+			ft.dwHighDateTime |= b2 << 2;
+			ft.dwHighDateTime |= b3 >> 6;
+			ft.dwLowDateTime = (((DWORD) (b3)) << 26) | (((DWORD) (b4)) << 18);
+		}
+
+		ft = AddFileTime(currentFileTime, ft);
+
+		std::wstring PropString;
+		std::wstring AltPropString;
+		strings::FileTimeToString(ft, PropString, AltPropString);
+		const auto ftBlock = blockT<FILETIME>::create(ft, TimeDelta->getSize(), 
+			TimeDelta->getOffset());
+		addChild(ftBlock, L"Time = %1!ws!", PropString.c_str());
+
+		ftBlock->addChild(TimeDelta, L"TimeDelta = 0x%1!08X! = %1!d!", TimeDelta->getData());
 		addChild(Random, L"Random = 0x%1!02X! = %1!d!", Random->getData());
 		addChild(Level, L"ResponseLevel = 0x%1!02X! = %1!d!", Level->getData());
 	}
 
 	void ConversationIndex::parse()
 	{
-		reserved = blockT<BYTE>::parse(parser);
-		const auto h1 = blockT<BYTE>::parse(parser);
-		const auto h2 = blockT<BYTE>::parse(parser);
-		const auto h3 = blockT<BYTE>::parse(parser);
-
-		// Encoding of the file time drops the high byte, which is always 1
-		// So we add it back to get a time which makes more sense
-		auto ft = FILETIME{};
-		ft.dwHighDateTime = 1 << 24 | *h1 << 16 | *h2 << 8 | *h3;
-
-		const auto l1 = blockT<BYTE>::parse(parser);
-		const auto l2 = blockT<BYTE>::parse(parser);
-		ft.dwLowDateTime = *l1 << 24 | *l2 << 16;
-
+		dwHighDateTime = blockT<DWORD>::parse(parser);
+		dwHighDateTime->setData(std::byteswap(dwHighDateTime->getData()));
+		dwLowDateTime = blockT<WORD>::parse(parser);
+		dwLowDateTime->setData(std::byteswap(dwLowDateTime->getData()));
 		currentFileTime = blockT<FILETIME>::create(
-			ft, h1->getSize() + h2->getSize() + h3->getSize() + l1->getSize() + l2->getSize(), h1->getOffset());
+			FILETIME{*dwLowDateTime, *dwHighDateTime},
+			dwHighDateTime->getSize() + dwLowDateTime->getSize(),
+			dwHighDateTime->getOffset());
 
 		threadGuid = blockT<GUID>::parse(parser);
 		auto ulResponseLevels = ULONG{};
@@ -68,7 +97,7 @@ namespace smartview
 			responseLevels.reserve(ulResponseLevels);
 			for (ULONG i = 0; i < ulResponseLevels; i++)
 			{
-				auto responseLevel = std::make_shared<smartview::ResponseLevel>();
+				auto responseLevel = std::make_shared<smartview::ResponseLevel>(currentFileTime->getData());
 				responseLevel->block::parse(parser, false);
 				if (!responseLevel->isSet()) break;
 				responseLevels.emplace_back(responseLevel);
@@ -83,13 +112,10 @@ namespace smartview
 		std::wstring PropString;
 		std::wstring AltPropString;
 		strings::FileTimeToString(*currentFileTime, PropString, AltPropString);
-		addChild(reserved, L"Unnamed byte = 0x%1!02X! = %1!d!", reserved->getData());
-		addChild(
-			currentFileTime,
-			L"Current FILETIME: (Low = 0x%1!08X!, High = 0x%2!08X!) = %3!ws!",
-			currentFileTime->getData().dwLowDateTime,
-			currentFileTime->getData().dwHighDateTime,
-			PropString.c_str());
+
+		addChild(currentFileTime, L"Current FILETIME: %1!ws!", PropString.c_str());
+		currentFileTime->addChild(dwLowDateTime, L"LowDateTime = 0x%1!04X!", dwLowDateTime->getData());
+		currentFileTime->addChild(dwHighDateTime, L"HighDateTime = 0x%1!08X!", dwHighDateTime->getData());
 		addChild(threadGuid, L"GUID = %1!ws!", guid::GUIDToString(*threadGuid).c_str());
 
 		if (!responseLevels.empty())
