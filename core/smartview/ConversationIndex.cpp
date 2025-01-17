@@ -39,7 +39,7 @@ namespace smartview
 
 	void ConversationIndex::parse()
 	{
-		m_UnnamedByte = blockT<BYTE>::parse(parser);
+		reserved = blockT<BYTE>::parse(parser);
 		const auto h1 = blockT<BYTE>::parse(parser);
 		const auto h2 = blockT<BYTE>::parse(parser);
 		const auto h3 = blockT<BYTE>::parse(parser);
@@ -53,7 +53,7 @@ namespace smartview
 		const auto l2 = blockT<BYTE>::parse(parser);
 		ft.dwLowDateTime = *l1 << 24 | *l2 << 16;
 
-		m_ftCurrent = blockT<FILETIME>::create(
+		currentFileTime = blockT<FILETIME>::create(
 			ft, h1->getSize() + h2->getSize() + h3->getSize() + l1->getSize() + l2->getSize(), h1->getOffset());
 
 		auto guid = GUID{};
@@ -80,7 +80,7 @@ namespace smartview
 			size += d->getSize();
 		}
 
-		m_guid = blockT<GUID>::create(guid, size, g1->getOffset());
+		threadGuid = blockT<GUID>::create(guid, size, g1->getOffset());
 		auto ulResponseLevels = ULONG{};
 		if (parser->getSize() > 0)
 		{
@@ -89,10 +89,13 @@ namespace smartview
 
 		if (ulResponseLevels && ulResponseLevels < _MaxEntriesSmall)
 		{
-			m_lpResponseLevels.reserve(ulResponseLevels);
+			responseLevels.reserve(ulResponseLevels);
 			for (ULONG i = 0; i < ulResponseLevels; i++)
 			{
-				m_lpResponseLevels.emplace_back(block::parse<ResponseLevel>(parser, false));
+				auto responseLevel = std::make_shared<smartview::ResponseLevel>();
+				responseLevel->block::parse(parser, false);
+				if (!responseLevel->isSet()) break;
+				responseLevels.emplace_back(responseLevel);
 			}
 		}
 	}
@@ -103,23 +106,22 @@ namespace smartview
 
 		std::wstring PropString;
 		std::wstring AltPropString;
-		strings::FileTimeToString(*m_ftCurrent, PropString, AltPropString);
-		addChild(m_UnnamedByte, L"Unnamed byte = 0x%1!02X! = %1!d!", m_UnnamedByte->getData());
+		strings::FileTimeToString(*currentFileTime, PropString, AltPropString);
+		addChild(reserved, L"Unnamed byte = 0x%1!02X! = %1!d!", reserved->getData());
 		addChild(
-			m_ftCurrent,
+			currentFileTime,
 			L"Current FILETIME: (Low = 0x%1!08X!, High = 0x%2!08X!) = %3!ws!",
-			m_ftCurrent->getData().dwLowDateTime,
-			m_ftCurrent->getData().dwHighDateTime,
+			currentFileTime->getData().dwLowDateTime,
+			currentFileTime->getData().dwHighDateTime,
 			PropString.c_str());
-		addChild(m_guid, L"GUID = %1!ws!", guid::GUIDToString(*m_guid).c_str());
+		addChild(threadGuid, L"GUID = %1!ws!", guid::GUIDToString(*threadGuid).c_str());
 
-		if (!m_lpResponseLevels.empty())
+		if (!responseLevels.empty())
 		{
 			auto i = 0;
-			for (const auto& responseLevel : m_lpResponseLevels)
+			for (const auto& responseLevel : responseLevels)
 			{
 				addChild(responseLevel, L"ResponseLevel[%1!d!]", i);
-
 				i++;
 			}
 		}

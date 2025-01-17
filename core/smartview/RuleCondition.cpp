@@ -56,6 +56,7 @@ namespace smartview
 			{
 				auto namedProp = std::make_shared<smartview::PropertyName>(PropId[i]);
 				namedProp->block::parse(parser, false);
+				if (!namedProp->isSet()) break;
 				PropertyName.emplace_back(namedProp);
 			}
 		}

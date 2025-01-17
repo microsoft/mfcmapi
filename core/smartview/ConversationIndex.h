@@ -4,7 +4,6 @@
 
 namespace smartview
 {
-	// [MS-OXOMSG].pdf
 	class ResponseLevel : public block
 	{
 	private:
@@ -17,15 +16,17 @@ namespace smartview
 		std::shared_ptr<blockT<BYTE>> Level = emptyT<BYTE>();
 	};
 
+	// [MS-OXOMSG] 2.2.1.3 PidTagConversationIndex Property
+	// https://learn.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxomsg/9e994fbb-b839-495f-84e3-2c8c02c7dd9b
 	class ConversationIndex : public block
 	{
 	private:
 		void parse() override;
 		void parseBlocks() override;
 
-		std::shared_ptr<blockT<BYTE>> m_UnnamedByte = emptyT<BYTE>();
-		std::shared_ptr<blockT<FILETIME>> m_ftCurrent = emptyT<FILETIME>();
-		std::shared_ptr<blockT<GUID>> m_guid = emptyT<GUID>();
-		std::vector<std::shared_ptr<ResponseLevel>> m_lpResponseLevels;
+		std::shared_ptr<blockT<BYTE>> reserved = emptyT<BYTE>();
+		std::shared_ptr<blockT<FILETIME>> currentFileTime = emptyT<FILETIME>();
+		std::shared_ptr<blockT<GUID>> threadGuid = emptyT<GUID>();
+		std::vector<std::shared_ptr<ResponseLevel>> responseLevels;
 	};
 } // namespace smartview
