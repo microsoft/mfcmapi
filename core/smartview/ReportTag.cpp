@@ -7,28 +7,27 @@ namespace smartview
 {
 	void ReportTag::parse()
 	{
-		m_Cookie = blockBytes::parse(parser, 9);
+		Cookie = blockBytes::parse(parser, 9);
 
-		m_Version = blockT<DWORD>::parse(parser);
-		//m_Version->setData(std::byteswap(m_Version->getData()));
+		Version = blockT<DWORD>::parse(parser);
 
-		m_cbStoreEntryID = blockT<DWORD>::parse(parser);
-		m_lpStoreEntryID = blockBytes::parse(parser, *m_cbStoreEntryID, _MaxEID);
+		StoreEntryIdSize = blockT<DWORD>::parse(parser);
+		StoreEntryId = blockBytes::parse(parser, *StoreEntryIdSize, _MaxEID);
 
-		m_cbFolderEntryID = blockT<DWORD>::parse(parser);
-		m_lpFolderEntryID = blockBytes::parse(parser, *m_cbFolderEntryID, _MaxEID);
+		FolderEntryIdSize = blockT<DWORD>::parse(parser);
+		FolderEntryId = blockBytes::parse(parser, *FolderEntryIdSize, _MaxEID);
 
-		m_cbMessageEntryID = blockT<DWORD>::parse(parser);
-		m_lpMessageEntryID = blockBytes::parse(parser, *m_cbMessageEntryID, _MaxEID);
+		MessageEntryIdSize = blockT<DWORD>::parse(parser);
+		MessageEntryId = blockBytes::parse(parser, *MessageEntryIdSize, _MaxEID);
 
-		m_cbSearchFolderEntryID = blockT<DWORD>::parse(parser);
-		m_lpSearchFolderEntryID = blockBytes::parse(parser, *m_cbSearchFolderEntryID, _MaxEID);
+		SearchFolderEntryIdSize = blockT<DWORD>::parse(parser);
+		SearchFolderEntryId = blockBytes::parse(parser, *SearchFolderEntryIdSize, _MaxEID);
 
-		m_cbMessageSearchKey = blockT<DWORD>::parse(parser);
-		m_lpMessageSearchKey = blockBytes::parse(parser, *m_cbMessageSearchKey, _MaxEID);
+		MessageSearchKeySize = blockT<DWORD>::parse(parser);
+		MessageSearchKey = blockBytes::parse(parser, *MessageSearchKeySize, _MaxEID);
 
-		m_cchAnsiText = blockT<DWORD>::parse(parser);
-		m_lpszAnsiText = blockStringA::parse(parser, *m_cchAnsiText);
+		ANSITextSize = blockT<DWORD>::parse(parser);
+		ANSIText = blockStringA::parse(parser, *ANSITextSize);
 	}
 
 	void ReportTag::addEID(
@@ -45,21 +44,21 @@ namespace smartview
 	void ReportTag::parseBlocks()
 	{
 		setText(L"Report Tag");
-		addLabeledChild(L"Cookie", m_Cookie);
+		addLabeledChild(L"Cookie", Cookie);
 
-		auto szFlags = flags::InterpretFlags(flagReportTagVersion, *m_Version);
-		addChild(m_Version, L"Version = 0x%1!08X! = %2!ws!", m_Version->getData(), szFlags.c_str());
+		auto szFlags = flags::InterpretFlags(flagReportTagVersion, *Version);
+		addChild(Version, L"Version = 0x%1!08X! = %2!ws!", Version->getData(), szFlags.c_str());
 
-		addEID(L"StoreEntryID", m_cbStoreEntryID, m_lpStoreEntryID);
-		addEID(L"FolderEntryID", m_cbFolderEntryID, m_lpFolderEntryID);
-		addEID(L"MessageEntryID", m_cbMessageEntryID, m_lpMessageEntryID);
-		addEID(L"SearchFolderEntryID", m_cbSearchFolderEntryID, m_lpSearchFolderEntryID);
-		addEID(L"MessageSearchKey", m_cbMessageSearchKey, m_lpMessageSearchKey);
+		addEID(L"StoreEntryID", StoreEntryIdSize, StoreEntryId);
+		addEID(L"FolderEntryID", FolderEntryIdSize, FolderEntryId);
+		addEID(L"MessageEntryID", MessageEntryIdSize, MessageEntryId);
+		addEID(L"SearchFolderEntryID", SearchFolderEntryIdSize, SearchFolderEntryId);
+		addEID(L"MessageSearchKey", MessageSearchKeySize, MessageSearchKey);
 
-		if (m_cchAnsiText)
+		if (ANSITextSize)
 		{
-			addChild(m_cchAnsiText, L"cchAnsiText = 0x%1!08X!", m_cchAnsiText->getData());
-			addChild(m_lpszAnsiText, L"AnsiText = \"%1!hs!\"", m_lpszAnsiText->c_str());
+			addChild(ANSITextSize, L"cchAnsiText = 0x%1!08X!", ANSITextSize->getData());
+			addChild(ANSIText, L"AnsiText = \"%1!hs!\"", ANSIText->c_str());
 		}
 	}
 } // namespace smartview

@@ -101,11 +101,11 @@ namespace smartview
 	{
 		setText(L"Conversation Index");
 
-		std::wstring PropString;
-		std::wstring AltPropString;
-		strings::FileTimeToString(*currentFileTime, PropString, AltPropString);
+		std::wstring propString;
+		std::wstring altPropString;
+		strings::FileTimeToString(*currentFileTime, propString, altPropString);
 
-		addChild(currentFileTime, L"Current FILETIME: %1!ws!", PropString.c_str());
+		addChild(currentFileTime, L"Current FILETIME: %1!ws!", propString.c_str());
 		currentFileTime->addChild(dwLowDateTime, L"LowDateTime = 0x%1!04X!", dwLowDateTime->getData());
 		currentFileTime->addChild(dwHighDateTime, L"HighDateTime = 0x%1!08X!", dwHighDateTime->getData());
 		addChild(threadGuid, L"GUID = %1!ws!", guid::GUIDToString(*threadGuid).c_str());
