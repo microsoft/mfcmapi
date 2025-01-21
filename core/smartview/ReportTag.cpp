@@ -9,11 +9,8 @@ namespace smartview
 	{
 		m_Cookie = blockBytes::parse(parser, 9);
 
-		// Version is big endian, so we have to read individual bytes
-		const auto hiWord = blockT<WORD>::parse(parser);
-		const auto loWord = blockT<WORD>::parse(parser);
-		m_Version =
-			blockT<DWORD>::create(*hiWord << 16 | *loWord, hiWord->getSize() + loWord->getSize(), hiWord->getOffset());
+		m_Version = blockT<DWORD>::parse(parser);
+		//m_Version->setData(std::byteswap(m_Version->getData()));
 
 		m_cbStoreEntryID = blockT<DWORD>::parse(parser);
 		m_lpStoreEntryID = blockBytes::parse(parser, *m_cbStoreEntryID, _MaxEID);

@@ -1,34 +1,41 @@
 Conversation Index
-	Unnamed byte = 0x01 = 1
-	Current FILETIME: (Low = 0xF84A0000, High = 0x01CA697F) = 01:22:48.084 AM 11/20/2009
-	GUID = {28B660A5-B37D-4058-B462-AF2C2CE5CCA6}
+	Current FILETIME: 01:15:51.530 AM 11/20/2009
+		LowDateTime = 0xF84A
+		HighDateTime = 0x01CA697F
+	GUID = {A560B628-7DB3-5840-B462-AF2C2CE5CCA6}
 	ResponseLevel[0]
 		DeltaCode = 0
-		TimeDelta = 0x00011C47 = 72775
+		Time = 01:47:39.283 AM 11/20/2009
+			TimeDelta = 0x00011C47 = 72775
 		Random = 0x06 = 6
 		ResponseLevel = 0x00 = 0
 	ResponseLevel[1]
 		DeltaCode = 0
-		TimeDelta = 0x00005ABB = 23227
+		Time = 01:26:00.412 AM 11/20/2009
+			TimeDelta = 0x00005ABB = 23227
 		Random = 0x04 = 4
 		ResponseLevel = 0x00 = 0
 	ResponseLevel[2]
 		DeltaCode = 0
-		TimeDelta = 0x001A3E64 = 1719908
+		Time = 01:47:17.886 PM 11/20/2009
+			TimeDelta = 0x001A3E64 = 1719908
 		Random = 0x09 = 9
 		ResponseLevel = 0x00 = 0
 	ResponseLevel[3]
 		DeltaCode = 0
-		TimeDelta = 0x000246F8 = 149240
+		Time = 02:21:03.767 AM 11/20/2009
+			TimeDelta = 0x000246F8 = 149240
 		Random = 0x0A = 10
 		ResponseLevel = 0x00 = 0
 	ResponseLevel[4]
 		DeltaCode = 0
-		TimeDelta = 0x0005A625 = 370213
+		Time = 03:57:36.442 AM 11/20/2009
+			TimeDelta = 0x0005A625 = 370213
 		Random = 0x0B = 11
 		ResponseLevel = 0x00 = 0
 	ResponseLevel[5]
 		DeltaCode = 0
-		TimeDelta = 0x0009B7BB = 636859
+		Time = 05:54:06.407 AM 11/20/2009
+			TimeDelta = 0x0009B7BB = 636859
 		Random = 0x0F = 15
 		ResponseLevel = 0x00 = 0
