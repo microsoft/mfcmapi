@@ -3,6 +3,7 @@
 #include <core/smartview/block/blockStringA.h>
 #include <core/smartview/block/blockBytes.h>
 #include <core/smartview/block/blockT.h>
+#include <core/smartview/EntryIdStruct.h>
 
 namespace smartview
 {
@@ -13,21 +14,17 @@ namespace smartview
 	private:
 		void parse() override;
 		void parseBlocks() override;
-		void addEID(
-			const std::wstring& label,
-			const std::shared_ptr<blockT<ULONG>>& cb,
-			const std::shared_ptr<blockBytes>& eid);
 
 		std::shared_ptr<blockBytes> Cookie = emptyBB(); // 8 characters + NULL terminator
 		std::shared_ptr<blockT<DWORD>> Version = emptyT<DWORD>();
 		std::shared_ptr<blockT<ULONG>> StoreEntryIdSize = emptyT<ULONG>();
-		std::shared_ptr<blockBytes> StoreEntryId = emptyBB();
+		std::shared_ptr<EntryIdStruct> StoreEntryId;
 		std::shared_ptr<blockT<ULONG>> FolderEntryIdSize = emptyT<ULONG>();
-		std::shared_ptr<blockBytes> FolderEntryId = emptyBB();
+		std::shared_ptr<EntryIdStruct> FolderEntryId;
 		std::shared_ptr<blockT<ULONG>> MessageEntryIdSize = emptyT<ULONG>();
-		std::shared_ptr<blockBytes> MessageEntryId = emptyBB();
+		std::shared_ptr<EntryIdStruct> MessageEntryId;
 		std::shared_ptr<blockT<ULONG>> SearchFolderEntryIdSize = emptyT<ULONG>();
-		std::shared_ptr<blockBytes> SearchFolderEntryId = emptyBB();
+		std::shared_ptr<EntryIdStruct> SearchFolderEntryId;
 		std::shared_ptr<blockT<ULONG>> MessageSearchKeySize = emptyT<ULONG>();
 		std::shared_ptr<blockBytes> MessageSearchKey = emptyBB();
 		std::shared_ptr<blockT<ULONG>> ANSITextSize = emptyT<ULONG>();

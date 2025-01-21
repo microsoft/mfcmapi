@@ -2,8 +2,21 @@ Report Tag
 	Cookie
 		cb: 9 lpb: 504344464542303900
 	Version = 0x00020001 = CurrentVersion
+	StoreEntryIdSize = 0x00000000
+	FolderEntryIdSize = 0x00000000
+	MessageEntryIdSize = 0x00000000
+	SearchFolderEntryIdSize = 0x0000002E
 	SearchFolderEntryID
-		cb: 46 lpb: 0000000096614EC66601D211A3B10008C728E7F1010085FA5C86FCE6D111A3A60008C728E7F1000000019EC00000
+		abFlags = 0x00000000
+		Provider GUID = {C64E6196-0166-11D2-A3B1-0008C728E7F1} = Unknown GUID
+		Exchange Folder Entry ID
+			Folder Type = 0x0001 = eitLTPrivateFolder
+			Database GUID = {865CFA85-E6FC-11D1-A3A6-0008C728E7F1} = Unknown GUID
+			GlobalCounter
+				cb: 6 lpb: 000000019EC0
+			Pad
+				cb: 2 lpb: 0000
+	MessageSearchKeySize = 0x00000010
 	MessageSearchKey
 		cb: 16 lpb: E866555BC88F2E4AB665769B02770F90
 	cchAnsiText = 0x00000001
