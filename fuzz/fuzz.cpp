@@ -51,7 +51,6 @@ void test(const SBinary hex)
 				runtimes[static_cast<size_t>(parser.type)].count(),
 				runtimes[static_cast<size_t>(parser.type)].count() / testnum);
 		}
-
 	}
 }
 

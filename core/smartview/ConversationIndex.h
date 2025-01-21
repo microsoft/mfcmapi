@@ -11,6 +11,7 @@ namespace smartview
 	{
 	public:
 		ResponseLevel(FILETIME _currentFileTime) : currentFileTime(_currentFileTime) {}
+
 	private:
 		void parse() override;
 		void parseBlocks() override;
