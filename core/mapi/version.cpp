@@ -17,7 +17,7 @@ namespace version
 		for (const auto component : mapistub::g_pszOutlookQualifiedComponents)
 		{
 			auto b64 = false;
-			auto lpszTempPath = mapistub::GetOutlookPath(component, &b64);
+			auto lpszTempPath = mapistub::GetOLMAPI32Path(component);
 
 			if (!lpszTempPath.empty())
 			{
@@ -34,6 +34,8 @@ namespace version
 				{
 					szOut = strings::formatmessage(
 						IDS_OUTLOOKVERSIONSTRING, lpszTempPath.c_str(), lpszTempVer.c_str(), lpszTempLang.c_str());
+					b64 = Is64BitModule(lpszTempPath);
+
 					szOut += strings::formatmessage(b64 ? IDS_TRUE : IDS_FALSE);
 					szOut += L"\n"; // STRING_OK
 				}
@@ -193,5 +195,80 @@ namespace version
 		}
 
 		return szVersionString;
+	}
+
+	bool Is64BitModule(const std::wstring& modulePath)
+	{
+		if (modulePath.empty()) return false;
+
+		const auto hFile = CreateFileW(
+			modulePath.c_str(),
+			GENERIC_READ,
+			FILE_SHARE_READ,
+			nullptr,
+			OPEN_EXISTING,
+			FILE_ATTRIBUTE_NORMAL,
+			nullptr);
+
+		if (hFile == INVALID_HANDLE_VALUE)
+		{
+			output::DebugPrint(output::dbgLevel::Generic, L"Is64BitModule: Failed to open file %ws\n", modulePath.c_str());
+			return false;
+		}
+
+		// Read DOS header
+		IMAGE_DOS_HEADER dosHeader = {};
+		DWORD bytesRead = 0;
+		if (!ReadFile(hFile, &dosHeader, sizeof(dosHeader), &bytesRead, nullptr) || 
+			bytesRead != sizeof(dosHeader) ||
+			dosHeader.e_magic != IMAGE_DOS_SIGNATURE)
+		{
+			CloseHandle(hFile);
+			return false;
+		}
+
+		// Seek to PE header
+		if (SetFilePointer(hFile, dosHeader.e_lfanew, nullptr, FILE_BEGIN) == INVALID_SET_FILE_POINTER)
+		{
+			CloseHandle(hFile);
+			return false;
+		}
+
+		// Read PE signature
+		DWORD peSignature = 0;
+		if (!ReadFile(hFile, &peSignature, sizeof(peSignature), &bytesRead, nullptr) ||
+			bytesRead != sizeof(peSignature) ||
+			peSignature != IMAGE_NT_SIGNATURE)
+		{
+			CloseHandle(hFile);
+			return false;
+		}
+
+		// Read file header to get machine type
+		IMAGE_FILE_HEADER fileHeader = {};
+		if (!ReadFile(hFile, &fileHeader, sizeof(fileHeader), &bytesRead, nullptr) ||
+			bytesRead != sizeof(fileHeader))
+		{
+			CloseHandle(hFile);
+			return false;
+		}
+
+		CloseHandle(hFile);
+
+		// Check machine type to determine if it's 64-bit
+		switch (fileHeader.Machine)
+		{
+		case IMAGE_FILE_MACHINE_AMD64:
+		case IMAGE_FILE_MACHINE_IA64:
+		case IMAGE_FILE_MACHINE_ARM64:
+			return true;
+		case IMAGE_FILE_MACHINE_I386:
+		case IMAGE_FILE_MACHINE_ARM:
+		case IMAGE_FILE_MACHINE_ARMNT:
+			return false;
+		default:
+			// Unknown architecture, assume 32-bit
+			return false;
+		}
 	}
 } // namespace version

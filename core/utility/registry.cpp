@@ -4,6 +4,7 @@
 #include <core/utility/output.h>
 #include <core/utility/error.h>
 #include <core/utility/import.h>
+#include <mapistub/library/stubutils.h>
 
 namespace registry
 {
@@ -63,6 +64,7 @@ namespace registry
 	boolRegKey loadAddIns{L"LoadAddIns", true, false, IDS_REGKEY_LOADADDINS};
 	boolRegKey forceOutlookMAPI{L"ForceOutlookMAPI", false, false, IDS_REGKEY_FORCEOUTLOOKMAPI};
 	boolRegKey forceSystemMAPI{L"ForceSystemMAPI", false, false, IDS_REGKEY_FORCESYSTEMMAPI};
+	boolRegKey preferOlmapi32{L"PreferOlmapi32", true, false, IDS_REGKEY_PREFER_OLMAPI32};
 	boolRegKey uiDiag{L"UIDiag", false, false, IDS_REGKEY_UIDIAG};
 	boolRegKey displayAboutDialog{L"DisplayAboutDialog", true, false, NULL};
 	wstringRegKey propertyColumnOrder{L"PropertyColumnOrder", L"", false, NULL};
@@ -96,6 +98,7 @@ namespace registry
 		&loadAddIns,
 		&forceOutlookMAPI,
 		&forceSystemMAPI,
+		&preferOlmapi32,
 		&uiDiag,
 		&displayAboutDialog,
 		&propertyColumnOrder,
@@ -330,5 +333,12 @@ namespace registry
 		}
 
 		if (hRootKey) EC_W32_S(RegCloseKey(hRootKey));
+	}
+
+	void PushOptionsToStub()
+	{
+		mapistub::ForceOutlookMAPI(forceOutlookMAPI);
+		mapistub::ForceSystemMAPI(forceSystemMAPI);
+		mapistub::PreferOlmapi32(preferOlmapi32);
 	}
 } // namespace registry

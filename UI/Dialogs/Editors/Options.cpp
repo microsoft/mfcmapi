@@ -117,8 +117,7 @@ namespace dialog::editor
 		COptions MyOptions(lpParentWnd);
 		MyOptions.DoModal();
 
-		mapistub::ForceOutlookMAPI(registry::forceOutlookMAPI);
-		mapistub::ForceSystemMAPI(registry::forceSystemMAPI);
+		registry::PushOptionsToStub();
 		return MyOptions.NeedPropRefresh();
 	}
 } // namespace dialog::editor

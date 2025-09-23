@@ -166,6 +166,7 @@ namespace registry
 	{
 		WriteBinToRegistry(hKey, szValueName, std::vector<BYTE>(lpbin, lpbin + cb), bSecure);
 	}
+	void PushOptionsToStub();
 
 	extern dwordRegKey debugTag;
 	extern boolRegKey debugToFile;
@@ -194,6 +195,7 @@ namespace registry
 	extern boolRegKey loadAddIns;
 	extern boolRegKey forceOutlookMAPI;
 	extern boolRegKey forceSystemMAPI;
+	extern boolRegKey preferOlmapi32;
 	extern boolRegKey uiDiag;
 	extern boolRegKey displayAboutDialog;
 	extern wstringRegKey propertyColumnOrder;
