@@ -76,8 +76,7 @@ namespace ui
 		m_hwinEventHook = SetWinEventHook(
 			EVENT_OBJECT_REORDER, EVENT_OBJECT_REORDER, nullptr, &MyWinEventProc, GetCurrentProcessId(), NULL, NULL);
 
-		mapistub::ForceOutlookMAPI(registry::forceOutlookMAPI);
-		mapistub::ForceSystemMAPI(registry::forceSystemMAPI);
+		registry::PushOptionsToStub();
 
 		addin::LoadAddIns();
 
