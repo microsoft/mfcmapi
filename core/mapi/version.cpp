@@ -24,12 +24,13 @@ namespace version
 				const auto lpszTempVer = std::wstring(MAX_PATH, '\0');
 				const auto lpszTempLang = std::wstring(MAX_PATH, '\0');
 				DWORD dwValueBuf = MAX_PATH;
-				const auto hRes = WC_W32(import::pfnMsiGetFileVersion(
-					lpszTempPath.c_str(),
-					const_cast<wchar_t*>(lpszTempVer.c_str()),
-					&dwValueBuf,
-					const_cast<wchar_t*>(lpszTempLang.c_str()),
-					&dwValueBuf));
+				const auto hRes = WC_W32(
+					import::pfnMsiGetFileVersion(
+						lpszTempPath.c_str(),
+						const_cast<wchar_t*>(lpszTempVer.c_str()),
+						&dwValueBuf,
+						const_cast<wchar_t*>(lpszTempLang.c_str()),
+						&dwValueBuf));
 				if (SUCCEEDED(hRes))
 				{
 					szOut = strings::formatmessage(
@@ -202,25 +203,19 @@ namespace version
 		if (modulePath.empty()) return false;
 
 		const auto hFile = CreateFileW(
-			modulePath.c_str(),
-			GENERIC_READ,
-			FILE_SHARE_READ,
-			nullptr,
-			OPEN_EXISTING,
-			FILE_ATTRIBUTE_NORMAL,
-			nullptr);
+			modulePath.c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
 
 		if (hFile == INVALID_HANDLE_VALUE)
 		{
-			output::DebugPrint(output::dbgLevel::Generic, L"Is64BitModule: Failed to open file %ws\n", modulePath.c_str());
+			output::DebugPrint(
+				output::dbgLevel::Generic, L"Is64BitModule: Failed to open file %ws\n", modulePath.c_str());
 			return false;
 		}
 
 		// Read DOS header
 		IMAGE_DOS_HEADER dosHeader = {};
 		DWORD bytesRead = 0;
-		if (!ReadFile(hFile, &dosHeader, sizeof(dosHeader), &bytesRead, nullptr) || 
-			bytesRead != sizeof(dosHeader) ||
+		if (!ReadFile(hFile, &dosHeader, sizeof(dosHeader), &bytesRead, nullptr) || bytesRead != sizeof(dosHeader) ||
 			dosHeader.e_magic != IMAGE_DOS_SIGNATURE)
 		{
 			CloseHandle(hFile);
@@ -237,8 +232,7 @@ namespace version
 		// Read PE signature
 		DWORD peSignature = 0;
 		if (!ReadFile(hFile, &peSignature, sizeof(peSignature), &bytesRead, nullptr) ||
-			bytesRead != sizeof(peSignature) ||
-			peSignature != IMAGE_NT_SIGNATURE)
+			bytesRead != sizeof(peSignature) || peSignature != IMAGE_NT_SIGNATURE)
 		{
 			CloseHandle(hFile);
 			return false;
@@ -246,8 +240,7 @@ namespace version
 
 		// Read file header to get machine type
 		IMAGE_FILE_HEADER fileHeader = {};
-		if (!ReadFile(hFile, &fileHeader, sizeof(fileHeader), &bytesRead, nullptr) ||
-			bytesRead != sizeof(fileHeader))
+		if (!ReadFile(hFile, &fileHeader, sizeof(fileHeader), &bytesRead, nullptr) || bytesRead != sizeof(fileHeader))
 		{
 			CloseHandle(hFile);
 			return false;
