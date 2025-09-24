@@ -24,13 +24,12 @@ namespace version
 				const auto lpszTempVer = std::wstring(MAX_PATH, '\0');
 				const auto lpszTempLang = std::wstring(MAX_PATH, '\0');
 				DWORD dwValueBuf = MAX_PATH;
-				const auto hRes = WC_W32(
-					import::pfnMsiGetFileVersion(
-						lpszTempPath.c_str(),
-						const_cast<wchar_t*>(lpszTempVer.c_str()),
-						&dwValueBuf,
-						const_cast<wchar_t*>(lpszTempLang.c_str()),
-						&dwValueBuf));
+				const auto hRes = WC_W32(import::pfnMsiGetFileVersion(
+					lpszTempPath.c_str(),
+					const_cast<wchar_t*>(lpszTempVer.c_str()),
+					&dwValueBuf,
+					const_cast<wchar_t*>(lpszTempLang.c_str()),
+					&dwValueBuf));
 				if (SUCCEEDED(hRes))
 				{
 					szOut = strings::formatmessage(
