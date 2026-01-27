@@ -3,38 +3,6 @@
 
 namespace mapi
 {
-	// Definitions for WrapCompressedRTFStreamEx in param for WrapCompressedRTFStreamEX
-	// http://msdn2.microsoft.com/en-us/library/bb905293.aspx
-	struct RTF_WCSINFO
-	{
-		ULONG size; // Size of the structure
-		ULONG ulFlags;
-		/****** MAPI_MODIFY ((ULONG) 0x00000001) above */
-		/****** STORE_UNCOMPRESSED_RTF ((ULONG) 0x00008000) above */
-		/****** MAPI_NATIVE_BODY ((ULONG) 0x00010000) mapidefs.h Only used for reading*/
-		ULONG ulInCodePage; // Codepage of the message, used when passing MAPI_NATIVE_BODY, ignored otherwise
-		ULONG ulOutCodePage; // Codepage of the Returned Stream, used when passing MAPI_NATIVE_BODY, ignored otherwise
-	};
-
-	// out param type information for WrapCompressedRTFStreamEX
-	// http://msdn2.microsoft.com/en-us/library/bb905294.aspx
-	struct RTF_WCSRETINFO
-	{
-		ULONG size; // Size of the structure
-		ULONG ulStreamFlags;
-		/****** MAPI_NATIVE_BODY_TYPE_RTF ((ULONG) 0x00000001) mapidefs.h */
-		/****** MAPI_NATIVE_BODY_TYPE_HTML ((ULONG) 0x00000002) mapidefs.h */
-		/****** MAPI_NATIVE_BODY_TYPE_PLAINTEXT ((ULONG) 0x00000004) mapidefs.h */
-	};
-
-	// Declaration missing from headers
-	STDAPI_(HRESULT)
-	WrapCompressedRTFStreamEx(
-		LPSTREAM pCompressedRTFStream,
-		const RTF_WCSINFO* pWCSInfo,
-		LPSTREAM* ppUncompressedRTFStream,
-		RTF_WCSRETINFO* pRetInfo);
-
 	// http://msdn.microsoft.com/en-us/library/office/dn433223.aspx
 #pragma pack(4)
 	struct CONTAB_ENTRYID
