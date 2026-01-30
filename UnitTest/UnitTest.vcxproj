@@ -755,9 +755,6 @@
   <PropertyGroup>
     <BeforeBuildGenerateSourcesTargets>$(BeforeBuildGenerateSourcesTargets);BuildSmartViewTests</BeforeBuildGenerateSourcesTargets>
   </PropertyGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\packages\Microsoft.Build.Tasks.Git.1.0.0\build\Microsoft.Build.Tasks.Git.targets" Condition="Exists('..\packages\Microsoft.Build.Tasks.Git.1.0.0\build\Microsoft.Build.Tasks.Git.targets')" />
