@@ -955,7 +955,6 @@
     <ClCompile Include="utility\strings.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
     <None Include="res\MFCMapi.rc2" />
     <None Include="res\splith.cur" />
     <None Include="res\splitv.cur" />

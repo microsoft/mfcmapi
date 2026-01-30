@@ -673,6 +673,5 @@
     <Image Include="res\bldver.rc">
       <Filter>Resource Files</Filter>
     </Image>
-    <None Include="packages.config" />
   </ItemGroup>
 </Project>
