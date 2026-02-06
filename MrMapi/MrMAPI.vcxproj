@@ -52,120 +52,161 @@
       <Configuration>Release</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|ARM64EC">
+      <Configuration>Debug</Configuration>
+      <Platform>ARM64EC</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug_Unicode|ARM64EC">
+      <Configuration>Debug_Unicode</Configuration>
+      <Platform>ARM64EC</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM64EC">
+      <Configuration>Release</Configuration>
+      <Platform>ARM64EC</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_Unicode|ARM64EC">
+      <Configuration>Release_Unicode</Configuration>
+      <Platform>ARM64EC</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Prefast|ARM64EC">
+      <Configuration>Prefast</Configuration>
+      <Platform>ARM64EC</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Prefast_Unicode|ARM64EC">
+      <Configuration>Prefast_Unicode</Configuration>
+      <Platform>ARM64EC</Platform>
+    </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{7AFE5655-71D0-4390-A4E0-BA915DFC18C4}</ProjectGuid>
     <RootNamespace>MrMAPI</RootNamespace>
     <Keyword>Win32Proj</Keyword>
-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Unicode|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>Static</UseOfMfc>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v143</PlatformToolset>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <SpectreMitigation>Spectre</SpectreMitigation>
     <WholeProgramOptimization>false</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>Static</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v143</PlatformToolset>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <SpectreMitigation>Spectre</SpectreMitigation>
     <WholeProgramOptimization>false</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Prefast|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>Static</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v143</PlatformToolset>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <SpectreMitigation>Spectre</SpectreMitigation>
     <WholeProgramOptimization>false</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Prefast_Unicode|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>Static</UseOfMfc>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v143</PlatformToolset>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <SpectreMitigation>Spectre</SpectreMitigation>
     <WholeProgramOptimization>false</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Unicode|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>Static</UseOfMfc>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v143</PlatformToolset>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <SpectreMitigation>Spectre</SpectreMitigation>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>Static</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v143</PlatformToolset>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <SpectreMitigation>Spectre</SpectreMitigation>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Unicode|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>Static</UseOfMfc>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v143</PlatformToolset>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <SpectreMitigation>Spectre</SpectreMitigation>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Unicode|ARM64EC'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseOfMfc>Static</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+    <UseDebugLibraries>true</UseDebugLibraries>
     <WholeProgramOptimization>false</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>Static</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v143</PlatformToolset>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <SpectreMitigation>Spectre</SpectreMitigation>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64EC'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseOfMfc>Static</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <UseDebugLibraries>true</UseDebugLibraries>
     <WholeProgramOptimization>false</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Prefast|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>Static</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v143</PlatformToolset>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <SpectreMitigation>Spectre</SpectreMitigation>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Prefast|ARM64EC'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseOfMfc>Static</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>false</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Prefast_Unicode|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>Static</UseOfMfc>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v143</PlatformToolset>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <SpectreMitigation>Spectre</SpectreMitigation>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Prefast_Unicode|ARM64EC'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseOfMfc>Static</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+    <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>false</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Unicode|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>Static</UseOfMfc>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v143</PlatformToolset>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <SpectreMitigation>Spectre</SpectreMitigation>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Unicode|ARM64EC'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseOfMfc>Static</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+    <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>Static</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v143</PlatformToolset>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <SpectreMitigation>Spectre</SpectreMitigation>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64EC'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseOfMfc>Static</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -226,31 +267,43 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Prefast|Win32'">
     <RunCodeAnalysis>true</RunCodeAnalysis>
-    <CodeAnalysisRuleSet>..\.gdn\i\nuget\Microsoft.Security.CodeAnalysis.PREfast.Cli.win-x64.1.6.0\tools\Sdl.Recommended.Warning.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Prefast_Unicode|Win32'">
     <RunCodeAnalysis>true</RunCodeAnalysis>
-    <CodeAnalysisRuleSet>..\.gdn\i\nuget\Microsoft.Security.CodeAnalysis.PREfast.Cli.win-x64.1.6.0\tools\Sdl.Recommended.Warning.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Unicode|Win32'">
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Unicode|x64'">
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Unicode|ARM64EC'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64EC'">
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Prefast|x64'">
     <RunCodeAnalysis>true</RunCodeAnalysis>
-    <CodeAnalysisRuleSet>..\.gdn\i\nuget\Microsoft.Security.CodeAnalysis.PREfast.Cli.win-x64.1.6.0\tools\Sdl.Recommended.Warning.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Prefast|ARM64EC'">
+    <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Prefast_Unicode|x64'">
     <RunCodeAnalysis>true</RunCodeAnalysis>
-    <CodeAnalysisRuleSet>..\.gdn\i\nuget\Microsoft.Security.CodeAnalysis.PREfast.Cli.win-x64.1.6.0\tools\Sdl.Recommended.Warning.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Prefast_Unicode|ARM64EC'">
+    <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64EC'">
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Unicode|x64'">
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Unicode|ARM64EC'">
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -261,15 +314,11 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <WarningLevel>Level4</WarningLevel>
-      <TreatWarningAsError>true</TreatWarningAsError>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <SDLCheck>true</SDLCheck>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
       <BuildStlModules>false</BuildStlModules>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
@@ -287,7 +336,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
-      <CETCompat>true</CETCompat>
+      <CETCompat Condition="'$(Platform)' != 'ARM64EC'">true</CETCompat>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mrmapi.exe.manifest</AdditionalManifestFiles>
@@ -302,15 +351,11 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <WarningLevel>Level4</WarningLevel>
-      <TreatWarningAsError>true</TreatWarningAsError>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <SDLCheck>true</SDLCheck>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
       <BuildStlModules>false</BuildStlModules>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
@@ -327,7 +372,43 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
-      <CETCompat>true</CETCompat>
+      <CETCompat Condition="'$(Platform)' != 'ARM64EC'">true</CETCompat>
+    </Link>
+    <Manifest>
+      <AdditionalManifestFiles>$(ProjectDir)\mrmapi.exe.manifest</AdditionalManifestFiles>
+    </Manifest>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64EC'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <AdditionalIncludeDirectories>$(SolutionDir)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;MRMAPI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <BuildStlModules>false</BuildStlModules>
+      <ControlFlowGuard>Guard</ControlFlowGuard>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_AFXDLL;MRMAPI;NDEBUG;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <SwapRunFromNET>true</SwapRunFromNET>
+      <SetChecksum>true</SetChecksum>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
+      <CETCompat Condition="'$(Platform)' != 'ARM64EC'">true</CETCompat>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mrmapi.exe.manifest</AdditionalManifestFiles>
@@ -342,15 +423,11 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <WarningLevel>Level4</WarningLevel>
-      <TreatWarningAsError>true</TreatWarningAsError>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <SDLCheck>true</SDLCheck>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
       <BuildStlModules>false</BuildStlModules>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
@@ -368,7 +445,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
-      <CETCompat>true</CETCompat>
+      <CETCompat Condition="'$(Platform)' != 'ARM64EC'">true</CETCompat>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mrmapi.exe.manifest</AdditionalManifestFiles>
@@ -383,15 +460,11 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <WarningLevel>Level4</WarningLevel>
-      <TreatWarningAsError>true</TreatWarningAsError>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <SDLCheck>true</SDLCheck>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
       <BuildStlModules>false</BuildStlModules>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
@@ -408,7 +481,43 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
-      <CETCompat>true</CETCompat>
+      <CETCompat Condition="'$(Platform)' != 'ARM64EC'">true</CETCompat>
+    </Link>
+    <Manifest>
+      <AdditionalManifestFiles>$(ProjectDir)\mrmapi.exe.manifest</AdditionalManifestFiles>
+    </Manifest>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_Unicode|ARM64EC'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <AdditionalIncludeDirectories>$(SolutionDir)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;UNICODE;MRMAPI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <BuildStlModules>false</BuildStlModules>
+      <ControlFlowGuard>Guard</ControlFlowGuard>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_AFXDLL;MRMAPI;NDEBUG;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <SwapRunFromNET>true</SwapRunFromNET>
+      <SetChecksum>true</SetChecksum>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
+      <CETCompat Condition="'$(Platform)' != 'ARM64EC'">true</CETCompat>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mrmapi.exe.manifest</AdditionalManifestFiles>
@@ -423,15 +532,11 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <WarningLevel>Level4</WarningLevel>
-      <TreatWarningAsError>true</TreatWarningAsError>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <SDLCheck>true</SDLCheck>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
       <BuildStlModules>false</BuildStlModules>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
@@ -446,7 +551,7 @@
       <SwapRunFromNET>true</SwapRunFromNET>
       <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
-      <CETCompat>true</CETCompat>
+      <CETCompat Condition="'$(Platform)' != 'ARM64EC'">true</CETCompat>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mrmapi.exe.manifest</AdditionalManifestFiles>
@@ -461,15 +566,11 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <WarningLevel>Level4</WarningLevel>
-      <TreatWarningAsError>true</TreatWarningAsError>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <EnablePREfast>true</EnablePREfast>
-      <SDLCheck>true</SDLCheck>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
       <BuildStlModules>false</BuildStlModules>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
@@ -484,7 +585,7 @@
       <SwapRunFromNET>true</SwapRunFromNET>
       <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
-      <CETCompat>true</CETCompat>
+      <CETCompat Condition="'$(Platform)' != 'ARM64EC'">true</CETCompat>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mrmapi.exe.manifest</AdditionalManifestFiles>
@@ -499,15 +600,11 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <WarningLevel>Level4</WarningLevel>
-      <TreatWarningAsError>true</TreatWarningAsError>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <EnablePREfast>true</EnablePREfast>
-      <SDLCheck>true</SDLCheck>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
       <BuildStlModules>false</BuildStlModules>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
@@ -522,7 +619,7 @@
       <SwapRunFromNET>true</SwapRunFromNET>
       <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
-      <CETCompat>true</CETCompat>
+      <CETCompat Condition="'$(Platform)' != 'ARM64EC'">true</CETCompat>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mrmapi.exe.manifest</AdditionalManifestFiles>
@@ -537,15 +634,11 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <WarningLevel>Level4</WarningLevel>
-      <TreatWarningAsError>true</TreatWarningAsError>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <SDLCheck>true</SDLCheck>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
       <BuildStlModules>false</BuildStlModules>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
@@ -559,7 +652,40 @@
       <SwapRunFromNET>true</SwapRunFromNET>
       <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
-      <CETCompat>true</CETCompat>
+      <CETCompat Condition="'$(Platform)' != 'ARM64EC'">true</CETCompat>
+    </Link>
+    <Manifest>
+      <AdditionalManifestFiles>$(ProjectDir)\mrmapi.exe.manifest</AdditionalManifestFiles>
+    </Manifest>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64EC'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(SolutionDir)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;MRMAPI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <BuildStlModules>false</BuildStlModules>
+      <ControlFlowGuard>Guard</ControlFlowGuard>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_AFXDLL;MRMAPI;_DEBUG;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <SwapRunFromNET>true</SwapRunFromNET>
+      <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
+      <CETCompat Condition="'$(Platform)' != 'ARM64EC'">true</CETCompat>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mrmapi.exe.manifest</AdditionalManifestFiles>
@@ -574,15 +700,11 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <WarningLevel>Level4</WarningLevel>
-      <TreatWarningAsError>true</TreatWarningAsError>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <EnablePREfast>true</EnablePREfast>
-      <SDLCheck>true</SDLCheck>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
       <BuildStlModules>false</BuildStlModules>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
@@ -596,7 +718,40 @@
       <SwapRunFromNET>true</SwapRunFromNET>
       <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
-      <CETCompat>true</CETCompat>
+      <CETCompat Condition="'$(Platform)' != 'ARM64EC'">true</CETCompat>
+    </Link>
+    <Manifest>
+      <AdditionalManifestFiles>$(ProjectDir)\mrmapi.exe.manifest</AdditionalManifestFiles>
+    </Manifest>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Prefast|ARM64EC'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(SolutionDir)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;MRMAPI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <EnablePREfast>true</EnablePREfast>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <BuildStlModules>false</BuildStlModules>
+      <ControlFlowGuard>Guard</ControlFlowGuard>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_AFXDLL;MRMAPI;_DEBUG;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <SwapRunFromNET>true</SwapRunFromNET>
+      <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
+      <CETCompat Condition="'$(Platform)' != 'ARM64EC'">true</CETCompat>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mrmapi.exe.manifest</AdditionalManifestFiles>
@@ -611,15 +766,11 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <WarningLevel>Level4</WarningLevel>
-      <TreatWarningAsError>true</TreatWarningAsError>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <EnablePREfast>true</EnablePREfast>
-      <SDLCheck>true</SDLCheck>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
       <BuildStlModules>false</BuildStlModules>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
@@ -633,7 +784,40 @@
       <SwapRunFromNET>true</SwapRunFromNET>
       <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
-      <CETCompat>true</CETCompat>
+      <CETCompat Condition="'$(Platform)' != 'ARM64EC'">true</CETCompat>
+    </Link>
+    <Manifest>
+      <AdditionalManifestFiles>$(ProjectDir)\mrmapi.exe.manifest</AdditionalManifestFiles>
+    </Manifest>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Prefast_Unicode|ARM64EC'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(SolutionDir)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;MRMAPI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <EnablePREfast>true</EnablePREfast>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <BuildStlModules>false</BuildStlModules>
+      <ControlFlowGuard>Guard</ControlFlowGuard>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_AFXDLL;MRMAPI;_DEBUG;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <SwapRunFromNET>true</SwapRunFromNET>
+      <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
+      <CETCompat Condition="'$(Platform)' != 'ARM64EC'">true</CETCompat>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mrmapi.exe.manifest</AdditionalManifestFiles>
@@ -648,15 +832,11 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <WarningLevel>Level4</WarningLevel>
-      <TreatWarningAsError>true</TreatWarningAsError>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <SDLCheck>true</SDLCheck>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
       <BuildStlModules>false</BuildStlModules>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
@@ -671,7 +851,7 @@
       <SwapRunFromNET>true</SwapRunFromNET>
       <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
-      <CETCompat>true</CETCompat>
+      <CETCompat Condition="'$(Platform)' != 'ARM64EC'">true</CETCompat>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mrmapi.exe.manifest</AdditionalManifestFiles>
@@ -686,15 +866,11 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <WarningLevel>Level4</WarningLevel>
-      <TreatWarningAsError>true</TreatWarningAsError>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <SDLCheck>true</SDLCheck>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
       <BuildStlModules>false</BuildStlModules>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
@@ -708,7 +884,40 @@
       <SwapRunFromNET>true</SwapRunFromNET>
       <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
-      <CETCompat>true</CETCompat>
+      <CETCompat Condition="'$(Platform)' != 'ARM64EC'">true</CETCompat>
+    </Link>
+    <Manifest>
+      <AdditionalManifestFiles>$(ProjectDir)\mrmapi.exe.manifest</AdditionalManifestFiles>
+    </Manifest>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Unicode|ARM64EC'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(SolutionDir)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;UNICODE;MRMAPI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <BuildStlModules>false</BuildStlModules>
+      <ControlFlowGuard>Guard</ControlFlowGuard>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_AFXDLL;MRMAPI;_DEBUG;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <SwapRunFromNET>true</SwapRunFromNET>
+      <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
+      <CETCompat Condition="'$(Platform)' != 'ARM64EC'">true</CETCompat>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mrmapi.exe.manifest</AdditionalManifestFiles>
