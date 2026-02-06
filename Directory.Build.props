@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup>
+    <!-- VS 2026 Toolset -->
+    <PlatformToolset>v145</PlatformToolset>
+    
+    <!-- Windows 11 SDK (pinned for reproducible builds) -->
+    <WindowsTargetPlatformVersion>10.0.22621.0</WindowsTargetPlatformVersion>
+    
+    <!-- Security Features (PropertyGroup level) -->
+    <SpectreMitigation>Spectre</SpectreMitigation>
+    <ControlFlowGuard>Guard</ControlFlowGuard>
+    <GuardEHContMetadata>true</GuardEHContMetadata>
+    
+    <!-- Code Analysis - Lightweight for Debug/Release -->
+    <EnableCppCoreCheck Condition="'$(Configuration)' != 'Prefast' AND '$(Configuration)' != 'Prefast_Unicode'">true</EnableCppCoreCheck>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)' != 'Prefast' AND '$(Configuration)' != 'Prefast_Unicode'">CppCoreCheckRules.ruleset</CodeAnalysisRuleSet>
+    
+    <!-- Code Analysis - Full for Prefast (MSVC /analyze only, not clang-tidy - they conflict) -->
+    <EnableCppCoreCheck Condition="'$(Configuration)' == 'Prefast' OR '$(Configuration)' == 'Prefast_Unicode'">true</EnableCppCoreCheck>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)' == 'Prefast' OR '$(Configuration)' == 'Prefast_Unicode'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <EnableMicrosoftCodeAnalysis Condition="'$(Configuration)' == 'Prefast' OR '$(Configuration)' == 'Prefast_Unicode'">true</EnableMicrosoftCodeAnalysis>
+    <EnableClangTidyCodeAnalysis Condition="'$(Configuration)' == 'Prefast' OR '$(Configuration)' == 'Prefast_Unicode'">false</EnableClangTidyCodeAnalysis>
+  </PropertyGroup>
+  
+  <!-- Compiler Settings - Quality & Security Baseline -->
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <SDLCheck>true</SDLCheck>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  
+  <!-- Traditional /analyze for Prefast configurations -->
+  <ItemDefinitionGroup Condition="'$(Configuration)' == 'Prefast' OR '$(Configuration)' == 'Prefast_Unicode'">
+    <ClCompile>
+      <EnablePREfast>true</EnablePREfast>
+      <AdditionalOptions>/analyze:WX- /analyze:max_paths 4 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+</Project>
