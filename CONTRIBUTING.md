@@ -10,7 +10,20 @@ When contributing to this repository, please first discuss the change by creatin
   - Desktop development with C++
   - v145 toolset (VS 2026)
   - Windows 11 SDK (10.0.22621.0)
+  - Spectre-mitigated libraries (recommended)
 * **Node.js** (for npm-based builds - optional but recommended)
+
+### Verify Prerequisites
+
+Run the prerequisite check to verify your environment:
+```bash
+npm run prereq
+```
+
+Or use the .vsconfig file to install all required components:
+1. Open Visual Studio Installer
+2. Click **More** → **Import configuration**
+3. Select the `.vsconfig` file from the repo root
 
 ## GETTING STARTED
 

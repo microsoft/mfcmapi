@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "MFCMAPI - Microsoft MAPI inspection tool",
   "scripts": {
+    "prereq": "pwsh scripts/Check-Prerequisites.ps1",
     "msbuild": "powershell -Command \"$vs = & \\\"${env:ProgramFiles(x86)}\\Microsoft Visual Studio\\Installer\\vswhere.exe\\\" -latest -property installationPath; & \\\"$vs\\MSBuild\\Current\\Bin\\amd64\\msbuild.exe\\\"",
     "vstest": "powershell -Command \"$vs = & \\\"${env:ProgramFiles(x86)}\\Microsoft Visual Studio\\Installer\\vswhere.exe\\\" -latest -property installationPath; & \\\"$vs\\Common7\\IDE\\CommonExtensions\\Microsoft\\TestWindow\\vstest.console.exe\\\"",
 
@@ -31,6 +32,7 @@
     "build:fuzz": "npm run build:fuzz:x64",
     "build:fuzz:x64": "npm run msbuild -- MFCMapi.sln /m /p:Configuration=Fuzz /p:Platform=x64",
     "build:fuzz:x86": "npm run msbuild -- MFCMapi.sln /m /p:Configuration=Fuzz /p:Platform=Win32",
+    "fuzz:corpus": "pwsh fuzz/Build-FuzzingCorpus.ps1",
 
     "build:all": "npm run build:all:x64 && npm run build:all:x86",
     "build:all:x64": "npm run build:debug:x64 && npm run build:release:x64 && npm run build:debug:ansi:x64 && npm run build:release:ansi:x64 && npm run build:prefast:x64 && npm run build:prefast:ansi:x64 && npm run build:fuzz:x64",

@@ -11,7 +11,7 @@ MFCMAPI supports fuzzing with [libFuzzer](https://llvm.org/docs/LibFuzzer.html) 
 
 ```bash
 # 1. Generate the corpus (converts hex test data to binary)
-pwsh fuzz/Build-FuzzingCorpus.ps1
+npm run fuzz:corpus
 
 # 2. Build the fuzz configuration
 npm run build:fuzz
@@ -24,7 +24,7 @@ npm run build:fuzz
 The fuzzer needs binary input files. The unit test data is stored as hex strings in `.dat` files. Run the corpus builder to convert them:
 
 ```bash
-pwsh fuzz/Build-FuzzingCorpus.ps1
+npm run fuzz:corpus
 ```
 
 This reads from `UnitTest/SmartViewTestData/In/*.dat` and writes binary files to `fuzz/corpus/`.
