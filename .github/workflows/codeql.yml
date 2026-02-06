@@ -40,6 +40,15 @@ jobs:
         with:
           submodules: 'recursive'
 
+      - name: Install required VS components from .vsconfig
+        shell: pwsh
+        run: |
+          $vsPath = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
+          $installer = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vs_installer.exe"
+          Write-Host "Installing components from .vsconfig..."
+          & $installer modify --installPath $vsPath --config "${{ github.workspace }}\.vsconfig" --quiet --norestart --wait
+          Write-Host "VS components installation complete"
+
       # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL
         uses: github/codeql-action/init@6bc82e05fd0ea64601dd4b465378bbcf57de0314 # v3.29.5

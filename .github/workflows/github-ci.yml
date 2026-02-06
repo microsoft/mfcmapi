@@ -33,6 +33,15 @@ jobs:
       with:
         submodules: 'recursive'
 
+    - name: Install required VS components from .vsconfig
+      shell: pwsh
+      run: |
+        $vsPath = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
+        $installer = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vs_installer.exe"
+        Write-Host "Installing components from .vsconfig..."
+        & $installer modify --installPath $vsPath --config "${{ github.workspace }}\.vsconfig" --quiet --norestart --wait
+        Write-Host "VS components installation complete"
+
     - name: "Build"
       shell: pwsh
       run: |
