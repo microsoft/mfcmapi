@@ -80,7 +80,28 @@
     "test:debug:ansi:x86": "npm run vstest -- bin/Win32/UnitTest/Debug/UnitTest.dll /logger:console",
     "test:release:ansi": "npm run test:release:ansi:x64",
     "test:release:ansi:x64": "npm run vstest -- bin/x64/UnitTest/Release/UnitTest.dll /logger:console",
-    "test:release:ansi:x86": "npm run vstest -- bin/Win32/UnitTest/Release/UnitTest.dll /logger:console"
+    "test:release:ansi:x86": "npm run vstest -- bin/Win32/UnitTest/Release/UnitTest.dll /logger:console",
+
+    "build:debug:arm64ec": "npm run msbuild -- MFCMapi.sln /m /p:Configuration=Debug_Unicode /p:Platform=ARM64EC",
+    "build:release:arm64ec": "npm run msbuild -- MFCMapi.sln /m /p:Configuration=Release_Unicode /p:Platform=ARM64EC",
+    "build:debug:ansi:arm64ec": "npm run msbuild -- MFCMapi.sln /m /p:Configuration=Debug /p:Platform=ARM64EC",
+    "build:release:ansi:arm64ec": "npm run msbuild -- MFCMapi.sln /m /p:Configuration=Release /p:Platform=ARM64EC",
+    "build:prefast:arm64ec": "npm run msbuild -- MFCMapi.sln /m /p:Configuration=Prefast_Unicode /p:Platform=ARM64EC",
+    "build:prefast:ansi:arm64ec": "npm run msbuild -- MFCMapi.sln /m /p:Configuration=Prefast /p:Platform=ARM64EC",
+    "build:all:arm64ec": "npm run build:debug:arm64ec && npm run build:release:arm64ec && npm run build:debug:ansi:arm64ec && npm run build:release:ansi:arm64ec && npm run build:prefast:arm64ec && npm run build:prefast:ansi:arm64ec",
+
+    "clean:debug:arm64ec": "npm run msbuild -- MFCMapi.sln /t:Clean /p:Configuration=Debug_Unicode /p:Platform=ARM64EC",
+    "clean:release:arm64ec": "npm run msbuild -- MFCMapi.sln /t:Clean /p:Configuration=Release_Unicode /p:Platform=ARM64EC",
+    "clean:debug:ansi:arm64ec": "npm run msbuild -- MFCMapi.sln /t:Clean /p:Configuration=Debug /p:Platform=ARM64EC",
+    "clean:release:ansi:arm64ec": "npm run msbuild -- MFCMapi.sln /t:Clean /p:Configuration=Release /p:Platform=ARM64EC",
+    "clean:prefast:arm64ec": "npm run msbuild -- MFCMapi.sln /t:Clean /p:Configuration=Prefast_Unicode /p:Platform=ARM64EC",
+    "clean:prefast:ansi:arm64ec": "npm run msbuild -- MFCMapi.sln /t:Clean /p:Configuration=Prefast /p:Platform=ARM64EC",
+    "clean:all:arm64ec": "npm run clean:debug:arm64ec && npm run clean:release:arm64ec && npm run clean:debug:ansi:arm64ec && npm run clean:release:ansi:arm64ec && npm run clean:prefast:arm64ec && npm run clean:prefast:ansi:arm64ec",
+
+    "test:debug:arm64ec": "npm run vstest -- bin/ARM64EC/UnitTest/Debug_Unicode/UnitTest.dll /logger:console",
+    "test:release:arm64ec": "npm run vstest -- bin/ARM64EC/UnitTest/Release_Unicode/UnitTest.dll /logger:console",
+    "test:debug:ansi:arm64ec": "npm run vstest -- bin/ARM64EC/UnitTest/Debug/UnitTest.dll /logger:console",
+    "test:release:ansi:arm64ec": "npm run vstest -- bin/ARM64EC/UnitTest/Release/UnitTest.dll /logger:console"
   },
   "devDependencies": {
     "clang-format": "^1.8.0"
