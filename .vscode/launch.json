@@ -168,6 +168,36 @@
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "console": "integratedTerminal"
+        },
+        {
+            "name": "Fuzz (x64)",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "preLaunchTask": "Build Fuzz x64",
+            "program": "${workspaceFolder}/bin/x64/Fuzz/MFCMapi.exe",
+            "args": [
+                "${workspaceFolder}/UnitTest/SmartViewTestData/In",
+                "-max_total_time=60",
+                "-print_final_stats=1"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Fuzz (x86)",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "preLaunchTask": "Build Fuzz x86",
+            "program": "${workspaceFolder}/bin/Win32/Fuzz/MFCMapi.exe",
+            "args": [
+                "${workspaceFolder}/UnitTest/SmartViewTestData/In",
+                "-max_total_time=60",
+                "-print_final_stats=1"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal"
         }
     ]
 }
