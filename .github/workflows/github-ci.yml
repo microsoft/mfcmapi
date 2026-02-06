@@ -13,7 +13,8 @@ permissions:
 
 jobs:
   build:
-    runs-on: windows-latest
+    # Use VS 2026 preview runner (GA May 4, 2026, then switch to windows-2025)
+    runs-on: windows-2025-vs2026
     permissions:
       security-events: write
     strategy:
