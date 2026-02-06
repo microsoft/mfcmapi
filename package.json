@@ -1,4 +1,85 @@
 {
+  "name": "mfcmapi",
+  "version": "1.0.0",
+  "description": "MFCMAPI - Microsoft MAPI inspection tool",
+  "scripts": {
+    "msbuild": "powershell -Command \"$vs = & \\\"${env:ProgramFiles(x86)}\\Microsoft Visual Studio\\Installer\\vswhere.exe\\\" -latest -property installationPath; & \\\"$vs\\MSBuild\\Current\\Bin\\amd64\\msbuild.exe\\\"",
+    "vstest": "powershell -Command \"$vs = & \\\"${env:ProgramFiles(x86)}\\Microsoft Visual Studio\\Installer\\vswhere.exe\\\" -latest -property installationPath; & \\\"$vs\\Common7\\IDE\\CommonExtensions\\Microsoft\\TestWindow\\vstest.console.exe\\\"",
+
+    "build": "npm run build:debug",
+    "build:debug": "npm run build:debug:x64",
+    "build:debug:x64": "npm run msbuild -- MFCMapi.sln /m /p:Configuration=Debug_Unicode /p:Platform=x64",
+    "build:debug:x86": "npm run msbuild -- MFCMapi.sln /m /p:Configuration=Debug_Unicode /p:Platform=Win32",
+    "build:release": "npm run build:release:x64",
+    "build:release:x64": "npm run msbuild -- MFCMapi.sln /m /p:Configuration=Release_Unicode /p:Platform=x64",
+    "build:release:x86": "npm run msbuild -- MFCMapi.sln /m /p:Configuration=Release_Unicode /p:Platform=Win32",
+
+    "build:debug:ansi": "npm run build:debug:ansi:x64",
+    "build:debug:ansi:x64": "npm run msbuild -- MFCMapi.sln /m /p:Configuration=Debug /p:Platform=x64",
+    "build:debug:ansi:x86": "npm run msbuild -- MFCMapi.sln /m /p:Configuration=Debug /p:Platform=Win32",
+    "build:release:ansi": "npm run build:release:ansi:x64",
+    "build:release:ansi:x64": "npm run msbuild -- MFCMapi.sln /m /p:Configuration=Release /p:Platform=x64",
+    "build:release:ansi:x86": "npm run msbuild -- MFCMapi.sln /m /p:Configuration=Release /p:Platform=Win32",
+
+    "build:prefast": "npm run build:prefast:x64",
+    "build:prefast:x64": "npm run msbuild -- MFCMapi.sln /m /p:Configuration=Prefast_Unicode /p:Platform=x64",
+    "build:prefast:x86": "npm run msbuild -- MFCMapi.sln /m /p:Configuration=Prefast_Unicode /p:Platform=Win32",
+    "build:prefast:ansi": "npm run build:prefast:ansi:x64",
+    "build:prefast:ansi:x64": "npm run msbuild -- MFCMapi.sln /m /p:Configuration=Prefast /p:Platform=x64",
+    "build:prefast:ansi:x86": "npm run msbuild -- MFCMapi.sln /m /p:Configuration=Prefast /p:Platform=Win32",
+
+    "build:fuzz": "npm run build:fuzz:x64",
+    "build:fuzz:x64": "npm run msbuild -- MFCMapi.sln /m /p:Configuration=Fuzz /p:Platform=x64",
+    "build:fuzz:x86": "npm run msbuild -- MFCMapi.sln /m /p:Configuration=Fuzz /p:Platform=Win32",
+
+    "build:all": "npm run build:all:x64 && npm run build:all:x86",
+    "build:all:x64": "npm run build:debug:x64 && npm run build:release:x64 && npm run build:debug:ansi:x64 && npm run build:release:ansi:x64 && npm run build:prefast:x64 && npm run build:prefast:ansi:x64 && npm run build:fuzz:x64",
+    "build:all:x86": "npm run build:debug:x86 && npm run build:release:x86 && npm run build:debug:ansi:x86 && npm run build:release:ansi:x86 && npm run build:prefast:x86 && npm run build:prefast:ansi:x86 && npm run build:fuzz:x86",
+
+    "clean": "npm run clean:all",
+    "clean:all": "npm run clean:all:x64 && npm run clean:all:x86",
+    "clean:all:x64": "npm run clean:debug:x64 && npm run clean:release:x64 && npm run clean:debug:ansi:x64 && npm run clean:release:ansi:x64 && npm run clean:prefast:x64 && npm run clean:prefast:ansi:x64 && npm run clean:fuzz:x64",
+    "clean:all:x86": "npm run clean:debug:x86 && npm run clean:release:x86 && npm run clean:debug:ansi:x86 && npm run clean:release:ansi:x86 && npm run clean:prefast:x86 && npm run clean:prefast:ansi:x86 && npm run clean:fuzz:x86",
+
+    "clean:debug": "npm run clean:debug:x64",
+    "clean:debug:x64": "npm run msbuild -- MFCMapi.sln /t:Clean /p:Configuration=Debug_Unicode /p:Platform=x64",
+    "clean:debug:x86": "npm run msbuild -- MFCMapi.sln /t:Clean /p:Configuration=Debug_Unicode /p:Platform=Win32",
+    "clean:release": "npm run clean:release:x64",
+    "clean:release:x64": "npm run msbuild -- MFCMapi.sln /t:Clean /p:Configuration=Release_Unicode /p:Platform=x64",
+    "clean:release:x86": "npm run msbuild -- MFCMapi.sln /t:Clean /p:Configuration=Release_Unicode /p:Platform=Win32",
+
+    "clean:debug:ansi": "npm run clean:debug:ansi:x64",
+    "clean:debug:ansi:x64": "npm run msbuild -- MFCMapi.sln /t:Clean /p:Configuration=Debug /p:Platform=x64",
+    "clean:debug:ansi:x86": "npm run msbuild -- MFCMapi.sln /t:Clean /p:Configuration=Debug /p:Platform=Win32",
+    "clean:release:ansi": "npm run clean:release:ansi:x64",
+    "clean:release:ansi:x64": "npm run msbuild -- MFCMapi.sln /t:Clean /p:Configuration=Release /p:Platform=x64",
+    "clean:release:ansi:x86": "npm run msbuild -- MFCMapi.sln /t:Clean /p:Configuration=Release /p:Platform=Win32",
+
+    "clean:prefast": "npm run clean:prefast:x64",
+    "clean:prefast:x64": "npm run msbuild -- MFCMapi.sln /t:Clean /p:Configuration=Prefast_Unicode /p:Platform=x64",
+    "clean:prefast:x86": "npm run msbuild -- MFCMapi.sln /t:Clean /p:Configuration=Prefast_Unicode /p:Platform=Win32",
+    "clean:prefast:ansi": "npm run clean:prefast:ansi:x64",
+    "clean:prefast:ansi:x64": "npm run msbuild -- MFCMapi.sln /t:Clean /p:Configuration=Prefast /p:Platform=x64",
+    "clean:prefast:ansi:x86": "npm run msbuild -- MFCMapi.sln /t:Clean /p:Configuration=Prefast /p:Platform=Win32",
+
+    "clean:fuzz": "npm run clean:fuzz:x64",
+    "clean:fuzz:x64": "npm run msbuild -- MFCMapi.sln /t:Clean /p:Configuration=Fuzz /p:Platform=x64",
+    "clean:fuzz:x86": "npm run msbuild -- MFCMapi.sln /t:Clean /p:Configuration=Fuzz /p:Platform=Win32",
+
+    "test": "npm run test:debug",
+    "test:debug": "npm run test:debug:x64",
+    "test:debug:x64": "npm run vstest -- bin/x64/UnitTest/Debug_Unicode/UnitTest.dll /logger:console",
+    "test:debug:x86": "npm run vstest -- bin/Win32/UnitTest/Debug_Unicode/UnitTest.dll /logger:console",
+    "test:release": "npm run test:release:x64",
+    "test:release:x64": "npm run vstest -- bin/x64/UnitTest/Release_Unicode/UnitTest.dll /logger:console",
+    "test:release:x86": "npm run vstest -- bin/Win32/UnitTest/Release_Unicode/UnitTest.dll /logger:console",
+    "test:debug:ansi": "npm run test:debug:ansi:x64",
+    "test:debug:ansi:x64": "npm run vstest -- bin/x64/UnitTest/Debug/UnitTest.dll /logger:console",
+    "test:debug:ansi:x86": "npm run vstest -- bin/Win32/UnitTest/Debug/UnitTest.dll /logger:console",
+    "test:release:ansi": "npm run test:release:ansi:x64",
+    "test:release:ansi:x64": "npm run vstest -- bin/x64/UnitTest/Release/UnitTest.dll /logger:console",
+    "test:release:ansi:x86": "npm run vstest -- bin/Win32/UnitTest/Release/UnitTest.dll /logger:console"
+  },
   "devDependencies": {
     "clang-format": "^1.8.0"
   }
