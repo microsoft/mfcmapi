@@ -176,7 +176,8 @@
             "preLaunchTask": "Build Fuzz x64",
             "program": "${workspaceFolder}/bin/x64/Fuzz/MFCMapi.exe",
             "args": [
-                "${workspaceFolder}/UnitTest/SmartViewTestData/In",
+                "${workspaceFolder}/fuzz/corpus",
+                "-artifact_prefix=${workspaceFolder}/fuzz/artifacts/",
                 "-max_total_time=60",
                 "-print_final_stats=1"
             ],
@@ -191,7 +192,8 @@
             "preLaunchTask": "Build Fuzz x86",
             "program": "${workspaceFolder}/bin/Win32/Fuzz/MFCMapi.exe",
             "args": [
-                "${workspaceFolder}/UnitTest/SmartViewTestData/In",
+                "${workspaceFolder}/fuzz/corpus",
+                "-artifact_prefix=${workspaceFolder}/fuzz/artifacts/",
                 "-max_total_time=60",
                 "-print_final_stats=1"
             ],
