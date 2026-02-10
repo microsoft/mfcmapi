@@ -13,13 +13,21 @@ permissions:
 
 jobs:
   build:
-    runs-on: windows-latest
+    # Use VS 2026 preview runner (GA May 4, 2026, then switch to windows-2025)
+    runs-on: windows-2025-vs2026
     permissions:
       security-events: write
     strategy:
+      fail-fast: false
       matrix:
         configuration: [ 'Release', 'Debug', 'Release_Unicode', 'Debug_Unicode' ]
-        platform: [ 'Win32', 'x64' ]
+        platform: [ 'Win32', 'x64', 'ARM64EC' ]
+        exclude:
+          # ARM64EC only needs Unicode builds (matches Outlook ARM64EC)
+          - platform: ARM64EC
+            configuration: Release
+          - platform: ARM64EC
+            configuration: Debug
 
     steps:
     - name: Harden Runner
@@ -32,6 +40,29 @@ jobs:
       with:
         submodules: 'recursive'
 
+    - name: Install Windows 11 SDK (10.0.22621.0)
+      shell: pwsh
+      run: |
+        $sdkPath = "${env:ProgramFiles(x86)}\Windows Kits\10\Include\10.0.22621.0"
+        if (Test-Path $sdkPath) {
+          Write-Host "Windows SDK 10.0.22621.0 already installed"
+          exit 0
+        }
+        Write-Host "Downloading Windows 11 SDK 10.0.22621.0..."
+        $installer = "$env:TEMP\winsdksetup.exe"
+        Invoke-WebRequest -Uri "https://go.microsoft.com/fwlink/?linkid=2196241" -OutFile $installer
+        Write-Host "Installing SDK (this may take a few minutes)..."
+        $proc = Start-Process -FilePath $installer -ArgumentList "/features OptionId.DesktopCPPx64 OptionId.DesktopCPPx86 OptionId.DesktopCPParm64 /quiet /norestart /log $env:TEMP\sdk_install.log" -Wait -PassThru
+        Write-Host "Installer exit code: $($proc.ExitCode)"
+        if (Test-Path $sdkPath) {
+          Write-Host "Windows SDK 10.0.22621.0 installed successfully"
+        } else {
+          Write-Host "SDK install log:"
+          Get-Content "$env:TEMP\sdk_install.log" -ErrorAction SilentlyContinue | Select-Object -Last 50
+          Write-Error "Windows SDK installation failed - path not found: $sdkPath"
+          exit 1
+        }
+
     - name: "Build"
       shell: pwsh
       run: |
@@ -39,6 +70,7 @@ jobs:
         & $path\MSBuild\Current\Bin\amd64\msbuild.exe /m /p:Configuration="${{matrix.configuration}}" /p:Platform="${{matrix.platform}}" mfcmapi.sln
 
     - name: Find vstest.console.exe
+      if: matrix.platform != 'ARM64EC'
       run: |
         $VSDevTestCmd = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere" -latest -prerelease -products * -find Common7\IDE\Extensions\TestPlatform\vstest.console.exe
         if (!$VSDevTestCmd) { exit 1 }
@@ -46,6 +78,7 @@ jobs:
         Add-Content $env:GITHUB_ENV "VSDevTestCmd=$VSDevTestCmd"
 
     - name: MFCMAPI UnitTests
+      if: matrix.platform != 'ARM64EC'
       run: cmd /c "$env:VSDevTestCmd" /Parallel /EnableCodeCoverage /Logger:trx "${{github.workspace}}\\bin\\${{matrix.platform}}\\UnitTest\\${{matrix.configuration}}\\UnitTest.dll"
 
     # - name: Upload Event File
@@ -56,10 +89,19 @@ jobs:
  
     - name: Upload Test Result Files
       uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
-      if: always()
+      if: always() && matrix.platform != 'ARM64EC'
       with:
         name: Test Results (${{ matrix.platform }} - ${{ matrix.configuration }})
         path: ${{github.workspace}}/**/TestResults/**/*
+
+    - name: Upload ARM64EC Binaries
+      uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+      if: matrix.platform == 'ARM64EC' && matrix.configuration == 'Release_Unicode'
+      with:
+        name: ARM64EC Release Binaries
+        path: |
+          ${{github.workspace}}/bin/ARM64EC/MFCMapi/Release_Unicode/*.exe
+          ${{github.workspace}}/bin/ARM64EC/MrMAPI/Release_Unicode/*.exe
 
   publish-test-results:
     name: "Publish Tests Results"

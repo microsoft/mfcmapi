@@ -15,7 +15,8 @@ permissions:
 jobs:
   analyze:
     name: Analyze (${{ matrix.language }})
-    runs-on: windows-latest
+    # Use VS 2026 preview runner (GA May 4, 2026, then switch to windows-2025)
+    runs-on: windows-2025-vs2026
     permissions:
       packages: read
       actions: read
@@ -27,7 +28,7 @@ jobs:
       matrix:
         include:
         - language: c-cpp
-          build-mode: autobuild
+          build-mode: manual
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@5ef0c079ce82195b2a36a210272d6b661572d83e # v2.14.2
@@ -39,9 +40,32 @@ jobs:
         with:
           submodules: 'recursive'
 
+      - name: Install Windows 11 SDK (10.0.22621.0)
+        shell: pwsh
+        run: |
+          $sdkPath = "${env:ProgramFiles(x86)}\Windows Kits\10\Include\10.0.22621.0"
+          if (Test-Path $sdkPath) {
+            Write-Host "Windows SDK 10.0.22621.0 already installed"
+            exit 0
+          }
+          Write-Host "Downloading Windows 11 SDK 10.0.22621.0..."
+          $installer = "$env:TEMP\winsdksetup.exe"
+          Invoke-WebRequest -Uri "https://go.microsoft.com/fwlink/?linkid=2196241" -OutFile $installer
+          Write-Host "Installing SDK (this may take a few minutes)..."
+          $proc = Start-Process -FilePath $installer -ArgumentList "/features OptionId.DesktopCPPx64 OptionId.DesktopCPPx86 /quiet /norestart /log $env:TEMP\sdk_install.log" -Wait -PassThru
+          Write-Host "Installer exit code: $($proc.ExitCode)"
+          if (Test-Path $sdkPath) {
+            Write-Host "Windows SDK 10.0.22621.0 installed successfully"
+          } else {
+            Write-Host "SDK install log:"
+            Get-Content "$env:TEMP\sdk_install.log" -ErrorAction SilentlyContinue | Select-Object -Last 50
+            Write-Error "Windows SDK installation failed - path not found: $sdkPath"
+            exit 1
+          }
+
       # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@45cbd0c69e560cd9e7cd7f8c32362050c9b7ded2 # v3.29.5
+        uses: github/codeql-action/init@v4
         with:
           languages: ${{ matrix.language }}
           build-mode: ${{ matrix.build-mode }}
@@ -52,12 +76,16 @@ jobs:
           # For more details on CodeQL's query packs, refer to: https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
           # queries: security-extended,security-and-quality
 
-      - name: Autobuild
-        uses: github/codeql-action/autobuild@45cbd0c69e560cd9e7cd7f8c32362050c9b7ded2 # v3.29.5
+      - name: Build for CodeQL
+        shell: pwsh
+        run: |
+          $path = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
+          # Build Release_Unicode|x64 for CodeQL analysis
+          & $path\MSBuild\Current\Bin\amd64\msbuild.exe /m /p:Configuration=Release_Unicode /p:Platform=x64 mfcmapi.sln
 
       - name: Perform CodeQL Analysis
         id: analyze
-        uses: github/codeql-action/analyze@45cbd0c69e560cd9e7cd7f8c32362050c9b7ded2 # v3.29.5
+        uses: github/codeql-action/analyze@v4
         with:
           category: "/language:${{matrix.language}}"
 

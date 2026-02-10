@@ -53,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />
+    <None Include="Directory.Build.props" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="UI\Dialogs\MFCUtilityFunctions.h">

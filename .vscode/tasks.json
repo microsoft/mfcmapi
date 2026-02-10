@@ -2,241 +2,123 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Batch Build",
-            "dependsOn": [
-                "Debug x64",
-                "Debug x86",
-                "Debug_Unicode x64",
-                "Debug_Unicode x86",
-                "Release x64",
-                "Release x86",
-                "Release_Unicode x64",
-                "Release_Unicode x86"
-            ],
-            "dependsOrder": "parallel",
-            "group": "build",
-            "isBackground": true
-        },
-        {
-            "label": "Debug x64",
-            "type": "shell",
-            "command": "msbuild /property:Configuration=Debug /property:Platform=x64",
-            "group": { "kind": "build", "isDefault": true }
-        },
-        {
-            "label": "Release x64",
-            "type": "shell",
-            "command": "msbuild /property:Configuration=Release /property:Platform=x64",
-            "group": "build"
-        },
-        {
-            "label": "Debug x86",
-            "type": "shell",
-            "command": "msbuild /property:Configuration=Debug /property:Platform=Win32",
-            "group": { "kind": "build", "isDefault": true }
-        },
-        {
-            "label": "Release x86",
-            "type": "shell",
-            "command": "msbuild /property:Configuration=Release /property:Platform=Win32",
-            "group": "build"
-        },
-        {
-            "label": "Debug_Unicode x64",
-            "type": "shell",
-            "command": "msbuild /property:Configuration=Debug_Unicode /property:Platform=x64",
-            "group": "build"
-        },
-        {
-            "label": "Release_Unicode x64",
-            "type": "shell",
-            "command": "msbuild /property:Configuration=Release_Unicode /property:Platform=x64",
-            "group": "build"
-        },
-        {
-            "label": "Debug_Unicode x86",
-            "type": "shell",
-            "command": "msbuild /property:Configuration=Debug_Unicode /property:Platform=Win32",
-            "group": { "kind": "build", "isDefault": true }
-        },
-        {
-            "label": "Release_Unicode x86",
-            "type": "shell",
-            "command": "msbuild /property:Configuration=Release_Unicode /property:Platform=Win32",
-            "group": "build"
-        },
-        {
-            "label": "Batch Prefast Build",
-            "dependsOn": [
-                "Prefast x64",
-                "Prefast x86",
-            ],
-            "dependsOrder": "parallel",
-            "group": "build",
-            "isBackground": true
-        },
-        {
-            "label": "Prefast x64",
-            "type": "shell",
-            "command": "msbuild /property:Configuration=Prefast /property:Platform=x64",
+            "label": "Build",
+            "type": "npm",
+            "script": "build",
             "group": { "kind": "build", "isDefault": true },
             "problemMatcher": "$msCompile"
         },
         {
-            "label": "Prefast x86",
-            "type": "shell",
-            "command": "msbuild /property:Configuration=Prefast /property:Platform=Win32",
-            "group": "build"
-        },
-        {
-            "label": "Batch Clean",
-            "dependsOn": [
-                "Clean Debug x64",
-                "Clean Debug x86",
-                "Clean Debug_Unicode x64",
-                "Clean Debug_Unicode x86",
-                "Clean Release x64",
-                "Clean Release x86",
-                "Clean Release_Unicode x64",
-                "Clean Release_Unicode x86",
-                "Clean Prefast x64",
-                "Clean Prefast x86"
-            ],
-            "dependsOrder": "parallel",
+            "label": "Build Debug x64",
+            "type": "npm",
+            "script": "build:debug:x64",
             "group": "build",
-            "isBackground": true
+            "problemMatcher": "$msCompile"
         },
         {
-            "label": "Clean Debug x64",
-            "type": "shell",
-            "command": "msbuild /target:Clean /property:Configuration=Debug /property:Platform=x64",
-            "group": "build"
+            "label": "Build Debug x86",
+            "type": "npm",
+            "script": "build:debug:x86",
+            "group": "build",
+            "problemMatcher": "$msCompile"
         },
         {
-            "label": "Clean Release x64",
-            "type": "shell",
-            "command": "msbuild /target:Clean /property:Configuration=Release /property:Platform=x64",
-            "group": "build"
+            "label": "Build Release x64",
+            "type": "npm",
+            "script": "build:release:x64",
+            "group": "build",
+            "problemMatcher": "$msCompile"
         },
         {
-            "label": "Clean Debug x86",
-            "type": "shell",
-            "command": "msbuild /target:Clean /property:Configuration=Debug /property:Platform=Win32",
-            "group": "build"
+            "label": "Build Release x86",
+            "type": "npm",
+            "script": "build:release:x86",
+            "group": "build",
+            "problemMatcher": "$msCompile"
         },
         {
-            "label": "Clean Release x86",
-            "type": "shell",
-            "command": "msbuild /target:Clean /property:Configuration=Release /property:Platform=Win32",
-            "group": "build"
+            "label": "Build Debug ANSI x64",
+            "type": "npm",
+            "script": "build:debug:ansi:x64",
+            "group": "build",
+            "problemMatcher": "$msCompile"
         },
         {
-            "label": "Clean Debug_Unicode x64",
-            "type": "shell",
-            "command": "msbuild /target:Clean /property:Configuration=Debug_Unicode /property:Platform=x64",
-            "group": "build"
+            "label": "Build Debug ANSI x86",
+            "type": "npm",
+            "script": "build:debug:ansi:x86",
+            "group": "build",
+            "problemMatcher": "$msCompile"
         },
         {
-            "label": "Clean Release_Unicode x64",
-            "type": "shell",
-            "command": "msbuild /target:Clean /property:Configuration=Release_Unicode /property:Platform=x64",
-            "group": "build"
+            "label": "Build Release ANSI x64",
+            "type": "npm",
+            "script": "build:release:ansi:x64",
+            "group": "build",
+            "problemMatcher": "$msCompile"
         },
         {
-            "label": "Clean Debug_Unicode x86",
-            "type": "shell",
-            "command": "msbuild /target:Clean /property:Configuration=Debug_Unicode /property:Platform=Win32",
-            "group": "build"
+            "label": "Build Release ANSI x86",
+            "type": "npm",
+            "script": "build:release:ansi:x86",
+            "group": "build",
+            "problemMatcher": "$msCompile"
         },
         {
-            "label": "Clean Release_Unicode x86",
-            "type": "shell",
-            "command": "msbuild /target:Clean /property:Configuration=Release_Unicode /property:Platform=Win32",
-            "group": "build"
+            "label": "Build Prefast x64",
+            "type": "npm",
+            "script": "build:prefast:x64",
+            "group": "build",
+            "problemMatcher": "$msCompile"
         },
         {
-            "label": "Clean Prefast x64",
-            "type": "shell",
-            "command": "msbuild /target:Clean /property:Configuration=Prefast /property:Platform=x64",
-            "group": "build"
+            "label": "Build Prefast x86",
+            "type": "npm",
+            "script": "build:prefast:x86",
+            "group": "build",
+            "problemMatcher": "$msCompile"
         },
         {
-            "label": "Clean Prefast x86",
-            "type": "shell",
-            "command": "msbuild /target:Clean /property:Configuration=Prefast /property:Platform=Win32",
-            "group": "build"
+            "label": "Build Fuzz x64",
+            "type": "npm",
+            "script": "build:fuzz:x64",
+            "group": "build",
+            "problemMatcher": "$msCompile"
         },
         {
-            "label": "Batch unit test",
-            "dependsOn": [
-                "Unit test Debug x64",
-                "Unit test Release x64",
-                "Unit test Debug x86",
-                "Unit test Release x86",
-                "Unit test Debug_Unicode x64",
-                "Unit test Release_Unicode x64",
-                "Unit test Debug_Unicode x86",
-                "Unit test Release_Unicode x86"
-            ],
-            "dependsOrder": "parallel",
-            "group": "test",
-            "isBackground": true
+            "label": "Build All",
+            "type": "npm",
+            "script": "build:all",
+            "group": "build",
+            "problemMatcher": "$msCompile"
         },
         {
-            "label": "Unit test Debug x64",
-            "dependsOn": [ "Debug x64" ],
-            "type": "shell",
-            "command": "vstest.console.exe ${workspaceFolder}/bin/x64/UnitTest/Debug/UnitTest.dll /logger:console /logger:trx",
+            "label": "Clean",
+            "type": "npm",
+            "script": "clean",
+            "group": "build",
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Test",
+            "type": "npm",
+            "script": "test",
             "group": { "kind": "test", "isDefault": true },
+            "problemMatcher": "$msCompile"
         },
         {
-            "label": "Unit test Release x64",
-            "dependsOn": [ "Release x64" ],
-            "type": "shell",
-            "command": "vstest.console.exe ${workspaceFolder}/bin/x64/UnitTest/Release/UnitTest.dll /logger:console /logger:trx",
-            "group": "test"
+            "label": "Test Debug x64",
+            "type": "npm",
+            "script": "test:debug:x64",
+            "group": "test",
+            "problemMatcher": "$msCompile"
         },
         {
-            "label": "Unit test Debug x86",
-            "dependsOn": [ "Debug x86" ],
-            "type": "shell",
-            "command": "vstest.console.exe ${workspaceFolder}/bin/Win32/UnitTest/Debug/UnitTest.dll /logger:console /logger:trx",
-            "group": "test"
-        },
-        {
-            "label": "Unit test Release x86",
-            "dependsOn": [ "Release x86" ],
-            "type": "shell",
-            "command": "vstest.console.exe ${workspaceFolder}/bin/Win32/UnitTest/Release/UnitTest.dll /logger:console /logger:trx",
-            "group": "test"
-        },
-        {
-            "label": "Unit test Debug_Unicode x64",
-            "dependsOn": [ "Debug_Unicode x64" ],
-            "type": "shell",
-            "command": "vstest.console.exe ${workspaceFolder}/bin/x64/UnitTest/Debug_Unicode/UnitTest.dll /logger:console /logger:trx",
-            "group": "test"
-        },
-        {
-            "label": "Unit test Release_Unicode x64",
-            "dependsOn": [ "Release_Unicode x64" ],
-            "type": "shell",
-            "command": "vstest.console.exe ${workspaceFolder}/bin/x64/UnitTest/Release_Unicode/UnitTest.dll /logger:console /logger:trx",
-            "group": "test"
-        },
-        {
-            "label": "Unit test Debug_Unicode x86",
-            "dependsOn": [ "Debug_Unicode x86" ],
-            "type": "shell",
-            "command": "vstest.console.exe ${workspaceFolder}/bin/Win32/UnitTest/Debug_Unicode/UnitTest.dll /logger:console /logger:trx",
-            "group": "test"
-        },
-        {
-            "label": "Unit test Release_Unicode x86",
-            "dependsOn": [ "Release_Unicode x86" ],
-            "type": "shell",
-            "command": "vstest.console.exe ${workspaceFolder}/bin/Win32/UnitTest/Release_Unicode/UnitTest.dll /logger:console /logger:trx",
-            "group": "test"
-        },
+            "label": "Test Release x64",
+            "type": "npm",
+            "script": "test:release:x64",
+            "group": "test",
+            "problemMatcher": "$msCompile"
+        }
     ]
 }

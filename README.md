@@ -2,34 +2,33 @@
 
 MFCMAPI provides access to MAPI stores to facilitate investigation of Exchange and Outlook issues and to provide developers with a sample for MAPI development.
 
-[Latest release](https://github.com/microsoft/mfcmapi/releases/latest)  
-[Release stats (raw JSON)](https://api.github.com/repos/microsoft/mfcmapi/releases/latest)  
-[Pretty release stats](https://somsubhra.github.io/github-release-stats/?username=microsoft&repository=mfcmapi&page=1&per_page=5)
+## Download
 
-## Contributing
+**[Download Latest Release](https://github.com/microsoft/mfcmapi/releases/latest)**
 
-MFCMAPI depends on the [MAPI Stub Library](https://github.com/microsoft/MAPIStubLibrary). When cloning, make sure to clone submodules. See [Contributing](CONTRIBUTING.md) for more details.
+### Which version do I need?
 
-## Fuzzing
+Choose based on your **Outlook installation** (not your Windows version):
 
-MFCMAPI supports fuzzing with [libFuzzer](https://llvm.org/docs/LibFuzzer.html) and the [fsanitize](https://learn.microsoft.com/en-us/cpp/build/reference/fsanitize?view=msvc-170) switch in Visual Studio. See [fuzz.cpp](fuzz/fuzz.cpp) for details.  
-To run fuzzing for this project, follow these steps:
-1. **Build Fuzzing Corpus**: 
-   - Open Powershell prompt
-   - Run [fuzz\Build-FuzzingCorpus.ps1](fuzz\Build-FuzzingCorpus.ps1) to generate a fuzzing corpus in [fuzz/corpus](fuzz/corpus) from Smart View unit test data.
+| Your Outlook | Download |
+|--------------|----------|
+| **64-bit Outlook** | `MFCMAPI.exe.x64.zip` |
+| **32-bit Outlook** | `MFCMAPI.exe.x86.zip` |
 
-1. **Switch Solution Configuration**:
-   - Open MFCMAPI.sln in Visual Studio.
-   - In the toolbar, locate the **Solution Configurations** dropdown.
-   - Select **Fuzz** from the list of configurations.
+**How to check your Outlook version:**
+1. Open Outlook
+2. Click **File** → **Office Account** → **About Outlook**
+3. Look for "32-bit" or "64-bit" in the top line
 
-1. **Debug Command Line Parameters**:
-   - When running the fuzzing tests, use the following command line parameters:  
-`$(ProjectDir)fuzz\corpus -artifact_prefix=fuzz\artifacts\`
+> **Note:** Most Microsoft 365 installations are 64-bit. If unsure, try the x64 version first.
 
 ## Help/Feedback
 
 For assistance using MFCMAPI, developing add-ins, or general MAPI development, consult the [documentation](docs/Documentation.md). Find a bug? Need help? Have a suggestion? Report your issues through the [issues tab](https://github.com/microsoft/mfcmapi/issues).  
+
+## Contributing
+
+Interested in contributing? See [Contributing](CONTRIBUTING.md) for build requirements and development setup.
 
 ## Badges
 
