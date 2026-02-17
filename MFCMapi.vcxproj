@@ -1124,7 +1124,17 @@
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />
+    <None Include=".editorconfig" />
+    <None Include=".gitattributes" />
+    <None Include=".gitignore" />
+    <None Include=".vsconfig" />
     <None Include="Directory.Build.props" />
+    <None Include="NuGet.Config" />
+    <None Include="package.json" />
+    <None Include="README.md" />
+    <None Include="CONTRIBUTING.md" />
+    <None Include="SECURITY.md" />
+    <None Include="license.md" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="UI\CMAPIProgress.cpp" />

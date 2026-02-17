@@ -50,10 +50,47 @@
     <Filter Include="Source Files\fuzz">
       <UniqueIdentifier>{56bd509d-6bf7-4d82-baca-407d35286b90}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Configuration Files">
+      <UniqueIdentifier>{A1B2C3D4-E5F6-4789-ABCD-EF0123456789}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include=".clang-format" />
-    <None Include="Directory.Build.props" />
+    <None Include=".clang-format">
+      <Filter>Configuration Files</Filter>
+    </None>
+    <None Include=".editorconfig">
+      <Filter>Configuration Files</Filter>
+    </None>
+    <None Include=".gitattributes">
+      <Filter>Configuration Files</Filter>
+    </None>
+    <None Include=".gitignore">
+      <Filter>Configuration Files</Filter>
+    </None>
+    <None Include=".vsconfig">
+      <Filter>Configuration Files</Filter>
+    </None>
+    <None Include="Directory.Build.props">
+      <Filter>Configuration Files</Filter>
+    </None>
+    <None Include="NuGet.Config">
+      <Filter>Configuration Files</Filter>
+    </None>
+    <None Include="package.json">
+      <Filter>Configuration Files</Filter>
+    </None>
+    <None Include="README.md">
+      <Filter>Configuration Files</Filter>
+    </None>
+    <None Include="CONTRIBUTING.md">
+      <Filter>Configuration Files</Filter>
+    </None>
+    <None Include="SECURITY.md">
+      <Filter>Configuration Files</Filter>
+    </None>
+    <None Include="license.md">
+      <Filter>Configuration Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="UI\Dialogs\MFCUtilityFunctions.h">

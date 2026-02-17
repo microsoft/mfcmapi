@@ -944,9 +944,6 @@
     <ClInclude Include="MrMAPI.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\.clang-format" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="MMAccounts.cpp" />
     <ClCompile Include="mmcli.cpp" />
     <ClCompile Include="MMNamedProps.cpp" />

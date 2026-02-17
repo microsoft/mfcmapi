@@ -118,7 +118,4 @@
       <Filter>Source Files\MrMAPI</Filter>
     </ClCompile>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="..\.clang-format" />
-  </ItemGroup>
 </Project>
