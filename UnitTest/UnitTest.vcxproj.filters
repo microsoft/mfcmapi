@@ -75,12 +75,25 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(SVOutHeader)" />
-    <None Include="$(SVOutCPP)" />
-    <None Include="$(SVOutRC)" />
-    <None Include="scripts\Build-SmartViewTests.ps1" />
-    <None Include="$(SVOutHeader)" />
-    <None Include="$(SVOutCPP)" />
-    <None Include="$(SVOutRC)" />
+    <Filter Include="Generated Files">
+      <UniqueIdentifier>{8E41214B-6784-4F4F-A6AF-8D7724862B86}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="scripts">
+      <UniqueIdentifier>{C5E8F54D-9A4D-4E5B-8B5C-7F5A3B7C9D1E}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="gen\SmartViewTests.h">
+      <Filter>Generated Files</Filter>
+    </None>
+    <None Include="gen\SmartViewTests.cpp">
+      <Filter>Generated Files</Filter>
+    </None>
+    <None Include="gen\SmartViewTests.rc">
+      <Filter>Generated Files</Filter>
+    </None>
+    <None Include="scripts\Build-SmartViewTests.ps1">
+      <Filter>scripts</Filter>
+    </None>
   </ItemGroup>
 </Project>

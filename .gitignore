@@ -10,3 +10,4 @@
 /packages
 /fuzz/corpus/
 /fuzz/artifacts/
+/UnitTest/gen/

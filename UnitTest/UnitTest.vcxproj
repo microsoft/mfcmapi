@@ -893,13 +893,14 @@
   </ItemDefinitionGroup>
   <PropertyGroup>
     <PowerShellExe>%WINDIR%\System32\WindowsPowerShell\v1.0\powershell.exe</PowerShellExe>
-    <BuildSmartViewTests>$(MSBuildThisFileDirectory)\scripts\Build-SmartViewTests.ps1</BuildSmartViewTests>
-    <SVInDir>$(MSBuildThisFileDirectory)\SmartViewTestData\In</SVInDir>
-    <SVOutDir>$(MSBuildThisFileDirectory)\SmartViewTestData\Out</SVOutDir>
-    <SVOutHeader>$(IntDir)SmartViewTests.h</SVOutHeader>
-    <SVOutRC>$(IntDir)\SmartViewTests.rc</SVOutRC>
-    <SVOutCPP>$(IntDir)\SmartViewTests.cpp</SVOutCPP>
-    <CommandString>$(PowerShellExe) -ExecutionPolicy Bypass -File $(BuildSmartViewTests) $(IntDir)</CommandString>
+    <BuildSmartViewTests>$(MSBuildThisFileDirectory)scripts\Build-SmartViewTests.ps1</BuildSmartViewTests>
+    <SVInDir>$(MSBuildThisFileDirectory)SmartViewTestData\In</SVInDir>
+    <SVOutDir>$(MSBuildThisFileDirectory)SmartViewTestData\Out</SVOutDir>
+    <SVGenDir>$(MSBuildThisFileDirectory)gen\</SVGenDir>
+    <SVOutHeader>$(SVGenDir)SmartViewTests.h</SVOutHeader>
+    <SVOutRC>$(SVGenDir)SmartViewTests.rc</SVOutRC>
+    <SVOutCPP>$(SVGenDir)SmartViewTests.cpp</SVOutCPP>
+    <CommandString>$(PowerShellExe) -ExecutionPolicy Bypass -File $(BuildSmartViewTests) $(SVGenDir)</CommandString>
   </PropertyGroup>
   <ItemGroup>
     <ClInclude Include="res\resource.h" />
@@ -923,9 +924,9 @@
     <ClCompile Include="tests\sidtest.cpp" />
     <ClCompile Include="tests\stringtest.cpp" />
     <ClCompile Include="UnitTest.cpp" />
-    <None Include="$(SVOutHeader)" />
-    <None Include="$(SVOutCPP)" />
-    <None Include="$(SVOutRC)" />
+    <None Include="gen\SmartViewTests.h" />
+    <None Include="gen\SmartViewTests.cpp" />
+    <None Include="gen\SmartViewTests.rc" />
     <None Include="scripts\Build-SmartViewTests.ps1" />
   </ItemGroup>
   <ItemGroup>
