@@ -86,6 +86,13 @@
             "problemMatcher": "$msCompile"
         },
         {
+            "label": "Build Fuzz x86",
+            "type": "npm",
+            "script": "build:fuzz:x86",
+            "group": "build",
+            "problemMatcher": "$msCompile"
+        },
+        {
             "label": "Build All",
             "type": "npm",
             "script": "build:all",
