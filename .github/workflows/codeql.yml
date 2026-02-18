@@ -48,13 +48,13 @@ jobs:
             Write-Host "Windows SDK 10.0.22621.0 already installed"
             exit 0
           }
-          
+
           # Download and verify installer
           $installer = "$env:TEMP\winsdksetup.exe"
           $expectedHash = "73FE3CC0E50D946D0C0A83A1424111E60DEE23F0803E305A8974A963B58290C0"
           Write-Host "Downloading Windows 11 SDK 10.0.22621.0..."
           Invoke-WebRequest -Uri "https://go.microsoft.com/fwlink/?linkid=2196241" -OutFile $installer
-          
+
           # Verify SHA256 hash
           $actualHash = (Get-FileHash -Path $installer -Algorithm SHA256).Hash
           if ($actualHash -ne $expectedHash) {
@@ -62,7 +62,7 @@ jobs:
             exit 1
           }
           Write-Host "SHA256 verified: $actualHash"
-          
+
           # Install SDK
           Write-Host "Installing SDK (this may take a few minutes)..."
           $proc = Start-Process -FilePath $installer -ArgumentList "/features OptionId.DesktopCPPx64 OptionId.DesktopCPPx86 /quiet /norestart /log $env:TEMP\sdk_install.log" -Wait -PassThru
@@ -75,7 +75,7 @@ jobs:
 
       # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v4
+        uses: github/codeql-action/init@45cbd0c69e560cd9e7cd7f8c32362050c9b7ded2 # v3.29.5
         with:
           languages: ${{ matrix.language }}
           build-mode: ${{ matrix.build-mode }}
@@ -95,7 +95,7 @@ jobs:
 
       - name: Perform CodeQL Analysis
         id: analyze
-        uses: github/codeql-action/analyze@v4
+        uses: github/codeql-action/analyze@45cbd0c69e560cd9e7cd7f8c32362050c9b7ded2 # v3.29.5
         with:
           category: "/language:${{matrix.language}}"
 
