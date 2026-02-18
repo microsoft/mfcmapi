@@ -65,9 +65,10 @@ function Test-VC145Toolset {
     
     $toolsetPath = Join-Path $VSPath "VC\Tools\MSVC"
     if (Test-Path $toolsetPath) {
-        $versions = Get-ChildItem $toolsetPath -Directory | Sort-Object Name -Descending
-        if ($versions) {
-            $latest = $versions[0].Name
+        # v145 toolset versions start with 14.5x
+        $v145Versions = Get-ChildItem $toolsetPath -Directory | Where-Object { $_.Name -match '^14\.5' } | Sort-Object Name -Descending
+        if ($v145Versions) {
+            $latest = $v145Versions[0].Name
             Write-Status "VC++ Toolset (v145):" "$latest" Green
             return $true
         }
