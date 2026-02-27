@@ -47,35 +47,7 @@ jobs:
     - name: Install Windows 11 SDK (10.0.22621.0)
       shell: pwsh
       run: |
-        $sdkPath = "${env:ProgramFiles(x86)}\Windows Kits\10\Include\10.0.22621.0"
-        if (Test-Path $sdkPath) {
-          Write-Host "Windows SDK 10.0.22621.0 already installed"
-          exit 0
-        }
-        
-        # Download and verify installer
-        $installer = "$env:TEMP\winsdksetup.exe"
-        $expectedHash = "73FE3CC0E50D946D0C0A83A1424111E60DEE23F0803E305A8974A963B58290C0"
-        Write-Host "Downloading Windows 11 SDK 10.0.22621.0..."
-        Invoke-WebRequest -Uri "https://go.microsoft.com/fwlink/?linkid=2196241" -OutFile $installer
-        
-        # Verify SHA256 hash
-        $actualHash = (Get-FileHash -Path $installer -Algorithm SHA256).Hash
-        if ($actualHash -ne $expectedHash) {
-          Write-Error "SHA256 hash mismatch! Expected: $expectedHash, Got: $actualHash"
-          exit 1
-        }
-        Write-Host "SHA256 verified: $actualHash"
-        
-        # Install SDK
-        Write-Host "Installing SDK (this may take a few minutes)..."
-        $proc = Start-Process -FilePath $installer -ArgumentList "/features OptionId.DesktopCPPx64 OptionId.DesktopCPPx86 OptionId.DesktopCPParm64 /quiet /norestart /log $env:TEMP\sdk_install.log" -Wait -PassThru
-        if (!(Test-Path $sdkPath)) {
-          Get-Content "$env:TEMP\sdk_install.log" -ErrorAction SilentlyContinue | Select-Object -Last 50
-          Write-Error "Windows SDK installation failed"
-          exit 1
-        }
-        Write-Host "Windows SDK 10.0.22621.0 installed successfully"
+        & "${{ github.workspace }}\scripts\install-winsdk.ps1"
 
     - name: "Build"
       shell: pwsh
