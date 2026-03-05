@@ -15,7 +15,7 @@ permissions:
 jobs:
   analyze:
     name: Analyze (${{ matrix.language }})
-    runs-on: windows-2022
+    runs-on: windows-latest
     permissions:
       packages: read
       actions: read
