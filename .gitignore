@@ -11,3 +11,4 @@
 /fuzz/corpus/
 /fuzz/artifacts/
 /UnitTest/gen/
+/codeql/

@@ -1,6 +1,6 @@
 param(
     [Parameter(ValueFromRemainingArguments = $true)]
-    [string[]]$MSBuildArgs
+    [string[]]$VSTestArgs
 )
 
 Set-StrictMode -Version Latest
@@ -12,24 +12,24 @@ if (-not (Test-Path -Path $vswhere)) {
     throw "vswhere.exe not found at '$vswhere'. Install Visual Studio Build Tools or Visual Studio."
 }
 
-$vsPath = & $vswhere -latest -requires Microsoft.Component.MSBuild -property installationPath
+$vsPath = & $vswhere -latest -requires Microsoft.VisualStudio.PackageGroup.TestTools.Core -property installationPath
 if (-not $vsPath) {
-    throw "MSBuild installation path not found via vswhere."
+    throw "Visual Studio installation path with Test Tools not found via vswhere."
 }
 
-$msbuild = Join-Path $vsPath "MSBuild\Current\Bin\amd64\msbuild.exe"
-if (-not (Test-Path -Path $msbuild)) {
-    throw "MSBuild executable not found at '$msbuild'.")
+$vstest = Join-Path $vsPath "Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe"
+if (-not (Test-Path -Path $vstest)) {
+    throw "vstest.console.exe not found at '$vstest'."
 }
 
-if (-not $MSBuildArgs -or $MSBuildArgs.Count -eq 0) {
-    throw "No MSBuild arguments were provided."
+if (-not $VSTestArgs -or $VSTestArgs.Count -eq 0) {
+    throw "No VSTest arguments were provided."
 }
 
 $srcRoot = Join-Path -Path $PSScriptRoot -ChildPath ".."
 Push-Location $srcRoot
 try {
-    & $msbuild @MSBuildArgs
+    & $vstest @VSTestArgs
     if ($LASTEXITCODE -ne 0) {
         exit $LASTEXITCODE
     }

@@ -4,8 +4,9 @@
   "description": "MFCMAPI - Microsoft MAPI inspection tool",
   "scripts": {
     "prereq": "pwsh scripts/Check-Prerequisites.ps1",
-    "msbuild": "powershell -Command \"$vs = & \\\"${env:ProgramFiles(x86)}\\Microsoft Visual Studio\\Installer\\vswhere.exe\\\" -latest -property installationPath; & \\\"$vs\\MSBuild\\Current\\Bin\\amd64\\msbuild.exe\\\" @args\"",
-    "vstest": "powershell -Command \"$vs = & \\\"${env:ProgramFiles(x86)}\\Microsoft Visual Studio\\Installer\\vswhere.exe\\\" -latest -property installationPath; & \\\"$vs\\Common7\\IDE\\CommonExtensions\\Microsoft\\TestWindow\\vstest.console.exe\\\" @args\"",
+    "codeql": "pwsh scripts/codeql.ps1",
+    "msbuild": "pwsh scripts/build.ps1",
+    "vstest": "pwsh scripts/vstest.ps1",
 
     "build": "npm run build:debug",
     "build:debug": "npm run build:debug:x64",
