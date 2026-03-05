@@ -39,6 +39,9 @@ jobs:
         with:
           submodules: 'recursive'
 
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
       # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL
         uses: github/codeql-action/init@c793b717bc78562f491db7b0e93a3a178b099162 # v3.29.5
@@ -53,11 +56,7 @@ jobs:
           # queries: security-extended,security-and-quality
 
       - name: Build for CodeQL
-        shell: pwsh
-        run: |
-          $vsPath = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -requires Microsoft.Component.MSBuild -property installationPath
-          $msbuildPath = Join-Path $vsPath "MSBuild\Current\Bin\amd64\msbuild.exe"
-          & $msbuildPath /m /p:Configuration=Release_Unicode /p:Platform=x64 MFCMapi.sln
+        run: msbuild /m /p:Configuration=Release_Unicode /p:Platform=x64 MFCMapi.sln
 
       - name: Perform CodeQL Analysis
         id: analyze
