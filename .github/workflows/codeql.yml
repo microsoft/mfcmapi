@@ -64,6 +64,37 @@ jobs:
         with:
           category: "/language:${{matrix.language}}"
 
+      - name: Collect CodeQL Troubleshooting Logs
+        if: always()
+        shell: pwsh
+        run: |
+          $outputDir = Join-Path $env:RUNNER_TEMP "codeql-troubleshooting"
+          New-Item -Path $outputDir -ItemType Directory -Force | Out-Null
+
+          $sourceRoots = @(
+            (Join-Path $env:RUNNER_TEMP "codeql_databases"),
+            (Join-Path $env:RUNNER_TEMP "_github_workflow")
+          )
+
+          $patterns = @("*.log", "*.txt", "*.json")
+
+          foreach ($root in $sourceRoots) {
+            if (Test-Path $root) {
+              foreach ($pattern in $patterns) {
+                Get-ChildItem -Path $root -Recurse -File -Filter $pattern -ErrorAction SilentlyContinue |
+                  Copy-Item -Destination $outputDir -Force -ErrorAction SilentlyContinue
+              }
+            }
+          }
+
+      - name: Upload CodeQL Troubleshooting Logs
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: codeql-troubleshooting-logs
+          path: ${{ runner.temp }}/codeql-troubleshooting
+          if-no-files-found: warn
+
       - name: Upload CodeQL Analysis Results
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
