@@ -46,7 +46,7 @@ function Test-VSInstallation {
 
 function Test-WindowsSDK {
     param([string]$RequiredVersion = "10.0.22621.0")
-    
+
     $sdkPath = "${env:ProgramFiles(x86)}\Windows Kits\10\Include\$RequiredVersion"
     if (Test-Path $sdkPath) {
         Write-Status "Windows SDK $RequiredVersion`:" "FOUND" Green
@@ -60,9 +60,9 @@ function Test-WindowsSDK {
 
 function Test-VC145Toolset {
     param([string]$VSPath)
-    
+
     if (-not $VSPath) { return $false }
-    
+
     $toolsetPath = Join-Path $VSPath "VC\Tools\MSVC"
     if (Test-Path $toolsetPath) {
         # v145 toolset versions start with 14.5x
@@ -81,13 +81,13 @@ function Test-VC145Toolset {
 
 function Test-SpectreLibraries {
     param([string]$VSPath)
-    
+
     if (-not $VSPath) { return $false }
-    
+
     $toolsetPath = Join-Path $VSPath "VC\Tools\MSVC"
     $versions = Get-ChildItem $toolsetPath -Directory -ErrorAction SilentlyContinue | Sort-Object Name -Descending
     if (-not $versions) { return $false }
-    
+
     $spectrePath = Join-Path $versions[0].FullName "lib\spectre"
     if (Test-Path $spectrePath) {
         Write-Status "Spectre-mitigated libs:" "FOUND" Green
@@ -119,7 +119,7 @@ function Install-MissingComponents {
     }
 
     Write-Host "`nMissing components detected." -ForegroundColor Yellow
-    
+
     # Check if VS Installer can help
     $vsInstaller = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vs_installer.exe"
     if (Test-Path $vsInstaller) {
@@ -156,11 +156,11 @@ if ($script:errors.Count -gt 0) {
         Write-Host "ERRORS:" -ForegroundColor Red
         $script:errors | ForEach-Object { Write-Host "  - $_" -ForegroundColor Red }
     }
-    
+
     if ($Install) {
         Install-MissingComponents
     }
-    
+
     exit 1
 }
 

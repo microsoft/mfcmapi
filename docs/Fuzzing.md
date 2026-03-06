@@ -16,7 +16,8 @@ npm run fuzz:corpus
 # 2. Build the fuzz configuration
 npm run build:fuzz
 
-# 3. Run from VS Code: select "Fuzz (x64)" and press F5
+# 3. Run the fuzzer
+npm run fuzz
 ```
 
 ## Building the Fuzzing Corpus
@@ -49,26 +50,35 @@ npm run build:fuzz
 
 ### From VS Code
 
-1. Run `pwsh fuzz/Build-FuzzingCorpus.ps1` first (if you haven't already)
+1. Run `pwsh .\fuzz\Build-FuzzingCorpus.ps1` first (if you haven't already)
 2. Open the Run and Debug panel (Ctrl+Shift+D)
 3. Select "Fuzz (x64)" or "Fuzz (x86)" from the configuration dropdown
 4. Press F5 to start
 
 The fuzzer runs for 60 seconds by default.
 
+To change the runtime in the debug panel, edit the selected fuzz entry in `.vscode/launch.json` and update the `"-MaxTotalTime", "60"` arguments.
+
 ### From Command Line
 
 ```bash
-./bin/x64/Fuzz/MFCMapi.exe fuzz/corpus -artifact_prefix=fuzz/artifacts/ -max_total_time=60
+npm run fuzz
+# or
+npm run fuzz:x86
+```
+
+To run longer or shorter from command line:
+
+```bash
+npm run fuzz:x64 -- -MaxTotalTime 300
+npm run fuzz:x86 -- -MaxTotalTime 120
 ```
 
 ### From Visual Studio
 
-Set the debug command line arguments:
-
-```
-$(ProjectDir)fuzz\corpus -artifact_prefix=$(ProjectDir)fuzz\artifacts\
-```
+1. Open `MFCMapi.sln` in Visual Studio
+2. Select the `fuzz/x64` project (or `fuzz/x86`)
+3. Press F5 to run
 
 ## Artifacts
 

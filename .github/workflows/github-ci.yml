@@ -35,7 +35,7 @@ jobs:
 
     steps:
     - name: Harden Runner
-      uses: step-security/harden-runner@a90bcbc6539c36a85cdfeb73f7e2f433735f215b # v2.15.0
+      uses: step-security/harden-runner@58077d3c7e43986b6b15fba718e8ea69e387dfcc # v2.15.1
       with:
         egress-policy: audit
 
@@ -53,7 +53,8 @@ jobs:
       shell: pwsh
       run: |
         $path = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
-        & $path\MSBuild\Current\Bin\amd64\msbuild.exe /m /p:Configuration="${{matrix.configuration}}" /p:Platform="${{matrix.platform}}" mfcmapi.sln
+        $msbuildPath = Join-Path $vsPath "MSBuild\Current\Bin\amd64\msbuild.exe"
+        & $msbuildPath /m /p:Configuration="${{matrix.configuration}}" /p:Platform="${{matrix.platform}}" mfcmapi.sln
 
     - name: Find vstest.console.exe
       if: matrix.platform != 'ARM64' && matrix.platform != 'ARM64EC'
@@ -111,7 +112,7 @@ jobs:
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@a90bcbc6539c36a85cdfeb73f7e2f433735f215b # v2.15.0
+        uses: step-security/harden-runner@58077d3c7e43986b6b15fba718e8ea69e387dfcc # v2.15.1
         with:
           egress-policy: audit
 

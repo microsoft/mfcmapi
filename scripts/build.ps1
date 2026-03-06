@@ -19,7 +19,7 @@ if (-not $vsPath) {
 
 $msbuild = Join-Path $vsPath "MSBuild\Current\Bin\amd64\msbuild.exe"
 if (-not (Test-Path -Path $msbuild)) {
-    throw "MSBuild executable not found at '$msbuild'.")
+    throw "MSBuild executable not found at '$msbuild'."
 }
 
 if (-not $MSBuildArgs -or $MSBuildArgs.Count -eq 0) {

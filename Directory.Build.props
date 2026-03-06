@@ -3,27 +3,27 @@
   <PropertyGroup>
     <!-- VS 2026 Toolset -->
     <PlatformToolset>v145</PlatformToolset>
-    
+
     <!-- Windows 11 SDK (pinned for reproducible builds) -->
     <WindowsTargetPlatformVersion>10.0.22621.0</WindowsTargetPlatformVersion>
-    
+
     <!-- Security Features (PropertyGroup level) -->
     <!-- Note: Spectre mitigated MFC libs may not be available for ARM64/ARM64EC -->
     <SpectreMitigation Condition="'$(Platform)' != 'ARM64' AND '$(Platform)' != 'ARM64EC'">Spectre</SpectreMitigation>
     <SpectreMitigation Condition="'$(Platform)' == 'ARM64' OR '$(Platform)' == 'ARM64EC'">false</SpectreMitigation>
     <ControlFlowGuard>Guard</ControlFlowGuard>
     <GuardEHContMetadata>true</GuardEHContMetadata>
-    
+
     <!-- Code Analysis - Lightweight by default -->
     <EnableCppCoreCheck>true</EnableCppCoreCheck>
     <CodeAnalysisRuleSet>CppCoreCheckRules.ruleset</CodeAnalysisRuleSet>
-    
+
     <!-- Code Analysis - Full when EnablePREfast=true (via command line /p:EnablePREfast=true) -->
     <CodeAnalysisRuleSet Condition="'$(EnablePREfast)' == 'true'">AllRules.ruleset</CodeAnalysisRuleSet>
     <EnableMicrosoftCodeAnalysis Condition="'$(EnablePREfast)' == 'true'">true</EnableMicrosoftCodeAnalysis>
     <EnableClangTidyCodeAnalysis Condition="'$(EnablePREfast)' == 'true'">false</EnableClangTidyCodeAnalysis>
   </PropertyGroup>
-  
+
   <!-- Compiler Settings - Quality & Security Baseline -->
   <!-- CET (Control-flow Enforcement Technology) enabled by default, disabled for ARM64EC below -->
   <ItemDefinitionGroup>
@@ -37,7 +37,7 @@
       <CETCompat>true</CETCompat>
     </Link>
   </ItemDefinitionGroup>
-  
+
   <!-- Prefast analysis settings when EnablePREfast=true -->
   <!-- Warning policy: /WX already set globally treats analysis warnings as errors -->
   <ItemDefinitionGroup Condition="'$(EnablePREfast)' == 'true'">
@@ -46,7 +46,7 @@
       <AdditionalOptions>/analyze:max_paths 4 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
   </ItemDefinitionGroup>
-  
+
   <!-- Disable CET for ARM64/ARM64EC (not supported) -->
   <ItemDefinitionGroup Condition="'$(Platform)' == 'ARM64' OR '$(Platform)' == 'ARM64EC'">
     <Link>

@@ -31,7 +31,7 @@ jobs:
           build-mode: manual
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@a90bcbc6539c36a85cdfeb73f7e2f433735f215b # v2.15.0
+        uses: step-security/harden-runner@58077d3c7e43986b6b15fba718e8ea69e387dfcc # v2.15.1
         with:
           egress-policy: audit
 
@@ -43,11 +43,11 @@ jobs:
       - name: Install Windows 11 SDK (10.0.22621.0)
         shell: pwsh
         run: |
-          & "${{ github.workspace }}\scripts\install-winsdk.ps1" -Features "OptionId.DesktopCPPx64 OptionId.DesktopCPPx86"
+          & "${{ github.workspace }}\scripts\install-winsdk.ps1"
 
       # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@c793b717bc78562f491db7b0e93a3a178b099162 # v3.29.5
+        uses: github/codeql-action/init@b5ebac6f4c00c8ccddb7cdcd45fdb248329f808a # v3.32.2
         with:
           languages: ${{ matrix.language }}
           build-mode: ${{ matrix.build-mode }}
@@ -67,7 +67,7 @@ jobs:
 
       - name: Perform CodeQL Analysis
         id: analyze
-        uses: github/codeql-action/analyze@c793b717bc78562f491db7b0e93a3a178b099162 # v3.29.5
+        uses: github/codeql-action/analyze@b5ebac6f4c00c8ccddb7cdcd45fdb248329f808a # v3.32.2
         with:
           category: "/language:${{matrix.language}}"
 
