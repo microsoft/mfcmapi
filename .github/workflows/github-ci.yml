@@ -13,17 +13,29 @@ permissions:
 
 jobs:
   build:
-    runs-on: windows-latest
+    # Use VS 2026 preview runner (GA May 4, 2026, then switch to windows-2025)
+    runs-on: windows-2025-vs2026
     permissions:
       security-events: write
     strategy:
+      fail-fast: false
       matrix:
         configuration: [ 'Release', 'Debug', 'Release_Unicode', 'Debug_Unicode' ]
-        platform: [ 'Win32', 'x64' ]
+        platform: [ 'Win32', 'x64', 'ARM64', 'ARM64EC' ]
+        exclude:
+          # ARM64/ARM64EC only need Unicode builds
+          - platform: ARM64
+            configuration: Release
+          - platform: ARM64
+            configuration: Debug
+          - platform: ARM64EC
+            configuration: Release
+          - platform: ARM64EC
+            configuration: Debug
 
     steps:
     - name: Harden Runner
-      uses: step-security/harden-runner@a90bcbc6539c36a85cdfeb73f7e2f433735f215b # v2.15.0
+      uses: step-security/harden-runner@58077d3c7e43986b6b15fba718e8ea69e387dfcc # v2.15.1
       with:
         egress-policy: audit
 
@@ -32,13 +44,20 @@ jobs:
       with:
         submodules: 'recursive'
 
+    - name: Install Windows 11 SDK (10.0.22621.0)
+      shell: pwsh
+      run: |
+        & "${{ github.workspace }}\scripts\install-winsdk.ps1"
+
     - name: "Build"
       shell: pwsh
       run: |
-        $path = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
-        & $path\MSBuild\Current\Bin\amd64\msbuild.exe /m /p:Configuration="${{matrix.configuration}}" /p:Platform="${{matrix.platform}}" mfcmapi.sln
+        $vsPath = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
+        $msbuildPath = Join-Path $vsPath "MSBuild\Current\Bin\amd64\msbuild.exe"
+        & $msbuildPath /m /p:Configuration="${{matrix.configuration}}" /p:Platform="${{matrix.platform}}" mfcmapi.sln
 
     - name: Find vstest.console.exe
+      if: matrix.platform != 'ARM64' && matrix.platform != 'ARM64EC'
       run: |
         $VSDevTestCmd = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere" -latest -prerelease -products * -find Common7\IDE\Extensions\TestPlatform\vstest.console.exe
         if (!$VSDevTestCmd) { exit 1 }
@@ -46,6 +65,7 @@ jobs:
         Add-Content $env:GITHUB_ENV "VSDevTestCmd=$VSDevTestCmd"
 
     - name: MFCMAPI UnitTests
+      if: matrix.platform != 'ARM64' && matrix.platform != 'ARM64EC'
       run: cmd /c "$env:VSDevTestCmd" /Parallel /EnableCodeCoverage /Logger:trx "${{github.workspace}}\\bin\\${{matrix.platform}}\\UnitTest\\${{matrix.configuration}}\\UnitTest.dll"
 
     # - name: Upload Event File
@@ -56,10 +76,28 @@ jobs:
  
     - name: Upload Test Result Files
       uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
-      if: always()
+      if: always() && matrix.platform != 'ARM64' && matrix.platform != 'ARM64EC'
       with:
         name: Test Results (${{ matrix.platform }} - ${{ matrix.configuration }})
         path: ${{github.workspace}}/**/TestResults/**/*
+
+    - name: Upload ARM64 Binaries
+      uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+      if: matrix.platform == 'ARM64' && matrix.configuration == 'Release_Unicode'
+      with:
+        name: ARM64 Release Binaries
+        path: |
+          ${{github.workspace}}/bin/ARM64/MFCMapi/Release_Unicode/*.exe
+          ${{github.workspace}}/bin/ARM64/MrMAPI/Release_Unicode/*.exe
+
+    - name: Upload ARM64EC Binaries
+      uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+      if: matrix.platform == 'ARM64EC' && matrix.configuration == 'Release_Unicode'
+      with:
+        name: ARM64EC Release Binaries
+        path: |
+          ${{github.workspace}}/bin/ARM64EC/MFCMapi/Release_Unicode/*.exe
+          ${{github.workspace}}/bin/ARM64EC/MrMAPI/Release_Unicode/*.exe
 
   publish-test-results:
     name: "Publish Tests Results"
@@ -74,7 +112,7 @@ jobs:
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@a90bcbc6539c36a85cdfeb73f7e2f433735f215b # v2.15.0
+        uses: step-security/harden-runner@58077d3c7e43986b6b15fba718e8ea69e387dfcc # v2.15.1
         with:
           egress-policy: audit
 

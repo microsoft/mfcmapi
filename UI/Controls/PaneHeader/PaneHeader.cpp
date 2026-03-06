@@ -119,6 +119,7 @@ namespace controls
 		switch (message)
 		{
 		case WM_PAINT:
+		{
 			auto ps = PAINTSTRUCT{};
 			::BeginPaint(m_hWnd, &ps);
 			if (ps.hdc)
@@ -132,6 +133,7 @@ namespace controls
 
 			::EndPaint(m_hWnd, &ps);
 			return 0;
+		}
 		case WM_WINDOWPOSCHANGED:
 			RecalcLayout();
 			return 0;
