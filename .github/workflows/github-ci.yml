@@ -52,7 +52,7 @@ jobs:
     - name: "Build"
       shell: pwsh
       run: |
-        $path = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
+        $vsPath = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
         $msbuildPath = Join-Path $vsPath "MSBuild\Current\Bin\amd64\msbuild.exe"
         & $msbuildPath /m /p:Configuration="${{matrix.configuration}}" /p:Platform="${{matrix.platform}}" mfcmapi.sln
 
