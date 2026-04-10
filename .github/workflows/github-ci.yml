@@ -69,20 +69,20 @@ jobs:
       run: cmd /c "$env:VSDevTestCmd" /Parallel /EnableCodeCoverage /Logger:trx "${{github.workspace}}\\bin\\${{matrix.platform}}\\UnitTest\\${{matrix.configuration}}\\UnitTest.dll"
 
     # - name: Upload Event File
-    #   uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+    #   uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
     #   with:
     #     name: Event File (${{ matrix.platform }} - ${{ matrix.configuration }})
     #     path: ${{ github.event_path }}
  
     - name: Upload Test Result Files
-      uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
       if: always() && matrix.platform != 'ARM64' && matrix.platform != 'ARM64EC'
       with:
         name: Test Results (${{ matrix.platform }} - ${{ matrix.configuration }})
         path: ${{github.workspace}}/**/TestResults/**/*
 
     - name: Upload ARM64 Binaries
-      uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
       if: matrix.platform == 'ARM64' && matrix.configuration == 'Release_Unicode'
       with:
         name: ARM64 Release Binaries
@@ -91,7 +91,7 @@ jobs:
           ${{github.workspace}}/bin/ARM64/MrMAPI/Release_Unicode/*.exe
 
     - name: Upload ARM64EC Binaries
-      uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
       if: matrix.platform == 'ARM64EC' && matrix.configuration == 'Release_Unicode'
       with:
         name: ARM64EC Release Binaries
