@@ -99,19 +99,19 @@ namespace propertybag
 				case PT_I8:
 					if (m_binVal.size() == 8)
 					{
-						m_prop.Value.li.QuadPart = static_cast<LONGLONG>(*m_binVal.data());
+						m_prop.Value.li.QuadPart = *reinterpret_cast<const LONGLONG*>(m_binVal.data());
 					}
 					break;
 				case PT_LONG:
 					if (m_binVal.size() == 4)
 					{
-						m_prop.Value.l = static_cast<DWORD>(*m_binVal.data());
+						m_prop.Value.l = *reinterpret_cast<const DWORD*>(m_binVal.data());
 					}
 					break;
 				case PT_BOOLEAN:
 					if (m_binVal.size() == 2)
 					{
-						m_prop.Value.b = static_cast<WORD>(*m_binVal.data());
+						m_prop.Value.b = *reinterpret_cast<const WORD*>(m_binVal.data());
 					}
 					break;
 				case PT_BINARY:
