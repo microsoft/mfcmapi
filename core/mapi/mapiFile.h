@@ -15,7 +15,6 @@ namespace file
 		bool bAssoc,
 		bool bUnicode,
 		HWND hWnd);
-	_Check_return_ HRESULT SaveToEML(_In_ LPMESSAGE lpMessage, _In_ const std::wstring& szFileName);
 	_Check_return_ HRESULT CreateNewMSG(
 		_In_ const std::wstring& szFileName,
 		bool bUnicode,

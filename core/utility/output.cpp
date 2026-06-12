@@ -15,7 +15,10 @@
 
 namespace output
 {
-	std::wstring g_szXMLHeader = L"<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n";
+	// Files are opened with the CRT "ccs=UNICODE" mode, which writes a UTF-16 LE BOM
+	// and encodes each character as two little-endian bytes. The declared encoding
+	// must match, otherwise XML parsers reject the file with an encoding mismatch.
+	std::wstring g_szXMLHeader = L"<?xml version=\"1.0\" encoding=\"UTF-16\"?>\n";
 	std::function<void(const std::wstring& errString)> outputToDbgView;
 	FILE* g_fDebugFile = nullptr;
 

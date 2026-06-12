@@ -198,6 +198,7 @@ namespace registry
 	extern boolRegKey preferOlmapi32;
 	extern boolRegKey uiDiag;
 	extern boolRegKey displayAboutDialog;
+	extern boolRegKey enableLegacyFeatures;
 	extern wstringRegKey propertyColumnOrder;
 	extern dwordRegKey namedPropBatchSize;
 } // namespace registry

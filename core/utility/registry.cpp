@@ -67,6 +67,7 @@ namespace registry
 	boolRegKey preferOlmapi32{L"PreferOlmapi32", true, false, IDS_REGKEY_PREFER_OLMAPI32};
 	boolRegKey uiDiag{L"UIDiag", false, false, IDS_REGKEY_UIDIAG};
 	boolRegKey displayAboutDialog{L"DisplayAboutDialog", true, false, NULL};
+	boolRegKey enableLegacyFeatures{L"EnableLegacyFeatures", false, false, IDS_REGKEY_ENABLE_LEGACY_FEATURES};
 	wstringRegKey propertyColumnOrder{L"PropertyColumnOrder", L"", false, NULL};
 	dwordRegKey namedPropBatchSize{L"NamedPropBatchSize", regOptionType::stringDec, 400, false, NULL};
 
@@ -101,6 +102,7 @@ namespace registry
 		&preferOlmapi32,
 		&uiDiag,
 		&displayAboutDialog,
+		&enableLegacyFeatures,
 		&propertyColumnOrder,
 		&namedPropBatchSize};
 

@@ -326,41 +326,6 @@ namespace file
 		return hRes;
 	}
 
-	_Check_return_ HRESULT SaveToEML(_In_ LPMESSAGE lpMessage, _In_ const std::wstring& szFileName)
-	{
-		LPSTREAM pStrmSrc = nullptr;
-
-		if (!lpMessage || szFileName.empty()) return MAPI_E_INVALID_PARAMETER;
-		output::DebugPrint(output::dbgLevel::Generic, L"SaveToEML: Saving message to \"%ws\"\n", szFileName.c_str());
-
-		// Open the property of the attachment
-		// containing the file data
-		auto hRes = EC_MAPI(lpMessage->OpenProperty(
-			PR_INTERNET_CONTENT, // TODO: There's a modern property for this...
-			const_cast<LPIID>(&IID_IStream),
-			0,
-			NULL, // MAPI_MODIFY is not needed
-			reinterpret_cast<LPUNKNOWN*>(&pStrmSrc)));
-		if (FAILED(hRes))
-		{
-			if (hRes == MAPI_E_NOT_FOUND)
-			{
-				output::DebugPrint(output::dbgLevel::Generic, L"No internet content found\n");
-			}
-		}
-		else
-		{
-			if (pStrmSrc)
-			{
-				hRes = WC_H(WriteStreamToFile(pStrmSrc, szFileName));
-
-				pStrmSrc->Release();
-			}
-		}
-
-		return hRes;
-	}
-
 	_Check_return_ HRESULT STDAPICALLTYPE MyStgCreateStorageEx(
 		_In_ const std::wstring& pName,
 		DWORD grfMode,
