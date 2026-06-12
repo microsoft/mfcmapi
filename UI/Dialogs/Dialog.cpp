@@ -114,9 +114,14 @@ namespace dialog
 			rcCloseIcon.top,
 			rcCloseIcon.right,
 			rcCloseIcon.bottom);
-		if (PtInRect(&rcCloseIcon, pt)) ret = HTCLOSE;
-		if (PtInRect(&rcMaxIcon, pt)) ret = HTMAXBUTTON;
-		if (PtInRect(&rcMinIcon, pt)) ret = HTMINBUTTON;
+		// Inline point-in-rect check to avoid ARM64EC icall thunk mismatch (LNK4279)
+		// between our code and the pre-built MFC library for PtInRect(RECT*, POINT).
+		const auto ptInRect = [](const RECT& rc, POINT p) noexcept {
+			return p.x >= rc.left && p.x < rc.right && p.y >= rc.top && p.y < rc.bottom;
+		};
+		if (ptInRect(rcCloseIcon, pt)) ret = HTCLOSE;
+		if (ptInRect(rcMaxIcon, pt)) ret = HTMAXBUTTON;
+		if (ptInRect(rcMinIcon, pt)) ret = HTMINBUTTON;
 
 		output::DebugPrint(output::dbgLevel::UI, L"CheckButtons result: %ws\r\n", FormatHT(ret).c_str());
 

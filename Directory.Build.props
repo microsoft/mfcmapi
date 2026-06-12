@@ -53,4 +53,14 @@
       <CETCompat>false</CETCompat>
     </Link>
   </ItemDefinitionGroup>
+
+  <!-- Suppress LNK4279 for ARM64EC: the new MSVC toolset (14.51+) classifies POINT as an
+       integer (i8) icall thunk while pre-built MFC libs use a struct (m8) thunk.
+       Both thunks produce equivalent code for this trivially-copyable 8-byte struct,
+       so the mismatch is a diagnostic false-positive introduced by the ABI transition. -->
+  <ItemDefinitionGroup Condition="'$(Platform)' == 'ARM64EC'">
+    <Link>
+      <AdditionalOptions>/IGNORE:4279 %(AdditionalOptions)</AdditionalOptions>
+    </Link>
+  </ItemDefinitionGroup>
 </Project>
