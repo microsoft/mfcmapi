@@ -1,0 +1,13 @@
+{
+    "C_Cpp.clang_format_style": "file",
+    "C_Cpp.clang_format_fallbackStyle": "Microsoft",
+    "C_Cpp.clang_format_path": "${workspaceFolder}/node_modules/clang-format/bin/win32/clang-format.exe",
+    "[cpp]": {
+        "editor.defaultFormatter": "ms-vscode.cpptools",
+        "editor.formatOnSave": true
+    },
+    "[c]": {
+        "editor.defaultFormatter": "ms-vscode.cpptools",
+        "editor.formatOnSave": true
+    }
+}

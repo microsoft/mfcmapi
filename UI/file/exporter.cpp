@@ -31,9 +31,8 @@ namespace file
 		}
 		uidDropDown.push_back(IDS_DDTNEFFILE);
 
-		MyData.AddPane(
-			viewpane::DropDownPane::Create(
-				0, IDS_FORMATTOSAVEMESSAGE, static_cast<ULONG>(uidDropDown.size()), uidDropDown.data(), true));
+		MyData.AddPane(viewpane::DropDownPane::Create(
+			0, IDS_FORMATTOSAVEMESSAGE, static_cast<ULONG>(uidDropDown.size()), uidDropDown.data(), true));
 		if (bMultiSelect)
 		{
 			MyData.AddPane(viewpane::CheckPane::Create(1, IDS_EXPORTPROMPTLOCATION, false, false));
@@ -137,20 +136,18 @@ namespace file
 			ULONG ulWrapLines = USE_DEFAULT_WRAPPING;
 			auto bDoAdrBook = false;
 
-			hRes = EC_H(
-				ui::mapiui::GetConversionToEMLOptions(
-					pParentWnd, &ulConvertFlags, &et, &mst, &ulWrapLines, &bDoAdrBook));
+			hRes = EC_H(ui::mapiui::GetConversionToEMLOptions(
+				pParentWnd, &ulConvertFlags, &et, &mst, &ulWrapLines, &bDoAdrBook));
 			if (hRes == S_OK)
 			{
-				return EC_H(
-					mapi::mapimime::ExportIMessageToEML(
-						lpMessage,
-						filename.c_str(),
-						ulConvertFlags,
-						et,
-						mst,
-						ulWrapLines,
-						bDoAdrBook ? lpAddrBook : nullptr));
+				return EC_H(mapi::mapimime::ExportIMessageToEML(
+					lpMessage,
+					filename.c_str(),
+					ulConvertFlags,
+					et,
+					mst,
+					ulWrapLines,
+					bDoAdrBook ? lpAddrBook : nullptr));
 			}
 		}
 

@@ -99,7 +99,9 @@
     "test:debug:arm64": "npm run vstest -- bin/ARM64/UnitTest/Debug_Unicode/UnitTest.dll /logger:console",
     "test:release:arm64": "npm run vstest -- bin/ARM64/UnitTest/Release_Unicode/UnitTest.dll /logger:console",
     "test:debug:ansi:arm64": "npm run vstest -- bin/ARM64/UnitTest/Debug/UnitTest.dll /logger:console",
-    "test:release:ansi:arm64": "npm run vstest -- bin/ARM64/UnitTest/Release/UnitTest.dll /logger:console"
+    "test:release:ansi:arm64": "npm run vstest -- bin/ARM64/UnitTest/Release/UnitTest.dll /logger:console",
+    "format": "pwsh scripts/clang.ps1",
+    "format:check": "pwsh scripts/clang.ps1 -Check"
   },
   "devDependencies": {
     "clang-format": "^1.8.0"
