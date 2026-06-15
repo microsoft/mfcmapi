@@ -161,4 +161,4 @@ namespace file
 
 		return hRes;
 	}
-} // namespace file
+} // Namespace file
