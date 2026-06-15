@@ -8,6 +8,7 @@
 #include <core/mapi/mapiFile.h>
 #include <core/utility/file.h>
 #include <core/utility/output.h>
+#include <core/utility/registry.h>
 #include <core/addin/mfcmapi.h>
 #include <UI/file/FileDialogEx.h>
 #include <UI/Dialogs/Editors/Editor.h>
@@ -23,15 +24,15 @@ namespace file
 		dialog::editor::CEditor MyData(
 			pParentWnd, IDS_SAVEMESSAGETOFILE, IDS_SAVEMESSAGETOFILEPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		UINT uidDropDown[] = {
-			IDS_DDTEXTFILE,
-			IDS_DDMSGFILEANSI,
-			IDS_DDMSGFILEUNICODE,
-			IDS_DDEMLFILE,
-			IDS_DDEMLFILEUSINGICONVERTERSESSION,
-			IDS_DDTNEFFILE};
-		MyData.AddPane(
-			viewpane::DropDownPane::Create(0, IDS_FORMATTOSAVEMESSAGE, _countof(uidDropDown), uidDropDown, true));
+		std::vector<UINT> uidDropDown{IDS_DDTEXTFILE, IDS_DDMSGFILEANSI, IDS_DDMSGFILEUNICODE};
+		if (registry::enableLegacyFeatures)
+		{
+			uidDropDown.push_back(IDS_DDEMLFILEUSINGICONVERTERSESSION);
+		}
+		uidDropDown.push_back(IDS_DDTNEFFILE);
+
+		MyData.AddPane(viewpane::DropDownPane::Create(
+			0, IDS_FORMATTOSAVEMESSAGE, static_cast<ULONG>(uidDropDown.size()), uidDropDown.data(), true));
 		if (bMultiSelect)
 		{
 			MyData.AddPane(viewpane::CheckPane::Create(1, IDS_EXPORTPROMPTLOCATION, false, false));
@@ -39,7 +40,25 @@ namespace file
 
 		if (!MyData.DisplayDialog()) return false;
 
-		exportType = static_cast<file::exportType>(MyData.GetDropDown(0));
+		switch (MyData.GetDropDownValue(0))
+		{
+		case IDS_DDTEXTFILE:
+			exportType = exportType::text;
+			break;
+		case IDS_DDMSGFILEANSI:
+			exportType = exportType::msgAnsi;
+			break;
+		case IDS_DDMSGFILEUNICODE:
+			exportType = exportType::msgUnicode;
+			break;
+		case IDS_DDEMLFILEUSINGICONVERTERSESSION:
+			exportType = exportType::emlIConverter;
+			break;
+		case IDS_DDTNEFFILE:
+			exportType = exportType::tnef;
+			break;
+		}
+
 		bPrompt = !bMultiSelect || MyData.GetCheck(1);
 
 		switch (exportType)
@@ -55,7 +74,6 @@ namespace file
 			szDotExt = L".msg";
 			szFilter = strings::loadstring(IDS_MSGFILES);
 			break;
-		case exportType::eml:
 		case exportType::emlIConverter:
 			szExt = L"eml";
 			szDotExt = L".eml";
@@ -110,9 +128,6 @@ namespace file
 		case exportType::msgUnicode:
 			return EC_H(file::SaveToMSG(lpMessage, filename, true, pParentWnd->GetSafeHwnd(), true));
 			break;
-		case exportType::eml:
-			return EC_H(file::SaveToEML(lpMessage, filename));
-			break;
 		case exportType::emlIConverter:
 		{
 			auto ulConvertFlags = CCSF_SMTP;
@@ -146,4 +161,4 @@ namespace file
 
 		return hRes;
 	}
-} // namespace file
+} // Namespace file
