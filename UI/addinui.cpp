@@ -162,20 +162,19 @@ namespace ui::addinui
 	__declspec(dllexport) void __cdecl FreeDialogResult(_In_ LPADDINDIALOGRESULT lpDialogResult)
 	{
 		if (lpDialogResult)
+		{
+			if (lpDialogResult->lpDialogControlResults)
 			{
-				if (lpDialogResult->lpDialogControlResults)
+				for (ULONG i = 0; i < lpDialogResult->ulNumControls; i++)
 				{
-					for (ULONG i = 0; i < lpDialogResult->ulNumControls; i++)
-					{
-						delete[] lpDialogResult->lpDialogControlResults[i].lpBin;
-						delete[] lpDialogResult->lpDialogControlResults[i].szText;
-					}
-
-					delete[] lpDialogResult->lpDialogControlResults;
+					delete[] lpDialogResult->lpDialogControlResults[i].lpBin;
+					delete[] lpDialogResult->lpDialogControlResults[i].szText;
 				}
-
-				delete lpDialogResult;
 			}
+
+			delete[] lpDialogResult->lpDialogControlResults;
+			delete lpDialogResult;
+		}
 	}
 
 	// Adds menu items appropriate to the context
