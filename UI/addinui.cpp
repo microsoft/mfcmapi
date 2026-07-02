@@ -172,7 +172,8 @@ namespace ui::addinui
 				}
 			}
 
-			delete[] lpDialogResult;
+			delete[] lpDialogResult->lpDialogControlResults;
+			delete lpDialogResult;
 		}
 	}
 
