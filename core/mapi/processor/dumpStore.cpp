@@ -126,7 +126,7 @@ namespace mapi::processor
 			output::OutputToFile(m_fMailboxTable, strings::LPCTSTRToWstring(lpDisplayName->Value.LPSZ));
 		}
 		output::OutputToFile(m_fMailboxTable, L"\" premailaddress=\"");
-		if (!strings::CheckStringProp(lpEmailAddress, PT_TSTRING))
+		if (strings::CheckStringProp(lpEmailAddress, PT_TSTRING))
 		{
 			output::OutputToFile(m_fMailboxTable, strings::LPCTSTRToWstring(lpEmailAddress->Value.LPSZ));
 		}
