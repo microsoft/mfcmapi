@@ -822,6 +822,7 @@ namespace mapi::processor
 
 			WC_H_S(file::SaveToMSG(lpMessage, szFileName, fMapiUnicode != 0, nullptr, false));
 		}
+
 		MAPIFreeBuffer(lpsProps);
 	}
 
