@@ -126,7 +126,7 @@ namespace mapi::processor
 			output::OutputToFile(m_fMailboxTable, strings::LPCTSTRToWstring(lpDisplayName->Value.LPSZ));
 		}
 		output::OutputToFile(m_fMailboxTable, L"\" premailaddress=\"");
-		if (!strings::CheckStringProp(lpEmailAddress, PT_TSTRING))
+		if (strings::CheckStringProp(lpEmailAddress, PT_TSTRING))
 		{
 			output::OutputToFile(m_fMailboxTable, strings::LPCTSTRToWstring(lpEmailAddress->Value.LPSZ));
 		}
@@ -822,6 +822,8 @@ namespace mapi::processor
 
 			WC_H_S(file::SaveToMSG(lpMessage, szFileName, fMapiUnicode != 0, nullptr, false));
 		}
+
+		MAPIFreeBuffer(lpsProps);
 	}
 
 	bool dumpStore::BeginMessageWork(
