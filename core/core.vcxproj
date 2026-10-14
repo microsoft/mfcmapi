@@ -810,6 +810,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="addin\addin.h" />
+    <ClInclude Include="addin\addinfile.h" />
     <ClInclude Include="interpret\errorArray.h" />
     <ClInclude Include="interpret\flagArray.h" />
     <ClInclude Include="interpret\flags.h" />
@@ -926,6 +927,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="addin\addin.cpp" />
+    <ClCompile Include="addin\addinfile.cpp" />
     <ClCompile Include="interpret\flags.cpp" />
     <ClCompile Include="interpret\guid.cpp" />
     <ClCompile Include="interpret\proptags.cpp" />

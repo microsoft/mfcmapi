@@ -12,9 +12,20 @@ if (-not (Test-Path -Path $vswhere)) {
     throw "vswhere.exe not found at '$vswhere'. Install Visual Studio Build Tools or Visual Studio."
 }
 
-$vsPath = & $vswhere -latest -requires Microsoft.Component.MSBuild -property installationPath
+$vsWhereArgs = @(
+    "-latest"
+    "-prerelease"
+    "-version"
+    "[18.0,19.0)"
+    "-requires"
+    "Microsoft.Component.MSBuild"
+    "Microsoft.VisualStudio.Component.VC.ATLMFC.Spectre"
+    "-property"
+    "installationPath"
+)
+$vsPath = & $vswhere @vsWhereArgs
 if (-not $vsPath) {
-    throw "MSBuild installation path not found via vswhere."
+    throw "Visual Studio 2026 with MSBuild and Spectre-mitigated MFC was not found via vswhere."
 }
 
 $msbuild = Join-Path $vsPath "MSBuild\Current\Bin\amd64\msbuild.exe"

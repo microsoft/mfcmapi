@@ -21,6 +21,7 @@ namespace cli
 	extern option switchAssociatedContents;
 	extern option switchMoreProperties;
 	extern option switchNoAddins;
+	extern option switchApproveAddins;
 	extern option switchOnline;
 	extern option switchMAPI;
 	extern option switchMIME;

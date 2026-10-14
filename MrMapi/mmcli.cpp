@@ -37,6 +37,7 @@ namespace cli
 	option switchAssociatedContents{L"HiddenContents", cmdmodeContents, 0, 0, OPT_INITALL};
 	option switchMoreProperties{L"MoreProperties", cmdmodeUnknown, 0, 0, OPT_NOOPT};
 	option switchNoAddins{L"NoAddins", cmdmodeUnknown, 0, 0, OPT_NOOPT};
+	option switchApproveAddins{L"ApproveAddins", cmdmodeUnknown, 0, 0, OPT_NOOPT};
 	option switchOnline{L"Online", cmdmodeUnknown, 0, 0, OPT_NOOPT};
 	option switchMAPI{L"MAPI", cmdmodeMAPIMIME, 0, 0, OPT_NEEDMAPIINIT | OPT_INITMFC | OPT_INOUT};
 	option switchMIME{L"MIME", cmdmodeMAPIMIME, 0, 0, OPT_NEEDMAPIINIT | OPT_INITMFC | OPT_INOUT};
@@ -99,6 +100,7 @@ namespace cli
 		&switchAssociatedContents,
 		&switchMoreProperties,
 		&switchNoAddins,
+		&switchApproveAddins,
 		&switchOnline,
 		&switchMAPI,
 		&switchMIME,
@@ -493,6 +495,8 @@ namespace cli
 				switchMoreProperties.name());
 			wprintf(L"   -Sk  (or -%ws) Skip embedded message attachments on export.\n", switchSkip.name());
 			wprintf(L"   -No  (or -%ws) No Addins. Don't load any add-ins.\n", switchNoAddins.name());
+			wprintf(
+				L"   -%ws Prompt to approve add-ins not previously approved or denied.\n", switchApproveAddins.name());
 			wprintf(L"   -On  (or -%ws) Online mode. Bypass cached mode.\n", switchOnline.name());
 			wprintf(L"   -V   (or -%ws) Verbose. Turn on all debug output.\n", switchVerbose.name());
 			wprintf(L"\n");

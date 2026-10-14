@@ -1,4 +1,7 @@
 #pragma once
+#include <functional>
+#include <string>
+#include <vector>
 
 // Forward declarations
 enum class parserType;
@@ -13,11 +16,20 @@ struct _AddIn;
 
 namespace addin
 {
-	EXTERN_C __declspec(
-		dllexport) void __cdecl AddInLog(bool bPrintThreadTime, _Printf_format_string_ LPWSTR szMsg, ...);
+	struct AddInApprovalCandidate
+	{
+		std::wstring fileName;
+		std::wstring sha256;
+	};
+
+	using AddInApprovalPrompt = std::function<bool(const std::vector<AddInApprovalCandidate>&, std::vector<bool>&)>;
+
+	EXTERN_C
+	__declspec(dllexport) void __cdecl AddInLog(bool bPrintThreadTime, _Printf_format_string_ LPWSTR szMsg, ...);
 	EXTERN_C __declspec(dllexport) void __cdecl GetMAPIModule(_In_ HMODULE* lphModule, bool bForce);
 
-	void LoadAddIns();
+	void LoadAddIns(_In_ const AddInApprovalPrompt& approvalPrompt = {});
+	_Check_return_ bool ClearAddInApprovalCache();
 	void UnloadAddIns();
 	void MergeAddInArrays();
 	std::wstring AddInSmartView(parserType iStructType, ULONG cbBin, _In_count_(cbBin) const BYTE* lpBin);

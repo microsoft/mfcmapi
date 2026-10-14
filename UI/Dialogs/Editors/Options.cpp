@@ -1,14 +1,16 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/Editors/Options.h>
+#include <UI/ViewPane/AddInApprovalPane.h>
 #include <mapistub/library/stubutils.h>
 #include <core/utility/registry.h>
-#include <core/utility/strings.h>
 #include <core/utility/output.h>
 #include <core/addin/mfcmapi.h>
 
 namespace dialog::editor
 {
+	static constexpr int ADDIN_APPROVAL_PANE_ID = 30000;
+
 	class COptions : public CEditor
 	{
 	public:
@@ -17,8 +19,6 @@ namespace dialog::editor
 		bool NeedPropRefresh() const noexcept;
 
 	private:
-		_Check_return_ ULONG HandleChange(UINT nID) override;
-
 		void OnOK() override;
 
 		bool m_bNeedPropRefresh{};
@@ -61,6 +61,8 @@ namespace dialog::editor
 				SetDecimal(regKey->uiOptionsPrompt, regKey->ulCurDWORD);
 			}
 		}
+
+		AddPane(viewpane::AddInApprovalPane::Create(ADDIN_APPROVAL_PANE_ID));
 	}
 
 	COptions::~COptions() { TRACE_DESTRUCTOR(CLASS); }
@@ -107,8 +109,6 @@ namespace dialog::editor
 
 		CEditor::OnOK();
 	}
-
-	_Check_return_ ULONG COptions::HandleChange(const UINT nID) { return CEditor::HandleChange(nID); }
 
 	bool COptions::NeedPropRefresh() const noexcept { return m_bNeedPropRefresh; }
 

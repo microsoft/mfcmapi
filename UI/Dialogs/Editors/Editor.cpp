@@ -307,6 +307,7 @@ namespace dialog::editor
 			const auto nCode = HIWORD(wParam);
 			switch (nCode)
 			{
+			case BN_CLICKED:
 			case BN_SETFOCUS:
 			case EN_SETFOCUS:
 				return ::SendMessage(reinterpret_cast<HWND>(dwRefData), uMsg, wParam, lParam);
@@ -1284,19 +1285,17 @@ namespace dialog::editor
 		{
 			if (pane)
 			{
+				// Let panes handle their own actions before looking up ordinary control IDs.
+				if (pane->HandleChange(nID) != static_cast<ULONG>(-1))
+				{
+					return static_cast<ULONG>(-1);
+				}
+
 				// Either the pane matches by nID, or can return a subpane which matches by nID.
 				const auto match = viewpane::GetPaneByNID(pane, nID);
 				if (match)
 				{
 					return match->GetID();
-				}
-
-				// Or the top level pane has a control or pane in it that can handle the change
-				// In which case stop looking.
-				// We do not return the pane's ID number because this is a button event, not an edit change
-				if (pane->HandleChange(nID) != static_cast<ULONG>(-1))
-				{
-					return static_cast<ULONG>(-1);
 				}
 			}
 		}
