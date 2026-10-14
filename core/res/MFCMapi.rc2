@@ -996,6 +996,10 @@ IDS_REGKEY_FORCESYSTEMMAPI "Force the use of the system's MAPI files"
 IDS_REGKEY_PREFER_OLMAPI32 "Prefer olmapi32.dll over other MAPI files"
 IDS_REGKEY_UIDIAG "Show UI diagnostics"
 IDS_REGKEY_ENABLE_LEGACY_FEATURES "Enable legacy features"
+IDS_REGKEY_UI_THEME "Appearance:"
+IDS_UI_THEME_SYSTEM "Use system setting"
+IDS_UI_THEME_LIGHT "Light"
+IDS_UI_THEME_DARK "Dark"
 
 // RestrictEditor.cpp
 IDS_RELOP "relop"

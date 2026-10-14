@@ -10,6 +10,7 @@
 #include <core/utility/output.h>
 #include <core/addin/mfcmapi.h>
 #include <core/utility/registry.h>
+#include <core/utility/import.h>
 
 namespace ui
 {
@@ -61,6 +62,36 @@ namespace ui
 		RGB(0xCD, 0x5C, 0x5C), // cRed
 		RGB(0x00, 0xFF, 0x00), // cGreen
 		RGB(0xFF, 0x7F, 0x50), // cOrange
+	};
+
+	// Explicit dark colors are required because classic system colors do not follow
+	// the Windows application theme.
+	COLORREF g_DarkColors[static_cast<int>(uiColor::UIEnd)] = {
+		RGB(0x20, 0x20, 0x20), // Background
+		RGB(0x2D, 0x2D, 0x30), // BackgroundReadOnly
+		RGB(0x00, 0x78, 0xD4), // Glow
+		RGB(0x09, 0x47, 0x71), // GlowBackground
+		RGB(0xFF, 0xFF, 0xFF), // GlowText
+		RGB(0xD0, 0xD0, 0xD0), // FrameSelected
+		RGB(0x5A, 0x5A, 0x5A), // FrameUnselected
+		RGB(0x26, 0x4F, 0x78), // SelectedBackground
+		RGB(0xC8, 0xC8, 0xC8), // Arrow
+		RGB(0xF1, 0xF1, 0xF1), // Text
+		RGB(0x8A, 0x8A, 0x8A), // TextDisabled
+		RGB(0xD6, 0xD6, 0xD6), // TextReadOnly
+		RGB(0xFF, 0x00, 0xFF), // BitmapTransBack
+		RGB(0x00, 0xFF, 0xFF), // BitmapTransFore
+		RGB(0x00, 0x5A, 0x9E), // Status
+		RGB(0xFF, 0xFF, 0xFF), // StatusText
+		RGB(0x2D, 0x2D, 0x30), // PaneHeaderBackground
+		RGB(0xF1, 0xF1, 0xF1), // PaneHeaderText
+		RGB(0x26, 0x4F, 0x78), // TextHighlightBackground
+		RGB(0xFF, 0xFF, 0xFF), // TextHighlight
+		RGB(0xFF, 0xC0, 0xCB), // TestPink
+		RGB(0xE6, 0xE6, 0xFA), // TestLavender
+		RGB(0xCD, 0x5C, 0x5C), // TestRed
+		RGB(0x00, 0xFF, 0x00), // TestGreen
+		RGB(0xFF, 0x7F, 0x50), // TestOrange
 	};
 
 	// Fixed mapping of UI elements to colors
@@ -116,6 +147,34 @@ namespace ui
 		NULL, // cStatusText
 	};
 
+	int g_HighContrastSysColors[static_cast<int>(uiColor::UIEnd)] = {
+		COLOR_WINDOW, // Background
+		COLOR_BTNFACE, // BackgroundReadOnly
+		COLOR_HIGHLIGHT, // Glow
+		COLOR_HIGHLIGHT, // GlowBackground
+		COLOR_HIGHLIGHTTEXT, // GlowText
+		COLOR_WINDOWTEXT, // FrameSelected
+		COLOR_GRAYTEXT, // FrameUnselected
+		COLOR_HIGHLIGHT, // SelectedBackground
+		COLOR_WINDOWTEXT, // Arrow
+		COLOR_WINDOWTEXT, // Text
+		COLOR_GRAYTEXT, // TextDisabled
+		COLOR_WINDOWTEXT, // TextReadOnly
+		NULL, // BitmapTransBack
+		NULL, // BitmapTransFore
+		COLOR_HIGHLIGHT, // Status
+		COLOR_HIGHLIGHTTEXT, // StatusText
+		COLOR_BTNFACE, // PaneHeaderBackground
+		COLOR_BTNTEXT, // PaneHeaderText
+		COLOR_HIGHLIGHT, // TextHighlightBackground
+		COLOR_HIGHLIGHTTEXT, // TextHighlight
+		NULL, // TestPink
+		NULL, // TestLavender
+		NULL, // TestRed
+		NULL, // TestGreen
+		NULL, // TestOrange
+	};
+
 	// Mapping of bitmap resources to constants
 	// NULL entries will get the fixed mapping from g_FixedColors
 	int g_BitmapResources[static_cast<int>(uiBitmap::BitmapEnd)] = {
@@ -126,56 +185,10 @@ namespace ui
 		IDB_RESTORE, // cRestore,
 	};
 
-	HBRUSH g_FixedBrushes[static_cast<int>(myColor::ColorEnd)] = {};
-	HBRUSH g_SysBrushes[static_cast<int>(uiColor::UIEnd)] = {};
+	HBRUSH g_ThemeBrushes[static_cast<int>(uiColor::UIEnd)] = {};
 	HPEN g_Pens[static_cast<int>(uiPen::PenEnd)] = {};
 	HBITMAP g_Bitmaps[static_cast<int>(uiBitmap::BitmapEnd)] = {};
-
-	void InitializeGDI() noexcept {}
-
-	void UninitializeGDI() noexcept
-	{
-		if (g_hFontSegoe) DeleteObject(g_hFontSegoe);
-		g_hFontSegoe = nullptr;
-		if (g_hFontSegoeBold) DeleteObject(g_hFontSegoeBold);
-		g_hFontSegoeBold = nullptr;
-
-		for (auto& fixedBrush : g_FixedBrushes)
-		{
-			if (fixedBrush)
-			{
-				DeleteObject(fixedBrush);
-				fixedBrush = nullptr;
-			}
-		}
-
-		for (auto& sysBrush : g_SysBrushes)
-		{
-			if (sysBrush)
-			{
-				DeleteObject(sysBrush);
-				sysBrush = nullptr;
-			}
-		}
-
-		for (auto& g_Pen : g_Pens)
-		{
-			if (g_Pen)
-			{
-				DeleteObject(g_Pen);
-				g_Pen = nullptr;
-			}
-		}
-
-		for (auto& bitmap : g_Bitmaps)
-		{
-			if (bitmap)
-			{
-				DeleteObject(bitmap);
-				bitmap = nullptr;
-			}
-		}
-	}
+	uiTheme g_EffectiveTheme = uiTheme::Light;
 
 	_Check_return_ LPMENUENTRY CreateMenuEntry(_In_ const std::wstring& szMenu)
 	{
@@ -582,25 +595,185 @@ namespace ui
 
 	_Check_return_ HBRUSH GetSysBrush(const uiColor uc) noexcept
 	{
-		// Return a cached brush if we have one
-		if (g_SysBrushes[static_cast<int>(uc)]) return g_SysBrushes[static_cast<int>(uc)];
-		// No cached brush found, cache and return a system brush if requested
-		const auto iSysColor = g_SysColors[static_cast<int>(uc)];
-		if (iSysColor)
+		auto& brush = g_ThemeBrushes[static_cast<int>(uc)];
+		if (!brush) brush = CreateSolidBrush(MyGetSysColor(uc));
+		return brush;
+	}
+
+	bool IsHighContrastEnabled() noexcept
+	{
+		auto highContrast = HIGHCONTRASTW{};
+		highContrast.cbSize = sizeof highContrast;
+		return SystemParametersInfoW(SPI_GETHIGHCONTRAST, sizeof highContrast, &highContrast, 0) &&
+			   (highContrast.dwFlags & HCF_HIGHCONTRASTON) != 0;
+	}
+
+	bool SystemUsesDarkTheme() noexcept
+	{
+		HKEY key = nullptr;
+		const auto status = RegOpenKeyExW(
+			HKEY_CURRENT_USER,
+			L"Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
+			0,
+			KEY_QUERY_VALUE,
+			&key);
+		if (status != ERROR_SUCCESS) return false;
+
+		DWORD appsUseLightTheme = 1;
+		DWORD type = REG_DWORD;
+		DWORD size = sizeof appsUseLightTheme;
+		const auto queryStatus = RegQueryValueExW(
+			key, L"AppsUseLightTheme", nullptr, &type, reinterpret_cast<LPBYTE>(&appsUseLightTheme), &size);
+		RegCloseKey(key);
+
+		return queryStatus == ERROR_SUCCESS && type == REG_DWORD && size == sizeof appsUseLightTheme &&
+			   appsUseLightTheme == 0;
+	}
+
+	uiTheme ResolveEffectiveTheme() noexcept
+	{
+		if (IsHighContrastEnabled()) return uiTheme::HighContrast;
+
+		switch (static_cast<uiThemePreference>(registry::uiTheme.ulCurDWORD))
 		{
-			g_SysBrushes[static_cast<int>(uc)] = GetSysColorBrush(iSysColor);
-			return g_SysBrushes[static_cast<int>(uc)];
+		case uiThemePreference::Dark:
+			return uiTheme::Dark;
+		case uiThemePreference::Light:
+			return uiTheme::Light;
+		case uiThemePreference::System:
+		default:
+			return SystemUsesDarkTheme() ? uiTheme::Dark : uiTheme::Light;
+		}
+	}
+
+	void InitializeGDI() noexcept { g_EffectiveTheme = ResolveEffectiveTheme(); }
+
+	void RefreshTheme() noexcept
+	{
+		g_EffectiveTheme = ResolveEffectiveTheme();
+
+		for (auto& brush : g_ThemeBrushes)
+		{
+			if (brush)
+			{
+				DeleteObject(brush);
+				brush = nullptr;
+			}
 		}
 
-		// No system brush for this color, cache and return a solid brush of the requested color
-		const auto mc = static_cast<int>(g_FixedColors[static_cast<int>(uc)]);
-		if (g_FixedBrushes[mc]) return g_FixedBrushes[mc];
-		g_FixedBrushes[mc] = CreateSolidBrush(g_Colors[mc]);
-		return g_FixedBrushes[mc];
+		for (auto& pen : g_Pens)
+		{
+			if (pen)
+			{
+				DeleteObject(pen);
+				pen = nullptr;
+			}
+		}
+	}
+
+	void UninitializeGDI() noexcept
+	{
+		if (g_hFontSegoe) DeleteObject(g_hFontSegoe);
+		g_hFontSegoe = nullptr;
+		if (g_hFontSegoeBold) DeleteObject(g_hFontSegoeBold);
+		g_hFontSegoeBold = nullptr;
+
+		RefreshTheme();
+
+		for (auto& bitmap : g_Bitmaps)
+		{
+			if (bitmap)
+			{
+				DeleteObject(bitmap);
+				bitmap = nullptr;
+			}
+		}
+	}
+
+	_Check_return_ uiTheme GetEffectiveTheme() noexcept { return g_EffectiveTheme; }
+
+	BOOL CALLBACK ApplyThemeToChild(_In_ HWND hWnd, LPARAM /*lParam*/) noexcept
+	{
+		WCHAR className[64] = {};
+		GetClassNameW(hWnd, className, _countof(className));
+
+		if (_wcsicmp(className, WC_LISTVIEWW) == 0)
+		{
+			ListView_SetBkColor(hWnd, MyGetSysColor(uiColor::Background));
+			ListView_SetTextBkColor(hWnd, MyGetSysColor(uiColor::Background));
+			ListView_SetTextColor(hWnd, MyGetSysColor(uiColor::Text));
+		}
+		else if (_wcsicmp(className, WC_TREEVIEWW) == 0)
+		{
+			TreeView_SetBkColor(hWnd, MyGetSysColor(uiColor::Background));
+			TreeView_SetTextColor(hWnd, MyGetSysColor(uiColor::Text));
+		}
+		else if (_wcsnicmp(className, L"RichEdit", 8) == 0)
+		{
+			const auto bReadOnly = (GetWindowLongPtr(hWnd, GWL_STYLE) & ES_READONLY) != 0;
+			const auto background = bReadOnly ? uiColor::BackgroundReadOnly : uiColor::Background;
+			static_cast<void>(::SendMessage(hWnd, EM_SETBKGNDCOLOR, 0, static_cast<LPARAM>(MyGetSysColor(background))));
+		}
+
+		InvalidateRect(hWnd, nullptr, true);
+		return true;
+	}
+
+	void ApplyTheme(_In_ HWND hWnd) noexcept
+	{
+		if (!hWnd) return;
+
+		if (import::pfnDwmSetWindowAttribute)
+		{
+			const BOOL useDarkMode = g_EffectiveTheme == uiTheme::Dark;
+			constexpr DWORD darkModeAttributeBefore20H1 = 19;
+			constexpr DWORD darkModeAttribute = 20;
+			auto hRes = import::pfnDwmSetWindowAttribute(hWnd, darkModeAttribute, &useDarkMode, sizeof useDarkMode);
+			if (FAILED(hRes))
+			{
+				static_cast<void>(import::pfnDwmSetWindowAttribute(
+					hWnd, darkModeAttributeBefore20H1, &useDarkMode, sizeof useDarkMode));
+			}
+		}
+
+		const auto hMenu = GetMenu(hWnd);
+		if (hMenu)
+		{
+			auto menuInfo = MENUINFO{};
+			menuInfo.cbSize = sizeof menuInfo;
+			menuInfo.fMask = MIM_BACKGROUND;
+			menuInfo.hbrBack = GetSysBrush(uiColor::Background);
+			SetMenuInfo(hMenu, &menuInfo);
+			DrawMenuBar(hWnd);
+		}
+
+		EnumChildWindows(hWnd, ApplyThemeToChild, 0);
+		RedrawWindow(hWnd, nullptr, nullptr, RDW_ERASE | RDW_FRAME | RDW_INVALIDATE | RDW_ALLCHILDREN | RDW_UPDATENOW);
+	}
+
+	BOOL CALLBACK ApplyThemeToTopLevelWindow(_In_ HWND hWnd, LPARAM /*lParam*/) noexcept
+	{
+		ApplyTheme(hWnd);
+		return true;
+	}
+
+	void ApplyThemeToAllWindows() noexcept
+	{
+		RefreshTheme();
+		EnumThreadWindows(GetCurrentThreadId(), ApplyThemeToTopLevelWindow, 0);
 	}
 
 	_Check_return_ COLORREF MyGetSysColor(const uiColor uc) noexcept
 	{
+		const auto theme = g_EffectiveTheme;
+		if (theme == uiTheme::Dark) return g_DarkColors[static_cast<int>(uc)];
+
+		if (theme == uiTheme::HighContrast)
+		{
+			const auto iSysColor = g_HighContrastSysColors[static_cast<int>(uc)];
+			if (iSysColor) return GetSysColor(iSysColor);
+		}
+
 		// Return a system color if we have one in g_SysColors
 		const auto iSysColor = g_SysColors[static_cast<int>(uc)];
 		if (iSysColor) return GetSysColor(iSysColor);
@@ -2120,6 +2293,8 @@ namespace ui
 			return true;
 		case WM_CTLCOLORSTATIC:
 		case WM_CTLCOLOREDIT:
+		case WM_CTLCOLORBTN:
+		case WM_CTLCOLORLISTBOX:
 		{
 			const auto lsStyle = static_cast<uiLabelStyle>(
 				reinterpret_cast<intptr_t>(::GetProp(reinterpret_cast<HWND>(lParam), LABEL_STYLE)));
@@ -2143,6 +2318,9 @@ namespace ui
 			*lpResult = reinterpret_cast<LRESULT>(GetSysBrush(uiBackground));
 			return true;
 		}
+		case WM_CTLCOLORSCROLLBAR:
+			*lpResult = reinterpret_cast<LRESULT>(GetSysBrush(uiColor::BackgroundReadOnly));
+			return true;
 		case WM_NOTIFY:
 		{
 			const auto pHdr = reinterpret_cast<LPNMHDR>(lParam);

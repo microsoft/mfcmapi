@@ -5,6 +5,20 @@
 
 namespace ui
 {
+	enum class uiThemePreference : DWORD
+	{
+		System,
+		Light,
+		Dark,
+	};
+
+	enum class uiTheme
+	{
+		Light,
+		Dark,
+		HighContrast,
+	};
+
 	enum class uiColor
 	{
 		Background,
@@ -69,6 +83,10 @@ namespace ui
 
 	void InitializeGDI() noexcept;
 	void UninitializeGDI() noexcept;
+	void RefreshTheme() noexcept;
+	void ApplyTheme(_In_ HWND hWnd) noexcept;
+	void ApplyThemeToAllWindows() noexcept;
+	_Check_return_ uiTheme GetEffectiveTheme() noexcept;
 
 	void UpdateMenuString(_In_ HWND hWnd, UINT uiMenuTag, UINT uidNewString);
 

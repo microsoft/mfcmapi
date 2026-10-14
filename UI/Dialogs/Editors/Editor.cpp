@@ -1237,7 +1237,7 @@ namespace dialog::editor
 		const auto pane = std::dynamic_pointer_cast<viewpane::DropDownPane>(GetPane(id));
 		if (pane)
 		{
-			return pane->GetDropDown();
+			return pane->GetDropDownSelection();
 		}
 
 		return CB_ERR;
@@ -1248,7 +1248,7 @@ namespace dialog::editor
 		const auto pane = std::dynamic_pointer_cast<viewpane::DropDownPane>(GetPane(id));
 		if (pane)
 		{
-			return pane->GetDropDownValue();
+			return pane->GetDropDownSelectionValue();
 		}
 
 		return 0;

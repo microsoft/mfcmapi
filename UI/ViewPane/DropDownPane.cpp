@@ -12,7 +12,7 @@ namespace viewpane
 		const int paneID,
 		const UINT uidLabel,
 		const ULONG ulDropList,
-		_In_opt_count_(ulDropList) UINT* lpuidDropList,
+		_In_opt_count_(ulDropList) const UINT* lpuidDropList,
 		const bool bReadOnly)
 	{
 		auto pane = std::make_shared<DropDownPane>();
@@ -246,6 +246,8 @@ namespace viewpane
 				m_DropDown.m_hWnd, WM_SETTEXT, NULL, reinterpret_cast<LPARAM>(static_cast<LPCTSTR>(text.c_str()))));
 		}
 	}
+
+	void DropDownPane::SetDropDownSelection(const int iSelection) { SetSelection(static_cast<DWORD_PTR>(iSelection)); }
 
 	void DropDownPane::SetSelection(DWORD_PTR iSelection)
 	{

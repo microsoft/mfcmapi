@@ -6,6 +6,7 @@
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 #include <core/addin/mfcmapi.h>
+#include <UI/UIFunctions.h>
 
 namespace dialog::editor
 {
@@ -60,6 +61,18 @@ namespace dialog::editor
 					viewpane::TextPane::CreateSingleLinePane(regKey->uiOptionsPrompt, regKey->uiOptionsPrompt, false));
 				SetDecimal(regKey->uiOptionsPrompt, regKey->ulCurDWORD);
 			}
+			else if (registry::regOptionType::dropdown == regKey->ulRegOptType)
+			{
+				auto pane = viewpane::DropDownPane::Create(
+					regKey->uiOptionsPrompt,
+					regKey->uiOptionsPrompt,
+					static_cast<ULONG>(regKey->uiDropDownOptions.size()),
+					regKey->uiDropDownOptions.data(),
+					true);
+				const auto selection = regKey->ulCurDWORD < regKey->uiDropDownOptions.size() ? regKey->ulCurDWORD : 0;
+				pane->SetDropDownSelection(static_cast<int>(selection));
+				AddPane(pane);
+			}
 		}
 	}
 
@@ -67,6 +80,8 @@ namespace dialog::editor
 
 	void COptions::OnOK()
 	{
+		const auto oldTheme = registry::uiTheme.ulCurDWORD;
+
 		// need to grab this FIRST
 		registry::debugFileName = GetStringW(registry::debugFileName.uiOptionsPrompt);
 
@@ -100,10 +115,20 @@ namespace dialog::editor
 			{
 				regKey->ulCurDWORD = GetDecimal(regKey->uiOptionsPrompt);
 			}
+			else if (registry::regOptionType::dropdown == regKey->ulRegOptType)
+			{
+				const auto selected = GetDropDown(regKey->uiOptionsPrompt);
+				if (selected >= 0 && selected < static_cast<int>(regKey->uiDropDownOptions.size()))
+				{
+					regKey->ulCurDWORD = static_cast<DWORD>(selected);
+				}
+			}
 		}
 
 		// Commit our values to the registry
 		registry::WriteToRegistry();
+
+		if (oldTheme != registry::uiTheme.ulCurDWORD) ui::ApplyThemeToAllWindows();
 
 		CEditor::OnOK();
 	}

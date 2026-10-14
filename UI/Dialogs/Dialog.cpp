@@ -244,6 +244,14 @@ namespace dialog
 		case WM_NCPAINT:
 			ui::DrawWindowFrame(m_hWnd, true, m_iStatusHeight);
 			return 0;
+		case WM_SHOWWINDOW:
+			if (wParam) ui::ApplyTheme(m_hWnd);
+			break;
+		case WM_SETTINGCHANGE:
+		case WM_SYSCOLORCHANGE:
+		case WM_THEMECHANGED:
+			ui::ApplyThemeToAllWindows();
+			break;
 		case WM_CREATE:
 			// Ensure all windows group together by enforcing a consistent App User Model ID.
 			// We don't use SetCurrentProcessExplicitAppUserModelID because logging on to MAPI somehow breaks this.
