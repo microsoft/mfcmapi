@@ -325,6 +325,11 @@ Specify PR_MEMBER_RIGHTS mask"
 
 // basedialog.cpp
 IDS_SETOPTS                      "Options"
+IDS_ADDINAPPROVAL                "Add-in approval"
+IDS_ADDINAPPROVALPROMPT          "Select the add-ins you want to load. Unchecked add-ins will be remembered as denied. Cancel saves no choices."
+IDS_ADDINAPPROVALRESETFAILED     "Unable to clear add-in approval decisions."
+IDS_CLEARADDINAPPROVALS          "Clear Add-in Decisions"
+IDS_ADDINAPPROVALRESETSUCCEEDED  "Add-in decisions cleared. Restart MFCMAPI for the changes to take effect."
 IDS_OPENEID                      "Open Entry ID"
 IDS_OPENEIDPROMPT                "This function will attempt to interpret a hex encoded binary string as an Entry ID.\r\n\
 The Entry ID will be passed to each selected interface in turn, until the object\r\n\

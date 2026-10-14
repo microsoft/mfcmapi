@@ -8,6 +8,7 @@
 #include <core/utility/registry.h>
 #include <core/utility/output.h>
 #include <core/utility/error.h>
+#include <core/addin/addinfile.h>
 
 // Our built in arrays, which get merged into the arrays declared in mfcmapi.h
 #include <core/interpret/genTagArray.h>
@@ -176,196 +177,339 @@ namespace addin
 		output::DebugPrint(output::dbgLevel::AddInPlumbing, L"Done loading AddIn\n");
 	}
 
-	class CFileList final
+	namespace
 	{
-	public:
-		std::wstring m_szKey;
-		HKEY m_hRootKey;
-		std::vector<std::wstring> m_lpList;
+		constexpr auto APPROVAL_LIST = L"AddInApprovalList"; // STRING_OK
+		constexpr auto DENIAL_LIST = L"AddInDenialList"; // STRING_OK
+		constexpr auto LIST_SEPARATOR = L";"; // STRING_OK
 
-#define EXCLUSION_LIST L"AddInExclusionList" // STRING_OK
-#define INCLUSION_LIST L"AddInInclusionList" // STRING_OK
-#define SEPARATOR L";" // STRING_OK
-
-		// Read in registry and build a list of invalid add-in DLLs
-		CFileList(_In_ const std::wstring& szKey)
+		void ReadList(_In_ HKEY rootKey, _In_ const std::wstring& valueName, _Out_ std::vector<std::wstring>& values)
 		{
-			std::wstring lpszReg;
-
-			m_hRootKey = registry::CreateRootKey();
-			m_szKey = szKey;
-
-			if (m_hRootKey)
+			const auto serialized = registry::ReadStringFromRegistry(rootKey, valueName);
+			size_t start = 0;
+			while (start < serialized.size())
 			{
-				lpszReg = registry::ReadStringFromRegistry(m_hRootKey, m_szKey);
+				const auto end = serialized.find(L';', start);
+				const auto length = end == std::wstring::npos ? serialized.size() - start : end - start;
+				if (length) values.emplace_back(serialized.substr(start, length));
+				if (end == std::wstring::npos) break;
+				start = end + 1;
 			}
+		}
 
-			if (!lpszReg.empty())
+		class CApprovalCache final
+		{
+		public:
+			CApprovalCache() : m_rootKey(registry::CreateRootKey())
 			{
-				LPWSTR szContext = nullptr;
-				auto szDLL = wcstok_s(const_cast<LPWSTR>(lpszReg.c_str()), SEPARATOR, &szContext);
-				while (szDLL)
+				if (m_rootKey)
 				{
-					AddToList(szDLL);
-					szDLL = wcstok_s(nullptr, SEPARATOR, &szContext);
+					ReadList(m_rootKey, APPROVAL_LIST, m_approved);
+					ReadList(m_rootKey, DENIAL_LIST, m_denied);
 				}
 			}
-		}
 
-		// Write the list back to registry
-		~CFileList()
-		{
-			std::wstring szList;
-
-			if (!m_lpList.empty())
+			~CApprovalCache()
 			{
-				for (const auto& dll : m_lpList)
+				if (m_rootKey) EC_W32_S(RegCloseKey(m_rootKey));
+			}
+
+			bool IsApproved(_In_ const std::wstring& hash) const { return Contains(m_approved, hash); }
+			bool IsDenied(_In_ const std::wstring& hash) const { return Contains(m_denied, hash); }
+
+			void Add(_In_ const std::wstring& hash, bool approved)
+			{
+				auto& target = approved ? m_approved : m_denied;
+				auto& other = approved ? m_denied : m_approved;
+				if (!Contains(target, hash)) target.push_back(hash);
+				other.erase(
+					std::remove_if(
+						other.begin(),
+						other.end(),
+						[&hash](const auto& value) { return strings::compareInsensitive(value, hash); }),
+					other.end());
+				m_dirty = true;
+			}
+
+			_Check_return_ bool Save()
+			{
+				if (!m_dirty) return true;
+				if (!m_rootKey) return false;
+				return WriteList(APPROVAL_LIST, m_approved) && WriteList(DENIAL_LIST, m_denied);
+			}
+
+		private:
+			static bool Contains(const std::vector<std::wstring>& values, const std::wstring& hash)
+			{
+				return std::any_of(values.cbegin(), values.cend(), [&hash](const auto& value) {
+					return strings::compareInsensitive(value, hash);
+				});
+			}
+
+			bool WriteList(const std::wstring& valueName, const std::vector<std::wstring>& values)
+			{
+				if (values.empty())
 				{
-					szList += dll;
-					szList += SEPARATOR;
+					const auto result = RegDeleteValueW(m_rootKey, valueName.c_str());
+					if (result == ERROR_SUCCESS || result == ERROR_FILE_NOT_FOUND) return true;
+					output::DebugPrint(
+						output::dbgLevel::Generic,
+						L"RegDeleteValueW(%ws) failed with %u\n",
+						valueName.c_str(),
+						static_cast<DWORD>(result));
+					return false;
 				}
 
-				registry::WriteStringToRegistry(m_hRootKey, m_szKey, szList);
+				std::wstring serialized;
+				for (const auto& value : values)
+				{
+					serialized += value;
+					serialized += LIST_SEPARATOR;
+				}
+
+				if (serialized.size() >= MAXDWORD / sizeof(WCHAR))
+				{
+					output::DebugPrint(output::dbgLevel::Generic, L"Add-in decision cache is too large to store\n");
+					return false;
+				}
+
+				const auto cbValue = static_cast<DWORD>((serialized.size() + 1) * sizeof(WCHAR));
+				const auto result = RegSetValueExW(
+					m_rootKey,
+					valueName.c_str(),
+					0,
+					REG_SZ,
+					reinterpret_cast<const BYTE*>(serialized.c_str()),
+					cbValue);
+				if (result == ERROR_SUCCESS) return true;
+				output::DebugPrint(
+					output::dbgLevel::Generic,
+					L"RegSetValueExW(%ws) failed with %u\n",
+					valueName.c_str(),
+					static_cast<DWORD>(result));
+				return false;
 			}
 
-			EC_W32_S(RegCloseKey(m_hRootKey));
-		}
+			HKEY m_rootKey{};
+			std::vector<std::wstring> m_approved;
+			std::vector<std::wstring> m_denied;
+			bool m_dirty{};
+		};
 
-		CFileList(const CFileList&) = delete;
-		CFileList& operator=(const CFileList&) = delete;
-		CFileList(CFileList&&) = delete;
-		CFileList& operator=(CFileList&&) = delete;
-
-		// Add the DLL to the list
-		void AddToList(_In_ const std::wstring& szDLL)
+		struct CPendingAddIn
 		{
-			if (szDLL.empty()) return;
-			m_lpList.push_back(szDLL);
-		}
+			AddInApprovalCandidate approval;
+			std::wstring path;
+			std::unique_ptr<CAddInFile> file;
+		};
 
-		// Check this DLL name against the list
-		bool IsOnList(_In_ const std::wstring& szDLL) const
+		void LoadApprovedAddIn(_In_ const std::wstring& path)
 		{
-			if (szDLL.empty()) return true;
-			for (const auto& dll : m_lpList)
+			const auto flags = LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LOAD_LIBRARY_SEARCH_DEFAULT_DIRS;
+			const auto hMod = LoadLibraryExW(path.c_str(), nullptr, flags);
+			if (!hMod)
 			{
-				if (strings::compareInsensitive(dll, szDLL)) return true;
+				output::DebugPrint(
+					output::dbgLevel::AddInPlumbing,
+					L"LoadLibraryExW(\"%ws\") failed with %u\n",
+					path.c_str(),
+					GetLastError());
+				return;
 			}
 
-			return false;
+			const auto pfnLoadAddIn = GetFunction<LPLOADADDIN>(hMod, szLoadAddIn);
+			if (pfnLoadAddIn && GetAddinVersion(hMod) == MFCMAPI_HEADER_CURRENT_VERSION)
+			{
+				g_lpMyAddins.emplace_back();
+				LoadSingleAddIn(g_lpMyAddins.back(), hMod, pfnLoadAddIn);
+			}
+			else
+			{
+				output::DebugPrint(
+					output::dbgLevel::AddInPlumbing, L"Approved DLL no longer has a compatible add-in export\n");
+				FreeLibrary(hMod);
+			}
 		}
-	};
+	} // namespace
 
-	void LoadAddIns()
+	_Check_return_ bool ClearAddInApprovalCache()
+	{
+		const auto rootKey = registry::CreateRootKey();
+		if (!rootKey) return false;
+
+		bool success = true;
+		for (const auto valueName : {APPROVAL_LIST, DENIAL_LIST})
+		{
+			const auto result = RegDeleteValueW(rootKey, valueName);
+			if (result != ERROR_SUCCESS && result != ERROR_FILE_NOT_FOUND)
+			{
+				output::DebugPrint(
+					output::dbgLevel::Generic,
+					L"RegDeleteValueW(%ws) failed with %u\n",
+					valueName,
+					static_cast<DWORD>(result));
+				success = false;
+			}
+		}
+
+		EC_W32_S(RegCloseKey(rootKey));
+		return success;
+	}
+
+	void LoadAddIns(_In_ const AddInApprovalPrompt& approvalPrompt)
 	{
 		output::DebugPrint(output::dbgLevel::AddInPlumbing, L"Loading AddIns\n");
-		// First, we look at each DLL in the current dir and see if it exports 'LoadAddIn'
 
-		if (!registry::loadAddIns)
+		if (registry::loadAddIns)
 		{
-			output::DebugPrint(output::dbgLevel::AddInPlumbing, L"Bypassing add-in loading\n");
-		}
-		else
-		{
-			const auto szFilePath = file::GetModuleFileName(nullptr);
-			if (szFilePath.empty()) return;
-
-			// We got the path to mfcmapi.exe - need to strip it
-			const auto szDir = szFilePath.substr(0, szFilePath.find_last_of(L'\\'));
-
-			CFileList ExclusionList(EXCLUSION_LIST);
-			CFileList InclusionList(INCLUSION_LIST);
-
-			if (!szDir.empty())
+			const auto filePath = file::GetModuleFileName(nullptr);
+			if (!filePath.empty())
 			{
-				output::DebugPrint(output::dbgLevel::AddInPlumbing, L"Current dir = \"%ws\"\n", szDir.c_str());
-				const auto szSpec = szDir + L"\\*.dll"; // STRING_OK
-				output::DebugPrint(output::dbgLevel::AddInPlumbing, L"File spec = \"%ws\"\n", szSpec.c_str());
-
-				WIN32_FIND_DATAW FindFileData = {};
-				const auto hFind = FindFirstFileW(szSpec.c_str(), &FindFileData);
-
-				if (hFind == INVALID_HANDLE_VALUE)
+				const auto directory = filePath.substr(0, filePath.find_last_of(L'\\'));
+				if (!directory.empty())
 				{
-					output::DebugPrint(
-						output::dbgLevel::AddInPlumbing, L"Invalid file handle. Error is %u.\n", GetLastError());
-				}
-				else
-				{
-					for (;;)
+					const auto spec = directory + L"\\*.dll"; // STRING_OK
+					WIN32_FIND_DATAW findData = {};
+					const auto findHandle = FindFirstFileW(spec.c_str(), &findData);
+					if (findHandle == INVALID_HANDLE_VALUE)
 					{
 						output::DebugPrint(
-							output::dbgLevel::AddInPlumbing, L"Examining \"%ws\"\n", FindFileData.cFileName);
-						HMODULE hMod = nullptr;
+							output::dbgLevel::AddInPlumbing, L"FindFirstFileW failed with %u\n", GetLastError());
+					}
+					else
+					{
+						CApprovalCache cache;
+						std::vector<CPendingAddIn> approved;
+						std::vector<CPendingAddIn> unknown;
+						auto findError = ERROR_NO_MORE_FILES;
 
-						// If we know the Add-in is good, just load it.
-						// If we know it's bad, skip it.
-						// Otherwise, we have to check if it's good.
-						// LoadLibrary calls DLLMain, which can get expensive just to see if a function is exported
-						// So we use DONT_RESOLVE_DLL_REFERENCES to see if we're interested in the DLL first
-						// Only if we're interested do we reload the DLL for real
-						if (InclusionList.IsOnList(FindFileData.cFileName))
+						for (;;)
 						{
-							hMod = import::MyLoadLibraryW(FindFileData.cFileName);
-						}
-						else
-						{
-							if (!ExclusionList.IsOnList(FindFileData.cFileName))
+							const auto path = directory + L"\\" + findData.cFileName;
+							auto candidateFile = std::make_unique<CAddInFile>();
+							if (candidateFile->Open(path))
 							{
-								hMod = LoadLibraryExW(FindFileData.cFileName, nullptr, DONT_RESOLVE_DLL_REFERENCES);
-								if (hMod)
+								if (!candidateFile->HasCompatibleBitness())
 								{
-									const auto pfnLoadAddIn = GetFunction<LPLOADADDIN>(hMod, szLoadAddIn);
-									FreeLibrary(hMod);
-									hMod = nullptr;
-
-									if (pfnLoadAddIn)
+									output::DebugPrint(
+										output::dbgLevel::AddInPlumbing,
+										L"Skipping add-in with incompatible bitness \"%ws\"\n",
+										path.c_str());
+								}
+								else
+								{
+									std::wstring hash;
+									if (candidateFile->HasLoadAddInExport() && candidateFile->GetSHA256(hash))
 									{
-										// Remember this as a good add-in
-										InclusionList.AddToList(FindFileData.cFileName);
-										// We found a candidate, load it for real now
-										hMod = import::MyLoadLibraryW(FindFileData.cFileName);
+										candidateFile->CloseView();
+										CPendingAddIn candidate{
+											{findData.cFileName, std::move(hash)}, path, std::move(candidateFile)};
+										if (!cache.IsDenied(candidate.approval.sha256) &&
+											cache.IsApproved(candidate.approval.sha256))
+										{
+											approved.emplace_back(std::move(candidate));
+										}
+										else if (!cache.IsDenied(candidate.approval.sha256))
+										{
+											unknown.emplace_back(std::move(candidate));
+										}
+									}
+									else
+									{
+										output::DebugPrint(
+											output::dbgLevel::AddInPlumbing,
+											L"Skipping non-add-in or unreadable image \"%ws\"\n",
+											path.c_str());
 									}
 								}
-
-								// If we still don't have a DLL loaded, exclude it
-								if (!hMod)
-								{
-									ExclusionList.AddToList(FindFileData.cFileName);
-								}
-							}
-						}
-
-						if (hMod)
-						{
-							output::DebugPrint(output::dbgLevel::AddInPlumbing, L"Opened module\n");
-							const auto pfnLoadAddIn = GetFunction<LPLOADADDIN>(hMod, szLoadAddIn);
-							if (pfnLoadAddIn && GetAddinVersion(hMod) == MFCMAPI_HEADER_CURRENT_VERSION)
-							{
-								output::DebugPrint(output::dbgLevel::AddInPlumbing, L"Found an add-in\n");
-								g_lpMyAddins.emplace_back();
-								LoadSingleAddIn(g_lpMyAddins.back(), hMod, pfnLoadAddIn);
 							}
 							else
 							{
-								// Not an add-in, release the hMod
-								FreeLibrary(hMod);
+								output::DebugPrint(
+									output::dbgLevel::AddInPlumbing,
+									L"Could not inspect \"%ws\" (error %u)\n",
+									path.c_str(),
+									GetLastError());
+							}
+
+							if (!FindNextFileW(findHandle, &findData))
+							{
+								findError = GetLastError();
+								break;
 							}
 						}
 
-						// get next file
-						if (!FindNextFileW(hFind, &FindFileData)) break;
-					}
+						FindClose(findHandle);
+						if (findError != ERROR_NO_MORE_FILES)
+						{
+							output::DebugPrint(
+								output::dbgLevel::AddInPlumbing, L"FindNextFileW failed with %u\n", findError);
+						}
 
-					const auto dwRet = GetLastError();
-					FindClose(hFind);
-					if (dwRet != ERROR_NO_MORE_FILES)
-					{
-						output::DebugPrint(
-							output::dbgLevel::AddInPlumbing, L"FindNextFile error. Error is %u.\n", dwRet);
+						if (!unknown.empty() && approvalPrompt)
+						{
+							std::vector<AddInApprovalCandidate> promptCandidates;
+							std::vector<size_t> decisionIndex;
+							promptCandidates.reserve(unknown.size());
+							decisionIndex.reserve(unknown.size());
+							for (const auto& candidate : unknown)
+							{
+								const auto existing = std::find_if(
+									promptCandidates.cbegin(),
+									promptCandidates.cend(),
+									[&candidate](const auto& promptCandidate) {
+										return promptCandidate.sha256 == candidate.approval.sha256;
+									});
+								if (existing == promptCandidates.cend())
+								{
+									decisionIndex.push_back(promptCandidates.size());
+									promptCandidates.push_back(candidate.approval);
+								}
+								else
+								{
+									decisionIndex.push_back(static_cast<size_t>(existing - promptCandidates.cbegin()));
+								}
+							}
+
+							std::vector<bool> decisions;
+							if (approvalPrompt(promptCandidates, decisions) &&
+								decisions.size() == promptCandidates.size())
+							{
+								for (size_t i = 0; i < promptCandidates.size(); ++i)
+									cache.Add(promptCandidates[i].sha256, decisions[i]);
+
+								if (!cache.Save())
+								{
+									output::DebugPrint(
+										output::dbgLevel::AddInPlumbing,
+										L"Could not persist add-in approval decisions; newly approved add-ins will not "
+										L"load\n");
+								}
+								else
+								{
+									for (size_t i = 0; i < unknown.size(); ++i)
+									{
+										if (decisions[decisionIndex[i]]) approved.emplace_back(std::move(unknown[i]));
+									}
+								}
+							}
+							else
+							{
+								output::DebugPrint(
+									output::dbgLevel::AddInPlumbing,
+									L"Add-in approval was cancelled or returned invalid decisions\n");
+							}
+						}
+
+						for (const auto& candidate : approved)
+							LoadApprovedAddIn(candidate.path);
 					}
 				}
 			}
+		}
+		else
+		{
+			output::DebugPrint(output::dbgLevel::AddInPlumbing, L"Bypassing add-in loading\n");
 		}
 
 		MergeAddInArrays();

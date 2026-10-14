@@ -1,10 +1,12 @@
 #include <StdAfx.h>
 #include <UI/ParentWnd.h>
+#include <UI/Dialogs/Editors/Editor.h>
 #include <core/utility/import.h>
 #include <UI/MyWinApp.h>
 #include <UI/UIFunctions.h>
 #include <mapistub/library/stubutils.h>
 #include <core/addin/addin.h>
+#include <core/addin/mfcmapi.h>
 #include <core/utility/registry.h>
 #include <core/utility/output.h>
 
@@ -15,6 +17,32 @@ namespace ui
 	static std::wstring CLASS = L"CParentWnd";
 
 	static CParentWnd* s_parentWnd{};
+
+	bool PromptForAddInApproval(
+		_In_ const std::vector<addin::AddInApprovalCandidate>& candidates,
+		_Out_ std::vector<bool>& approvals)
+	{
+		dialog::editor::CEditor editor(
+			nullptr, IDS_ADDINAPPROVAL, IDS_ADDINAPPROVALPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+		constexpr int firstPaneID = 40000;
+		for (size_t i = 0; i < candidates.size(); ++i)
+		{
+			const auto label = candidates[i].fileName + L" [SHA-256: " + candidates[i].sha256 + L"]";
+			editor.AddPane(viewpane::CheckPane::Create(firstPaneID + static_cast<int>(i), label, false, false));
+		}
+
+		if (!editor.DisplayDialog()) return false;
+
+		approvals.clear();
+		approvals.reserve(candidates.size());
+		for (size_t i = 0; i < candidates.size(); ++i)
+		{
+			approvals.push_back(editor.GetCheck(firstPaneID + static_cast<int>(i)));
+		}
+
+		return true;
+	}
+
 	_Check_return_ CParentWnd* GetParentWnd()
 	{
 		if (!s_parentWnd)
@@ -78,7 +106,7 @@ namespace ui
 
 		registry::PushOptionsToStub();
 
-		addin::LoadAddIns();
+		addin::LoadAddIns(PromptForAddInApproval);
 
 		// Notice we never create a window here!
 		TRACE_CONSTRUCTOR(CLASS);

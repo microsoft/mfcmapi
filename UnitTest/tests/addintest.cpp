@@ -1,7 +1,9 @@
 #include <UnitTest/stdafx.h>
 #include <UnitTest/UnitTest.h>
 #include <core/addin/addin.h>
+#include <core/addin/addinfile.h>
 #include <core/addin/mfcmapi.h>
+#include <cstring>
 
 namespace addin
 {
@@ -41,6 +43,67 @@ namespace addintest
 		_In_ const SMARTVIEW_PARSER_ARRAY_ENTRY& a2) noexcept
 	{
 		return addin::compareSmartViewParser(nullptr, reinterpret_cast<LPCVOID>(&a1), reinterpret_cast<LPCVOID>(&a2));
+	}
+
+	std::vector<BYTE> MakePeImageWithExport(const char* exportName, bool is64Bit = true)
+	{
+		constexpr size_t ntOffset = 0x80;
+		constexpr size_t rawOffset = 0x200;
+		auto image = std::vector<BYTE>(0x400);
+
+		IMAGE_DOS_HEADER dosHeader = {};
+		dosHeader.e_magic = IMAGE_DOS_SIGNATURE;
+		dosHeader.e_lfanew = static_cast<LONG>(ntOffset);
+		memcpy(image.data(), &dosHeader, sizeof(dosHeader));
+
+		const DWORD signature = IMAGE_NT_SIGNATURE;
+		memcpy(image.data() + ntOffset, &signature, sizeof(signature));
+
+		IMAGE_FILE_HEADER fileHeader = {};
+		fileHeader.Machine = is64Bit ? IMAGE_FILE_MACHINE_AMD64 : IMAGE_FILE_MACHINE_I386;
+		fileHeader.NumberOfSections = 1;
+		fileHeader.SizeOfOptionalHeader =
+			static_cast<WORD>(is64Bit ? sizeof(IMAGE_OPTIONAL_HEADER64) : sizeof(IMAGE_OPTIONAL_HEADER32));
+		memcpy(image.data() + ntOffset + sizeof(signature), &fileHeader, sizeof(fileHeader));
+
+		const auto optionalOffset = ntOffset + sizeof(signature) + sizeof(fileHeader);
+		if (is64Bit)
+		{
+			IMAGE_OPTIONAL_HEADER64 optionalHeader = {};
+			optionalHeader.Magic = IMAGE_NT_OPTIONAL_HDR64_MAGIC;
+			optionalHeader.SizeOfHeaders = static_cast<DWORD>(rawOffset);
+			optionalHeader.NumberOfRvaAndSizes = IMAGE_NUMBEROF_DIRECTORY_ENTRIES;
+			optionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT] =
+				IMAGE_DATA_DIRECTORY{0x1000, sizeof(IMAGE_EXPORT_DIRECTORY)};
+			memcpy(image.data() + optionalOffset, &optionalHeader, sizeof(optionalHeader));
+		}
+		else
+		{
+			IMAGE_OPTIONAL_HEADER32 optionalHeader = {};
+			optionalHeader.Magic = IMAGE_NT_OPTIONAL_HDR32_MAGIC;
+			optionalHeader.SizeOfHeaders = static_cast<DWORD>(rawOffset);
+			optionalHeader.NumberOfRvaAndSizes = IMAGE_NUMBEROF_DIRECTORY_ENTRIES;
+			optionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT] =
+				IMAGE_DATA_DIRECTORY{0x1000, sizeof(IMAGE_EXPORT_DIRECTORY)};
+			memcpy(image.data() + optionalOffset, &optionalHeader, sizeof(optionalHeader));
+		}
+
+		IMAGE_SECTION_HEADER section = {};
+		section.VirtualAddress = 0x1000;
+		section.SizeOfRawData = 0x200;
+		section.PointerToRawData = static_cast<DWORD>(rawOffset);
+		const auto sectionOffset = optionalOffset + fileHeader.SizeOfOptionalHeader;
+		memcpy(image.data() + sectionOffset, &section, sizeof(section));
+
+		IMAGE_EXPORT_DIRECTORY exports = {};
+		exports.NumberOfNames = 1;
+		exports.AddressOfNames = 0x1040;
+		memcpy(image.data() + rawOffset, &exports, sizeof(exports));
+
+		const DWORD nameRva = 0x1060;
+		memcpy(image.data() + rawOffset + 0x40, &nameRva, sizeof(nameRva));
+		memcpy(image.data() + rawOffset + 0x60, exportName, strlen(exportName) + 1);
+		return image;
 	}
 
 	TEST_CLASS(addinTest)
@@ -144,6 +207,34 @@ namespace addintest
 				addin::AddInStructTypeToString(parserType::NOPARSING).c_str(),
 				L"NOPARSING");
 			Assert::AreEqual(L"", addin::AddInStructTypeToString(parserType{0xfff}).c_str(), L"unknown");
+		}
+
+		TEST_METHOD(Test_HasLoadAddInExport)
+		{
+			auto addInImage = MakePeImageWithExport("LoadAddIn");
+			Assert::IsTrue(addin::HasLoadAddInExport(addInImage.data(), addInImage.size()));
+			Assert::IsTrue(addin::IsCompatibleBitness(addInImage.data(), addInImage.size(), true));
+			Assert::IsFalse(addin::IsCompatibleBitness(addInImage.data(), addInImage.size(), false));
+
+			auto x86Image = MakePeImageWithExport("LoadAddIn", false);
+			Assert::IsTrue(addin::HasLoadAddInExport(x86Image.data(), x86Image.size()));
+			Assert::IsTrue(addin::IsCompatibleBitness(x86Image.data(), x86Image.size(), false));
+			Assert::IsFalse(addin::IsCompatibleBitness(x86Image.data(), x86Image.size(), true));
+
+			auto otherImage = MakePeImageWithExport("NotAnAddIn");
+			Assert::IsFalse(addin::HasLoadAddInExport(otherImage.data(), otherImage.size()));
+
+			auto invalidNameRva = MakePeImageWithExport("LoadAddIn");
+			const DWORD invalidRva = 0xfffffff0;
+			memcpy(invalidNameRva.data() + 0x240, &invalidRva, sizeof(invalidRva));
+			Assert::IsFalse(addin::HasLoadAddInExport(invalidNameRva.data(), invalidNameRva.size()));
+
+			auto unterminatedName = MakePeImageWithExport("LoadAddIn");
+			memset(unterminatedName.data() + 0x260, 'A', unterminatedName.size() - 0x260);
+			Assert::IsFalse(addin::HasLoadAddInExport(unterminatedName.data(), unterminatedName.size()));
+
+			addInImage.resize(32);
+			Assert::IsFalse(addin::HasLoadAddInExport(addInImage.data(), addInImage.size()));
 		}
 
 		void testFA(std::wstring testName, const FLAG_ARRAY_ENTRY& fa1, const FLAG_ARRAY_ENTRY& fa2)
