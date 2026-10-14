@@ -13,6 +13,11 @@ permissions:
 jobs:
     build:
         runs-on: windows-latest
+        env:
+            # Update together using the wingetcreate.exe digest from the matching release:
+            # https://api.github.com/repos/microsoft/winget-create/releases/tags/v<version>
+            WINGETCREATE_VERSION: "1.12.13.0"
+            WINGETCREATE_SHA256: "24042bd37915805615e6cf969ac57c6439124c3fe85823327f5f3fb24bd9ffea"
 
         steps:
         - name: Harden Runner
@@ -20,21 +25,40 @@ jobs:
           with:
             egress-policy: audit
 
+        - name: Download and verify WingetCreate
+          run: |
+            $wingetCreatePath = Join-Path $env:RUNNER_TEMP "wingetcreate.exe"
+            $wingetCreateUrl = "https://github.com/microsoft/winget-create/releases/download/v$env:WINGETCREATE_VERSION/wingetcreate.exe"
+
+            Invoke-WebRequest -Uri $wingetCreateUrl -OutFile $wingetCreatePath -ErrorAction Stop
+            $actualHash = (Get-FileHash -LiteralPath $wingetCreatePath -Algorithm SHA256).Hash.ToLowerInvariant()
+            if ($actualHash -cne $env:WINGETCREATE_SHA256) {
+                Remove-Item -LiteralPath $wingetCreatePath -Force
+                throw "WingetCreate SHA-256 mismatch. Expected $env:WINGETCREATE_SHA256; received $actualHash."
+            }
+            Write-Host "Verified WingetCreate $env:WINGETCREATE_VERSION ($actualHash)."
+          shell: pwsh
+
         - name: '📫🚀 Publish Latest MFCMAPI Release to Winget'
+          env:
+            MFCMAPI_WINGET: ${{ secrets.MFCMAPI_WINGET }}
           run: |
             $wingetPackage = "Microsoft.MFCMAPI"
-            $gitToken = "${{ secrets.MFCMAPI_WINGET }}"
+            $wingetCreatePath = Join-Path $env:RUNNER_TEMP "wingetcreate.exe"
+            $actualHash = (Get-FileHash -LiteralPath $wingetCreatePath -Algorithm SHA256).Hash.ToLowerInvariant()
+            if ($actualHash -cne $env:WINGETCREATE_SHA256) {
+                throw "WingetCreate changed after verification. Expected $env:WINGETCREATE_SHA256; received $actualHash."
+            }
 
-            $github = Invoke-RestMethod -uri "https://api.github.com/repos/Microsoft/MFCMAPI/releases" 
+            $github = Invoke-RestMethod -uri "https://api.github.com/repos/Microsoft/MFCMAPI/releases"
 
-            $targetRelease = $github | Where-Object { -not $_.draft -and -not $_.prerelease }| Select -First 1
+            $targetRelease = $github | Where-Object { -not $_.draft -and -not $_.prerelease } | Select -First 1
             $ver = $targetRelease.tag_name -ireplace '^v'
-            # Write-Host $targetRelease
-            # Write-Host $ver
             $installerUserX86Url = $targetRelease | Select -ExpandProperty assets -First 1 | Where-Object -Property name -match 'MFCMAPI.exe' | Select -ExpandProperty browser_download_url
             $installerUserX64Url = $targetRelease | Select -ExpandProperty assets -First 1 | Where-Object -Property name -match 'MFCMAPI.x64.exe' | Select -ExpandProperty browser_download_url
 
-            # getting latest wingetcreate file
-            iwr https://aka.ms/wingetcreate/latest -OutFile wingetcreate.exe
-            .\wingetcreate.exe update $wingetPackage -s -v $ver -u "$installerUserX86Url|user" "$installerUserX64Url|user" -t $gitToken
+            & $wingetCreatePath update $wingetPackage -s -v $ver -u "$installerUserX86Url|user" "$installerUserX64Url|user" -t $env:MFCMAPI_WINGET
+            if ($LASTEXITCODE -ne 0) {
+                throw "WingetCreate failed with exit code $LASTEXITCODE."
+            }
           shell: pwsh
