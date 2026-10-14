@@ -4,6 +4,7 @@
 #include <core/addin/addinfile.h>
 #include <core/addin/mfcmapi.h>
 #include <cstring>
+#include <stdexcept>
 
 namespace addin
 {
@@ -23,6 +24,17 @@ namespace addin
 
 namespace addintest
 {
+	void CopyToImage(std::vector<BYTE>& image, const size_t offset, const void* source, const size_t size)
+	{
+		if (offset > image.size() || size > image.size() - offset || (size && !source))
+		{
+			throw std::out_of_range("Invalid synthetic PE image copy");
+		}
+
+		const auto result = memcpy_s(image.data() + offset, image.size() - offset, source, size);
+		if (result != 0) throw std::runtime_error("Unable to copy synthetic PE image data");
+	}
+
 	int _cdecl testCompareTypes(_In_ const NAME_ARRAY_ENTRY& a1, _In_ const NAME_ARRAY_ENTRY& a2) noexcept
 	{
 		return addin::compareTypes(nullptr, reinterpret_cast<LPCVOID>(&a1), reinterpret_cast<LPCVOID>(&a2));
@@ -54,17 +66,17 @@ namespace addintest
 		IMAGE_DOS_HEADER dosHeader = {};
 		dosHeader.e_magic = IMAGE_DOS_SIGNATURE;
 		dosHeader.e_lfanew = static_cast<LONG>(ntOffset);
-		memcpy(image.data(), &dosHeader, sizeof(dosHeader));
+		CopyToImage(image, 0, &dosHeader, sizeof(dosHeader));
 
 		const DWORD signature = IMAGE_NT_SIGNATURE;
-		memcpy(image.data() + ntOffset, &signature, sizeof(signature));
+		CopyToImage(image, ntOffset, &signature, sizeof(signature));
 
 		IMAGE_FILE_HEADER fileHeader = {};
 		fileHeader.Machine = is64Bit ? IMAGE_FILE_MACHINE_AMD64 : IMAGE_FILE_MACHINE_I386;
 		fileHeader.NumberOfSections = 1;
 		fileHeader.SizeOfOptionalHeader =
 			static_cast<WORD>(is64Bit ? sizeof(IMAGE_OPTIONAL_HEADER64) : sizeof(IMAGE_OPTIONAL_HEADER32));
-		memcpy(image.data() + ntOffset + sizeof(signature), &fileHeader, sizeof(fileHeader));
+		CopyToImage(image, ntOffset + sizeof(signature), &fileHeader, sizeof(fileHeader));
 
 		const auto optionalOffset = ntOffset + sizeof(signature) + sizeof(fileHeader);
 		if (is64Bit)
@@ -75,7 +87,7 @@ namespace addintest
 			optionalHeader.NumberOfRvaAndSizes = IMAGE_NUMBEROF_DIRECTORY_ENTRIES;
 			optionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT] =
 				IMAGE_DATA_DIRECTORY{0x1000, sizeof(IMAGE_EXPORT_DIRECTORY)};
-			memcpy(image.data() + optionalOffset, &optionalHeader, sizeof(optionalHeader));
+			CopyToImage(image, optionalOffset, &optionalHeader, sizeof(optionalHeader));
 		}
 		else
 		{
@@ -85,7 +97,7 @@ namespace addintest
 			optionalHeader.NumberOfRvaAndSizes = IMAGE_NUMBEROF_DIRECTORY_ENTRIES;
 			optionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT] =
 				IMAGE_DATA_DIRECTORY{0x1000, sizeof(IMAGE_EXPORT_DIRECTORY)};
-			memcpy(image.data() + optionalOffset, &optionalHeader, sizeof(optionalHeader));
+			CopyToImage(image, optionalOffset, &optionalHeader, sizeof(optionalHeader));
 		}
 
 		IMAGE_SECTION_HEADER section = {};
@@ -93,16 +105,26 @@ namespace addintest
 		section.SizeOfRawData = 0x200;
 		section.PointerToRawData = static_cast<DWORD>(rawOffset);
 		const auto sectionOffset = optionalOffset + fileHeader.SizeOfOptionalHeader;
-		memcpy(image.data() + sectionOffset, &section, sizeof(section));
+		CopyToImage(image, sectionOffset, &section, sizeof(section));
 
 		IMAGE_EXPORT_DIRECTORY exports = {};
 		exports.NumberOfNames = 1;
 		exports.AddressOfNames = 0x1040;
-		memcpy(image.data() + rawOffset, &exports, sizeof(exports));
+		CopyToImage(image, rawOffset, &exports, sizeof(exports));
 
 		const DWORD nameRva = 0x1060;
-		memcpy(image.data() + rawOffset + 0x40, &nameRva, sizeof(nameRva));
-		memcpy(image.data() + rawOffset + 0x60, exportName, strlen(exportName) + 1);
+		CopyToImage(image, rawOffset + 0x40, &nameRva, sizeof(nameRva));
+
+		const auto exportNameOffset = rawOffset + 0x60;
+		const auto exportNameCapacity = image.size() - exportNameOffset;
+		if (!exportName) throw std::invalid_argument("Synthetic PE export name cannot be null");
+		const auto exportNameLength = strnlen_s(exportName, exportNameCapacity);
+		if (exportNameLength == exportNameCapacity)
+		{
+			throw std::length_error("Synthetic PE export name exceeds the image");
+		}
+
+		CopyToImage(image, exportNameOffset, exportName, exportNameLength + 1);
 		return image;
 	}
 
@@ -226,7 +248,7 @@ namespace addintest
 
 			auto invalidNameRva = MakePeImageWithExport("LoadAddIn");
 			const DWORD invalidRva = 0xfffffff0;
-			memcpy(invalidNameRva.data() + 0x240, &invalidRva, sizeof(invalidRva));
+			CopyToImage(invalidNameRva, 0x240, &invalidRva, sizeof(invalidRva));
 			Assert::IsFalse(addin::HasLoadAddInExport(invalidNameRva.data(), invalidNameRva.size()));
 
 			auto unterminatedName = MakePeImageWithExport("LoadAddIn");
