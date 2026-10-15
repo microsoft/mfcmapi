@@ -22,6 +22,7 @@ namespace ui
 #define SEGOEBOLD L"Segoe UI Bold" // STRING_OK
 #define BUTTON_STYLE _T("ButtonStyle") // STRING_OK
 #define LABEL_STYLE _T("LabelStyle") // STRING_OK
+#define SCROLL_HOST _T("ScrollHost") // STRING_OK
 
 #define BORDER_VISIBLEWIDTH 2
 
@@ -692,6 +693,11 @@ namespace ui
 
 	_Check_return_ uiTheme GetEffectiveTheme() noexcept { return g_EffectiveTheme; }
 
+	void StyleScrollHost(_In_ HWND hWnd) noexcept
+	{
+		EC_B_S(::SetProp(hWnd, SCROLL_HOST, reinterpret_cast<HANDLE>(true)));
+	}
+
 	BOOL CALLBACK ApplyThemeToChild(_In_ HWND hWnd, LPARAM /*lParam*/) noexcept
 	{
 		WCHAR className[64] = {};
@@ -704,18 +710,23 @@ namespace ui
 		const auto isComboList = _wcsicmp(className, L"ComboLBox") == 0;
 		const auto isHeader = _wcsicmp(className, WC_HEADERW) == 0;
 		const auto isScrollBar = _wcsicmp(className, L"ScrollBar") == 0;
+		const auto isMarkedScrollHost = ::GetProp(hWnd, SCROLL_HOST) != nullptr;
+		const auto isScrollHost = isScrollBar || isMarkedScrollHost;
 		const auto isToolTip = _wcsicmp(className, TOOLTIPS_CLASSW) == 0;
+		auto scrollInfo = SCROLLINFO{};
+		scrollInfo.cbSize = sizeof scrollInfo;
+		scrollInfo.fMask = SIF_RANGE | SIF_PAGE | SIF_POS;
+		const auto preserveScrollInfo = isMarkedScrollHost && ::GetScrollInfo(hWnd, SB_VERT, &scrollInfo);
 
 		if (import::pfnSetWindowTheme && (isList || isTree || isEdit || isRichEdit || isCombo || isComboList ||
-										  isHeader || isScrollBar || isToolTip))
+										  isHeader || isScrollHost || isToolTip))
 		{
-			if (isScrollBar)
+			if (isScrollHost)
 			{
 				const auto theme = g_EffectiveTheme == uiTheme::Dark	? L"DarkMode_Explorer"
-								   : g_EffectiveTheme == uiTheme::Light ? L""
+								   : g_EffectiveTheme == uiTheme::Light ? L"Explorer"
 																		: nullptr;
-				static_cast<void>(
-					import::pfnSetWindowTheme(hWnd, theme, g_EffectiveTheme == uiTheme::Light ? L"" : nullptr));
+				static_cast<void>(import::pfnSetWindowTheme(hWnd, theme, nullptr));
 			}
 			else
 			{
@@ -746,7 +757,16 @@ namespace ui
 			UpdateEditTextColor(hWnd, bReadOnly);
 		}
 
-		InvalidateRect(hWnd, nullptr, true);
+		if (preserveScrollInfo)
+		{
+			::SetScrollInfo(hWnd, SB_VERT, &scrollInfo, false);
+			::ShowScrollBar(
+				hWnd,
+				SB_VERT,
+				scrollInfo.nPage && scrollInfo.nPage < static_cast<UINT>(scrollInfo.nMax - scrollInfo.nMin + 1));
+		}
+
+		RedrawWindow(hWnd, nullptr, nullptr, RDW_INVALIDATE | RDW_ERASE | RDW_FRAME);
 		return true;
 	}
 
@@ -1094,98 +1114,6 @@ namespace ui
 
 		return DefSubclassProc(hWnd, uMsg, wParam, lParam);
 	}
-
-	void DrawLightScrollBar(_In_ HWND hWnd, _In_ HDC hdc) noexcept
-	{
-		auto client = RECT{};
-		GetClientRect(hWnd, &client);
-		FillRect(hdc, &client, GetSysBrush(uiColor::Background));
-
-		const auto width = client.right - client.left;
-		const auto height = client.bottom - client.top;
-		const auto arrowHeight = min(width, height / 2);
-		const auto trackTop = client.top + arrowHeight;
-		const auto trackBottom = client.bottom - arrowHeight;
-		const auto trackHeight = max(0, trackBottom - trackTop);
-
-		auto scrollInfo = SCROLLINFO{};
-		scrollInfo.cbSize = sizeof scrollInfo;
-		scrollInfo.fMask = SIF_RANGE | SIF_PAGE | SIF_POS;
-		GetScrollInfo(hWnd, SB_CTL, &scrollInfo);
-
-		const auto range = max(1, scrollInfo.nMax - scrollInfo.nMin + 1);
-		const auto page = min(static_cast<int>(scrollInfo.nPage), range);
-		const auto maximumPosition = max(scrollInfo.nMin, scrollInfo.nMax - page + 1);
-		auto thumbHeight = page ? MulDiv(trackHeight, page, range) : GetSystemMetrics(SM_CYVTHUMB);
-		thumbHeight = min(trackHeight, max(GetSystemMetrics(SM_CYVTHUMB), thumbHeight));
-
-		auto thumbTop = trackTop;
-		if (maximumPosition > scrollInfo.nMin && trackHeight > thumbHeight)
-		{
-			thumbTop +=
-				MulDiv(trackHeight - thumbHeight, scrollInfo.nPos - scrollInfo.nMin, maximumPosition - scrollInfo.nMin);
-		}
-
-		const auto thumb = RECT{client.left, thumbTop, client.right, thumbTop + thumbHeight};
-		FillRect(hdc, &thumb, GetSysBrush(uiColor::BackgroundReadOnly));
-
-		const auto triangleHalfWidth = max(2, width / 4);
-		const auto triangleHalfHeight = max(1, triangleHalfWidth / 2);
-		const auto centerX = client.left + width / 2;
-		const auto topCenterY = client.top + arrowHeight / 2;
-		const POINT up[] = {
-			{centerX - triangleHalfWidth, topCenterY + triangleHalfHeight},
-			{centerX + triangleHalfWidth, topCenterY + triangleHalfHeight},
-			{centerX, topCenterY - triangleHalfHeight}};
-		DrawFilledPolygon(hdc, up, _countof(up), MyGetSysColor(uiColor::Arrow), GetSysBrush(uiColor::Arrow));
-
-		const auto bottomCenterY = client.bottom - arrowHeight / 2;
-		const POINT down[] = {
-			{centerX - triangleHalfWidth, bottomCenterY - triangleHalfHeight},
-			{centerX + triangleHalfWidth, bottomCenterY - triangleHalfHeight},
-			{centerX, bottomCenterY + triangleHalfHeight}};
-		DrawFilledPolygon(hdc, down, _countof(down), MyGetSysColor(uiColor::Arrow), GetSysBrush(uiColor::Arrow));
-	}
-
-	LRESULT CALLBACK DrawScrollBarProc(
-		_In_ HWND hWnd,
-		const UINT uMsg,
-		const WPARAM wParam,
-		const LPARAM lParam,
-		const UINT_PTR uIdSubclass,
-		DWORD_PTR /*dwRefData*/) noexcept
-	{
-		if (uMsg == WM_NCDESTROY)
-		{
-			RemoveWindowSubclass(hWnd, DrawScrollBarProc, uIdSubclass);
-			return DefSubclassProc(hWnd, uMsg, wParam, lParam);
-		}
-
-		if (g_EffectiveTheme != uiTheme::Light) return DefSubclassProc(hWnd, uMsg, wParam, lParam);
-
-		switch (uMsg)
-		{
-		case WM_ERASEBKGND:
-			return true;
-		case WM_PAINT:
-		{
-			auto paint = PAINTSTRUCT{};
-			const auto hdc = BeginPaint(hWnd, &paint);
-			if (hdc) DrawLightScrollBar(hWnd, hdc);
-			EndPaint(hWnd, &paint);
-			return 0;
-		}
-		case WM_PRINTCLIENT:
-			DrawLightScrollBar(hWnd, reinterpret_cast<HDC>(wParam));
-			return 0;
-		default:
-			break;
-		}
-
-		return DefSubclassProc(hWnd, uMsg, wParam, lParam);
-	}
-
-	void SubclassScrollBar(_In_ HWND hWnd) noexcept { SetWindowSubclass(hWnd, DrawScrollBarProc, 0, 0); }
 
 	void SubclassEdit(_In_ HWND hWnd, _In_opt_ HWND hWndParent, const bool bReadOnly)
 	{

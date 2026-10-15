@@ -87,6 +87,7 @@ namespace ui
 	void ApplyTheme(_In_ HWND hWnd) noexcept;
 	void RedrawAllWindows() noexcept;
 	void ApplyThemeToAllWindows() noexcept;
+	void StyleScrollHost(_In_ HWND hWnd) noexcept;
 	_Check_return_ uiTheme GetEffectiveTheme() noexcept;
 
 	void UpdateMenuString(_In_ HWND hWnd, UINT uiMenuTag, UINT uidNewString);
@@ -149,7 +150,6 @@ namespace ui
 		UINT_PTR uIdSubclass,
 		DWORD_PTR /*dwRefData*/) noexcept;
 	void SubclassEdit(_In_ HWND hWnd, _In_opt_ HWND hWndParent, bool bReadOnly);
-	void SubclassScrollBar(_In_ HWND hWnd) noexcept;
 
 	// List
 	void CustomDrawList(_In_ LPNMLVCUSTOMDRAW lvcd, _In_ LRESULT* pResult, DWORD_PTR iItemCurHover) noexcept;
