@@ -85,6 +85,7 @@ namespace ui
 	void UninitializeGDI() noexcept;
 	void RefreshTheme() noexcept;
 	void ApplyTheme(_In_ HWND hWnd) noexcept;
+	void RedrawAllWindows() noexcept;
 	void ApplyThemeToAllWindows() noexcept;
 	_Check_return_ uiTheme GetEffectiveTheme() noexcept;
 
@@ -121,6 +122,7 @@ namespace ui
 	HBITMAP ScaleBitmap(HBITMAP hBitmap, const SCALE& scale) noexcept;
 
 	void ClearEditFormatting(_In_ HWND hWnd, bool bReadOnly) noexcept;
+	void UpdateEditTextColor(_In_ HWND hWnd, bool bReadOnly) noexcept;
 
 	// Application-specific owner-drawn menu info struct. Owner-drawn data
 	// is a pointer to one of these. MSAAMENUINFO must be the first
@@ -147,6 +149,7 @@ namespace ui
 		UINT_PTR uIdSubclass,
 		DWORD_PTR /*dwRefData*/) noexcept;
 	void SubclassEdit(_In_ HWND hWnd, _In_opt_ HWND hWndParent, bool bReadOnly);
+	void SubclassScrollBar(_In_ HWND hWnd) noexcept;
 
 	// List
 	void CustomDrawList(_In_ LPNMLVCUSTOMDRAW lvcd, _In_ LRESULT* pResult, DWORD_PTR iItemCurHover) noexcept;

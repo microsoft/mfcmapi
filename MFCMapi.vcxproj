@@ -1015,6 +1015,7 @@
     <ClInclude Include="UI\ViewPane\CountedTextPane.h" />
     <ClInclude Include="UI\ViewPane\DropDownPane.h" />
     <ClInclude Include="UI\ViewPane\ListPane.h" />
+    <ClInclude Include="UI\ViewPane\SectionPane.h" />
     <ClInclude Include="UI\ViewPane\SmartViewPane.h" />
     <ClInclude Include="UI\ViewPane\SplitterPane.h" />
     <ClInclude Include="UI\ViewPane\TextPane.h" />
@@ -1135,6 +1136,7 @@
     <ClCompile Include="UI\ViewPane\CountedTextPane.cpp" />
     <ClCompile Include="UI\ViewPane\DropDownPane.cpp" />
     <ClCompile Include="UI\ViewPane\ListPane.cpp" />
+    <ClCompile Include="UI\ViewPane\SectionPane.cpp" />
     <ClCompile Include="UI\ViewPane\SmartViewPane.cpp" />
     <ClCompile Include="UI\ViewPane\SplitterPane.cpp" />
     <ClCompile Include="UI\ViewPane\TextPane.cpp" />

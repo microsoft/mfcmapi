@@ -589,6 +589,12 @@
     <ClInclude Include="UI\ViewPane\ListPane.h">
       <Filter>Source Files\UI\ViewPane</Filter>
     </ClInclude>
+    <ClCompile Include="UI\ViewPane\SectionPane.cpp">
+      <Filter>Source Files\UI\ViewPane</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\ViewPane\SectionPane.h">
+      <Filter>Source Files\UI\ViewPane</Filter>
+    </ClInclude>
     <ClCompile Include="UI\ViewPane\SmartViewPane.cpp">
       <Filter>Source Files\UI\ViewPane</Filter>
     </ClCompile>

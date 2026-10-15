@@ -311,6 +311,9 @@ namespace viewpane
 		output::DebugPrintEx(
 			output::dbgLevel::Stream, CLASS, L"SetEditBoxText", L"read %d bytes from the stream\n", lBytesRead);
 
+		ui::ClearEditFormatting(m_EditBox.m_hWnd, m_bReadOnly);
+		if (!m_highlights.empty()) DoHighlights();
+
 		// Clear the modify bit so this stream appears untouched
 		m_EditBox.SetModify(false);
 
@@ -488,11 +491,11 @@ namespace viewpane
 		auto charformat = CHARFORMAT2A{};
 		charformat.cbSize = sizeof charformat;
 		charformat.dwMask = CFM_COLOR | CFM_BACKCOLOR;
-		charformat.dwEffects = CFE_AUTOCOLOR | CFE_AUTOBACKCOLOR;
+		charformat.dwEffects = 0;
+		charformat.crTextColor = MyGetSysColor(m_bReadOnly ? ui::uiColor::TextReadOnly : ui::uiColor::Text);
+		charformat.crBackColor = MyGetSysColor(m_bReadOnly ? ui::uiColor::BackgroundReadOnly : ui::uiColor::Background);
 		::SendMessage(m_EditBox.GetSafeHwnd(), EM_SETCHARFORMAT, SCF_SELECTION, reinterpret_cast<LPARAM>(&charformat));
 
-		// Clear out CFE_AUTOCOLOR and CFE_AUTOBACKCOLOR so we can change color
-		charformat.dwEffects = 0;
 		for (const auto& range : m_highlights)
 		{
 			if (static_cast<LONG>(range.start) == -1 || static_cast<LONG>(range.end) == -1) continue;

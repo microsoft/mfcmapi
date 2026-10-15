@@ -696,23 +696,54 @@ namespace ui
 	{
 		WCHAR className[64] = {};
 		GetClassNameW(hWnd, className, _countof(className));
+		const auto isList = _wcsicmp(className, WC_LISTVIEWW) == 0;
+		const auto isTree = _wcsicmp(className, WC_TREEVIEWW) == 0;
+		const auto isEdit = _wcsicmp(className, WC_EDITW) == 0;
+		const auto isRichEdit = _wcsnicmp(className, L"RichEdit", 8) == 0;
+		const auto isCombo = _wcsicmp(className, WC_COMBOBOXW) == 0;
+		const auto isComboList = _wcsicmp(className, L"ComboLBox") == 0;
+		const auto isHeader = _wcsicmp(className, WC_HEADERW) == 0;
+		const auto isScrollBar = _wcsicmp(className, L"ScrollBar") == 0;
+		const auto isToolTip = _wcsicmp(className, TOOLTIPS_CLASSW) == 0;
 
-		if (_wcsicmp(className, WC_LISTVIEWW) == 0)
+		if (import::pfnSetWindowTheme && (isList || isTree || isEdit || isRichEdit || isCombo || isComboList ||
+										  isHeader || isScrollBar || isToolTip))
+		{
+			if (isScrollBar)
+			{
+				const auto theme = g_EffectiveTheme == uiTheme::Dark	? L"DarkMode_Explorer"
+								   : g_EffectiveTheme == uiTheme::Light ? L""
+																		: nullptr;
+				static_cast<void>(
+					import::pfnSetWindowTheme(hWnd, theme, g_EffectiveTheme == uiTheme::Light ? L"" : nullptr));
+			}
+			else
+			{
+				// DarkMode_Explorer leaves the combo drop button light.
+				const auto theme = g_EffectiveTheme == uiTheme::Dark
+									   ? (isCombo || isComboList ? L"DarkMode_CFD" : L"DarkMode_Explorer")
+									   : L"Explorer";
+				static_cast<void>(import::pfnSetWindowTheme(hWnd, theme, nullptr));
+			}
+		}
+
+		if (isList)
 		{
 			ListView_SetBkColor(hWnd, MyGetSysColor(uiColor::Background));
 			ListView_SetTextBkColor(hWnd, MyGetSysColor(uiColor::Background));
 			ListView_SetTextColor(hWnd, MyGetSysColor(uiColor::Text));
 		}
-		else if (_wcsicmp(className, WC_TREEVIEWW) == 0)
+		else if (isTree)
 		{
 			TreeView_SetBkColor(hWnd, MyGetSysColor(uiColor::Background));
 			TreeView_SetTextColor(hWnd, MyGetSysColor(uiColor::Text));
 		}
-		else if (_wcsnicmp(className, L"RichEdit", 8) == 0)
+		else if (isRichEdit)
 		{
 			const auto bReadOnly = (GetWindowLongPtr(hWnd, GWL_STYLE) & ES_READONLY) != 0;
 			const auto background = bReadOnly ? uiColor::BackgroundReadOnly : uiColor::Background;
 			static_cast<void>(::SendMessage(hWnd, EM_SETBKGNDCOLOR, 0, static_cast<LPARAM>(MyGetSysColor(background))));
+			UpdateEditTextColor(hWnd, bReadOnly);
 		}
 
 		InvalidateRect(hWnd, nullptr, true);
@@ -722,6 +753,8 @@ namespace ui
 	void ApplyTheme(_In_ HWND hWnd) noexcept
 	{
 		if (!hWnd) return;
+
+		ApplyThemeToChild(hWnd, 0);
 
 		if (import::pfnDwmSetWindowAttribute)
 		{
@@ -757,10 +790,12 @@ namespace ui
 		return true;
 	}
 
+	void RedrawAllWindows() noexcept { EnumThreadWindows(GetCurrentThreadId(), ApplyThemeToTopLevelWindow, 0); }
+
 	void ApplyThemeToAllWindows() noexcept
 	{
 		RefreshTheme();
-		EnumThreadWindows(GetCurrentThreadId(), ApplyThemeToTopLevelWindow, 0);
+		RedrawAllWindows();
 	}
 
 	_Check_return_ COLORREF MyGetSysColor(const uiColor uc) noexcept
@@ -905,6 +940,18 @@ namespace ui
 		static_cast<void>(::SendMessage(hWnd, EM_SETCHARFORMAT, SCF_ALL, reinterpret_cast<LPARAM>(&cf)));
 	}
 
+	void UpdateEditTextColor(_In_ HWND hWnd, const bool bReadOnly) noexcept
+	{
+		auto cf = CHARFORMAT2{};
+		cf.cbSize = sizeof cf;
+		cf.dwMask = CFM_COLOR;
+		cf.crTextColor = MyGetSysColor(
+			!IsWindowEnabled(hWnd) ? uiColor::TextDisabled
+			: bReadOnly			   ? uiColor::TextReadOnly
+								   : uiColor::Text);
+		static_cast<void>(::SendMessage(hWnd, EM_SETCHARFORMAT, SCF_ALL, reinterpret_cast<LPARAM>(&cf)));
+	}
+
 	// Lighten the colors of the base, being careful not to overflow
 	constexpr COLORREF LightColor(const COLORREF crBase)
 	{
@@ -971,7 +1018,7 @@ namespace ui
 		const WPARAM wParam,
 		const LPARAM lParam,
 		const UINT_PTR uIdSubclass,
-		DWORD_PTR /*dwRefData*/) noexcept
+		const DWORD_PTR dwRefData) noexcept
 	{
 		static auto borderWidth = 2;
 		switch (uMsg)
@@ -985,11 +1032,26 @@ namespace ui
 		case WM_NCDESTROY:
 			RemoveWindowSubclass(hWnd, DrawEditProc, uIdSubclass);
 			return DefSubclassProc(hWnd, uMsg, wParam, lParam);
+		case WM_MOUSEWHEEL:
+			if (dwRefData && !(GetWindowLongPtr(hWnd, GWL_STYLE) & ES_MULTILINE))
+			{
+				return ::SendMessage(reinterpret_cast<HWND>(dwRefData), uMsg, wParam, lParam);
+			}
+			break;
 		case WM_SETFOCUS:
 		case WM_KILLFOCUS:
 			// Trigger WM_NCPAINT so we can get an updated frame reflecting focus status
 			::RedrawWindow(hWnd, nullptr, nullptr, RDW_FRAME | RDW_INVALIDATE | RDW_ERASENOW);
 			break;
+		case WM_ENABLE:
+		{
+			const auto bReadOnly = (GetWindowLongPtr(hWnd, GWL_STYLE) & ES_READONLY) != 0;
+			const auto background = bReadOnly || !wParam ? uiColor::BackgroundReadOnly : uiColor::Background;
+			static_cast<void>(::SendMessage(hWnd, EM_SETBKGNDCOLOR, 0, MyGetSysColor(background)));
+			UpdateEditTextColor(hWnd, bReadOnly);
+			::RedrawWindow(hWnd, nullptr, nullptr, RDW_FRAME | RDW_INVALIDATE | RDW_ERASENOW);
+			break;
+		}
 		case WM_NCPAINT:
 		{
 			const auto hdc = GetWindowDC(hWnd);
@@ -1032,6 +1094,98 @@ namespace ui
 
 		return DefSubclassProc(hWnd, uMsg, wParam, lParam);
 	}
+
+	void DrawLightScrollBar(_In_ HWND hWnd, _In_ HDC hdc) noexcept
+	{
+		auto client = RECT{};
+		GetClientRect(hWnd, &client);
+		FillRect(hdc, &client, GetSysBrush(uiColor::Background));
+
+		const auto width = client.right - client.left;
+		const auto height = client.bottom - client.top;
+		const auto arrowHeight = min(width, height / 2);
+		const auto trackTop = client.top + arrowHeight;
+		const auto trackBottom = client.bottom - arrowHeight;
+		const auto trackHeight = max(0, trackBottom - trackTop);
+
+		auto scrollInfo = SCROLLINFO{};
+		scrollInfo.cbSize = sizeof scrollInfo;
+		scrollInfo.fMask = SIF_RANGE | SIF_PAGE | SIF_POS;
+		GetScrollInfo(hWnd, SB_CTL, &scrollInfo);
+
+		const auto range = max(1, scrollInfo.nMax - scrollInfo.nMin + 1);
+		const auto page = min(static_cast<int>(scrollInfo.nPage), range);
+		const auto maximumPosition = max(scrollInfo.nMin, scrollInfo.nMax - page + 1);
+		auto thumbHeight = page ? MulDiv(trackHeight, page, range) : GetSystemMetrics(SM_CYVTHUMB);
+		thumbHeight = min(trackHeight, max(GetSystemMetrics(SM_CYVTHUMB), thumbHeight));
+
+		auto thumbTop = trackTop;
+		if (maximumPosition > scrollInfo.nMin && trackHeight > thumbHeight)
+		{
+			thumbTop +=
+				MulDiv(trackHeight - thumbHeight, scrollInfo.nPos - scrollInfo.nMin, maximumPosition - scrollInfo.nMin);
+		}
+
+		const auto thumb = RECT{client.left, thumbTop, client.right, thumbTop + thumbHeight};
+		FillRect(hdc, &thumb, GetSysBrush(uiColor::BackgroundReadOnly));
+
+		const auto triangleHalfWidth = max(2, width / 4);
+		const auto triangleHalfHeight = max(1, triangleHalfWidth / 2);
+		const auto centerX = client.left + width / 2;
+		const auto topCenterY = client.top + arrowHeight / 2;
+		const POINT up[] = {
+			{centerX - triangleHalfWidth, topCenterY + triangleHalfHeight},
+			{centerX + triangleHalfWidth, topCenterY + triangleHalfHeight},
+			{centerX, topCenterY - triangleHalfHeight}};
+		DrawFilledPolygon(hdc, up, _countof(up), MyGetSysColor(uiColor::Arrow), GetSysBrush(uiColor::Arrow));
+
+		const auto bottomCenterY = client.bottom - arrowHeight / 2;
+		const POINT down[] = {
+			{centerX - triangleHalfWidth, bottomCenterY - triangleHalfHeight},
+			{centerX + triangleHalfWidth, bottomCenterY - triangleHalfHeight},
+			{centerX, bottomCenterY + triangleHalfHeight}};
+		DrawFilledPolygon(hdc, down, _countof(down), MyGetSysColor(uiColor::Arrow), GetSysBrush(uiColor::Arrow));
+	}
+
+	LRESULT CALLBACK DrawScrollBarProc(
+		_In_ HWND hWnd,
+		const UINT uMsg,
+		const WPARAM wParam,
+		const LPARAM lParam,
+		const UINT_PTR uIdSubclass,
+		DWORD_PTR /*dwRefData*/) noexcept
+	{
+		if (uMsg == WM_NCDESTROY)
+		{
+			RemoveWindowSubclass(hWnd, DrawScrollBarProc, uIdSubclass);
+			return DefSubclassProc(hWnd, uMsg, wParam, lParam);
+		}
+
+		if (g_EffectiveTheme != uiTheme::Light) return DefSubclassProc(hWnd, uMsg, wParam, lParam);
+
+		switch (uMsg)
+		{
+		case WM_ERASEBKGND:
+			return true;
+		case WM_PAINT:
+		{
+			auto paint = PAINTSTRUCT{};
+			const auto hdc = BeginPaint(hWnd, &paint);
+			if (hdc) DrawLightScrollBar(hWnd, hdc);
+			EndPaint(hWnd, &paint);
+			return 0;
+		}
+		case WM_PRINTCLIENT:
+			DrawLightScrollBar(hWnd, reinterpret_cast<HDC>(wParam));
+			return 0;
+		default:
+			break;
+		}
+
+		return DefSubclassProc(hWnd, uMsg, wParam, lParam);
+	}
+
+	void SubclassScrollBar(_In_ HWND hWnd) noexcept { SetWindowSubclass(hWnd, DrawScrollBarProc, 0, 0); }
 
 	void SubclassEdit(_In_ HWND hWnd, _In_opt_ HWND hWndParent, const bool bReadOnly)
 	{
@@ -2073,6 +2227,7 @@ namespace ui
 		const auto htMin = HTMINBUTTON == iHitTest;
 
 		DrawBitmap(hdc, rcCloseIcon, uiBitmap::Close, htClose, htClose && !bHover ? 2 : 0);
+		if (registry::uiDiag) ::FrameRect(hdc, &rcCloseIcon, GetSysBrush(uiColor::TestPink));
 
 		if (bMaxBox)
 		{
@@ -2082,11 +2237,13 @@ namespace ui
 				IsZoomed(hWnd) ? uiBitmap::Restore : uiBitmap::Maximize,
 				htMax,
 				htMax && !bHover ? 2 : 0);
+			if (registry::uiDiag) ::FrameRect(hdc, &rcMaxIcon, GetSysBrush(uiColor::TestPink));
 		}
 
 		if (bMinBox)
 		{
 			DrawBitmap(hdc, rcMinIcon, uiBitmap::Minimize, htMin, htMin && !bHover ? 2 : 0);
+			if (registry::uiDiag) ::FrameRect(hdc, &rcMinIcon, GetSysBrush(uiColor::TestPink));
 		}
 
 		if (hdcLocal) ReleaseDC(hWnd, hdcLocal);
@@ -2306,6 +2463,8 @@ namespace ui
 				uiText = uiColor::PaneHeaderText;
 				uiBackground = registry::uiDiag ? uiColor::TestRed : uiColor::PaneHeaderBackground;
 			}
+
+			if (!IsWindowEnabled(reinterpret_cast<HWND>(lParam))) uiText = uiColor::TextDisabled;
 
 			const auto hdc = reinterpret_cast<HDC>(wParam);
 			if (hdc)

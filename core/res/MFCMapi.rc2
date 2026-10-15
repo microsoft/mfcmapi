@@ -1000,6 +1000,12 @@ IDS_REGKEY_UI_THEME "Appearance:"
 IDS_UI_THEME_SYSTEM "Use system setting"
 IDS_UI_THEME_LIGHT "Light"
 IDS_UI_THEME_DARK "Dark"
+IDS_OPTIONS_ONLINE_CACHE "Online and cache"
+IDS_OPTIONS_TABLES_DISPLAY "Tables and display"
+IDS_OPTIONS_PROPERTIES "Properties and named properties"
+IDS_OPTIONS_NOTIFICATIONS_OPENING "Notifications and object opening"
+IDS_OPTIONS_MAPI_IMPLEMENTATION "MAPI implementation and extensions"
+IDS_OPTIONS_DIAGNOSTICS "Diagnostics, tracing, and safety"
 
 // RestrictEditor.cpp
 IDS_RELOP "relop"

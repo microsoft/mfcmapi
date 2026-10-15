@@ -7,6 +7,7 @@
 #include <core/utility/output.h>
 #include <core/addin/mfcmapi.h>
 #include <UI/UIFunctions.h>
+#include <UI/ViewPane/SectionPane.h>
 
 namespace dialog::editor
 {
@@ -18,6 +19,7 @@ namespace dialog::editor
 		bool NeedPropRefresh() const noexcept;
 
 	private:
+		void AddOptionPane(_In_ registry::__RegKey* regKey);
 		_Check_return_ ULONG HandleChange(UINT nID) override;
 
 		void OnOK() override;
@@ -35,44 +37,88 @@ namespace dialog::editor
 		output::DebugPrintEx(
 			output::dbgLevel::Generic, CLASS, L"COptions(", L"Building option sheet - adding fields\n");
 
-		for (auto& regKey : registry::RegKeys)
-		{
-			if (!regKey || !regKey->uiOptionsPrompt) continue;
+		const std::vector<std::pair<UINT, std::vector<registry::__RegKey*>>> optionGroups = {
+			{0, {&registry::uiTheme}},
+			{IDS_OPTIONS_ONLINE_CACHE, {&registry::forceMDBOnline, &registry::forceMapiNoCache}},
+			{IDS_OPTIONS_TABLES_DISPLAY,
+			 {&registry::throttleLevel,
+			  &registry::doColumnNames,
+			  &registry::editColumnsOnLoad,
+			  &registry::allowDupeColumns,
+			  &registry::onlyAdditionalProperties,
+			  &registry::doSmartView}},
+			{IDS_OPTIONS_PROPERTIES,
+			 {&registry::parseNamedProps,
+			  &registry::getPropNamesOnAllProps,
+			  &registry::cacheNamedProps,
+			  &registry::preferUnicodeProps,
+			  &registry::useRowDataForSinglePropList,
+			  &registry::useGetPropList,
+			  &registry::suppressNotFound}},
+			{IDS_OPTIONS_NOTIFICATIONS_OPENING,
+			 {&registry::hierExpandNotifications,
+			  &registry::hierRootNotifs,
+			  &registry::useMessageRaw,
+			  &registry::allowPersistCache}},
+			{IDS_OPTIONS_MAPI_IMPLEMENTATION,
+			 {&registry::preferOlmapi32,
+			  &registry::forceOutlookMAPI,
+			  &registry::forceSystemMAPI,
+			  &registry::loadAddIns,
+			  &registry::enableLegacyFeatures}},
+			{IDS_OPTIONS_DIAGNOSTICS,
+			 {&registry::uiDiag,
+			  &registry::debugTag,
+			  &registry::debugToFile,
+			  &registry::debugFileName,
+			  &registry::useIMAPIProgress,
+			  &registry::heapEnableTerminationOnCorruption}}};
 
-			if (registry::regOptionType::check == regKey->ulRegOptType)
+		for (const auto& [section, options] : optionGroups)
+		{
+			if (section) AddPane(std::make_shared<viewpane::SectionPane>(section, section));
+			for (const auto& regKey : options)
 			{
-				AddPane(viewpane::CheckPane::Create(
-					regKey->uiOptionsPrompt, regKey->uiOptionsPrompt, 0 != regKey->ulCurDWORD, false));
+				AddOptionPane(regKey);
 			}
-			else if (registry::regOptionType::string == regKey->ulRegOptType)
-			{
-				AddPane(viewpane::TextPane::CreateSingleLinePane(
-					regKey->uiOptionsPrompt, regKey->uiOptionsPrompt, regKey->szCurSTRING, false));
-			}
-			else if (registry::regOptionType::stringHex == regKey->ulRegOptType)
-			{
-				AddPane(
-					viewpane::TextPane::CreateSingleLinePane(regKey->uiOptionsPrompt, regKey->uiOptionsPrompt, false));
-				SetHex(regKey->uiOptionsPrompt, regKey->ulCurDWORD);
-			}
-			else if (registry::regOptionType::stringDec == regKey->ulRegOptType)
-			{
-				AddPane(
-					viewpane::TextPane::CreateSingleLinePane(regKey->uiOptionsPrompt, regKey->uiOptionsPrompt, false));
-				SetDecimal(regKey->uiOptionsPrompt, regKey->ulCurDWORD);
-			}
-			else if (registry::regOptionType::dropdown == regKey->ulRegOptType)
-			{
-				auto pane = viewpane::DropDownPane::Create(
-					regKey->uiOptionsPrompt,
-					regKey->uiOptionsPrompt,
-					static_cast<ULONG>(regKey->uiDropDownOptions.size()),
-					regKey->uiDropDownOptions.data(),
-					true);
-				const auto selection = regKey->ulCurDWORD < regKey->uiDropDownOptions.size() ? regKey->ulCurDWORD : 0;
-				pane->SetDropDownSelection(static_cast<int>(selection));
-				AddPane(pane);
-			}
+		}
+	}
+
+	void COptions::AddOptionPane(_In_ registry::__RegKey* regKey)
+	{
+		if (!regKey || !regKey->uiOptionsPrompt) return;
+
+		if (registry::regOptionType::check == regKey->ulRegOptType)
+		{
+			AddPane(viewpane::CheckPane::Create(
+				regKey->uiOptionsPrompt, regKey->uiOptionsPrompt, 0 != regKey->ulCurDWORD, false));
+		}
+		else if (registry::regOptionType::string == regKey->ulRegOptType)
+		{
+			AddPane(viewpane::TextPane::CreateSingleLinePane(
+				regKey->uiOptionsPrompt, regKey->uiOptionsPrompt, regKey->szCurSTRING, false));
+		}
+		else if (registry::regOptionType::stringHex == regKey->ulRegOptType)
+		{
+			AddPane(viewpane::TextPane::CreateSingleLinePane(regKey->uiOptionsPrompt, regKey->uiOptionsPrompt, false));
+			SetHex(regKey->uiOptionsPrompt, regKey->ulCurDWORD);
+		}
+		else if (registry::regOptionType::stringDec == regKey->ulRegOptType)
+		{
+			AddPane(viewpane::TextPane::CreateSingleLinePane(regKey->uiOptionsPrompt, regKey->uiOptionsPrompt, false));
+			SetDecimal(regKey->uiOptionsPrompt, regKey->ulCurDWORD);
+		}
+		else if (registry::regOptionType::dropdown == regKey->ulRegOptType)
+		{
+			auto pane = viewpane::DropDownPane::Create(
+				regKey->uiOptionsPrompt,
+				regKey->uiOptionsPrompt,
+				static_cast<ULONG>(regKey->uiDropDownOptions.size()),
+				regKey->uiDropDownOptions.data(),
+				true);
+			const auto selection = regKey->ulCurDWORD < regKey->uiDropDownOptions.size() ? regKey->ulCurDWORD : 0;
+			pane->SetDropDownSelection(static_cast<int>(selection));
+			AddPane(pane);
 		}
 	}
 
@@ -81,6 +127,7 @@ namespace dialog::editor
 	void COptions::OnOK()
 	{
 		const auto oldTheme = registry::uiTheme.ulCurDWORD;
+		const auto oldUIDiag = registry::uiDiag.ulCurDWORD;
 
 		// need to grab this FIRST
 		registry::debugFileName = GetStringW(registry::debugFileName.uiOptionsPrompt);
@@ -128,7 +175,14 @@ namespace dialog::editor
 		// Commit our values to the registry
 		registry::WriteToRegistry();
 
-		if (oldTheme != registry::uiTheme.ulCurDWORD) ui::ApplyThemeToAllWindows();
+		if (oldTheme != registry::uiTheme.ulCurDWORD)
+		{
+			ui::ApplyThemeToAllWindows();
+		}
+		else if (oldUIDiag != registry::uiDiag.ulCurDWORD)
+		{
+			ui::RedrawAllWindows();
+		}
 
 		CEditor::OnOK();
 	}

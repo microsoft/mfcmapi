@@ -76,7 +76,7 @@ namespace viewpane
 	// DropDownPane Layout:
 	// Header: GetHeaderHeight
 	// Dropdown: m_iEditHeight
-	int DropDownPane::GetFixedHeight() { return GetHeaderHeight() + m_iEditHeight; }
+	int DropDownPane::GetFixedHeight() { return GetHeaderHeight() + m_iEditHeight + 2 * GetSystemMetrics(SM_CYBORDER); }
 
 	HDWP DropDownPane::DeferWindowPos(
 		_In_ HDWP hWinPosInfo,

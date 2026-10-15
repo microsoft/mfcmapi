@@ -77,6 +77,10 @@ namespace controls
 		{
 			StyleLabel(m_leftLabel.m_hWnd, ui::uiLabelStyle::PaneHeaderLabel);
 		}
+		if (m_bSection)
+		{
+			::SendMessageA(m_leftLabel.m_hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(ui::GetSegoeFontBold()), false);
+		}
 
 		EC_B_S(m_rightLabel.Create(
 			nullptr, WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE, CRect(0, 0, 0, 0), this, IDD_RIGHTLABEL));

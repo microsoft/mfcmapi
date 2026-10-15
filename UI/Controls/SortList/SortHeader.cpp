@@ -60,6 +60,7 @@ namespace controls::sortlistctrl
 
 			if (m_hwndTip)
 			{
+				ui::ApplyTheme(m_hwndTip);
 				EC_B_S(::SetWindowPos(m_hwndTip, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE));
 
 				m_ti.cbSize = sizeof(TOOLINFO);

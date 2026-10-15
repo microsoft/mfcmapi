@@ -316,6 +316,8 @@ namespace dialog::editor
 		case WM_NEXTDLGCTL:
 			// Ensure tabs are handled by parent dialog
 			return ::SendMessage(reinterpret_cast<HWND>(dwRefData), uMsg, wParam, lParam);
+		case WM_MOUSEWHEEL:
+			return ::SendMessage(reinterpret_cast<HWND>(dwRefData), uMsg, wParam, lParam);
 		case WM_NCDESTROY:
 			RemoveWindowSubclass(hWnd, DrawScrollProc, uIdSubclass);
 			return DefSubclassProc(hWnd, uMsg, wParam, lParam);
@@ -394,6 +396,7 @@ namespace dialog::editor
 				nullptr,
 				nullptr,
 				nullptr);
+			ui::SubclassScrollBar(m_hWndVertScroll);
 			// Subclass static control so we can ensure we're drawing everything right
 			SetWindowSubclass(m_ScrollWindow.m_hWnd, DrawScrollProc, 0, reinterpret_cast<DWORD_PTR>(m_hWnd));
 			pParent = &m_ScrollWindow;
