@@ -1360,7 +1360,6 @@ namespace ui
 
 		// hdcBitmap: Load the image
 		const auto hdcBitmap = CreateCompatibleDC(hdc);
-		// TODO: pass target dimensions here and load the most appropriate bitmap
 		const auto hbmBitmap = GetBitmap(iBitmap);
 		static_cast<void>(SelectObject(hdcBitmap, hbmBitmap));
 
