@@ -977,6 +977,14 @@ namespace ui
 	// We have to force load the system riched20 to ensure this doesn't break since
 	// Office's riched20 apparently doesn't handle CFM_COLOR at all.
 	// Sets our text color, script, and turns off bold, italic, etc formatting.
+	void SetRichEditCharacterFormat(_In_ HWND hWnd, _In_ CHARFORMAT2& cf) noexcept
+	{
+		const auto eventMask = static_cast<DWORD>(::SendMessage(hWnd, EM_GETEVENTMASK, 0, 0));
+		static_cast<void>(::SendMessage(hWnd, EM_SETEVENTMASK, 0, eventMask & ~ENM_CHANGE));
+		static_cast<void>(::SendMessage(hWnd, EM_SETCHARFORMAT, SCF_ALL, reinterpret_cast<LPARAM>(&cf)));
+		static_cast<void>(::SendMessage(hWnd, EM_SETEVENTMASK, 0, eventMask));
+	}
+
 	void ClearEditFormatting(_In_ HWND hWnd, const bool bReadOnly) noexcept
 	{
 		CHARFORMAT2 cf{};
@@ -986,7 +994,7 @@ namespace ui
 		cf.crTextColor = MyGetSysColor(bReadOnly ? uiColor::TextReadOnly : uiColor::Text);
 		const auto fontName = strings::wstringTotstring(GetUIFontFaceName());
 		_tcscpy_s(cf.szFaceName, _countof(cf.szFaceName), fontName.c_str());
-		static_cast<void>(::SendMessage(hWnd, EM_SETCHARFORMAT, SCF_ALL, reinterpret_cast<LPARAM>(&cf)));
+		SetRichEditCharacterFormat(hWnd, cf);
 	}
 
 	void UpdateEditTextColor(_In_ HWND hWnd, const bool bReadOnly) noexcept
@@ -998,7 +1006,7 @@ namespace ui
 			!IsWindowEnabled(hWnd) ? uiColor::TextDisabled
 			: bReadOnly			   ? uiColor::TextReadOnly
 								   : uiColor::Text);
-		static_cast<void>(::SendMessage(hWnd, EM_SETCHARFORMAT, SCF_ALL, reinterpret_cast<LPARAM>(&cf)));
+		SetRichEditCharacterFormat(hWnd, cf);
 	}
 
 	// Lighten the colors of the base, being careful not to overflow
