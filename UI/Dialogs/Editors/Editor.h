@@ -6,6 +6,7 @@
 #include <UI/ViewPane/CheckPane.h>
 #include <UI/ViewPane/DropDownPane.h>
 #include <UI/ViewPane/ListPane.h>
+#include <UI/Controls/ScrollHost.h>
 #include <core/smartview/SmartView.h>
 
 namespace dialog::editor
@@ -221,8 +222,7 @@ namespace dialog::editor
 		std::shared_ptr<viewpane::ViewPane> PaneFromWindow(HWND hWnd) const noexcept;
 
 		bool m_bEnableScroll{};
-		CWnd m_ScrollWindow;
-		HWND m_hWndVertScroll{};
+		controls::CScrollHost m_ScrollWindow;
 		bool m_bScrollVisible{};
 
 		int m_iScrollClient{};

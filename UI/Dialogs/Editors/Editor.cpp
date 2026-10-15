@@ -15,11 +15,6 @@ extern ui::CMyWinApp theApp;
 namespace dialog::editor
 {
 	static std::wstring CLASS = L"CEditor";
-	constexpr auto scrollDragOffset = _T("MFCMAPI_SCROLL_DRAG_OFFSET"); // STRING_OK
-	constexpr auto scrollRepeatCommand = _T("MFCMAPI_SCROLL_REPEAT_COMMAND"); // STRING_OK
-	constexpr auto scrollTrackPosition = _T("MFCMAPI_SCROLL_TRACK_POSITION"); // STRING_OK
-	constexpr UINT_PTR scrollRepeatTimer = 0x4D46;
-	constexpr UINT scrollRepeatInterval = 50;
 
 #define MAX_WIDTH 1750
 
@@ -68,7 +63,6 @@ namespace dialog::editor
 		TRACE_CONSTRUCTOR(CLASS);
 
 		m_bEnableScroll = false;
-		m_hWndVertScroll = nullptr;
 		m_iScrollClient = 0;
 		m_bScrollVisible = false;
 
@@ -232,7 +226,7 @@ namespace dialog::editor
 
 			si.cbSize = sizeof si;
 			si.fMask = SIF_ALL;
-			::GetScrollInfo(m_hWndVertScroll, SB_VERT, &si);
+			::GetScrollInfo(m_ScrollWindow.GetSafeHwnd(), SB_VERT, &si);
 
 			// Save the position for comparison later on.
 			const auto yPos = si.nPos;
@@ -258,8 +252,7 @@ namespace dialog::editor
 				break;
 			case SB_THUMBTRACK:
 			{
-				const auto trackPosition = reinterpret_cast<INT_PTR>(::GetProp(m_hWndVertScroll, scrollTrackPosition));
-				si.nPos = trackPosition ? static_cast<int>(trackPosition - 1) : si.nTrackPos;
+				si.nPos = m_ScrollWindow.GetTrackPosition();
 				break;
 			}
 			default:
@@ -269,8 +262,8 @@ namespace dialog::editor
 			// Set the position and then retrieve it. Due to adjustments
 			// by Windows it may not be the same as the value set.
 			si.fMask = SIF_POS;
-			::SetScrollInfo(m_hWndVertScroll, SB_VERT, &si, TRUE);
-			::GetScrollInfo(m_hWndVertScroll, SB_VERT, &si);
+			::SetScrollInfo(m_ScrollWindow.GetSafeHwnd(), SB_VERT, &si, TRUE);
+			::GetScrollInfo(m_ScrollWindow.GetSafeHwnd(), SB_VERT, &si);
 
 			// If the position has changed, scroll window and update it.
 			if (si.nPos != yPos)
@@ -299,218 +292,6 @@ namespace dialog::editor
 	{
 		auto pane = GetPane(id);
 		if (pane) pane->SetLabel(szLabel);
-	}
-
-	struct ScrollGeometry
-	{
-		int trackTop{};
-		int trackHeight{};
-		int thumbTop{};
-		int thumbHeight{};
-		int minimum{};
-		int maximumPosition{};
-	};
-
-	_Check_return_ bool GetScrollGeometry(_In_ HWND hWnd, _Out_ ScrollGeometry* geometry) noexcept
-	{
-		if (!geometry) return false;
-
-		auto info = SCROLLINFO{};
-		info.cbSize = sizeof info;
-		info.fMask = SIF_RANGE | SIF_PAGE | SIF_POS;
-		if (!::GetScrollInfo(hWnd, SB_VERT, &info)) return false;
-
-		auto window = RECT{};
-		::GetWindowRect(hWnd, &window);
-		const auto arrowHeight = GetSystemMetrics(SM_CYVSCROLL);
-		geometry->trackTop = window.top + arrowHeight;
-		geometry->trackHeight = max(0, window.bottom - window.top - 2 * arrowHeight);
-		geometry->minimum = info.nMin;
-
-		const auto range = max(1, info.nMax - info.nMin + 1);
-		const auto page = min(static_cast<int>(info.nPage), range);
-		geometry->maximumPosition = max(info.nMin, info.nMax - page + 1);
-		geometry->thumbHeight = page ? MulDiv(geometry->trackHeight, page, range) : GetSystemMetrics(SM_CYVTHUMB);
-		geometry->thumbHeight = min(geometry->trackHeight, max(GetSystemMetrics(SM_CYVTHUMB), geometry->thumbHeight));
-		geometry->thumbTop = geometry->trackTop;
-		if (geometry->maximumPosition > geometry->minimum && geometry->trackHeight > geometry->thumbHeight)
-		{
-			geometry->thumbTop += MulDiv(
-				geometry->trackHeight - geometry->thumbHeight,
-				info.nPos - geometry->minimum,
-				geometry->maximumPosition - geometry->minimum);
-		}
-
-		return true;
-	}
-
-	LRESULT CALLBACK
-	DrawScrollProc(_In_ HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData)
-	{
-		LRESULT lRes = 0;
-		if (ui::HandleControlUI(uMsg, wParam, lParam, &lRes)) return lRes;
-
-		switch (uMsg)
-		{
-		case WM_NCHITTEST:
-		{
-			auto client = RECT{};
-			::GetClientRect(hWnd, &client);
-			auto clientRight = POINT{client.right, client.top};
-			::ClientToScreen(hWnd, &clientRight);
-
-			auto window = RECT{};
-			::GetWindowRect(hWnd, &window);
-			const auto point = POINT{GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)};
-			if (point.x >= clientRight.x && point.x < window.right && point.y >= window.top && point.y < window.bottom)
-			{
-				return HTVSCROLL;
-			}
-
-			break;
-		}
-		case WM_NCLBUTTONDOWN:
-			if (wParam == HTVSCROLL)
-			{
-				auto geometry = ScrollGeometry{};
-				if (!GetScrollGeometry(hWnd, &geometry)) break;
-
-				const auto y = GET_Y_LPARAM(lParam);
-				const auto window = [hWnd] {
-					auto rect = RECT{};
-					::GetWindowRect(hWnd, &rect);
-					return rect;
-				}();
-				auto scrollCommand = SB_ENDSCROLL;
-				if (y < geometry.trackTop)
-					scrollCommand = SB_LINEUP;
-				else if (y >= window.bottom - GetSystemMetrics(SM_CYVSCROLL))
-					scrollCommand = SB_LINEDOWN;
-				else if (y < geometry.thumbTop)
-					scrollCommand = SB_PAGEUP;
-				else if (y >= geometry.thumbTop + geometry.thumbHeight)
-					scrollCommand = SB_PAGEDOWN;
-				else
-				{
-					EC_B_S(::SetProp(
-						hWnd,
-						scrollDragOffset,
-						reinterpret_cast<HANDLE>(static_cast<INT_PTR>(y - geometry.thumbTop + 1))));
-					::SetCapture(hWnd);
-				}
-
-				if (scrollCommand != SB_ENDSCROLL)
-				{
-					EC_B_S(::SetProp(
-						hWnd, scrollRepeatCommand, reinterpret_cast<HANDLE>(static_cast<INT_PTR>(scrollCommand + 1))));
-					::SetCapture(hWnd);
-					::SetTimer(hWnd, scrollRepeatTimer, GetDoubleClickTime(), nullptr);
-					return ::SendMessage(
-						reinterpret_cast<HWND>(dwRefData), WM_VSCROLL, static_cast<WPARAM>(scrollCommand), 0);
-				}
-
-				return 0;
-			}
-			break;
-		case WM_MOUSEMOVE:
-			if (::GetCapture() == hWnd && ::GetProp(hWnd, scrollDragOffset))
-			{
-				auto geometry = ScrollGeometry{};
-				if (!GetScrollGeometry(hWnd, &geometry)) return 0;
-
-				auto point = POINT{GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)};
-				::ClientToScreen(hWnd, &point);
-				const auto dragOffset =
-					static_cast<int>(reinterpret_cast<INT_PTR>(::GetProp(hWnd, scrollDragOffset))) - 1;
-				const auto availableTrack = geometry.trackHeight - geometry.thumbHeight;
-				const auto thumbTop = min(availableTrack, max(0, point.y - dragOffset - geometry.trackTop));
-				const auto position =
-					availableTrack && geometry.maximumPosition > geometry.minimum
-						? geometry.minimum +
-							  MulDiv(thumbTop, geometry.maximumPosition - geometry.minimum, availableTrack)
-						: geometry.minimum;
-				EC_B_S(
-					::SetProp(hWnd, scrollTrackPosition, reinterpret_cast<HANDLE>(static_cast<INT_PTR>(position + 1))));
-				return ::SendMessage(
-					reinterpret_cast<HWND>(dwRefData), WM_VSCROLL, static_cast<WPARAM>(SB_THUMBTRACK), 0);
-			}
-			break;
-		case WM_TIMER:
-			if (wParam == scrollRepeatTimer)
-			{
-				const auto command =
-					static_cast<int>(reinterpret_cast<INT_PTR>(::GetProp(hWnd, scrollRepeatCommand))) - 1;
-				if (command < SB_LINEUP || command > SB_PAGEDOWN) return 0;
-
-				auto geometry = ScrollGeometry{};
-				auto window = RECT{};
-				auto point = POINT{};
-				if (!GetScrollGeometry(hWnd, &geometry) || !::GetWindowRect(hWnd, &window) || !::GetCursorPos(&point))
-				{
-					return 0;
-				}
-
-				const auto arrowHeight = GetSystemMetrics(SM_CYVSCROLL);
-				const auto pointerInCommand =
-					(command == SB_LINEUP && point.y < geometry.trackTop) ||
-					(command == SB_LINEDOWN && point.y >= window.bottom - arrowHeight) ||
-					(command == SB_PAGEUP && point.y >= geometry.trackTop && point.y < geometry.thumbTop) ||
-					(command == SB_PAGEDOWN && point.y >= geometry.thumbTop + geometry.thumbHeight &&
-					 point.y < window.bottom - arrowHeight);
-				if (pointerInCommand)
-				{
-					::SendMessage(reinterpret_cast<HWND>(dwRefData), WM_VSCROLL, static_cast<WPARAM>(command), 0);
-				}
-
-				::KillTimer(hWnd, scrollRepeatTimer);
-				::SetTimer(hWnd, scrollRepeatTimer, scrollRepeatInterval, nullptr);
-				return 0;
-			}
-			break;
-		case WM_LBUTTONUP:
-			if (::GetCapture() == hWnd)
-			{
-				::ReleaseCapture();
-				::KillTimer(hWnd, scrollRepeatTimer);
-				::RemoveProp(hWnd, scrollDragOffset);
-				::RemoveProp(hWnd, scrollRepeatCommand);
-				::RemoveProp(hWnd, scrollTrackPosition);
-				return 0;
-			}
-			break;
-		case WM_CAPTURECHANGED:
-			::KillTimer(hWnd, scrollRepeatTimer);
-			::RemoveProp(hWnd, scrollDragOffset);
-			::RemoveProp(hWnd, scrollRepeatCommand);
-			::RemoveProp(hWnd, scrollTrackPosition);
-			break;
-		case WM_COMMAND:
-		{
-			const auto nCode = HIWORD(wParam);
-			switch (nCode)
-			{
-			case BN_SETFOCUS:
-			case EN_SETFOCUS:
-				return ::SendMessage(reinterpret_cast<HWND>(dwRefData), uMsg, wParam, lParam);
-			}
-			break;
-		}
-		case WM_NEXTDLGCTL:
-			// Ensure tabs are handled by parent dialog
-			return ::SendMessage(reinterpret_cast<HWND>(dwRefData), uMsg, wParam, lParam);
-		case WM_MOUSEWHEEL:
-			return ::SendMessage(reinterpret_cast<HWND>(dwRefData), uMsg, wParam, lParam);
-		case WM_VSCROLL:
-			return ::SendMessage(reinterpret_cast<HWND>(dwRefData), uMsg, wParam, 0);
-		case WM_NCDESTROY:
-			::KillTimer(hWnd, scrollRepeatTimer);
-			::RemoveProp(hWnd, scrollDragOffset);
-			::RemoveProp(hWnd, scrollRepeatCommand);
-			::RemoveProp(hWnd, scrollTrackPosition);
-			RemoveWindowSubclass(hWnd, DrawScrollProc, uIdSubclass);
-			return DefSubclassProc(hWnd, uMsg, wParam, lParam);
-		}
-		return DefSubclassProc(hWnd, uMsg, wParam, lParam);
 	}
 
 	// The order these controls are created dictates our tab order - be careful moving things around!
@@ -559,23 +340,8 @@ namespace dialog::editor
 		CWnd* pParent = this;
 		if (m_bEnableScroll)
 		{
-			m_ScrollWindow.CreateEx(
-				0,
-				_T("Static"), // STRING_OK
-				nullptr,
-				WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_VSCROLL,
-				CRect(0, 0, 0, 0),
-				this,
-				NULL);
-			ui::StyleScrollHost(m_ScrollWindow.m_hWnd);
-			// Necessary for TAB to work. Without this, all TABS get stuck on the control
-			// instead of passing to the children.
-			EC_B_S(m_ScrollWindow.ModifyStyleEx(0, WS_EX_CONTROLPARENT));
-
-			m_hWndVertScroll = m_ScrollWindow.m_hWnd;
-			::ShowScrollBar(m_hWndVertScroll, SB_VERT, FALSE);
-			// Subclass static control so we can ensure we're drawing everything right
-			SetWindowSubclass(m_ScrollWindow.m_hWnd, DrawScrollProc, 0, reinterpret_cast<DWORD_PTR>(m_hWnd));
+			EC_B_S(m_ScrollWindow.Create(this));
+			::ShowScrollBar(m_ScrollWindow.GetSafeHwnd(), SB_VERT, FALSE);
 			pParent = &m_ScrollWindow;
 		}
 
@@ -1090,23 +856,23 @@ namespace dialog::editor
 				auto si = SCROLLINFO{};
 				si.cbSize = sizeof si;
 				si.fMask = SIF_POS;
-				::GetScrollInfo(m_hWndVertScroll, SB_VERT, &si);
+				::GetScrollInfo(m_ScrollWindow.GetSafeHwnd(), SB_VERT, &si);
 				iScrollPos = si.nPos;
 
 				si.nMin = 0;
 				si.nMax = m_iScrollClient;
 				si.nPage = iCYBottom - iCYTop;
 				si.fMask = SIF_RANGE | SIF_PAGE;
-				::SetScrollInfo(m_hWndVertScroll, SB_VERT, &si, FALSE);
-				::ShowScrollBar(m_hWndVertScroll, SB_VERT, TRUE);
+				::SetScrollInfo(m_ScrollWindow.GetSafeHwnd(), SB_VERT, &si, FALSE);
+				::ShowScrollBar(m_ScrollWindow.GetSafeHwnd(), SB_VERT, TRUE);
 				si.fMask = SIF_POS;
-				::GetScrollInfo(m_hWndVertScroll, SB_VERT, &si);
+				::GetScrollInfo(m_ScrollWindow.GetSafeHwnd(), SB_VERT, &si);
 				iScrollPos = si.nPos;
 				m_bScrollVisible = true;
 			}
 			else
 			{
-				::ShowScrollBar(m_hWndVertScroll, SB_VERT, FALSE);
+				::ShowScrollBar(m_ScrollWindow.GetSafeHwnd(), SB_VERT, FALSE);
 				m_bScrollVisible = false;
 			}
 
@@ -1509,7 +1275,7 @@ namespace dialog::editor
 		auto si = SCROLLINFO{};
 		si.cbSize = sizeof si;
 		si.fMask = SIF_POS;
-		::GetScrollInfo(m_hWndVertScroll, SB_VERT, &si);
+		::GetScrollInfo(m_ScrollWindow.GetSafeHwnd(), SB_VERT, &si);
 		output::DebugPrint(output::dbgLevel::Generic, L"si.nPos = %d\n", si.nPos);
 		auto rcScroll = RECT{};
 		::GetClientRect(m_ScrollWindow.GetSafeHwnd(), &rcScroll);
@@ -1549,7 +1315,7 @@ namespace dialog::editor
 		// Adjust scroll bar
 		si.fMask = SIF_POS;
 		si.nPos = si.nPos + iScroll;
-		::SetScrollInfo(m_hWndVertScroll, SB_VERT, &si, TRUE);
+		::SetScrollInfo(m_ScrollWindow.GetSafeHwnd(), SB_VERT, &si, TRUE);
 
 		// Adjust view
 		::ScrollWindowEx(
