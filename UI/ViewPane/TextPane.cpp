@@ -234,7 +234,7 @@ namespace viewpane
 		if (m_EditBox.m_hWnd)
 		{
 			ui::SubclassEdit(m_EditBox.m_hWnd, pParent ? pParent->m_hWnd : nullptr, m_bReadOnly);
-			SendMessage(m_EditBox.m_hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(ui::GetSegoeFont()), false);
+			SendMessage(m_EditBox.m_hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(ui::GetUIFont()), false);
 
 			m_bInitialized = true; // We can now call SetEditBoxText
 

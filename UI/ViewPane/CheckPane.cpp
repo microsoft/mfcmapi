@@ -153,7 +153,7 @@ namespace viewpane
 			2 * GetSystemMetrics(SM_CXFIXEDFRAME),
 			szButton);
 
-		ui::DrawSegoeTextW(
+		ui::DrawUITextW(
 			hDC,
 			szButton,
 			bDisabled ? MyGetSysColor(ui::uiColor::TextDisabled) : MyGetSysColor(ui::uiColor::Text),

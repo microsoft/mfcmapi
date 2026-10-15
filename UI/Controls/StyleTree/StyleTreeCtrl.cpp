@@ -18,7 +18,7 @@ namespace controls
 		CTreeCtrl::Create(style, CRect(0, 0, 0, 0), pCreateParent, IDC_FOLDER_TREE);
 		TreeView_SetBkColor(m_hWnd, ui::MyGetSysColor(ui::uiColor::Background));
 		TreeView_SetTextColor(m_hWnd, ui::MyGetSysColor(ui::uiColor::Text));
-		::SendMessageA(m_hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(ui::GetSegoeFont()), false);
+		::SendMessageA(m_hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(ui::GetUIFont()), false);
 	}
 
 	BEGIN_MESSAGE_MAP(StyleTreeCtrl, CTreeCtrl)

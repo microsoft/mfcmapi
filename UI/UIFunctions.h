@@ -102,8 +102,8 @@ namespace ui
 	_Check_return_ int GetTextHeight(_In_opt_ HWND hwndEdit);
 	SIZE GetTextExtentPoint32(HDC hdc, const std::wstring& szText) noexcept;
 
-	HFONT GetSegoeFont() noexcept;
-	HFONT GetSegoeFontBold() noexcept;
+	HFONT GetUIFont() noexcept;
+	HFONT GetUIFontBold() noexcept;
 
 	_Check_return_ HBRUSH GetSysBrush(uiColor uc) noexcept;
 	_Check_return_ COLORREF MyGetSysColor(uiColor uc) noexcept;
@@ -203,7 +203,7 @@ namespace ui
 	void StyleLabel(_In_ HWND hWnd, uiLabelStyle lsStyle);
 
 	void StyleButton(_In_ HWND hWnd, uiButtonStyle bsStyle);
-	void DrawSegoeTextW(
+	void DrawUITextW(
 		_In_ HDC hdc,
 		_In_ const std::wstring& lpchText,
 		_In_ COLORREF color,

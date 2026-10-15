@@ -497,7 +497,7 @@ namespace dialog
 			const auto hdc = ::GetDC(m_hWnd);
 			if (hdc)
 			{
-				const auto hfontOld = SelectObject(hdc, ui::GetSegoeFontBold());
+				const auto hfontOld = SelectObject(hdc, ui::GetUIFontBold());
 
 				if (iData1)
 				{

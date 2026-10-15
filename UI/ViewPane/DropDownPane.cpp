@@ -56,7 +56,7 @@ namespace viewpane
 	{
 		auto cxDropDown = 0;
 		const auto hdc = GetDC(m_DropDown.GetSafeHwnd());
-		const auto hfontOld = SelectObject(hdc, ui::GetSegoeFont());
+		const auto hfontOld = SelectObject(hdc, ui::GetUIFont());
 		for (auto iDropString = 0; iDropString < m_DropDown.GetCount(); iDropString++)
 		{
 			const auto szDropString = ui::GetLBText(m_DropDown.m_hWnd, iDropString);
@@ -132,7 +132,7 @@ namespace viewpane
 			pParent,
 			m_nID));
 
-		SendMessage(m_DropDown.m_hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(ui::GetSegoeFont()), false);
+		SendMessage(m_DropDown.m_hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(ui::GetUIFont()), false);
 	}
 
 	void DropDownPane::Initialize(_In_ CWnd* pParent, _In_ HDC hdc)

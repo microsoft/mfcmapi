@@ -335,7 +335,7 @@ namespace dialog::editor
 		// setup to get button widths
 		const auto hdc = ::GetDC(m_hWnd);
 		if (!hdc) return false; // fatal error
-		const auto hfontOld = SelectObject(hdc, ui::GetSegoeFont());
+		const auto hfontOld = SelectObject(hdc, ui::GetUIFont());
 
 		CWnd* pParent = this;
 		if (m_bEnableScroll)
@@ -576,7 +576,7 @@ namespace dialog::editor
 		auto cx = 0;
 
 		const auto hdc = ::GetDC(m_hWnd);
-		const auto hfontOld = SelectObject(hdc, ui::GetSegoeFont());
+		const auto hfontOld = SelectObject(hdc, ui::GetUIFont());
 
 		auto iPromptLineCount = 0;
 		if (m_bHasPrompt)

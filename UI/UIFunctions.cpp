@@ -14,12 +14,11 @@
 
 namespace ui
 {
-	HFONT g_hFontSegoe = nullptr;
-	HFONT g_hFontSegoeBold = nullptr;
+	HFONT g_hUIFont = nullptr;
+	HFONT g_hUIFontBold = nullptr;
+	std::wstring g_uiFontFaceName;
 
-#define SEGOE _T("Segoe UI") // STRING_OK
-#define SEGOEW L"Segoe UI" // STRING_OK
-#define SEGOEBOLD L"Segoe UI Bold" // STRING_OK
+	constexpr auto uiFontFamily = L"Segoe UI";
 #define BUTTON_STYLE _T("ButtonStyle") // STRING_OK
 #define LABEL_STYLE _T("LabelStyle") // STRING_OK
 #define SCROLL_HOST _T("ScrollHost") // STRING_OK
@@ -506,8 +505,7 @@ namespace ui
 		const auto hdc = WC_D(HDC, GetDC(hwndEdit));
 		if (hdc)
 		{
-			// Get the metrics for the Segoe font.
-			const auto hOldFont = SelectObject(hdc, GetSegoeFont());
+			const auto hOldFont = SelectObject(hdc, GetUIFont());
 			WC_B_S(::GetTextMetrics(hdc, &tmFont));
 			SelectObject(hdc, hOldFont);
 			ReleaseDC(hwndEdit, hdc);
@@ -524,74 +522,103 @@ namespace ui
 		return size;
 	}
 
-	int CALLBACK EnumFontFamExProcW(
+	struct FontCreationContext
+	{
+		HFONT font{};
+		int height{};
+		LONG weight{};
+	};
+
+	int CALLBACK CreateEnumeratedFont(
 		_In_ LPLOGFONTW lplf,
 		_In_ NEWTEXTMETRICEXW* /*lpntme*/,
 		DWORD /*FontType*/,
 		LPARAM lParam) noexcept
 	{
-		// Use a 9 point font
-		lplf->lfHeight = -MulDiv(9, GetDeviceCaps(GetDC(nullptr), LOGPIXELSY), 72);
+		const auto context = reinterpret_cast<FontCreationContext*>(lParam);
+		lplf->lfHeight = context->height;
 		lplf->lfWidth = 0;
+		lplf->lfWeight = context->weight;
 		lplf->lfCharSet = DEFAULT_CHARSET;
-		*reinterpret_cast<HFONT*>(lParam) = CreateFontIndirectW(lplf);
+		context->font = WC_D(HFONT, CreateFontIndirectW(lplf));
 		return 0;
 	}
 
-	// This font is not cached and must be delete manually
-	HFONT GetFont(_In_z_ const LPCWSTR szFont) noexcept
+	HFONT CreateFontForFamily(_In_z_ const LPCWSTR family, const LONG weight) noexcept
 	{
-		HFONT hFont = nullptr;
-		LOGFONTW lfFont = {};
-		wcscpy_s(lfFont.lfFaceName, _countof(lfFont.lfFaceName), szFont);
+		const auto hdc = WC_D(HDC, ::GetDC(nullptr));
+		if (!hdc) return nullptr;
 
+		auto query = LOGFONTW{};
+		wcscpy_s(query.lfFaceName, _countof(query.lfFaceName), family);
+		query.lfCharSet = DEFAULT_CHARSET;
+		const auto dpi = WC_D(int, GetDeviceCaps(hdc, LOGPIXELSY));
+		auto context = FontCreationContext{
+			nullptr,
+			-MulDiv(9, dpi, 72),
+			weight,
+		};
 		EnumFontFamiliesExW(
-			GetDC(nullptr),
-			&lfFont,
-			reinterpret_cast<FONTENUMPROCW>(EnumFontFamExProcW),
-			reinterpret_cast<LPARAM>(&hFont),
-			0);
-		if (hFont) return hFont;
+			hdc, &query, reinterpret_cast<FONTENUMPROCW>(CreateEnumeratedFont), reinterpret_cast<LPARAM>(&context), 0);
+		WC_B_S(::ReleaseDC(nullptr, hdc));
+		return context.font;
+	}
 
-		// If we can't get our font, fallback to a system font
+	HFONT CreateSystemMessageFont(const LONG weight) noexcept
+	{
 		auto ncm = NONCLIENTMETRICSW{};
 		ncm.cbSize = sizeof ncm;
-		SystemParametersInfoW(SPI_GETNONCLIENTMETRICS, NULL, &ncm, NULL);
-		static auto lf = ncm.lfMessageFont;
+		if (!WC_D(BOOL, SystemParametersInfoW(SPI_GETNONCLIENTMETRICS, sizeof ncm, &ncm, 0))) return nullptr;
 
-		// Create the font, and then return its handle.
-		hFont = CreateFontW(
-			lf.lfHeight,
-			lf.lfWidth,
-			lf.lfEscapement,
-			lf.lfOrientation,
-			lf.lfWeight,
-			lf.lfItalic,
-			lf.lfUnderline,
-			lf.lfStrikeOut,
-			lf.lfCharSet,
-			lf.lfOutPrecision,
-			lf.lfClipPrecision,
-			lf.lfQuality,
-			lf.lfPitchAndFamily,
-			lf.lfFaceName);
-		return hFont;
+		auto font = ncm.lfMessageFont;
+		font.lfWeight = weight;
+		g_uiFontFaceName = font.lfFaceName;
+		return WC_D(HFONT, CreateFontIndirectW(&font));
 	}
 
-	// Cached for deletion in UninitializeGDI
-	HFONT GetSegoeFont() noexcept
+	void
+	LogUIFontSelection(_In_z_ const LPCWSTR selectedFamily, _In_z_ const LPCWSTR source, const LONG weight) noexcept
 	{
-		if (g_hFontSegoe) return g_hFontSegoe;
-		g_hFontSegoe = GetFont(SEGOEW);
-		return g_hFontSegoe;
+		output::DebugPrint(
+			output::dbgLevel::Generic,
+			L"UI font: requested=%ws selected=%ws source=%ws weight=%d\n",
+			uiFontFamily,
+			selectedFamily,
+			source,
+			weight);
 	}
 
-	// Cached for deletion in UninitializeGDI
-	HFONT GetSegoeFontBold() noexcept
+	HFONT CreateUIFont(const LONG weight) noexcept
 	{
-		if (g_hFontSegoeBold) return g_hFontSegoeBold;
-		g_hFontSegoeBold = GetFont(SEGOEBOLD);
-		return g_hFontSegoeBold;
+		auto font = CreateFontForFamily(uiFontFamily, weight);
+		if (font)
+		{
+			g_uiFontFaceName = uiFontFamily;
+			LogUIFontSelection(g_uiFontFaceName.c_str(), L"family-9pt", weight);
+			return font;
+		}
+
+		font = CreateSystemMessageFont(weight);
+		if (font) LogUIFontSelection(g_uiFontFaceName.c_str(), L"system-message", weight);
+		return font;
+	}
+
+	HFONT GetUIFont() noexcept
+	{
+		if (!g_hUIFont) g_hUIFont = CreateUIFont(FW_NORMAL);
+		return g_hUIFont;
+	}
+
+	HFONT GetUIFontBold() noexcept
+	{
+		if (!g_hUIFontBold) g_hUIFontBold = CreateUIFont(FW_BOLD);
+		return g_hUIFontBold;
+	}
+
+	const std::wstring& GetUIFontFaceName() noexcept
+	{
+		if (g_uiFontFaceName.empty()) static_cast<void>(GetUIFont());
+		return g_uiFontFaceName;
 	}
 
 	_Check_return_ HBRUSH GetSysBrush(const uiColor uc) noexcept
@@ -674,10 +701,11 @@ namespace ui
 
 	void UninitializeGDI() noexcept
 	{
-		if (g_hFontSegoe) DeleteObject(g_hFontSegoe);
-		g_hFontSegoe = nullptr;
-		if (g_hFontSegoeBold) DeleteObject(g_hFontSegoeBold);
-		g_hFontSegoeBold = nullptr;
+		if (g_hUIFont) DeleteObject(g_hUIFont);
+		g_hUIFont = nullptr;
+		if (g_hUIFontBold) DeleteObject(g_hUIFontBold);
+		g_hUIFontBold = nullptr;
+		g_uiFontFaceName.clear();
 
 		RefreshTheme();
 
@@ -922,7 +950,7 @@ namespace ui
 		return hRet;
 	}
 
-	void DrawSegoeTextW(
+	void DrawUITextW(
 		_In_ HDC hdc,
 		_In_ const std::wstring& lpchText,
 		_In_ const COLORREF color,
@@ -931,7 +959,7 @@ namespace ui
 		_In_ const UINT format)
 	{
 		output::DebugPrint(output::dbgLevel::Draw, L"Draw %d, \"%ws\"\n", rc.right - rc.left, lpchText.c_str());
-		const auto hfontOld = SelectObject(hdc, bBold ? GetSegoeFontBold() : GetSegoeFont());
+		const auto hfontOld = SelectObject(hdc, bBold ? GetUIFontBold() : GetUIFont());
 		const auto crText = SetTextColor(hdc, color);
 		SetBkMode(hdc, TRANSPARENT);
 		RECT drawRc = rc;
@@ -956,7 +984,8 @@ namespace ui
 		cf.cbSize = sizeof cf;
 		cf.dwMask = CFM_COLOR | CFM_FACE | CFM_BOLD | CFM_ITALIC | CFM_UNDERLINE | CFM_STRIKEOUT;
 		cf.crTextColor = MyGetSysColor(bReadOnly ? uiColor::TextReadOnly : uiColor::Text);
-		_tcscpy_s(cf.szFaceName, _countof(cf.szFaceName), SEGOE);
+		const auto fontName = strings::wstringTotstring(GetUIFontFaceName());
+		_tcscpy_s(cf.szFaceName, _countof(cf.szFaceName), fontName.c_str());
 		static_cast<void>(::SendMessage(hWnd, EM_SETCHARFORMAT, SCF_ALL, reinterpret_cast<LPARAM>(&cf)));
 	}
 
@@ -1583,7 +1612,7 @@ namespace ui
 
 		auto rcText = rcHeader;
 		rcText.left += GetSystemMetrics(SM_CXEDGE);
-		DrawSegoeTextW(
+		DrawUITextW(
 			hdc,
 			hdItem.pszText,
 			MyGetSysColor(uiColor::Text),
@@ -1710,7 +1739,7 @@ namespace ui
 			GetWindowTextW(hWnd, szButton, _countof(szButton));
 			const auto bDisabled = (itemState & CDIS_DISABLED) != 0;
 
-			DrawSegoeTextW(
+			DrawUITextW(
 				hDC,
 				szButton,
 				bPushed || bDisabled ? MyGetSysColor(uiColor::TextDisabled) : MyGetSysColor(uiColor::Text),
@@ -1779,7 +1808,7 @@ namespace ui
 		const auto hdc = GetDC(nullptr);
 		if (hdc)
 		{
-			const auto hfontOld = SelectObject(hdc, GetSegoeFont());
+			const auto hfontOld = SelectObject(hdc, GetUIFont());
 
 			// In order to compute the right width, we need to drop our prefix characters
 			auto szText = strings::StripCharacter(lpMenuEntry->m_MSAA.pszWText, L'&');
@@ -1896,7 +1925,7 @@ namespace ui
 				rcText.right - rcText.left,
 				lpMenuEntry->m_pName.c_str());
 
-			DrawSegoeTextW(hdc, lpMenuEntry->m_pName, MyGetSysColor(cFore), rcText, false, uiTextFlags);
+			DrawUITextW(hdc, lpMenuEntry->m_pName, MyGetSysColor(cFore), rcText, false, uiTextFlags);
 
 			// Triple buffer the check mark so we can copy it over without the background
 			if (lpDrawItemStruct->itemState & ODS_CHECKED)
@@ -1966,7 +1995,7 @@ namespace ui
 
 		FillRect(lpDrawItemStruct->hDC, &lpDrawItemStruct->rcItem, GetSysBrush(cBack));
 
-		DrawSegoeTextW(
+		DrawUITextW(
 			lpDrawItemStruct->hDC,
 			szText,
 			MyGetSysColor(cFore),
@@ -2025,14 +2054,13 @@ namespace ui
 		GradientFillRect(ps.hdc, rcGrad, uiColor::Status);
 
 		rcText.left = rcText.right - iStatusData2;
-		DrawSegoeTextW(ps.hdc, szStatusData2, crFore, rcText, true, DT_LEFT | DT_SINGLELINE | DT_BOTTOM);
+		DrawUITextW(ps.hdc, szStatusData2, crFore, rcText, true, DT_LEFT | DT_SINGLELINE | DT_BOTTOM);
 		rcText.right = rcText.left;
 		rcText.left = rcText.right - iStatusData1;
-		DrawSegoeTextW(ps.hdc, szStatusData1, crFore, rcText, true, DT_LEFT | DT_SINGLELINE | DT_BOTTOM);
+		DrawUITextW(ps.hdc, szStatusData1, crFore, rcText, true, DT_LEFT | DT_SINGLELINE | DT_BOTTOM);
 		rcText.right = rcText.left;
 		rcText.left = 0;
-		DrawSegoeTextW(
-			ps.hdc, szStatusInfo, crFore, rcText, true, DT_LEFT | DT_SINGLELINE | DT_BOTTOM | DT_END_ELLIPSIS);
+		DrawUITextW(ps.hdc, szStatusInfo, crFore, rcText, true, DT_LEFT | DT_SINGLELINE | DT_BOTTOM | DT_END_ELLIPSIS);
 
 		db.End(ps.hdc);
 		EndPaint(hwnd, &ps);
@@ -2344,7 +2372,7 @@ namespace ui
 
 			const WCHAR szTitle[256] = {};
 			DefWindowProcW(hWnd, WM_GETTEXT, static_cast<WPARAM>(_countof(szTitle)), reinterpret_cast<LPARAM>(szTitle));
-			DrawSegoeTextW(
+			DrawUITextW(
 				hdc, szTitle, MyGetSysColor(uiColor::Text), rcCaptionText, false, DT_LEFT | DT_SINGLELINE | DT_VCENTER);
 
 			// Finally, we paint our border glow if we're not maximized
@@ -2399,7 +2427,7 @@ namespace ui
 			{
 				SetTextColor(hdc, MyGetSysColor(uiText));
 				SetBkMode(hdc, TRANSPARENT);
-				SelectObject(hdc, GetSegoeFont());
+				SelectObject(hdc, GetUIFont());
 			}
 
 			*lpResult = reinterpret_cast<LRESULT>(GetSysBrush(uiBackground));
@@ -2442,7 +2470,7 @@ namespace ui
 			auto rcText = rcWin;
 			FillRect(hdc, &rcText, GetSysBrush(uiColor::Background));
 
-			DrawSegoeTextW(
+			DrawUITextW(
 				hdc,
 				strings::loadstring(uIDText),
 				MyGetSysColor(uiColor::TextDisabled),
@@ -2480,7 +2508,7 @@ namespace ui
 	void SubclassLabel(_In_ HWND hWnd) noexcept
 	{
 		SetWindowSubclass(hWnd, LabelProc, 0, 0);
-		SendMessageA(hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(GetSegoeFont()), false);
+		SendMessageA(hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(GetUIFont()), false);
 		::SendMessage(hWnd, EM_SETMARGINS, EC_LEFTMARGIN | EC_RIGHTMARGIN, 0);
 	}
 

@@ -67,7 +67,7 @@ namespace controls::sortlistctrl
 		ListView_SetBkColor(m_hWnd, MyGetSysColor(ui::uiColor::Background));
 		ListView_SetTextBkColor(m_hWnd, MyGetSysColor(ui::uiColor::Background));
 		ListView_SetTextColor(m_hWnd, ui::MyGetSysColor(ui::uiColor::Text));
-		::SendMessageA(m_hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(ui::GetSegoeFont()), false);
+		::SendMessageA(m_hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(ui::GetUIFont()), false);
 
 		SetExtendedStyle(
 			GetExtendedStyle() | LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_INFOTIP | LVS_EX_DOUBLEBUFFER);
