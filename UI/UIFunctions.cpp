@@ -263,6 +263,7 @@ namespace ui
 				if (lpMenuEntry)
 				{
 					lpMenuEntry->m_bOnMenuBar = bRoot;
+					lpMenuEntry->m_bHasSubMenu = menuiteminfo.hSubMenu != nullptr;
 					menuiteminfo.fMask = MIIM_DATA | MIIM_FTYPE;
 					menuiteminfo.fType |= MF_OWNERDRAW;
 					menuiteminfo.dwItemData = reinterpret_cast<ULONG_PTR>(lpMenuEntry);
@@ -290,12 +291,13 @@ namespace ui
 		const auto hMenu = GetMenu(hWnd);
 		if (!hMenu) return;
 
-		auto menuiteminfo = MENUITEMINFOW{sizeof(MENUITEMINFOW), MIIM_DATA | MIIM_FTYPE};
+		auto menuiteminfo = MENUITEMINFOW{sizeof(MENUITEMINFOW), MIIM_DATA | MIIM_FTYPE | MIIM_SUBMENU};
 
 		EC_B_S(::GetMenuItemInfoW(hMenu, uiMenuTag, false, &menuiteminfo));
 		auto lpMenuEntry = CreateMenuEntry(szNewString);
 		if (lpMenuEntry)
 		{
+			lpMenuEntry->m_bHasSubMenu = menuiteminfo.hSubMenu != nullptr;
 			// Clean up old owner draw string data if it exists
 			DeleteMenuEntry(reinterpret_cast<LPMENUENTRY>(menuiteminfo.dwItemData));
 
@@ -1825,8 +1827,7 @@ namespace ui
 			lpMeasureItemStruct->itemHeight = size.cy + 2 * GetSystemMetrics(SM_CYEDGE);
 
 			// Make sure we have room for the flyout icon
-			if (!lpMenuEntry->m_bOnMenuBar &&
-				IsMenu(reinterpret_cast<HMENU>(static_cast<UINT_PTR>(lpMeasureItemStruct->itemID))))
+			if (!lpMenuEntry->m_bOnMenuBar && lpMenuEntry->m_bHasSubMenu)
 			{
 				lpMeasureItemStruct->itemWidth += GetSystemMetrics(SM_CXSMICON);
 			}
@@ -1926,6 +1927,8 @@ namespace ui
 			else
 				rcText.left += GetSystemMetrics(SM_CXEDGE);
 
+			if (!lpMenuEntry->m_bOnMenuBar && lpMenuEntry->m_bHasSubMenu) rcText.right -= GetSystemMetrics(SM_CXSMICON);
+
 			output::DebugPrint(
 				output::dbgLevel::Draw,
 				L"DrawMenu text %d, \"%ws\"\n",
@@ -1933,6 +1936,19 @@ namespace ui
 				lpMenuEntry->m_pName.c_str());
 
 			DrawUITextW(hdc, lpMenuEntry->m_pName, MyGetSysColor(cFore), rcText, false, uiTextFlags);
+
+			if (!lpMenuEntry->m_bOnMenuBar && lpMenuEntry->m_bHasSubMenu)
+			{
+				const auto arrowGutter = GetSystemMetrics(SM_CXMENUCHECK);
+				const auto arrowWidth = max(2, GetSystemMetrics(SM_CXEDGE));
+				const auto arrowHeight = max(2, GetSystemMetrics(SM_CYEDGE));
+				const auto x = rcItem.right - GetSystemMetrics(SM_CXEDGE) - arrowGutter / 2;
+				const auto y = (rcItem.top + rcItem.bottom) / 2;
+				const POINT triangle[] = {{x - arrowWidth, y - arrowHeight}, {x - arrowWidth, y + arrowHeight}, {x, y}};
+				const auto arrowColor = bHot && !bDisabled ? uiColor::Glow : cFore;
+				DrawFilledPolygon(
+					hdc, triangle, _countof(triangle), MyGetSysColor(arrowColor), GetSysBrush(arrowColor));
+			}
 
 			// Triple buffer the check mark so we can copy it over without the background
 			if (lpDrawItemStruct->itemState & ODS_CHECKED)
@@ -1973,6 +1989,11 @@ namespace ui
 		}
 
 		db.End(hdc);
+		if (!lpMenuEntry->m_bOnMenuBar && lpMenuEntry->m_bHasSubMenu)
+		{
+			// Windows draws its submenu arrow after WM_DRAWITEM. Keep it from overwriting ours.
+			WC_D(int, ::ExcludeClipRect(hdc, rcItem.left, rcItem.top, rcItem.right, rcItem.bottom));
+		}
 	}
 
 	std::wstring GetLBText(HWND hwnd, const int nIndex)

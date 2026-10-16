@@ -133,6 +133,7 @@ namespace ui
 		MSAAMENUINFO m_MSAA{}; // MSAA info - must be first element.
 		std::wstring m_pName; // Menu text for display. Empty for separator item.
 		BOOL m_bOnMenuBar{};
+		BOOL m_bHasSubMenu{};
 		ULONG_PTR m_AddInData{};
 	};
 	typedef MenuEntry* LPMENUENTRY;

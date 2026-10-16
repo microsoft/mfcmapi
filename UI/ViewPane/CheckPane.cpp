@@ -103,38 +103,43 @@ namespace viewpane
 		const auto bDisabled = (itemState & CDIS_DISABLED) != 0;
 		const auto bFocused = (itemState & CDIS_FOCUS) != 0;
 
+		WC_D_S(::FillRect(hDC, &rc, GetSysBrush(ui::uiColor::Background)));
+
 		const auto lCheck = GetSystemMetrics(SM_CXMENUCHECK);
 		const auto lEdge = lCheck / 5;
 		auto rcCheck = RECT{0};
 		rcCheck.left = rc.left;
 		rcCheck.right = rcCheck.left + lCheck;
-		rcCheck.top = (rc.bottom - rc.top - lCheck) / 2;
+		rcCheck.top = rc.top + (rc.bottom - rc.top - lCheck) / 2;
 		rcCheck.bottom = rcCheck.top + lCheck;
 
 		WC_D_S(::FillRect(hDC, &rcCheck, GetSysBrush(ui::uiColor::Background)));
+		auto borderWidth = 1;
 		if (bFocused)
 		{
-			ui::FrameRect(hDC, rcCheck, 3, ui::uiColor::Glow);
+			borderWidth = 3;
+			ui::FrameRect(hDC, rcCheck, borderWidth, ui::uiColor::Glow);
 		}
 		else if (bGlow)
 		{
-			ui::FrameRect(hDC, rcCheck, 2, ui::uiColor::Glow);
+			borderWidth = 2;
+			ui::FrameRect(hDC, rcCheck, borderWidth, ui::uiColor::Glow);
 		}
 		else if (bDisabled)
 		{
-			ui::FrameRect(hDC, rcCheck, 1, ui::uiColor::FrameUnselected);
+			ui::FrameRect(hDC, rcCheck, borderWidth, ui::uiColor::FrameUnselected);
 		}
 		else
 		{
-			ui::FrameRect(hDC, rcCheck, 1, ui::uiColor::FrameSelected);
+			ui::FrameRect(hDC, rcCheck, borderWidth, ui::uiColor::FrameSelected);
 		}
 
 		if (bChecked)
 		{
 			auto rcFill = rcCheck;
-			const auto deflate = lEdge;
+			const auto deflate = max(lEdge, borderWidth + 1);
 			InflateRect(&rcFill, -deflate, -deflate);
-			FillRect(hDC, &rcFill, GetSysBrush(ui::uiColor::Glow));
+			WC_D_S(::FillRect(hDC, &rcFill, GetSysBrush(ui::uiColor::Glow)));
 		}
 
 		auto rcLabel = rc;

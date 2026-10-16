@@ -140,12 +140,47 @@ namespace controls::sortlistctrl
 		}
 	}
 
+	void CSortListCtrl::PaintScrollCorner() const noexcept
+	{
+		auto horizontal = SCROLLBARINFO{sizeof SCROLLBARINFO};
+		auto vertical = SCROLLBARINFO{sizeof SCROLLBARINFO};
+		if (!WC_D(BOOL, ::GetScrollBarInfo(m_hWnd, OBJID_HSCROLL, &horizontal)) ||
+			!WC_D(BOOL, ::GetScrollBarInfo(m_hWnd, OBJID_VSCROLL, &vertical)) ||
+			(horizontal.rgstate[0] & (STATE_SYSTEM_INVISIBLE | STATE_SYSTEM_OFFSCREEN)) != 0 ||
+			(vertical.rgstate[0] & (STATE_SYSTEM_INVISIBLE | STATE_SYSTEM_OFFSCREEN)) != 0)
+			return;
+
+		auto client = RECT{};
+		auto window = RECT{};
+		if (!WC_D(BOOL, ::GetClientRect(m_hWnd, &client)) || !WC_D(BOOL, ::GetWindowRect(m_hWnd, &window))) return;
+		auto clientOrigin = POINT{client.left, client.top};
+		if (!WC_D(BOOL, ::ClientToScreen(m_hWnd, &clientOrigin))) return;
+		OffsetRect(&client, clientOrigin.x - window.left, clientOrigin.y - window.top);
+		auto corner = RECT{
+			client.right,
+			client.bottom,
+			client.right + ::GetSystemMetrics(SM_CXVSCROLL),
+			client.bottom + ::GetSystemMetrics(SM_CYHSCROLL)};
+		const auto hdc = WC_D(HDC, ::GetWindowDC(m_hWnd));
+		if (hdc)
+		{
+			WC_B_S(::FillRect(hdc, &corner, ui::GetSysBrush(ui::uiColor::Background)));
+			WC_B_S(::ReleaseDC(m_hWnd, hdc));
+		}
+	}
+
 	LRESULT CSortListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		const auto iItemCur = m_iItemCurHover;
 
 		switch (message)
 		{
+		case WM_NCPAINT:
+		{
+			const auto result = CListCtrl::WindowProc(message, wParam, lParam);
+			PaintScrollCorner();
+			return result;
+		}
 			// I can handle notify messages for my child header control since I am the parent window
 			// This makes it easy for me to customize the child control to do what I want
 			// I cannot handle notify heading to my parent though - have to depend on reflection for that
