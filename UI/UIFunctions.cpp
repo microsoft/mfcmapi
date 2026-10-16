@@ -1319,17 +1319,18 @@ namespace ui
 		HDC hdcTarget,
 		const int iWidth,
 		const int iHeight,
-		const uiColor cSource,
-		const uiColor cReplace) noexcept
+		const COLORREF cSource,
+		const COLORREF cReplace) noexcept
 	{
 		RECT rcBM = {0, 0, iWidth, iHeight};
 
 		const auto hbmTarget = CreateCompatibleBitmap(hdcSource, iWidth, iHeight);
 		static_cast<void>(SelectObject(hdcTarget, hbmTarget));
-		FillRect(hdcTarget, &rcBM, GetSysBrush(cReplace));
+		SetDCBrushColor(hdcTarget, cReplace);
+		FillRect(hdcTarget, &rcBM, static_cast<HBRUSH>(GetStockObject(DC_BRUSH)));
 
 		static_cast<void>(
-			TransparentBlt(hdcTarget, 0, 0, iWidth, iHeight, hdcSource, 0, 0, iWidth, iHeight, MyGetSysColor(cSource)));
+			TransparentBlt(hdcTarget, 0, 0, iWidth, iHeight, hdcSource, 0, 0, iWidth, iHeight, cSource));
 		if (hbmTarget) DeleteObject(hbmTarget);
 	}
 
@@ -1341,13 +1342,14 @@ namespace ui
 		const int iWidth,
 		const int iHeight,
 		const int offset,
-		const uiColor cBackground) noexcept
+		const COLORREF cBackground) noexcept
 	{
 		RECT rcBM = {0, 0, iWidth, iHeight};
 
 		const auto hbmTarget = CreateCompatibleBitmap(hdcSource, iWidth, iHeight);
 		static_cast<void>(SelectObject(hdcTarget, hbmTarget));
-		FillRect(hdcTarget, &rcBM, GetSysBrush(cBackground));
+		SetDCBrushColor(hdcTarget, cBackground);
+		FillRect(hdcTarget, &rcBM, static_cast<HBRUSH>(GetStockObject(DC_BRUSH)));
 
 		static_cast<void>(BitBlt(hdcTarget, offset, offset, iWidth, iHeight, hdcSource, 0, 0, SRCCOPY));
 		if (hbmTarget) DeleteObject(hbmTarget);
@@ -1355,7 +1357,7 @@ namespace ui
 
 	// Draws a bitmap on the screen, double buffered, with two color replacement
 	// Fills rectangle with cBackground
-	// Replaces cBitmapTransFore (cyan) with cFrameSelected
+	// Replaces cBitmapTransFore (cyan), or the notify bitmap's blue, with the foreground
 	// Replaces cBitmapTransBack (magenta) with the cBackground
 	// Scales from size of bitmap to size of target rectangle
 	void DrawBitmap(
@@ -1363,10 +1365,15 @@ namespace ui
 		_In_ const RECT& rcTarget,
 		const uiBitmap iBitmap,
 		const bool bHover,
-		const int offset) noexcept
+		const int offset,
+		const COLORREF foreground,
+		const COLORREF background) noexcept
 	{
 		const int iWidth = rcTarget.right - rcTarget.left;
 		const int iHeight = rcTarget.bottom - rcTarget.top;
+		const auto cForeground = foreground == CLR_INVALID ? MyGetSysColor(uiColor::FrameSelected) : foreground;
+		const auto cBackground =
+			background == CLR_INVALID ? MyGetSysColor(bHover ? uiColor::GlowBackground : uiColor::Background) : background;
 
 		// hdcBitmap: Load the image
 		const auto hdcBitmap = CreateCompatibleDC(hdc);
@@ -1376,10 +1383,15 @@ namespace ui
 		auto bm = BITMAP{};
 		::GetObject(hbmBitmap, sizeof bm, &bm);
 
-		// hdcForeReplace: Create a bitmap compatible with hdc, select it, fill with cFrameSelected, copy from hdcBitmap, with cBitmapTransFore transparent
+		// hdcForeReplace: Replace only the artwork's foreground color.
 		const auto hdcForeReplace = CreateCompatibleDC(hdc);
 		CopyBitmap(
-			hdcBitmap, hdcForeReplace, bm.bmWidth, bm.bmHeight, uiColor::BitmapTransFore, uiColor::FrameSelected);
+			hdcBitmap,
+			hdcForeReplace,
+			bm.bmWidth,
+			bm.bmHeight,
+			iBitmap == uiBitmap::Notify ? RGB(0x00, 0x70, 0xC4) : MyGetSysColor(uiColor::BitmapTransFore),
+			cForeground);
 
 		// hdcBackReplace: Create a bitmap compatible with hdc, select it, fill with cBackground, copy from hdcForeReplace, with cBitmapTransBack transparent
 		const auto hdcBackReplace = CreateCompatibleDC(hdc);
@@ -1388,8 +1400,8 @@ namespace ui
 			hdcBackReplace,
 			bm.bmWidth,
 			bm.bmHeight,
-			uiColor::BitmapTransBack,
-			bHover ? uiColor::GlowBackground : uiColor::Background);
+			MyGetSysColor(uiColor::BitmapTransBack),
+			cBackground);
 
 		const auto hdcShift = CreateCompatibleDC(hdc);
 		ShiftBitmap(
@@ -1398,12 +1410,19 @@ namespace ui
 			bm.bmWidth,
 			bm.bmHeight,
 			offset,
-			bHover ? uiColor::GlowBackground : uiColor::Background);
+			cBackground);
 
 		// In case the original bitmap dimensions doesn't match our target dimension, we stretch it to fit
 		// We can get better results if the original bitmap happens to match.
+		const auto savedDC = SaveDC(hdc);
+		if (iBitmap == uiBitmap::Notify)
+		{
+			SetStretchBltMode(hdc, HALFTONE);
+			SetBrushOrgEx(hdc, 0, 0, nullptr);
+		}
 		static_cast<void>(StretchBlt(
 			hdc, rcTarget.left, rcTarget.top, iWidth, iHeight, hdcShift, 0, 0, bm.bmWidth, bm.bmHeight, SRCCOPY));
+		RestoreDC(hdc, savedDC);
 
 		if (hdcShift) DeleteDC(hdcShift);
 		if (hdcBackReplace) DeleteDC(hdcBackReplace);
@@ -1415,8 +1434,12 @@ namespace ui
 #endif
 	}
 
-	void
-	CustomDrawTree(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, const bool bHover, _In_ HTREEITEM hItemCurHover) noexcept
+	void CustomDrawTree(
+		_In_ NMHDR* pNMHDR,
+		_In_ LRESULT* pResult,
+		const bool bHover,
+		_In_ HTREEITEM hItemCurHover,
+		const std::wstring& text)
 	{
 		if (!pNMHDR) return;
 		const auto lvcd = reinterpret_cast<LPNMTVCUSTOMDRAW>(pNMHDR);
@@ -1429,43 +1452,60 @@ namespace ui
 
 		case CDDS_ITEMPREPAINT:
 		{
-			auto hItem = reinterpret_cast<HTREEITEM>(lvcd->nmcd.dwItemSpec);
-
-			if (hItem)
-			{
-				lvcd->clrTextBk = MyGetSysColor(uiColor::Background);
-				lvcd->clrText = MyGetSysColor(uiColor::Text);
-				const int iState = TreeView_GetItemState(lvcd->nmcd.hdr.hwndFrom, hItem, TVIS_SELECTED);
-				TreeView_SetItemState(
-					lvcd->nmcd.hdr.hwndFrom, hItem, iState & TVIS_SELECTED ? TVIS_BOLD : NULL, TVIS_BOLD);
-			}
-
-			*pResult = CDRF_DODEFAULT | CDRF_NOTIFYPOSTPAINT;
-
-			if (hItem == hItemCurHover)
-			{
-				lvcd->clrText = MyGetSysColor(uiColor::GlowText);
-				lvcd->clrTextBk = MyGetSysColor(uiColor::GlowBackground);
-				*pResult |= CDRF_NEWFONT;
-			}
-
-			break;
-		}
-
-		case CDDS_ITEMPOSTPAINT:
-		{
 			const auto hItem = reinterpret_cast<HTREEITEM>(lvcd->nmcd.dwItemSpec);
-
+			const auto hwnd = lvcd->nmcd.hdr.hwndFrom;
+			const auto hdc = lvcd->nmcd.hdc;
 			if (hItem)
 			{
-				// Cover over the +/- and paint triangles instead
+				const auto selected = (TreeView_GetItemState(hwnd, hItem, TVIS_SELECTED) & TVIS_SELECTED) != 0;
+				const auto hovered = hItem == hItemCurHover;
+				const auto highContrast = GetEffectiveTheme() == uiTheme::HighContrast;
+				const auto background = selected				   ? uiColor::SelectedBackground
+										: hovered && !highContrast ? uiColor::GlowBackground
+																   : uiColor::Background;
+				const auto foreground = selected || (hovered && !highContrast) ? uiColor::GlowText : uiColor::Text;
+				lvcd->clrTextBk = MyGetSysColor(background);
+				lvcd->clrText = MyGetSysColor(foreground);
+
+				auto row = RECT{};
+				auto label = RECT{};
+				GetClientRect(hwnd, &row);
+				TreeView_GetItemRect(hwnd, hItem, &label, true);
+				row.top = label.top;
+				row.bottom = label.bottom;
+				const auto savedDC = SaveDC(hdc);
+				IntersectClipRect(hdc, row.left, row.top, row.right, row.bottom);
+				FillRect(hdc, &row, GetSysBrush(background));
+
+				if (!TreeView_GetEditControl(hwnd) || !selected)
+				{
+					label.right = row.right;
+					DrawUITextW(
+						hdc, text, lvcd->clrText, label, selected, DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_NOPREFIX);
+				}
+
 				DrawExpandTriangle(
-					lvcd->nmcd.hdr.hwndFrom,
-					lvcd->nmcd.hdc,
-					hItem,
-					bHover && hItem == hItemCurHover,
-					hItem == hItemCurHover);
+					hwnd, hdc, hItem, bHover && hovered && !selected && !highContrast, foreground, background);
+
+				if (hovered && !selected && highContrast)
+				{
+					::FrameRect(hdc, &row, GetSysBrush(foreground));
+				}
+
+				const auto hideFocus = ::SendMessage(hwnd, WM_QUERYUISTATE, 0, 0) & UISF_HIDEFOCUS;
+				if (selected && ::GetFocus() == hwnd && !hideFocus)
+				{
+					InflateRect(&row, -1, -1);
+					SetTextColor(hdc, lvcd->clrText);
+					SetBkColor(hdc, lvcd->clrTextBk);
+					DrawFocusRect(hdc, &row);
+				}
+
+				RestoreDC(hdc, savedDC);
 			}
+
+			// Keep native selection and hit testing, but paint every part of the row ourselves.
+			*pResult = CDRF_SKIPDEFAULT;
 			break;
 		}
 
@@ -1476,8 +1516,13 @@ namespace ui
 	}
 
 	// Paints the triangles indicating expansion state
-	void
-	DrawExpandTriangle(_In_ HWND hWnd, _In_ HDC hdc, _In_ HTREEITEM hItem, const bool bGlow, const bool bHover) noexcept
+	void DrawExpandTriangle(
+		_In_ HWND hWnd,
+		_In_ HDC hdc,
+		_In_ HTREEITEM hItem,
+		const bool bGlow,
+		const uiColor foreground,
+		const uiColor background) noexcept
 	{
 		auto tvitem = TVITEM{};
 		tvitem.hItem = hItem;
@@ -1490,14 +1535,8 @@ namespace ui
 			TreeView_GetItemRect(hWnd, hItem, &rcButton, true);
 			const auto triangleSize = (rcButton.bottom - rcButton.top) / 4;
 
-			// Erase the +/- icons
-			// We erase everything to the left of the label
 			rcButton.right = rcButton.left;
-			rcButton.left = 0;
-			FillRect(hdc, &rcButton, GetSysBrush(bHover ? uiColor::GlowBackground : uiColor::Background));
-
-			// Now we focus on a box 15 pixels wide to the left of the label
-			rcButton.left = rcButton.right - 15;
+			rcButton.left = rcButton.right - MulDiv(15, GetDeviceCaps(hdc, LOGPIXELSX), 96);
 
 			// Boundary box for the actual triangles
 			auto rcTriangle = RECT{};
@@ -1533,8 +1572,8 @@ namespace ui
 				tri[2].y = (rcTriangle.top + rcTriangle.bottom) / 2;
 			}
 
-			auto cEdge = bGlow ? uiColor::Glow : bExpanded ? uiColor::FrameSelected : uiColor::Arrow;
-			auto cFill = bGlow ? uiColor::Glow : bExpanded ? uiColor::FrameSelected : uiColor::Background;
+			const auto cEdge = bGlow ? uiColor::Glow : foreground;
+			const auto cFill = bGlow ? uiColor::Glow : bExpanded ? foreground : background;
 
 			DrawFilledPolygon(hdc, tri, _countof(tri), MyGetSysColor(cEdge), GetSysBrush(cFill));
 		}

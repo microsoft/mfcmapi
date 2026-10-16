@@ -157,10 +157,28 @@ namespace ui
 	void DrawListItemGlow(_In_ HWND hWnd, UINT itemID) noexcept;
 
 	// Tree
-	void DrawBitmap(_In_ HDC hdc, _In_ const RECT& rcTarget, uiBitmap iBitmap, bool bHover, int offset = 0) noexcept;
-	void CustomDrawTree(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, bool bHover, _In_ HTREEITEM hItemCurHover) noexcept;
+	void DrawBitmap(
+		_In_ HDC hdc,
+		_In_ const RECT& rcTarget,
+		uiBitmap iBitmap,
+		bool bHover,
+		int offset = 0,
+		COLORREF foreground = CLR_INVALID,
+		COLORREF background = CLR_INVALID) noexcept;
+	void CustomDrawTree(
+		_In_ NMHDR* pNMHDR,
+		_In_ LRESULT* pResult,
+		bool bHover,
+		_In_ HTREEITEM hItemCurHover,
+		const std::wstring& text);
 	void DrawTreeItemGlow(_In_ HWND hWnd, _In_ HTREEITEM hItem) noexcept;
-	void DrawExpandTriangle(_In_ HWND hWnd, _In_ HDC hdc, _In_ HTREEITEM hItem, bool bGlow, bool bHover) noexcept;
+	void DrawExpandTriangle(
+		_In_ HWND hWnd,
+		_In_ HDC hdc,
+		_In_ HTREEITEM hItem,
+		bool bGlow,
+		uiColor foreground,
+		uiColor background) noexcept;
 
 	// Header
 	void DrawTriangle(_In_ HWND hWnd, _In_ HDC hdc, _In_ const RECT& rc, bool bButton, bool bUp);

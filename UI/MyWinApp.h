@@ -14,5 +14,6 @@ namespace ui
 
 	private:
 		BOOL InitInstance() override;
+		BOOL PreTranslateMessage(MSG* pMsg) override;
 	};
 } // namespace ui

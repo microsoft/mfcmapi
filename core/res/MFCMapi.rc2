@@ -1006,6 +1006,7 @@ IDS_OPTIONS_PROPERTIES "Properties and named properties"
 IDS_OPTIONS_NOTIFICATIONS_OPENING "Notifications and object opening"
 IDS_OPTIONS_MAPI_IMPLEMENTATION "MAPI implementation and extensions"
 IDS_OPTIONS_DIAGNOSTICS "Diagnostics, tracing, and safety"
+IDS_NOTIFICATIONS_ACTIVE "Notifications active"
 
 // RestrictEditor.cpp
 IDS_RELOP "relop"
