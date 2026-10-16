@@ -1119,14 +1119,17 @@ namespace ui
 				auto rc = RECT{};
 				GetWindowRect(hWnd, &rc);
 				OffsetRect(&rc, -rc.left, -rc.top);
+				const auto bReadOnly = (GetWindowLongPtr(hWnd, GWL_STYLE) & ES_READONLY) != 0;
+				const auto background =
+					bReadOnly || !IsWindowEnabled(hWnd) ? uiColor::BackgroundReadOnly : uiColor::Background;
+				// Clear both the custom frame and the native border reserved by WM_NCCALCSIZE.
+				FrameRect(hdc, rc, borderWidth + 1, background);
 				if ((::GetFocus() == hWnd))
 				{
 					FrameRect(hdc, rc, borderWidth, uiColor::Glow);
 				}
 				else
 				{
-					// Clear out any previous border first, plus 1 for the built in border
-					FrameRect(hdc, rc, borderWidth + 1, uiColor::Background);
 					FrameRect(hdc, rc, 1, uiColor::FrameSelected);
 				}
 
