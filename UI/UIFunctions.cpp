@@ -2221,7 +2221,11 @@ namespace ui
 		const std::wstring& szStatusInfo)
 	{
 		auto rcStatus = RECT{};
-		GetClientRect(hwnd, &rcStatus);
+		if (!WC_D(BOOL, GetClientRect(hwnd, &rcStatus))) return;
+		auto rcWindow = RECT{};
+		if (!WC_D(BOOL, GetWindowRect(hwnd, &rcWindow))) return;
+		auto clientBottom = POINT{0, rcStatus.bottom};
+		if (!WC_D(BOOL, ClientToScreen(hwnd, &clientBottom))) return;
 		if (rcStatus.bottom - rcStatus.top > iStatusHeight)
 		{
 			rcStatus.top = rcStatus.bottom - iStatusHeight;
@@ -2236,8 +2240,8 @@ namespace ui
 		auto rcText = rcGrad;
 		const auto crFore = MyGetSysColor(uiColor::StatusText);
 
-		// We start painting a little lower to allow our gradiants to line up
-		rcGrad.bottom += GetSystemMetrics(SM_CYSIZEFRAME) - BORDER_VISIBLEWIDTH;
+		// Match the nonclient gradient, including the padded bottom border.
+		rcGrad.bottom += rcWindow.bottom - clientBottom.y - BORDER_VISIBLEWIDTH;
 		GradientFillRect(ps.hdc, rcGrad, uiColor::Status);
 
 		rcText.left = rcText.right - iStatusData2;

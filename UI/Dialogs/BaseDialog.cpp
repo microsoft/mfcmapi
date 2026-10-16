@@ -532,22 +532,13 @@ namespace dialog
 		::RedrawWindow(m_hWnd, &rcStatus, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
 	}
 
-	void CBaseDialog::OnSize(UINT /* nType*/, const int cx, const int cy)
+	void CBaseDialog::OnSize(const UINT nType, const int cx, const int cy)
 	{
 		auto hdwp = WC_D(HDWP, BeginDeferWindowPos(1));
 		if (hdwp)
 		{
 			const auto iHeight = GetStatusHeight();
 			const auto iNewCY = cy - iHeight;
-			auto rcStatus = RECT{};
-			::GetClientRect(m_hWnd, &rcStatus);
-			if (rcStatus.bottom - rcStatus.top > iHeight)
-			{
-				rcStatus.top = rcStatus.bottom - iHeight;
-			}
-			// Tell the status bar it needs repainting
-			::InvalidateRect(m_hWnd, &rcStatus, false);
-
 			if (m_lpFakeSplitter && m_lpFakeSplitter.m_hWnd)
 			{
 				hdwp = ui::DeferWindowPos(
@@ -555,6 +546,12 @@ namespace dialog
 			}
 
 			WC_B_S(EndDeferWindowPos(hdwp));
+		}
+
+		// Repaint the status bar and its nonclient gutters after resize layout completes.
+		if (nType != SIZE_MINIMIZED)
+		{
+			WC_B_S(::RedrawWindow(m_hWnd, nullptr, nullptr, RDW_INVALIDATE | RDW_FRAME | RDW_NOCHILDREN));
 		}
 	}
 

@@ -119,9 +119,10 @@ namespace dialog
 		const auto ptInRect = [](const RECT& rc, POINT p) noexcept {
 			return p.x >= rc.left && p.x < rc.right && p.y >= rc.top && p.y < rc.bottom;
 		};
+		const auto dwWinStyle = ::GetWindowLongPtr(hWnd, GWL_STYLE);
 		if (ptInRect(rcCloseIcon, pt)) ret = HTCLOSE;
-		if (ptInRect(rcMaxIcon, pt)) ret = HTMAXBUTTON;
-		if (ptInRect(rcMinIcon, pt)) ret = HTMINBUTTON;
+		if (WS_MAXIMIZEBOX == (dwWinStyle & WS_MAXIMIZEBOX) && ptInRect(rcMaxIcon, pt)) ret = HTMAXBUTTON;
+		if (WS_MINIMIZEBOX == (dwWinStyle & WS_MINIMIZEBOX) && ptInRect(rcMinIcon, pt)) ret = HTMINBUTTON;
 
 		output::DebugPrint(output::dbgLevel::UI, L"CheckButtons result: %ws\r\n", FormatHT(ret).c_str());
 
