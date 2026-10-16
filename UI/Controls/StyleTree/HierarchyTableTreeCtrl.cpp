@@ -970,8 +970,8 @@ namespace controls
 						{
 							const auto theme = ui::GetEffectiveTheme();
 							const auto color = theme == ui::uiTheme::HighContrast ? lvcd->clrText
-											   : theme == ui::uiTheme::Dark		 ? RGB(0x66, 0xB5, 0xED)
-																					 : ui::MyGetSysColor(ui::uiColor::Glow);
+											   : theme == ui::uiTheme::Dark		  ? RGB(0x66, 0xB5, 0xED)
+																			: ui::MyGetSysColor(ui::uiColor::Glow);
 							rect.left = rect.right + MulDiv(4, GetDeviceCaps(lvcd->nmcd.hdc, LOGPIXELSX), 96);
 							rect.right = rect.left + rect.bottom - rect.top;
 							// The artwork is 3 pixels below center in the 34-pixel source bitmap.
