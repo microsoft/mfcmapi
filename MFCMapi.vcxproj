@@ -1013,6 +1013,7 @@
     <ClInclude Include="UI\RichEditOleCallback.h" />
     <ClInclude Include="UI\Dialogs\propList\SingleRecipientDialog.h" />
     <ClInclude Include="UI\ViewPane\CheckPane.h" />
+    <ClInclude Include="UI\ViewPane\AddInApprovalPane.h" />
     <ClInclude Include="UI\ViewPane\CountedTextPane.h" />
     <ClInclude Include="UI\ViewPane\DropDownPane.h" />
     <ClInclude Include="UI\ViewPane\ListPane.h" />
@@ -1134,6 +1135,7 @@
     <ClCompile Include="UI\Dialogs\Editors\StreamEditor.cpp" />
     <ClCompile Include="UI\Dialogs\Editors\TagArrayEditor.cpp" />
     <ClCompile Include="UI\UIFunctions.cpp" />
+    <ClCompile Include="UI\ViewPane\AddInApprovalPane.cpp" />
     <ClCompile Include="UI\ViewPane\CheckPane.cpp" />
     <ClCompile Include="UI\ViewPane\CountedTextPane.cpp" />
     <ClCompile Include="UI\ViewPane\DropDownPane.cpp" />

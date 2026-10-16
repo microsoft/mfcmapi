@@ -1,9 +1,9 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/Editors/Options.h>
+#include <UI/ViewPane/AddInApprovalPane.h>
 #include <mapistub/library/stubutils.h>
 #include <core/utility/registry.h>
-#include <core/utility/strings.h>
 #include <core/utility/output.h>
 #include <core/addin/mfcmapi.h>
 #include <UI/UIFunctions.h>
@@ -12,6 +12,8 @@
 
 namespace dialog::editor
 {
+	static constexpr int ADDIN_APPROVAL_PANE_ID = 30000;
+
 	struct OptionValue
 	{
 		DWORD number{};
@@ -103,6 +105,10 @@ namespace dialog::editor
 			for (const auto& regKey : options)
 			{
 				AddOptionPane(regKey);
+			}
+			if (section == IDS_OPTIONS_ADDINS)
+			{
+				AddPane(viewpane::AddInApprovalPane::Create(ADDIN_APPROVAL_PANE_ID));
 			}
 		}
 	}

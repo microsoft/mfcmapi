@@ -8,11 +8,17 @@ namespace viewpane
 	std::shared_ptr<CheckPane>
 	CheckPane::Create(const int paneID, const UINT uidLabel, const bool bVal, const bool bReadOnly)
 	{
+		return Create(paneID, strings::loadstring(uidLabel), bVal, bReadOnly);
+	}
+
+	std::shared_ptr<CheckPane>
+	CheckPane::Create(const int paneID, const std::wstring& szLabel, const bool bVal, const bool bReadOnly)
+	{
 		auto pane = std::make_shared<CheckPane>();
 		if (pane)
 		{
 			pane->m_bCheckValue = bVal;
-			pane->m_szLabel = strings::loadstring(uidLabel);
+			pane->m_szLabel = szLabel;
 
 			pane->SetReadOnly(bReadOnly);
 			pane->m_paneID = paneID;

@@ -166,6 +166,7 @@ namespace controls
 		case WM_COMMAND:
 			switch (HIWORD(wParam))
 			{
+			case BN_CLICKED:
 			case BN_SETFOCUS:
 			case EN_SETFOCUS:
 				return ::SendMessage(m_parent, message, wParam, lParam);

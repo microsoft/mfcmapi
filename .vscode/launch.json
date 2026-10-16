@@ -2,10 +2,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "MFCMAPI (Debug x64)",
+            "name": "MFCMAPI (Debug Unicode x64)",
             "type": "cppvsdbg",
             "request": "launch",
-            "preLaunchTask": "Build",
+            "preLaunchTask": "Build Debug x64",
             "program": "${workspaceFolder}/bin/x64/Debug_Unicode/MFCMapi.exe",
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

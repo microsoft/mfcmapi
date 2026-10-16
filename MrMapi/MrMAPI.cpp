@@ -30,6 +30,26 @@
 // Initialize MFC for LoadString support later on
 void InitMFC() { AfxWinInit(::GetModuleHandle(nullptr), nullptr, ::GetCommandLine(), 0); }
 
+bool PromptForAddInApproval(
+	_In_ const std::vector<addin::AddInApprovalCandidate>& candidates,
+	_Out_ std::vector<bool>& approvals)
+{
+	approvals.clear();
+	approvals.reserve(candidates.size());
+
+	for (const auto& candidate : candidates)
+	{
+		wprintf(L"Load add-in \"%ws\" (SHA-256: %ws)? [y/N] ", candidate.fileName.c_str(), candidate.sha256.c_str());
+		fflush(stdout);
+
+		WCHAR response[16] = {};
+		if (!fgetws(response, _countof(response), stdin)) return false;
+		approvals.push_back(response[0] == L'y' || response[0] == L'Y');
+	}
+
+	return true;
+}
+
 _Check_return_ LPMAPISESSION MrMAPILogonEx(const std::wstring& lpszProfile)
 {
 	auto ulFlags = MAPI_EXTENDED | MAPI_NO_MAIL | MAPI_UNICODE | MAPI_NEW_SESSION;
@@ -174,7 +194,10 @@ int wmain(_In_ int argc, _In_count_(argc) wchar_t* argv[])
 	if (!(cli::switchNoAddins.isSet()))
 	{
 		registry::loadAddIns = true;
-		addin::LoadAddIns();
+		if (cli::switchApproveAddins.isSet())
+			addin::LoadAddIns(PromptForAddInApproval);
+		else
+			addin::LoadAddIns();
 	}
 
 	if (cli::switchVersion.isSet())

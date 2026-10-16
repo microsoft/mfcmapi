@@ -1,4 +1,8 @@
-The model for add-in development for MFCMAPI is quite simple. Build a DLL that exports a few functions, drop said DLL into the same directory as MFCMAPI, and MFCMAPI will find it when it starts up. No messy config files, no fiddling around in the directory. Wanna disable an add-in? Just rename it so it's not a DLL anymore.
+The model for add-in development for MFCMAPI is quite simple. Build a DLL that exports a few functions and drop it into the same directory as MFCMAPI. On startup, MFCMAPI checks DLL exports without loading the file and offers add-in-shaped DLLs that have not been seen before in one approval dialog. Check the add-ins you want to load.
+
+MFCMAPI remembers both approvals and denials by the DLL's SHA-256 hash. Replacing an add-in with different contents requires a new decision; moving an identical DLL does not. Unchecked entries are remembered as denied. Canceling the dialog saves no decisions for the new entries. Use the **Clear** action in the Options dialog to clear all remembered add-in decisions. To disable a previously approved add-in, clear its approval and deny it, or rename it so it no longer has a `.dll` extension.
+
+MrMAPI loads previously approved add-ins without prompting. It skips unknown add-ins by default; pass `-ApproveAddins` to enable interactive yes/no prompts. `-NoAddins` disables add-in loading.
 
 The core of an MFCMAPI addin is the header file: [MFCMAPI.h](MFCMAPI.h). This file contains the definitions for the functions you'll need to implement and export from your DLL, as well as definitions for functions your add-in can import from MFCMAPI.
 
