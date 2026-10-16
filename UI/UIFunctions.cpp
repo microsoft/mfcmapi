@@ -2543,6 +2543,91 @@ namespace ui
 		}
 	}
 
+	void DrawPopupMenuBorder(_In_ HWND hWnd, _In_opt_ HDC printDC = nullptr) noexcept
+	{
+		auto window = RECT{};
+		auto client = RECT{};
+		if (FAILED(WC_B(::GetWindowRect(hWnd, &window))) || FAILED(WC_B(::GetClientRect(hWnd, &client)))) return;
+		auto origin = POINT{};
+		if (FAILED(WC_B(::ClientToScreen(hWnd, &origin)))) return;
+		OffsetRect(&client, origin.x - window.left, origin.y - window.top);
+		OffsetRect(&window, -window.left, -window.top);
+
+		const auto hdc = printDC ? printDC : WC_D(HDC, ::GetWindowDC(hWnd));
+		if (!hdc) return;
+		const auto saved = WC_D(int, ::SaveDC(hdc));
+		if (saved)
+		{
+			// Recolor only the native nonclient frame; leave its dimensions and menu contents intact.
+			ExcludeClipRect(hdc, client.left, client.top, client.right, client.bottom);
+			FillRect(hdc, &window, GetSysBrush(uiColor::BackgroundReadOnly));
+			auto edge = RECT{window.left, window.top, window.right, window.top + 1};
+			FillRect(hdc, &edge, GetSysBrush(uiColor::FrameUnselected));
+			edge = RECT{window.left, window.top, window.left + 1, window.bottom};
+			FillRect(hdc, &edge, GetSysBrush(uiColor::FrameUnselected));
+			RestoreDC(hdc, saved);
+		}
+
+		if (!printDC) WC_B_S(::ReleaseDC(hWnd, hdc));
+	}
+
+	LRESULT CALLBACK PopupMenuProc(
+		_In_ HWND hWnd,
+		const UINT message,
+		const WPARAM wParam,
+		const LPARAM lParam,
+		const UINT_PTR subclassID,
+		const DWORD_PTR /*data*/) noexcept
+	{
+		if (message == WM_NCDESTROY)
+		{
+			RemoveWindowSubclass(hWnd, PopupMenuProc, subclassID);
+			return DefSubclassProc(hWnd, message, wParam, lParam);
+		}
+
+		const auto result = DefSubclassProc(hWnd, message, wParam, lParam);
+		if (GetEffectiveTheme() == uiTheme::Dark)
+		{
+			if (message == WM_NCPAINT || message == WM_PAINT)
+			{
+				DrawPopupMenuBorder(hWnd);
+			}
+			else if (message == WM_PRINT && (lParam & PRF_NONCLIENT))
+			{
+				DrawPopupMenuBorder(hWnd, reinterpret_cast<HDC>(wParam));
+			}
+		}
+
+		return result;
+	}
+
+	thread_local HHOOK g_MenuHook{};
+	thread_local ULONG g_MenuLoopDepth{};
+
+	LRESULT CALLBACK PopupMenuHook(const int code, const WPARAM wParam, const LPARAM lParam) noexcept
+	{
+		if (code >= 0)
+		{
+			const auto message = reinterpret_cast<const CWPSTRUCT*>(lParam);
+			// The first popup is created before WM_ENTERMENULOOP installs this hook.
+			if (message->message == WM_CREATE || message->message == WM_NCCALCSIZE ||
+				message->message == WM_WINDOWPOSCHANGING)
+			{
+				WCHAR className[32]{};
+				if (GetClassNameW(message->hwnd, className, _countof(className)) && wcscmp(className, L"#32768") == 0)
+				{
+					DWORD_PTR data{};
+					if (!GetWindowSubclass(message->hwnd, PopupMenuProc, 0, &data))
+					{
+						WC_B_S(SetWindowSubclass(message->hwnd, PopupMenuProc, 0, 0));
+					}
+				}
+			}
+		}
+
+		return CallNextHookEx(g_MenuHook, code, wParam, lParam);
+	}
+
 	_Check_return_ bool
 	HandleControlUI(const UINT message, const WPARAM wParam, const LPARAM lParam, _Out_ LRESULT* lpResult)
 	{
@@ -2550,6 +2635,20 @@ namespace ui
 		*lpResult = 0;
 		switch (message)
 		{
+		case WM_ENTERMENULOOP:
+			if (g_MenuLoopDepth++ == 0 && GetEffectiveTheme() == uiTheme::Dark)
+			{
+				g_MenuHook =
+					WC_D(HHOOK, SetWindowsHookExW(WH_CALLWNDPROC, PopupMenuHook, nullptr, GetCurrentThreadId()));
+			}
+			break;
+		case WM_EXITMENULOOP:
+			if (g_MenuLoopDepth && --g_MenuLoopDepth == 0 && g_MenuHook)
+			{
+				WC_B_S(UnhookWindowsHookEx(g_MenuHook));
+				g_MenuHook = nullptr;
+			}
+			break;
 		case WM_DRAWITEM:
 			if (DrawItem(reinterpret_cast<LPDRAWITEMSTRUCT>(lParam))) return true;
 			break;
