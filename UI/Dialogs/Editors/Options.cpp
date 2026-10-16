@@ -86,6 +86,7 @@ namespace dialog::editor
 				  &registry::forceOutlookMAPI,
 				  &registry::forceSystemMAPI,
 				  &registry::enableLegacyFeatures}},
+				{IDS_OPTIONS_ADDINS, {}},
 				{IDS_OPTIONS_DIAGNOSTICS,
 				 {&registry::uiDiag, &registry::useIMAPIProgress, &registry::heapEnableTerminationOnCorruption}}};
 		}
@@ -106,7 +107,7 @@ namespace dialog::editor
 			{
 				AddOptionPane(regKey);
 			}
-			if (section == IDS_OPTIONS_ADDINS)
+			if (advanced && section == IDS_OPTIONS_ADDINS)
 			{
 				AddPane(viewpane::AddInApprovalPane::Create(ADDIN_APPROVAL_PANE_ID));
 			}
