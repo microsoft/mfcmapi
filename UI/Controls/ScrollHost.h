@@ -11,6 +11,7 @@ namespace controls
 	private:
 		struct ScrollGeometry
 		{
+			RECT bounds{};
 			int trackTop{};
 			int trackHeight{};
 			int thumbTop{};

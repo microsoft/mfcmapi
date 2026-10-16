@@ -122,6 +122,7 @@ namespace ui
 	SCALE GetDPIScale() noexcept;
 	HIMAGELIST CreateThemedImageList(HBITMAP hBitmap, int sourceImageSize, const SIZE& targetImageSize);
 
+	void FormatRichEdit(_In_ HWND hWnd, const std::function<void()>& format) noexcept;
 	void ClearEditFormatting(_In_ HWND hWnd, bool bReadOnly) noexcept;
 	void UpdateEditTextColor(_In_ HWND hWnd, bool bReadOnly) noexcept;
 

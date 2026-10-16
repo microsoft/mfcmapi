@@ -234,6 +234,7 @@ namespace viewpane
 		if (m_EditBox.m_hWnd)
 		{
 			ui::SubclassEdit(m_EditBox.m_hWnd, pParent ? pParent->m_hWnd : nullptr, m_bReadOnly);
+			WC_B_S(SetWindowSubclass(m_EditBox.m_hWnd, ThemeProc, 0, reinterpret_cast<DWORD_PTR>(this)));
 			SendMessage(m_EditBox.m_hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(ui::GetUIFont()), false);
 
 			m_bInitialized = true; // We can now call SetEditBoxText
@@ -469,56 +470,81 @@ namespace viewpane
 		}
 	}
 
-	void TextPane::DoHighlights()
+	LRESULT CALLBACK
+	TextPane::ThemeProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam, UINT_PTR subclassID, DWORD_PTR data)
 	{
-		// Disable events and turn off redraw so we can mess with the control without flicker and stuff
-		const auto eventMask = ::SendMessage(m_EditBox.GetSafeHwnd(), EM_SETEVENTMASK, 0, 0);
-		::SendMessage(m_EditBox.GetSafeHwnd(), WM_SETREDRAW, false, 0);
-
-		// Grab the original scroll position
-		const auto originalScroll = POINT{};
-		::SendMessage(m_EditBox.GetSafeHwnd(), EM_GETSCROLLPOS, 0, reinterpret_cast<LPARAM>(&originalScroll));
-
-		// Grab the original range so we can restore it later
-		const auto originalRange = CHARRANGE{};
-		::SendMessage(m_EditBox.GetSafeHwnd(), EM_EXGETSEL, 0, reinterpret_cast<LPARAM>(&originalRange));
-
-		// Select the entire range
-		auto wholeRange = CHARRANGE{0, -1};
-		::SendMessage(m_EditBox.GetSafeHwnd(), EM_EXSETSEL, 0, reinterpret_cast<LPARAM>(&wholeRange));
-
-		// Wipe our current formatting
-		auto charformat = CHARFORMAT2A{};
-		charformat.cbSize = sizeof charformat;
-		charformat.dwMask = CFM_COLOR | CFM_BACKCOLOR;
-		charformat.dwEffects = 0;
-		charformat.crTextColor = MyGetSysColor(m_bReadOnly ? ui::uiColor::TextReadOnly : ui::uiColor::Text);
-		charformat.crBackColor = MyGetSysColor(m_bReadOnly ? ui::uiColor::BackgroundReadOnly : ui::uiColor::Background);
-		::SendMessage(m_EditBox.GetSafeHwnd(), EM_SETCHARFORMAT, SCF_SELECTION, reinterpret_cast<LPARAM>(&charformat));
-
-		for (const auto& range : m_highlights)
+		if (message == WM_NCDESTROY)
 		{
-			if (static_cast<LONG>(range.start) == -1 || static_cast<LONG>(range.end) == -1) continue;
-			auto charrange = CHARRANGE{static_cast<LONG>(range.start), static_cast<LONG>(range.end)};
-			::SendMessage(m_EditBox.GetSafeHwnd(), EM_EXSETSEL, 0, reinterpret_cast<LPARAM>(&charrange));
-
-			charformat.crTextColor = MyGetSysColor(ui::uiColor::TextHighlight);
-			charformat.crBackColor = MyGetSysColor(ui::uiColor::TextHighlightBackground);
-			::SendMessage(
-				m_EditBox.GetSafeHwnd(), EM_SETCHARFORMAT, SCF_SELECTION, reinterpret_cast<LPARAM>(&charformat));
+			RemoveWindowSubclass(hWnd, ThemeProc, subclassID);
+		}
+		else if (message == WM_MFCMAPI_THEMECHANGED)
+		{
+			reinterpret_cast<TextPane*>(data)->DoHighlights();
 		}
 
-		// Set our original selection range back
-		::SendMessage(m_EditBox.GetSafeHwnd(), EM_EXSETSEL, 0, reinterpret_cast<LPARAM>(&originalRange));
-		::SendMessage(m_EditBox.GetSafeHwnd(), EM_HIDESELECTION, false, 0);
+		return DefSubclassProc(hWnd, message, wParam, lParam);
+	}
 
-		// Set our original scroll position
-		::SendMessage(m_EditBox.GetSafeHwnd(), EM_SETSCROLLPOS, 0, reinterpret_cast<LPARAM>(&originalScroll));
+	void TextPane::DoHighlights()
+	{
+		if (!m_EditBox.GetSafeHwnd()) return;
+		ui::FormatRichEdit(m_EditBox.GetSafeHwnd(), [&]() {
+			// Disable events and turn off redraw so we can mess with the control without flicker and stuff
+			const auto eventMask = ::SendMessage(m_EditBox.GetSafeHwnd(), EM_SETEVENTMASK, 0, 0);
+			::SendMessage(m_EditBox.GetSafeHwnd(), WM_SETREDRAW, false, 0);
 
-		// Reenable redraw and events
-		::SendMessage(m_EditBox.GetSafeHwnd(), WM_SETREDRAW, true, 0);
-		InvalidateRect(m_EditBox.GetSafeHwnd(), nullptr, true);
-		::SendMessage(m_EditBox.GetSafeHwnd(), EM_SETEVENTMASK, 0, eventMask);
+			// Grab the original scroll position
+			const auto originalScroll = POINT{};
+			::SendMessage(m_EditBox.GetSafeHwnd(), EM_GETSCROLLPOS, 0, reinterpret_cast<LPARAM>(&originalScroll));
+
+			// Grab the original range so we can restore it later
+			const auto originalRange = CHARRANGE{};
+			::SendMessage(m_EditBox.GetSafeHwnd(), EM_EXGETSEL, 0, reinterpret_cast<LPARAM>(&originalRange));
+
+			// Select the entire range
+			auto wholeRange = CHARRANGE{0, -1};
+			::SendMessage(m_EditBox.GetSafeHwnd(), EM_EXSETSEL, 0, reinterpret_cast<LPARAM>(&wholeRange));
+
+			// Wipe our current formatting
+			auto charformat = CHARFORMAT2A{};
+			charformat.cbSize = sizeof charformat;
+			charformat.dwMask = CFM_COLOR | CFM_BACKCOLOR;
+			charformat.dwEffects = 0;
+			const auto readOnly = (m_EditBox.GetStyle() & ES_READONLY) != 0;
+			const auto disabled = !m_EditBox.IsWindowEnabled();
+			charformat.crTextColor = MyGetSysColor(
+				disabled   ? ui::uiColor::TextDisabled
+				: readOnly ? ui::uiColor::TextReadOnly
+						   : ui::uiColor::Text);
+			charformat.crBackColor =
+				MyGetSysColor(readOnly || disabled ? ui::uiColor::BackgroundReadOnly : ui::uiColor::Background);
+			::SendMessage(
+				m_EditBox.GetSafeHwnd(), EM_SETCHARFORMAT, SCF_SELECTION, reinterpret_cast<LPARAM>(&charformat));
+
+			for (const auto& range : m_highlights)
+			{
+				if (static_cast<LONG>(range.start) == -1 || static_cast<LONG>(range.end) == -1) continue;
+				auto charrange = CHARRANGE{static_cast<LONG>(range.start), static_cast<LONG>(range.end)};
+				::SendMessage(m_EditBox.GetSafeHwnd(), EM_EXSETSEL, 0, reinterpret_cast<LPARAM>(&charrange));
+
+				charformat.crTextColor = MyGetSysColor(ui::uiColor::TextHighlight);
+				charformat.crBackColor = MyGetSysColor(ui::uiColor::TextHighlightBackground);
+				::SendMessage(
+					m_EditBox.GetSafeHwnd(), EM_SETCHARFORMAT, SCF_SELECTION, reinterpret_cast<LPARAM>(&charformat));
+			}
+
+			// Set our original selection range back
+			::SendMessage(m_EditBox.GetSafeHwnd(), EM_EXSETSEL, 0, reinterpret_cast<LPARAM>(&originalRange));
+			::SendMessage(m_EditBox.GetSafeHwnd(), EM_HIDESELECTION, false, 0);
+
+			// Set our original scroll position
+			::SendMessage(m_EditBox.GetSafeHwnd(), EM_SETSCROLLPOS, 0, reinterpret_cast<LPARAM>(&originalScroll));
+
+			// Reenable redraw and events
+			::SendMessage(m_EditBox.GetSafeHwnd(), WM_SETREDRAW, true, 0);
+			InvalidateRect(m_EditBox.GetSafeHwnd(), nullptr, true);
+			::SendMessage(m_EditBox.GetSafeHwnd(), EM_SETEVENTMASK, 0, eventMask);
+		});
 	}
 
 	bool TextPane::containsWindow(HWND hWnd) const noexcept

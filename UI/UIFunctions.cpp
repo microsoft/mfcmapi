@@ -12,6 +12,7 @@
 #include <core/utility/registry.h>
 #include <core/utility/import.h>
 #include <cmath>
+#include <tom.h>
 
 namespace ui
 {
@@ -783,7 +784,8 @@ namespace ui
 		else if (isRichEdit)
 		{
 			const auto bReadOnly = (GetWindowLongPtr(hWnd, GWL_STYLE) & ES_READONLY) != 0;
-			const auto background = bReadOnly ? uiColor::BackgroundReadOnly : uiColor::Background;
+			const auto background =
+				bReadOnly || !IsWindowEnabled(hWnd) ? uiColor::BackgroundReadOnly : uiColor::Background;
 			static_cast<void>(::SendMessage(hWnd, EM_SETBKGNDCOLOR, 0, static_cast<LPARAM>(MyGetSysColor(background))));
 			UpdateEditTextColor(hWnd, bReadOnly);
 		}
@@ -1069,12 +1071,37 @@ namespace ui
 	// We have to force load the system riched20 to ensure this doesn't break since
 	// Office's riched20 apparently doesn't handle CFM_COLOR at all.
 	// Sets our text color, script, and turns off bold, italic, etc formatting.
-	void SetRichEditCharacterFormat(_In_ HWND hWnd, _In_ CHARFORMAT2& cf) noexcept
+	void FormatRichEdit(_In_ HWND hWnd, const std::function<void()>& format) noexcept
 	{
+		IRichEditOle* richEdit = nullptr;
+		if (FAILED(WC_B(::SendMessage(hWnd, EM_GETOLEINTERFACE, 0, reinterpret_cast<LPARAM>(&richEdit))))) return;
+		ITextDocument* document = nullptr;
+		const auto queried = WC_H(richEdit->QueryInterface(IID_PPV_ARGS(&document)));
+		richEdit->Release();
+		if (FAILED(queried)) return;
+
+		// Suspend recording without clearing the user's existing undo/redo history.
+		const auto suspended = WC_H(document->Undo(tomSuspend, nullptr));
+		if (FAILED(suspended))
+		{
+			document->Release();
+			return;
+		}
+
+		const auto modified = ::SendMessage(hWnd, EM_GETMODIFY, 0, 0);
 		const auto eventMask = static_cast<DWORD>(::SendMessage(hWnd, EM_GETEVENTMASK, 0, 0));
 		static_cast<void>(::SendMessage(hWnd, EM_SETEVENTMASK, 0, eventMask & ~ENM_CHANGE));
-		static_cast<void>(::SendMessage(hWnd, EM_SETCHARFORMAT, SCF_ALL, reinterpret_cast<LPARAM>(&cf)));
+		format();
+		WC_H_S(document->Undo(tomResume, nullptr));
+		static_cast<void>(::SendMessage(hWnd, EM_SETMODIFY, modified, 0));
 		static_cast<void>(::SendMessage(hWnd, EM_SETEVENTMASK, 0, eventMask));
+		document->Release();
+	}
+
+	void SetRichEditCharacterFormat(_In_ HWND hWnd, _In_ CHARFORMAT2& cf) noexcept
+	{
+		FormatRichEdit(
+			hWnd, [&]() { WC_B_S(::SendMessage(hWnd, EM_SETCHARFORMAT, SCF_ALL, reinterpret_cast<LPARAM>(&cf))); });
 	}
 
 	void ClearEditFormatting(_In_ HWND hWnd, const bool bReadOnly) noexcept
@@ -1093,7 +1120,8 @@ namespace ui
 	{
 		auto cf = CHARFORMAT2{};
 		cf.cbSize = sizeof cf;
-		cf.dwMask = CFM_COLOR;
+		cf.dwMask = CFM_COLOR | CFM_BACKCOLOR;
+		cf.dwEffects = CFE_AUTOBACKCOLOR;
 		cf.crTextColor = MyGetSysColor(
 			!IsWindowEnabled(hWnd) ? uiColor::TextDisabled
 			: bReadOnly			   ? uiColor::TextReadOnly
@@ -2089,7 +2117,10 @@ namespace ui
 				SetRect(&rc, 0, 0, nWidth, nHeight);
 				static_cast<void>(DrawFrameControl(hdcMem, &rc, DFC_MENU, DFCS_MENUCHECK));
 
-				static_cast<void>(TransparentBlt(
+				const auto oldBrush = SelectObject(hdc, GetSysBrush(cFore));
+				constexpr DWORD destinationCopy = 0x00AA0029;
+				// Keep white mask pixels transparent and paint the black check with the text brush.
+				WC_B_S(MaskBlt(
 					hdc,
 					rcItem.left,
 					(rcItem.top + rcItem.bottom - nHeight) / 2,
@@ -2098,9 +2129,11 @@ namespace ui
 					hdcMem,
 					0,
 					0,
-					nWidth,
-					nHeight,
-					MyGetSysColor(uiColor::Background)));
+					bm,
+					0,
+					0,
+					MAKEROP4(destinationCopy, PATCOPY)));
+				SelectObject(hdc, oldBrush);
 
 #ifdef SKIPBUFFER
 				auto frameRect = rcItem;

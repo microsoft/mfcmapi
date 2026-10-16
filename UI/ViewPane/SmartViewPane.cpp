@@ -289,7 +289,7 @@ namespace viewpane
 
 		switch (lvcd->nmcd.dwDrawStage)
 		{
-		case CDDS_ITEMPOSTPAINT:
+		case CDDS_ITEMPREPAINT:
 		{
 			if (!registry::uiDiag) return;
 			const auto hItem = reinterpret_cast<HTREEITEM>(lvcd->nmcd.dwItemSpec);

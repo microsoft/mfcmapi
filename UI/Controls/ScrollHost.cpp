@@ -35,26 +35,19 @@ namespace controls
 		info.fMask = SIF_RANGE | SIF_PAGE | SIF_POS;
 		if (!::GetScrollInfo(m_hWnd, SB_VERT, &info)) return false;
 
-		auto window = RECT{};
-		::GetWindowRect(m_hWnd, &window);
-		const auto arrowHeight = GetSystemMetrics(SM_CYVSCROLL);
-		geometry->trackTop = window.top + arrowHeight;
-		geometry->trackHeight = max(0, window.bottom - window.top - 2 * arrowHeight);
+		auto bar = SCROLLBARINFO{sizeof SCROLLBARINFO};
+		if (!WC_D(BOOL, ::GetScrollBarInfo(m_hWnd, OBJID_VSCROLL, &bar))) return false;
+		if (bar.rgstate[0] & (STATE_SYSTEM_INVISIBLE | STATE_SYSTEM_OFFSCREEN)) return false;
+		geometry->bounds = bar.rcScrollBar;
+		geometry->trackTop = bar.rcScrollBar.top + bar.dxyLineButton;
+		geometry->trackHeight = max(0, bar.rcScrollBar.bottom - bar.rcScrollBar.top - 2 * bar.dxyLineButton);
 		geometry->minimum = info.nMin;
 
 		const auto range = max(1, info.nMax - info.nMin + 1);
 		const auto page = min(static_cast<int>(info.nPage), range);
 		geometry->maximumPosition = max(info.nMin, info.nMax - page + 1);
-		geometry->thumbHeight = page ? MulDiv(geometry->trackHeight, page, range) : GetSystemMetrics(SM_CYVTHUMB);
-		geometry->thumbHeight = min(geometry->trackHeight, max(GetSystemMetrics(SM_CYVTHUMB), geometry->thumbHeight));
-		geometry->thumbTop = geometry->trackTop;
-		if (geometry->maximumPosition > geometry->minimum && geometry->trackHeight > geometry->thumbHeight)
-		{
-			geometry->thumbTop += MulDiv(
-				geometry->trackHeight - geometry->thumbHeight,
-				info.nPos - geometry->minimum,
-				geometry->maximumPosition - geometry->minimum);
-		}
+		geometry->thumbHeight = bar.xyThumbBottom - bar.xyThumbTop;
+		geometry->thumbTop = bar.rcScrollBar.top + bar.xyThumbTop;
 
 		return true;
 	}
@@ -75,15 +68,9 @@ namespace controls
 		{
 		case WM_NCHITTEST:
 		{
-			auto client = RECT{};
-			GetClientRect(&client);
-			auto clientRight = POINT{client.right, client.top};
-			::ClientToScreen(m_hWnd, &clientRight);
-
-			auto window = RECT{};
-			GetWindowRect(&window);
+			auto geometry = ScrollGeometry{};
 			const auto point = POINT{GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)};
-			if (point.x >= clientRight.x && point.x < window.right && point.y >= window.top && point.y < window.bottom)
+			if (GetScrollGeometry(&geometry) && ::PtInRect(&geometry.bounds, point))
 			{
 				return HTVSCROLL;
 			}
@@ -97,12 +84,10 @@ namespace controls
 				if (!GetScrollGeometry(&geometry)) break;
 
 				const auto y = GET_Y_LPARAM(lParam);
-				auto window = RECT{};
-				GetWindowRect(&window);
 				auto command = SB_ENDSCROLL;
 				if (y < geometry.trackTop)
 					command = SB_LINEUP;
-				else if (y >= window.bottom - GetSystemMetrics(SM_CYVSCROLL))
+				else if (y >= geometry.trackTop + geometry.trackHeight)
 					command = SB_LINEDOWN;
 				else if (y < geometry.thumbTop)
 					command = SB_PAGEUP;
@@ -147,18 +132,16 @@ namespace controls
 			if (wParam == scrollRepeatTimer)
 			{
 				auto geometry = ScrollGeometry{};
-				auto window = RECT{};
 				auto point = POINT{};
-				if (!GetScrollGeometry(&geometry) || !::GetWindowRect(m_hWnd, &window) || !::GetCursorPos(&point))
-					return 0;
+				if (!GetScrollGeometry(&geometry) || !WC_D(BOOL, ::GetCursorPos(&point))) return 0;
 
-				const auto arrowHeight = GetSystemMetrics(SM_CYVSCROLL);
 				const auto pointerInCommand =
-					(m_repeatCommand == SB_LINEUP && point.y < geometry.trackTop) ||
-					(m_repeatCommand == SB_LINEDOWN && point.y >= window.bottom - arrowHeight) ||
-					(m_repeatCommand == SB_PAGEUP && point.y >= geometry.trackTop && point.y < geometry.thumbTop) ||
-					(m_repeatCommand == SB_PAGEDOWN && point.y >= geometry.thumbTop + geometry.thumbHeight &&
-					 point.y < window.bottom - arrowHeight);
+					::PtInRect(&geometry.bounds, point) &&
+					((m_repeatCommand == SB_LINEUP && point.y < geometry.trackTop) ||
+					 (m_repeatCommand == SB_LINEDOWN && point.y >= geometry.trackTop + geometry.trackHeight) ||
+					 (m_repeatCommand == SB_PAGEUP && point.y >= geometry.trackTop && point.y < geometry.thumbTop) ||
+					 (m_repeatCommand == SB_PAGEDOWN && point.y >= geometry.thumbTop + geometry.thumbHeight &&
+					  point.y < geometry.trackTop + geometry.trackHeight));
 				if (pointerInCommand)
 				{
 					::SendMessage(m_parent, WM_VSCROLL, static_cast<WPARAM>(m_repeatCommand), 0);
