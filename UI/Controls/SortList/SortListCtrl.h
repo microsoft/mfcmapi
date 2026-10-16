@@ -100,6 +100,7 @@ namespace controls::sortlistctrl
 		void OnDeleteAllItems(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult) noexcept;
 		void OnDeleteItem(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 		void PaintScrollCorner() const noexcept;
+		void RefreshImages();
 		void AutoSizeColumn(int iColumn, int iMaxWidth, int iMinWidth);
 		void OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult) noexcept;
 		_Check_return_ static int CALLBACK

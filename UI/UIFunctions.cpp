@@ -11,6 +11,7 @@
 #include <core/addin/mfcmapi.h>
 #include <core/utility/registry.h>
 #include <core/utility/import.h>
+#include <cmath>
 
 namespace ui
 {
@@ -787,6 +788,8 @@ namespace ui
 			UpdateEditTextColor(hWnd, bReadOnly);
 		}
 
+		::SendMessage(hWnd, WM_MFCMAPI_THEMECHANGED, 0, 0);
+
 		if (preserveScrollInfo)
 		{
 			::SetScrollInfo(hWnd, SB_VERT, &scrollInfo, false);
@@ -916,40 +919,127 @@ namespace ui
 		const auto dpiX = GetDeviceCaps(hdcWin, LOGPIXELSX);
 		const auto dpiY = GetDeviceCaps(hdcWin, LOGPIXELSY);
 
-		if (hdcWin) DeleteDC(hdcWin);
+		if (hdcWin) ReleaseDC(nullptr, hdcWin);
 		return {dpiX, dpiY, 96};
 	}
 
-	HBITMAP ScaleBitmap(HBITMAP hBitmap, const SCALE& scale) noexcept
+	HIMAGELIST CreateThemedImageList(HBITMAP hBitmap, const int sourceImageSize, const SIZE& targetImageSize)
 	{
 		auto bm = BITMAP{};
-		::GetObject(hBitmap, sizeof(BITMAP), &bm);
+		const auto objectSize = WC_D(int, ::GetObject(hBitmap, sizeof bm, &bm));
+		if (!objectSize) return nullptr;
+		if (sourceImageSize <= 0 || bm.bmHeight != sourceImageSize || bm.bmWidth <= 0 || bm.bmWidth % sourceImageSize ||
+			targetImageSize.cx <= 0 || targetImageSize.cy <= 0)
+		{
+			WC_H_S(E_INVALIDARG);
+			return nullptr;
+		}
 
-		const SIZE sizeSrc = {bm.bmWidth, bm.bmHeight};
-		const SIZE sizeDst = {scale.x * sizeSrc.cx / scale.denominator, scale.y * sizeSrc.cy / scale.denominator};
+		const auto imageCount = bm.bmWidth / sourceImageSize;
+		if (targetImageSize.cx > MAXLONG / imageCount)
+		{
+			WC_H_S(E_INVALIDARG);
+			return nullptr;
+		}
 
-		const auto hdcWin = GetWindowDC(nullptr);
-		const auto hRet = CreateCompatibleBitmap(hdcWin, sizeDst.cx, sizeDst.cy);
+		auto info = BITMAPINFO{};
+		info.bmiHeader.biSize = sizeof info.bmiHeader;
+		info.bmiHeader.biWidth = bm.bmWidth;
+		info.bmiHeader.biHeight = -bm.bmHeight;
+		info.bmiHeader.biPlanes = 1;
+		info.bmiHeader.biBitCount = 32;
+		info.bmiHeader.biCompression = BI_RGB;
+		auto pixels = std::vector<RGBQUAD>(static_cast<size_t>(bm.bmWidth) * bm.bmHeight);
+		CClientDC dc(nullptr);
+		const auto rows =
+			WC_D(int, GetDIBits(dc.GetSafeHdc(), hBitmap, 0, bm.bmHeight, pixels.data(), &info, DIB_RGB_COLORS));
+		if (!rows) return nullptr;
+		if (rows != bm.bmHeight)
+		{
+			WC_H_S(E_UNEXPECTED);
+			return nullptr;
+		}
 
-		const auto hdcSrc = CreateCompatibleDC(hdcWin);
-		const auto hdcDst = CreateCompatibleDC(hdcWin);
+		const auto transparent = MyGetSysColor(uiColor::BitmapTransBack);
+		const auto foregroundKey = MyGetSysColor(uiColor::BitmapTransFore);
+		const auto foreground = MyGetSysColor(uiColor::Text);
 
-		const auto bmpSrc = SelectObject(hdcSrc, hBitmap);
-		const auto bmpDst = SelectObject(hdcDst, hRet);
+		// Magenta is transparent, cyan is theme ink, and all other colors are literal.
+		for (auto& pixel : pixels)
+		{
+			auto color = RGB(pixel.rgbRed, pixel.rgbGreen, pixel.rgbBlue);
+			if (color == transparent)
+			{
+				pixel = {};
+				continue;
+			}
 
-		static_cast<void>(
-			StretchBlt(hdcDst, 0, 0, sizeDst.cx, sizeDst.cy, hdcSrc, 0, 0, sizeSrc.cx, sizeSrc.cy, SRCCOPY));
+			if (color == foregroundKey) color = foreground;
+			pixel = {GetBValue(color), GetGValue(color), GetRValue(color), 255};
+		}
 
-		static_cast<void>(SelectObject(hdcSrc, bmpSrc));
-		static_cast<void>(SelectObject(hdcDst, bmpDst));
+		const auto width = targetImageSize.cx * imageCount;
+		info.bmiHeader.biWidth = width;
+		info.bmiHeader.biHeight = -targetImageSize.cy;
+		info.bmiHeader.biSizeImage = 0;
+		void* bits = nullptr;
+		const auto hScaled = WC_D(HBITMAP, CreateDIBSection(dc.GetSafeHdc(), &info, DIB_RGB_COLORS, &bits, nullptr, 0));
+		if (!hScaled) return nullptr;
+		CBitmap scaled;
+		scaled.Attach(hScaled);
+		const auto target = static_cast<RGBQUAD*>(bits);
 
-		if (bmpDst) DeleteObject(bmpDst);
-		if (bmpSrc) DeleteObject(bmpSrc);
-		if (hdcDst) DeleteDC(hdcDst);
-		if (hdcSrc) DeleteDC(hdcSrc);
-		if (hdcWin) DeleteDC(hdcWin);
+		// Area-filter premultiplied pixels within each cell, never across neighboring icons.
+		for (auto image = 0; image < imageCount; ++image)
+		{
+			for (auto y = 0; y < targetImageSize.cy; ++y)
+			{
+				const auto top = static_cast<double>(y) * sourceImageSize / targetImageSize.cy;
+				const auto bottom = static_cast<double>(y + 1) * sourceImageSize / targetImageSize.cy;
+				for (auto x = 0; x < targetImageSize.cx; ++x)
+				{
+					const auto left = static_cast<double>(x) * sourceImageSize / targetImageSize.cx;
+					const auto right = static_cast<double>(x + 1) * sourceImageSize / targetImageSize.cx;
+					double red = 0, green = 0, blue = 0, alpha = 0;
+					for (auto sy = static_cast<int>(top); sy < sourceImageSize && sy < std::ceil(bottom); ++sy)
+					{
+						const auto weightY =
+							(std::min)(bottom, static_cast<double>(sy + 1)) - (std::max)(top, static_cast<double>(sy));
+						for (auto sx = static_cast<int>(left); sx < sourceImageSize && sx < std::ceil(right); ++sx)
+						{
+							const auto weight = weightY * ((std::min)(right, static_cast<double>(sx + 1)) -
+														   (std::max)(left, static_cast<double>(sx)));
+							const auto& pixel =
+								pixels[static_cast<size_t>(sy) * bm.bmWidth + image * sourceImageSize + sx];
+							red += pixel.rgbRed * weight;
+							green += pixel.rgbGreen * weight;
+							blue += pixel.rgbBlue * weight;
+							alpha += pixel.rgbReserved * weight;
+						}
+					}
 
-		return hRet;
+					const auto area = (right - left) * (bottom - top);
+					target[static_cast<size_t>(y) * width + image * targetImageSize.cx + x] = {
+						static_cast<BYTE>(blue / area + 0.5),
+						static_cast<BYTE>(green / area + 0.5),
+						static_cast<BYTE>(red / area + 0.5),
+						static_cast<BYTE>(alpha / area + 0.5)};
+				}
+			}
+		}
+
+		const auto images =
+			WC_D(HIMAGELIST, ImageList_Create(targetImageSize.cx, targetImageSize.cy, ILC_COLOR32, imageCount, 1));
+		if (!images) return nullptr;
+		const auto firstImage = ImageList_Add(images, hScaled, nullptr);
+		if (firstImage == -1)
+		{
+			WC_H_S(E_FAIL);
+			WC_B_S(ImageList_Destroy(images));
+			return nullptr;
+		}
+
+		return images;
 	}
 
 	void DrawUITextW(
@@ -1332,8 +1422,7 @@ namespace ui
 		SetDCBrushColor(hdcTarget, cReplace);
 		FillRect(hdcTarget, &rcBM, static_cast<HBRUSH>(GetStockObject(DC_BRUSH)));
 
-		static_cast<void>(
-			TransparentBlt(hdcTarget, 0, 0, iWidth, iHeight, hdcSource, 0, 0, iWidth, iHeight, cSource));
+		static_cast<void>(TransparentBlt(hdcTarget, 0, 0, iWidth, iHeight, hdcSource, 0, 0, iWidth, iHeight, cSource));
 		if (hbmTarget) DeleteObject(hbmTarget);
 	}
 
@@ -1375,8 +1464,9 @@ namespace ui
 		const int iWidth = rcTarget.right - rcTarget.left;
 		const int iHeight = rcTarget.bottom - rcTarget.top;
 		const auto cForeground = foreground == CLR_INVALID ? MyGetSysColor(uiColor::FrameSelected) : foreground;
-		const auto cBackground =
-			background == CLR_INVALID ? MyGetSysColor(bHover ? uiColor::GlowBackground : uiColor::Background) : background;
+		const auto cBackground = background == CLR_INVALID
+									 ? MyGetSysColor(bHover ? uiColor::GlowBackground : uiColor::Background)
+									 : background;
 
 		// hdcBitmap: Load the image
 		const auto hdcBitmap = CreateCompatibleDC(hdc);
@@ -1407,13 +1497,7 @@ namespace ui
 			cBackground);
 
 		const auto hdcShift = CreateCompatibleDC(hdc);
-		ShiftBitmap(
-			hdcBackReplace,
-			hdcShift,
-			bm.bmWidth,
-			bm.bmHeight,
-			offset,
-			cBackground);
+		ShiftBitmap(hdcBackReplace, hdcShift, bm.bmWidth, bm.bmHeight, offset, cBackground);
 
 		// In case the original bitmap dimensions doesn't match our target dimension, we stretch it to fit
 		// We can get better results if the original bitmap happens to match.

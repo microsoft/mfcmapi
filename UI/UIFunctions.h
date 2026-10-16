@@ -120,7 +120,7 @@ namespace ui
 	};
 
 	SCALE GetDPIScale() noexcept;
-	HBITMAP ScaleBitmap(HBITMAP hBitmap, const SCALE& scale) noexcept;
+	HIMAGELIST CreateThemedImageList(HBITMAP hBitmap, int sourceImageSize, const SIZE& targetImageSize);
 
 	void ClearEditFormatting(_In_ HWND hWnd, bool bReadOnly) noexcept;
 	void UpdateEditTextColor(_In_ HWND hWnd, bool bReadOnly) noexcept;
