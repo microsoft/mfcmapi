@@ -88,6 +88,7 @@ namespace ui
 	void RedrawAllWindows() noexcept;
 	void ApplyThemeToAllWindows() noexcept;
 	void StyleScrollHost(_In_ HWND hWnd) noexcept;
+	void PaintScrollCorner(_In_ HWND hWnd) noexcept;
 	_Check_return_ uiTheme GetEffectiveTheme() noexcept;
 
 	void UpdateMenuString(_In_ HWND hWnd, UINT uiMenuTag, UINT uidNewString);

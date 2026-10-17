@@ -31,6 +31,7 @@ namespace controls
 	ON_NOTIFY_REFLECT(TVN_GETDISPINFO, OnGetDispInfo)
 	ON_NOTIFY_REFLECT(TVN_GETINFOTIP, OnGetInfoTip)
 	ON_NOTIFY_REFLECT(TVN_ITEMEXPANDING, OnItemExpanding)
+	ON_NOTIFY_REFLECT(TVN_ITEMEXPANDED, OnItemExpanded)
 	ON_NOTIFY_REFLECT(TVN_SELCHANGED, OnSelChanged)
 	ON_NOTIFY_REFLECT(TVN_ENDLABELEDIT, OnEndLabelEdit)
 	ON_NOTIFY_REFLECT(TVN_DELETEITEM, OnDeleteItem)
@@ -43,6 +44,13 @@ namespace controls
 		// Read the current hover local, since we need to clear it before we do any drawing
 		switch (message)
 		{
+		case WM_NCPAINT:
+		case WM_PAINT:
+		{
+			const auto result = CTreeCtrl::WindowProc(message, wParam, lParam);
+			ui::PaintScrollCorner(m_hWnd);
+			return result;
+		}
 		case WM_GETDLGCODE:
 			return OnGetDlgCode();
 		case WM_CONTEXTMENU:
@@ -349,6 +357,13 @@ namespace controls
 				}
 			}
 		}
+	}
+
+	void StyleTreeCtrl::OnItemExpanded(_In_ NMHDR* /*pNMHDR*/, _In_ LRESULT* pResult)
+	{
+		*pResult = 0;
+		// Expansion after scrolling can reuse stale pixels; redraw the completed layout.
+		WC_B_S(::RedrawWindow(m_hWnd, nullptr, nullptr, RDW_INVALIDATE | RDW_ERASE | RDW_FRAME));
 	}
 
 	void StyleTreeCtrl::Refresh()

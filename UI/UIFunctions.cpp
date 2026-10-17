@@ -730,6 +730,34 @@ namespace ui
 		EC_B_S(::SetProp(hWnd, SCROLL_HOST, reinterpret_cast<HANDLE>(true)));
 	}
 
+	void PaintScrollCorner(_In_ HWND hWnd) noexcept
+	{
+		const auto style = ::GetWindowLongPtr(hWnd, GWL_STYLE);
+		if ((style & (WS_HSCROLL | WS_VSCROLL)) != (WS_HSCROLL | WS_VSCROLL)) return;
+
+		auto horizontal = SCROLLBARINFO{sizeof SCROLLBARINFO};
+		auto vertical = SCROLLBARINFO{sizeof SCROLLBARINFO};
+		if (!WC_D(BOOL, ::GetScrollBarInfo(hWnd, OBJID_HSCROLL, &horizontal)) ||
+			!WC_D(BOOL, ::GetScrollBarInfo(hWnd, OBJID_VSCROLL, &vertical)) ||
+			(horizontal.rgstate[0] & (STATE_SYSTEM_INVISIBLE | STATE_SYSTEM_OFFSCREEN)) != 0 ||
+			(vertical.rgstate[0] & (STATE_SYSTEM_INVISIBLE | STATE_SYSTEM_OFFSCREEN)) != 0)
+			return;
+
+		auto window = RECT{};
+		if (!WC_D(BOOL, ::GetWindowRect(hWnd, &window))) return;
+		const auto corner = RECT{
+			vertical.rcScrollBar.left - window.left,
+			horizontal.rcScrollBar.top - window.top,
+			vertical.rcScrollBar.right - window.left,
+			horizontal.rcScrollBar.bottom - window.top};
+		const auto hdc = WC_D(HDC, ::GetWindowDC(hWnd));
+		if (hdc)
+		{
+			WC_B_S(::FillRect(hdc, &corner, GetSysBrush(uiColor::Background)));
+			WC_B_S(::ReleaseDC(hWnd, hdc));
+		}
+	}
+
 	BOOL CALLBACK ApplyThemeToChild(_In_ HWND hWnd, LPARAM /*lParam*/) noexcept
 	{
 		WCHAR className[64] = {};
