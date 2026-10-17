@@ -119,9 +119,10 @@ namespace dialog
 		const auto ptInRect = [](const RECT& rc, POINT p) noexcept {
 			return p.x >= rc.left && p.x < rc.right && p.y >= rc.top && p.y < rc.bottom;
 		};
+		const auto dwWinStyle = ::GetWindowLongPtr(hWnd, GWL_STYLE);
 		if (ptInRect(rcCloseIcon, pt)) ret = HTCLOSE;
-		if (ptInRect(rcMaxIcon, pt)) ret = HTMAXBUTTON;
-		if (ptInRect(rcMinIcon, pt)) ret = HTMINBUTTON;
+		if (WS_MAXIMIZEBOX == (dwWinStyle & WS_MAXIMIZEBOX) && ptInRect(rcMaxIcon, pt)) ret = HTMAXBUTTON;
+		if (WS_MINIMIZEBOX == (dwWinStyle & WS_MINIMIZEBOX) && ptInRect(rcMinIcon, pt)) ret = HTMINBUTTON;
 
 		output::DebugPrint(output::dbgLevel::UI, L"CheckButtons result: %ws\r\n", FormatHT(ret).c_str());
 
@@ -244,6 +245,14 @@ namespace dialog
 		case WM_NCPAINT:
 			ui::DrawWindowFrame(m_hWnd, true, m_iStatusHeight);
 			return 0;
+		case WM_SHOWWINDOW:
+			if (wParam) ui::ApplyTheme(m_hWnd);
+			break;
+		case WM_SETTINGCHANGE:
+		case WM_SYSCOLORCHANGE:
+		case WM_THEMECHANGED:
+			ui::ApplyThemeToAllWindows();
+			break;
 		case WM_CREATE:
 			// Ensure all windows group together by enforcing a consistent App User Model ID.
 			// We don't use SetCurrentProcessExplicitAppUserModelID because logging on to MAPI somehow breaks this.

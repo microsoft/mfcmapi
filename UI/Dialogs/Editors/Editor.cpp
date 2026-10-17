@@ -63,7 +63,6 @@ namespace dialog::editor
 		TRACE_CONSTRUCTOR(CLASS);
 
 		m_bEnableScroll = false;
-		m_hWndVertScroll = nullptr;
 		m_iScrollClient = 0;
 		m_bScrollVisible = false;
 
@@ -216,19 +215,18 @@ namespace dialog::editor
 					m_hWnd,
 					WM_VSCROLL,
 					nLines < 0 ? static_cast<WPARAM>(SB_LINEDOWN) : static_cast<WPARAM>(SB_LINEUP),
-					reinterpret_cast<LPARAM>(m_hWndVertScroll));
+					0);
 			}
 			break;
 		}
 		case WM_VSCROLL:
 		{
 			const auto wScrollType = LOWORD(wParam);
-			const auto hWndScroll = reinterpret_cast<HWND>(lParam);
 			auto si = SCROLLINFO{};
 
 			si.cbSize = sizeof si;
 			si.fMask = SIF_ALL;
-			::GetScrollInfo(hWndScroll, SB_CTL, &si);
+			::GetScrollInfo(m_ScrollWindow.GetSafeHwnd(), SB_VERT, &si);
 
 			// Save the position for comparison later on.
 			const auto yPos = si.nPos;
@@ -253,8 +251,10 @@ namespace dialog::editor
 				si.nPos += si.nPage;
 				break;
 			case SB_THUMBTRACK:
-				si.nPos = si.nTrackPos;
+			{
+				si.nPos = m_ScrollWindow.GetTrackPosition();
 				break;
+			}
 			default:
 				break;
 			}
@@ -262,8 +262,8 @@ namespace dialog::editor
 			// Set the position and then retrieve it. Due to adjustments
 			// by Windows it may not be the same as the value set.
 			si.fMask = SIF_POS;
-			::SetScrollInfo(hWndScroll, SB_CTL, &si, TRUE);
-			::GetScrollInfo(hWndScroll, SB_CTL, &si);
+			::SetScrollInfo(m_ScrollWindow.GetSafeHwnd(), SB_VERT, &si, TRUE);
+			::GetScrollInfo(m_ScrollWindow.GetSafeHwnd(), SB_VERT, &si);
 
 			// If the position has changed, scroll window and update it.
 			if (si.nPos != yPos)
@@ -292,36 +292,6 @@ namespace dialog::editor
 	{
 		auto pane = GetPane(id);
 		if (pane) pane->SetLabel(szLabel);
-	}
-
-	LRESULT CALLBACK
-	DrawScrollProc(_In_ HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData)
-	{
-		LRESULT lRes = 0;
-		if (ui::HandleControlUI(uMsg, wParam, lParam, &lRes)) return lRes;
-
-		switch (uMsg)
-		{
-		case WM_COMMAND:
-		{
-			const auto nCode = HIWORD(wParam);
-			switch (nCode)
-			{
-			case BN_CLICKED:
-			case BN_SETFOCUS:
-			case EN_SETFOCUS:
-				return ::SendMessage(reinterpret_cast<HWND>(dwRefData), uMsg, wParam, lParam);
-			}
-			break;
-		}
-		case WM_NEXTDLGCTL:
-			// Ensure tabs are handled by parent dialog
-			return ::SendMessage(reinterpret_cast<HWND>(dwRefData), uMsg, wParam, lParam);
-		case WM_NCDESTROY:
-			RemoveWindowSubclass(hWnd, DrawScrollProc, uIdSubclass);
-			return DefSubclassProc(hWnd, uMsg, wParam, lParam);
-		}
-		return DefSubclassProc(hWnd, uMsg, wParam, lParam);
 	}
 
 	// The order these controls are created dictates our tab order - be careful moving things around!
@@ -365,38 +335,13 @@ namespace dialog::editor
 		// setup to get button widths
 		const auto hdc = ::GetDC(m_hWnd);
 		if (!hdc) return false; // fatal error
-		const auto hfontOld = SelectObject(hdc, ui::GetSegoeFont());
+		const auto hfontOld = SelectObject(hdc, ui::GetUIFont());
 
 		CWnd* pParent = this;
 		if (m_bEnableScroll)
 		{
-			m_ScrollWindow.CreateEx(
-				0,
-				_T("Static"), // STRING_OK
-				nullptr,
-				WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN,
-				CRect(0, 0, 0, 0),
-				this,
-				NULL);
-			// Necessary for TAB to work. Without this, all TABS get stuck on the control
-			// instead of passing to the children.
-			EC_B_S(m_ScrollWindow.ModifyStyleEx(0, WS_EX_CONTROLPARENT));
-
-			m_hWndVertScroll = ::CreateWindowEx(
-				0,
-				_T("SCROLLBAR"), // STRING_OK
-				nullptr,
-				WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | SBS_VERT | SBS_RIGHTALIGN,
-				0,
-				0,
-				0,
-				0,
-				m_hWnd,
-				nullptr,
-				nullptr,
-				nullptr);
-			// Subclass static control so we can ensure we're drawing everything right
-			SetWindowSubclass(m_ScrollWindow.m_hWnd, DrawScrollProc, 0, reinterpret_cast<DWORD_PTR>(m_hWnd));
+			EC_B_S(m_ScrollWindow.Create(this));
+			::ShowScrollBar(m_ScrollWindow.GetSafeHwnd(), SB_VERT, FALSE);
 			pParent = &m_ScrollWindow;
 		}
 
@@ -631,7 +576,7 @@ namespace dialog::editor
 		auto cx = 0;
 
 		const auto hdc = ::GetDC(m_hWnd);
-		const auto hfontOld = SelectObject(hdc, ui::GetSegoeFont());
+		const auto hfontOld = SelectObject(hdc, ui::GetUIFont());
 
 		auto iPromptLineCount = 0;
 		if (m_bHasPrompt)
@@ -904,54 +849,38 @@ namespace dialog::editor
 		auto iScrollPos = 0;
 		if (m_bEnableScroll)
 		{
-			auto iScrollWindowWidth = cx;
+			::SetWindowPos(m_ScrollWindow.m_hWnd, nullptr, 0, iCYTop, cx, iCYBottom - iCYTop, SWP_NOZORDER);
+
 			if (iCYBottom - iCYTop < m_iScrollClient)
 			{
-				const auto iScrollBarWidth = GetSystemMetrics(SM_CXVSCROLL);
-				// This positions the scroll bar on the right just iCXMargin from the edge
-				iScrollWindowWidth -= iScrollBarWidth - iCXMargin;
-				output::DebugPrint(
-					output::dbgLevel::Draw,
-					L"CEditor::OnSize Scroll iScrollBarWidth =%d new iFullWidth=%d\n",
-					iScrollBarWidth,
-					iFullWidth);
-				output::DebugPrint(
-					output::dbgLevel::Draw, L"CEditor::OnSize m_hWndVertScroll positioned at=%d\n", iScrollWindowWidth);
-				::SetWindowPos(
-					m_hWndVertScroll,
-					nullptr,
-					iScrollWindowWidth,
-					iCYTop,
-					iScrollBarWidth,
-					iCYBottom - iCYTop,
-					SWP_NOZORDER);
 				auto si = SCROLLINFO{};
 				si.cbSize = sizeof si;
 				si.fMask = SIF_POS;
-				::GetScrollInfo(m_hWndVertScroll, SB_CTL, &si);
+				::GetScrollInfo(m_ScrollWindow.GetSafeHwnd(), SB_VERT, &si);
 				iScrollPos = si.nPos;
 
 				si.nMin = 0;
 				si.nMax = m_iScrollClient;
 				si.nPage = iCYBottom - iCYTop;
 				si.fMask = SIF_RANGE | SIF_PAGE;
-				::SetScrollInfo(m_hWndVertScroll, SB_CTL, &si, FALSE);
-				::ShowScrollBar(m_hWndVertScroll, SB_CTL, TRUE);
+				::SetScrollInfo(m_ScrollWindow.GetSafeHwnd(), SB_VERT, &si, FALSE);
+				::ShowScrollBar(m_ScrollWindow.GetSafeHwnd(), SB_VERT, TRUE);
+				si.fMask = SIF_POS;
+				::GetScrollInfo(m_ScrollWindow.GetSafeHwnd(), SB_VERT, &si);
+				iScrollPos = si.nPos;
 				m_bScrollVisible = true;
 			}
 			else
 			{
-				::ShowScrollBar(m_hWndVertScroll, SB_CTL, FALSE);
+				::ShowScrollBar(m_ScrollWindow.GetSafeHwnd(), SB_VERT, FALSE);
 				m_bScrollVisible = false;
 			}
 
-			output::DebugPrint(output::dbgLevel::Draw, L"CEditor::OnSize m_ScrollWindow positioned at=%d\n", iCXMargin);
-			::SetWindowPos(
-				m_ScrollWindow.m_hWnd, nullptr, 0, iCYTop, iScrollWindowWidth, iCYBottom - iCYTop, SWP_NOZORDER);
 			iCYTop = -iScrollPos; // We get scrolling for free by adjusting our top
 
-			// Our pane width should now be the scroll width minus two margins
-			iFullWidth = iScrollWindowWidth - 2 * iCXMargin;
+			auto rcScroll = RECT{};
+			::GetClientRect(m_ScrollWindow.m_hWnd, &rcScroll);
+			iFullWidth = rcScroll.right - rcScroll.left - 2 * iCXMargin;
 		}
 
 		auto hdwp = WC_D(HDWP, BeginDeferWindowPos(2));
@@ -1238,7 +1167,7 @@ namespace dialog::editor
 		const auto pane = std::dynamic_pointer_cast<viewpane::DropDownPane>(GetPane(id));
 		if (pane)
 		{
-			return pane->GetDropDown();
+			return pane->GetDropDownSelection();
 		}
 
 		return CB_ERR;
@@ -1249,7 +1178,7 @@ namespace dialog::editor
 		const auto pane = std::dynamic_pointer_cast<viewpane::DropDownPane>(GetPane(id));
 		if (pane)
 		{
-			return pane->GetDropDownValue();
+			return pane->GetDropDownSelectionValue();
 		}
 
 		return 0;
@@ -1344,7 +1273,7 @@ namespace dialog::editor
 		auto si = SCROLLINFO{};
 		si.cbSize = sizeof si;
 		si.fMask = SIF_POS;
-		::GetScrollInfo(m_hWndVertScroll, SB_CTL, &si);
+		::GetScrollInfo(m_ScrollWindow.GetSafeHwnd(), SB_VERT, &si);
 		output::DebugPrint(output::dbgLevel::Generic, L"si.nPos = %d\n", si.nPos);
 		auto rcScroll = RECT{};
 		::GetClientRect(m_ScrollWindow.GetSafeHwnd(), &rcScroll);
@@ -1384,7 +1313,7 @@ namespace dialog::editor
 		// Adjust scroll bar
 		si.fMask = SIF_POS;
 		si.nPos = si.nPos + iScroll;
-		::SetScrollInfo(m_hWndVertScroll, SB_CTL, &si, TRUE);
+		::SetScrollInfo(m_ScrollWindow.GetSafeHwnd(), SB_VERT, &si, TRUE);
 
 		// Adjust view
 		::ScrollWindowEx(

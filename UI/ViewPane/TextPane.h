@@ -80,6 +80,8 @@ namespace viewpane
 		std::wstring GetUIValue() const;
 		void CommitUIValues() override;
 		void SetEditBoxText();
+		static LRESULT CALLBACK
+		ThemeProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam, UINT_PTR subclassID, DWORD_PTR data);
 
 		std::wstring m_lpszW;
 		bool m_bCommitted{false};

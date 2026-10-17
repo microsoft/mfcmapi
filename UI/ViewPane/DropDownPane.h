@@ -10,11 +10,12 @@ namespace viewpane
 			int paneID,
 			UINT uidLabel,
 			ULONG ulDropList,
-			_In_opt_count_(ulDropList) UINT* lpuidDropList,
+			_In_opt_count_(ulDropList) const UINT* lpuidDropList,
 			bool bReadOnly);
 		static std::shared_ptr<DropDownPane> CreateGuid(int paneID, UINT uidLabel, bool bReadOnly);
 
 		void SetDropDownSelection(_In_ const std::wstring& szText);
+		void SetDropDownSelection(int iSelection);
 		void InsertDropString(_In_ const std::wstring& szText, ULONG ulValue);
 		_Check_return_ std::wstring GetDropStringUseControl() const;
 		_Check_return_ int GetDropDownSelection() const;

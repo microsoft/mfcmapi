@@ -1156,7 +1156,10 @@ namespace controls::sortlistctrl
 
 	void CSingleMAPIPropListCtrl::OnCopyProperty() const
 	{
-		cache::CGlobalCache::getInstance().SetPropertyToCopy(GetSelectedPropModelData(), m_lpPropBag);
+		if (!m_lpPropBag) return;
+		const auto propModelData = GetSelectedPropModelData();
+		if (!propModelData) return;
+		cache::CGlobalCache::getInstance().SetPropertyToCopy(propModelData, m_lpPropBag);
 	}
 
 	void CSingleMAPIPropListCtrl::OnPasteProperty()

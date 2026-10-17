@@ -13,12 +13,13 @@ namespace controls
 		m_bReadOnly = bReadOnly;
 
 		auto style = TVS_HASBUTTONS | TVS_LINESATROOT | TVS_DISABLEDRAGDROP | TVS_SHOWSELALWAYS | TVS_FULLROWSELECT |
-					 WS_CHILD | WS_TABSTOP | WS_CLIPSIBLINGS | WS_VISIBLE;
+					 TVS_INFOTIP | WS_CHILD | WS_TABSTOP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_VISIBLE;
 		if (!bReadOnly) style |= TVS_EDITLABELS;
 		CTreeCtrl::Create(style, CRect(0, 0, 0, 0), pCreateParent, IDC_FOLDER_TREE);
+		TreeView_SetExtendedStyle(m_hWnd, TVS_EX_DOUBLEBUFFER, TVS_EX_DOUBLEBUFFER);
 		TreeView_SetBkColor(m_hWnd, ui::MyGetSysColor(ui::uiColor::Background));
 		TreeView_SetTextColor(m_hWnd, ui::MyGetSysColor(ui::uiColor::Text));
-		::SendMessageA(m_hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(ui::GetSegoeFont()), false);
+		::SendMessageA(m_hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(ui::GetUIFont()), false);
 	}
 
 	BEGIN_MESSAGE_MAP(StyleTreeCtrl, CTreeCtrl)
@@ -28,7 +29,9 @@ namespace controls
 	ON_NOTIFY_REFLECT(NM_CUSTOMDRAW, OnCustomDraw)
 	ON_NOTIFY_REFLECT(NM_RCLICK, OnRightClick)
 	ON_NOTIFY_REFLECT(TVN_GETDISPINFO, OnGetDispInfo)
+	ON_NOTIFY_REFLECT(TVN_GETINFOTIP, OnGetInfoTip)
 	ON_NOTIFY_REFLECT(TVN_ITEMEXPANDING, OnItemExpanding)
+	ON_NOTIFY_REFLECT(TVN_ITEMEXPANDED, OnItemExpanded)
 	ON_NOTIFY_REFLECT(TVN_SELCHANGED, OnSelChanged)
 	ON_NOTIFY_REFLECT(TVN_ENDLABELEDIT, OnEndLabelEdit)
 	ON_NOTIFY_REFLECT(TVN_DELETEITEM, OnDeleteItem)
@@ -41,6 +44,13 @@ namespace controls
 		// Read the current hover local, since we need to clear it before we do any drawing
 		switch (message)
 		{
+		case WM_NCPAINT:
+		case WM_PAINT:
+		{
+			const auto result = CTreeCtrl::WindowProc(message, wParam, lParam);
+			ui::PaintScrollCorner(m_hWnd);
+			return result;
+		}
 		case WM_GETDLGCODE:
 			return OnGetDlgCode();
 		case WM_CONTEXTMENU:
@@ -49,6 +59,14 @@ namespace controls
 		case WM_KEYDOWN:
 			OnKeyDown(static_cast<UINT>(wParam), LOWORD(lParam), HIWORD(lParam));
 			return 0;
+		case WM_SETFOCUS:
+		case WM_KILLFOCUS:
+		case WM_UPDATEUISTATE:
+		{
+			const auto result = CTreeCtrl::WindowProc(message, wParam, lParam);
+			if (GetSelectedItem()) ui::DrawTreeItemGlow(m_hWnd, GetSelectedItem());
+			return result;
+		}
 		case WM_MOUSEMOVE:
 		{
 			const auto hItemCurHover = m_hItemCurHover;
@@ -59,17 +77,9 @@ namespace controls
 			WC_B_S(::SendMessage(m_hWnd, TVM_HITTEST, 0, reinterpret_cast<LPARAM>(&tvHitTestInfo)));
 			if (tvHitTestInfo.hItem)
 			{
-				if (tvHitTestInfo.flags & TVHT_ONITEMBUTTON)
-				{
-					m_HoverButton = true;
-				}
-				else
-				{
-					m_HoverButton = false;
-				}
-
 				// If this is a new glow, clean up the old glow and track for leaving the control
-				if (hItemCurHover != tvHitTestInfo.hItem)
+				const auto hoverButton = (tvHitTestInfo.flags & TVHT_ONITEMBUTTON) != 0;
+				if (hItemCurHover != tvHitTestInfo.hItem || m_HoverButton != hoverButton)
 				{
 					ui::DrawTreeItemGlow(m_hWnd, tvHitTestInfo.hItem);
 
@@ -80,6 +90,7 @@ namespace controls
 					}
 
 					m_hItemCurHover = tvHitTestInfo.hItem;
+					m_HoverButton = hoverButton;
 
 					auto tmEvent = TRACKMOUSEEVENT{};
 					tmEvent.cbSize = sizeof(TRACKMOUSEEVENT);
@@ -135,7 +146,11 @@ namespace controls
 
 	void StyleTreeCtrl::OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 	{
-		ui::CustomDrawTree(pNMHDR, pResult, m_HoverButton, m_hItemCurHover);
+		const auto draw = reinterpret_cast<LPNMTVCUSTOMDRAW>(pNMHDR);
+		const auto text = draw->nmcd.dwDrawStage == CDDS_ITEMPREPAINT
+							  ? GetItemTextW(reinterpret_cast<HTREEITEM>(draw->nmcd.dwItemSpec))
+							  : std::wstring{};
+		ui::CustomDrawTree(pNMHDR, pResult, m_HoverButton, m_hItemCurHover, text);
 		if (OnCustomDrawCallback) OnCustomDrawCallback(pNMHDR, pResult, m_hItemCurHover);
 	}
 
@@ -169,9 +184,17 @@ namespace controls
 	{
 		const auto pNMTV = reinterpret_cast<LPNMTREEVIEW>(pNMHDR);
 
+		if (pNMTV && pNMTV->itemOld.hItem)
+		{
+			SetItemState(pNMTV->itemOld.hItem, 0, TVIS_BOLD);
+			ui::DrawTreeItemGlow(m_hWnd, pNMTV->itemOld.hItem);
+		}
+
 		if (pNMTV && pNMTV->itemNew.hItem)
 		{
 			m_bItemSelected = true;
+			SetItemState(pNMTV->itemNew.hItem, TVIS_BOLD, TVIS_BOLD);
+			ui::DrawTreeItemGlow(m_hWnd, pNMTV->itemNew.hItem);
 
 			if (ItemSelectedCallback) ItemSelectedCallback(pNMTV->itemNew.hItem);
 		}
@@ -230,6 +253,21 @@ namespace controls
 		if (lpDispInfo && lpDispInfo->item.mask & TVIF_CHILDREN && HasChildrenCallback)
 		{
 			lpDispInfo->item.cChildren = HasChildrenCallback(reinterpret_cast<HTREEITEM>(lpDispInfo->item.lParam));
+		}
+
+		*pResult = 0;
+	}
+
+	void StyleTreeCtrl::OnGetInfoTip(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
+	{
+		const auto tip = reinterpret_cast<LPNMTVGETINFOTIP>(pNMHDR);
+		if (GetInfoTipCallback)
+		{
+			const auto text = GetInfoTipCallback(tip->hItem);
+			if (!text.empty())
+			{
+				_tcsncpy_s(tip->pszText, tip->cchTextMax, strings::wstringTotstring(text).c_str(), _TRUNCATE);
+			}
 		}
 
 		*pResult = 0;
@@ -319,6 +357,13 @@ namespace controls
 				}
 			}
 		}
+	}
+
+	void StyleTreeCtrl::OnItemExpanded(_In_ NMHDR* /*pNMHDR*/, _In_ LRESULT* pResult)
+	{
+		*pResult = 0;
+		// Expansion after scrolling can reuse stale pixels; redraw the completed layout.
+		WC_B_S(::RedrawWindow(m_hWnd, nullptr, nullptr, RDW_INVALIDATE | RDW_ERASE | RDW_FRAME));
 	}
 
 	void StyleTreeCtrl::Refresh()
