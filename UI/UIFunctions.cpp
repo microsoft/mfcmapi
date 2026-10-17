@@ -1011,8 +1011,9 @@ namespace ui
 						{
 							const auto weight = weightY * ((std::min)(right, static_cast<double>(sx + 1)) -
 														   (std::max)(left, static_cast<double>(sx)));
-							const auto& pixel = pixels[static_cast<size_t>(sy) * bm.bmWidth +
-													   static_cast<size_t>(image) * static_cast<size_t>(sourceImageSize) + sx];
+							const auto& pixel = pixels
+								[static_cast<size_t>(sy) * bm.bmWidth +
+								 static_cast<size_t>(image) * static_cast<size_t>(sourceImageSize) + sx];
 							red += pixel.rgbRed * weight;
 							green += pixel.rgbGreen * weight;
 							blue += pixel.rgbBlue * weight;
@@ -1021,12 +1022,13 @@ namespace ui
 					}
 
 					const auto area = (right - left) * (bottom - top);
-					target[static_cast<size_t>(y) * width +
-						   static_cast<size_t>(image) * static_cast<size_t>(targetImageSize.cx) + x] = {
-						static_cast<BYTE>(blue / area + 0.5),
-						static_cast<BYTE>(green / area + 0.5),
-						static_cast<BYTE>(red / area + 0.5),
-						static_cast<BYTE>(alpha / area + 0.5)};
+					target
+						[static_cast<size_t>(y) * width +
+						 static_cast<size_t>(image) * static_cast<size_t>(targetImageSize.cx) + x] = {
+							static_cast<BYTE>(blue / area + 0.5),
+							static_cast<BYTE>(green / area + 0.5),
+							static_cast<BYTE>(red / area + 0.5),
+							static_cast<BYTE>(alpha / area + 0.5)};
 				}
 			}
 		}
