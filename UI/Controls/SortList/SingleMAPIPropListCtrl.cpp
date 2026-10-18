@@ -1169,6 +1169,13 @@ namespace controls::sortlistctrl
 
 		const auto sourceProp = cache::CGlobalCache::getInstance().GetPropertyToCopy();
 		const auto sourcePropBag = cache::CGlobalCache::getInstance().GetSourcePropBag();
+		if (!sourceProp || !sourcePropBag)
+		{
+			output::DebugPrint(
+				output::dbgLevel::Generic, L"OnPasteProperty: no copied property or source property bag available.\n");
+			return;
+		}
+
 		const auto ulSourcePropTag = sourceProp->getPropTag();
 		auto lpSourcePropObj = sourcePropBag->GetMAPIProp();
 		if (!lpSourcePropObj)

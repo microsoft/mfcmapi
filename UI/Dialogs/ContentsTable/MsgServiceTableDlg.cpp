@@ -247,8 +247,6 @@ namespace dialog
 
 			lpProfSect->Release();
 		}
-
-		MAPIFreeBuffer(MapiUID.lpb);
 	}
 
 	void CMsgServiceTableDlg::OnDeleteSelectedItem()
