@@ -181,6 +181,7 @@ namespace dialog::editor
 				break;
 			case BN_SETFOCUS:
 			case EN_SETFOCUS:
+			case CBN_SETFOCUS:
 				EnsureVisible(reinterpret_cast<HWND>(lParam));
 			}
 
@@ -447,11 +448,18 @@ namespace dialog::editor
 		m_iTextHeight = ui::GetTextHeight(m_hWnd);
 		m_iButtonHeight = m_iTextHeight + GetSystemMetrics(SM_CYEDGE) * 2;
 
-		OnSetDefaultSize();
+		auto workArea = SIZE{};
+		if (!GetMonitorWorkArea(workArea)) return false;
+		OnSetDefaultSize(workArea);
 
 		// Size according to our defaults, respecting minimums
 		EC_B_S(SetWindowPos(
-			nullptr, 0, 0, max(MIN_WIDTH, m_iMinWidth), max(MIN_HEIGHT, m_iMinHeight), SWP_NOZORDER | SWP_NOMOVE));
+			nullptr,
+			0,
+			0,
+			min(workArea.cx, max(MIN_WIDTH, m_iMinWidth)),
+			min(workArea.cy, max(MIN_HEIGHT, m_iMinHeight)),
+			SWP_NOZORDER | SWP_NOMOVE));
 
 		return bRet;
 	}
@@ -654,15 +662,34 @@ namespace dialog::editor
 		return SIZE{cx, cy};
 	}
 
-	void CEditor::OnSetDefaultSize()
+	bool CEditor::GetMonitorWorkArea(_Out_ SIZE& workArea) const noexcept
 	{
-		CRect rcMaxScreen;
-		EC_B_S(
-			SystemParametersInfo(SPI_GETWORKAREA, NULL, static_cast<LPVOID>(static_cast<LPRECT>(rcMaxScreen)), NULL));
-		const auto cxFullScreen = rcMaxScreen.Width();
-		const auto cyFullScreen = rcMaxScreen.Height();
+		// Before centering, the dialog's template position need not be on its owner's monitor.
+		const auto hwnd =
+			!::IsWindowVisible(m_hWnd) && m_pParentWnd->GetSafeHwnd() ? m_pParentWnd->GetSafeHwnd() : m_hWnd;
+		const auto monitor = WC_D(HMONITOR, ::MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST));
+		if (!monitor) return false;
+		auto info = MONITORINFO{sizeof MONITORINFO};
+		if (!WC_D(BOOL, ::GetMonitorInfo(monitor, &info))) return false;
+		workArea = SIZE{info.rcWork.right - info.rcWork.left, info.rcWork.bottom - info.rcWork.top};
+		return true;
+	}
 
-		const SIZE sScreen = {cxFullScreen, cyFullScreen};
+	void CEditor::OnGetMinMaxInfo(_Inout_ MINMAXINFO* lpMMI) noexcept
+	{
+		lpMMI->ptMinTrackSize = POINT{m_iMinWidth, m_iMinHeight};
+		auto workArea = SIZE{};
+		if (GetMonitorWorkArea(workArea))
+		{
+			lpMMI->ptMinTrackSize.x = min(lpMMI->ptMinTrackSize.x, workArea.cx);
+			lpMMI->ptMinTrackSize.y = min(lpMMI->ptMinTrackSize.y, workArea.cy);
+		}
+	}
+
+	void CEditor::OnSetDefaultSize(const SIZE sScreen)
+	{
+		const auto cxFullScreen = sScreen.cx;
+		const auto cyFullScreen = sScreen.cy;
 		auto sArea = ComputeWorkArea(sScreen);
 		// inflate the rectangle according to the title bar, border, etc...
 		CRect MyRect(0, 0, sArea.cx, sArea.cy);
@@ -696,7 +723,9 @@ namespace dialog::editor
 	// Recalculates our line heights and window defaults, then redraws the window with the new dimensions
 	void CEditor::OnRecalcLayout()
 	{
-		OnSetDefaultSize();
+		auto workArea = SIZE{};
+		if (!GetMonitorWorkArea(workArea)) return;
+		OnSetDefaultSize(workArea);
 
 		auto rc = RECT{};
 		::GetClientRect(m_hWnd, &rc);

@@ -31,6 +31,7 @@ namespace controls::sortlistctrl
 		TOOLINFOW m_ti;
 		HWND m_hwndParent;
 		bool m_bTooltipDisplayed;
+		int m_iTooltipColumn{-1};
 
 		DECLARE_MESSAGE_MAP()
 	};

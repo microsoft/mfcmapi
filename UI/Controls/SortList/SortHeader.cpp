@@ -87,22 +87,23 @@ namespace controls::sortlistctrl
 				return true;
 			}
 			case WM_MOUSEMOVE:
+			{
 				// This covers the case where we move from one header to another, but don't leave the control
+				HDHITTESTINFO hdHitTestInfo = {0};
+				hdHitTestInfo.pt.x = GET_X_LPARAM(lParam);
+				hdHitTestInfo.pt.y = GET_Y_LPARAM(lParam);
+				::SendMessage(m_hWnd, HDM_HITTEST, 0, reinterpret_cast<LPARAM>(&hdHitTestInfo));
 				if (m_bTooltipDisplayed)
 				{
-					HDHITTESTINFO hdHitTestInfo = {0};
-					hdHitTestInfo.pt.x = GET_X_LPARAM(lParam);
-					hdHitTestInfo.pt.y = GET_Y_LPARAM(lParam);
-
-					WC_B_S(::SendMessage(m_hWnd, HDM_HITTEST, 0, reinterpret_cast<LPARAM>(&hdHitTestInfo)));
-					if (!(hdHitTestInfo.flags & HHT_ONHEADER))
+					if (!(hdHitTestInfo.flags & HHT_ONHEADER) || hdHitTestInfo.iItem != m_iTooltipColumn)
 					{
-						// We were displaying a tooltip, but we're now on empty space in the header. Turn it off.
 						EC_B_S(::SendMessage(m_hwndTip, TTM_TRACKACTIVATE, false, reinterpret_cast<LPARAM>(&m_ti)));
 						m_bTooltipDisplayed = false;
+						m_iTooltipColumn = -1;
 					}
 				}
-				else
+
+				if (!m_bTooltipDisplayed && (hdHitTestInfo.flags & HHT_ONHEADER))
 				{
 					TRACKMOUSEEVENT tmEvent = {0};
 					tmEvent.cbSize = sizeof(TRACKMOUSEEVENT);
@@ -114,13 +115,14 @@ namespace controls::sortlistctrl
 				}
 
 				break;
+			}
 			case WM_MOUSEHOVER:
 			{
 				HDHITTESTINFO hdHitTestInfo = {0};
 				hdHitTestInfo.pt.x = GET_X_LPARAM(lParam);
 				hdHitTestInfo.pt.y = GET_Y_LPARAM(lParam);
 
-				EC_B_S(::SendMessage(m_hWnd, HDM_HITTEST, 0, reinterpret_cast<LPARAM>(&hdHitTestInfo)));
+				::SendMessage(m_hWnd, HDM_HITTEST, 0, reinterpret_cast<LPARAM>(&hdHitTestInfo));
 
 				// We only turn on or modify our tooltip if we're on a column header
 				if (hdHitTestInfo.flags & HHT_ONHEADER)
@@ -154,6 +156,7 @@ namespace controls::sortlistctrl
 						// Turn on the tooltip
 						EC_B_S(::SendMessage(m_hwndTip, TTM_TRACKACTIVATE, true, reinterpret_cast<LPARAM>(&m_ti)));
 						m_bTooltipDisplayed = true;
+						m_iTooltipColumn = hdHitTestInfo.iItem;
 					}
 				}
 				break;
@@ -162,6 +165,7 @@ namespace controls::sortlistctrl
 				// We were displaying a tooltip, but we're now off of the header. Turn it off.
 				EC_B_S(::SendMessage(m_hwndTip, TTM_TRACKACTIVATE, false, reinterpret_cast<LPARAM>(&m_ti)));
 				m_bTooltipDisplayed = false;
+				m_iTooltipColumn = -1;
 				return NULL;
 			}
 		}
