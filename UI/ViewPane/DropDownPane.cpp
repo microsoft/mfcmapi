@@ -12,7 +12,7 @@ namespace viewpane
 		const int paneID,
 		const UINT uidLabel,
 		const ULONG ulDropList,
-		_In_opt_count_(ulDropList) UINT* lpuidDropList,
+		_In_opt_count_(ulDropList) const UINT* lpuidDropList,
 		const bool bReadOnly)
 	{
 		auto pane = std::make_shared<DropDownPane>();
@@ -56,7 +56,7 @@ namespace viewpane
 	{
 		auto cxDropDown = 0;
 		const auto hdc = GetDC(m_DropDown.GetSafeHwnd());
-		const auto hfontOld = SelectObject(hdc, ui::GetSegoeFont());
+		const auto hfontOld = SelectObject(hdc, ui::GetUIFont());
 		for (auto iDropString = 0; iDropString < m_DropDown.GetCount(); iDropString++)
 		{
 			const auto szDropString = ui::GetLBText(m_DropDown.m_hWnd, iDropString);
@@ -76,7 +76,7 @@ namespace viewpane
 	// DropDownPane Layout:
 	// Header: GetHeaderHeight
 	// Dropdown: m_iEditHeight
-	int DropDownPane::GetFixedHeight() { return GetHeaderHeight() + m_iEditHeight; }
+	int DropDownPane::GetFixedHeight() { return GetHeaderHeight() + m_iEditHeight + 2 * GetSystemMetrics(SM_CYBORDER); }
 
 	HDWP DropDownPane::DeferWindowPos(
 		_In_ HDWP hWinPosInfo,
@@ -132,7 +132,7 @@ namespace viewpane
 			pParent,
 			m_nID));
 
-		SendMessage(m_DropDown.m_hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(ui::GetSegoeFont()), false);
+		SendMessage(m_DropDown.m_hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(ui::GetUIFont()), false);
 	}
 
 	void DropDownPane::Initialize(_In_ CWnd* pParent, _In_ HDC hdc)
@@ -246,6 +246,8 @@ namespace viewpane
 				m_DropDown.m_hWnd, WM_SETTEXT, NULL, reinterpret_cast<LPARAM>(static_cast<LPCTSTR>(text.c_str()))));
 		}
 	}
+
+	void DropDownPane::SetDropDownSelection(const int iSelection) { SetSelection(static_cast<DWORD_PTR>(iSelection)); }
 
 	void DropDownPane::SetSelection(DWORD_PTR iSelection)
 	{

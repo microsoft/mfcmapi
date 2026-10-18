@@ -7,6 +7,7 @@
 #include <core/utility/import.h>
 #include <UI/Dialogs/ContentsTable/MainDlg.h>
 #include <UI/mapiui.h>
+#include <UI/UIFunctions.h>
 #include <core/utility/registry.h>
 
 // The one and only CMyWinApp object
@@ -48,6 +49,28 @@ namespace ui
 		{
 			import::MyHeapSetInformation(nullptr, HeapEnableTerminationOnCorruption, nullptr, 0);
 		}
+	}
+
+	BOOL CMyWinApp::PreTranslateMessage(MSG* pMsg)
+	{
+		if (pMsg && pMsg->message == WM_KEYDOWN && pMsg->wParam == 'D' && GetKeyState(VK_CONTROL) < 0 &&
+			GetKeyState(VK_SHIFT) < 0 && GetKeyState(VK_MENU) >= 0)
+		{
+			if (!(pMsg->lParam & (1L << 30)))
+			{
+				const auto theme = GetEffectiveTheme();
+				const auto dark = theme == uiTheme::Dark ||
+								  (theme == uiTheme::HighContrast &&
+								   registry::uiTheme.ulCurDWORD == static_cast<DWORD>(uiThemePreference::Dark));
+				registry::uiTheme = static_cast<DWORD>(dark ? uiThemePreference::Light : uiThemePreference::Dark);
+				registry::WriteToRegistry();
+				ApplyThemeToAllWindows();
+			}
+
+			return true;
+		}
+
+		return CWinApp::PreTranslateMessage(pMsg);
 	}
 
 	// CMyWinApp initialization

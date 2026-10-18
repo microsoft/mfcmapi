@@ -67,35 +67,31 @@ namespace controls::sortlistctrl
 		ListView_SetBkColor(m_hWnd, MyGetSysColor(ui::uiColor::Background));
 		ListView_SetTextBkColor(m_hWnd, MyGetSysColor(ui::uiColor::Background));
 		ListView_SetTextColor(m_hWnd, ui::MyGetSysColor(ui::uiColor::Text));
-		::SendMessageA(m_hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(ui::GetSegoeFont()), false);
+		::SendMessageA(m_hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(ui::GetUIFont()), false);
 
 		SetExtendedStyle(
 			GetExtendedStyle() | LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_INFOTIP | LVS_EX_DOUBLEBUFFER);
 
 		if (bImages)
 		{
-			// At 100% DPI, ideal ImageList height is 16 pixels
-			// At 200%, it's 32, 200% of 16.
-			// So we can use our DPI scale to find out what size ImageList to create.
-			auto scale = ui::GetDPIScale();
-			const auto imageX = 16 * scale.x / scale.denominator;
-			const auto imageY = 16 * scale.y / scale.denominator;
-			const auto hImageList = ImageList_Create(imageX, imageY, ILC_COLOR32 | ILC_MASK, 1, 1);
-
-			m_ImageList.Attach(hImageList);
-
-			// Now we load our bitmap and scale it the same as our ImageList before loading
-			const auto hBitmap = ::LoadBitmap(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDB_ICONS));
-			// Our bitmap is 32*32, which is already 2x scaled up
-			// So double the denominator to compensate before scaling the bitmap
-			scale.denominator *= 2;
-			const auto hBitmapScaled = ScaleBitmap(hBitmap, scale);
-			m_ImageList.Add(CBitmap::FromHandle(hBitmapScaled), MyGetSysColor(ui::uiColor::BitmapTransBack));
-
-			SetImageList(&m_ImageList, LVSIL_SMALL);
-			if (hBitmapScaled) DeleteObject(hBitmapScaled);
-			if (hBitmap) DeleteObject(hBitmap);
+			RefreshImages();
 		}
+	}
+
+	void CSortListCtrl::RefreshImages()
+	{
+		CBitmap bitmap;
+		const auto loaded = WC_D(BOOL, bitmap.LoadBitmap(IDB_ICONS));
+		if (!loaded) return;
+		const auto scale = ui::GetDPIScale();
+		const auto images = ui::CreateThemedImageList(
+			static_cast<HBITMAP>(bitmap.GetSafeHandle()),
+			32,
+			SIZE{MulDiv(16, scale.x, scale.denominator), MulDiv(16, scale.y, scale.denominator)});
+		if (!images) return;
+		SetImageList(CImageList::FromHandle(images), LVSIL_SMALL);
+		m_ImageList.DeleteImageList();
+		m_ImageList.Attach(images);
 	}
 
 	static bool s_bInTrack = false;
@@ -146,6 +142,16 @@ namespace controls::sortlistctrl
 
 		switch (message)
 		{
+		case WM_MFCMAPI_THEMECHANGED:
+			if (m_ImageList.GetSafeHandle()) RefreshImages();
+			break;
+		case WM_NCPAINT:
+		case WM_PAINT:
+		{
+			const auto result = CListCtrl::WindowProc(message, wParam, lParam);
+			ui::PaintScrollCorner(m_hWnd);
+			return result;
+		}
 			// I can handle notify messages for my child header control since I am the parent window
 			// This makes it easy for me to customize the child control to do what I want
 			// I cannot handle notify heading to my parent though - have to depend on reflection for that
@@ -384,7 +390,8 @@ namespace controls::sortlistctrl
 		{
 			const auto ul1 = lpData1->getSortValue();
 			const auto ul2 = lpData2->getSortValue();
-			return lpSortInfo->bSortUp ? ul2.QuadPart > ul1.QuadPart : ul1.QuadPart >= ul2.QuadPart;
+			iRet = ul1.QuadPart < ul2.QuadPart ? -1 : ul1.QuadPart > ul2.QuadPart ? 1 : 0;
+			return lpSortInfo->bSortUp ? -iRet : iRet;
 		}
 		default:
 			break;

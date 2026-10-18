@@ -144,6 +144,9 @@
     <ClInclude Include="UI\Controls\FakeSplitter.h">
       <Filter>Source Files\UI</Filter>
     </ClInclude>
+    <ClInclude Include="UI\Controls\ScrollHost.h">
+      <Filter>Source Files\UI</Filter>
+    </ClInclude>
     <ClInclude Include="UI\file\FileDialogEx.h">
       <Filter>Source Files\UI\file</Filter>
     </ClInclude>
@@ -248,6 +251,9 @@
       <Filter>Source Files\UI\Controls\SortList</Filter>
     </ClCompile>
     <ClCompile Include="UI\Controls\FakeSplitter.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Controls\ScrollHost.cpp">
       <Filter>Source Files\UI</Filter>
     </ClCompile>
     <ClCompile Include="UI\file\FileDialogEx.cpp">
@@ -593,6 +599,12 @@
       <Filter>Source Files\UI\ViewPane</Filter>
     </ClCompile>
     <ClInclude Include="UI\ViewPane\ListPane.h">
+      <Filter>Source Files\UI\ViewPane</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\ViewPane\SectionPane.cpp">
+      <Filter>Source Files\UI\ViewPane</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\ViewPane\SectionPane.h">
       <Filter>Source Files\UI\ViewPane</Filter>
     </ClInclude>
     <ClCompile Include="UI\ViewPane\SmartViewPane.cpp">

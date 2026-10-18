@@ -358,7 +358,7 @@ namespace viewpane
 			SwapListItems(i, i - 1);
 		}
 
-		m_List.SetSelectedItem(iItem);
+		m_List.SetSelectedItem(0);
 		m_bDirty = true;
 	}
 
@@ -376,7 +376,7 @@ namespace viewpane
 			SwapListItems(i, i + 1);
 		}
 
-		m_List.SetSelectedItem(iItem);
+		m_List.SetSelectedItem(m_List.GetItemCount() - 1);
 		m_bDirty = true;
 	}
 

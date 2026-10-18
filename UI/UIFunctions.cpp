@@ -10,17 +10,20 @@
 #include <core/utility/output.h>
 #include <core/addin/mfcmapi.h>
 #include <core/utility/registry.h>
+#include <core/utility/import.h>
+#include <cmath>
+#include <tom.h>
 
 namespace ui
 {
-	HFONT g_hFontSegoe = nullptr;
-	HFONT g_hFontSegoeBold = nullptr;
+	HFONT g_hUIFont = nullptr;
+	HFONT g_hUIFontBold = nullptr;
+	std::wstring g_uiFontFaceName;
 
-#define SEGOE _T("Segoe UI") // STRING_OK
-#define SEGOEW L"Segoe UI" // STRING_OK
-#define SEGOEBOLD L"Segoe UI Bold" // STRING_OK
+	constexpr auto uiFontFamily = L"Segoe UI";
 #define BUTTON_STYLE _T("ButtonStyle") // STRING_OK
 #define LABEL_STYLE _T("LabelStyle") // STRING_OK
+#define SCROLL_HOST _T("ScrollHost") // STRING_OK
 
 #define BORDER_VISIBLEWIDTH 2
 
@@ -61,6 +64,36 @@ namespace ui
 		RGB(0xCD, 0x5C, 0x5C), // cRed
 		RGB(0x00, 0xFF, 0x00), // cGreen
 		RGB(0xFF, 0x7F, 0x50), // cOrange
+	};
+
+	// Explicit dark colors are required because classic system colors do not follow
+	// the Windows application theme.
+	COLORREF g_DarkColors[static_cast<int>(uiColor::UIEnd)] = {
+		RGB(0x20, 0x20, 0x20), // Background
+		RGB(0x2D, 0x2D, 0x30), // BackgroundReadOnly
+		RGB(0x00, 0x72, 0xC6), // Glow
+		RGB(0x09, 0x47, 0x71), // GlowBackground
+		RGB(0xFF, 0xFF, 0xFF), // GlowText
+		RGB(0xD0, 0xD0, 0xD0), // FrameSelected
+		RGB(0x5A, 0x5A, 0x5A), // FrameUnselected
+		RGB(0x26, 0x4F, 0x78), // SelectedBackground
+		RGB(0xC8, 0xC8, 0xC8), // Arrow
+		RGB(0xF1, 0xF1, 0xF1), // Text
+		RGB(0x8A, 0x8A, 0x8A), // TextDisabled
+		RGB(0xD6, 0xD6, 0xD6), // TextReadOnly
+		RGB(0xFF, 0x00, 0xFF), // BitmapTransBack
+		RGB(0x00, 0xFF, 0xFF), // BitmapTransFore
+		RGB(0x00, 0x72, 0xC6), // Status
+		RGB(0xFF, 0xFF, 0xFF), // StatusText
+		RGB(0x09, 0x47, 0x71), // PaneHeaderBackground
+		RGB(0xF1, 0xF1, 0xF1), // PaneHeaderText
+		RGB(0x26, 0x4F, 0x78), // TextHighlightBackground
+		RGB(0xFF, 0xFF, 0xFF), // TextHighlight
+		RGB(0xFF, 0xC0, 0xCB), // TestPink
+		RGB(0xE6, 0xE6, 0xFA), // TestLavender
+		RGB(0xCD, 0x5C, 0x5C), // TestRed
+		RGB(0x00, 0xFF, 0x00), // TestGreen
+		RGB(0xFF, 0x7F, 0x50), // TestOrange
 	};
 
 	// Fixed mapping of UI elements to colors
@@ -116,6 +149,34 @@ namespace ui
 		NULL, // cStatusText
 	};
 
+	int g_HighContrastSysColors[static_cast<int>(uiColor::UIEnd)] = {
+		COLOR_WINDOW, // Background
+		COLOR_BTNFACE, // BackgroundReadOnly
+		COLOR_HIGHLIGHT, // Glow
+		COLOR_HIGHLIGHT, // GlowBackground
+		COLOR_HIGHLIGHTTEXT, // GlowText
+		COLOR_WINDOWTEXT, // FrameSelected
+		COLOR_GRAYTEXT, // FrameUnselected
+		COLOR_HIGHLIGHT, // SelectedBackground
+		COLOR_WINDOWTEXT, // Arrow
+		COLOR_WINDOWTEXT, // Text
+		COLOR_GRAYTEXT, // TextDisabled
+		COLOR_WINDOWTEXT, // TextReadOnly
+		NULL, // BitmapTransBack
+		NULL, // BitmapTransFore
+		COLOR_HIGHLIGHT, // Status
+		COLOR_HIGHLIGHTTEXT, // StatusText
+		COLOR_BTNFACE, // PaneHeaderBackground
+		COLOR_BTNTEXT, // PaneHeaderText
+		COLOR_HIGHLIGHT, // TextHighlightBackground
+		COLOR_HIGHLIGHTTEXT, // TextHighlight
+		NULL, // TestPink
+		NULL, // TestLavender
+		NULL, // TestRed
+		NULL, // TestGreen
+		NULL, // TestOrange
+	};
+
 	// Mapping of bitmap resources to constants
 	// NULL entries will get the fixed mapping from g_FixedColors
 	int g_BitmapResources[static_cast<int>(uiBitmap::BitmapEnd)] = {
@@ -126,56 +187,10 @@ namespace ui
 		IDB_RESTORE, // cRestore,
 	};
 
-	HBRUSH g_FixedBrushes[static_cast<int>(myColor::ColorEnd)] = {};
-	HBRUSH g_SysBrushes[static_cast<int>(uiColor::UIEnd)] = {};
+	HBRUSH g_ThemeBrushes[static_cast<int>(uiColor::UIEnd)] = {};
 	HPEN g_Pens[static_cast<int>(uiPen::PenEnd)] = {};
 	HBITMAP g_Bitmaps[static_cast<int>(uiBitmap::BitmapEnd)] = {};
-
-	void InitializeGDI() noexcept {}
-
-	void UninitializeGDI() noexcept
-	{
-		if (g_hFontSegoe) DeleteObject(g_hFontSegoe);
-		g_hFontSegoe = nullptr;
-		if (g_hFontSegoeBold) DeleteObject(g_hFontSegoeBold);
-		g_hFontSegoeBold = nullptr;
-
-		for (auto& fixedBrush : g_FixedBrushes)
-		{
-			if (fixedBrush)
-			{
-				DeleteObject(fixedBrush);
-				fixedBrush = nullptr;
-			}
-		}
-
-		for (auto& sysBrush : g_SysBrushes)
-		{
-			if (sysBrush)
-			{
-				DeleteObject(sysBrush);
-				sysBrush = nullptr;
-			}
-		}
-
-		for (auto& g_Pen : g_Pens)
-		{
-			if (g_Pen)
-			{
-				DeleteObject(g_Pen);
-				g_Pen = nullptr;
-			}
-		}
-
-		for (auto& bitmap : g_Bitmaps)
-		{
-			if (bitmap)
-			{
-				DeleteObject(bitmap);
-				bitmap = nullptr;
-			}
-		}
-	}
+	uiTheme g_EffectiveTheme = uiTheme::Light;
 
 	_Check_return_ LPMENUENTRY CreateMenuEntry(_In_ const std::wstring& szMenu)
 	{
@@ -250,6 +265,7 @@ namespace ui
 				if (lpMenuEntry)
 				{
 					lpMenuEntry->m_bOnMenuBar = bRoot;
+					lpMenuEntry->m_bHasSubMenu = menuiteminfo.hSubMenu != nullptr;
 					menuiteminfo.fMask = MIIM_DATA | MIIM_FTYPE;
 					menuiteminfo.fType |= MF_OWNERDRAW;
 					menuiteminfo.dwItemData = reinterpret_cast<ULONG_PTR>(lpMenuEntry);
@@ -277,12 +293,13 @@ namespace ui
 		const auto hMenu = GetMenu(hWnd);
 		if (!hMenu) return;
 
-		auto menuiteminfo = MENUITEMINFOW{sizeof(MENUITEMINFOW), MIIM_DATA | MIIM_FTYPE};
+		auto menuiteminfo = MENUITEMINFOW{sizeof(MENUITEMINFOW), MIIM_DATA | MIIM_FTYPE | MIIM_SUBMENU};
 
 		EC_B_S(::GetMenuItemInfoW(hMenu, uiMenuTag, false, &menuiteminfo));
 		auto lpMenuEntry = CreateMenuEntry(szNewString);
 		if (lpMenuEntry)
 		{
+			lpMenuEntry->m_bHasSubMenu = menuiteminfo.hSubMenu != nullptr;
 			// Clean up old owner draw string data if it exists
 			DeleteMenuEntry(reinterpret_cast<LPMENUENTRY>(menuiteminfo.dwItemData));
 
@@ -492,8 +509,7 @@ namespace ui
 		const auto hdc = WC_D(HDC, GetDC(hwndEdit));
 		if (hdc)
 		{
-			// Get the metrics for the Segoe font.
-			const auto hOldFont = SelectObject(hdc, GetSegoeFont());
+			const auto hOldFont = SelectObject(hdc, GetUIFont());
 			WC_B_S(::GetTextMetrics(hdc, &tmFont));
 			SelectObject(hdc, hOldFont);
 			ReleaseDC(hwndEdit, hdc);
@@ -510,97 +526,372 @@ namespace ui
 		return size;
 	}
 
-	int CALLBACK EnumFontFamExProcW(
+	struct FontCreationContext
+	{
+		HFONT font{};
+		int height{};
+		LONG weight{};
+	};
+
+	int CALLBACK CreateEnumeratedFont(
 		_In_ LPLOGFONTW lplf,
 		_In_ NEWTEXTMETRICEXW* /*lpntme*/,
 		DWORD /*FontType*/,
 		LPARAM lParam) noexcept
 	{
-		// Use a 9 point font
-		lplf->lfHeight = -MulDiv(9, GetDeviceCaps(GetDC(nullptr), LOGPIXELSY), 72);
+		const auto context = reinterpret_cast<FontCreationContext*>(lParam);
+		lplf->lfHeight = context->height;
 		lplf->lfWidth = 0;
+		lplf->lfWeight = context->weight;
 		lplf->lfCharSet = DEFAULT_CHARSET;
-		*reinterpret_cast<HFONT*>(lParam) = CreateFontIndirectW(lplf);
+		context->font = WC_D(HFONT, CreateFontIndirectW(lplf));
 		return 0;
 	}
 
-	// This font is not cached and must be delete manually
-	HFONT GetFont(_In_z_ const LPCWSTR szFont) noexcept
+	HFONT CreateFontForFamily(_In_z_ const LPCWSTR family, const LONG weight) noexcept
 	{
-		HFONT hFont = nullptr;
-		LOGFONTW lfFont = {};
-		wcscpy_s(lfFont.lfFaceName, _countof(lfFont.lfFaceName), szFont);
+		const auto hdc = WC_D(HDC, ::GetDC(nullptr));
+		if (!hdc) return nullptr;
 
+		auto query = LOGFONTW{};
+		wcscpy_s(query.lfFaceName, _countof(query.lfFaceName), family);
+		query.lfCharSet = DEFAULT_CHARSET;
+		const auto dpi = WC_D(int, GetDeviceCaps(hdc, LOGPIXELSY));
+		auto context = FontCreationContext{
+			nullptr,
+			-MulDiv(9, dpi, 72),
+			weight,
+		};
 		EnumFontFamiliesExW(
-			GetDC(nullptr),
-			&lfFont,
-			reinterpret_cast<FONTENUMPROCW>(EnumFontFamExProcW),
-			reinterpret_cast<LPARAM>(&hFont),
-			0);
-		if (hFont) return hFont;
+			hdc, &query, reinterpret_cast<FONTENUMPROCW>(CreateEnumeratedFont), reinterpret_cast<LPARAM>(&context), 0);
+		WC_B_S(::ReleaseDC(nullptr, hdc));
+		return context.font;
+	}
 
-		// If we can't get our font, fallback to a system font
+	HFONT CreateSystemMessageFont(const LONG weight) noexcept
+	{
 		auto ncm = NONCLIENTMETRICSW{};
 		ncm.cbSize = sizeof ncm;
-		SystemParametersInfoW(SPI_GETNONCLIENTMETRICS, NULL, &ncm, NULL);
-		static auto lf = ncm.lfMessageFont;
+		if (!WC_D(BOOL, SystemParametersInfoW(SPI_GETNONCLIENTMETRICS, sizeof ncm, &ncm, 0))) return nullptr;
 
-		// Create the font, and then return its handle.
-		hFont = CreateFontW(
-			lf.lfHeight,
-			lf.lfWidth,
-			lf.lfEscapement,
-			lf.lfOrientation,
-			lf.lfWeight,
-			lf.lfItalic,
-			lf.lfUnderline,
-			lf.lfStrikeOut,
-			lf.lfCharSet,
-			lf.lfOutPrecision,
-			lf.lfClipPrecision,
-			lf.lfQuality,
-			lf.lfPitchAndFamily,
-			lf.lfFaceName);
-		return hFont;
+		auto font = ncm.lfMessageFont;
+		font.lfWeight = weight;
+		g_uiFontFaceName = font.lfFaceName;
+		return WC_D(HFONT, CreateFontIndirectW(&font));
 	}
 
-	// Cached for deletion in UninitializeGDI
-	HFONT GetSegoeFont() noexcept
+	void
+	LogUIFontSelection(_In_z_ const LPCWSTR selectedFamily, _In_z_ const LPCWSTR source, const LONG weight) noexcept
 	{
-		if (g_hFontSegoe) return g_hFontSegoe;
-		g_hFontSegoe = GetFont(SEGOEW);
-		return g_hFontSegoe;
+		output::DebugPrint(
+			output::dbgLevel::Generic,
+			L"UI font: requested=%ws selected=%ws source=%ws weight=%d\n",
+			uiFontFamily,
+			selectedFamily,
+			source,
+			weight);
 	}
 
-	// Cached for deletion in UninitializeGDI
-	HFONT GetSegoeFontBold() noexcept
+	HFONT CreateUIFont(const LONG weight) noexcept
 	{
-		if (g_hFontSegoeBold) return g_hFontSegoeBold;
-		g_hFontSegoeBold = GetFont(SEGOEBOLD);
-		return g_hFontSegoeBold;
+		auto font = CreateFontForFamily(uiFontFamily, weight);
+		if (font)
+		{
+			g_uiFontFaceName = uiFontFamily;
+			LogUIFontSelection(g_uiFontFaceName.c_str(), L"family-9pt", weight);
+			return font;
+		}
+
+		font = CreateSystemMessageFont(weight);
+		if (font) LogUIFontSelection(g_uiFontFaceName.c_str(), L"system-message", weight);
+		return font;
+	}
+
+	HFONT GetUIFont() noexcept
+	{
+		if (!g_hUIFont) g_hUIFont = CreateUIFont(FW_NORMAL);
+		return g_hUIFont;
+	}
+
+	HFONT GetUIFontBold() noexcept
+	{
+		if (!g_hUIFontBold) g_hUIFontBold = CreateUIFont(FW_BOLD);
+		return g_hUIFontBold;
+	}
+
+	const std::wstring& GetUIFontFaceName() noexcept
+	{
+		if (g_uiFontFaceName.empty()) static_cast<void>(GetUIFont());
+		return g_uiFontFaceName;
 	}
 
 	_Check_return_ HBRUSH GetSysBrush(const uiColor uc) noexcept
 	{
-		// Return a cached brush if we have one
-		if (g_SysBrushes[static_cast<int>(uc)]) return g_SysBrushes[static_cast<int>(uc)];
-		// No cached brush found, cache and return a system brush if requested
-		const auto iSysColor = g_SysColors[static_cast<int>(uc)];
-		if (iSysColor)
+		auto& brush = g_ThemeBrushes[static_cast<int>(uc)];
+		if (!brush) brush = CreateSolidBrush(MyGetSysColor(uc));
+		return brush;
+	}
+
+	bool IsHighContrastEnabled() noexcept
+	{
+		auto highContrast = HIGHCONTRASTW{};
+		highContrast.cbSize = sizeof highContrast;
+		return SystemParametersInfoW(SPI_GETHIGHCONTRAST, sizeof highContrast, &highContrast, 0) &&
+			   (highContrast.dwFlags & HCF_HIGHCONTRASTON) != 0;
+	}
+
+	bool SystemUsesDarkTheme() noexcept
+	{
+		HKEY key = nullptr;
+		const auto status = RegOpenKeyExW(
+			HKEY_CURRENT_USER,
+			L"Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
+			0,
+			KEY_QUERY_VALUE,
+			&key);
+		if (status != ERROR_SUCCESS) return false;
+
+		DWORD appsUseLightTheme = 1;
+		DWORD type = REG_DWORD;
+		DWORD size = sizeof appsUseLightTheme;
+		const auto queryStatus = RegQueryValueExW(
+			key, L"AppsUseLightTheme", nullptr, &type, reinterpret_cast<LPBYTE>(&appsUseLightTheme), &size);
+		RegCloseKey(key);
+
+		return queryStatus == ERROR_SUCCESS && type == REG_DWORD && size == sizeof appsUseLightTheme &&
+			   appsUseLightTheme == 0;
+	}
+
+	uiTheme ResolveEffectiveTheme() noexcept
+	{
+		if (IsHighContrastEnabled()) return uiTheme::HighContrast;
+
+		switch (static_cast<uiThemePreference>(registry::uiTheme.ulCurDWORD))
 		{
-			g_SysBrushes[static_cast<int>(uc)] = GetSysColorBrush(iSysColor);
-			return g_SysBrushes[static_cast<int>(uc)];
+		case uiThemePreference::Dark:
+			return uiTheme::Dark;
+		case uiThemePreference::Light:
+			return uiTheme::Light;
+		case uiThemePreference::System:
+		default:
+			return SystemUsesDarkTheme() ? uiTheme::Dark : uiTheme::Light;
+		}
+	}
+
+	void InitializeGDI() noexcept { g_EffectiveTheme = ResolveEffectiveTheme(); }
+
+	void RefreshTheme() noexcept
+	{
+		g_EffectiveTheme = ResolveEffectiveTheme();
+
+		for (auto& brush : g_ThemeBrushes)
+		{
+			if (brush)
+			{
+				DeleteObject(brush);
+				brush = nullptr;
+			}
 		}
 
-		// No system brush for this color, cache and return a solid brush of the requested color
-		const auto mc = static_cast<int>(g_FixedColors[static_cast<int>(uc)]);
-		if (g_FixedBrushes[mc]) return g_FixedBrushes[mc];
-		g_FixedBrushes[mc] = CreateSolidBrush(g_Colors[mc]);
-		return g_FixedBrushes[mc];
+		for (auto& pen : g_Pens)
+		{
+			if (pen)
+			{
+				DeleteObject(pen);
+				pen = nullptr;
+			}
+		}
+	}
+
+	void UninitializeGDI() noexcept
+	{
+		if (g_hUIFont) DeleteObject(g_hUIFont);
+		g_hUIFont = nullptr;
+		if (g_hUIFontBold) DeleteObject(g_hUIFontBold);
+		g_hUIFontBold = nullptr;
+		g_uiFontFaceName.clear();
+
+		RefreshTheme();
+
+		for (auto& bitmap : g_Bitmaps)
+		{
+			if (bitmap)
+			{
+				DeleteObject(bitmap);
+				bitmap = nullptr;
+			}
+		}
+	}
+
+	_Check_return_ uiTheme GetEffectiveTheme() noexcept { return g_EffectiveTheme; }
+
+	void StyleScrollHost(_In_ HWND hWnd) noexcept
+	{
+		EC_B_S(::SetProp(hWnd, SCROLL_HOST, reinterpret_cast<HANDLE>(true)));
+	}
+
+	void PaintScrollCorner(_In_ HWND hWnd) noexcept
+	{
+		const auto style = ::GetWindowLongPtr(hWnd, GWL_STYLE);
+		if ((style & (WS_HSCROLL | WS_VSCROLL)) != (WS_HSCROLL | WS_VSCROLL)) return;
+
+		auto horizontal = SCROLLBARINFO{sizeof SCROLLBARINFO};
+		auto vertical = SCROLLBARINFO{sizeof SCROLLBARINFO};
+		if (!WC_D(BOOL, ::GetScrollBarInfo(hWnd, OBJID_HSCROLL, &horizontal)) ||
+			!WC_D(BOOL, ::GetScrollBarInfo(hWnd, OBJID_VSCROLL, &vertical)) ||
+			(horizontal.rgstate[0] & (STATE_SYSTEM_INVISIBLE | STATE_SYSTEM_OFFSCREEN)) != 0 ||
+			(vertical.rgstate[0] & (STATE_SYSTEM_INVISIBLE | STATE_SYSTEM_OFFSCREEN)) != 0)
+			return;
+
+		auto window = RECT{};
+		if (!WC_D(BOOL, ::GetWindowRect(hWnd, &window))) return;
+		const auto corner = RECT{
+			vertical.rcScrollBar.left - window.left,
+			horizontal.rcScrollBar.top - window.top,
+			vertical.rcScrollBar.right - window.left,
+			horizontal.rcScrollBar.bottom - window.top};
+		const auto hdc = WC_D(HDC, ::GetWindowDC(hWnd));
+		if (hdc)
+		{
+			WC_B_S(::FillRect(hdc, &corner, GetSysBrush(uiColor::Background)));
+			WC_B_S(::ReleaseDC(hWnd, hdc));
+		}
+	}
+
+	BOOL CALLBACK ApplyThemeToChild(_In_ HWND hWnd, LPARAM /*lParam*/) noexcept
+	{
+		WCHAR className[64] = {};
+		GetClassNameW(hWnd, className, _countof(className));
+		const auto isList = _wcsicmp(className, WC_LISTVIEWW) == 0;
+		const auto isTree = _wcsicmp(className, WC_TREEVIEWW) == 0;
+		const auto isEdit = _wcsicmp(className, WC_EDITW) == 0;
+		const auto isRichEdit = _wcsnicmp(className, L"RichEdit", 8) == 0;
+		const auto isCombo = _wcsicmp(className, WC_COMBOBOXW) == 0;
+		const auto isComboList = _wcsicmp(className, L"ComboLBox") == 0;
+		const auto isHeader = _wcsicmp(className, WC_HEADERW) == 0;
+		const auto isScrollBar = _wcsicmp(className, L"ScrollBar") == 0;
+		const auto isMarkedScrollHost = ::GetProp(hWnd, SCROLL_HOST) != nullptr;
+		const auto isScrollHost = isScrollBar || isMarkedScrollHost;
+		const auto isToolTip = _wcsicmp(className, TOOLTIPS_CLASSW) == 0;
+		auto scrollInfo = SCROLLINFO{};
+		scrollInfo.cbSize = sizeof scrollInfo;
+		scrollInfo.fMask = SIF_RANGE | SIF_PAGE | SIF_POS;
+		const auto preserveScrollInfo = isMarkedScrollHost && ::GetScrollInfo(hWnd, SB_VERT, &scrollInfo);
+
+		if (import::pfnSetWindowTheme && (isList || isTree || isEdit || isRichEdit || isCombo || isComboList ||
+										  isHeader || isScrollHost || isToolTip))
+		{
+			if (isScrollHost)
+			{
+				const auto theme = g_EffectiveTheme == uiTheme::Dark	? L"DarkMode_Explorer"
+								   : g_EffectiveTheme == uiTheme::Light ? L"Explorer"
+																		: nullptr;
+				static_cast<void>(import::pfnSetWindowTheme(hWnd, theme, nullptr));
+			}
+			else
+			{
+				// DarkMode_Explorer leaves the combo drop button light.
+				const auto theme = g_EffectiveTheme == uiTheme::Dark
+									   ? (isCombo || isComboList ? L"DarkMode_CFD" : L"DarkMode_Explorer")
+									   : L"Explorer";
+				static_cast<void>(import::pfnSetWindowTheme(hWnd, theme, nullptr));
+			}
+		}
+
+		if (isList)
+		{
+			ListView_SetBkColor(hWnd, MyGetSysColor(uiColor::Background));
+			ListView_SetTextBkColor(hWnd, MyGetSysColor(uiColor::Background));
+			ListView_SetTextColor(hWnd, MyGetSysColor(uiColor::Text));
+		}
+		else if (isTree)
+		{
+			TreeView_SetBkColor(hWnd, MyGetSysColor(uiColor::Background));
+			TreeView_SetTextColor(hWnd, MyGetSysColor(uiColor::Text));
+		}
+		else if (isRichEdit)
+		{
+			const auto bReadOnly = (GetWindowLongPtr(hWnd, GWL_STYLE) & ES_READONLY) != 0;
+			const auto background =
+				bReadOnly || !IsWindowEnabled(hWnd) ? uiColor::BackgroundReadOnly : uiColor::Background;
+			static_cast<void>(::SendMessage(hWnd, EM_SETBKGNDCOLOR, 0, static_cast<LPARAM>(MyGetSysColor(background))));
+			UpdateEditTextColor(hWnd, bReadOnly);
+		}
+
+		::SendMessage(hWnd, WM_MFCMAPI_THEMECHANGED, 0, 0);
+
+		if (preserveScrollInfo)
+		{
+			::SetScrollInfo(hWnd, SB_VERT, &scrollInfo, false);
+			::ShowScrollBar(
+				hWnd,
+				SB_VERT,
+				scrollInfo.nPage && scrollInfo.nPage < static_cast<UINT>(scrollInfo.nMax - scrollInfo.nMin + 1));
+		}
+
+		RedrawWindow(hWnd, nullptr, nullptr, RDW_INVALIDATE | RDW_ERASE | RDW_FRAME);
+		return true;
+	}
+
+	void ApplyTheme(_In_ HWND hWnd) noexcept
+	{
+		if (!hWnd) return;
+
+		ApplyThemeToChild(hWnd, 0);
+
+		if (import::pfnDwmSetWindowAttribute)
+		{
+			const BOOL useDarkMode = g_EffectiveTheme == uiTheme::Dark;
+			constexpr DWORD darkModeAttributeBefore20H1 = 19;
+			constexpr DWORD darkModeAttribute = 20;
+			auto hRes = import::pfnDwmSetWindowAttribute(hWnd, darkModeAttribute, &useDarkMode, sizeof useDarkMode);
+			if (FAILED(hRes))
+			{
+				static_cast<void>(import::pfnDwmSetWindowAttribute(
+					hWnd, darkModeAttributeBefore20H1, &useDarkMode, sizeof useDarkMode));
+			}
+		}
+
+		const auto hMenu = GetMenu(hWnd);
+		if (hMenu)
+		{
+			auto menuInfo = MENUINFO{};
+			menuInfo.cbSize = sizeof menuInfo;
+			menuInfo.fMask = MIM_BACKGROUND;
+			menuInfo.hbrBack = GetSysBrush(uiColor::Background);
+			SetMenuInfo(hMenu, &menuInfo);
+			DrawMenuBar(hWnd);
+		}
+
+		EnumChildWindows(hWnd, ApplyThemeToChild, 0);
+		RedrawWindow(hWnd, nullptr, nullptr, RDW_ERASE | RDW_FRAME | RDW_INVALIDATE | RDW_ALLCHILDREN | RDW_UPDATENOW);
+	}
+
+	BOOL CALLBACK ApplyThemeToTopLevelWindow(_In_ HWND hWnd, LPARAM /*lParam*/) noexcept
+	{
+		ApplyTheme(hWnd);
+		return true;
+	}
+
+	void RedrawAllWindows() noexcept { EnumThreadWindows(GetCurrentThreadId(), ApplyThemeToTopLevelWindow, 0); }
+
+	void ApplyThemeToAllWindows() noexcept
+	{
+		RefreshTheme();
+		RedrawAllWindows();
 	}
 
 	_Check_return_ COLORREF MyGetSysColor(const uiColor uc) noexcept
 	{
+		const auto theme = g_EffectiveTheme;
+		if (theme == uiTheme::Dark) return g_DarkColors[static_cast<int>(uc)];
+
+		if (theme == uiTheme::HighContrast)
+		{
+			const auto iSysColor = g_HighContrastSysColors[static_cast<int>(uc)];
+			if (iSysColor) return GetSysColor(iSysColor);
+		}
+
 		// Return a system color if we have one in g_SysColors
 		const auto iSysColor = g_SysColors[static_cast<int>(uc)];
 		if (iSysColor) return GetSysColor(iSysColor);
@@ -658,43 +949,133 @@ namespace ui
 		const auto dpiX = GetDeviceCaps(hdcWin, LOGPIXELSX);
 		const auto dpiY = GetDeviceCaps(hdcWin, LOGPIXELSY);
 
-		if (hdcWin) DeleteDC(hdcWin);
+		if (hdcWin) ReleaseDC(nullptr, hdcWin);
 		return {dpiX, dpiY, 96};
 	}
 
-	HBITMAP ScaleBitmap(HBITMAP hBitmap, const SCALE& scale) noexcept
+	HIMAGELIST CreateThemedImageList(HBITMAP hBitmap, const int sourceImageSize, const SIZE& targetImageSize)
 	{
 		auto bm = BITMAP{};
-		::GetObject(hBitmap, sizeof(BITMAP), &bm);
+		const auto objectSize = WC_D(int, ::GetObject(hBitmap, sizeof bm, &bm));
+		if (!objectSize) return nullptr;
+		if (sourceImageSize <= 0 || bm.bmHeight != sourceImageSize || bm.bmWidth <= 0 || bm.bmWidth % sourceImageSize ||
+			targetImageSize.cx <= 0 || targetImageSize.cy <= 0)
+		{
+			WC_H_S(E_INVALIDARG);
+			return nullptr;
+		}
 
-		const SIZE sizeSrc = {bm.bmWidth, bm.bmHeight};
-		const SIZE sizeDst = {scale.x * sizeSrc.cx / scale.denominator, scale.y * sizeSrc.cy / scale.denominator};
+		const auto imageCount = bm.bmWidth / sourceImageSize;
+		if (targetImageSize.cx > MAXLONG / imageCount)
+		{
+			WC_H_S(E_INVALIDARG);
+			return nullptr;
+		}
 
-		const auto hdcWin = GetWindowDC(nullptr);
-		const auto hRet = CreateCompatibleBitmap(hdcWin, sizeDst.cx, sizeDst.cy);
+		auto info = BITMAPINFO{};
+		info.bmiHeader.biSize = sizeof info.bmiHeader;
+		info.bmiHeader.biWidth = bm.bmWidth;
+		info.bmiHeader.biHeight = -bm.bmHeight;
+		info.bmiHeader.biPlanes = 1;
+		info.bmiHeader.biBitCount = 32;
+		info.bmiHeader.biCompression = BI_RGB;
+		auto pixels = std::vector<RGBQUAD>(static_cast<size_t>(bm.bmWidth) * bm.bmHeight);
+		CClientDC dc(nullptr);
+		const auto rows =
+			WC_D(int, GetDIBits(dc.GetSafeHdc(), hBitmap, 0, bm.bmHeight, pixels.data(), &info, DIB_RGB_COLORS));
+		if (!rows) return nullptr;
+		if (rows != bm.bmHeight)
+		{
+			WC_H_S(E_UNEXPECTED);
+			return nullptr;
+		}
 
-		const auto hdcSrc = CreateCompatibleDC(hdcWin);
-		const auto hdcDst = CreateCompatibleDC(hdcWin);
+		const auto transparent = MyGetSysColor(uiColor::BitmapTransBack);
+		const auto foregroundKey = MyGetSysColor(uiColor::BitmapTransFore);
+		const auto foreground = MyGetSysColor(uiColor::Text);
 
-		const auto bmpSrc = SelectObject(hdcSrc, hBitmap);
-		const auto bmpDst = SelectObject(hdcDst, hRet);
+		// Magenta is transparent, cyan is theme ink, and all other colors are literal.
+		for (auto& pixel : pixels)
+		{
+			auto color = RGB(pixel.rgbRed, pixel.rgbGreen, pixel.rgbBlue);
+			if (color == transparent)
+			{
+				pixel = {};
+				continue;
+			}
 
-		static_cast<void>(
-			StretchBlt(hdcDst, 0, 0, sizeDst.cx, sizeDst.cy, hdcSrc, 0, 0, sizeSrc.cx, sizeSrc.cy, SRCCOPY));
+			if (color == foregroundKey) color = foreground;
+			pixel = {GetBValue(color), GetGValue(color), GetRValue(color), 255};
+		}
 
-		static_cast<void>(SelectObject(hdcSrc, bmpSrc));
-		static_cast<void>(SelectObject(hdcDst, bmpDst));
+		const auto width = targetImageSize.cx * imageCount;
+		info.bmiHeader.biWidth = width;
+		info.bmiHeader.biHeight = -targetImageSize.cy;
+		info.bmiHeader.biSizeImage = 0;
+		void* bits = nullptr;
+		const auto hScaled = WC_D(HBITMAP, CreateDIBSection(dc.GetSafeHdc(), &info, DIB_RGB_COLORS, &bits, nullptr, 0));
+		if (!hScaled) return nullptr;
+		CBitmap scaled;
+		scaled.Attach(hScaled);
+		const auto target = static_cast<RGBQUAD*>(bits);
 
-		if (bmpDst) DeleteObject(bmpDst);
-		if (bmpSrc) DeleteObject(bmpSrc);
-		if (hdcDst) DeleteDC(hdcDst);
-		if (hdcSrc) DeleteDC(hdcSrc);
-		if (hdcWin) DeleteDC(hdcWin);
+		// Area-filter premultiplied pixels within each cell, never across neighboring icons.
+		for (auto image = 0; image < imageCount; ++image)
+		{
+			for (auto y = 0; y < targetImageSize.cy; ++y)
+			{
+				const auto top = static_cast<double>(y) * sourceImageSize / targetImageSize.cy;
+				const auto bottom = static_cast<double>(y + 1) * sourceImageSize / targetImageSize.cy;
+				for (auto x = 0; x < targetImageSize.cx; ++x)
+				{
+					const auto left = static_cast<double>(x) * sourceImageSize / targetImageSize.cx;
+					const auto right = static_cast<double>(x + 1) * sourceImageSize / targetImageSize.cx;
+					double red = 0, green = 0, blue = 0, alpha = 0;
+					for (auto sy = static_cast<int>(top); sy < sourceImageSize && sy < std::ceil(bottom); ++sy)
+					{
+						const auto weightY =
+							(std::min)(bottom, static_cast<double>(sy + 1)) - (std::max)(top, static_cast<double>(sy));
+						for (auto sx = static_cast<int>(left); sx < sourceImageSize && sx < std::ceil(right); ++sx)
+						{
+							const auto weight = weightY * ((std::min)(right, static_cast<double>(sx + 1)) -
+														   (std::max)(left, static_cast<double>(sx)));
+							const auto& pixel = pixels
+								[static_cast<size_t>(sy) * bm.bmWidth +
+								 static_cast<size_t>(image) * static_cast<size_t>(sourceImageSize) + sx];
+							red += pixel.rgbRed * weight;
+							green += pixel.rgbGreen * weight;
+							blue += pixel.rgbBlue * weight;
+							alpha += pixel.rgbReserved * weight;
+						}
+					}
 
-		return hRet;
+					const auto area = (right - left) * (bottom - top);
+					target
+						[static_cast<size_t>(y) * width +
+						 static_cast<size_t>(image) * static_cast<size_t>(targetImageSize.cx) + x] = {
+							static_cast<BYTE>(blue / area + 0.5),
+							static_cast<BYTE>(green / area + 0.5),
+							static_cast<BYTE>(red / area + 0.5),
+							static_cast<BYTE>(alpha / area + 0.5)};
+				}
+			}
+		}
+
+		const auto images =
+			WC_D(HIMAGELIST, ImageList_Create(targetImageSize.cx, targetImageSize.cy, ILC_COLOR32, imageCount, 1));
+		if (!images) return nullptr;
+		const auto firstImage = ImageList_Add(images, hScaled, nullptr);
+		if (firstImage == -1)
+		{
+			WC_H_S(E_FAIL);
+			WC_B_S(ImageList_Destroy(images));
+			return nullptr;
+		}
+
+		return images;
 	}
 
-	void DrawSegoeTextW(
+	void DrawUITextW(
 		_In_ HDC hdc,
 		_In_ const std::wstring& lpchText,
 		_In_ const COLORREF color,
@@ -703,7 +1084,7 @@ namespace ui
 		_In_ const UINT format)
 	{
 		output::DebugPrint(output::dbgLevel::Draw, L"Draw %d, \"%ws\"\n", rc.right - rc.left, lpchText.c_str());
-		const auto hfontOld = SelectObject(hdc, bBold ? GetSegoeFontBold() : GetSegoeFont());
+		const auto hfontOld = SelectObject(hdc, bBold ? GetUIFontBold() : GetUIFont());
 		const auto crText = SetTextColor(hdc, color);
 		SetBkMode(hdc, TRANSPARENT);
 		RECT drawRc = rc;
@@ -721,6 +1102,39 @@ namespace ui
 	// We have to force load the system riched20 to ensure this doesn't break since
 	// Office's riched20 apparently doesn't handle CFM_COLOR at all.
 	// Sets our text color, script, and turns off bold, italic, etc formatting.
+	void FormatRichEdit(_In_ HWND hWnd, const std::function<void()>& format) noexcept
+	{
+		IRichEditOle* richEdit = nullptr;
+		if (FAILED(WC_B(::SendMessage(hWnd, EM_GETOLEINTERFACE, 0, reinterpret_cast<LPARAM>(&richEdit))))) return;
+		ITextDocument* document = nullptr;
+		const auto queried = WC_H(richEdit->QueryInterface(IID_PPV_ARGS(&document)));
+		richEdit->Release();
+		if (FAILED(queried)) return;
+
+		// Suspend recording without clearing the user's existing undo/redo history.
+		const auto suspended = WC_H(document->Undo(tomSuspend, nullptr));
+		if (FAILED(suspended))
+		{
+			document->Release();
+			return;
+		}
+
+		const auto modified = ::SendMessage(hWnd, EM_GETMODIFY, 0, 0);
+		const auto eventMask = static_cast<DWORD>(::SendMessage(hWnd, EM_GETEVENTMASK, 0, 0));
+		static_cast<void>(::SendMessage(hWnd, EM_SETEVENTMASK, 0, eventMask & ~ENM_CHANGE));
+		format();
+		WC_H_S(document->Undo(tomResume, nullptr));
+		static_cast<void>(::SendMessage(hWnd, EM_SETMODIFY, modified, 0));
+		static_cast<void>(::SendMessage(hWnd, EM_SETEVENTMASK, 0, eventMask));
+		document->Release();
+	}
+
+	void SetRichEditCharacterFormat(_In_ HWND hWnd, _In_ CHARFORMAT2& cf) noexcept
+	{
+		FormatRichEdit(
+			hWnd, [&]() { WC_B_S(::SendMessage(hWnd, EM_SETCHARFORMAT, SCF_ALL, reinterpret_cast<LPARAM>(&cf))); });
+	}
+
 	void ClearEditFormatting(_In_ HWND hWnd, const bool bReadOnly) noexcept
 	{
 		CHARFORMAT2 cf{};
@@ -728,8 +1142,22 @@ namespace ui
 		cf.cbSize = sizeof cf;
 		cf.dwMask = CFM_COLOR | CFM_FACE | CFM_BOLD | CFM_ITALIC | CFM_UNDERLINE | CFM_STRIKEOUT;
 		cf.crTextColor = MyGetSysColor(bReadOnly ? uiColor::TextReadOnly : uiColor::Text);
-		_tcscpy_s(cf.szFaceName, _countof(cf.szFaceName), SEGOE);
-		static_cast<void>(::SendMessage(hWnd, EM_SETCHARFORMAT, SCF_ALL, reinterpret_cast<LPARAM>(&cf)));
+		const auto fontName = strings::wstringTotstring(GetUIFontFaceName());
+		_tcscpy_s(cf.szFaceName, _countof(cf.szFaceName), fontName.c_str());
+		SetRichEditCharacterFormat(hWnd, cf);
+	}
+
+	void UpdateEditTextColor(_In_ HWND hWnd, const bool bReadOnly) noexcept
+	{
+		auto cf = CHARFORMAT2{};
+		cf.cbSize = sizeof cf;
+		cf.dwMask = CFM_COLOR | CFM_BACKCOLOR;
+		cf.dwEffects = CFE_AUTOBACKCOLOR;
+		cf.crTextColor = MyGetSysColor(
+			!IsWindowEnabled(hWnd) ? uiColor::TextDisabled
+			: bReadOnly			   ? uiColor::TextReadOnly
+								   : uiColor::Text);
+		SetRichEditCharacterFormat(hWnd, cf);
 	}
 
 	// Lighten the colors of the base, being careful not to overflow
@@ -798,7 +1226,7 @@ namespace ui
 		const WPARAM wParam,
 		const LPARAM lParam,
 		const UINT_PTR uIdSubclass,
-		DWORD_PTR /*dwRefData*/) noexcept
+		const DWORD_PTR dwRefData) noexcept
 	{
 		static auto borderWidth = 2;
 		switch (uMsg)
@@ -812,11 +1240,26 @@ namespace ui
 		case WM_NCDESTROY:
 			RemoveWindowSubclass(hWnd, DrawEditProc, uIdSubclass);
 			return DefSubclassProc(hWnd, uMsg, wParam, lParam);
+		case WM_MOUSEWHEEL:
+			if (dwRefData && !(GetWindowLongPtr(hWnd, GWL_STYLE) & ES_MULTILINE))
+			{
+				return ::SendMessage(reinterpret_cast<HWND>(dwRefData), uMsg, wParam, lParam);
+			}
+			break;
 		case WM_SETFOCUS:
 		case WM_KILLFOCUS:
 			// Trigger WM_NCPAINT so we can get an updated frame reflecting focus status
 			::RedrawWindow(hWnd, nullptr, nullptr, RDW_FRAME | RDW_INVALIDATE | RDW_ERASENOW);
 			break;
+		case WM_ENABLE:
+		{
+			const auto bReadOnly = (GetWindowLongPtr(hWnd, GWL_STYLE) & ES_READONLY) != 0;
+			const auto background = bReadOnly || !wParam ? uiColor::BackgroundReadOnly : uiColor::Background;
+			static_cast<void>(::SendMessage(hWnd, EM_SETBKGNDCOLOR, 0, MyGetSysColor(background)));
+			UpdateEditTextColor(hWnd, bReadOnly);
+			::RedrawWindow(hWnd, nullptr, nullptr, RDW_FRAME | RDW_INVALIDATE | RDW_ERASENOW);
+			break;
+		}
 		case WM_NCPAINT:
 		{
 			const auto hdc = GetWindowDC(hWnd);
@@ -825,14 +1268,17 @@ namespace ui
 				auto rc = RECT{};
 				GetWindowRect(hWnd, &rc);
 				OffsetRect(&rc, -rc.left, -rc.top);
+				const auto bReadOnly = (GetWindowLongPtr(hWnd, GWL_STYLE) & ES_READONLY) != 0;
+				const auto background =
+					bReadOnly || !IsWindowEnabled(hWnd) ? uiColor::BackgroundReadOnly : uiColor::Background;
+				// Clear both the custom frame and the native border reserved by WM_NCCALCSIZE.
+				FrameRect(hdc, rc, borderWidth + 1, background);
 				if ((::GetFocus() == hWnd))
 				{
 					FrameRect(hdc, rc, borderWidth, uiColor::Glow);
 				}
 				else
 				{
-					// Clear out any previous border first, plus 1 for the built in border
-					FrameRect(hdc, rc, borderWidth + 1, uiColor::Background);
 					FrameRect(hdc, rc, 1, uiColor::FrameSelected);
 				}
 
@@ -1025,17 +1471,17 @@ namespace ui
 		HDC hdcTarget,
 		const int iWidth,
 		const int iHeight,
-		const uiColor cSource,
-		const uiColor cReplace) noexcept
+		const COLORREF cSource,
+		const COLORREF cReplace) noexcept
 	{
 		RECT rcBM = {0, 0, iWidth, iHeight};
 
 		const auto hbmTarget = CreateCompatibleBitmap(hdcSource, iWidth, iHeight);
 		static_cast<void>(SelectObject(hdcTarget, hbmTarget));
-		FillRect(hdcTarget, &rcBM, GetSysBrush(cReplace));
+		SetDCBrushColor(hdcTarget, cReplace);
+		FillRect(hdcTarget, &rcBM, static_cast<HBRUSH>(GetStockObject(DC_BRUSH)));
 
-		static_cast<void>(
-			TransparentBlt(hdcTarget, 0, 0, iWidth, iHeight, hdcSource, 0, 0, iWidth, iHeight, MyGetSysColor(cSource)));
+		static_cast<void>(TransparentBlt(hdcTarget, 0, 0, iWidth, iHeight, hdcSource, 0, 0, iWidth, iHeight, cSource));
 		if (hbmTarget) DeleteObject(hbmTarget);
 	}
 
@@ -1047,13 +1493,14 @@ namespace ui
 		const int iWidth,
 		const int iHeight,
 		const int offset,
-		const uiColor cBackground) noexcept
+		const COLORREF cBackground) noexcept
 	{
 		RECT rcBM = {0, 0, iWidth, iHeight};
 
 		const auto hbmTarget = CreateCompatibleBitmap(hdcSource, iWidth, iHeight);
 		static_cast<void>(SelectObject(hdcTarget, hbmTarget));
-		FillRect(hdcTarget, &rcBM, GetSysBrush(cBackground));
+		SetDCBrushColor(hdcTarget, cBackground);
+		FillRect(hdcTarget, &rcBM, static_cast<HBRUSH>(GetStockObject(DC_BRUSH)));
 
 		static_cast<void>(BitBlt(hdcTarget, offset, offset, iWidth, iHeight, hdcSource, 0, 0, SRCCOPY));
 		if (hbmTarget) DeleteObject(hbmTarget);
@@ -1061,7 +1508,7 @@ namespace ui
 
 	// Draws a bitmap on the screen, double buffered, with two color replacement
 	// Fills rectangle with cBackground
-	// Replaces cBitmapTransFore (cyan) with cFrameSelected
+	// Replaces cBitmapTransFore (cyan), or the notify bitmap's blue, with the foreground
 	// Replaces cBitmapTransBack (magenta) with the cBackground
 	// Scales from size of bitmap to size of target rectangle
 	void DrawBitmap(
@@ -1069,24 +1516,34 @@ namespace ui
 		_In_ const RECT& rcTarget,
 		const uiBitmap iBitmap,
 		const bool bHover,
-		const int offset) noexcept
+		const int offset,
+		const COLORREF foreground,
+		const COLORREF background) noexcept
 	{
 		const int iWidth = rcTarget.right - rcTarget.left;
 		const int iHeight = rcTarget.bottom - rcTarget.top;
+		const auto cForeground = foreground == CLR_INVALID ? MyGetSysColor(uiColor::FrameSelected) : foreground;
+		const auto cBackground = background == CLR_INVALID
+									 ? MyGetSysColor(bHover ? uiColor::GlowBackground : uiColor::Background)
+									 : background;
 
 		// hdcBitmap: Load the image
 		const auto hdcBitmap = CreateCompatibleDC(hdc);
-		// TODO: pass target dimensions here and load the most appropriate bitmap
 		const auto hbmBitmap = GetBitmap(iBitmap);
 		static_cast<void>(SelectObject(hdcBitmap, hbmBitmap));
 
 		auto bm = BITMAP{};
 		::GetObject(hbmBitmap, sizeof bm, &bm);
 
-		// hdcForeReplace: Create a bitmap compatible with hdc, select it, fill with cFrameSelected, copy from hdcBitmap, with cBitmapTransFore transparent
+		// hdcForeReplace: Replace only the artwork's foreground color.
 		const auto hdcForeReplace = CreateCompatibleDC(hdc);
 		CopyBitmap(
-			hdcBitmap, hdcForeReplace, bm.bmWidth, bm.bmHeight, uiColor::BitmapTransFore, uiColor::FrameSelected);
+			hdcBitmap,
+			hdcForeReplace,
+			bm.bmWidth,
+			bm.bmHeight,
+			iBitmap == uiBitmap::Notify ? RGB(0x00, 0x70, 0xC4) : MyGetSysColor(uiColor::BitmapTransFore),
+			cForeground);
 
 		// hdcBackReplace: Create a bitmap compatible with hdc, select it, fill with cBackground, copy from hdcForeReplace, with cBitmapTransBack transparent
 		const auto hdcBackReplace = CreateCompatibleDC(hdc);
@@ -1095,22 +1552,23 @@ namespace ui
 			hdcBackReplace,
 			bm.bmWidth,
 			bm.bmHeight,
-			uiColor::BitmapTransBack,
-			bHover ? uiColor::GlowBackground : uiColor::Background);
+			MyGetSysColor(uiColor::BitmapTransBack),
+			cBackground);
 
 		const auto hdcShift = CreateCompatibleDC(hdc);
-		ShiftBitmap(
-			hdcBackReplace,
-			hdcShift,
-			bm.bmWidth,
-			bm.bmHeight,
-			offset,
-			bHover ? uiColor::GlowBackground : uiColor::Background);
+		ShiftBitmap(hdcBackReplace, hdcShift, bm.bmWidth, bm.bmHeight, offset, cBackground);
 
 		// In case the original bitmap dimensions doesn't match our target dimension, we stretch it to fit
 		// We can get better results if the original bitmap happens to match.
+		const auto savedDC = SaveDC(hdc);
+		if (iBitmap == uiBitmap::Notify)
+		{
+			SetStretchBltMode(hdc, HALFTONE);
+			SetBrushOrgEx(hdc, 0, 0, nullptr);
+		}
 		static_cast<void>(StretchBlt(
 			hdc, rcTarget.left, rcTarget.top, iWidth, iHeight, hdcShift, 0, 0, bm.bmWidth, bm.bmHeight, SRCCOPY));
+		RestoreDC(hdc, savedDC);
 
 		if (hdcShift) DeleteDC(hdcShift);
 		if (hdcBackReplace) DeleteDC(hdcBackReplace);
@@ -1122,8 +1580,12 @@ namespace ui
 #endif
 	}
 
-	void
-	CustomDrawTree(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, const bool bHover, _In_ HTREEITEM hItemCurHover) noexcept
+	void CustomDrawTree(
+		_In_ NMHDR* pNMHDR,
+		_In_ LRESULT* pResult,
+		const bool bHover,
+		_In_ HTREEITEM hItemCurHover,
+		const std::wstring& text)
 	{
 		if (!pNMHDR) return;
 		const auto lvcd = reinterpret_cast<LPNMTVCUSTOMDRAW>(pNMHDR);
@@ -1136,43 +1598,60 @@ namespace ui
 
 		case CDDS_ITEMPREPAINT:
 		{
-			auto hItem = reinterpret_cast<HTREEITEM>(lvcd->nmcd.dwItemSpec);
-
-			if (hItem)
-			{
-				lvcd->clrTextBk = MyGetSysColor(uiColor::Background);
-				lvcd->clrText = MyGetSysColor(uiColor::Text);
-				const int iState = TreeView_GetItemState(lvcd->nmcd.hdr.hwndFrom, hItem, TVIS_SELECTED);
-				TreeView_SetItemState(
-					lvcd->nmcd.hdr.hwndFrom, hItem, iState & TVIS_SELECTED ? TVIS_BOLD : NULL, TVIS_BOLD);
-			}
-
-			*pResult = CDRF_DODEFAULT | CDRF_NOTIFYPOSTPAINT;
-
-			if (hItem == hItemCurHover)
-			{
-				lvcd->clrText = MyGetSysColor(uiColor::GlowText);
-				lvcd->clrTextBk = MyGetSysColor(uiColor::GlowBackground);
-				*pResult |= CDRF_NEWFONT;
-			}
-
-			break;
-		}
-
-		case CDDS_ITEMPOSTPAINT:
-		{
 			const auto hItem = reinterpret_cast<HTREEITEM>(lvcd->nmcd.dwItemSpec);
-
+			const auto hwnd = lvcd->nmcd.hdr.hwndFrom;
+			const auto hdc = lvcd->nmcd.hdc;
 			if (hItem)
 			{
-				// Cover over the +/- and paint triangles instead
+				const auto selected = (TreeView_GetItemState(hwnd, hItem, TVIS_SELECTED) & TVIS_SELECTED) != 0;
+				const auto hovered = hItem == hItemCurHover;
+				const auto highContrast = GetEffectiveTheme() == uiTheme::HighContrast;
+				const auto background = selected				   ? uiColor::SelectedBackground
+										: hovered && !highContrast ? uiColor::GlowBackground
+																   : uiColor::Background;
+				const auto foreground = selected || (hovered && !highContrast) ? uiColor::GlowText : uiColor::Text;
+				lvcd->clrTextBk = MyGetSysColor(background);
+				lvcd->clrText = MyGetSysColor(foreground);
+
+				auto row = RECT{};
+				auto label = RECT{};
+				GetClientRect(hwnd, &row);
+				TreeView_GetItemRect(hwnd, hItem, &label, true);
+				row.top = label.top;
+				row.bottom = label.bottom;
+				const auto savedDC = SaveDC(hdc);
+				IntersectClipRect(hdc, row.left, row.top, row.right, row.bottom);
+				FillRect(hdc, &row, GetSysBrush(background));
+
+				if (!TreeView_GetEditControl(hwnd) || !selected)
+				{
+					label.right = row.right;
+					DrawUITextW(
+						hdc, text, lvcd->clrText, label, selected, DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_NOPREFIX);
+				}
+
 				DrawExpandTriangle(
-					lvcd->nmcd.hdr.hwndFrom,
-					lvcd->nmcd.hdc,
-					hItem,
-					bHover && hItem == hItemCurHover,
-					hItem == hItemCurHover);
+					hwnd, hdc, hItem, bHover && hovered && !selected && !highContrast, foreground, background);
+
+				if (hovered && !selected && highContrast)
+				{
+					::FrameRect(hdc, &row, GetSysBrush(foreground));
+				}
+
+				const auto hideFocus = ::SendMessage(hwnd, WM_QUERYUISTATE, 0, 0) & UISF_HIDEFOCUS;
+				if (selected && ::GetFocus() == hwnd && !hideFocus)
+				{
+					InflateRect(&row, -1, -1);
+					SetTextColor(hdc, lvcd->clrText);
+					SetBkColor(hdc, lvcd->clrTextBk);
+					DrawFocusRect(hdc, &row);
+				}
+
+				RestoreDC(hdc, savedDC);
 			}
+
+			// Keep native selection and hit testing, but paint every part of the row ourselves.
+			*pResult = CDRF_SKIPDEFAULT;
 			break;
 		}
 
@@ -1183,8 +1662,13 @@ namespace ui
 	}
 
 	// Paints the triangles indicating expansion state
-	void
-	DrawExpandTriangle(_In_ HWND hWnd, _In_ HDC hdc, _In_ HTREEITEM hItem, const bool bGlow, const bool bHover) noexcept
+	void DrawExpandTriangle(
+		_In_ HWND hWnd,
+		_In_ HDC hdc,
+		_In_ HTREEITEM hItem,
+		const bool bGlow,
+		const uiColor foreground,
+		const uiColor background) noexcept
 	{
 		auto tvitem = TVITEM{};
 		tvitem.hItem = hItem;
@@ -1197,14 +1681,8 @@ namespace ui
 			TreeView_GetItemRect(hWnd, hItem, &rcButton, true);
 			const auto triangleSize = (rcButton.bottom - rcButton.top) / 4;
 
-			// Erase the +/- icons
-			// We erase everything to the left of the label
 			rcButton.right = rcButton.left;
-			rcButton.left = 0;
-			FillRect(hdc, &rcButton, GetSysBrush(bHover ? uiColor::GlowBackground : uiColor::Background));
-
-			// Now we focus on a box 15 pixels wide to the left of the label
-			rcButton.left = rcButton.right - 15;
+			rcButton.left = rcButton.right - MulDiv(15, GetDeviceCaps(hdc, LOGPIXELSX), 96);
 
 			// Boundary box for the actual triangles
 			auto rcTriangle = RECT{};
@@ -1240,8 +1718,8 @@ namespace ui
 				tri[2].y = (rcTriangle.top + rcTriangle.bottom) / 2;
 			}
 
-			auto cEdge = bGlow ? uiColor::Glow : bExpanded ? uiColor::FrameSelected : uiColor::Arrow;
-			auto cFill = bGlow ? uiColor::Glow : bExpanded ? uiColor::FrameSelected : uiColor::Background;
+			const auto cEdge = bGlow ? uiColor::Glow : foreground;
+			const auto cFill = bGlow ? uiColor::Glow : bExpanded ? foreground : background;
 
 			DrawFilledPolygon(hdc, tri, _countof(tri), MyGetSysColor(cEdge), GetSysBrush(cFill));
 		}
@@ -1328,7 +1806,7 @@ namespace ui
 
 		auto rcText = rcHeader;
 		rcText.left += GetSystemMetrics(SM_CXEDGE);
-		DrawSegoeTextW(
+		DrawUITextW(
 			hdc,
 			hdItem.pszText,
 			MyGetSysColor(uiColor::Text),
@@ -1455,7 +1933,7 @@ namespace ui
 			GetWindowTextW(hWnd, szButton, _countof(szButton));
 			const auto bDisabled = (itemState & CDIS_DISABLED) != 0;
 
-			DrawSegoeTextW(
+			DrawUITextW(
 				hDC,
 				szButton,
 				bPushed || bDisabled ? MyGetSysColor(uiColor::TextDisabled) : MyGetSysColor(uiColor::Text),
@@ -1524,7 +2002,7 @@ namespace ui
 		const auto hdc = GetDC(nullptr);
 		if (hdc)
 		{
-			const auto hfontOld = SelectObject(hdc, GetSegoeFont());
+			const auto hfontOld = SelectObject(hdc, GetUIFont());
 
 			// In order to compute the right width, we need to drop our prefix characters
 			auto szText = strings::StripCharacter(lpMenuEntry->m_MSAA.pszWText, L'&');
@@ -1534,8 +2012,7 @@ namespace ui
 			lpMeasureItemStruct->itemHeight = size.cy + 2 * GetSystemMetrics(SM_CYEDGE);
 
 			// Make sure we have room for the flyout icon
-			if (!lpMenuEntry->m_bOnMenuBar &&
-				IsMenu(reinterpret_cast<HMENU>(static_cast<UINT_PTR>(lpMeasureItemStruct->itemID))))
+			if (!lpMenuEntry->m_bOnMenuBar && lpMenuEntry->m_bHasSubMenu)
 			{
 				lpMeasureItemStruct->itemWidth += GetSystemMetrics(SM_CXSMICON);
 			}
@@ -1635,13 +2112,28 @@ namespace ui
 			else
 				rcText.left += GetSystemMetrics(SM_CXEDGE);
 
+			if (!lpMenuEntry->m_bOnMenuBar && lpMenuEntry->m_bHasSubMenu) rcText.right -= GetSystemMetrics(SM_CXSMICON);
+
 			output::DebugPrint(
 				output::dbgLevel::Draw,
 				L"DrawMenu text %d, \"%ws\"\n",
 				rcText.right - rcText.left,
 				lpMenuEntry->m_pName.c_str());
 
-			DrawSegoeTextW(hdc, lpMenuEntry->m_pName, MyGetSysColor(cFore), rcText, false, uiTextFlags);
+			DrawUITextW(hdc, lpMenuEntry->m_pName, MyGetSysColor(cFore), rcText, false, uiTextFlags);
+
+			if (!lpMenuEntry->m_bOnMenuBar && lpMenuEntry->m_bHasSubMenu)
+			{
+				const auto arrowGutter = GetSystemMetrics(SM_CXMENUCHECK);
+				const auto arrowWidth = max(2, GetSystemMetrics(SM_CXEDGE));
+				const auto arrowHeight = max(2, GetSystemMetrics(SM_CYEDGE));
+				const auto x = rcItem.right - GetSystemMetrics(SM_CXEDGE) - arrowGutter / 2;
+				const auto y = (rcItem.top + rcItem.bottom) / 2;
+				const POINT triangle[] = {{x - arrowWidth, y - arrowHeight}, {x - arrowWidth, y + arrowHeight}, {x, y}};
+				const auto arrowColor = bHot && !bDisabled ? uiColor::Glow : cFore;
+				DrawFilledPolygon(
+					hdc, triangle, _countof(triangle), MyGetSysColor(arrowColor), GetSysBrush(arrowColor));
+			}
 
 			// Triple buffer the check mark so we can copy it over without the background
 			if (lpDrawItemStruct->itemState & ODS_CHECKED)
@@ -1656,7 +2148,10 @@ namespace ui
 				SetRect(&rc, 0, 0, nWidth, nHeight);
 				static_cast<void>(DrawFrameControl(hdcMem, &rc, DFC_MENU, DFCS_MENUCHECK));
 
-				static_cast<void>(TransparentBlt(
+				const auto oldBrush = SelectObject(hdc, GetSysBrush(cFore));
+				constexpr DWORD destinationCopy = 0x00AA0029;
+				// Keep white mask pixels transparent and paint the black check with the text brush.
+				WC_B_S(MaskBlt(
 					hdc,
 					rcItem.left,
 					(rcItem.top + rcItem.bottom - nHeight) / 2,
@@ -1665,9 +2160,11 @@ namespace ui
 					hdcMem,
 					0,
 					0,
-					nWidth,
-					nHeight,
-					MyGetSysColor(uiColor::Background)));
+					bm,
+					0,
+					0,
+					MAKEROP4(destinationCopy, PATCOPY)));
+				SelectObject(hdc, oldBrush);
 
 #ifdef SKIPBUFFER
 				auto frameRect = rcItem;
@@ -1682,6 +2179,11 @@ namespace ui
 		}
 
 		db.End(hdc);
+		if (!lpMenuEntry->m_bOnMenuBar && lpMenuEntry->m_bHasSubMenu)
+		{
+			// Windows draws its submenu arrow after WM_DRAWITEM. Keep it from overwriting ours.
+			WC_D(int, ::ExcludeClipRect(hdc, rcItem.left, rcItem.top, rcItem.right, rcItem.bottom));
+		}
 	}
 
 	std::wstring GetLBText(HWND hwnd, const int nIndex)
@@ -1711,7 +2213,7 @@ namespace ui
 
 		FillRect(lpDrawItemStruct->hDC, &lpDrawItemStruct->rcItem, GetSysBrush(cBack));
 
-		DrawSegoeTextW(
+		DrawUITextW(
 			lpDrawItemStruct->hDC,
 			szText,
 			MyGetSysColor(cFore),
@@ -1750,7 +2252,11 @@ namespace ui
 		const std::wstring& szStatusInfo)
 	{
 		auto rcStatus = RECT{};
-		GetClientRect(hwnd, &rcStatus);
+		if (!WC_D(BOOL, GetClientRect(hwnd, &rcStatus))) return;
+		auto rcWindow = RECT{};
+		if (!WC_D(BOOL, GetWindowRect(hwnd, &rcWindow))) return;
+		auto clientBottom = POINT{0, rcStatus.bottom};
+		if (!WC_D(BOOL, ClientToScreen(hwnd, &clientBottom))) return;
 		if (rcStatus.bottom - rcStatus.top > iStatusHeight)
 		{
 			rcStatus.top = rcStatus.bottom - iStatusHeight;
@@ -1765,19 +2271,18 @@ namespace ui
 		auto rcText = rcGrad;
 		const auto crFore = MyGetSysColor(uiColor::StatusText);
 
-		// We start painting a little lower to allow our gradiants to line up
-		rcGrad.bottom += GetSystemMetrics(SM_CYSIZEFRAME) - BORDER_VISIBLEWIDTH;
+		// Match the nonclient gradient, including the padded bottom border.
+		rcGrad.bottom += rcWindow.bottom - clientBottom.y - BORDER_VISIBLEWIDTH;
 		GradientFillRect(ps.hdc, rcGrad, uiColor::Status);
 
 		rcText.left = rcText.right - iStatusData2;
-		DrawSegoeTextW(ps.hdc, szStatusData2, crFore, rcText, true, DT_LEFT | DT_SINGLELINE | DT_BOTTOM);
+		DrawUITextW(ps.hdc, szStatusData2, crFore, rcText, true, DT_LEFT | DT_SINGLELINE | DT_BOTTOM);
 		rcText.right = rcText.left;
 		rcText.left = rcText.right - iStatusData1;
-		DrawSegoeTextW(ps.hdc, szStatusData1, crFore, rcText, true, DT_LEFT | DT_SINGLELINE | DT_BOTTOM);
+		DrawUITextW(ps.hdc, szStatusData1, crFore, rcText, true, DT_LEFT | DT_SINGLELINE | DT_BOTTOM);
 		rcText.right = rcText.left;
 		rcText.left = 0;
-		DrawSegoeTextW(
-			ps.hdc, szStatusInfo, crFore, rcText, true, DT_LEFT | DT_SINGLELINE | DT_BOTTOM | DT_END_ELLIPSIS);
+		DrawUITextW(ps.hdc, szStatusInfo, crFore, rcText, true, DT_LEFT | DT_SINGLELINE | DT_BOTTOM | DT_END_ELLIPSIS);
 
 		db.End(ps.hdc);
 		EndPaint(hwnd, &ps);
@@ -1900,6 +2405,7 @@ namespace ui
 		const auto htMin = HTMINBUTTON == iHitTest;
 
 		DrawBitmap(hdc, rcCloseIcon, uiBitmap::Close, htClose, htClose && !bHover ? 2 : 0);
+		if (registry::uiDiag) ::FrameRect(hdc, &rcCloseIcon, GetSysBrush(uiColor::TestPink));
 
 		if (bMaxBox)
 		{
@@ -1909,11 +2415,13 @@ namespace ui
 				IsZoomed(hWnd) ? uiBitmap::Restore : uiBitmap::Maximize,
 				htMax,
 				htMax && !bHover ? 2 : 0);
+			if (registry::uiDiag) ::FrameRect(hdc, &rcMaxIcon, GetSysBrush(uiColor::TestPink));
 		}
 
 		if (bMinBox)
 		{
 			DrawBitmap(hdc, rcMinIcon, uiBitmap::Minimize, htMin, htMin && !bHover ? 2 : 0);
+			if (registry::uiDiag) ::FrameRect(hdc, &rcMinIcon, GetSysBrush(uiColor::TestPink));
 		}
 
 		if (hdcLocal) ReleaseDC(hWnd, hdcLocal);
@@ -2086,7 +2594,7 @@ namespace ui
 
 			const WCHAR szTitle[256] = {};
 			DefWindowProcW(hWnd, WM_GETTEXT, static_cast<WPARAM>(_countof(szTitle)), reinterpret_cast<LPARAM>(szTitle));
-			DrawSegoeTextW(
+			DrawUITextW(
 				hdc, szTitle, MyGetSysColor(uiColor::Text), rcCaptionText, false, DT_LEFT | DT_SINGLELINE | DT_VCENTER);
 
 			// Finally, we paint our border glow if we're not maximized
@@ -2103,6 +2611,91 @@ namespace ui
 		}
 	}
 
+	void DrawPopupMenuBorder(_In_ HWND hWnd, _In_opt_ HDC printDC = nullptr) noexcept
+	{
+		auto window = RECT{};
+		auto client = RECT{};
+		if (FAILED(WC_B(::GetWindowRect(hWnd, &window))) || FAILED(WC_B(::GetClientRect(hWnd, &client)))) return;
+		auto origin = POINT{};
+		if (FAILED(WC_B(::ClientToScreen(hWnd, &origin)))) return;
+		OffsetRect(&client, origin.x - window.left, origin.y - window.top);
+		OffsetRect(&window, -window.left, -window.top);
+
+		const auto hdc = printDC ? printDC : WC_D(HDC, ::GetWindowDC(hWnd));
+		if (!hdc) return;
+		const auto saved = WC_D(int, ::SaveDC(hdc));
+		if (saved)
+		{
+			// Recolor only the native nonclient frame; leave its dimensions and menu contents intact.
+			ExcludeClipRect(hdc, client.left, client.top, client.right, client.bottom);
+			FillRect(hdc, &window, GetSysBrush(uiColor::BackgroundReadOnly));
+			auto edge = RECT{window.left, window.top, window.right, window.top + 1};
+			FillRect(hdc, &edge, GetSysBrush(uiColor::FrameUnselected));
+			edge = RECT{window.left, window.top, window.left + 1, window.bottom};
+			FillRect(hdc, &edge, GetSysBrush(uiColor::FrameUnselected));
+			RestoreDC(hdc, saved);
+		}
+
+		if (!printDC) WC_B_S(::ReleaseDC(hWnd, hdc));
+	}
+
+	LRESULT CALLBACK PopupMenuProc(
+		_In_ HWND hWnd,
+		const UINT message,
+		const WPARAM wParam,
+		const LPARAM lParam,
+		const UINT_PTR subclassID,
+		const DWORD_PTR /*data*/) noexcept
+	{
+		if (message == WM_NCDESTROY)
+		{
+			RemoveWindowSubclass(hWnd, PopupMenuProc, subclassID);
+			return DefSubclassProc(hWnd, message, wParam, lParam);
+		}
+
+		const auto result = DefSubclassProc(hWnd, message, wParam, lParam);
+		if (GetEffectiveTheme() == uiTheme::Dark)
+		{
+			if (message == WM_NCPAINT || message == WM_PAINT)
+			{
+				DrawPopupMenuBorder(hWnd);
+			}
+			else if (message == WM_PRINT && (lParam & PRF_NONCLIENT))
+			{
+				DrawPopupMenuBorder(hWnd, reinterpret_cast<HDC>(wParam));
+			}
+		}
+
+		return result;
+	}
+
+	thread_local HHOOK g_MenuHook{};
+	thread_local ULONG g_MenuLoopDepth{};
+
+	LRESULT CALLBACK PopupMenuHook(const int code, const WPARAM wParam, const LPARAM lParam) noexcept
+	{
+		if (code >= 0)
+		{
+			const auto message = reinterpret_cast<const CWPSTRUCT*>(lParam);
+			// The first popup is created before WM_ENTERMENULOOP installs this hook.
+			if (message->message == WM_CREATE || message->message == WM_NCCALCSIZE ||
+				message->message == WM_WINDOWPOSCHANGING)
+			{
+				WCHAR className[32]{};
+				if (GetClassNameW(message->hwnd, className, _countof(className)) && wcscmp(className, L"#32768") == 0)
+				{
+					DWORD_PTR data{};
+					if (!GetWindowSubclass(message->hwnd, PopupMenuProc, 0, &data))
+					{
+						WC_B_S(SetWindowSubclass(message->hwnd, PopupMenuProc, 0, 0));
+					}
+				}
+			}
+		}
+
+		return CallNextHookEx(g_MenuHook, code, wParam, lParam);
+	}
+
 	_Check_return_ bool
 	HandleControlUI(const UINT message, const WPARAM wParam, const LPARAM lParam, _Out_ LRESULT* lpResult)
 	{
@@ -2110,6 +2703,20 @@ namespace ui
 		*lpResult = 0;
 		switch (message)
 		{
+		case WM_ENTERMENULOOP:
+			if (g_MenuLoopDepth++ == 0 && GetEffectiveTheme() == uiTheme::Dark)
+			{
+				g_MenuHook =
+					WC_D(HHOOK, SetWindowsHookExW(WH_CALLWNDPROC, PopupMenuHook, nullptr, GetCurrentThreadId()));
+			}
+			break;
+		case WM_EXITMENULOOP:
+			if (g_MenuLoopDepth && --g_MenuLoopDepth == 0 && g_MenuHook)
+			{
+				WC_B_S(UnhookWindowsHookEx(g_MenuHook));
+				g_MenuHook = nullptr;
+			}
+			break;
 		case WM_DRAWITEM:
 			if (DrawItem(reinterpret_cast<LPDRAWITEMSTRUCT>(lParam))) return true;
 			break;
@@ -2120,6 +2727,8 @@ namespace ui
 			return true;
 		case WM_CTLCOLORSTATIC:
 		case WM_CTLCOLOREDIT:
+		case WM_CTLCOLORBTN:
+		case WM_CTLCOLORLISTBOX:
 		{
 			const auto lsStyle = static_cast<uiLabelStyle>(
 				reinterpret_cast<intptr_t>(::GetProp(reinterpret_cast<HWND>(lParam), LABEL_STYLE)));
@@ -2132,17 +2741,22 @@ namespace ui
 				uiBackground = registry::uiDiag ? uiColor::TestRed : uiColor::PaneHeaderBackground;
 			}
 
+			if (!IsWindowEnabled(reinterpret_cast<HWND>(lParam))) uiText = uiColor::TextDisabled;
+
 			const auto hdc = reinterpret_cast<HDC>(wParam);
 			if (hdc)
 			{
 				SetTextColor(hdc, MyGetSysColor(uiText));
 				SetBkMode(hdc, TRANSPARENT);
-				SelectObject(hdc, GetSegoeFont());
+				SelectObject(hdc, GetUIFont());
 			}
 
 			*lpResult = reinterpret_cast<LRESULT>(GetSysBrush(uiBackground));
 			return true;
 		}
+		case WM_CTLCOLORSCROLLBAR:
+			*lpResult = reinterpret_cast<LRESULT>(GetSysBrush(uiColor::BackgroundReadOnly));
+			return true;
 		case WM_NOTIFY:
 		{
 			const auto pHdr = reinterpret_cast<LPNMHDR>(lParam);
@@ -2177,7 +2791,7 @@ namespace ui
 			auto rcText = rcWin;
 			FillRect(hdc, &rcText, GetSysBrush(uiColor::Background));
 
-			DrawSegoeTextW(
+			DrawUITextW(
 				hdc,
 				strings::loadstring(uIDText),
 				MyGetSysColor(uiColor::TextDisabled),
@@ -2215,7 +2829,7 @@ namespace ui
 	void SubclassLabel(_In_ HWND hWnd) noexcept
 	{
 		SetWindowSubclass(hWnd, LabelProc, 0, 0);
-		SendMessageA(hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(GetSegoeFont()), false);
+		SendMessageA(hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(GetUIFont()), false);
 		::SendMessage(hWnd, EM_SETMARGINS, EC_LEFTMARGIN | EC_RIGHTMARGIN, 0);
 	}
 

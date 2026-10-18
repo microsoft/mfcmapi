@@ -23,6 +23,10 @@ namespace dialog
 	private:
 		void Constructor();
 		LRESULT NCHitTest(WPARAM wParam, LPARAM lParam);
+		void DrawPressedCaptionButton() const noexcept;
+		void CancelCaptionButton(bool repaint) noexcept;
+		int m_pressedCaptionButton{HTNOWHERE};
+		bool m_captionPointerInside{};
 		CWnd* m_hwndCenteringWindow{};
 		UINT m_iAutoCenterWidth{};
 		int m_iStatusHeight{};

@@ -1156,7 +1156,10 @@ namespace controls::sortlistctrl
 
 	void CSingleMAPIPropListCtrl::OnCopyProperty() const
 	{
-		cache::CGlobalCache::getInstance().SetPropertyToCopy(GetSelectedPropModelData(), m_lpPropBag);
+		if (!m_lpPropBag) return;
+		const auto propModelData = GetSelectedPropModelData();
+		if (!propModelData) return;
+		cache::CGlobalCache::getInstance().SetPropertyToCopy(propModelData, m_lpPropBag);
 	}
 
 	void CSingleMAPIPropListCtrl::OnPasteProperty()
@@ -1166,6 +1169,13 @@ namespace controls::sortlistctrl
 
 		const auto sourceProp = cache::CGlobalCache::getInstance().GetPropertyToCopy();
 		const auto sourcePropBag = cache::CGlobalCache::getInstance().GetSourcePropBag();
+		if (!sourceProp || !sourcePropBag)
+		{
+			output::DebugPrint(
+				output::dbgLevel::Generic, L"OnPasteProperty: no copied property or source property bag available.\n");
+			return;
+		}
+
 		const auto ulSourcePropTag = sourceProp->getPropTag();
 		auto lpSourcePropObj = sourcePropBag->GetMAPIProp();
 		if (!lpSourcePropObj)

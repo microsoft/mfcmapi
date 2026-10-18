@@ -36,6 +36,7 @@ namespace controls
 		std::function<void(LPARAM lpData)> OnLastChildDeletedCallback = nullptr;
 		std::function<void(int x, int y)> HandleContextMenuCallback = nullptr;
 		std::function<void(NMHDR*, LRESULT*, HTREEITEM)> OnCustomDrawCallback = nullptr;
+		std::function<std::wstring(HTREEITEM)> GetInfoTipCallback = nullptr;
 
 	protected:
 		LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
@@ -52,6 +53,7 @@ namespace controls
 
 	private:
 		void OnGetDispInfo(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
+		void OnGetInfoTip(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 
 		// Overrides from base class
 		void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
@@ -59,6 +61,7 @@ namespace controls
 		void OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 		void OnRightClick(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 		void OnItemExpanding(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
+		void OnItemExpanded(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 		_Check_return_ UINT OnGetDlgCode();
 		void OnContextMenu(_In_ HWND hwnd, int x, int y);
 		void OnEndLabelEdit(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);

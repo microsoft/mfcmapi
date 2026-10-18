@@ -119,9 +119,10 @@ namespace dialog
 		const auto ptInRect = [](const RECT& rc, POINT p) noexcept {
 			return p.x >= rc.left && p.x < rc.right && p.y >= rc.top && p.y < rc.bottom;
 		};
+		const auto dwWinStyle = ::GetWindowLongPtr(hWnd, GWL_STYLE);
 		if (ptInRect(rcCloseIcon, pt)) ret = HTCLOSE;
-		if (ptInRect(rcMaxIcon, pt)) ret = HTMAXBUTTON;
-		if (ptInRect(rcMinIcon, pt)) ret = HTMINBUTTON;
+		if (WS_MAXIMIZEBOX == (dwWinStyle & WS_MAXIMIZEBOX) && ptInRect(rcMaxIcon, pt)) ret = HTMAXBUTTON;
+		if (WS_MINIMIZEBOX == (dwWinStyle & WS_MINIMIZEBOX) && ptInRect(rcMinIcon, pt)) ret = HTMINBUTTON;
 
 		output::DebugPrint(output::dbgLevel::UI, L"CheckButtons result: %ws\r\n", FormatHT(ret).c_str());
 
@@ -145,7 +146,10 @@ namespace dialog
 			if (ht == HTNOWHERE) ht = HTCAPTION;
 		}
 
-		ui::DrawSystemButtons(m_hWnd, nullptr, ht, true);
+		if (m_pressedCaptionButton == HTNOWHERE)
+			ui::DrawSystemButtons(m_hWnd, nullptr, ht, true);
+		else
+			DrawPressedCaptionButton();
 		output::DebugPrint(output::dbgLevel::UI, L"%ws\r\n", FormatHT(ht).c_str());
 		return ht;
 	}
@@ -156,7 +160,7 @@ namespace dialog
 		// These are client coordinates - we need to translate them to screen coordinates
 		POINT pt = {GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)};
 		output::DebugPrint(output::dbgLevel::UI, L"NCHitTestMouse: pt = %d %d", pt.x, pt.y);
-		if (::MapWindowPoints(hWnd, nullptr, &pt, 1) == 0) return HTNOWHERE; // Map our client point to the screen
+		if (!WC_D(BOOL, ::ClientToScreen(hWnd, &pt))) return HTNOWHERE;
 		output::Outputf(output::dbgLevel::UI, nullptr, false, L" mapped = %d %d\r\n", pt.x, pt.y);
 
 		const auto ht = CheckButtons(hWnd, pt);
@@ -164,31 +168,23 @@ namespace dialog
 		return ht;
 	}
 
-	bool DepressSystemButton(HWND hWnd, const int iHitTest)
+	void CMyDialog::DrawPressedCaptionButton() const noexcept
 	{
-		ui::DrawSystemButtons(hWnd, nullptr, iHitTest, false);
-		SetCapture(hWnd);
-		for (;;)
+		if (m_pressedCaptionButton != HTNOWHERE)
 		{
-			auto msg = MSG{};
-			if (::PeekMessage(&msg, hWnd, WM_MOUSEFIRST, WM_MOUSELAST, PM_REMOVE))
-			{
-				switch (msg.message)
-				{
-				case WM_LBUTTONUP:
-					output::DebugPrint(output::dbgLevel::UI, L"WM_LBUTTONUP\n");
-					ui::DrawSystemButtons(hWnd, nullptr, HTNOWHERE, false);
-					ReleaseCapture();
-					return NCHitTestMouse(hWnd, msg.lParam) == iHitTest;
-
-				case WM_MOUSEMOVE:
-					output::DebugPrint(output::dbgLevel::UI, L"WM_MOUSEMOVE\n");
-					ui::DrawSystemButtons(hWnd, nullptr, iHitTest, NCHitTestMouse(hWnd, msg.lParam) != iHitTest);
-
-					break;
-				}
-			}
+			ui::DrawSystemButtons(m_hWnd, nullptr, m_captionPointerInside ? m_pressedCaptionButton : HTNOWHERE, false);
 		}
+	}
+
+	void CMyDialog::CancelCaptionButton(const bool repaint) noexcept
+	{
+		if (m_pressedCaptionButton == HTNOWHERE) return;
+
+		// ReleaseCapture synchronously sends WM_CAPTURECHANGED.
+		m_pressedCaptionButton = HTNOWHERE;
+		m_captionPointerInside = false;
+		if (::GetCapture() == m_hWnd) ::ReleaseCapture();
+		if (repaint) ui::DrawSystemButtons(m_hWnd, nullptr, HTNOWHERE, false);
 	}
 
 #define WM_NCUAHDRAWCAPTION 0x00AE
@@ -212,9 +208,41 @@ namespace dialog
 			case HTCLOSE:
 			case HTMAXBUTTON:
 			case HTMINBUTTON:
-				if (DepressSystemButton(m_hWnd, static_cast<int>(wParam)))
+				m_pressedCaptionButton = static_cast<int>(wParam);
+				m_captionPointerInside = true;
+				::SetCapture(m_hWnd);
+				if (::GetCapture() != m_hWnd)
 				{
-					switch (wParam)
+					WC_H_S(E_FAIL);
+					CancelCaptionButton(true);
+				}
+				else
+				{
+					DrawPressedCaptionButton();
+				}
+
+				return 0;
+			}
+
+			break;
+		case WM_MOUSEMOVE:
+			if (m_pressedCaptionButton != HTNOWHERE)
+			{
+				m_captionPointerInside = NCHitTestMouse(m_hWnd, lParam) == m_pressedCaptionButton;
+				DrawPressedCaptionButton();
+				return 0;
+			}
+
+			break;
+		case WM_LBUTTONUP:
+			if (m_pressedCaptionButton != HTNOWHERE)
+			{
+				const auto button = m_pressedCaptionButton;
+				const auto activate = ::GetCapture() == m_hWnd && NCHitTestMouse(m_hWnd, lParam) == button;
+				CancelCaptionButton(true);
+				if (activate)
+				{
+					switch (button)
 					{
 					case HTCLOSE:
 						::SendMessageA(m_hWnd, WM_SYSCOMMAND, SC_CLOSE, NULL);
@@ -232,18 +260,36 @@ namespace dialog
 			}
 
 			break;
+		case WM_CANCELMODE:
+		case WM_CAPTURECHANGED:
+			CancelCaptionButton(true);
+			break;
+		case WM_DESTROY:
+			CancelCaptionButton(false);
+			break;
 		case WM_NCACTIVATE:
 			// Pass -1 to DefWindowProc to signal we do not want our client repainted.
 			lParam = -1;
 			ui::DrawWindowFrame(m_hWnd, !!wParam, m_iStatusHeight);
+			DrawPressedCaptionButton();
 			break;
 		case WM_SETTEXT:
 			CDialog::WindowProc(message, wParam, lParam);
 			ui::DrawWindowFrame(m_hWnd, true, m_iStatusHeight);
+			DrawPressedCaptionButton();
 			return true;
 		case WM_NCPAINT:
 			ui::DrawWindowFrame(m_hWnd, true, m_iStatusHeight);
+			DrawPressedCaptionButton();
 			return 0;
+		case WM_SHOWWINDOW:
+			if (wParam) ui::ApplyTheme(m_hWnd);
+			break;
+		case WM_SETTINGCHANGE:
+		case WM_SYSCOLORCHANGE:
+		case WM_THEMECHANGED:
+			ui::ApplyThemeToAllWindows();
+			break;
 		case WM_CREATE:
 			// Ensure all windows group together by enforcing a consistent App User Model ID.
 			// We don't use SetCurrentProcessExplicitAppUserModelID because logging on to MAPI somehow breaks this.
@@ -284,6 +330,7 @@ namespace dialog
 		// Set the title bar directly using DefWindowProcW to avoid converting Unicode
 		::DefWindowProcW(m_hWnd, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(szTitle.c_str()));
 		ui::DrawWindowFrame(m_hWnd, true, GetStatusHeight());
+		DrawPressedCaptionButton();
 	}
 
 	void CMyDialog::DisplayParentedDialog(const UINT iAutoCenterWidth)

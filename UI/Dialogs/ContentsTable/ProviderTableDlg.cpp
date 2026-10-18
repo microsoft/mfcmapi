@@ -103,8 +103,6 @@ namespace dialog
 
 			lpProfSect->Release();
 		}
-
-		MAPIFreeBuffer(MapiUID.lpb);
 	}
 
 	void CProviderTableDlg::HandleAddInMenuSingle(

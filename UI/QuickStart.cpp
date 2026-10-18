@@ -437,7 +437,6 @@ namespace dialog
 		static_cast<void>(MyResults.DisplayDialog());
 
 		MAPIFreeBuffer(lpThumbnail);
-		if (lpAdrBook) lpAdrBook->Release();
 	}
 
 	bool HandleQuickStart(_In_ WORD wMenuSelect, _In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)

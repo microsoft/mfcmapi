@@ -993,6 +993,7 @@
     <ClInclude Include="UI\Dialogs\Dialog.h" />
     <ClInclude Include="UI\Dialogs\Editors\Editor.h" />
     <ClInclude Include="UI\Controls\FakeSplitter.h" />
+    <ClInclude Include="UI\Controls\ScrollHost.h" />
     <ClInclude Include="UI\Dialogs\ContentsTable\FolderDlg.h" />
     <ClInclude Include="UI\Dialogs\ContentsTable\FormContainerDlg.h" />
     <ClInclude Include="UI\Dialogs\Editors\HexEditor.h" />
@@ -1016,6 +1017,7 @@
     <ClInclude Include="UI\ViewPane\CountedTextPane.h" />
     <ClInclude Include="UI\ViewPane\DropDownPane.h" />
     <ClInclude Include="UI\ViewPane\ListPane.h" />
+    <ClInclude Include="UI\ViewPane\SectionPane.h" />
     <ClInclude Include="UI\ViewPane\SmartViewPane.h" />
     <ClInclude Include="UI\ViewPane\SplitterPane.h" />
     <ClInclude Include="UI\ViewPane\TextPane.h" />
@@ -1101,6 +1103,7 @@
     <ClCompile Include="UI\Dialogs\Dialog.cpp" />
     <ClCompile Include="UI\Dialogs\Editors\Editor.cpp" />
     <ClCompile Include="UI\Controls\FakeSplitter.cpp" />
+    <ClCompile Include="UI\Controls\ScrollHost.cpp" />
     <ClCompile Include="UI\Dialogs\ContentsTable\FolderDlg.cpp" />
     <ClCompile Include="UI\Dialogs\ContentsTable\FormContainerDlg.cpp" />
     <ClCompile Include="UI\Dialogs\Editors\HexEditor.cpp" />
@@ -1137,6 +1140,7 @@
     <ClCompile Include="UI\ViewPane\CountedTextPane.cpp" />
     <ClCompile Include="UI\ViewPane\DropDownPane.cpp" />
     <ClCompile Include="UI\ViewPane\ListPane.cpp" />
+    <ClCompile Include="UI\ViewPane\SectionPane.cpp" />
     <ClCompile Include="UI\ViewPane\SmartViewPane.cpp" />
     <ClCompile Include="UI\ViewPane\SplitterPane.cpp" />
     <ClCompile Include="UI\ViewPane\TextPane.cpp" />

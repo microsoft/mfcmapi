@@ -13,7 +13,6 @@ namespace viewpane
 		if (pane)
 		{
 			pane->m_paneID = paneID;
-			pane->SetLabel(IDS_ADDINAPPROVAL);
 			pane->SetReadOnly(false);
 		}
 

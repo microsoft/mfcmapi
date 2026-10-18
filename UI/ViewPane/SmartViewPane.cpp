@@ -289,7 +289,7 @@ namespace viewpane
 
 		switch (lvcd->nmcd.dwDrawStage)
 		{
-		case CDDS_ITEMPOSTPAINT:
+		case CDDS_ITEMPREPAINT:
 		{
 			if (!registry::uiDiag) return;
 			const auto hItem = reinterpret_cast<HTREEITEM>(lvcd->nmcd.dwItemSpec);
@@ -312,7 +312,7 @@ namespace viewpane
 					TreeView_GetItemRect(lvcd->nmcd.hdr.hwndFrom, hItem, &rect, 1);
 					rect.left = rect.right;
 					rect.right += size.cx;
-					ui::DrawSegoeTextW(
+					ui::DrawUITextW(
 						lvcd->nmcd.hdc,
 						blockString,
 						MyGetSysColor(ui::uiColor::Glow),

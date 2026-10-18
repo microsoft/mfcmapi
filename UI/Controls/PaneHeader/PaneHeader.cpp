@@ -77,6 +77,10 @@ namespace controls
 		{
 			StyleLabel(m_leftLabel.m_hWnd, ui::uiLabelStyle::PaneHeaderLabel);
 		}
+		if (m_bSection)
+		{
+			::SendMessageA(m_leftLabel.m_hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(ui::GetUIFontBold()), false);
+		}
 
 		EC_B_S(m_rightLabel.Create(
 			nullptr, WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE, CRect(0, 0, 0, 0), this, IDD_RIGHTLABEL));
@@ -283,7 +287,7 @@ namespace controls
 		EC_B_S(::SetWindowTextW(m_rightLabel.m_hWnd, szLabel.c_str()));
 
 		const auto hdc = ::GetDC(m_rightLabel.GetSafeHwnd());
-		const auto hfontOld = SelectObject(hdc, ui::GetSegoeFont());
+		const auto hfontOld = SelectObject(hdc, ui::GetUIFont());
 		const auto sizeText = ui::GetTextExtentPoint32(hdc, szLabel);
 		static_cast<void>(SelectObject(hdc, hfontOld));
 		::ReleaseDC(m_rightLabel.GetSafeHwnd(), hdc);
@@ -301,7 +305,7 @@ namespace controls
 
 		m_szActionButton = szActionButton;
 		const auto hdc = ::GetDC(m_actionButton.GetSafeHwnd());
-		const auto hfontOld = SelectObject(hdc, ui::GetSegoeFont());
+		const auto hfontOld = SelectObject(hdc, ui::GetUIFont());
 		const auto sizeText = ui::GetTextExtentPoint32(hdc, szActionButton);
 		static_cast<void>(SelectObject(hdc, hfontOld));
 		::ReleaseDC(m_actionButton.GetSafeHwnd(), hdc);

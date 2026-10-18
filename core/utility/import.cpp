@@ -12,6 +12,7 @@ namespace import
 	HMODULE hModAclui = nullptr;
 	HMODULE hModOle32 = nullptr;
 	HMODULE hModUxTheme = nullptr;
+	HMODULE hModDwmApi = nullptr;
 	HMODULE hModInetComm = nullptr;
 	HMODULE hModShell32 = nullptr;
 	HMODULE hModCrypt32 = nullptr;
@@ -41,6 +42,7 @@ namespace import
 	LPGETTHEMEMARGINS pfnGetThemeMargins = nullptr;
 	LPSETWINDOWTHEME pfnSetWindowTheme = nullptr;
 	LPGETTHEMESYSSIZE pfnGetThemeSysSize = nullptr;
+	LPDWMSETWINDOWATTRIBUTE pfnDwmSetWindowAttribute = nullptr;
 	LPSHGETPROPERTYSTOREFORWINDOW pfnSHGetPropertyStoreForWindow = nullptr;
 
 	// From inetcomm.dll
@@ -103,6 +105,7 @@ namespace import
 		LoadProc(L"uxtheme.dll", hModUxTheme, "GetThemeMargins", pfnGetThemeMargins); // STRING_OK;
 		LoadProc(L"uxtheme.dll", hModUxTheme, "SetWindowTheme", pfnSetWindowTheme); // STRING_OK;
 		LoadProc(L"uxtheme.dll", hModUxTheme, "GetThemeSysSize", pfnGetThemeSysSize); // STRING_OK;
+		LoadProc(L"dwmapi.dll", hModDwmApi, "DwmSetWindowAttribute", pfnDwmSetWindowAttribute); // STRING_OK;
 		LoadProc(L"msi.dll", mapistub::hModMSI, "MsiGetFileVersionW", pfnMsiGetFileVersion); // STRING_OK;
 		LoadProc(L"shell32.dll", hModShell32, "SHGetPropertyStoreForWindow", pfnSHGetPropertyStoreForWindow); // STRING_OK;
 		LoadProc(L"kernel32.dll", mapistub::hModKernel32, "FindPackagesByPackageFamily", pfnFindPackagesByPackageFamily); // STRING_OK;

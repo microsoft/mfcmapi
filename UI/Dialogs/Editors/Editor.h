@@ -6,6 +6,7 @@
 #include <UI/ViewPane/CheckPane.h>
 #include <UI/ViewPane/DropDownPane.h>
 #include <UI/ViewPane/ListPane.h>
+#include <UI/Controls/ScrollHost.h>
 #include <core/smartview/SmartView.h>
 
 namespace dialog::editor
@@ -164,11 +165,9 @@ namespace dialog::editor
 			UINT uidActionButtonText3);
 
 		_Check_return_ SIZE ComputeWorkArea(SIZE sScreen);
-		void OnGetMinMaxInfo(_Inout_ MINMAXINFO* lpMMI) noexcept
-		{
-			lpMMI->ptMinTrackSize = POINT{m_iMinWidth, m_iMinHeight};
-		}
-		void OnSetDefaultSize();
+		void OnGetMinMaxInfo(_Inout_ MINMAXINFO* lpMMI) noexcept;
+		_Check_return_ bool GetMonitorWorkArea(_Out_ SIZE& workArea) const noexcept;
+		void OnSetDefaultSize(SIZE workArea);
 		_Check_return_ LRESULT OnNcHitTest(CPoint point);
 		void OnSize(UINT nType, int cx, int cy);
 		LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
@@ -221,8 +220,7 @@ namespace dialog::editor
 		std::shared_ptr<viewpane::ViewPane> PaneFromWindow(HWND hWnd) const noexcept;
 
 		bool m_bEnableScroll{};
-		CWnd m_ScrollWindow;
-		HWND m_hWndVertScroll{};
+		controls::CScrollHost m_ScrollWindow;
 		bool m_bScrollVisible{};
 
 		int m_iScrollClient{};

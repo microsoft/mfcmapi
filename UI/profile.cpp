@@ -259,15 +259,17 @@ namespace ui::profile
 
 			while (lpServicesIni[n].lpszSection != nullptr)
 			{
-				std::wstring lpszProp = lpServicesIni[n].lpszKey;
-				std::wstring lpszValue = lpServicesIni[n].lpszValue;
+				auto lpszProp = lpServicesIni[n].lpszKey;
+				const auto lpszValue = lpServicesIni[n].lpszValue;
+				std::wstring propertyKey;
 
 				// Switch the property if necessary
-				if (lpszProp.empty() && lpServicesIni[n].ulKey != 0)
+				if ((!lpszProp || !*lpszProp) && lpServicesIni[n].ulKey != 0)
 				{
-					lpszProp = strings::format(
+					propertyKey = strings::format(
 						L"%lx", // STRING_OK
 						lpServicesIni[n].ulKey);
+					lpszProp = propertyKey.c_str();
 				}
 
 				// Write the item to MAPISVC.INF
@@ -275,11 +277,11 @@ namespace ui::profile
 					output::dbgLevel::Generic,
 					L"\tWriting: \"%ws\"::\"%ws\"::\"%ws\"\n",
 					lpServicesIni[n].lpszSection,
-					lpszProp.c_str(),
-					lpszValue.c_str());
+					lpszProp ? lpszProp : L"(null)",
+					lpszValue ? lpszValue : L"(null)");
 
 				hRes = EC_B(WritePrivateProfileStringW(
-					lpServicesIni[n].lpszSection, lpszProp.c_str(), lpszValue.c_str(), szServicesIni.c_str()));
+					lpServicesIni[n].lpszSection, lpszProp, lpszValue, szServicesIni.c_str()));
 				n++;
 			}
 

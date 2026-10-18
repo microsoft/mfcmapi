@@ -87,6 +87,7 @@ namespace dialog
 
 		auto szHelpText = strings::formatmessage(IDS_HELPTEXT, szProductName.c_str());
 		::SetWindowTextW(m_HelpText.m_hWnd, szHelpText.c_str());
+		ui::UpdateEditTextColor(m_HelpText.m_hWnd, true);
 
 		auto rcCheck = rcHelpText;
 		rcCheck.top = rcHelpText.bottom + iMargin;

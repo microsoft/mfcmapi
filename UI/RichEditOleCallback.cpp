@@ -64,19 +64,33 @@ namespace ui
 	STDMETHODIMP CRichEditOleCallback::DeleteObject(LPOLEOBJECT /*lpoleobj*/) { return E_NOTIMPL; }
 
 	STDMETHODIMP CRichEditOleCallback::QueryAcceptData(
-		LPDATAOBJECT /*lpdataobj*/,
+		LPDATAOBJECT lpdataobj,
 		CLIPFORMAT FAR* lpcfFormat,
 		DWORD /*reco*/,
-		BOOL /*fReally*/,
+		BOOL fReally,
 		HGLOBAL /*hMetaPict*/)
 	{
-		if (lpcfFormat)
+		if (!lpdataobj || !lpcfFormat) return EC_H(E_INVALIDARG);
+
+		// Choose only plain text, preferring Unicode without breaking ANSI-only sources.
+		for (const auto format : {static_cast<CLIPFORMAT>(CF_UNICODETEXT), static_cast<CLIPFORMAT>(CF_TEXT)})
 		{
-			// Ensure that the only paste we ever get is CF_TEXT
-			*lpcfFormat = CF_TEXT;
+			auto formatEtc = FORMATETC{format, nullptr, DVASPECT_CONTENT, -1, TYMED_HGLOBAL};
+			if (lpdataobj->QueryGetData(&formatEtc) == S_OK)
+			{
+				*lpcfFormat = format;
+				return S_OK;
+			}
 		}
 
-		return S_OK;
+		if (fReally)
+		{
+			output::DebugPrint(
+				output::dbgLevel::Generic,
+				L"QueryAcceptData: pasted or dropped data contains no supported plain text.\n");
+		}
+
+		return DV_E_FORMATETC;
 	}
 
 	STDMETHODIMP CRichEditOleCallback::ContextSensitiveHelp(BOOL /*fEnterMode*/) { return E_NOTIMPL; }

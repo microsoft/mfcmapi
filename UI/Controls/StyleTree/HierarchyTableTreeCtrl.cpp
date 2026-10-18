@@ -80,6 +80,13 @@ namespace controls
 		OnLastChildDeletedCallback = [&](auto _1) { return OnLastChildDeleted(_1); };
 		HandleContextMenuCallback = [&](auto _1, auto _2) { return HandleContextMenu(_1, _2); };
 		OnCustomDrawCallback = [&](auto _1, auto _2, auto _3) { return OnCustomDraw(_1, _2, _3); };
+		GetInfoTipCallback = [&](HTREEITEM hItem) {
+			const auto data = GetSortListData(hItem);
+			const auto node = data ? data->cast<sortlistdata::nodeData>() : nullptr;
+			return node && node->hasSink()
+					   ? GetItemTextW(hItem) + L"\r\n" + strings::loadstring(IDS_NOTIFICATIONS_ACTIVE)
+					   : std::wstring{};
+		};
 
 		StyleTreeCtrl::Create(pCreateParent, false);
 	}
@@ -931,20 +938,18 @@ namespace controls
 	void CHierarchyTableTreeCtrl::OnCustomDraw(
 		_In_ NMHDR* pNMHDR,
 		_In_ LRESULT* /*pResult*/,
-		_In_ HTREEITEM hItemCurHover) noexcept
+		_In_ HTREEITEM /*hItemCurHover*/) noexcept
 	{
 		const auto lvcd = reinterpret_cast<LPNMTVCUSTOMDRAW>(pNMHDR);
 		if (!lvcd) return;
 
 		switch (lvcd->nmcd.dwDrawStage)
 		{
-		case CDDS_ITEMPOSTPAINT:
+		case CDDS_ITEMPREPAINT:
 		{
 			const auto hItem = reinterpret_cast<HTREEITEM>(lvcd->nmcd.dwItemSpec);
 			if (hItem)
 			{
-				// If we've advised on this object, add a little icon to let the user know
-				// Paint the advise icon, IDB_ADVISE
 				auto tvi = TVITEM{};
 				tvi.mask = TVIF_PARAM;
 				tvi.hItem = hItem;
@@ -957,9 +962,24 @@ namespace controls
 					{
 						auto rect = RECT{};
 						TreeView_GetItemRect(lvcd->nmcd.hdr.hwndFrom, hItem, &rect, 1);
-						rect.left = rect.right;
-						rect.right += rect.bottom - rect.top;
-						DrawBitmap(lvcd->nmcd.hdc, rect, ui::uiBitmap::Notify, hItem == hItemCurHover);
+						const auto savedDC = SaveDC(lvcd->nmcd.hdc);
+						auto client = RECT{};
+						GetClientRect(&client);
+						IntersectClipRect(lvcd->nmcd.hdc, client.left, rect.top, client.right, rect.bottom);
+						if (!GetEditControl() || hItem != GetSelectedItem())
+						{
+							const auto theme = ui::GetEffectiveTheme();
+							const auto color = theme == ui::uiTheme::HighContrast ? lvcd->clrText
+											   : theme == ui::uiTheme::Dark		  ? RGB(0x66, 0xB5, 0xED)
+																			: ui::MyGetSysColor(ui::uiColor::Glow);
+							rect.left = rect.right + MulDiv(4, GetDeviceCaps(lvcd->nmcd.hdc, LOGPIXELSX), 96);
+							rect.right = rect.left + rect.bottom - rect.top;
+							// The artwork is 3 pixels below center in the 34-pixel source bitmap.
+							OffsetRect(&rect, 0, -MulDiv(3, rect.bottom - rect.top, 34));
+							ui::DrawBitmap(
+								lvcd->nmcd.hdc, rect, ui::uiBitmap::Notify, false, 0, color, lvcd->clrTextBk);
+						}
+						RestoreDC(lvcd->nmcd.hdc, savedDC);
 					}
 				}
 			}

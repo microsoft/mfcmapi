@@ -28,6 +28,7 @@ namespace controls
 
 		void SetLabel(const UINT uidLabel) { m_szLabel = strings::loadstring(uidLabel); }
 		void SetLabel(const std::wstring szLabel) { m_szLabel = szLabel; }
+		void SetSectionStyle() noexcept { m_bSection = true; }
 
 		// Returns the height of our control, accounting for an expand/collapse button
 		// Will return 0 if we have no label or button
@@ -48,6 +49,7 @@ namespace controls
 		HWND m_hWndParent{};
 		bool m_bCollapsible{};
 		bool m_bCollapsed{};
+		bool m_bSection{};
 		CButton m_CollapseButton;
 
 		// Margins

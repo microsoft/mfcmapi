@@ -17,7 +17,8 @@ namespace registry
 		check,
 		string,
 		stringHex,
-		stringDec
+		stringDec,
+		dropdown
 	};
 
 	class __RegKey
@@ -32,6 +33,7 @@ namespace registry
 		std::wstring szCurSTRING;
 		bool bRefresh{};
 		UINT uiOptionsPrompt{};
+		std::vector<UINT> uiDropDownOptions;
 
 		__RegKey() = default;
 		__RegKey(const __RegKey&) = delete;
@@ -73,7 +75,8 @@ namespace registry
 			const regOptionType _ulRegOptType,
 			const DWORD _default,
 			const bool _refresh,
-			const int _uiOptionsPrompt)
+			const int _uiOptionsPrompt,
+			std::vector<UINT> _uiDropDownOptions = {})
 			: __RegKey{}
 		{
 			szKeyName = _szKeyName;
@@ -83,6 +86,7 @@ namespace registry
 			ulCurDWORD = _default;
 			bRefresh = _refresh;
 			uiOptionsPrompt = _uiOptionsPrompt;
+			uiDropDownOptions = std::move(_uiDropDownOptions);
 		}
 
 		operator DWORD() const noexcept { return ulCurDWORD; }
@@ -201,4 +205,5 @@ namespace registry
 	extern boolRegKey enableLegacyFeatures;
 	extern wstringRegKey propertyColumnOrder;
 	extern dwordRegKey namedPropBatchSize;
+	extern dwordRegKey uiTheme;
 } // namespace registry
