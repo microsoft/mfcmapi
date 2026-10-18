@@ -390,7 +390,8 @@ namespace controls::sortlistctrl
 		{
 			const auto ul1 = lpData1->getSortValue();
 			const auto ul2 = lpData2->getSortValue();
-			return lpSortInfo->bSortUp ? ul2.QuadPart > ul1.QuadPart : ul1.QuadPart >= ul2.QuadPart;
+			iRet = ul1.QuadPart < ul2.QuadPart ? -1 : ul1.QuadPart > ul2.QuadPart ? 1 : 0;
+			return lpSortInfo->bSortUp ? -iRet : iRet;
 		}
 		default:
 			break;

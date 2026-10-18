@@ -103,55 +103,53 @@ namespace dialog
 
 		if (!m_lpMessage || !m_lpContentsTableListCtrl) return;
 
-		const auto iNumSelected = m_lpContentsTableListCtrl->GetSelectedCount();
-
-		if (iNumSelected && iNumSelected < MAXNewADRLIST)
+		const auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
+		if (items.empty()) return;
+		if (items.size() >= MAXNewADRLIST)
 		{
-			auto lpAdrList = mapi::allocate<LPADRLIST>(CbNewADRLIST(iNumSelected));
-			if (lpAdrList)
-			{
-				lpAdrList->cEntries = iNumSelected;
-
-				for (auto iSelection = UINT{}; iSelection < iNumSelected; iSelection++)
-				{
-					const auto lpProp = mapi::allocate<LPSPropValue>(sizeof(SPropValue));
-					if (lpProp)
-					{
-						lpAdrList->aEntries[iSelection].ulReserved1 = 0;
-						lpAdrList->aEntries[iSelection].cValues = 1;
-						lpAdrList->aEntries[iSelection].rgPropVals = lpProp;
-						lpProp->ulPropTag = PR_ROWID;
-						lpProp->dwAlignPad = 0;
-						// Find the highlighted item AttachNum
-						const auto lpListData = m_lpContentsTableListCtrl->GetFirstSelectedItemData();
-						if (lpListData)
-						{
-							const auto contents = lpListData->cast<sortlistdata::contentsData>();
-							if (contents)
-							{
-								lpProp->Value.l = contents->getRowID();
-							}
-							else
-							{
-								lpProp->Value.l = 0;
-							}
-						}
-
-						output::DebugPrintEx(
-							output::dbgLevel::DeleteSelectedItem,
-							CLASS,
-							L"OnDeleteSelectedItem",
-							L"Deleting row 0x%08X\n",
-							lpProp->Value.l);
-					}
-				}
-
-				EC_MAPI_S(m_lpMessage->ModifyRecipients(MODRECIP_REMOVE, lpAdrList));
-
-				OnRefreshView();
-				FreePadrlist(lpAdrList);
-			}
+			EC_H_S(MAPI_E_INVALID_PARAMETER);
+			return;
 		}
+
+		const auto iNumSelected = static_cast<ULONG>(items.size());
+		auto lpAdrList = mapi::allocate<LPADRLIST>(CbNewADRLIST(iNumSelected));
+		if (!lpAdrList) return;
+		lpAdrList->cEntries = iNumSelected;
+
+		for (ULONG iSelection = 0; iSelection < iNumSelected; iSelection++)
+		{
+			const auto lpListData = items[iSelection];
+			const auto contents = lpListData ? lpListData->cast<sortlistdata::contentsData>() : nullptr;
+			if (!contents)
+			{
+				EC_H_S(MAPI_E_INVALID_PARAMETER);
+				FreePadrlist(lpAdrList);
+				return;
+			}
+
+			const auto lpProp = mapi::allocate<LPSPropValue>(sizeof(SPropValue));
+			if (!lpProp)
+			{
+				FreePadrlist(lpAdrList);
+				return;
+			}
+
+			lpAdrList->aEntries[iSelection].cValues = 1;
+			lpAdrList->aEntries[iSelection].rgPropVals = lpProp;
+			lpProp->ulPropTag = PR_ROWID;
+			lpProp->Value.l = contents->getRowID();
+
+			output::DebugPrintEx(
+				output::dbgLevel::DeleteSelectedItem,
+				CLASS,
+				L"OnDeleteSelectedItem",
+				L"Deleting row 0x%08X\n",
+				lpProp->Value.l);
+		}
+
+		EC_MAPI_S(m_lpMessage->ModifyRecipients(MODRECIP_REMOVE, lpAdrList));
+		FreePadrlist(lpAdrList);
+		OnRefreshView();
 	}
 
 	void CRecipientsDlg::OnModifyRecipients()

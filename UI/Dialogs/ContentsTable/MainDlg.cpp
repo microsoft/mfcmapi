@@ -264,7 +264,7 @@ namespace dialog
 
 	void CMainDlg::OnCloseAddressBook()
 	{
-		if (!m_lpMapiObjects) m_lpMapiObjects->SetAddrBook(nullptr);
+		if (m_lpMapiObjects) m_lpMapiObjects->SetAddrBook(nullptr);
 	}
 
 	void CMainDlg::OnOpenAddressBook()
