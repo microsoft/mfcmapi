@@ -64,8 +64,11 @@ namespace dialog::editor
 
 		if (!ResEdit.DisplayDialog()) return;
 
+		const auto child = ResEdit.DetachModifiedSRestriction();
+		if (!child) return;
+
 		// Since m_lpNewRes was owned by an m_lpAllocParent, we don't free it directly
-		m_lpNewRes = ResEdit.DetachModifiedSRestriction();
+		m_lpNewRes = child;
 
 		SetStringW(2, property::RestrictionToString(m_lpNewRes, nullptr));
 	}

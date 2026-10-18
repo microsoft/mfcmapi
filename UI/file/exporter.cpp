@@ -90,6 +90,7 @@ namespace file
 		{
 			// If we weren't asked to prompt for each item, we still need to ask for a directory
 			dir = file::GetDirectoryPath(pParentWnd->GetSafeHwnd());
+			if (dir.empty()) return false;
 		}
 
 		return true;

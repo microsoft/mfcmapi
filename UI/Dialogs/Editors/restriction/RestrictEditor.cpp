@@ -10,6 +10,7 @@
 #include <UI/Dialogs/Editors/restriction/ResSubResEditor.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/mapi/mapiMemory.h>
+#include <core/mapi/mapiFunctions.h>
 #include <core/utility/output.h>
 #include <core/interpret/flags.h>
 #include <core/addin/mfcmapi.h>
@@ -131,12 +132,21 @@ namespace dialog::editor
 
 			if (ulOldResType == ulNewResType) return paneID;
 
-			SetStringW(1, flags::InterpretFlags(flagRestrictionType, ulNewResType));
-
-			m_bModified = true;
 			if ((ulOldResType == RES_AND || ulOldResType == RES_OR) &&
 				(ulNewResType == RES_AND || ulNewResType == RES_OR))
 			{
+				if (!m_bModified)
+				{
+					auto copy = SRestriction{};
+					if (FAILED(EC_H(mapi::HrCopyRestrictionArray(GetSourceRes(), m_lpAllocParent, 1, &copy))))
+					{
+						SetHex(0, ulOldResType);
+						return paneID;
+					}
+
+					*m_lpOutputRes = copy;
+				}
+
 				m_lpOutputRes->rt = ulNewResType; // just need to adjust our type and refresh
 			}
 			else
@@ -156,9 +166,12 @@ namespace dialog::editor
 					m_lpOutputRes = mapi::allocate<LPSRestriction>(sizeof(SRestriction), m_lpAllocParent);
 				}
 
+				if (!m_lpOutputRes) return paneID;
 				m_lpOutputRes->rt = ulNewResType;
 			}
 
+			m_bModified = true;
+			SetStringW(1, flags::InterpretFlags(flagRestrictionType, ulNewResType));
 			SetStringW(2, property::RestrictionToString(m_lpOutputRes, nullptr));
 		}
 		return paneID;
@@ -267,9 +280,13 @@ namespace dialog::editor
 			lpSourceRes->res.resNot.lpRes); // pass source res into editor
 		if (MyResEditor.DisplayDialog())
 		{
+			const auto child = MyResEditor.DetachModifiedSRestriction();
+			if (!child) return S_FALSE;
+
 			m_lpOutputRes->rt = lpSourceRes->rt;
+			m_lpOutputRes->res.resNot = lpSourceRes->res.resNot;
 			// Since m_lpOutputRes->res.resNot.lpRes was owned by an m_lpAllocParent, we don't free it directly
-			m_lpOutputRes->res.resNot.lpRes = MyResEditor.DetachModifiedSRestriction();
+			m_lpOutputRes->res.resNot.lpRes = child;
 			return S_OK;
 		}
 
@@ -371,11 +388,17 @@ namespace dialog::editor
 			this, m_lpMapiObjects, lpSourceRes->res.resSub.ulSubObject, lpSourceRes->res.resSub.lpRes, m_lpAllocParent);
 		if (MyEditor.DisplayDialog())
 		{
-			m_lpOutputRes->rt = lpSourceRes->rt;
-			m_lpOutputRes->res.resSub.ulSubObject = MyEditor.GetHex(1);
+			auto child = MyEditor.DetachModifiedSRestriction();
+			if (!child)
+			{
+				const auto hRes = EC_H(mapi::HrCopyRestriction(lpSourceRes->res.resSub.lpRes, m_lpAllocParent, &child));
+				if (FAILED(hRes)) return hRes;
+			}
 
+			m_lpOutputRes->rt = lpSourceRes->rt;
+			m_lpOutputRes->res.resSub.ulSubObject = MyEditor.GetHex(0);
 			// Since m_lpOutputRes->res.resSub.lpRes was owned by an m_lpAllocParent, we don't free it directly
-			m_lpOutputRes->res.resSub.lpRes = MyEditor.DetachModifiedSRestriction();
+			m_lpOutputRes->res.resSub.lpRes = child;
 			return S_OK;
 		}
 
