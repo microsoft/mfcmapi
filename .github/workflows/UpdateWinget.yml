@@ -57,8 +57,21 @@ jobs:
             $installerUserX86Url = $targetRelease | Select -ExpandProperty assets -First 1 | Where-Object -Property name -match 'MFCMAPI.exe' | Select -ExpandProperty browser_download_url
             $installerUserX64Url = $targetRelease | Select -ExpandProperty assets -First 1 | Where-Object -Property name -match 'MFCMAPI.x64.exe' | Select -ExpandProperty browser_download_url
 
-            & $wingetCreatePath update $wingetPackage -s -v $ver -u "$installerUserX86Url|user" "$installerUserX64Url|user" -t $env:MFCMAPI_WINGET
-            if ($LASTEXITCODE -ne 0) {
-                throw "WingetCreate failed with exit code $LASTEXITCODE."
+            $wingetArgs = @("update", $wingetPackage, "-s", "-v", $ver, "-u", "$installerUserX86Url|user", "$installerUserX64Url|user", "-t", $env:MFCMAPI_WINGET)
+            $maxAttempts = 3
+            for ($attempt = 1; $attempt -le $maxAttempts; $attempt++) {
+                $wingetOutput = & $wingetCreatePath @wingetArgs 2>&1
+                $wingetExitCode = $LASTEXITCODE
+                $wingetOutput | ForEach-Object { Write-Host $_ }
+
+                if ($wingetExitCode -eq 0) {
+                    break
+                }
+                if ($attempt -eq $maxAttempts -or ($wingetOutput -join "`n") -notmatch "Failed to connect to GitHub") {
+                    throw "WingetCreate failed with exit code $wingetExitCode."
+                }
+
+                Write-Warning "WingetCreate could not connect to GitHub; retrying in $([math]::Pow(2, $attempt)) seconds (attempt $($attempt + 1) of $maxAttempts)."
+                Start-Sleep -Seconds ([math]::Pow(2, $attempt))
             }
           shell: pwsh
