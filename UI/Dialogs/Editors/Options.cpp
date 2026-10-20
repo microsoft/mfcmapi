@@ -6,6 +6,7 @@
 #include <core/utility/registry.h>
 #include <core/utility/output.h>
 #include <core/addin/mfcmapi.h>
+#include <core/addin/addin.h>
 #include <UI/UIFunctions.h>
 #include <UI/ViewPane/SectionPane.h>
 #include <map>
@@ -96,7 +97,7 @@ namespace dialog::editor
 				{0, {&registry::uiTheme}},
 				{IDS_OPTIONS_ONLINE_CACHE, {&registry::forceMDBOnline, &registry::forceMapiNoCache}},
 				{IDS_OPTIONS_TABLES_DISPLAY, {&registry::doColumnNames, &registry::onlyAdditionalProperties}},
-				{IDS_OPTIONS_ADDINS, {&registry::loadAddIns}},
+				{IDS_OPTIONS_ADDINS, {&registry::addInDirectory}},
 				{IDS_OPTIONS_LOGGING, {&registry::debugTag, &registry::debugToFile, &registry::debugFileName}}};
 		}
 
@@ -127,8 +128,27 @@ namespace dialog::editor
 		}
 		else if (registry::regOptionType::string == regKey->ulRegOptType)
 		{
-			AddPane(viewpane::TextPane::CreateSingleLinePane(
-				regKey->uiOptionsPrompt, regKey->uiOptionsPrompt, value.text, false));
+			if (regKey == &registry::addInDirectory)
+			{
+				auto pane = viewpane::PathPane::Create(
+					regKey->uiOptionsPrompt, regKey->uiOptionsPrompt, viewpane::pathType::directory, value.text);
+				pane->SetHelpText(IDS_ADDINDIRECTORYHELP);
+				AddPane(pane);
+			}
+			else if (regKey == &registry::debugFileName)
+			{
+				AddPane(viewpane::PathPane::Create(
+					regKey->uiOptionsPrompt,
+					regKey->uiOptionsPrompt,
+					viewpane::pathType::fileSave,
+					value.text,
+					L"log"));
+			}
+			else
+			{
+				AddPane(viewpane::TextPane::CreateSingleLinePane(
+					regKey->uiOptionsPrompt, regKey->uiOptionsPrompt, value.text, false));
+			}
 		}
 		else if (registry::regOptionType::stringHex == regKey->ulRegOptType)
 		{
@@ -158,6 +178,23 @@ namespace dialog::editor
 
 	void COptions::OnOK()
 	{
+		if (!m_advanced)
+		{
+			const auto directory = GetStringW(IDS_REGKEY_ADDINDIRECTORY);
+			const auto validationResult = addin::ValidateAddInDirectory(directory);
+			if (validationResult != ERROR_SUCCESS)
+			{
+				error::ErrDialog(__FILE__, __LINE__, IDS_ADDINDIRECTORYERROR, directory.c_str(), validationResult);
+				return;
+			}
+
+			if (directory != registry::addInDirectory.szCurSTRING && !addin::ClearAddInApprovalCache())
+			{
+				error::ErrDialog(__FILE__, __LINE__, IDS_ADDINAPPROVALRESETFAILED);
+				return;
+			}
+		}
+
 		for (const auto regKey : m_options)
 		{
 			auto& value = m_values.at(regKey);
