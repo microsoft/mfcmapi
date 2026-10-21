@@ -1015,6 +1015,7 @@
     <ClInclude Include="UI\ViewPane\CheckPane.h" />
     <ClInclude Include="UI\ViewPane\AddInApprovalPane.h" />
     <ClInclude Include="UI\ViewPane\CountedTextPane.h" />
+    <ClInclude Include="UI\ViewPane\PathPane.h" />
     <ClInclude Include="UI\ViewPane\DropDownPane.h" />
     <ClInclude Include="UI\ViewPane\ListPane.h" />
     <ClInclude Include="UI\ViewPane\SectionPane.h" />
@@ -1138,6 +1139,7 @@
     <ClCompile Include="UI\ViewPane\AddInApprovalPane.cpp" />
     <ClCompile Include="UI\ViewPane\CheckPane.cpp" />
     <ClCompile Include="UI\ViewPane\CountedTextPane.cpp" />
+    <ClCompile Include="UI\ViewPane\PathPane.cpp" />
     <ClCompile Include="UI\ViewPane\DropDownPane.cpp" />
     <ClCompile Include="UI\ViewPane\ListPane.cpp" />
     <ClCompile Include="UI\ViewPane\SectionPane.cpp" />

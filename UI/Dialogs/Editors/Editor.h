@@ -3,6 +3,7 @@
 #include <UI/ViewPane/ViewPane.h>
 // These panes aren't all used in Editor.h, but included so that including Editor.h elsewhere enables all pane types
 #include <UI/ViewPane/TextPane.h>
+#include <UI/ViewPane/PathPane.h>
 #include <UI/ViewPane/CheckPane.h>
 #include <UI/ViewPane/DropDownPane.h>
 #include <UI/ViewPane/ListPane.h>

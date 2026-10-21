@@ -28,7 +28,8 @@ namespace addin
 	__declspec(dllexport) void __cdecl AddInLog(bool bPrintThreadTime, _Printf_format_string_ LPWSTR szMsg, ...);
 	EXTERN_C __declspec(dllexport) void __cdecl GetMAPIModule(_In_ HMODULE* lphModule, bool bForce);
 
-	void LoadAddIns(_In_ const AddInApprovalPrompt& approvalPrompt = {});
+	_Check_return_ DWORD ValidateAddInDirectory(const std::wstring& directory);
+	_Check_return_ DWORD LoadAddIns(_In_ const AddInApprovalPrompt& approvalPrompt = {});
 	_Check_return_ bool ClearAddInApprovalCache();
 	void UnloadAddIns();
 	void MergeAddInArrays();
