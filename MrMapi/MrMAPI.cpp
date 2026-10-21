@@ -166,6 +166,9 @@ int wmain(_In_ int argc, _In_count_(argc) wchar_t* argv[])
 	registry::debugTag =
 		static_cast<DWORD>(output::dbgLevel::Console); // Any debug logging with Console will print to the console now
 
+	registry::RegKeys = {&registry::addInDirectory};
+	registry::ReadFromRegistry();
+
 	output::initStubCallbacks();
 
 	SetDllDirectory(_T(""));
@@ -193,11 +196,14 @@ int wmain(_In_ int argc, _In_count_(argc) wchar_t* argv[])
 
 	if (!(cli::switchNoAddins.isSet()))
 	{
-		registry::loadAddIns = true;
-		if (cli::switchApproveAddins.isSet())
-			addin::LoadAddIns(PromptForAddInApproval);
-		else
-			addin::LoadAddIns();
+		const auto loadResult =
+			cli::switchApproveAddins.isSet() ? addin::LoadAddIns(PromptForAddInApproval) : addin::LoadAddIns();
+		if (loadResult != ERROR_SUCCESS)
+			output::DebugPrint(
+				output::dbgLevel::AddInPlumbing,
+				L"Cannot scan add-in directory \"%ws\" (Windows error %lu).\n",
+				registry::addInDirectory.szCurSTRING.c_str(),
+				loadResult);
 	}
 
 	if (cli::switchVersion.isSet())

@@ -870,10 +870,11 @@ namespace dialog::editor
 			}
 		}
 
-		if (iVariableLines) iLineHeight = (iCYBottom - iCYTop - iFixedHeight) / iVariableLines;
+		const auto contentHeight = m_bEnableScroll ? max(iCYBottom - iCYTop, m_iScrollClient) : iCYBottom - iCYTop;
+		if (iVariableLines) iLineHeight = max(0, (contentHeight - iFixedHeight) / iVariableLines);
 
 		// There may be some unaccounted slack space after all this. Compute it so we can give it to a pane.
-		UINT iSlackSpace = iCYBottom - iCYTop - iFixedHeight - iVariableLines * iLineHeight;
+		UINT iSlackSpace = max(0, contentHeight - iFixedHeight - iVariableLines * iLineHeight);
 
 		auto iScrollPos = 0;
 		if (m_bEnableScroll)

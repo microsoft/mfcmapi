@@ -589,6 +589,12 @@
     <ClInclude Include="UI\ViewPane\CountedTextPane.h">
       <Filter>Source Files\UI\ViewPane</Filter>
     </ClInclude>
+    <ClCompile Include="UI\ViewPane\PathPane.cpp">
+      <Filter>Source Files\UI\ViewPane</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\ViewPane\PathPane.h">
+      <Filter>Source Files\UI\ViewPane</Filter>
+    </ClInclude>
     <ClCompile Include="UI\ViewPane\DropDownPane.cpp">
       <Filter>Source Files\UI\ViewPane</Filter>
     </ClCompile>
