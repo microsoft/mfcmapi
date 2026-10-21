@@ -37,6 +37,8 @@ namespace viewpane
 		void CommitUIValues() override;
 		int GetMinWidth() override;
 		int GetFixedHeight() override;
+		static LRESULT CALLBACK
+		WheelProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam, UINT_PTR subclassID, DWORD_PTR data);
 
 		std::vector<std::pair<std::wstring, ULONG>> m_DropList;
 		std::wstring m_lpszSelectionString;

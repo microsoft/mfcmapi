@@ -841,7 +841,7 @@ namespace dialog
 
 		MyStoreEID.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_STOREEID, false));
 		MyStoreEID.AddPane(viewpane::CheckPane::Create(1, IDS_EIDBASE64ENCODED, false, false));
-		MyStoreEID.AddPane(viewpane::TextPane::CreateSingleLinePane(2, IDS_FILENAME, false));
+		MyStoreEID.AddPane(viewpane::PathPane::Create(2, IDS_FILENAME, viewpane::pathType::fileOpen));
 		MyStoreEID.AddPane(viewpane::CheckPane::Create(3, IDS_PUBLICFOLDERSTORE, false, false));
 
 		if (!MyStoreEID.DisplayDialog()) return;

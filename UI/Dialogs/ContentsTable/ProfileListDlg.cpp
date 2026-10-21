@@ -218,7 +218,14 @@ namespace dialog
 				if (!contents) break;
 
 				editor::CEditor MyFile(this, IDS_PSTPATH, IDS_PSTPATHPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-				MyFile.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_SERVICE, file, false));
+				MyFile.AddPane(viewpane::PathPane::Create(
+					0,
+					IDS_FILEPATH,
+					viewpane::pathType::fileOpen,
+					file,
+					L"pst",
+					strings::loadstring(IDS_PSTFILES),
+					OFN_OVERWRITEPROMPT));
 				MyFile.AddPane(viewpane::CheckPane::Create(1, IDS_PSTDOPW, false, false));
 				MyFile.AddPane(viewpane::TextPane::CreateSingleLinePane(2, IDS_PSTPW, false));
 
