@@ -33,6 +33,7 @@
 #include <core/interpret/flags.h>
 #include <core/interpret/proptags.h>
 #include <core/mapi/mapiFunctions.h>
+#include <core/mapi/mapiABFunctions.h>
 #include <core/property/parseProperty.h>
 #include <core/mapi/processor/dumpStore.h>
 #include <UI/Dialogs/propList/AccountsDialog.h>
@@ -1236,18 +1237,8 @@ namespace dialog
 				if (MyPrompt.GetCheck(0))
 				{
 					auto lpAB = m_lpMapiObjects->GetAddrBook(true); // do not release
-					auto ulUIParam = reinterpret_cast<ULONG_PTR>(m_hWnd);
 
-					EC_H_CANCEL_S(lpAB->Details(
-						&ulUIParam,
-						nullptr,
-						nullptr,
-						cbEntryID,
-						lpEntryID,
-						nullptr,
-						nullptr,
-						nullptr,
-						DIALOG_MODAL)); // API doesn't like Unicode
+					static_cast<void>(mapi::ab::DisplayDetails(lpAB, m_hWnd, cbEntryID, lpEntryID));
 				}
 				else
 				{

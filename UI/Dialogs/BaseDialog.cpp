@@ -25,6 +25,7 @@
 #include <core/utility/output.h>
 #include <core/interpret/flags.h>
 #include <core/mapi/mapiFunctions.h>
+#include <core/mapi/mapiABFunctions.h>
 
 namespace dialog
 {
@@ -704,18 +705,7 @@ namespace dialog
 
 		if (MyEID.GetCheck(8) && lpAB) // Do IAddrBook->Details here
 		{
-			auto ulUIParam = reinterpret_cast<ULONG_PTR>(m_hWnd);
-
-			EC_H_CANCEL_S(lpAB->Details(
-				&ulUIParam,
-				nullptr,
-				nullptr,
-				sBin.cb,
-				reinterpret_cast<LPENTRYID>(sBin.lpb),
-				nullptr,
-				nullptr,
-				nullptr,
-				DIALOG_MODAL)); // API doesn't like unicode
+			static_cast<void>(mapi::ab::DisplayDetails(lpAB, m_hWnd, sBin.cb, reinterpret_cast<LPENTRYID>(sBin.lpb)));
 		}
 		else
 		{

@@ -98,21 +98,9 @@ namespace dialog
 			{
 				for (ULONG i = 0; i < lpEIDs->cValues; i++)
 				{
-					auto ulUIParam = reinterpret_cast<ULONG_PTR>(m_hWnd);
-
-					// Have to pass DIALOG_MODAL according to
-					// http://support.microsoft.com/kb/171637
-					const auto hRes = EC_H_CANCEL(lpAddrBook->Details(
-						&ulUIParam,
-						nullptr,
-						nullptr,
-						lpEIDs->lpbin[i].cb,
-						reinterpret_cast<LPENTRYID>(lpEIDs->lpbin[i].lpb),
-						nullptr,
-						nullptr,
-						nullptr,
-						DIALOG_MODAL)); // API doesn't like Unicode
-					if (lpEIDs->cValues > i + 1 && bShouldCancel(this, hRes)) break;
+					const auto hRes = mapi::ab::DisplayDetails(
+						lpAddrBook, m_hWnd, lpEIDs->lpbin[i].cb, reinterpret_cast<LPENTRYID>(lpEIDs->lpbin[i].lpb));
+					if (hRes == MAPI_E_BUSY || (lpEIDs->cValues > i + 1 && bShouldCancel(this, hRes))) break;
 				}
 			}
 

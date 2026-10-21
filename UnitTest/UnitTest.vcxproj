@@ -795,6 +795,7 @@
     </ClCompile>
     <ClCompile Include="tests\clitest.cpp" />
     <ClCompile Include="tests\guidtest.cpp" />
+    <ClCompile Include="tests\mapiabtest.cpp" />
     <ClCompile Include="tests\mapioutputtest.cpp" />
     <ClCompile Include="tests\namedproptest.cpp" />
     <ClCompile Include="tests\propertytest.cpp" />
