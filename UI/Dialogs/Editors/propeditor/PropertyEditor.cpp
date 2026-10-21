@@ -370,8 +370,8 @@ namespace dialog::editor
 			break;
 		}
 
-		// If nothing has changed, we're done.
-		if (!m_bDirty) return;
+		// MV rows must return a value even when an unchanged row is accepted.
+		if (!m_bDirty && !m_bMVRow) return;
 
 		m_sOutputValue.ulPropTag = m_ulPropTag;
 
