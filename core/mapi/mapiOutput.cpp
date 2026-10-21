@@ -252,6 +252,7 @@ namespace output
 		Output(ulDbgLvl, fFile, false, g_szXMLHeader);
 		Output(ulDbgLvl, fFile, false, L"<table>\n");
 
+		ULONG iOutputRow = 0;
 		for (;;)
 		{
 			FreeProws(lpRows);
@@ -261,7 +262,7 @@ namespace output
 
 			for (ULONG iCurRow = 0; iCurRow < lpRows->cRows; iCurRow++)
 			{
-				Outputf(ulDbgLvl, fFile, false, L"<row index = \"0x%08X\">\n", iCurRow);
+				Outputf(ulDbgLvl, fFile, false, L"<row index = \"0x%08X\">\n", iOutputRow++);
 				outputSRow(ulDbgLvl, fFile, &lpRows->aRow[iCurRow], nullptr);
 				Output(ulDbgLvl, fFile, false, L"</row>\n");
 			}
