@@ -43,35 +43,22 @@ namespace dialog::editor
 				1, PROP_TYPE(ulPropTag) == PT_ERROR ? CHANGE_PROP_TYPE(ulPropTag, PT_UNSPECIFIED) : ulPropTag};
 			ULONG ulValues = NULL;
 
-			auto hRes = WC_MAPI(lpMAPIProp->GetProps(&sTag, NULL, &ulValues, &sourceProp));
-
-			// Suppress MAPI_E_NOT_FOUND error when the source type is non error
-			if (sourceProp && PROP_TYPE(sourceProp->ulPropTag) == PT_ERROR &&
-				sourceProp->Value.err == MAPI_E_NOT_FOUND && PROP_TYPE(ulPropTag) != PT_ERROR)
-			{
-				MAPIFreeBuffer(sourceProp);
-				sourceProp = nullptr;
-			}
-
-			if (hRes == MAPI_E_CALL_FAILED)
-			{
-				// Just suppress this - let the user edit anyway
-				hRes = S_OK;
-			}
-
-			// In all cases where we got a value back, we need to reset our property tag to the value we got
-			// This will address when the source is PT_UNSPECIFIED, when the returned value is PT_ERROR,
-			// or any other case where the returned value has a different type than requested
-			if (SUCCEEDED(hRes) && sourceProp)
-			{
-				ulPropTag = sourceProp->ulPropTag;
-			}
-
+			WC_MAPI_S(lpMAPIProp->GetProps(&sTag, NULL, &ulValues, &sourceProp));
 			lpsPropValue = sourceProp;
 		}
-		else if (lpsPropValue && PROP_TYPE(lpsPropValue->ulPropTag) != PT_ERROR)
+
+		if (lpsPropValue)
 		{
-			ulPropTag = lpsPropValue->ulPropTag;
+			// Missing values can be created, but other errors must not be read as the requested type.
+			if (PROP_TYPE(lpsPropValue->ulPropTag) == PT_ERROR &&
+				lpsPropValue->Value.err == MAPI_E_NOT_FOUND && PROP_TYPE(ulPropTag) != PT_ERROR)
+			{
+				lpsPropValue = nullptr;
+			}
+			else
+			{
+				ulPropTag = lpsPropValue->ulPropTag;
+			}
 		}
 
 		auto propertyEditor = std::shared_ptr<IPropEditor>{};
