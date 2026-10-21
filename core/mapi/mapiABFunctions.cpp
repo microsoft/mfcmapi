@@ -12,6 +12,29 @@
 
 namespace mapi::ab
 {
+	_Check_return_ HRESULT
+	DisplayDetails(_In_ LPADRBOOK lpAddrBook, HWND hwnd, ULONG cbEntryID, _In_ LPENTRYID lpEntryID)
+	{
+		if (!lpAddrBook) return EC_H(MAPI_E_INVALID_PARAMETER);
+
+		// Outlook's modal Details dialogs can hang when nested dialogs close out of order.
+		static thread_local bool detailsActive{};
+		if (detailsActive) return EC_H_MSG(IDS_ABDETAILSALREADYOPEN, MAPI_E_BUSY);
+
+		struct ResetDetailsActive
+		{
+			bool& active;
+			~ResetDetailsActive() { active = false; }
+		};
+		const ResetDetailsActive reset{detailsActive};
+		detailsActive = true;
+
+		auto ulUIParam = reinterpret_cast<ULONG_PTR>(hwnd);
+		// Outlook requires DIALOG_MODAL; see historical KB 171637. The API does not support Unicode here.
+		return EC_H_CANCEL(lpAddrBook->Details(
+			&ulUIParam, nullptr, nullptr, cbEntryID, lpEntryID, nullptr, nullptr, nullptr, DIALOG_MODAL));
+	}
+
 	_Check_return_ LPADRLIST AllocAdrList(ULONG ulNumProps)
 	{
 		if (ulNumProps > ULONG_MAX / sizeof(SPropValue)) return nullptr;
