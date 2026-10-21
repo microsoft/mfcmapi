@@ -50,8 +50,8 @@ namespace dialog::editor
 		if (lpsPropValue)
 		{
 			// Missing values can be created, but other errors must not be read as the requested type.
-			if (PROP_TYPE(lpsPropValue->ulPropTag) == PT_ERROR &&
-				lpsPropValue->Value.err == MAPI_E_NOT_FOUND && PROP_TYPE(ulPropTag) != PT_ERROR)
+			if (PROP_TYPE(lpsPropValue->ulPropTag) == PT_ERROR && lpsPropValue->Value.err == MAPI_E_NOT_FOUND &&
+				PROP_TYPE(ulPropTag) != PT_ERROR)
 			{
 				lpsPropValue = nullptr;
 			}
