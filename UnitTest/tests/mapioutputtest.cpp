@@ -135,7 +135,7 @@ namespace mapioutputtest
 			*rows = nullptr;
 			if (queryCount == failOnQuery && !returnRowsOnFailure) return MAPI_E_CALL_FAILED;
 			if (position == m_rowCount && nullAtEnd) return S_OK;
-			const auto count = (std::min) ({static_cast<ULONG>(requested), m_batchSize, m_rowCount - position});
+			const auto count = (std::min)({static_cast<ULONG>(requested), m_batchSize, m_rowCount - position});
 			*rows = mapi::allocate<LPSRowSet>(CbNewSRowSet(count));
 			if (!*rows) return MAPI_E_NOT_ENOUGH_MEMORY;
 			(*rows)->cRows = count;
