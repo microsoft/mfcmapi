@@ -106,7 +106,12 @@ namespace ui
 
 		registry::PushOptionsToStub();
 
-		addin::LoadAddIns(PromptForAddInApproval);
+		const auto loadResult = addin::LoadAddIns(PromptForAddInApproval);
+		if (loadResult != ERROR_SUCCESS)
+		{
+			error::ErrDialog(
+				__FILE__, __LINE__, IDS_ADDINDIRECTORYERROR, registry::addInDirectory.szCurSTRING.c_str(), loadResult);
+		}
 
 		// Notice we never create a window here!
 		TRACE_CONSTRUCTOR(CLASS);

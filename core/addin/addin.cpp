@@ -356,164 +356,239 @@ namespace addin
 		return success;
 	}
 
-	void LoadAddIns(_In_ const AddInApprovalPrompt& approvalPrompt)
+	DWORD ValidateAddInDirectory(const std::wstring& directory)
+	{
+		if (directory.empty()) return ERROR_SUCCESS;
+		if (directory.size() > MAX_PATH - 7) return ERROR_FILENAME_EXCED_RANGE;
+		if (directory.size() < 3 ||
+			!((directory[0] >= L'A' && directory[0] <= L'Z') || (directory[0] >= L'a' && directory[0] <= L'z')) ||
+			directory[1] != L':' || directory[2] != L'\\')
+			return ERROR_BAD_PATHNAME;
+		if (directory.find_first_of(L"<>\"|?*/:", 2) != std::wstring::npos ||
+			std::any_of(directory.begin(), directory.end(), [](wchar_t ch) { return ch < L' '; }))
+			return ERROR_BAD_PATHNAME;
+
+		for (size_t start = 3; start < directory.size();)
+		{
+			const auto end = directory.find(L'\\', start);
+			const auto length = (end == std::wstring::npos ? directory.size() : end) - start;
+			if (!length || directory[start + length - 1] == L'.' || directory[start + length - 1] == L' ')
+				return ERROR_BAD_PATHNAME;
+			if (end == std::wstring::npos) break;
+			start = end + 1;
+		}
+
+		const auto root = directory.substr(0, 3);
+		if (GetDriveTypeW(root.c_str()) != DRIVE_FIXED) return ERROR_NOT_SUPPORTED;
+
+		const auto handle = CreateFileW(
+			directory.c_str(),
+			FILE_LIST_DIRECTORY | FILE_READ_ATTRIBUTES,
+			FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+			nullptr,
+			OPEN_EXISTING,
+			FILE_FLAG_BACKUP_SEMANTICS,
+			nullptr);
+		if (handle == INVALID_HANDLE_VALUE) return GetLastError();
+
+		auto result = static_cast<DWORD>(ERROR_SUCCESS);
+		BY_HANDLE_FILE_INFORMATION info{};
+		WCHAR resolved[MAX_PATH + 4]{};
+		if (!GetFileInformationByHandle(handle, &info))
+			result = GetLastError();
+		else if (!(info.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
+			result = ERROR_DIRECTORY;
+		else
+		{
+			const auto length = GetFinalPathNameByHandleW(handle, resolved, _countof(resolved), FILE_NAME_NORMALIZED);
+			if (!length)
+				result = GetLastError();
+			else if (length >= _countof(resolved))
+				result = ERROR_FILENAME_EXCED_RANGE;
+			else if (length < 7 || wcsncmp(resolved, L"\\\\?\\", 4) || resolved[5] != L':' || resolved[6] != L'\\')
+				result = ERROR_NOT_SUPPORTED;
+			else
+			{
+				const std::wstring resolvedRoot(resolved + 4, 3);
+				if (GetDriveTypeW(resolvedRoot.c_str()) != DRIVE_FIXED) result = ERROR_NOT_SUPPORTED;
+			}
+		}
+
+		WC_B_S(CloseHandle(handle));
+		return result;
+	}
+
+	DWORD LoadAddIns(_In_ const AddInApprovalPrompt& approvalPrompt)
 	{
 		output::DebugPrint(output::dbgLevel::AddInPlumbing, L"Loading AddIns\n");
 
-		if (registry::loadAddIns)
+		const std::wstring directory = registry::addInDirectory;
+		auto result = ValidateAddInDirectory(directory);
+		if (result != ERROR_SUCCESS)
 		{
-			const auto filePath = file::GetModuleFileName(nullptr);
-			if (!filePath.empty())
+			output::DebugPrint(
+				output::dbgLevel::AddInPlumbing,
+				L"Invalid add-in directory \"%ws\" (error %u); add-ins will not be loaded\n",
+				directory.c_str(),
+				result);
+			MergeAddInArrays();
+			return result;
+		}
+
+		if (!directory.empty())
+		{
+			output::DebugPrint(
+				output::dbgLevel::AddInPlumbing, L"Scanning add-in directory \"%ws\"\n", directory.c_str());
+			const auto prefix = directory.back() == L'\\' ? directory : directory + L"\\";
+			const auto spec = prefix + L"*.dll"; // STRING_OK
+			WIN32_FIND_DATAW findData = {};
+			const auto findHandle = FindFirstFileW(spec.c_str(), &findData);
+			if (findHandle == INVALID_HANDLE_VALUE)
 			{
-				const auto directory = filePath.substr(0, filePath.find_last_of(L'\\'));
-				if (!directory.empty())
+				const auto findError = GetLastError();
+				if (findError != ERROR_FILE_NOT_FOUND)
 				{
-					const auto spec = directory + L"\\*.dll"; // STRING_OK
-					WIN32_FIND_DATAW findData = {};
-					const auto findHandle = FindFirstFileW(spec.c_str(), &findData);
-					if (findHandle == INVALID_HANDLE_VALUE)
+					result = findError;
+					output::DebugPrint(output::dbgLevel::AddInPlumbing, L"FindFirstFileW failed with %u\n", result);
+				}
+			}
+			else
+			{
+				CApprovalCache cache;
+				std::vector<CPendingAddIn> approved;
+				std::vector<CPendingAddIn> unknown;
+				auto findError = ERROR_NO_MORE_FILES;
+
+				for (;;)
+				{
+					const auto path = prefix + findData.cFileName;
+					auto candidateFile = std::make_unique<CAddInFile>();
+					if (candidateFile->Open(path))
 					{
-						output::DebugPrint(
-							output::dbgLevel::AddInPlumbing, L"FindFirstFileW failed with %u\n", GetLastError());
+						if (!candidateFile->HasCompatibleBitness())
+						{
+							output::DebugPrint(
+								output::dbgLevel::AddInPlumbing,
+								L"Skipping add-in with incompatible bitness \"%ws\"\n",
+								path.c_str());
+						}
+						else
+						{
+							std::wstring hash;
+							if (candidateFile->HasLoadAddInExport() && candidateFile->GetSHA256(hash))
+							{
+								candidateFile->CloseView();
+								CPendingAddIn candidate{
+									{findData.cFileName, std::move(hash)}, path, std::move(candidateFile)};
+								if (!cache.IsDenied(candidate.approval.sha256) &&
+									cache.IsApproved(candidate.approval.sha256))
+								{
+									approved.emplace_back(std::move(candidate));
+								}
+								else if (!cache.IsDenied(candidate.approval.sha256))
+								{
+									unknown.emplace_back(std::move(candidate));
+								}
+							}
+							else
+							{
+								output::DebugPrint(
+									output::dbgLevel::AddInPlumbing,
+									L"Skipping non-add-in or unreadable image \"%ws\"\n",
+									path.c_str());
+							}
+						}
 					}
 					else
 					{
-						CApprovalCache cache;
-						std::vector<CPendingAddIn> approved;
-						std::vector<CPendingAddIn> unknown;
-						auto findError = ERROR_NO_MORE_FILES;
+						output::DebugPrint(
+							output::dbgLevel::AddInPlumbing,
+							L"Could not inspect \"%ws\" (error %u)\n",
+							path.c_str(),
+							GetLastError());
+					}
 
-						for (;;)
-						{
-							const auto path = directory + L"\\" + findData.cFileName;
-							auto candidateFile = std::make_unique<CAddInFile>();
-							if (candidateFile->Open(path))
-							{
-								if (!candidateFile->HasCompatibleBitness())
-								{
-									output::DebugPrint(
-										output::dbgLevel::AddInPlumbing,
-										L"Skipping add-in with incompatible bitness \"%ws\"\n",
-										path.c_str());
-								}
-								else
-								{
-									std::wstring hash;
-									if (candidateFile->HasLoadAddInExport() && candidateFile->GetSHA256(hash))
-									{
-										candidateFile->CloseView();
-										CPendingAddIn candidate{
-											{findData.cFileName, std::move(hash)}, path, std::move(candidateFile)};
-										if (!cache.IsDenied(candidate.approval.sha256) &&
-											cache.IsApproved(candidate.approval.sha256))
-										{
-											approved.emplace_back(std::move(candidate));
-										}
-										else if (!cache.IsDenied(candidate.approval.sha256))
-										{
-											unknown.emplace_back(std::move(candidate));
-										}
-									}
-									else
-									{
-										output::DebugPrint(
-											output::dbgLevel::AddInPlumbing,
-											L"Skipping non-add-in or unreadable image \"%ws\"\n",
-											path.c_str());
-									}
-								}
-							}
-							else
-							{
-								output::DebugPrint(
-									output::dbgLevel::AddInPlumbing,
-									L"Could not inspect \"%ws\" (error %u)\n",
-									path.c_str(),
-									GetLastError());
-							}
-
-							if (!FindNextFileW(findHandle, &findData))
-							{
-								findError = GetLastError();
-								break;
-							}
-						}
-
-						FindClose(findHandle);
-						if (findError != ERROR_NO_MORE_FILES)
-						{
-							output::DebugPrint(
-								output::dbgLevel::AddInPlumbing, L"FindNextFileW failed with %u\n", findError);
-						}
-
-						if (!unknown.empty() && approvalPrompt)
-						{
-							std::vector<AddInApprovalCandidate> promptCandidates;
-							std::vector<size_t> decisionIndex;
-							promptCandidates.reserve(unknown.size());
-							decisionIndex.reserve(unknown.size());
-							for (const auto& candidate : unknown)
-							{
-								const auto existing = std::find_if(
-									promptCandidates.cbegin(),
-									promptCandidates.cend(),
-									[&candidate](const auto& promptCandidate) {
-										return promptCandidate.sha256 == candidate.approval.sha256;
-									});
-								if (existing == promptCandidates.cend())
-								{
-									decisionIndex.push_back(promptCandidates.size());
-									promptCandidates.push_back(candidate.approval);
-								}
-								else
-								{
-									decisionIndex.push_back(static_cast<size_t>(existing - promptCandidates.cbegin()));
-								}
-							}
-
-							std::vector<bool> decisions;
-							if (approvalPrompt(promptCandidates, decisions) &&
-								decisions.size() == promptCandidates.size())
-							{
-								for (size_t i = 0; i < promptCandidates.size(); ++i)
-									cache.Add(promptCandidates[i].sha256, decisions[i]);
-
-								if (!cache.Save())
-								{
-									output::DebugPrint(
-										output::dbgLevel::AddInPlumbing,
-										L"Could not persist add-in approval decisions; newly approved add-ins will not "
-										L"load\n");
-								}
-								else
-								{
-									for (size_t i = 0; i < unknown.size(); ++i)
-									{
-										if (decisions[decisionIndex[i]]) approved.emplace_back(std::move(unknown[i]));
-									}
-								}
-							}
-							else
-							{
-								output::DebugPrint(
-									output::dbgLevel::AddInPlumbing,
-									L"Add-in approval was cancelled or returned invalid decisions\n");
-							}
-						}
-
-						for (const auto& candidate : approved)
-							LoadApprovedAddIn(candidate.path);
+					if (!FindNextFileW(findHandle, &findData))
+					{
+						findError = GetLastError();
+						break;
 					}
 				}
+
+				FindClose(findHandle);
+				if (findError != ERROR_NO_MORE_FILES)
+				{
+					result = findError;
+					output::DebugPrint(output::dbgLevel::AddInPlumbing, L"FindNextFileW failed with %u\n", findError);
+				}
+
+				if (!unknown.empty() && approvalPrompt)
+				{
+					std::vector<AddInApprovalCandidate> promptCandidates;
+					std::vector<size_t> decisionIndex;
+					promptCandidates.reserve(unknown.size());
+					decisionIndex.reserve(unknown.size());
+					for (const auto& candidate : unknown)
+					{
+						const auto existing = std::find_if(
+							promptCandidates.cbegin(),
+							promptCandidates.cend(),
+							[&candidate](const auto& promptCandidate) {
+								return promptCandidate.sha256 == candidate.approval.sha256;
+							});
+						if (existing == promptCandidates.cend())
+						{
+							decisionIndex.push_back(promptCandidates.size());
+							promptCandidates.push_back(candidate.approval);
+						}
+						else
+						{
+							decisionIndex.push_back(static_cast<size_t>(existing - promptCandidates.cbegin()));
+						}
+					}
+
+					std::vector<bool> decisions;
+					if (approvalPrompt(promptCandidates, decisions) && decisions.size() == promptCandidates.size())
+					{
+						for (size_t i = 0; i < promptCandidates.size(); ++i)
+							cache.Add(promptCandidates[i].sha256, decisions[i]);
+
+						if (!cache.Save())
+						{
+							output::DebugPrint(
+								output::dbgLevel::AddInPlumbing,
+								L"Could not persist add-in approval decisions; newly approved add-ins will not "
+								L"load\n");
+						}
+						else
+						{
+							for (size_t i = 0; i < unknown.size(); ++i)
+							{
+								if (decisions[decisionIndex[i]]) approved.emplace_back(std::move(unknown[i]));
+							}
+						}
+					}
+					else
+					{
+						output::DebugPrint(
+							output::dbgLevel::AddInPlumbing,
+							L"Add-in approval was cancelled or returned invalid decisions\n");
+					}
+				}
+
+				for (const auto& candidate : approved)
+					LoadApprovedAddIn(candidate.path);
 			}
 		}
 		else
 		{
-			output::DebugPrint(output::dbgLevel::AddInPlumbing, L"Bypassing add-in loading\n");
+			output::DebugPrint(
+				output::dbgLevel::AddInPlumbing, L"No add-in directory configured; bypassing add-in loading\n");
 		}
 
 		MergeAddInArrays();
 		output::DebugPrint(output::dbgLevel::AddInPlumbing, L"Done loading AddIns\n");
+		return result;
 	}
 
 	void UnloadAddIns()

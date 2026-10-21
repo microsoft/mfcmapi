@@ -497,6 +497,7 @@ namespace cli
 			wprintf(L"   -No  (or -%ws) No Addins. Don't load any add-ins.\n", switchNoAddins.name());
 			wprintf(
 				L"   -%ws Prompt to approve add-ins not previously approved or denied.\n", switchApproveAddins.name());
+			wprintf(L"           Add-ins are disabled unless an add-in directory is configured in MFCMAPI Options.\n");
 			wprintf(L"   -On  (or -%ws) Online mode. Bypass cached mode.\n", switchOnline.name());
 			wprintf(L"   -V   (or -%ws) Verbose. Turn on all debug output.\n", switchVerbose.name());
 			wprintf(L"\n");

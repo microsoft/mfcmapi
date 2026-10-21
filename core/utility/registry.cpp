@@ -61,7 +61,7 @@ namespace registry
 		true,
 		false,
 		IDS_REGKEY_HEAPENABLETERMINATIONONCORRUPTION};
-	boolRegKey loadAddIns{L"LoadAddIns", true, false, IDS_REGKEY_LOADADDINS};
+	wstringRegKey addInDirectory{L"AddInDirectory", L"", false, IDS_REGKEY_ADDINDIRECTORY};
 	boolRegKey forceOutlookMAPI{L"ForceOutlookMAPI", false, false, IDS_REGKEY_FORCEOUTLOOKMAPI};
 	boolRegKey forceSystemMAPI{L"ForceSystemMAPI", false, false, IDS_REGKEY_FORCESYSTEMMAPI};
 	boolRegKey preferOlmapi32{L"PreferOlmapi32", true, false, IDS_REGKEY_PREFER_OLMAPI32};
@@ -104,7 +104,7 @@ namespace registry
 		&useMessageRaw,
 		&suppressNotFound,
 		&heapEnableTerminationOnCorruption,
-		&loadAddIns,
+		&addInDirectory,
 		&forceOutlookMAPI,
 		&forceSystemMAPI,
 		&preferOlmapi32,
@@ -165,10 +165,13 @@ namespace registry
 				&cb));
 			if (hRes == S_OK && cb && !(cb % 2) && dwKeyType == REG_SZ)
 			{
+				szBuf.resize(cb / sizeof(wchar_t));
+				if (szBuf.back() == L'\0') szBuf.pop_back();
 				return szBuf;
 			}
 		}
 
+		if (hRes == S_OK) WC_H_S(HRESULT_FROM_WIN32(ERROR_INVALID_DATA));
 		return szDefault;
 	}
 
