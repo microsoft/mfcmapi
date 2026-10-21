@@ -3,6 +3,9 @@
 
 namespace mapi::ab
 {
+	_Check_return_ HRESULT
+	DisplayDetails(_In_ LPADRBOOK lpAddrBook, HWND hwnd, ULONG cbEntryID, _In_ LPENTRYID lpEntryID);
+
 	_Check_return_ HRESULT AddOneOffAddress(
 		_In_ LPMAPISESSION lpMAPISession,
 		_In_ LPMESSAGE lpMessage,

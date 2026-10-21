@@ -1682,6 +1682,7 @@ IDS_CAPABILITIES_PROMPT "Store capabilities"
 IDS_CAPABILITIES_FOLDER "MSCAP_SEL_FOLDER (2)"
 IDS_CAPABILITIES_RESTRICTION "MSCAP_SEL_RESTRICTION (4)"
 IDS_RESERVED "Reserved (%1!d!)"
+IDS_ABDETAILSALREADYOPEN "An address-book Details dialog is already open. Close the existing Details dialog before opening another."
 
 // All strings above this point use FormatMessage style formatting
 

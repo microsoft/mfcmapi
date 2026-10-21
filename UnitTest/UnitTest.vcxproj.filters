@@ -32,6 +32,9 @@
     <ClCompile Include="tests\guidtest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="tests\mapiabtest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="tests\mapioutputtest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
