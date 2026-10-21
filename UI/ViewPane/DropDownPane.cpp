@@ -133,6 +133,31 @@ namespace viewpane
 			m_nID));
 
 		SendMessage(m_DropDown.m_hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(ui::GetUIFont()), false);
+		WC_B_S(SetWindowSubclass(m_DropDown.GetSafeHwnd(), WheelProc, 0, 0));
+	}
+
+	LRESULT CALLBACK DropDownPane::WheelProc(
+		HWND hWnd,
+		UINT message,
+		WPARAM wParam,
+		LPARAM lParam,
+		UINT_PTR subclassID,
+		DWORD_PTR /*data*/)
+	{
+		if (message == WM_NCDESTROY)
+		{
+			RemoveWindowSubclass(hWnd, WheelProc, subclassID);
+		}
+		else if (message == WM_MOUSEWHEEL && !::SendMessage(hWnd, CB_GETDROPPEDSTATE, 0, 0))
+		{
+			const auto focus = ::GetFocus();
+			if (focus != hWnd && !::IsChild(hWnd, focus))
+			{
+				return ::SendMessage(::GetParent(hWnd), message, wParam, lParam);
+			}
+		}
+
+		return DefSubclassProc(hWnd, message, wParam, lParam);
 	}
 
 	void DropDownPane::Initialize(_In_ CWnd* pParent, _In_ HDC hdc)

@@ -196,7 +196,7 @@ namespace registry
 	extern boolRegKey useMessageRaw;
 	extern boolRegKey suppressNotFound;
 	extern boolRegKey heapEnableTerminationOnCorruption;
-	extern boolRegKey loadAddIns;
+	extern wstringRegKey addInDirectory;
 	extern boolRegKey forceOutlookMAPI;
 	extern boolRegKey forceSystemMAPI;
 	extern boolRegKey preferOlmapi32;

@@ -927,7 +927,8 @@ namespace dialog
 		if (!szDLLPath.empty())
 		{
 			const auto szFullPath = szDLLPath + L"\\mapi32.dll";
-			MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_PATH, szFullPath, false));
+			MyData.AddPane(viewpane::PathPane::Create(
+				0, IDS_PATH, viewpane::pathType::fileOpen, szFullPath, L"dll", {}, OFN_FILEMUSTEXIST));
 		}
 
 		if (MyData.DisplayDialog())

@@ -3,6 +3,7 @@
 #include <core/addin/addin.h>
 #include <core/addin/addinfile.h>
 #include <core/addin/mfcmapi.h>
+#include <core/utility/registry.h>
 #include <cstring>
 #include <stdexcept>
 
@@ -24,6 +25,134 @@ namespace addin
 
 namespace addintest
 {
+	class TestDirectory
+	{
+	public:
+		TestDirectory()
+		{
+			WCHAR temporary[MAX_PATH]{};
+			WCHAR name[MAX_PATH]{};
+			if (!GetTempPathW(_countof(temporary), temporary) || !GetTempFileNameW(temporary, L"adi", 0, name))
+				throw std::runtime_error("Unable to generate add-in test directory");
+			path = name;
+			if (!DeleteFileW(path.c_str()) || !CreateDirectoryW(path.c_str(), nullptr))
+				throw std::runtime_error("Unable to create add-in test directory");
+		}
+
+		~TestDirectory()
+		{
+			for (const auto& file : files)
+				if (!DeleteFileW(file.c_str())) Logger::WriteMessage(L"Unable to remove add-in test file");
+			if (!RemoveDirectoryW((path + L"\\nested").c_str()) && GetLastError() != ERROR_FILE_NOT_FOUND)
+				Logger::WriteMessage(L"Unable to remove nested add-in test directory");
+			if (!RemoveDirectoryW(path.c_str())) Logger::WriteMessage(L"Unable to remove add-in test directory");
+		}
+
+		void Write(const std::wstring& name, const std::vector<BYTE>& image)
+		{
+			const auto file = path + L"\\" + name;
+			const auto handle =
+				CreateFileW(file.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, nullptr);
+			if (handle == INVALID_HANDLE_VALUE) throw std::runtime_error("Unable to create add-in test file");
+			files.push_back(file);
+			DWORD written{};
+			const auto success = WriteFile(handle, image.data(), static_cast<DWORD>(image.size()), &written, nullptr);
+			const auto closed = CloseHandle(handle);
+			Assert::IsTrue(success && closed);
+			Assert::AreEqual(static_cast<DWORD>(image.size()), written);
+		}
+
+		std::wstring path;
+
+	private:
+		std::vector<std::wstring> files;
+	};
+
+	class TestRegistry
+	{
+	public:
+		TestRegistry() : savedKeys(registry::RegKeys)
+		{
+			static LONG sequence{};
+			name = L"Software\\MFCMAPI-AddinTest-" + std::to_wstring(GetCurrentProcessId()) + L"-" +
+				   std::to_wstring(GetTickCount64()) + L"-" + std::to_wstring(InterlockedIncrement(&sequence));
+			DWORD disposition{};
+			if (RegCreateKeyExW(
+					HKEY_CURRENT_USER,
+					name.c_str(),
+					0,
+					nullptr,
+					REG_OPTION_NON_VOLATILE,
+					KEY_ALL_ACCESS,
+					nullptr,
+					&key,
+					&disposition) != ERROR_SUCCESS)
+				throw std::runtime_error("Unable to create add-in test registry key");
+			if (disposition != REG_CREATED_NEW_KEY)
+			{
+				RegCloseKey(key);
+				throw std::runtime_error("Add-in test registry key already exists");
+			}
+			if (RegOverridePredefKey(HKEY_CURRENT_USER, key) != ERROR_SUCCESS)
+			{
+				RegCloseKey(key);
+				RegDeleteKeyW(HKEY_CURRENT_USER, name.c_str());
+				throw std::runtime_error("Unable to isolate add-in test registry");
+			}
+			savedDirectory = registry::addInDirectory.szCurSTRING;
+			registry::addInDirectory.clear();
+		}
+
+		~TestRegistry()
+		{
+			registry::RegKeys = std::move(savedKeys);
+			registry::addInDirectory = savedDirectory;
+			if (RegOverridePredefKey(HKEY_CURRENT_USER, nullptr) != ERROR_SUCCESS)
+				Logger::WriteMessage(L"Unable to restore predefined registry key");
+			if (RegDeleteTreeW(key, nullptr) != ERROR_SUCCESS)
+				Logger::WriteMessage(L"Unable to clear add-in test registry");
+			RegCloseKey(key);
+			if (RegDeleteKeyW(HKEY_CURRENT_USER, name.c_str()) != ERROR_SUCCESS)
+				Logger::WriteMessage(L"Unable to remove add-in test registry key");
+		}
+
+		void SetRaw(DWORD type, const BYTE* data, DWORD size)
+		{
+			Assert::AreEqual(
+				static_cast<LSTATUS>(ERROR_SUCCESS), RegSetValueExW(key, L"AddInDirectory", 0, type, data, size));
+		}
+
+		HKEY key{};
+
+	private:
+		std::wstring name;
+		std::wstring savedDirectory;
+		std::vector<registry::__RegKey*> savedKeys;
+	};
+
+	class TestWorkingDirectory
+	{
+	public:
+		explicit TestWorkingDirectory(const std::wstring& directory)
+		{
+			WCHAR current[MAX_PATH]{};
+			const auto length = GetCurrentDirectoryW(_countof(current), current);
+			if (!length || length >= _countof(current))
+				throw std::runtime_error("Unable to save test working directory");
+			saved = current;
+			if (!SetCurrentDirectoryW(directory.c_str()))
+				throw std::runtime_error("Unable to set test working directory");
+		}
+
+		~TestWorkingDirectory()
+		{
+			if (!SetCurrentDirectoryW(saved.c_str())) Logger::WriteMessage(L"Unable to restore test working directory");
+		}
+
+	private:
+		std::wstring saved;
+	};
+
 	void CopyToImage(std::vector<BYTE>& image, const size_t offset, const void* source, const size_t size)
 	{
 		if (offset > image.size() || size > image.size() - offset || (size && !source))
@@ -135,6 +264,237 @@ namespace addintest
 		static const bool dummy_var = true;
 
 		TEST_CLASS_INITIALIZE(initialize) { unittest::init(); }
+
+		TEST_METHOD(Test_AddInDirectoryValidation)
+		{
+			Assert::AreEqual(static_cast<DWORD>(ERROR_SUCCESS), addin::ValidateAddInDirectory(L""));
+			for (const auto& invalid :
+				 {L"addins",
+				  L".\\addins",
+				  L"C:addins",
+				  L"\\addins",
+				  L"\\\\server\\share",
+				  L"\\\\?\\C:\\addins",
+				  L"\\\\.\\C:\\addins",
+				  L"\"C:\\addins\"",
+				  L"C:\\*.dll",
+				  L"C:/addins",
+				  L"%TEMP%\\addins",
+				  L"C:\\addins\\..",
+				  L"C:\\addins\\.",
+				  L"C:\\addins ",
+				  L"C:\\addins|other",
+				  L"C:\\addins:other"})
+				Assert::AreNotEqual(static_cast<DWORD>(ERROR_SUCCESS), addin::ValidateAddInDirectory(invalid), invalid);
+			const auto embeddedNull = std::wstring(L"C:\\addins") + L'\0' + L"ignored";
+			Assert::AreNotEqual(static_cast<DWORD>(ERROR_SUCCESS), addin::ValidateAddInDirectory(embeddedNull));
+			Assert::AreEqual(
+				static_cast<DWORD>(ERROR_FILENAME_EXCED_RANGE),
+				addin::ValidateAddInDirectory(L"C:\\" + std::wstring(MAX_PATH, L'a')));
+
+			TestDirectory directory;
+			Assert::AreEqual(static_cast<DWORD>(ERROR_SUCCESS), addin::ValidateAddInDirectory(directory.path));
+			Assert::AreEqual(static_cast<DWORD>(ERROR_SUCCESS), addin::ValidateAddInDirectory(directory.path + L"\\"));
+			Assert::IsTrue(CreateDirectoryW((directory.path + L"\\nested").c_str(), nullptr));
+			Assert::AreEqual(
+				static_cast<DWORD>(ERROR_SUCCESS), addin::ValidateAddInDirectory(directory.path + L"\\nested"));
+			const auto unicodePath = directory.path + L"\\spaces ; \u65e5\u672c";
+			Assert::IsTrue(CreateDirectoryW(unicodePath.c_str(), nullptr));
+			const auto unicodeResult = addin::ValidateAddInDirectory(unicodePath);
+			Assert::IsTrue(RemoveDirectoryW(unicodePath.c_str()));
+			Assert::AreEqual(static_cast<DWORD>(ERROR_SUCCESS), unicodeResult);
+			directory.Write(L"not a directory.dll", {0});
+			Assert::AreEqual(
+				static_cast<DWORD>(ERROR_DIRECTORY),
+				addin::ValidateAddInDirectory(directory.path + L"\\not a directory.dll"));
+			Assert::AreNotEqual(
+				static_cast<DWORD>(ERROR_SUCCESS), addin::ValidateAddInDirectory(directory.path + L"\\missing"));
+		}
+
+		TEST_METHOD(Test_AddInDirectoryRegistry)
+		{
+			TestRegistry registry;
+			registry::ReadFromRegistry();
+			Assert::IsTrue(registry::addInDirectory.empty());
+
+			const std::wstring directory = L"C:\\Add-ins with spaces;\u65e5\u672c";
+			registry::addInDirectory = directory;
+			registry::WriteToRegistry();
+			registry::addInDirectory.clear();
+			registry::ReadFromRegistry();
+			Assert::AreEqual(directory, registry::addInDirectory.szCurSTRING);
+			registry::addInDirectory.clear();
+			registry::WriteToRegistry();
+			const auto root = registry::CreateRootKey();
+			Assert::IsNotNull(root);
+			const auto queryResult = RegQueryValueExW(root, L"AddInDirectory", nullptr, nullptr, nullptr, nullptr);
+			RegCloseKey(root);
+			Assert::AreEqual(static_cast<LSTATUS>(ERROR_FILE_NOT_FOUND), queryResult);
+			registry::ReadFromRegistry();
+			Assert::IsTrue(registry::addInDirectory.empty());
+		}
+
+		TEST_METHOD(Test_AddInDirectoryMalformedRegistry)
+		{
+			TestRegistry registry;
+			const DWORD wrongType = 1;
+			registry.SetRaw(REG_DWORD, reinterpret_cast<const BYTE*>(&wrongType), sizeof(wrongType));
+			Assert::IsTrue(registry::ReadStringFromRegistry(registry.key, L"AddInDirectory").empty());
+			const std::wstring directory = L"C:\\addins";
+			const std::wstring embeddedNull = directory + L'\0' + L"ignored";
+			registry.SetRaw(
+				REG_SZ,
+				reinterpret_cast<const BYTE*>(embeddedNull.c_str()),
+				static_cast<DWORD>((embeddedNull.size() + 1) * sizeof(wchar_t)));
+			const auto value = registry::ReadStringFromRegistry(registry.key, L"AddInDirectory");
+			Assert::AreEqual(embeddedNull, value);
+			Assert::AreNotEqual(static_cast<DWORD>(ERROR_SUCCESS), addin::ValidateAddInDirectory(value));
+			registry.SetRaw(REG_SZ, reinterpret_cast<const BYTE*>(directory.data()), 3);
+			Assert::IsTrue(registry::ReadStringFromRegistry(registry.key, L"AddInDirectory").empty());
+			registry.SetRaw(
+				REG_EXPAND_SZ,
+				reinterpret_cast<const BYTE*>(directory.c_str()),
+				static_cast<DWORD>((directory.size() + 1) * sizeof(wchar_t)));
+			Assert::IsTrue(registry::ReadStringFromRegistry(registry.key, L"AddInDirectory").empty());
+			const std::wstring longDirectory = L"C:\\" + std::wstring(MAX_PATH, L'a');
+			registry::WriteStringToRegistry(registry.key, L"AddInDirectory", longDirectory);
+			const auto longValue = registry::ReadStringFromRegistry(registry.key, L"AddInDirectory");
+			Assert::AreEqual(longDirectory, longValue);
+			Assert::AreEqual(static_cast<DWORD>(ERROR_FILENAME_EXCED_RANGE), addin::ValidateAddInDirectory(longValue));
+		}
+
+		TEST_METHOD(Test_AddInsDisabledByDefault)
+		{
+			TestRegistry registry;
+			const auto root = registry::CreateRootKey();
+			Assert::IsNotNull(root);
+			registry::WriteDWORDToRegistry(root, L"LoadAddIns", 1);
+			RegCloseKey(root);
+			registry::ReadFromRegistry();
+			bool prompted{};
+			Assert::AreEqual(static_cast<DWORD>(ERROR_SUCCESS), addin::LoadAddIns([&prompted](const auto&, auto&) {
+								 prompted = true;
+								 return false;
+							 }));
+			Assert::IsFalse(prompted);
+			Assert::IsTrue(g_lpMyAddins.empty());
+			Assert::IsFalse(PropTagArray.empty());
+		}
+
+		TEST_METHOD(Test_AddInsOnlyScanConfiguredDirectory)
+		{
+			TestRegistry registry;
+			TestDirectory directory;
+			TestDirectory otherDirectory;
+			TestWorkingDirectory workingDirectory(otherDirectory.path);
+			const auto root = registry::CreateRootKey();
+			Assert::IsNotNull(root);
+			registry::WriteDWORDToRegistry(root, L"LoadAddIns", 0);
+			RegCloseKey(root);
+			Assert::IsTrue(CreateDirectoryW((directory.path + L"\\nested").c_str(), nullptr));
+			auto image = MakePeImageWithExport("LoadAddIn", sizeof(void*) == 8);
+			directory.Write(L"selected.dll", image);
+			// Distinct hashes keep prompt deduplication from hiding an extra scan.
+			image.back() = 1;
+			otherDirectory.Write(L"working-directory-excluded.dll", image);
+			image.back() = 2;
+			directory.Write(L"nested\\excluded.dll", image);
+			directory.Write(L"not-an-addin.dll", MakePeImageWithExport("OtherExport", sizeof(void*) == 8));
+			registry::addInDirectory = directory.path + L"\\";
+			size_t count{};
+			Assert::AreEqual(
+				static_cast<DWORD>(ERROR_SUCCESS), addin::LoadAddIns([&count](const auto& candidates, auto&) {
+					count = candidates.size();
+					Assert::AreEqual(std::wstring(L"selected.dll"), candidates[0].fileName);
+					return false;
+				}));
+			Assert::AreEqual(size_t{1}, count);
+			Assert::IsTrue(g_lpMyAddins.empty());
+			Assert::IsFalse(PropTagArray.empty());
+		}
+
+		TEST_METHOD(Test_AddInsUnknownAndDenied)
+		{
+			TestRegistry registry;
+			TestDirectory directory;
+			TestDirectory movedDirectory;
+			const auto image = MakePeImageWithExport("LoadAddIn", sizeof(void*) == 8);
+			directory.Write(L"unknown.dll", image);
+			movedDirectory.Write(L"moved.dll", image);
+			registry::addInDirectory = directory.path;
+			Assert::AreEqual(static_cast<DWORD>(ERROR_SUCCESS), addin::LoadAddIns());
+			Assert::IsTrue(g_lpMyAddins.empty());
+
+			size_t prompts{};
+			const addin::AddInApprovalPrompt deny = [&prompts](const auto& candidates, auto& decisions) {
+				++prompts;
+				decisions.assign(candidates.size(), false);
+				return true;
+			};
+			Assert::AreEqual(static_cast<DWORD>(ERROR_SUCCESS), addin::LoadAddIns(deny));
+			Assert::AreEqual(size_t{1}, prompts);
+			registry::addInDirectory = movedDirectory.path;
+			Assert::AreEqual(static_cast<DWORD>(ERROR_SUCCESS), addin::LoadAddIns(deny));
+			Assert::AreEqual(size_t{1}, prompts);
+			Assert::IsTrue(g_lpMyAddins.empty());
+		}
+
+		TEST_METHOD(Test_ClearAddInDecisions)
+		{
+			TestRegistry registry;
+			const auto root = registry::CreateRootKey();
+			Assert::IsNotNull(root);
+			registry::WriteStringToRegistry(root, L"AddInApprovalList", L"approved-hash");
+			registry::WriteStringToRegistry(root, L"AddInDenialList", L"denied-hash");
+			registry::WriteStringToRegistry(root, L"AddInDirectory", L"C:\\addins");
+
+			Assert::IsTrue(addin::ClearAddInApprovalCache());
+			for (const auto name : {L"AddInApprovalList", L"AddInDenialList"})
+			{
+				Assert::AreEqual(
+					static_cast<LSTATUS>(ERROR_FILE_NOT_FOUND),
+					RegQueryValueExW(root, name, nullptr, nullptr, nullptr, nullptr));
+			}
+			Assert::AreEqual(std::wstring(L"C:\\addins"), registry::ReadStringFromRegistry(root, L"AddInDirectory"));
+			Assert::IsTrue(addin::ClearAddInApprovalCache());
+			RegCloseKey(root);
+		}
+
+		TEST_METHOD(Test_OnlyRegisteredOptionsAreRead)
+		{
+			TestRegistry registry;
+			const auto root = registry::CreateRootKey();
+			Assert::IsNotNull(root);
+			const auto oldDebugTag = registry::debugTag.ulCurDWORD;
+			const auto oldGetPropList = registry::useGetPropList.ulCurDWORD;
+			registry::WriteDWORDToRegistry(root, L"DebugTag", ~oldDebugTag);
+			registry::WriteDWORDToRegistry(root, L"UseGetPropList", !oldGetPropList);
+			registry::WriteStringToRegistry(root, L"AddInDirectory", L"C:\\addins");
+			RegCloseKey(root);
+
+			registry::RegKeys = {&registry::addInDirectory};
+			registry::ReadFromRegistry();
+			Assert::AreEqual(std::wstring(L"C:\\addins"), registry::addInDirectory.szCurSTRING);
+			Assert::AreEqual(oldDebugTag, registry::debugTag.ulCurDWORD);
+			Assert::AreEqual(oldGetPropList, registry::useGetPropList.ulCurDWORD);
+		}
+
+		TEST_METHOD(Test_AddInsEmptyAndInvalidDirectories)
+		{
+			TestRegistry registry;
+			TestDirectory directory;
+			registry::addInDirectory = directory.path;
+			Assert::AreEqual(static_cast<DWORD>(ERROR_SUCCESS), addin::LoadAddIns());
+			registry::addInDirectory = directory.path + L"\\missing";
+			bool prompted{};
+			Assert::AreNotEqual(static_cast<DWORD>(ERROR_SUCCESS), addin::LoadAddIns([&prompted](const auto&, auto&) {
+									prompted = true;
+									return false;
+								}));
+			Assert::IsFalse(prompted);
+			Assert::IsTrue(g_lpMyAddins.empty());
+			Assert::IsFalse(PropTagArray.empty());
+		}
 
 		TEST_METHOD(Test_compareTypes)
 		{
