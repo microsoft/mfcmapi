@@ -787,6 +787,7 @@
     <ClCompile Include="tests\addintest.cpp" />
     <ClCompile Include="tests\filetest.cpp" />
     <ClCompile Include="tests\flagtest.cpp" />
+    <ClCompile Include="tests\globalcachetest.cpp" />
     <ClCompile Include="tests\proptagTest.cpp" />
     <ClCompile Include="tests\blockPVtest.cpp" />
     <ClCompile Include="tests\blocktest.cpp" />
