@@ -4,11 +4,38 @@
 #include <core/utility/registry.h>
 #include <core/utility/strings.h>
 #include <core/smartview/SmartView.h>
+#include <mapistub/library/stubutils.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace unittest
 {
+	testMapiMemory::testMapiMemory()
+	{
+		HMODULE testModule{};
+		Assert::IsTrue(GetModuleHandleExW(0, L"UnitTest.dll", &testModule) != FALSE);
+		const auto original = mapistub::GetMAPIHandle();
+		if (original &&
+			!GetModuleHandleExW(
+				GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, reinterpret_cast<LPCWSTR>(original), &m_originalMAPI))
+		{
+			FreeLibrary(testModule);
+			Assert::Fail(L"Could not retain the original MAPI module.");
+		}
+
+		m_debugTag = registry::debugTag;
+		registry::debugTag = 0;
+		mapistub::SetMAPIHandle(nullptr);
+		mapistub::SetMAPIHandle(testModule);
+	}
+
+	testMapiMemory::~testMapiMemory()
+	{
+		mapistub::SetMAPIHandle(nullptr);
+		if (m_originalMAPI) mapistub::SetMAPIHandle(m_originalMAPI);
+		registry::debugTag = m_debugTag;
+	}
+
 	void init()
 	{
 		// Set up our property arrays or nothing works

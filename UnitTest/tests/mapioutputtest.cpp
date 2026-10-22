@@ -5,14 +5,13 @@
 #include <core/utility/error.h>
 #include <core/utility/output.h>
 #include <core/utility/registry.h>
-#include <mapistub/library/stubutils.h>
 #include <fcntl.h>
 #include <io.h>
 #include <cstddef>
 #include <limits>
 #include <memory>
 
-// Resolve only the exporter's memory APIs through this DLL, not an installed MAPI provider.
+// Resolve test memory APIs through this DLL, not an installed MAPI provider.
 #ifdef _M_IX86
 #pragma comment(linker, "/export:MAPIAllocateBuffer@8=_TestMAPIAllocateBuffer@8")
 #pragma comment(linker, "/export:MAPIFreeBuffer@4=_TestMAPIFreeBuffer@4")
@@ -273,24 +272,7 @@ namespace mapioutputtest
 			freedPropertyTags.clear();
 			m_previousFreedRowSets = 0;
 			m_errors.clear();
-			HMODULE testModule{};
-			Assert::IsTrue(GetModuleHandleExW(0, L"UnitTest.dll", &testModule) != FALSE);
-			const auto original = mapistub::GetMAPIHandle();
-			if (original)
-			{
-				if (!GetModuleHandleExW(
-						GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, reinterpret_cast<LPCWSTR>(original), &m_originalMAPI))
-				{
-					FreeLibrary(testModule);
-					Assert::Fail(L"Could not retain the original MAPI module.");
-				}
-			}
-
-			m_debugTag = registry::debugTag;
-			registry::debugTag = 0;
-			mapistub::SetMAPIHandle(nullptr);
-			mapistub::SetMAPIHandle(testModule);
-			m_installed = true;
+			m_memory = std::make_unique<unittest::testMapiMemory>();
 			m_originalDisplayError = std::move(error::displayError);
 			error::displayError = [this](const std::wstring& text) { m_errors.push_back(text); };
 		}
@@ -304,14 +286,10 @@ namespace mapioutputtest
 				TestMAPIFreeBuffer(buffers + 1);
 			}
 
-			if (m_installed)
+			if (m_memory)
 			{
 				error::displayError = std::move(m_originalDisplayError);
-				mapistub::SetMAPIHandle(nullptr);
-				if (m_originalMAPI) mapistub::SetMAPIHandle(m_originalMAPI);
-				registry::debugTag = m_debugTag;
-				m_originalMAPI = nullptr;
-				m_installed = false;
+				m_memory.reset();
 			}
 
 			Assert::AreEqual(0UL, leakedBuffers, L"The exporter leaked MAPI allocations.");
@@ -507,9 +485,7 @@ namespace mapioutputtest
 			Assert::IsTrue(m_errors[0].find(L"0x80004005") != std::wstring::npos);
 		}
 
-		HMODULE m_originalMAPI{};
-		bool m_installed{};
-		ULONG m_debugTag{};
+		std::unique_ptr<unittest::testMapiMemory> m_memory;
 		ULONG m_previousFreedRowSets{};
 		std::function<void(const std::wstring&)> m_originalDisplayError;
 		std::vector<std::wstring> m_errors;
