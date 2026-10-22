@@ -66,7 +66,32 @@ jobs:
 
     - name: MFCMAPI UnitTests
       if: matrix.platform != 'ARM64' && matrix.platform != 'ARM64EC'
-      run: cmd /c "$env:VSDevTestCmd" /Parallel /EnableCodeCoverage /Logger:trx "${{github.workspace}}\\bin\\${{matrix.platform}}\\UnitTest\\${{matrix.configuration}}\\UnitTest.dll"
+      timeout-minutes: 8
+      shell: pwsh
+      run: |
+        $results = Join-Path $env:GITHUB_WORKSPACE 'TestResults'
+        New-Item -ItemType Directory -Path $results -Force | Out-Null
+        $settings = Join-Path $results 'hang-diagnostics.runsettings'
+        @'
+        <RunSettings>
+          <DataCollectionRunSettings>
+            <DataCollectors>
+              <DataCollector friendlyName="Code Coverage">
+                <Configuration>
+                  <CodeCoverage>
+                    <EnableStaticNativeInstrumentationRestore>False</EnableStaticNativeInstrumentationRestore>
+                  </CodeCoverage>
+                </Configuration>
+              </DataCollector>
+            </DataCollectors>
+          </DataCollectionRunSettings>
+        </RunSettings>
+        '@ | Set-Content -LiteralPath $settings -Encoding utf8
+        $assembly = Join-Path $env:GITHUB_WORKSPACE 'bin\${{matrix.platform}}\UnitTest\${{matrix.configuration}}\UnitTest.dll'
+        & $env:VSDevTestCmd /Parallel /EnableCodeCoverage /Logger:trx `
+          "/Settings:$settings" "/ResultsDirectory:$results" "/Diag:$results\vstest.log" `
+          '/Blame:CollectHangDump;TestTimeout=2min;HangDumpType=mini' $assembly
+        exit $LASTEXITCODE
 
     # - name: Upload Event File
     #   uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -79,7 +104,10 @@ jobs:
       if: always() && matrix.platform != 'ARM64' && matrix.platform != 'ARM64EC'
       with:
         name: Test Results (${{ matrix.platform }} - ${{ matrix.configuration }})
-        path: ${{github.workspace}}/**/TestResults/**/*
+        path: |
+          ${{github.workspace}}/**/TestResults/**/*
+          ${{github.workspace}}\bin\${{matrix.platform}}\UnitTest\${{matrix.configuration}}\UnitTest.dll
+          ${{github.workspace}}\bin\${{matrix.platform}}\UnitTest\${{matrix.configuration}}\UnitTest*.pdb
 
     - name: Upload ARM64 Binaries
       uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

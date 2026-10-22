@@ -1177,7 +1177,8 @@ namespace controls::sortlistctrl
 		}
 
 		const auto ulSourcePropTag = sourceProp->getPropTag();
-		auto lpSourcePropObj = sourcePropBag->GetMAPIProp();
+		// GetMAPIProp returns a borrowed pointer; sourcePropBag keeps it alive across dialogs.
+		const auto lpSourcePropObj = sourcePropBag->GetMAPIProp();
 		if (!lpSourcePropObj)
 		{
 			// If we don't have a source prop object, try setting the prop back to the prop bag
@@ -1245,14 +1246,21 @@ namespace controls::sortlistctrl
 		break;
 		case 1:
 		{
-			ULONG ulValues = NULL;
 			LPSPropValue lpSourceProp = nullptr;
-			hRes = EC_MAPI(lpSourcePropObj->GetProps(&TagArray, fMapiUnicode, &ulValues, &lpSourceProp));
-			if (SUCCEEDED(hRes) && ulValues && lpSourceProp && PT_ERROR != lpSourceProp->ulPropTag)
+			hRes = EC_MAPI(mapi::HrGetOnePropEx(lpSourcePropObj, ulSourceTag, fMapiUnicode, &lpSourceProp));
+			if (SUCCEEDED(hRes))
 			{
-				lpSourceProp->ulPropTag = ulTargetTag;
-				hRes = EC_H(lpPropBag->SetProps(ulValues, lpSourceProp));
+				if (lpSourceProp)
+				{
+					lpSourceProp->ulPropTag = ulTargetTag;
+					hRes = EC_H(lpPropBag->SetProps(1, lpSourceProp));
+				}
+				else
+				{
+					hRes = EC_H(MAPI_E_CALL_FAILED);
+				}
 			}
+			MAPIFreeBuffer(lpSourceProp);
 		}
 		break;
 		case 2:
@@ -1274,8 +1282,6 @@ namespace controls::sortlistctrl
 				RefreshMAPIPropList();
 			}
 		}
-
-		lpSourcePropObj->Release();
 	}
 
 	void CSingleMAPIPropListCtrl::OnCopyTo()

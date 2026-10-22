@@ -68,6 +68,9 @@
     <ClCompile Include="tests\flagtest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="tests\globalcachetest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="tests\filetest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

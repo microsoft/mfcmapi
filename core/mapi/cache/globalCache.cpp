@@ -111,6 +111,8 @@ namespace cache
 		EmptyBuffer();
 		m_propToCopy = prop;
 		m_sourcePropBag = propBag;
+		m_lpSourcePropObject = m_sourcePropBag ? m_sourcePropBag->GetMAPIProp() : nullptr;
+		if (m_lpSourcePropObject) m_lpSourcePropObject->AddRef();
 		clipboard::CopyTo(m_propToCopy->ToString());
 	}
 

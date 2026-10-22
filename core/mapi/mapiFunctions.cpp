@@ -2891,6 +2891,8 @@ namespace mapi
 
 	bool IsABObject(ULONG ulProps, LPSPropValue lpProps) noexcept
 	{
+		if (!ulProps || !lpProps) return false;
+
 		const auto lpObjectType = PpropFindProp(lpProps, ulProps, PR_OBJECT_TYPE);
 
 		if (lpObjectType && PR_OBJECT_TYPE == lpObjectType->ulPropTag)
