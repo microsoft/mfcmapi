@@ -3,12 +3,14 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/ContentsTable/AttachmentsDlg.h>
 #include <UI/Controls/SortList/ContentsTableListCtrl.h>
+#include <UI/Controls/SortList/SingleMAPIPropListCtrl.h>
 #include <UI/file/FileDialogEx.h>
 #include <core/mapi/cache/mapiObjects.h>
 #include <core/mapi/columnTags.h>
 #include <core/mapi/mapiProgress.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <core/sortlistdata/contentsData.h>
+#include <core/propertyBag/propertyBag.h>
 #include <core/mapi/cache/globalCache.h>
 #include <UI/mapiui.h>
 #include <UI/addinui.h>
@@ -157,6 +159,17 @@ namespace dialog
 	_Check_return_ LPMESSAGE CAttachmentsDlg::OpenEmbeddedMessage(LPATTACH lpAttach) const
 	{
 		if (!lpAttach) return nullptr;
+
+		// MSG storage cannot reopen an embedded message while the property pane holds it.
+		if (m_bDisplayAttachAsEmbeddedMessage && lpAttach == m_lpAttach && m_lpPropDisplay)
+		{
+			const auto propBag = m_lpPropDisplay->GetDataSource();
+			if (propBag)
+			{
+				const auto message = mapi::safe_cast<LPMESSAGE>(propBag->GetMAPIProp());
+				if (message) return message;
+			}
+		}
 
 		LPMESSAGE lpMessage = nullptr;
 		auto hRes = WC_MAPI(lpAttach->OpenProperty(
