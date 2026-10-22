@@ -38,6 +38,9 @@
     <ClCompile Include="tests\mapioutputtest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="tests\mapiproptest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="tests\sidtest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

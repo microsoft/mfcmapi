@@ -1089,7 +1089,24 @@ namespace mapi
 
 		if (!lpMAPIProp) return MAPI_E_INVALID_PARAMETER;
 
-		if (PROP_TYPE(ulPropTag) == PT_ERROR) ulPropTag = CHANGE_PROP_TYPE(ulPropTag, PT_UNSPECIFIED);
+		if (PROP_TYPE(ulPropTag) == PT_ERROR)
+		{
+			ulPropTag = CHANGE_PROP_TYPE(ulPropTag, PT_UNSPECIFIED);
+			LPSPropTagArray lpTags = nullptr;
+			const auto hRes = WC_MAPI(lpMAPIProp->GetPropList(0, &lpTags));
+			ULONG ulRow{};
+			if (SUCCEEDED(hRes) && FindPropInPropTagArray(lpTags, ulPropTag, &ulRow))
+			{
+				const auto ulStoredTag = getTag(lpTags, ulRow);
+				if (PROP_TYPE(ulStoredTag) != PT_ERROR && PROP_TYPE(ulStoredTag) != PT_UNSPECIFIED)
+				{
+					// Some providers accept PT_UNSPECIFIED without deleting the property.
+					ulPropTag = ulStoredTag;
+				}
+			}
+
+			MAPIFreeBuffer(lpTags);
+		}
 
 		output::DebugPrint(
 			output::dbgLevel::Generic,
