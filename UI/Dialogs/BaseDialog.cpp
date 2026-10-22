@@ -31,6 +31,44 @@ namespace dialog
 {
 	static std::wstring CLASS = L"CBaseDialog";
 
+	static void UpdateLegacyMenu(_In_ HMENU hMenu)
+	{
+		constexpr struct
+		{
+			UINT command;
+			UINT before;
+			UINT resource;
+		} items[] = {
+			{ID_CONVERTMSGTOEML, ID_CONVERTMSGTOXML, IDR_MENU_MAIN},
+			{ID_CONVERTEMLTOMSG, ID_CONVERTMSGTOXML, IDR_MENU_MAIN},
+			{ID_LOADFROMEML, ID_LOADFROMMSG, IDR_MENU_FOLDER}};
+
+		for (const auto& item : items)
+		{
+			if (!registry::enableLegacyFeatures)
+			{
+				ui::DeleteMenu(hMenu, item.command);
+				continue;
+			}
+
+			if (ui::LocateSubmenu(hMenu, item.command)) continue;
+			const auto hSubMenu = ui::LocateSubmenu(hMenu, item.before);
+			if (!hSubMenu) continue;
+
+			const auto hTemplate = EC_D(HMENU, ::LoadMenuW(nullptr, MAKEINTRESOURCEW(item.resource)));
+			if (!hTemplate) continue;
+
+			wchar_t text[128]{};
+			if (EC_D(int, GetMenuStringW(hTemplate, item.command, text, _countof(text), MF_BYCOMMAND)) &&
+				SUCCEEDED(EC_B(InsertMenuW(hSubMenu, item.before, MF_BYCOMMAND | MF_STRING, item.command, text))))
+			{
+				ui::ConvertMenuOwnerDraw(hSubMenu, false);
+			}
+
+			EC_B_S(DestroyMenu(hTemplate));
+		}
+	}
+
 	CBaseDialog::CBaseDialog(
 		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects, // Pass NULL to create a new m_lpMapiObjects,
 		const ULONG ulAddInContext)
@@ -106,6 +144,10 @@ namespace dialog
 	{
 		switch (message)
 		{
+		case WM_INITMENU:
+			// Restore optional commands before derived dialogs update their enabled state.
+			UpdateLegacyMenu(reinterpret_cast<HMENU>(wParam));
+			break;
 		case WM_COMMAND:
 		{
 			const auto idFrom = LOWORD(wParam);
@@ -194,6 +236,7 @@ namespace dialog
 		SetMenuInfo(hMenu, &mi);
 
 		ui::ConvertMenuOwnerDraw(hMenu, true);
+		UpdateLegacyMenu(hMenu);
 
 		// We're done - force our new menu on screen
 		DrawMenuBar();
