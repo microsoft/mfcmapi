@@ -1,7 +1,9 @@
 #include <UnitTest/stdafx.h>
 #include <UnitTest/UnitTest.h>
 #include <core/mapi/cache/globalCache.h>
+#include <core/mapi/mapiFunctions.h>
 #include <core/propertyBag/rowPropertyBag.h>
+#include <mapistub/library/stubutils.h>
 #include <memory>
 
 namespace globalcachetest
@@ -115,8 +117,45 @@ namespace globalcachetest
 		static const bool dummy_var = true;
 
 		TEST_CLASS_INITIALIZE(initialize) { unittest::init(); }
-		TEST_METHOD_INITIALIZE(reset) { cache::CGlobalCache::getInstance().SetABEntriesToCopy(nullptr); }
-		TEST_METHOD_CLEANUP(cleanup) { cache::CGlobalCache::getInstance().SetABEntriesToCopy(nullptr); }
+		TEST_METHOD_INITIALIZE(reset)
+		{
+			m_mapiRequests = 0;
+			m_originalMapiLog = std::move(mapistub::logLoadMapiCallback);
+			mapistub::logLoadMapiCallback = [this](LPCWSTR message, va_list args) {
+				++m_mapiRequests;
+				if (m_originalMapiLog) m_originalMapiLog(message, args);
+			};
+			// Invalidate cached imports so earlier tests cannot mask an unintended MAPI lookup.
+			InterlockedIncrement(reinterpret_cast<volatile LONG*>(&mapistub::g_ulDllSequenceNum));
+			cache::CGlobalCache::getInstance().SetABEntriesToCopy(nullptr);
+		}
+
+		TEST_METHOD_CLEANUP(cleanup)
+		{
+			cache::CGlobalCache::getInstance().SetABEntriesToCopy(nullptr);
+			mapistub::logLoadMapiCallback = std::move(m_originalMapiLog);
+			Assert::AreEqual<ULONG>(0, m_mapiRequests, L"Empty-row cache operations must not resolve MAPI imports.");
+		}
+
+		TEST_METHOD(EmptyPropertyArrayDoesNotResolveMAPI) { Assert::IsFalse(mapi::IsABObject(0, nullptr)); }
+
+		TEST_METHOD(ZeroPropertyCountDoesNotResolveMAPI)
+		{
+			SPropValue prop{};
+			prop.ulPropTag = PR_OBJECT_TYPE;
+			prop.Value.l = MAPI_MAILUSER;
+			Assert::IsFalse(mapi::IsABObject(0, &prop));
+		}
+
+		TEST_METHOD(NullPropertyArrayDoesNotResolveMAPI) { Assert::IsFalse(mapi::IsABObject(1, nullptr)); }
+
+		TEST_METHOD(EmptyRowsPreserveAddressBookHint)
+		{
+			propertybag::rowPropertyBag row(nullptr, false);
+			propertybag::rowPropertyBag abRow(nullptr, true);
+			Assert::IsFalse(row.IsAB());
+			Assert::IsTrue(abRow.IsAB());
+		}
 
 		TEST_METHOD(PropertyCopyExposesSourceObject)
 		{
@@ -251,5 +290,9 @@ namespace globalcachetest
 			Assert::AreEqual<ULONG>(BUFFER_PROPTAG | BUFFER_SOURCEPROPOBJ, cache.GetBufferStatus());
 			Assert::IsTrue(cache.GetAttachmentsToCopy().empty());
 		}
+
+	private:
+		ULONG m_mapiRequests{};
+		std::function<void(LPCWSTR, va_list)> m_originalMapiLog;
 	};
 } // namespace globalcachetest
