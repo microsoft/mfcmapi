@@ -31,6 +31,7 @@ namespace stringtest
 			// A resource which does exist
 			Assert::AreEqual(std::wstring(L"Flags: "), strings::loadstring(IDS_FLAGS_PREFIX));
 			Assert::AreEqual(std::wstring(L"hh':'mm':'ss'.%1!03d!' tt"), strings::loadstring(IDS_FILETIMEFORMAT));
+			Assert::AreEqual(std::wstring(L"HH':'mm':'ss'.%1!03d!'"), strings::loadstring(IDS_FILETIMEFORMAT24));
 		}
 
 		TEST_METHOD(Test_format)
@@ -557,6 +558,82 @@ namespace stringtest
 			strings::FileTimeToString(FILETIME{0xFFFFFFFF, 0xFFFFFFFF}, prop, alt);
 			Assert::AreEqual(std::wstring(L"Invalid systime"), prop);
 			Assert::AreEqual(std::wstring(L"Low: 0xFFFFFFFF High: 0xFFFFFFFF"), alt);
+		}
+
+		TEST_METHOD(Test_FileTimeToString_NoonAndMidnightWithoutTimeMarkers)
+		{
+			for (const auto localeName : {L"sv-SE", L"de-DE", L"fr-FR", L"ru-RU"})
+			{
+				const auto locale = LocaleNameToLCID(localeName, 0);
+				Assert::IsTrue(locale != 0);
+				SYSTEMTIME date{1601, 1, 0, 1, 0, 0, 0, 0};
+				wchar_t formattedDate[MAX_PATH]{};
+				Assert::IsTrue(GetDateFormatW(locale, 0, &date, nullptr, formattedDate, MAX_PATH) != 0);
+				std::wstring midnight;
+				std::wstring noon;
+				std::wstring alt;
+				strings::FileTimeToString(FILETIME{0, 0}, midnight, alt, locale);
+				Assert::AreEqual(std::wstring(L"00:00:00.000 ") + formattedDate, midnight);
+				Assert::AreEqual(std::wstring(L"Low: 0x00000000 High: 0x00000000"), alt);
+				strings::FileTimeToString(FILETIME{0x9534E000, 0x64}, noon, alt, locale);
+				Assert::AreEqual(std::wstring(L"12:00:00.000 ") + formattedDate, noon);
+				Assert::AreEqual(std::wstring(L"Low: 0x9534E000 High: 0x00000064"), alt);
+				Assert::AreNotEqual(midnight, noon);
+			}
+		}
+
+		TEST_METHOD(Test_FileTimeToString_PreservesUSTimeMarkers)
+		{
+			const auto locale = LocaleNameToLCID(L"en-US", 0);
+			Assert::IsTrue(locale != 0);
+			std::wstring prop;
+			std::wstring alt;
+			strings::FileTimeToString(FILETIME{0, 0}, prop, alt, locale);
+			Assert::AreEqual(std::wstring(L"12:00:00.000 AM 1/1/1601"), prop);
+			strings::FileTimeToString(FILETIME{0x9534E000, 0x64}, prop, alt, locale);
+			Assert::AreEqual(std::wstring(L"12:00:00.000 PM 1/1/1601"), prop);
+		}
+
+		TEST_METHOD(Test_FileTimeToString_PreservesMillisecondsIn24HourOutput)
+		{
+			for (const auto localeName : {L"sv-SE", L"de-DE", L"fr-FR", L"ru-RU"})
+			{
+				const auto locale = LocaleNameToLCID(localeName, 0);
+				Assert::IsTrue(locale != 0);
+				for (const WORD hour : {WORD{0}, WORD{1}, WORD{11}, WORD{12}, WORD{13}, WORD{23}})
+				{
+					SYSTEMTIME time{1601, 1, 0, 1, hour, 34, 56, 123};
+					FILETIME fileTime{};
+					Assert::IsTrue(SystemTimeToFileTime(&time, &fileTime) != 0);
+					std::wstring prop;
+					std::wstring alt;
+					strings::FileTimeToString(fileTime, prop, alt, locale);
+					Assert::IsTrue(
+						strings::beginsWith(prop, strings::format(L"%02u:34:56.123 ", static_cast<unsigned>(hour))));
+				}
+			}
+		}
+
+		TEST_METHOD(Test_FileTimeToString_DefaultLocaleIsUnchanged)
+		{
+			std::wstring implicit;
+			std::wstring explicitLocale;
+			std::wstring implicitAlt;
+			std::wstring explicitAlt;
+			strings::FileTimeToString(FILETIME{0x085535B0, 0x01D387EC}, implicit, implicitAlt);
+			strings::FileTimeToString(
+				FILETIME{0x085535B0, 0x01D387EC}, explicitLocale, explicitAlt, LOCALE_USER_DEFAULT);
+			Assert::AreEqual(implicit, explicitLocale);
+			Assert::AreEqual(implicitAlt, explicitAlt);
+		}
+
+		TEST_METHOD(Test_FileTimeToString_InvalidLocaleDoesNotProduceBlankSuccess)
+		{
+			std::wstring prop;
+			std::wstring alt;
+			strings::FileTimeToString(FILETIME{0, 0}, prop, alt, 0xFFFFFFFF);
+			Assert::AreEqual(std::wstring(L"Invalid systime"), prop);
+			Assert::AreEqual(std::wstring(L"Low: 0x00000000 High: 0x00000000"), alt);
 		}
 
 		TEST_METHOD(Test_loadfile)

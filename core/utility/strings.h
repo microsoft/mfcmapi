@@ -82,7 +82,8 @@ namespace strings
 	void FileTimeToString(
 		_In_ const FILETIME& fileTime,
 		_In_ std::wstring& PropString,
-		_In_opt_ std::wstring& AltPropString);
+		_In_opt_ std::wstring& AltPropString,
+		LCID locale = LOCALE_USER_DEFAULT);
 
 	bool IsFilteredHex(const WCHAR& chr);
 	size_t OffsetToFilteredOffset(const std::wstring& szString, size_t offset);
