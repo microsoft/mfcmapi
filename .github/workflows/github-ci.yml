@@ -71,9 +71,25 @@ jobs:
       run: |
         $results = Join-Path $env:GITHUB_WORKSPACE 'TestResults'
         New-Item -ItemType Directory -Path $results -Force | Out-Null
+        $settings = Join-Path $results 'hang-diagnostics.runsettings'
+        @'
+        <RunSettings>
+          <DataCollectionRunSettings>
+            <DataCollectors>
+              <DataCollector friendlyName="Code Coverage">
+                <Configuration>
+                  <CodeCoverage>
+                    <EnableStaticNativeInstrumentationRestore>False</EnableStaticNativeInstrumentationRestore>
+                  </CodeCoverage>
+                </Configuration>
+              </DataCollector>
+            </DataCollectors>
+          </DataCollectionRunSettings>
+        </RunSettings>
+        '@ | Set-Content -LiteralPath $settings -Encoding utf8
         $assembly = Join-Path $env:GITHUB_WORKSPACE 'bin\${{matrix.platform}}\UnitTest\${{matrix.configuration}}\UnitTest.dll'
         & $env:VSDevTestCmd /Parallel /EnableCodeCoverage /Logger:trx `
-          "/ResultsDirectory:$results" "/Diag:$results\vstest.log" `
+          "/Settings:$settings" "/ResultsDirectory:$results" "/Diag:$results\vstest.log" `
           '/Blame:CollectHangDump;TestTimeout=2min;HangDumpType=mini' $assembly
         exit $LASTEXITCODE
 
