@@ -32,6 +32,19 @@ namespace unittest
 
 	void init();
 
+	class testMapiMemory
+	{
+	public:
+		testMapiMemory();
+		~testMapiMemory();
+		testMapiMemory(const testMapiMemory&) = delete;
+		testMapiMemory& operator=(const testMapiMemory&) = delete;
+
+	private:
+		HMODULE m_originalMAPI{};
+		ULONG m_debugTag{};
+	};
+
 	void AreEqualEx(
 		const std::wstring& expected,
 		const std::wstring& actual,
