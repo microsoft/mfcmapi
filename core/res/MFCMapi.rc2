@@ -1459,6 +1459,7 @@ lpActions->cActions = 0x%3!08X!\r\n"
 IDS_ACTIONSACTION "lpActions->lpAction[0x%1!08X!]:\r\n"
 
 IDS_FILETIMEFORMAT "hh':'mm':'ss'.%1!03d!' tt"
+IDS_FILETIMEFORMAT24 "HH':'mm':'ss'.%1!03d!'"
 IDS_INVALIDSYSTIME "Invalid systime"
 IDS_FILETIMEALTFORMAT "Low: 0x%1!08X! High: 0x%2!08X!"
 

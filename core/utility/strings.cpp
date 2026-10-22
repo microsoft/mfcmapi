@@ -1,6 +1,7 @@
 #include <core/stdafx.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
+#include <core/utility/error.h>
 #include <core/interpret/guid.h>
 
 namespace strings
@@ -736,8 +737,11 @@ namespace strings
 		return szCur;
 	}
 
-	void
-	FileTimeToString(_In_ const FILETIME& fileTime, _In_ std::wstring& PropString, _In_opt_ std::wstring& AltPropString)
+	void FileTimeToString(
+		_In_ const FILETIME& fileTime,
+		_In_ std::wstring& PropString,
+		_In_opt_ std::wstring& AltPropString,
+		LCID locale)
 	{
 		PropString = std::wstring{};
 		AltPropString = std::wstring{};
@@ -747,14 +751,24 @@ namespace strings
 		{
 			wchar_t szTimeStr[MAX_PATH] = {};
 			wchar_t szDateStr[MAX_PATH] = {};
+			wchar_t szAM[MAX_PATH] = {};
+			wchar_t szPM[MAX_PATH] = {};
+			const auto amResult = WC_B(GetLocaleInfoW(locale, LOCALE_S1159, szAM, MAX_PATH));
+			const auto pmResult = WC_B(GetLocaleInfoW(locale, LOCALE_S2359, szPM, MAX_PATH));
+			const auto am = trimWhitespace(szAM);
+			const auto pm = trimWhitespace(szPM);
+			const auto hasTimeMarkers =
+				SUCCEEDED(amResult) && SUCCEEDED(pmResult) && !am.empty() && !pm.empty() && !compareInsensitive(am, pm);
 
 			// shove millisecond info into our format string since GetTimeFormat doesn't use it
-			auto szFormatStr = formatmessage(IDS_FILETIMEFORMAT, SysTime.wMilliseconds);
+			const auto szFormatStr =
+				formatmessage(hasTimeMarkers ? IDS_FILETIMEFORMAT : IDS_FILETIMEFORMAT24, SysTime.wMilliseconds);
 
-			GetTimeFormatW(LOCALE_USER_DEFAULT, NULL, &SysTime, szFormatStr.c_str(), szTimeStr, MAX_PATH);
-			GetDateFormatW(LOCALE_USER_DEFAULT, NULL, &SysTime, nullptr, szDateStr, MAX_PATH);
-
-			PropString = format(L"%ws %ws", szTimeStr, szDateStr); // STRING_OK
+			if (SUCCEEDED(WC_B(GetTimeFormatW(locale, 0, &SysTime, szFormatStr.c_str(), szTimeStr, MAX_PATH))) &&
+				SUCCEEDED(WC_B(GetDateFormatW(locale, 0, &SysTime, nullptr, szDateStr, MAX_PATH))))
+			{
+				PropString = format(L"%ws %ws", szTimeStr, szDateStr); // STRING_OK
+			}
 		}
 
 		if (PropString.empty())
