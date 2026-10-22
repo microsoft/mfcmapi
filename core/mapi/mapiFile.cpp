@@ -29,29 +29,27 @@ namespace file
 		auto hRes = WC_H(::StgOpenStorage(szMessageFile.c_str(), nullptr, ulFlags, nullptr, 0, lppStorage));
 
 		// If we asked for best access (read/write) and didn't get it, then try it without readwrite
-		if (hRes == STG_E_ACCESSDENIED && !*lppStorage && bBestAccess)
+		if ((hRes == STG_E_ACCESSDENIED || hRes == STG_E_SHAREVIOLATION) && !*lppStorage && bBestAccess)
 		{
-			hRes = EC_H(MyStgOpenStorage(szMessageFile, false, lppStorage));
+			hRes = MyStgOpenStorage(szMessageFile, false, lppStorage);
 		}
 
 		return hRes;
 	}
 
 	// Creates an LPMESSAGE on top of the MSG file
-	_Check_return_ LPMESSAGE LoadMSGToMessage(_In_ const std::wstring& szMessageFile)
+	_Check_return_ LPMESSAGE LoadMSGToMessage(_In_ const std::wstring& szMessageFile, _Out_opt_ HRESULT* lpResult)
 	{
 		LPMESSAGE lpMessage = nullptr;
-		// get memory allocation function
-		const auto lpMalloc = MAPIGetDefaultMalloc();
-		if (lpMalloc)
+		LPSTORAGE pStorage = nullptr;
+		auto hRes = EC_H(MyStgOpenStorage(szMessageFile, true, &pStorage));
+		if (pStorage)
 		{
-			LPSTORAGE pStorage = nullptr;
-			// Open the compound file
-			EC_H_S(MyStgOpenStorage(szMessageFile, true, &pStorage));
-			if (pStorage)
+			const auto lpMalloc = MAPIGetDefaultMalloc();
+			if (lpMalloc)
 			{
 				// Open an IMessage interface on an IStorage object
-				EC_MAPI_S(OpenIMsgOnIStg(
+				hRes = EC_MAPI(OpenIMsgOnIStg(
 					nullptr,
 					MAPIAllocateBuffer,
 					MAPIAllocateMore,
@@ -63,11 +61,16 @@ namespace file
 					0,
 					0,
 					&lpMessage));
-
-				pStorage->Release();
 			}
+			else
+			{
+				hRes = EC_H(MAPI_E_CALL_FAILED);
+			}
+
+			pStorage->Release();
 		}
 
+		if (lpResult) *lpResult = hRes;
 		return lpMessage;
 	}
 
@@ -101,7 +104,7 @@ namespace file
 			 PR_HAS_DAMS}};
 
 		auto hRes = S_OK;
-		auto pIMsg = LoadMSGToMessage(szMessageFile);
+		auto pIMsg = LoadMSGToMessage(szMessageFile, &hRes);
 		if (pIMsg)
 		{
 			LPSPropProblemArray lpProblems = nullptr;

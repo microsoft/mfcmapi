@@ -258,6 +258,11 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Unicode|ARM64EC'">
   </PropertyGroup>
+  <ItemDefinitionGroup>
+    <Link>
+      <AdditionalDependencies>ole32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
@@ -797,6 +802,7 @@
     <ClCompile Include="tests\clitest.cpp" />
     <ClCompile Include="tests\guidtest.cpp" />
     <ClCompile Include="tests\mapiabtest.cpp" />
+    <ClCompile Include="tests\mapifiletest.cpp" />
     <ClCompile Include="tests\mapioutputtest.cpp" />
     <ClCompile Include="tests\mapiproptest.cpp" />
     <ClCompile Include="tests\namedproptest.cpp" />
