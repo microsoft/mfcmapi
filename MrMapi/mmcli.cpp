@@ -7,6 +7,7 @@
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 #include <core/interpret/proptype.h>
+#include <core/interpret/proptags.h>
 
 namespace error
 {
@@ -74,6 +75,8 @@ namespace cli
 	option switchFindProperty{L"FindProperty", cmdmodeContents, 1, USHRT_MAX, OPT_INITALL};
 	option switchFindNamedProperty{L"FindNamedProperty", cmdmodeContents, 1, USHRT_MAX, OPT_INITALL};
 	option switchRecurse{L"Recurse", cmdmodeContents, 0, 0, OPT_NOOPT};
+	// Share Store's parse mode so either switch order works; validation selects the final mode.
+	option switchEntryID{L"EntryID", cmdmodeStoreProperties, 1, 1, OPT_INITALL};
 
 	// If we want to add aliases for any switches, add them here
 	option switchHelpAlias{L"Help", cmdmodeHelpFull, 0, 0, OPT_INITMFC};
@@ -137,6 +140,7 @@ namespace cli
 		&switchFindProperty,
 		&switchFindNamedProperty,
 		&switchRecurse,
+		&switchEntryID,
 		// If we want to add aliases for any switches, add them here
 		&switchHelpAlias,
 	};
@@ -167,6 +171,7 @@ namespace cli
 		}
 
 		wprintf(L"Usage:\n");
+		wprintf(L"   MrMAPI -EntryID <hex> -Profile <name> -Store <index> <property name|8-digit hex tag>\n");
 		wprintf(L"   MrMAPI -%ws\n", switchHelp.name());
 		wprintf(
 			L"   MrMAPI [-%ws] [-%ws] [-%ws] [-%ws <type>] <property number>|<property name>\n",
@@ -296,6 +301,15 @@ namespace cli
 
 		if (bFull)
 		{
+			wprintf(L"\n   Message by EntryID:\n");
+			wprintf(L"   -EntryID opens one message read-only in the explicitly selected profile and store.\n");
+			wprintf(L"           Hex must be contiguous pairs (1-8192 bytes), without 0x, spaces or separators.\n");
+			wprintf(L"           -Profile <name> and -Store <zero-based decimal index> are required; no defaults.\n");
+			wprintf(L"           Specify one known property name or full typed hex tag (optional 0x prefix).\n");
+			wprintf(L"           Output is MrMAPI property XML on stdout, not a bare value. No file is written.\n");
+			wprintf(L"           Only -NoAddins, -Verbose, -Online and -Version are also accepted.\n");
+			wprintf(L"           Exit codes: 0 success/help, 2 invalid input, 1 MAPI/property failure.\n");
+			wprintf(L"           Example: MrMAPI -EntryID 00000000... -Profile \"Test\" -Store 0 PR_SUBJECT_W\n");
 			wprintf(L"\n");
 			wprintf(L"All switches may be shortened if the intended switch is unambiguous.\n");
 			wprintf(L"For example, -T may be used instead of -%ws.\n", switchType.name());
@@ -330,6 +344,9 @@ namespace cli
 				L"   -P   (or -%ws) Parser type (number). See list below for supported parsers.\n",
 				switchParser.name());
 			wprintf(L"   -B   (or -%ws) Input file is binary. Default is hex encoded text.\n", switchBinary.name());
+			wprintf(L"           Empty input is parsed as an empty blob.\n");
+			wprintf(L"           Input failures return a nonzero exit code without replacing output.\n");
+			wprintf(L"           Input and output must identify different files.\n");
 			wprintf(L"\n");
 			wprintf(L"   Rules Table:\n");
 			wprintf(L"   -R   (or -%ws) Output rules table. Profile optional.\n", switchRule.name());
@@ -558,6 +575,39 @@ namespace cli
 
 	void PostParseCheck(OPTIONS& options)
 	{
+		if (switchEntryID.isSet() && options.mode != cmdmodeHelpFull)
+		{
+			const auto& hex = switchEntryID[0];
+			const auto& store = switchStore[0];
+			auto property = switchUnswitched[0];
+			if (property.size() > 2 && (property.substr(0, 2) == L"0x" || property.substr(0, 2) == L"0X"))
+				property.erase(0, 2);
+			const auto isHex = [](const std::wstring& value) {
+				return !value.empty() && value.find_first_not_of(L"0123456789abcdefABCDEF") == std::wstring::npos;
+			};
+			const auto tag = proptags::PropNameToPropTag(switchUnswitched[0]);
+			auto valid =
+				options.mode == cmdmodeStoreProperties && !switchProfile[0].empty() && switchStore.isSet() &&
+				!store.empty() && store.find_first_not_of(L"0123456789") == std::wstring::npos &&
+				switchStore.hasULONG(0, 10) && switchStore.atULONG(0, 10) <= LONG_MAX && hex.size() <= 16384 &&
+				hex.size() % 2 == 0 && isHex(hex) &&
+				((property.size() == 8 && isHex(property)) || proptags::LookupPropName(switchUnswitched[0]) != 0) &&
+				PROP_ID(tag) != 0 && PROP_TYPE(tag) != PT_UNSPECIFIED && PROP_TYPE(tag) != PT_ERROR &&
+				PROP_TYPE(tag) != PT_OBJECT;
+			for (const auto option : g_options)
+			{
+				if (option->isSet() && option != &switchEntryID && option != &switchStore && option != &switchProfile &&
+					option != &switchNoAddins && option != &switchVerbose && option != &switchOnline &&
+					option != &switchVersion)
+					valid = false;
+			}
+
+			options.mode = valid ? cmdmodeEntryID : cmdmodeHelp;
+			if (!valid)
+				wprintf(L"Invalid -EntryID request: supply hex, an explicit profile/store, and one typed property.\n");
+			return;
+		}
+
 		// Having processed the command line, we may not have determined a mode.
 		// Some modes can be presumed by the switches we did see.
 

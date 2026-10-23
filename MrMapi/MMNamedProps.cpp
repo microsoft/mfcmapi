@@ -28,24 +28,6 @@ void WriteOutput(_In_opt_ FILE* fOut, _Printf_format_string_ LPCWSTR szMsg, Argu
 	}
 }
 
-void PrintGuid(FILE* fOut, const GUID& lpGuid)
-{
-	WriteOutput(
-		fOut,
-		L"%.8lX-%.4X-%.4X-%.2X%.2X-%.2X%.2X%.2X%.2X%.2X%.2X",
-		lpGuid.Data1,
-		lpGuid.Data2,
-		lpGuid.Data3,
-		lpGuid.Data4[0],
-		lpGuid.Data4[1],
-		lpGuid.Data4[2],
-		lpGuid.Data4[3],
-		lpGuid.Data4[4],
-		lpGuid.Data4[5],
-		lpGuid.Data4[6],
-		lpGuid.Data4[7]);
-}
-
 /// <summary>
 /// Hash implementation for GUIDs so they can be stored in std::unordered_list
 /// </summary>
@@ -256,19 +238,11 @@ void DoNamedProps(_In_opt_ LPMAPISESSION lpSession, _In_opt_ LPMDB lpMDB)
 
 	for (const auto& name : names)
 	{
-		WriteOutput(fOut, L"[%08X] (", PROP_TAG(PT_UNSPECIFIED, name->getPropID()));
-		const auto nameId = name->getMapiNameId();
-		PrintGuid(fOut, *nameId->lpguid);
-		switch (nameId->ulKind)
-		{
-		case MNID_ID:
-			WriteOutput(fOut, L":0x%04X)\n", nameId->Kind.lID);
-			break;
-
-		case MNID_STRING:
-			WriteOutput(fOut, L":%ws)\n", nameId->Kind.lpwstrName);
-			break;
-		}
+		WriteOutput(
+			fOut,
+			L"[%08X] (%ws)\n",
+			PROP_TAG(PT_UNSPECIFIED, name->getPropID()),
+			cache::NamedPropertyToString(*name->getMapiNameId()).c_str());
 	}
 
 	wprintf(L"Completed.\n");

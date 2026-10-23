@@ -5,6 +5,7 @@
 #include <MrMapi/MMAcls.h>
 #include <MrMapi/MMContents.h>
 #include <MrMapi/MMErr.h>
+#include <MrMapi/MMEntryID.h>
 #include <MrMapi/MMFidMid.h>
 #include <MrMapi/MMFolder.h>
 #include <MrMapi/MMNamedProps.h>
@@ -179,8 +180,18 @@ int wmain(_In_ int argc, _In_count_(argc) wchar_t* argv[])
 
 	auto ProgOpts = cli::OPTIONS{};
 	auto cl = cli::GetCommandLine(argc, argv);
+	bool entryIDRequested{};
+	for (const auto& arg : cl)
+	{
+		if (cli::GetOption(arg, cli::g_options) == &cli::switchEntryID) entryIDRequested = true;
+	}
 	cli::ParseArgs(ProgOpts, cl, cli::g_options);
 	PostParseCheck(ProgOpts);
+	if (entryIDRequested && ProgOpts.mode == cli::cmdmodeHelp)
+	{
+		wprintf(L"Invalid -EntryID command. Use -Help for syntax.\n");
+		return 2;
+	}
 
 	// Must be first after ParseArgs and PostParseCheck
 	if (ProgOpts.flags & cli::OPT_INITMFC)
@@ -260,7 +271,7 @@ int wmain(_In_ int argc, _In_count_(argc) wchar_t* argv[])
 
 		if (lpMAPISession && gotStoreIndex && !lpMDB)
 		{
-			lpMDB = OpenStore(lpMAPISession, ulStoreIndex);
+			lpMDB = OpenStore(lpMAPISession, ulStoreIndex, ProgOpts.mode == cli::cmdmodeEntryID);
 			if (!lpMDB) wprintf(L"OpenStore failed\n");
 		}
 
@@ -273,6 +284,10 @@ int wmain(_In_ int argc, _In_count_(argc) wchar_t* argv[])
 
 		switch (ProgOpts.mode)
 		{
+		case cli::cmdmodeEntryID:
+			hRes = DoEntryID(lpMDB);
+			if (FAILED(hRes)) wprintf(L"EntryID property lookup failed: 0x%08lx\n", hRes);
+			break;
 		case cli::cmdmodePropTag:
 			DoPropTags();
 			break;
@@ -280,7 +295,7 @@ int wmain(_In_ int argc, _In_count_(argc) wchar_t* argv[])
 			DoGUIDs();
 			break;
 		case cli::cmdmodeSmartView:
-			DoSmartView();
+			hRes = DoSmartView();
 			break;
 		case cli::cmdmodeAcls:
 			DoAcls(lpFolder);
@@ -358,5 +373,5 @@ int wmain(_In_ int argc, _In_count_(argc) wchar_t* argv[])
 		addin::UnloadAddIns();
 	}
 
-	return 0;
+	return (ProgOpts.mode == cli::cmdmodeEntryID || ProgOpts.mode == cli::cmdmodeSmartView) && FAILED(hRes) ? 1 : 0;
 }
