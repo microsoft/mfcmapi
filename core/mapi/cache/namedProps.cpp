@@ -443,6 +443,26 @@ namespace cache
 		return results;
 	}
 
+	std::wstring NamedPropertyToString(const MAPINAMEID& nameID)
+	{
+		if (!nameID.lpguid || (nameID.ulKind == MNID_STRING && !nameID.Kind.lpwstrName))
+		{
+			WC_H_S(MAPI_E_INVALID_PARAMETER);
+			return strings::format(
+				L"ulKind=0x%08X, invalid named property (missing GUID or string name)", nameID.ulKind);
+		}
+		auto text = strings::MAPINAMEIDToString(nameID);
+		if (text.empty())
+		{
+			WC_H_S(MAPI_E_INVALID_PARAMETER);
+			return strings::format(
+				L"ulKind=0x%08X (unknown), guid=%ws", nameID.ulKind, guid::GUIDToStringAndName(nameID.lpguid).c_str());
+		}
+		const auto names = NameIDToPropNames(&nameID);
+		if (!names.empty()) text += L", names=" + strings::join(names, L", ");
+		return text;
+	}
+
 	ULONG FindHighestNamedProp(_In_ const LPMAPIPROP lpMAPIProp)
 	{
 		output::DebugPrint(

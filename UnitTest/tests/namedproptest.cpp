@@ -227,5 +227,55 @@ namespace namedproptest
 			const auto badID = MAPINAMEID{const_cast<LPGUID>(&guid::PSETID_Common), 3, dispidFormStorage};
 			Assert::AreEqual(std::wstring(L""), strings::MAPINAMEIDToString(badID));
 		}
+
+		TEST_METHOD(NamedPropertyOutputIncludesRawIdentityAndAllKnownNames)
+		{
+			Assert::AreEqual(
+				std::wstring(L"ulKind=MNID_ID, lID=8540, guid={00062008-0000-0000-C000-000000000046} = "
+							 L"PSETID_Common, names=PidLidPropertyDefinitionStream, dispidPropDefStream"),
+				cache::NamedPropertyToString(propDefStream));
+		}
+
+		TEST_METHOD(NamedPropertyOutputPreservesStringIdentity)
+		{
+			Assert::AreEqual(
+				std::wstring(L"ulKind=MNID_STRING, lpwstrName='name', guid={00062008-0000-0000-C000-000000000046} = "
+							 L"PSETID_Common"),
+				cache::NamedPropertyToString(formStorageName));
+		}
+
+		TEST_METHOD(NamedPropertyOutputDoesNotMapUnknownGUIDsByIDAlone)
+		{
+			GUID unknown{0x12345678, 0x1234, 0x5678, {0x90, 0x12, 0x34, 0x56, 0x78, 0x90, 0xab, 0xcd}};
+			MAPINAMEID name{&unknown, MNID_ID, dispidPropDefStream};
+			const auto text = cache::NamedPropertyToString(name);
+			Assert::IsTrue(text.find(L"lID=8540") != std::wstring::npos);
+			Assert::IsTrue(text.find(L"{12345678-1234-5678-9012-34567890ABCD}") != std::wstring::npos);
+			Assert::IsTrue(text.find(L"names=") == std::wstring::npos);
+		}
+
+		TEST_METHOD(NamedPropertyOutputKeepsUnknownIDsAndKindsVisible)
+		{
+			MAPINAMEID name{const_cast<LPGUID>(&guid::PSETID_Common), MNID_ID, 0x12345678};
+			Assert::AreEqual(
+				std::wstring(
+					L"ulKind=MNID_ID, lID=12345678, guid={00062008-0000-0000-C000-000000000046} = PSETID_Common"),
+				cache::NamedPropertyToString(name));
+			name.ulKind = 3;
+			Assert::AreEqual(
+				std::wstring(
+					L"ulKind=0x00000003 (unknown), guid={00062008-0000-0000-C000-000000000046} = PSETID_Common"),
+				cache::NamedPropertyToString(name));
+		}
+
+		TEST_METHOD(NamedPropertyOutputReportsMissingIdentityFields)
+		{
+			auto name = formStorageID;
+			name.lpguid = nullptr;
+			Assert::IsTrue(cache::NamedPropertyToString(name).find(L"invalid named property") != std::wstring::npos);
+			name = formStorageName;
+			name.Kind.lpwstrName = nullptr;
+			Assert::IsTrue(cache::NamedPropertyToString(name).find(L"invalid named property") != std::wstring::npos);
+		}
 	};
 } // namespace namedproptest

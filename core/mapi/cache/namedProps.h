@@ -104,6 +104,7 @@ namespace cache
 		bool bIsAB); // true for an address book property (they can be > 8000 and not named props)
 
 	std::vector<std::wstring> NameIDToPropNames(_In_opt_ const MAPINAMEID* lpNameID);
+	std::wstring NamedPropertyToString(const MAPINAMEID& nameID);
 
 	ULONG FindHighestNamedProp(_In_ LPMAPIPROP lpMAPIProp);
 
