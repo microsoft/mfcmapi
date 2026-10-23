@@ -989,7 +989,6 @@
     <ClInclude Include="UI\DoubleBuffer.h" />
     <ClInclude Include="UI\Dialogs\ContentsTable\ContentsTableDlg.h" />
     <ClInclude Include="UI\Controls\SortList\ContentsTableListCtrl.h" />
-    <ClInclude Include="UI\Controls\SortList\TableQuery.h" />
     <ClInclude Include="UI\Dialogs\Editors\DbgView.h" />
     <ClInclude Include="UI\Dialogs\Dialog.h" />
     <ClInclude Include="UI\Dialogs\Editors\Editor.h" />

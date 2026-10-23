@@ -1,6 +1,5 @@
 #include <UnitTest/stdafx.h>
 #include <UnitTest/UnitTest.h>
-#include <UI/Controls/SortList/TableQuery.h>
 #include <core/mapi/mapiMemory.h>
 #include <core/mapi/mapiOutput.h>
 #include <core/mapi/mapiFunctions.h>
@@ -402,8 +401,7 @@ namespace mapioutputtest
 				table.expectedFlags = TBL_NOADVANCE;
 				table.columns = {0x81AF3003};
 				LPSRowSet rows = nullptr;
-				Assert::AreEqual(
-					S_OK, controls::sortlistctrl::QueryRowsWithDiagnostics(&table, requested, TBL_NOADVANCE, &rows));
+				Assert::AreEqual(S_OK, mapi::QueryRowsWithDiagnostics(&table, requested, TBL_NOADVANCE, &rows));
 				Assert::IsNotNull(rows);
 				Assert::AreEqual(1UL, rows->cRows);
 				Assert::AreEqual(numberTag, rows->aRow[0].lpProps[1].ulPropTag);
@@ -439,10 +437,8 @@ namespace mapioutputtest
 		{
 			auto table = TestTable(0, 20);
 			LPSRowSet rows = nullptr;
-			Assert::AreEqual(
-				MAPI_E_INVALID_PARAMETER, controls::sortlistctrl::QueryRowsWithDiagnostics(nullptr, 20, 0, &rows));
-			Assert::AreEqual(
-				MAPI_E_INVALID_PARAMETER, controls::sortlistctrl::QueryRowsWithDiagnostics(&table, 20, 0, nullptr));
+			Assert::AreEqual(MAPI_E_INVALID_PARAMETER, mapi::QueryRowsWithDiagnostics(nullptr, 20, 0, &rows));
+			Assert::AreEqual(MAPI_E_INVALID_PARAMETER, mapi::QueryRowsWithDiagnostics(&table, 20, 0, nullptr));
 			Assert::AreEqual(size_t{2}, m_errors.size());
 			Assert::AreEqual(0UL, table.queryCount);
 			Assert::AreEqual(0UL, table.queryColumnsCount);
@@ -603,8 +599,7 @@ namespace mapioutputtest
 		{
 			m_errors.clear();
 			LPSRowSet rows = nullptr;
-			const auto result =
-				controls::sortlistctrl::QueryRowsWithDiagnostics(&table, table.expectedRequested, 0, &rows);
+			const auto result = mapi::QueryRowsWithDiagnostics(&table, table.expectedRequested, 0, &rows);
 			Assert::AreEqual(table.queryResult, result);
 			if (expectedRows)
 			{
@@ -619,7 +614,6 @@ namespace mapioutputtest
 			FreeProws(rows);
 			Assert::AreEqual(size_t{1}, m_errors.size());
 			Assert::IsTrue(m_errors[0].find(L"QueryRows") != std::wstring::npos);
-			Assert::IsTrue(m_errors[0].find(L"TableQuery.h") != std::wstring::npos);
 			Assert::IsTrue(m_errors[0].find(error::ErrorNameFromErrorCode(result)) != std::wstring::npos);
 			Assert::AreEqual(expectGuidance, m_errors[0].find(L"MV_INSTANCE") != std::wstring::npos);
 			if (expectGuidance)
