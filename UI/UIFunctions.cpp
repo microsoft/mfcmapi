@@ -1241,11 +1241,15 @@ namespace ui
 			RemoveWindowSubclass(hWnd, DrawEditProc, uIdSubclass);
 			return DefSubclassProc(hWnd, uMsg, wParam, lParam);
 		case WM_MOUSEWHEEL:
-			if (dwRefData && !(GetWindowLongPtr(hWnd, GWL_STYLE) & ES_MULTILINE))
+		{
+			const auto parent = reinterpret_cast<HWND>(dwRefData);
+			if (parent && (!(GetWindowLongPtr(hWnd, GWL_STYLE) & ES_MULTILINE) ||
+						   (::GetFocus() != hWnd && (GetWindowLongPtr(parent, GWL_STYLE) & WS_VSCROLL))))
 			{
-				return ::SendMessage(reinterpret_cast<HWND>(dwRefData), uMsg, wParam, lParam);
+				return ::SendMessage(parent, uMsg, wParam, lParam);
 			}
 			break;
+		}
 		case WM_SETFOCUS:
 		case WM_KILLFOCUS:
 			// Trigger WM_NCPAINT so we can get an updated frame reflecting focus status
