@@ -58,6 +58,7 @@ namespace cli
 	extern option switchFindProperty;
 	extern option switchFindNamedProperty;
 	extern option switchRecurse;
+	extern option switchEntryID;
 
 	extern std::vector<option*> g_options;
 
@@ -84,6 +85,7 @@ namespace cli
 		cmdmodeSearchState,
 		cmdmodeNamedProps,
 		cmdmodeEnumAccounts,
+		cmdmodeEntryID,
 	};
 
 	enum OPTIONFLAGS
