@@ -7,7 +7,7 @@ namespace dialog::editor
 	enum class MailboxMethod
 	{
 		SMTP,
-		GAL,
+		AddressBook,
 		DN,
 		EntryID
 	};

@@ -15,17 +15,17 @@ namespace dialog::editor
 			  IDS_OPENOTHERUSER,
 			  IDS_OPENMAILBOXPROMPT,
 			  CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL | CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_ACTION2,
-			  IDS_MAILBOXSELECTGAL,
+			  IDS_MAILBOXSELECTADDRESSBOOK,
 			  IDS_MAILBOXADVANCED,
 			  0),
 		  m_session(session)
 	{
-		const UINT methods[] = {IDS_MAILBOXSMTP, IDS_MAILBOXGAL, IDS_MAILBOXDN, IDS_MAILBOXENTRYID};
+		const UINT methods[] = {IDS_MAILBOXSMTP, IDS_MAILBOXADDRESSBOOK, IDS_MAILBOXDN, IDS_MAILBOXENTRYID};
 		auto method = viewpane::DropDownPane::Create(0, IDS_MAILBOXMETHOD, _countof(methods), methods, true);
 		method->SetDropDownSelection(0);
 		AddPane(method);
 		AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_MAILBOXSMTP, false));
-		m_options[static_cast<size_t>(MailboxMethod::GAL)].flags =
+		m_options[static_cast<size_t>(MailboxMethod::AddressBook)].flags =
 			OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP;
 		m_options[static_cast<size_t>(MailboxMethod::DN)].flags =
 			OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP;
@@ -41,10 +41,10 @@ namespace dialog::editor
 
 	void CMailboxEditor::UpdateMethod()
 	{
-		const UINT labels[] = {IDS_MAILBOXSMTP, IDS_MAILBOXGALIDENTITY, IDS_USERDN, IDS_EID};
+		const UINT labels[] = {IDS_MAILBOXSMTP, IDS_MAILBOXADDRESSBOOKIDENTITY, IDS_USERDN, IDS_EID};
 		GetPane(1)->SetLabel(labels[static_cast<size_t>(m_method)]);
 		SetStringW(1, Options().identity);
-		GetDlgItem(IDD_EDITACTION1)->EnableWindow(m_method == MailboxMethod::GAL);
+		GetDlgItem(IDD_EDITACTION1)->EnableWindow(m_method == MailboxMethod::AddressBook);
 		GetDlgItem(IDD_EDITACTION2)->EnableWindow(m_method != MailboxMethod::SMTP);
 		OnRecalcLayout();
 	}
@@ -67,7 +67,7 @@ namespace dialog::editor
 
 	void CMailboxEditor::OnEditAction1()
 	{
-		if (m_method != MailboxMethod::GAL) return;
+		if (m_method != MailboxMethod::AddressBook) return;
 		LPADRBOOK addressBook{};
 		const auto openResult = EC_MAPI(
 			m_session->OpenAddressBook(reinterpret_cast<ULONG_PTR>(m_hWnd), nullptr, AB_NO_DIALOG, &addressBook));

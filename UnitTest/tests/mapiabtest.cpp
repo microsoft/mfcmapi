@@ -239,7 +239,7 @@ namespace mapiabtest
 		ULONG createCalls{};
 	};
 
-	class TestAddressBook final : public IAddrBook
+	class TestAddressBook final : public IAddrBook, public IABContainer, public IMAPITable
 	{
 	public:
 		HRESULT STDMETHODCALLTYPE QueryInterface(REFIID, void** object) override
@@ -305,15 +305,132 @@ namespace mapiabtest
 		OpenEntry(ULONG cbEntryID, LPENTRYID addressEntry, LPCIID iid, ULONG flags, ULONG* type, LPUNKNOWN* object)
 			override
 		{
-			++openCalls;
 			Assert::AreEqual(1UL, cbEntryID);
-			Assert::AreEqual(static_cast<BYTE>(42), *reinterpret_cast<LPBYTE>(addressEntry));
-			Assert::IsTrue(IsEqualIID(*iid, IID_IMAPIProp));
 			Assert::AreEqual(0UL, flags);
-			*type = resolvedObjectType;
-			*object = static_cast<IMAPIProp*>(this);
+			if (IsEqualIID(*iid, IID_IABContainer))
+			{
+				++containerOpenCalls;
+				const auto index = *reinterpret_cast<LPBYTE>(addressEntry);
+				Assert::IsTrue(index < searchContainers.size());
+				activeContainer = searchContainers[index];
+				*type = MAPI_ABCONT;
+				*object = static_cast<IABContainer*>(activeContainer);
+				activeContainer->AddRef();
+				return containerOpenResult;
+			}
+			const auto index = static_cast<size_t>(*reinterpret_cast<LPBYTE>(addressEntry) - 42);
+			Assert::IsTrue(index < activeContainer->tableRecipients.size());
+			auto& recipient = *activeContainer->tableRecipients[index];
+			++recipient.openCalls;
+			Assert::IsTrue(IsEqualIID(*iid, IID_IMAPIProp));
+			*type = recipient.resolvedObjectType;
+			*object = static_cast<IAddrBook*>(&recipient);
+			recipient.AddRef();
+			return recipient.openResult;
+		}
+		HRESULT STDMETHODCALLTYPE GetContentsTable(ULONG flags, LPMAPITABLE* table) override
+		{
+			++contentsTableCalls;
+			Assert::AreEqual(static_cast<ULONG>(MAPI_UNICODE), flags);
+			*table = static_cast<IMAPITable*>(this);
 			AddRef();
-			return openResult;
+			tablePosition = 0;
+			return contentsTableResult;
+		}
+		HRESULT STDMETHODCALLTYPE GetHierarchyTable(ULONG, LPMAPITABLE*) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE SetSearchCriteria(LPSRestriction, LPENTRYLIST, ULONG) override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE GetSearchCriteria(ULONG, LPSRestriction*, LPENTRYLIST*, ULONG*) override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE CreateEntry(ULONG, LPENTRYID, ULONG, LPMAPIPROP*) override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE CopyEntries(LPENTRYLIST, ULONG_PTR, LPMAPIPROGRESS, ULONG) override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE DeleteEntries(LPENTRYLIST, ULONG) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE Advise(ULONG, LPMAPIADVISESINK, ULONG_PTR*) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE GetStatus(ULONG*, ULONG*) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE SetColumns(LPSPropTagArray tags, ULONG flags) override
+		{
+			Assert::AreEqual(1UL, tags->cValues);
+			Assert::AreEqual(static_cast<ULONG>(PR_ENTRYID), tags->aulPropTag[0]);
+			Assert::AreEqual(0UL, flags);
+			return columnsResult;
+		}
+		HRESULT STDMETHODCALLTYPE QueryColumns(ULONG, LPSPropTagArray*) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE GetRowCount(ULONG, ULONG*) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE SeekRow(BOOKMARK, LONG, LONG*) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE SeekRowApprox(ULONG, ULONG) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE QueryPosition(ULONG*, ULONG*, ULONG*) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE FindRow(LPSRestriction, BOOKMARK, ULONG) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE Restrict(LPSRestriction restriction, ULONG flags) override
+		{
+			Assert::AreEqual(0UL, flags);
+			Assert::AreEqual(static_cast<ULONG>(RES_PROPERTY), restriction->rt);
+			Assert::AreEqual(static_cast<ULONG>(RELOP_EQ), restriction->res.resProperty.relop);
+			Assert::AreEqual(static_cast<ULONG>(PR_ANR_W), restriction->res.resProperty.ulPropTag);
+			Assert::AreEqual(static_cast<ULONG>(PR_ANR_W), restriction->res.resProperty.lpProp->ulPropTag);
+			Assert::AreEqual(requestedSMTP, std::wstring(restriction->res.resProperty.lpProp->Value.lpszW));
+			return restrictResult;
+		}
+		HRESULT STDMETHODCALLTYPE CreateBookmark(BOOKMARK*) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE FreeBookmark(BOOKMARK) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE SortTable(LPSSortOrderSet, ULONG) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE QuerySortOrder(LPSSortOrderSet*) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE QueryRows(LONG requested, ULONG flags, LPSRowSet* rows) override
+		{
+			++queryCalls;
+			Assert::AreEqual(20L, requested);
+			Assert::AreEqual(0UL, flags);
+			const auto count = (std::min)(static_cast<size_t>(requested), tableRecipients.size() - tablePosition);
+			*rows = mapi::allocate<LPSRowSet>(static_cast<ULONG>(CbNewSRowSet(count)));
+			Assert::IsNotNull(*rows);
+			(*rows)->cRows = static_cast<ULONG>(count);
+			for (ULONG index = 0; index < count; ++index)
+			{
+				auto& row = (*rows)->aRow[index];
+				row.cValues = 1;
+				row.lpProps = mapi::allocate<LPSPropValue>(sizeof(SPropValue) + 1);
+				Assert::IsNotNull(row.lpProps);
+				row.lpProps[0].ulPropTag = PR_ENTRYID;
+				row.lpProps[0].Value.bin = {1, reinterpret_cast<LPBYTE>(row.lpProps + 1)};
+				*row.lpProps[0].Value.bin.lpb = static_cast<BYTE>(42 + tablePosition + index);
+			}
+			tablePosition += count;
+			return queryResult;
+		}
+		HRESULT STDMETHODCALLTYPE Abort() override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE ExpandRow(ULONG, LPBYTE, ULONG, ULONG, LPSRowSet*, ULONG*) override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE CollapseRow(ULONG, LPBYTE, ULONG, ULONG*) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE WaitForCompletion(ULONG, ULONG, ULONG*) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE GetCollapseState(ULONG, ULONG, LPBYTE, ULONG*, LPBYTE*) override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE SetCollapseState(ULONG, ULONG, LPBYTE, BOOKMARK*) override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE
+		ResolveNames(LPSPropTagArray tags, ULONG flags, LPADRLIST recipients, LPFlagList status) override
+		{
+			Assert::AreEqual(1UL, tags->cValues);
+			Assert::AreEqual(static_cast<ULONG>(PR_ENTRYID), tags->aulPropTag[0]);
+			Assert::AreEqual(1UL, status->cFlags);
+			Assert::AreEqual(static_cast<ULONG>(MAPI_UNRESOLVED), status->ulFlag[0]);
+			const auto hr = ResolveRecipient(0, flags, nullptr, recipients);
+			status->ulFlag[0] = resolutionStatus;
+			return hr;
 		}
 		HRESULT STDMETHODCALLTYPE CompareEntryIDs(ULONG, LPENTRYID, ULONG, LPENTRYID, ULONG, ULONG*) override
 		{
@@ -333,8 +450,11 @@ namespace mapiabtest
 		{
 			return MAPI_E_NO_SUPPORT;
 		}
-		HRESULT STDMETHODCALLTYPE
-		ResolveName(ULONG_PTR uiParam, ULONG flags, LPTSTR title, LPADRLIST recipients) override
+		HRESULT STDMETHODCALLTYPE ResolveName(ULONG_PTR, ULONG, LPTSTR, LPADRLIST) override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT ResolveRecipient(ULONG_PTR uiParam, ULONG flags, LPTSTR title, LPADRLIST recipients)
 		{
 			++resolveCalls;
 			Assert::AreEqual(ULONG_PTR{}, uiParam);
@@ -380,7 +500,27 @@ namespace mapiabtest
 		HRESULT STDMETHODCALLTYPE SetPAB(ULONG, LPENTRYID) override { return MAPI_E_NO_SUPPORT; }
 		HRESULT STDMETHODCALLTYPE GetDefaultDir(ULONG*, LPENTRYID*) override { return MAPI_E_NO_SUPPORT; }
 		HRESULT STDMETHODCALLTYPE SetDefaultDir(ULONG, LPENTRYID) override { return MAPI_E_NO_SUPPORT; }
-		HRESULT STDMETHODCALLTYPE GetSearchPath(ULONG, LPSRowSet*) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE GetSearchPath(ULONG flags, LPSRowSet* path) override
+		{
+			++searchPathCalls;
+			Assert::AreEqual(0UL, flags);
+			*path = nullptr;
+			if (!returnSearchPath) return searchPathResult;
+			*path = mapi::allocate<LPSRowSet>(static_cast<ULONG>(CbNewSRowSet(searchContainers.size())));
+			Assert::IsNotNull(*path);
+			(*path)->cRows = static_cast<ULONG>(searchContainers.size());
+			for (ULONG index = 0; index < (*path)->cRows; ++index)
+			{
+				auto& row = (*path)->aRow[index];
+				row.cValues = 1;
+				row.lpProps = mapi::allocate<LPSPropValue>(sizeof(SPropValue) + 1);
+				Assert::IsNotNull(row.lpProps);
+				row.lpProps[0].ulPropTag = searchEntryIDTag;
+				row.lpProps[0].Value.bin = {1, reinterpret_cast<LPBYTE>(row.lpProps + 1)};
+				*row.lpProps[0].Value.bin.lpb = static_cast<BYTE>(index);
+			}
+			return searchPathResult;
+		}
 		HRESULT STDMETHODCALLTYPE SetSearchPath(ULONG, LPSRowSet) override { return MAPI_E_NO_SUPPORT; }
 		HRESULT STDMETHODCALLTYPE PrepareRecips(ULONG, LPSPropTagArray, LPADRLIST) override
 		{
@@ -396,6 +536,23 @@ namespace mapiabtest
 		ULONG detailsFlags{};
 		bool noCallbacks{};
 		HRESULT resolveResult{S_OK};
+		HRESULT searchPathResult{S_OK};
+		HRESULT containerOpenResult{S_OK};
+		bool returnSearchPath{true};
+		ULONG searchPathCalls{};
+		ULONG containerOpenCalls{};
+		ULONG searchEntryIDTag{PR_ENTRYID};
+		ULONG resolutionStatus{MAPI_RESOLVED};
+		std::vector<TestAddressBook*> searchContainers{this};
+		TestAddressBook* activeContainer{this};
+		std::vector<TestAddressBook*> tableRecipients{this};
+		size_t tablePosition{};
+		ULONG contentsTableCalls{};
+		ULONG queryCalls{};
+		HRESULT contentsTableResult{S_OK};
+		HRESULT columnsResult{S_OK};
+		HRESULT restrictResult{S_OK};
+		HRESULT queryResult{S_OK};
 		HRESULT openResult{S_OK};
 		HRESULT getPropsResult{S_OK};
 		ULONG resolvedEntryIDTag{PR_ENTRYID};
@@ -721,6 +878,242 @@ namespace mapiabtest
 			}
 		}
 
+		TEST_METHOD(SearchesPastContactsAndNearMatchesForVerifiedExchangeMailbox)
+		{
+			unittest::testMapiMemory memory;
+			for (const auto contact : {false, true})
+			{
+				TestAddressBook book;
+				TestAddressBook exchange;
+				ConfigureMailbox(book);
+				ConfigureMailbox(exchange);
+				if (contact)
+					book.mailboxProperties[0].Value.lpszW = const_cast<LPWSTR>(L"SMTP");
+				else
+					book.mailboxProperties[2].Value.lpszW = const_cast<LPWSTR>(L"other@example.test");
+				book.searchContainers = {&book, &exchange};
+				std::wstring dn = L"stale";
+				Assert::AreEqual(S_OK, mapi::ab::ResolveExchangeMailbox(&book, L"user@example.test", dn));
+				Assert::AreEqual(std::wstring(L"/o=Test/ou=Test/cn=Recipients/cn=User"), dn);
+				Assert::AreEqual(2UL, book.containerOpenCalls);
+				Assert::AreEqual(1UL, book.resolveCalls);
+				Assert::AreEqual(1UL, exchange.resolveCalls);
+				Assert::AreEqual(1UL, book.refs());
+				Assert::AreEqual(1UL, exchange.refs());
+			}
+		}
+
+		TEST_METHOD(ContinuesPastUnresolvedContainerWithoutOpeningItsRecipient)
+		{
+			unittest::testMapiMemory memory;
+			TestAddressBook book;
+			TestAddressBook exchange;
+			ConfigureMailbox(exchange);
+			book.resolutionStatus = MAPI_UNRESOLVED;
+			book.searchContainers = {&book, &exchange};
+			std::wstring dn;
+			Assert::AreEqual(S_OK, mapi::ab::ResolveExchangeMailbox(&book, L"user@example.test", dn));
+			Assert::AreEqual(0UL, book.openCalls);
+			Assert::AreEqual(1UL, exchange.openCalls);
+			Assert::AreEqual(1UL, book.refs());
+			Assert::AreEqual(1UL, exchange.refs());
+		}
+
+		TEST_METHOD(DeduplicatesSameExchangeIdentityAcrossContainers)
+		{
+			unittest::testMapiMemory memory;
+			TestAddressBook book;
+			TestAddressBook duplicate;
+			ConfigureMailbox(book);
+			ConfigureMailbox(duplicate);
+			duplicate.mailboxProperties[1].Value.lpszW = const_cast<LPWSTR>(L"/o=test/ou=test/cn=recipients/cn=user");
+			book.searchContainers = {&book, &duplicate};
+			std::wstring dn;
+			Assert::AreEqual(S_OK, mapi::ab::ResolveExchangeMailbox(&book, L"user@example.test", dn));
+			Assert::AreEqual(1UL, book.getPropsCalls);
+			Assert::AreEqual(1UL, duplicate.getPropsCalls);
+			Assert::AreEqual(1UL, book.refs());
+			Assert::AreEqual(1UL, duplicate.refs());
+		}
+
+		TEST_METHOD(RejectsConflictingExchangeIdentitiesWithoutOpeningAnyStore)
+		{
+			unittest::testMapiMemory memory;
+			TestAddressBook book;
+			TestAddressBook conflict;
+			ConfigureMailbox(book);
+			ConfigureMailbox(conflict);
+			conflict.mailboxProperties[1].Value.lpszW = const_cast<LPWSTR>(L"/o=Test/ou=Test/cn=Recipients/cn=Other");
+			book.searchContainers = {&book, &conflict};
+			std::wstring dn = L"stale";
+			Assert::AreEqual(MAPI_E_AMBIGUOUS_RECIP, mapi::ab::ResolveExchangeMailbox(&book, L"user@example.test", dn));
+			Assert::IsTrue(dn.empty());
+			TestSession session;
+			session.addressBook = &book;
+			LPMDB mailbox{};
+			Assert::AreEqual(
+				MAPI_E_AMBIGUOUS_RECIP, mapi::store::OpenMailboxBySMTP(&session, L"user@example.test", &mailbox));
+			Assert::IsNull(mailbox);
+			Assert::AreEqual(0UL, session.storeTableCalls);
+			Assert::AreEqual(0UL, session.storeOpenCalls);
+			Assert::AreEqual(1UL, book.refs());
+			Assert::AreEqual(1UL, conflict.refs());
+		}
+
+		TEST_METHOD(RejectsAmbiguousContainerResolutionStatus)
+		{
+			unittest::testMapiMemory memory;
+			TestAddressBook book;
+			book.resolutionStatus = MAPI_AMBIGUOUS;
+			std::wstring dn = L"stale";
+			Assert::AreEqual(MAPI_E_AMBIGUOUS_RECIP, mapi::ab::ResolveExchangeMailbox(&book, L"user@example.test", dn));
+			Assert::IsTrue(dn.empty());
+			Assert::AreEqual(0UL, book.openCalls);
+			Assert::AreEqual(1UL, book.refs());
+		}
+
+		TEST_METHOD(DoesNotHideLaterProviderFailureBehindEarlierMatch)
+		{
+			unittest::testMapiMemory memory;
+			TestAddressBook book;
+			TestAddressBook failed;
+			ConfigureMailbox(book);
+			failed.resolveResult = MAPI_E_NO_ACCESS;
+			book.searchContainers = {&book, &failed};
+			std::wstring dn = L"stale";
+			Assert::AreEqual(MAPI_E_NO_ACCESS, mapi::ab::ResolveExchangeMailbox(&book, L"user@example.test", dn));
+			Assert::IsTrue(dn.empty());
+			Assert::AreEqual(1UL, book.refs());
+			Assert::AreEqual(1UL, failed.refs());
+		}
+
+		TEST_METHOD(PreservesSearchPathAndContainerOpenErrors)
+		{
+			unittest::testMapiMemory memory;
+			for (const auto failSearch : {false, true})
+			{
+				TestAddressBook book;
+				if (failSearch)
+					book.searchPathResult = MAPI_E_NO_ACCESS;
+				else
+					book.containerOpenResult = MAPI_E_NOT_FOUND;
+				std::wstring dn = L"stale";
+				Assert::AreEqual(
+					failSearch ? MAPI_E_NO_ACCESS : MAPI_E_NOT_FOUND,
+					mapi::ab::ResolveExchangeMailbox(&book, L"user@example.test", dn));
+				Assert::IsTrue(dn.empty());
+				Assert::AreEqual(0UL, book.resolveCalls);
+				Assert::AreEqual(1UL, book.refs());
+			}
+		}
+
+		TEST_METHOD(RejectsMissingAndMalformedSearchPaths)
+		{
+			unittest::testMapiMemory memory;
+			for (const auto missing : {false, true})
+			{
+				TestAddressBook book;
+				if (missing)
+					book.returnSearchPath = false;
+				else
+					book.searchEntryIDTag = CHANGE_PROP_TYPE(PR_ENTRYID, PT_ERROR);
+				std::wstring dn = L"stale";
+				Assert::AreEqual(
+					MAPI_E_INVALID_OBJECT, mapi::ab::ResolveExchangeMailbox(&book, L"user@example.test", dn));
+				Assert::IsTrue(dn.empty());
+				Assert::AreEqual(0UL, book.containerOpenCalls);
+			}
+			TestAddressBook empty;
+			empty.searchContainers.clear();
+			std::wstring dn = L"stale";
+			Assert::AreEqual(MAPI_E_NOT_FOUND, mapi::ab::ResolveExchangeMailbox(&empty, L"user@example.test", dn));
+			Assert::IsTrue(dn.empty());
+		}
+
+		TEST_METHOD(SearchesContentsWhenContainerDoesNotSupportResolveNames)
+		{
+			unittest::testMapiMemory memory;
+			TestAddressBook book;
+			ConfigureMailbox(book);
+			book.resolveResult = MAPI_E_NO_SUPPORT;
+			std::wstring dn;
+			Assert::AreEqual(S_OK, mapi::ab::ResolveExchangeMailbox(&book, L"User@Example.Test", dn));
+			Assert::AreEqual(std::wstring(L"/o=Test/ou=Test/cn=Recipients/cn=User"), dn);
+			Assert::AreEqual(1UL, book.contentsTableCalls);
+			Assert::AreEqual(2UL, book.queryCalls);
+			Assert::AreEqual(1UL, book.refs());
+		}
+
+		TEST_METHOD(ContentsSearchVerifiesEveryCandidateAcrossBatches)
+		{
+			unittest::testMapiMemory memory;
+			TestAddressBook book;
+			TestAddressBook contact;
+			ConfigureMailbox(book);
+			ConfigureMailbox(contact);
+			contact.mailboxProperties[0].Value.lpszW = const_cast<LPWSTR>(L"SMTP");
+			book.resolveResult = MAPI_E_NO_SUPPORT;
+			book.tableRecipients.assign(20, &contact);
+			book.tableRecipients.push_back(&book);
+			std::wstring dn;
+			Assert::AreEqual(S_OK, mapi::ab::ResolveExchangeMailbox(&book, L"user@example.test", dn));
+			Assert::AreEqual(3UL, book.queryCalls);
+			Assert::AreEqual(20UL, contact.getPropsCalls);
+			Assert::AreEqual(1UL, book.getPropsCalls);
+			Assert::AreEqual(1UL, book.refs());
+			Assert::AreEqual(1UL, contact.refs());
+		}
+
+		TEST_METHOD(ContentsSearchRejectsConflictingExactMatches)
+		{
+			unittest::testMapiMemory memory;
+			TestAddressBook book;
+			TestAddressBook conflict;
+			ConfigureMailbox(book);
+			ConfigureMailbox(conflict);
+			conflict.mailboxProperties[1].Value.lpszW = const_cast<LPWSTR>(L"/o=Test/ou=Test/cn=Recipients/cn=Other");
+			book.resolveResult = MAPI_E_NO_SUPPORT;
+			book.tableRecipients = {&book, &conflict};
+			std::wstring dn = L"stale";
+			Assert::AreEqual(MAPI_E_AMBIGUOUS_RECIP, mapi::ab::ResolveExchangeMailbox(&book, L"user@example.test", dn));
+			Assert::IsTrue(dn.empty());
+			Assert::AreEqual(1UL, book.refs());
+			Assert::AreEqual(1UL, conflict.refs());
+		}
+
+		TEST_METHOD(ContentsSearchPreservesTableFailuresAndCleansUp)
+		{
+			unittest::testMapiMemory memory;
+			for (const auto stage : {0, 1, 2, 3})
+			{
+				TestAddressBook book;
+				ConfigureMailbox(book);
+				book.resolveResult = MAPI_E_NO_SUPPORT;
+				if (stage == 0) book.contentsTableResult = MAPI_E_NO_ACCESS;
+				if (stage == 1) book.columnsResult = MAPI_E_NO_ACCESS;
+				if (stage == 2) book.restrictResult = MAPI_E_NO_ACCESS;
+				if (stage == 3) book.queryResult = MAPI_E_NO_ACCESS;
+				std::wstring dn = L"stale";
+				Assert::AreEqual(MAPI_E_NO_ACCESS, mapi::ab::ResolveExchangeMailbox(&book, L"user@example.test", dn));
+				Assert::IsTrue(dn.empty());
+				Assert::AreEqual(0UL, book.getPropsCalls);
+				Assert::AreEqual(1UL, book.refs());
+			}
+		}
+
+		TEST_METHOD(DoesNotUseContentsFallbackForRecipientPropertyErrors)
+		{
+			unittest::testMapiMemory memory;
+			TestAddressBook book;
+			ConfigureMailbox(book);
+			book.getPropsResult = MAPI_E_NO_SUPPORT;
+			std::wstring dn = L"stale";
+			Assert::AreEqual(MAPI_E_NO_SUPPORT, mapi::ab::ResolveExchangeMailbox(&book, L"user@example.test", dn));
+			Assert::IsTrue(dn.empty());
+			Assert::AreEqual(0UL, book.contentsTableCalls);
+			Assert::AreEqual(1UL, book.refs());
+		}
+
 		TEST_METHOD(RejectsMissingErrorAndEmptyIdentityProperties)
 		{
 			unittest::testMapiMemory memory;
@@ -789,9 +1182,7 @@ namespace mapiabtest
 				else
 					book.resolvedObjectType = MAPI_DISTLIST;
 				std::wstring dn = L"stale";
-				Assert::AreEqual(
-					errorEntry ? MAPI_E_NOT_FOUND : MAPI_E_INVALID_OBJECT,
-					mapi::ab::ResolveExchangeMailbox(&book, L"user@example.test", dn));
+				Assert::AreEqual(MAPI_E_NOT_FOUND, mapi::ab::ResolveExchangeMailbox(&book, L"user@example.test", dn));
 				Assert::IsTrue(dn.empty());
 				Assert::AreEqual(0UL, book.getPropsCalls);
 				Assert::AreEqual(1UL, book.refs());
