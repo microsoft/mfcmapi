@@ -1458,7 +1458,7 @@ IDS_ACTIONSACTION "lpActions->lpAction[0x%1!08X!]:\r\n"
 
 IDS_FILETIMEFORMAT "hh':'mm':'ss'.%1!03d!' tt"
 IDS_FILETIMEFORMAT24 "HH':'mm':'ss'.%1!03d!'"
-IDS_OPENMAILBOXPROMPT "Choose how to open the mailbox. SMTP uses existing permissions without administrative flags. Address book and DN retain their advanced administrative defaults; use Advanced to inspect or change them."
+IDS_OPENMAILBOXPROMPT "Choose how to open the mailbox. SMTP and address book selection use existing permissions without administrative flags. DN retains its advanced administrative defaults; use Advanced to inspect or change them."
 IDS_MAILBOXMETHOD "Open by"
 IDS_MAILBOXSMTP "SMTP address"
 IDS_MAILBOXADDRESSBOOK "Address book"

@@ -584,10 +584,15 @@ namespace mapiabtest
 		{
 			m_errors.clear();
 			m_originalDisplayError = std::move(error::displayError);
+			m_originalServerPrompt = std::move(mapi::store::promptServerName);
 			error::displayError = [this](const std::wstring& text) { m_errors.push_back(text); };
 		}
 
-		TEST_METHOD_CLEANUP(restoreErrors) { error::displayError = std::move(m_originalDisplayError); }
+		TEST_METHOD_CLEANUP(restoreErrors)
+		{
+			error::displayError = std::move(m_originalDisplayError);
+			mapi::store::promptServerName = std::move(m_originalServerPrompt);
+		}
 
 		TEST_METHOD(ForwardsModalDetailsArguments)
 		{
@@ -741,6 +746,52 @@ namespace mapiabtest
 				mailbox->Release();
 				Assert::AreEqual(1UL, store.refs);
 			}
+		}
+
+		TEST_METHOD(AddressBookMailboxOpenUsesSelectedIdentityWithoutServerPrompt)
+		{
+			unittest::testMapiMemory memory;
+			ULONG prompts{};
+			mapi::store::promptServerName = [&] {
+				++prompts;
+				return std::wstring{};
+			};
+			for (const auto flags :
+				 {ULONG{}, static_cast<ULONG>(OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP)})
+			{
+				TestMailboxStore store;
+				store.expectedFlags = flags;
+				TestSession session;
+				session.openedStore = &store;
+				session.storeOpenResult = S_OK;
+				const auto mailbox = mapi::store::OpenOtherUsersMailbox(
+					&session, &store, {}, L"/o=Test/ou=Test/cn=Recipients/cn=User", L"user@example.test", flags, true);
+				Assert::IsTrue(mailbox == static_cast<IMsgStore*>(&store));
+				Assert::AreEqual(0UL, prompts);
+				Assert::AreEqual(1UL, store.createCalls);
+				Assert::AreEqual(1UL, session.storeOpenCalls);
+				mailbox->Release();
+				Assert::AreEqual(1UL, store.refs);
+			}
+		}
+
+		TEST_METHOD(AddressBookMailboxOpenDoesNotPromptOrFallbackAfterEntryIDFailure)
+		{
+			unittest::testMapiMemory memory;
+			ULONG prompts{};
+			mapi::store::promptServerName = [&] {
+				++prompts;
+				return std::wstring{};
+			};
+			TestMailboxStore store;
+			store.createResult = MAPI_E_NO_ACCESS;
+			TestSession session;
+			Assert::IsNull(mapi::store::OpenOtherUsersMailbox(
+				&session, &store, {}, L"/o=Test/ou=Test/cn=Recipients/cn=User", L"user@example.test", 0, true));
+			Assert::AreEqual(0UL, prompts);
+			Assert::AreEqual(1UL, store.createCalls);
+			Assert::AreEqual(0UL, session.storeOpenCalls);
+			Assert::AreEqual(1UL, store.refs);
 		}
 
 		TEST_METHOD(SMTPMailboxLogonDoesNotOpenOnEntryIDFailure)
@@ -1347,5 +1398,6 @@ namespace mapiabtest
 		ENTRYID m_entry{};
 		std::vector<std::wstring> m_errors;
 		std::function<void(const std::wstring&)> m_originalDisplayError;
+		std::function<std::wstring()> m_originalServerPrompt;
 	};
 } // namespace mapiabtest

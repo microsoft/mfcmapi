@@ -25,8 +25,7 @@ namespace dialog::editor
 		method->SetDropDownSelection(0);
 		AddPane(method);
 		AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_MAILBOXSMTP, false));
-		m_options[static_cast<size_t>(MailboxMethod::AddressBook)].flags =
-			OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP;
+		m_options[static_cast<size_t>(MailboxMethod::AddressBook)].forceServer = true;
 		m_options[static_cast<size_t>(MailboxMethod::DN)].flags =
 			OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP;
 		m_options[static_cast<size_t>(MailboxMethod::EntryID)].flags = MDB_WRITE;
@@ -81,16 +80,21 @@ namespace dialog::editor
 		addressBook->Release();
 		if (!user) return;
 
-		static const SizedSPropTagArray(1, tags) = {1, {PR_EMAIL_ADDRESS_W}};
+		static const SizedSPropTagArray(3, tags) = {3, {PR_ADDRTYPE_W, PR_EMAIL_ADDRESS_W, PR_SMTP_ADDRESS_W}};
 		ULONG count{};
 		LPSPropValue props{};
 		const auto hRes = EC_MAPI(user->GetProps(LPSPropTagArray(&tags), MAPI_UNICODE, &count, &props));
 		if (SUCCEEDED(hRes))
 		{
 			const auto dn = props ? PpropFindProp(props, count, PR_EMAIL_ADDRESS_W) : nullptr;
-			if (strings::CheckStringProp(dn, PT_UNICODE) && dn->Value.lpszW[0])
+			const auto type = props ? PpropFindProp(props, count, PR_ADDRTYPE_W) : nullptr;
+			const auto smtp = props ? PpropFindProp(props, count, PR_SMTP_ADDRESS_W) : nullptr;
+			if (strings::CheckStringProp(type, PT_UNICODE) && _wcsicmp(type->Value.lpszW, L"EX") == 0 &&
+				strings::CheckStringProp(dn, PT_UNICODE) && dn->Value.lpszW[0] &&
+				strings::CheckStringProp(smtp, PT_UNICODE) && mapi::ab::IsMailboxSMTPAddress(smtp->Value.lpszW))
 			{
 				Options().identity = dn->Value.lpszW;
+				Options().smtp = smtp->Value.lpszW;
 				SetStringW(1, Options().identity);
 			}
 			else
@@ -124,8 +128,7 @@ namespace dialog::editor
 		else
 		{
 			advanced.SetPromptPostFix(flags::AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
-			const auto server = options.server.empty() ? mapi::store::GetServerName(m_session) : options.server;
-			advanced.AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_SERVERNAME, server, false));
+			advanced.AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_SERVERNAME, options.server, false));
 			advanced.AddPane(viewpane::TextPane::CreateSingleLinePane(2, IDS_USER_SMTP_ADDRESS, options.smtp, false));
 			advanced.AddPane(viewpane::CheckPane::Create(3, IDS_FORCESERVER, options.forceServer, false));
 		}

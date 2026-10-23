@@ -495,7 +495,10 @@ namespace mapi::store
 		ULONG ulFlags, // desired flags for CreateStoreEntryID
 		bool bForceServer) // Use CreateStoreEntryID2
 	{
-		if (!lpMAPISession || !lpMDB || szMailboxDN.empty() || !StoreSupportsManageStore(lpMDB)) return nullptr;
+		if (!lpMAPISession || !lpMDB || szMailboxDN.empty()) return nullptr;
+		if (szServerName.empty() && !smtpAddress.empty() && bForceServer)
+			return MailboxLogon(lpMAPISession, lpMDB, {}, szMailboxDN, smtpAddress, ulFlags, true);
+		if (!StoreSupportsManageStore(lpMDB)) return nullptr;
 
 		output::DebugPrint(
 			output::dbgLevel::Generic,
