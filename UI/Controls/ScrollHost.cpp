@@ -168,7 +168,6 @@ namespace controls
 			{
 			case BN_CLICKED:
 			case BN_SETFOCUS:
-			case EN_CHANGE:
 			case EN_SETFOCUS:
 			case CBN_SETFOCUS:
 				return ::SendMessage(m_parent, message, wParam, lParam);
