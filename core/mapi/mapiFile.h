@@ -4,7 +4,10 @@ namespace file
 {
 	std::wstring BuildFileName(_In_ const std::wstring& ext, _In_ const std::wstring& dir, _In_ LPMESSAGE lpMessage);
 
-	_Check_return_ LPMESSAGE LoadMSGToMessage(_In_ const std::wstring& szMessageFile);
+	_Check_return_ HRESULT
+	MyStgOpenStorage(_In_ const std::wstring& szMessageFile, bool bBestAccess, _Deref_out_ LPSTORAGE* lppStorage);
+	_Check_return_ LPMESSAGE
+	LoadMSGToMessage(_In_ const std::wstring& szMessageFile, _Out_opt_ HRESULT* lpResult = nullptr);
 	_Check_return_ HRESULT LoadFromMSG(_In_ const std::wstring& szMessageFile, _In_ LPMESSAGE lpMessage, HWND hWnd);
 	_Check_return_ HRESULT
 	LoadFromTNEF(_In_ const std::wstring& szMessageFile, _In_ LPADRBOOK lpAdrBook, _In_ LPMESSAGE lpMessage);
