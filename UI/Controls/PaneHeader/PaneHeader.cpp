@@ -281,6 +281,21 @@ namespace controls
 		return cx;
 	}
 
+	void PaneHeader::SetLabel(const std::wstring szLabel)
+	{
+		m_szLabel = szLabel;
+		if (!m_bInitialized) return;
+
+		EC_B_S(::SetWindowTextW(m_leftLabel.m_hWnd, m_szLabel.c_str()));
+		const auto hdc = ::GetDC(m_leftLabel.GetSafeHwnd());
+		const auto hfontOld = SelectObject(hdc, m_bSection ? ui::GetUIFontBold() : ui::GetUIFont());
+		const auto sizeText = ui::GetTextExtentPoint32(hdc, m_szLabel);
+		static_cast<void>(SelectObject(hdc, hfontOld));
+		::ReleaseDC(m_leftLabel.GetSafeHwnd(), hdc);
+		m_iLabelWidth = sizeText.cx;
+		RecalcLayout();
+	}
+
 	void PaneHeader::SetRightLabel(const std::wstring szLabel)
 	{
 		if (!m_bInitialized) return;
