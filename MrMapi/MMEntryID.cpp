@@ -1,5 +1,5 @@
 #include <StdAfx.h>
-#include <MrMapi/MMStore.h>
+#include <MrMapi/MMEntryID.h>
 #include <MrMapi/mmcli.h>
 #include <core/interpret/proptags.h>
 #include <core/mapi/mapiOutput.h>

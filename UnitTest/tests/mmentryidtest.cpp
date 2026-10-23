@@ -1,7 +1,7 @@
 #include <UnitTest/stdafx.h>
 #include <UnitTest/UnitTest.h>
 #include <MrMapi/mmcli.h>
-#include <MrMapi/MMStore.h>
+#include <MrMapi/MMEntryID.h>
 #include <core/utility/registry.h>
 
 namespace mmentryidtest

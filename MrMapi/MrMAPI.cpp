@@ -5,6 +5,7 @@
 #include <MrMapi/MMAcls.h>
 #include <MrMapi/MMContents.h>
 #include <MrMapi/MMErr.h>
+#include <MrMapi/MMEntryID.h>
 #include <MrMapi/MMFidMid.h>
 #include <MrMapi/MMFolder.h>
 #include <MrMapi/MMNamedProps.h>

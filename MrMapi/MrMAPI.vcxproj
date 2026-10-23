@@ -810,6 +810,7 @@
     <ClInclude Include="MMAcls.h" />
     <ClInclude Include="MMContents.h" />
     <ClInclude Include="MMErr.h" />
+    <ClInclude Include="MMEntryID.h" />
     <ClInclude Include="MMFidMid.h" />
     <ClInclude Include="MMFolder.h" />
     <ClInclude Include="MMMapiMime.h" />

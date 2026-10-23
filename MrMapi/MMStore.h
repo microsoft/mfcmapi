@@ -12,5 +12,3 @@ void PrintObjectProperties(const std::wstring& szObjType, _In_ LPMAPIPROP lpMAPI
 void DoStore(LPMAPISESSION lpMAPISession, LPMDB lpMDB);
 
 LPMDB OpenStore(_In_ LPMAPISESSION lpMAPISession, ULONG ulIndex, bool readOnly = false);
-
-HRESULT DoEntryID(_In_opt_ LPMDB lpMDB);
