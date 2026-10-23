@@ -138,6 +138,9 @@
     <ClInclude Include="UI\Controls\SortList\ContentsTableListCtrl.h">
       <Filter>Source Files\UI\Controls\SortList</Filter>
     </ClInclude>
+    <ClInclude Include="UI\Controls\SortList\TableQuery.h">
+      <Filter>Source Files\UI\Controls\SortList</Filter>
+    </ClInclude>
     <ClInclude Include="UI\Controls\SortList\SingleMAPIPropListCtrl.h">
       <Filter>Source Files\UI\Controls\SortList</Filter>
     </ClInclude>

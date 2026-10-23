@@ -1,5 +1,6 @@
 #include <StdAfx.h>
 #include <UI/Controls/SortList/ContentsTableListCtrl.h>
+#include <UI/Controls/SortList/TableQuery.h>
 #include <core/sortlistdata/sortListData.h>
 #include <core/mapi/cache/mapiObjects.h>
 #include <UI/UIFunctions.h>
@@ -569,7 +570,7 @@ namespace controls::sortlistctrl
 				if (FAILED(hRes)) break;
 
 				if (lpListCtrl->bAbortLoad()) break;
-				hRes = mapi::QueryRowsWithDiagnostics(lpContentsTable, 1, NULL, &pRows);
+				hRes = QueryRowsWithDiagnostics(lpContentsTable, 1, NULL, &pRows);
 			}
 			else
 			{
@@ -581,7 +582,7 @@ namespace controls::sortlistctrl
 					rowCount);
 				// Pull back a sizable block of rows to add to the list box
 				if (lpListCtrl->bAbortLoad()) break;
-				hRes = mapi::QueryRowsWithDiagnostics(lpContentsTable, rowCount, NULL, &pRows);
+				hRes = QueryRowsWithDiagnostics(lpContentsTable, rowCount, NULL, &pRows);
 			}
 
 			if (FAILED(hRes) || !pRows || !pRows->cRows) break;

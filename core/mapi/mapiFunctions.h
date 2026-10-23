@@ -120,9 +120,6 @@ namespace mapi
 
 	_Check_return_ ULONG GetMAPIObjectType(_In_opt_ LPMAPIPROP lpMAPIProp);
 
-	_Check_return_ HRESULT
-	QueryRowsWithDiagnostics(_In_ LPMAPITABLE lpTable, LONG rowCount, ULONG flags, _Deref_out_ LPSRowSet* rows);
-
 	_Check_return_ HRESULT GetPropsNULL(
 		_In_ LPMAPIPROP lpMAPIProp,
 		ULONG ulFlags,
