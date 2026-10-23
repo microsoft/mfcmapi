@@ -283,13 +283,12 @@ namespace mapi::store
 		const std::wstring& smtpAddress,
 		ULONG ulFlags) // desired flags for CreateStoreEntryID
 	{
-		if (!lpMDB || (lpszMsgStoreDN.empty() && lpszMailboxDN.empty() && smtpAddress.empty()) ||
-			!StoreSupportsManageStoreEx(lpMDB))
+		if (!lpMDB || (lpszMsgStoreDN.empty() && smtpAddress.empty()) || !StoreSupportsManageStoreEx(lpMDB))
 		{
 			if (!lpMDB) output::DebugPrint(output::dbgLevel::Generic, L"CreateStoreEntryID2: MDB was NULL\n");
-			if (lpszMsgStoreDN.empty() && lpszMailboxDN.empty() && smtpAddress.empty())
+			if (lpszMsgStoreDN.empty() && smtpAddress.empty())
 				output::DebugPrint(
-					output::dbgLevel::Generic, L"CreateStoreEntryID2: Store DN, mailbox DN and SMTP address were missing\n");
+					output::dbgLevel::Generic, L"CreateStoreEntryID2: Store DN and SMTP address were missing\n");
 			return {};
 		}
 
@@ -498,7 +497,19 @@ namespace mapi::store
 	{
 		if (!lpMAPISession || !lpMDB || szMailboxDN.empty()) return nullptr;
 		if (szServerName.empty() && bForceServer)
-			return MailboxLogon(lpMAPISession, lpMDB, {}, szMailboxDN, smtpAddress, ulFlags, true);
+		{
+			auto routingSMTP = smtpAddress;
+			if (routingSMTP.empty())
+			{
+				LPADRBOOK addressBook{};
+				auto hRes = EC_MAPI(lpMAPISession->OpenAddressBook(0, nullptr, AB_NO_DIALOG, &addressBook));
+				if (SUCCEEDED(hRes) && !addressBook) hRes = EC_H(MAPI_E_INVALID_OBJECT);
+				if (SUCCEEDED(hRes)) hRes = EC_H(ab::ResolveExchangeMailboxSMTP(addressBook, szMailboxDN, routingSMTP));
+				if (addressBook) addressBook->Release();
+				if (FAILED(hRes)) return nullptr;
+			}
+			return MailboxLogon(lpMAPISession, lpMDB, {}, szMailboxDN, routingSMTP, ulFlags, true);
+		}
 		if (!StoreSupportsManageStore(lpMDB)) return nullptr;
 
 		output::DebugPrint(

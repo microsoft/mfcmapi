@@ -49,8 +49,12 @@ namespace dialog::editor
 	ULONG CMailboxEditor::HandleChange(UINT nID)
 	{
 		const auto pane = CEditor::HandleChange(nID);
-		if (pane == 1 && m_method == MailboxMethod::DN && GetStringW(1) != Options().identity)
-			Options().smtp.clear();
+		if (pane == 1 && m_method == MailboxMethod::DN)
+		{
+			const auto identity = GetStringW(1);
+			if (identity != Options().identity) Options().smtp.clear();
+			Options().identity = identity;
+		}
 		if (pane == 0)
 		{
 			const auto method = GetDropDown(0);

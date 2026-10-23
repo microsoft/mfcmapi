@@ -453,9 +453,9 @@ namespace mapiabtest
 		{
 			return MAPI_E_NO_SUPPORT;
 		}
-		HRESULT STDMETHODCALLTYPE ResolveName(ULONG_PTR, ULONG, LPTSTR, LPADRLIST) override
+		HRESULT STDMETHODCALLTYPE ResolveName(ULONG_PTR ui, ULONG flags, LPTSTR title, LPADRLIST recipients) override
 		{
-			return MAPI_E_NO_SUPPORT;
+			return ResolveRecipient(ui, flags, title, recipients);
 		}
 		HRESULT ResolveRecipient(ULONG_PTR uiParam, ULONG flags, LPTSTR title, LPADRLIST recipients)
 		{
@@ -768,6 +768,7 @@ namespace mapiabtest
 					&session, &store, {}, L"/o=Test/ou=Test/cn=Recipients/cn=User", L"user@example.test", flags, true);
 				Assert::IsTrue(mailbox == static_cast<IMsgStore*>(&store));
 				Assert::AreEqual(0UL, prompts);
+				Assert::AreEqual(0UL, session.addressBookCalls);
 				Assert::AreEqual(1UL, store.createCalls);
 				Assert::AreEqual(1UL, session.storeOpenCalls);
 				mailbox->Release();
@@ -794,20 +795,29 @@ namespace mapiabtest
 			Assert::AreEqual(1UL, store.refs);
 		}
 
-		TEST_METHOD(DNOnlyMailboxOpenNeedsNeitherServerNorSMTP)
+		TEST_METHOD(DNOnlyMailboxOpenResolvesRoutingSMTPWithoutServerPrompt)
 		{
 			unittest::testMapiMemory memory;
 			ULONG prompts{};
-			mapi::store::promptServerName = [&] { ++prompts; return std::wstring{}; };
+			mapi::store::promptServerName = [&] {
+				++prompts;
+				return std::wstring{};
+			};
+			TestAddressBook book;
+			ConfigureMailbox(book);
 			TestMailboxStore store;
-			store.expectedSMTP.clear();
 			TestSession session;
+			session.addressBook = &book;
 			session.openedStore = &store;
 			session.storeOpenResult = S_OK;
 			const auto mailbox = mapi::store::OpenOtherUsersMailbox(
 				&session, &store, {}, L"/o=Test/ou=Test/cn=Recipients/cn=User", {}, 0, true);
 			Assert::IsTrue(mailbox == static_cast<IMsgStore*>(&store));
 			Assert::AreEqual(0UL, prompts);
+			Assert::AreEqual(1UL, session.addressBookCalls);
+			Assert::AreEqual(1UL, book.resolveCalls);
+			Assert::AreEqual(std::wstring(L"/o=Test/ou=Test/cn=Recipients/cn=User"), book.requestedSMTP);
+			Assert::AreEqual(1UL, book.refs());
 			Assert::AreEqual(1UL, store.createCalls);
 			Assert::AreEqual(1UL, session.storeOpenCalls);
 			mailbox->Release();
@@ -818,16 +828,206 @@ namespace mapiabtest
 		{
 			unittest::testMapiMemory memory;
 			ULONG prompts{};
-			mapi::store::promptServerName = [&] { ++prompts; return std::wstring{}; };
+			mapi::store::promptServerName = [&] {
+				++prompts;
+				return std::wstring{};
+			};
+			TestAddressBook book;
+			ConfigureMailbox(book);
 			TestMailboxStore store;
-			store.expectedSMTP.clear();
 			store.createResult = MAPI_E_NO_ACCESS;
 			TestSession session;
+			session.addressBook = &book;
 			Assert::IsNull(mapi::store::OpenOtherUsersMailbox(
 				&session, &store, {}, L"/o=Test/ou=Test/cn=Recipients/cn=User", {}, 0, true));
 			Assert::AreEqual(0UL, prompts);
+			Assert::AreEqual(1UL, book.resolveCalls);
+			Assert::AreEqual(1UL, book.refs());
 			Assert::AreEqual(0UL, session.storeOpenCalls);
 			Assert::AreEqual(1UL, store.refs);
+		}
+
+		TEST_METHOD(DNMailboxResolutionVerifiesExactRecipientAndReturnsSMTP)
+		{
+			unittest::testMapiMemory memory;
+			TestAddressBook book;
+			ConfigureMailbox(book);
+			const std::wstring dn = L"/O=TEST/OU=TEST/CN=RECIPIENTS/CN=USER";
+			std::wstring smtp = L"stale";
+			Assert::AreEqual(S_OK, mapi::ab::ResolveExchangeMailboxSMTP(&book, dn, smtp));
+			Assert::AreEqual(std::wstring(L"user@example.test"), smtp);
+			Assert::AreEqual(dn, book.requestedSMTP);
+			Assert::AreEqual(1UL, book.resolveCalls);
+			Assert::AreEqual(1UL, book.openCalls);
+			Assert::AreEqual(0UL, book.searchPathCalls);
+			Assert::AreEqual(1UL, book.refs());
+		}
+
+		TEST_METHOD(DNMailboxResolutionRejectsInvalidInputBeforeLookup)
+		{
+			unittest::testMapiMemory memory;
+			TestAddressBook book;
+			std::wstring smtp = L"stale";
+			Assert::AreEqual(
+				MAPI_E_INVALID_PARAMETER, mapi::ab::ResolveExchangeMailboxSMTP(nullptr, L"/o=Test/cn=User", smtp));
+			Assert::IsTrue(smtp.empty());
+			for (const auto& dn : {std::wstring{}, std::wstring(L"dn\0suffix", 9)})
+			{
+				smtp = L"stale";
+				Assert::AreEqual(MAPI_E_INVALID_PARAMETER, mapi::ab::ResolveExchangeMailboxSMTP(&book, dn, smtp));
+				Assert::IsTrue(smtp.empty());
+			}
+			Assert::AreEqual(0UL, book.resolveCalls);
+		}
+
+		TEST_METHOD(DNMailboxResolutionPreservesProviderFailuresAndCleansUp)
+		{
+			unittest::testMapiMemory memory;
+			for (const auto stage : {0, 1, 2})
+			{
+				TestAddressBook book;
+				ConfigureMailbox(book);
+				const auto expected = stage == 0 ? MAPI_E_AMBIGUOUS_RECIP : MAPI_E_NO_ACCESS;
+				if (stage == 0) book.resolveResult = expected;
+				if (stage == 1) book.openResult = expected;
+				if (stage == 2) book.getPropsResult = expected;
+				std::wstring smtp = L"stale";
+				Assert::AreEqual(
+					expected,
+					mapi::ab::ResolveExchangeMailboxSMTP(&book, L"/o=Test/ou=Test/cn=Recipients/cn=User", smtp));
+				Assert::IsTrue(smtp.empty());
+				Assert::AreEqual(1UL, book.refs());
+				Assert::AreEqual(stage == 2 ? 1UL : 0UL, book.getPropsCalls);
+			}
+		}
+
+		TEST_METHOD(DNMailboxResolutionRejectsInvalidResolvedObjects)
+		{
+			unittest::testMapiMemory memory;
+			for (const auto errorEntry : {false, true})
+			{
+				TestAddressBook book;
+				ConfigureMailbox(book);
+				if (errorEntry)
+					book.resolvedEntryIDTag = CHANGE_PROP_TYPE(PR_ENTRYID, PT_ERROR);
+				else
+					book.resolvedObjectType = MAPI_DISTLIST;
+				std::wstring smtp = L"stale";
+				Assert::AreEqual(
+					MAPI_E_NOT_FOUND,
+					mapi::ab::ResolveExchangeMailboxSMTP(&book, L"/o=Test/ou=Test/cn=Recipients/cn=User", smtp));
+				Assert::IsTrue(smtp.empty());
+				Assert::AreEqual(0UL, book.getPropsCalls);
+				Assert::AreEqual(1UL, book.refs());
+			}
+		}
+
+		TEST_METHOD(DNMailboxResolutionRejectsMismatchedOrIncompleteIdentity)
+		{
+			unittest::testMapiMemory memory;
+			for (const auto stage : {0, 1, 2, 3, 4, 5, 6, 7})
+			{
+				TestAddressBook book;
+				ConfigureMailbox(book);
+				if (stage == 0) book.mailboxProperties[0].Value.lpszW = const_cast<LPWSTR>(L"SMTP");
+				if (stage == 1) book.mailboxProperties[1].Value.lpszW = const_cast<LPWSTR>(L"/o=Test/cn=OtherUser");
+				if (stage == 2 || stage == 4 || stage == 5)
+				{
+					const auto index = stage == 2 ? 2U : stage == 4 ? 1U : 0U;
+					book.mailboxProperties[index].ulPropTag =
+						CHANGE_PROP_TYPE(book.mailboxProperties[index].ulPropTag, PT_ERROR);
+					book.mailboxProperties[index].Value.err = MAPI_E_NOT_FOUND;
+					book.getPropsResult = MAPI_W_ERRORS_RETURNED;
+				}
+				if (stage == 3) book.mailboxProperties[2].Value.lpszW = const_cast<LPWSTR>(L"invalid-smtp");
+				if (stage == 6) book.mailboxProperties[2].Value.lpszW = const_cast<LPWSTR>(L"");
+				if (stage == 7) book.mailboxProperties[1].Value.lpszW = const_cast<LPWSTR>(L"");
+				std::wstring smtp = L"stale";
+				Assert::AreEqual(
+					MAPI_E_NOT_FOUND,
+					mapi::ab::ResolveExchangeMailboxSMTP(&book, L"/o=Test/ou=Test/cn=Recipients/cn=User", smtp));
+				Assert::IsTrue(smtp.empty());
+				Assert::AreEqual(1UL, book.refs());
+			}
+		}
+
+		TEST_METHOD(DNMailboxOpenStopsOnRoutingLookupFailure)
+		{
+			unittest::testMapiMemory memory;
+			ULONG prompts{};
+			mapi::store::promptServerName = [&] {
+				++prompts;
+				return std::wstring{};
+			};
+			TestAddressBook book;
+			book.resolveResult = MAPI_E_NOT_FOUND;
+			TestMailboxStore store;
+			TestSession session;
+			session.addressBook = &book;
+			Assert::IsNull(mapi::store::OpenOtherUsersMailbox(
+				&session, &store, {}, L"/o=Test/ou=Test/cn=Recipients/cn=User", {}, 0, true));
+			Assert::AreEqual(0UL, prompts);
+			Assert::AreEqual(1UL, book.resolveCalls);
+			Assert::AreEqual(1UL, book.refs());
+			Assert::AreEqual(0UL, store.createCalls);
+			Assert::AreEqual(0UL, session.storeOpenCalls);
+			Assert::IsFalse(m_errors.empty());
+		}
+
+		TEST_METHOD(DNMailboxOpenStopsOnAddressBookFailureOrMissingObject)
+		{
+			unittest::testMapiMemory memory;
+			ULONG prompts{};
+			mapi::store::promptServerName = [&] {
+				++prompts;
+				return std::wstring{};
+			};
+			for (const auto failOpen : {false, true})
+			{
+				TestAddressBook book;
+				TestMailboxStore store;
+				TestSession session;
+				if (failOpen)
+				{
+					session.addressBook = &book;
+					session.addressBookResult = MAPI_E_NO_ACCESS;
+				}
+				Assert::IsNull(mapi::store::OpenOtherUsersMailbox(
+					&session, &store, {}, L"/o=Test/ou=Test/cn=Recipients/cn=User", {}, 0, true));
+				Assert::AreEqual(0UL, prompts);
+				Assert::AreEqual(1UL, session.addressBookCalls);
+				Assert::AreEqual(0UL, book.resolveCalls);
+				Assert::AreEqual(1UL, book.refs());
+				Assert::AreEqual(0UL, store.createCalls);
+				Assert::AreEqual(0UL, session.storeOpenCalls);
+			}
+			Assert::IsFalse(m_errors.empty());
+		}
+
+		TEST_METHOD(DNMailboxOpenRejectsMissingRoutingSMTPWithoutFallback)
+		{
+			unittest::testMapiMemory memory;
+			ULONG prompts{};
+			mapi::store::promptServerName = [&] {
+				++prompts;
+				return std::wstring{};
+			};
+			TestAddressBook book;
+			ConfigureMailbox(book);
+			book.mailboxProperties[2].ulPropTag = CHANGE_PROP_TYPE(PR_SMTP_ADDRESS_W, PT_ERROR);
+			book.mailboxProperties[2].Value.err = MAPI_E_NOT_FOUND;
+			book.getPropsResult = MAPI_W_ERRORS_RETURNED;
+			TestMailboxStore store;
+			TestSession session;
+			session.addressBook = &book;
+			Assert::IsNull(mapi::store::OpenOtherUsersMailbox(
+				&session, &store, {}, L"/o=Test/ou=Test/cn=Recipients/cn=User", {}, 0, true));
+			Assert::AreEqual(0UL, prompts);
+			Assert::AreEqual(1UL, book.resolveCalls);
+			Assert::AreEqual(1UL, book.refs());
+			Assert::AreEqual(0UL, store.createCalls);
+			Assert::AreEqual(0UL, session.storeOpenCalls);
+			Assert::IsFalse(m_errors.empty());
 		}
 
 		TEST_METHOD(SMTPMailboxLogonDoesNotOpenOnEntryIDFailure)
