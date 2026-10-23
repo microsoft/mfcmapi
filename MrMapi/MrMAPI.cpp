@@ -187,7 +187,7 @@ int wmain(_In_ int argc, _In_count_(argc) wchar_t* argv[])
 	cli::ParseArgs(ProgOpts, cl, cli::g_options);
 	if (mailboxRequested && !cli::switchMailbox.isSet())
 	{
-		wprintf(L"-Mailbox requires a primary SMTP address.\n");
+		wprintf(L"-Mailbox requires an SMTP address.\n");
 		return 2;
 	}
 	PostParseCheck(ProgOpts);

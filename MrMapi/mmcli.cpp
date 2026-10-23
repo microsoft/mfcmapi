@@ -170,7 +170,8 @@ namespace cli
 		}
 
 		wprintf(L"Usage:\n");
-		wprintf(L"   Add -Mailbox <primary SMTP address> -Profile <profile> to a store/folder command.\n");
+		wprintf(L"   Add -Mailbox <SMTP address> -Profile <profile> to a store/folder command.\n");
+		wprintf(L"   Primary addresses and verified SMTP aliases are supported.\n");
 		wprintf(L"   Uses that profile's Exchange session and existing permissions; never falls back to its own "
 				L"mailbox.\n");
 		wprintf(L"   MrMAPI -%ws\n", switchHelp.name());
@@ -565,7 +566,7 @@ namespace cli
 	std::wstring ValidateMailboxOptions(const OPTIONS& options)
 	{
 		if (!switchMailbox.isSet()) return {};
-		if (!mapi::ab::IsMailboxSMTPAddress(switchMailbox[0])) return L"-Mailbox requires a primary SMTP address.";
+		if (!mapi::ab::IsMailboxSMTPAddress(switchMailbox[0])) return L"-Mailbox requires an SMTP address.";
 		if (!switchProfile.isSet() || switchProfile[0].empty())
 			return L"-Mailbox requires an explicit nonempty -Profile.";
 		if (!switchStore.empty() || !switchReceiveFolder.empty() || switchFolder[0].find(L'#') == 0)

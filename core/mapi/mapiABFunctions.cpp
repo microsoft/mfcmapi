@@ -23,6 +23,32 @@ namespace mapi::ab
 
 	namespace
 	{
+		bool HasSMTPProxy(_In_opt_ const SPropValue* properties, ULONG count, const std::wstring& smtpAddress)
+		{
+			const auto matches = [&](const wchar_t* proxy) {
+				return proxy && _wcsnicmp(proxy, L"SMTP:", 5) == 0 && _wcsicmp(proxy + 5, smtpAddress.c_str()) == 0;
+			};
+			for (ULONG index = 0; properties && index < count; ++index)
+			{
+				const auto& prop = properties[index];
+				if (PROP_ID(prop.ulPropTag) != PROP_ID(PR_EMS_AB_PROXY_ADDRESSES_W)) continue;
+				if (PROP_TYPE(prop.ulPropTag) == PT_MV_UNICODE && prop.Value.MVszW.lppszW)
+				{
+					for (ULONG value = 0; value < prop.Value.MVszW.cValues; ++value)
+						if (matches(prop.Value.MVszW.lppszW[value])) return true;
+				}
+				if (PROP_TYPE(prop.ulPropTag) == PT_MV_STRING8 && prop.Value.MVszA.lppszA)
+				{
+					for (ULONG value = 0; value < prop.Value.MVszA.cValues; ++value)
+					{
+						const auto proxy = prop.Value.MVszA.lppszA[value];
+						if (proxy && matches(strings::LPCSTRToWstring(proxy).c_str())) return true;
+					}
+				}
+			}
+			return false;
+		}
+
 		_Check_return_ HRESULT VerifyMailboxEntry(
 			_In_ LPADRBOOK addressBook,
 			_In_opt_ const SPropValue* entryID,
@@ -44,7 +70,13 @@ namespace mapi::ab
 			if (SUCCEEDED(hRes) && objectType != MAPI_MAILUSER) hRes = WC_H(MAPI_E_NOT_FOUND);
 			if (SUCCEEDED(hRes))
 			{
-				static const SizedSPropTagArray(3, tags) = {3, {PR_ADDRTYPE_W, PR_EMAIL_ADDRESS_W, PR_SMTP_ADDRESS_W}};
+				static const SizedSPropTagArray(5, tags) = {
+					5,
+					{PR_ADDRTYPE_W,
+					 PR_EMAIL_ADDRESS_W,
+					 PR_SMTP_ADDRESS_W,
+					 PR_EMS_AB_PROXY_ADDRESSES_W,
+					 PR_EMS_AB_PROXY_ADDRESSES_A}};
 				ULONG count{};
 				LPSPropValue properties{};
 				hRes = WC_MAPI(recipient->GetProps(LPSPropTagArray(&tags), MAPI_UNICODE, &count, &properties));
@@ -53,11 +85,12 @@ namespace mapi::ab
 					const auto type = properties ? PpropFindProp(properties, count, PR_ADDRTYPE_W) : nullptr;
 					const auto dn = properties ? PpropFindProp(properties, count, PR_EMAIL_ADDRESS_W) : nullptr;
 					const auto smtp = properties ? PpropFindProp(properties, count, PR_SMTP_ADDRESS_W) : nullptr;
-					// Verify the provider's actual primary address, not an unresolved input property or an ANR near-match.
+					const auto matchesSMTP = (strings::CheckStringProp(smtp, PT_UNICODE) &&
+											  _wcsicmp(smtp->Value.lpszW, smtpAddress.c_str()) == 0) ||
+											 HasSMTPProxy(properties, count, smtpAddress);
+					// ANR finds candidates; the recipient's primary or proxy address must verify the supplied SMTP.
 					if (!strings::CheckStringProp(type, PT_UNICODE) || _wcsicmp(type->Value.lpszW, L"EX") != 0 ||
-						!strings::CheckStringProp(dn, PT_UNICODE) || !dn->Value.lpszW[0] ||
-						!strings::CheckStringProp(smtp, PT_UNICODE) ||
-						_wcsicmp(smtp->Value.lpszW, smtpAddress.c_str()) != 0)
+						!strings::CheckStringProp(dn, PT_UNICODE) || !dn->Value.lpszW[0] || !matchesSMTP)
 						hRes = WC_H(MAPI_E_NOT_FOUND);
 					else
 					{
@@ -74,6 +107,7 @@ namespace mapi::ab
 		_Check_return_ HRESULT SearchMailboxContents(
 			_In_ LPADRBOOK addressBook,
 			_In_ LPABCONT container,
+			const std::wstring& lookupName,
 			const std::wstring& smtpAddress,
 			_Out_ std::wstring& mailboxDN)
 		{
@@ -86,7 +120,7 @@ namespace mapi::ab
 			{
 				SPropValue name{};
 				name.ulPropTag = PR_ANR_W;
-				name.Value.lpszW = const_cast<LPWSTR>(smtpAddress.c_str());
+				name.Value.lpszW = const_cast<LPWSTR>(lookupName.c_str());
 				SRestriction restriction{};
 				restriction.rt = RES_PROPERTY;
 				restriction.res.resProperty = {RELOP_EQ, PR_ANR_W, &name};
@@ -130,6 +164,7 @@ namespace mapi::ab
 		_Check_return_ HRESULT ResolveMailboxInContainer(
 			_In_ LPADRBOOK addressBook,
 			_In_ LPABCONT container,
+			const std::wstring& lookupName,
 			const std::wstring& smtpAddress,
 			_Out_ std::wstring& mailboxDN)
 		{
@@ -138,7 +173,7 @@ namespace mapi::ab
 			recipients->cEntries = 1;
 			recipients->aEntries[0].cValues = 1;
 			recipients->aEntries[0].rgPropVals[0].ulPropTag = PR_DISPLAY_NAME_W;
-			recipients->aEntries[0].rgPropVals[0].Value.lpszW = const_cast<LPWSTR>(smtpAddress.c_str());
+			recipients->aEntries[0].rgPropVals[0].Value.lpszW = const_cast<LPWSTR>(lookupName.c_str());
 			static const SizedSPropTagArray(1, tags) = {1, {PR_ENTRYID}};
 			FlagList flags{1, {MAPI_UNRESOLVED}};
 			auto hRes = WC_MAPI(container->ResolveNames(LPSPropTagArray(&tags), MAPI_UNICODE, recipients, &flags));
@@ -146,7 +181,7 @@ namespace mapi::ab
 			if (hRes == MAPI_E_NO_SUPPORT)
 			{
 				FreePadrlist(recipients);
-				return SearchMailboxContents(addressBook, container, smtpAddress, mailboxDN);
+				return SearchMailboxContents(addressBook, container, lookupName, smtpAddress, mailboxDN);
 			}
 			if (SUCCEEDED(hRes))
 			{
@@ -204,7 +239,15 @@ namespace mapi::ab
 					hRes = WC_H(MAPI_E_INVALID_OBJECT);
 				else
 				{
-					hRes = ResolveMailboxInContainer(addressBook, container, smtpAddress, candidateDN);
+					hRes = ResolveMailboxInContainer(addressBook, container, smtpAddress, smtpAddress, candidateDN);
+					// Some address books index aliases by account name, not by the full proxy address.
+					if (hRes == MAPI_E_NOT_FOUND)
+						hRes = ResolveMailboxInContainer(
+							addressBook,
+							container,
+							smtpAddress.substr(0, smtpAddress.find(L'@')),
+							smtpAddress,
+							candidateDN);
 					noMatch = hRes == MAPI_E_NOT_FOUND;
 				}
 			}

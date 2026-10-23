@@ -256,7 +256,7 @@ namespace mapiabtest
 		GetProps(LPSPropTagArray tags, ULONG flags, ULONG* count, LPSPropValue* props) override
 		{
 			++getPropsCalls;
-			Assert::AreEqual(3UL, tags->cValues);
+			Assert::AreEqual(5UL, tags->cValues);
 			Assert::AreEqual(static_cast<ULONG>(MAPI_UNICODE), flags);
 			*count = static_cast<ULONG>(mailboxProperties.size());
 			*props = nullptr;
@@ -389,7 +389,9 @@ namespace mapiabtest
 			++queryCalls;
 			Assert::AreEqual(20L, requested);
 			Assert::AreEqual(0UL, flags);
-			const auto count = (std::min)(static_cast<size_t>(requested), tableRecipients.size() - tablePosition);
+			const auto total =
+				accountLookupOnly && requestedSMTP.find(L'@') != std::wstring::npos ? size_t{} : tableRecipients.size();
+			const auto count = (std::min)(static_cast<size_t>(requested), total - tablePosition);
 			*rows = mapi::allocate<LPSRowSet>(static_cast<ULONG>(CbNewSRowSet(count)));
 			Assert::IsNotNull(*rows);
 			(*rows)->cRows = static_cast<ULONG>(count);
@@ -429,7 +431,8 @@ namespace mapiabtest
 			Assert::AreEqual(1UL, status->cFlags);
 			Assert::AreEqual(static_cast<ULONG>(MAPI_UNRESOLVED), status->ulFlag[0]);
 			const auto hr = ResolveRecipient(0, flags, nullptr, recipients);
-			status->ulFlag[0] = resolutionStatus;
+			status->ulFlag[0] = accountLookupOnly && requestedSMTP.find(L'@') != std::wstring::npos ? MAPI_UNRESOLVED
+																									: resolutionStatus;
 			return hr;
 		}
 		HRESULT STDMETHODCALLTYPE CompareEntryIDs(ULONG, LPENTRYID, ULONG, LPENTRYID, ULONG, ULONG*) override
@@ -464,6 +467,7 @@ namespace mapiabtest
 			Assert::AreEqual(1UL, recipients->aEntries[0].cValues);
 			Assert::AreEqual(static_cast<ULONG>(PR_DISPLAY_NAME_W), recipients->aEntries[0].rgPropVals[0].ulPropTag);
 			requestedSMTP = recipients->aEntries[0].rgPropVals[0].Value.lpszW;
+			requestedLookups.push_back(requestedSMTP);
 			auto& prop = recipients->aEntries[0].rgPropVals[0];
 			prop = {};
 			prop.ulPropTag = resolvedEntryIDTag;
@@ -562,6 +566,8 @@ namespace mapiabtest
 		ULONG openCalls{};
 		ULONG getPropsCalls{};
 		std::wstring requestedSMTP;
+		std::vector<std::wstring> requestedLookups;
+		bool accountLookupOnly{};
 		std::vector<SPropValue> mailboxProperties;
 		ULONG refs() const noexcept { return m_refs; }
 
@@ -827,7 +833,7 @@ namespace mapiabtest
 			Assert::AreEqual(1UL, book.refs());
 		}
 
-		TEST_METHOD(ChecksPrimarySMTPInputBeforeResolution)
+		TEST_METHOD(ChecksSMTPInputBeforeResolution)
 		{
 			unittest::testMapiMemory memory;
 			TestAddressBook book;
@@ -845,7 +851,7 @@ namespace mapiabtest
 			Assert::IsTrue(mapi::ab::IsMailboxSMTPAddress(L"user@example.test"));
 		}
 
-		TEST_METHOD(ResolvesAndVerifiesExactPrimarySMTPWithoutUI)
+		TEST_METHOD(ResolvesAndVerifiesExactSMTPWithoutUI)
 		{
 			unittest::testMapiMemory memory;
 			TestAddressBook book;
@@ -878,6 +884,138 @@ namespace mapiabtest
 			}
 		}
 
+		TEST_METHOD(ResolvesAccountIndexedAliasesAndVerifiesUnicodeOrANSIProxyAddresses)
+		{
+			unittest::testMapiMemory memory;
+			for (const auto useTable : {false, true})
+			{
+				for (const auto unicode : {false, true})
+				{
+					TestAddressBook book;
+					ConfigureMailbox(book);
+					book.accountLookupOnly = true;
+					if (useTable) book.resolveResult = MAPI_E_NO_SUPPORT;
+					book.mailboxProperties[2].Value.lpszW = const_cast<LPWSTR>(L"primary@example.test");
+					LPWSTR wide[] = {
+						const_cast<LPWSTR>(L"SMTP:primary@example.test"),
+						const_cast<LPWSTR>(L"smtp:USER@EXAMPLE.TEST")};
+					LPSTR narrow[] = {
+						const_cast<LPSTR>("SMTP:primary@example.test"), const_cast<LPSTR>("smtp:USER@EXAMPLE.TEST")};
+					book.mailboxProperties.resize(4);
+					auto& proxies = book.mailboxProperties[3];
+					proxies.ulPropTag = unicode ? PR_EMS_AB_PROXY_ADDRESSES_W : PR_EMS_AB_PROXY_ADDRESSES_A;
+					if (unicode)
+						proxies.Value.MVszW = {_countof(wide), wide};
+					else
+						proxies.Value.MVszA = {_countof(narrow), narrow};
+					std::wstring dn = L"stale";
+					Assert::AreEqual(S_OK, mapi::ab::ResolveExchangeMailbox(&book, L"user@example.test", dn));
+					Assert::AreEqual(std::wstring(L"/o=Test/ou=Test/cn=Recipients/cn=User"), dn);
+					Assert::AreEqual(size_t{2}, book.requestedLookups.size());
+					Assert::AreEqual(std::wstring(L"user@example.test"), book.requestedLookups[0]);
+					Assert::AreEqual(std::wstring(L"user"), book.requestedLookups[1]);
+					Assert::AreEqual(1UL, book.getPropsCalls);
+					Assert::AreEqual(1UL, book.refs());
+				}
+			}
+		}
+
+		TEST_METHOD(VerifiedProxyDoesNotRequirePrimarySMTPProperty)
+		{
+			unittest::testMapiMemory memory;
+			TestAddressBook book;
+			ConfigureMailbox(book);
+			book.mailboxProperties[2].ulPropTag = CHANGE_PROP_TYPE(PR_SMTP_ADDRESS_W, PT_ERROR);
+			book.mailboxProperties[2].Value.err = MAPI_E_NOT_FOUND;
+			LPWSTR values[] = {const_cast<LPWSTR>(L"SMTP:user@example.test")};
+			book.mailboxProperties.resize(4);
+			book.mailboxProperties[3].ulPropTag = PR_EMS_AB_PROXY_ADDRESSES_W;
+			book.mailboxProperties[3].Value.MVszW = {_countof(values), values};
+			book.getPropsResult = MAPI_W_ERRORS_RETURNED;
+			std::wstring dn;
+			Assert::AreEqual(S_OK, mapi::ab::ResolveExchangeMailbox(&book, L"user@example.test", dn));
+			Assert::IsFalse(dn.empty());
+			Assert::AreEqual(1UL, book.refs());
+		}
+
+		TEST_METHOD(RejectsUnverifiedAliasesAndOtherProxyAddressTypes)
+		{
+			unittest::testMapiMemory memory;
+			LPWSTR values[] = {
+				nullptr,
+				const_cast<LPWSTR>(L""),
+				const_cast<LPWSTR>(L"SMTP"),
+				const_cast<LPWSTR>(L"X500:user@example.test"),
+				const_cast<LPWSTR>(L"SIP:user@example.test"),
+				const_cast<LPWSTR>(L"smtp:user@example.test.invalid"),
+				const_cast<LPWSTR>(L"smtp:otheruser@example.test")};
+			for (const auto malformed : {0, 1, 2})
+			{
+				TestAddressBook book;
+				ConfigureMailbox(book);
+				book.mailboxProperties[2].Value.lpszW = const_cast<LPWSTR>(L"primary@example.test");
+				book.mailboxProperties.resize(4);
+				auto& proxies = book.mailboxProperties[3];
+				proxies.ulPropTag = PR_EMS_AB_PROXY_ADDRESSES_W;
+				proxies.Value.MVszW = {_countof(values), malformed == 1 ? nullptr : values};
+				if (malformed == 2)
+				{
+					proxies.ulPropTag = CHANGE_PROP_TYPE(PR_EMS_AB_PROXY_ADDRESSES_W, PT_ERROR);
+					proxies.Value.err = MAPI_E_NOT_FOUND;
+				}
+				std::wstring dn = L"stale";
+				Assert::AreEqual(MAPI_E_NOT_FOUND, mapi::ab::ResolveExchangeMailbox(&book, L"user@example.test", dn));
+				Assert::IsTrue(dn.empty());
+				Assert::AreEqual(1UL, book.refs());
+			}
+		}
+
+		TEST_METHOD(VerifiedAliasStillRequiresExchangeMailUserAndLegacyDN)
+		{
+			unittest::testMapiMemory memory;
+			for (const auto invalid : {0, 1, 2})
+			{
+				TestAddressBook book;
+				ConfigureMailbox(book);
+				book.mailboxProperties[2].Value.lpszW = const_cast<LPWSTR>(L"primary@example.test");
+				LPWSTR values[] = {const_cast<LPWSTR>(L"smtp:user@example.test")};
+				book.mailboxProperties.resize(4);
+				book.mailboxProperties[3].ulPropTag = PR_EMS_AB_PROXY_ADDRESSES_W;
+				book.mailboxProperties[3].Value.MVszW = {_countof(values), values};
+				if (invalid == 0) book.mailboxProperties[0].Value.lpszW = const_cast<LPWSTR>(L"SMTP");
+				if (invalid == 1) book.mailboxProperties[1].Value.lpszW = const_cast<LPWSTR>(L"");
+				if (invalid == 2) book.resolvedObjectType = MAPI_DISTLIST;
+				std::wstring dn = L"stale";
+				Assert::AreEqual(MAPI_E_NOT_FOUND, mapi::ab::ResolveExchangeMailbox(&book, L"user@example.test", dn));
+				Assert::IsTrue(dn.empty());
+				Assert::AreEqual(1UL, book.refs());
+			}
+		}
+
+		TEST_METHOD(RejectsAliasClaimedByDifferentExchangeIdentities)
+		{
+			unittest::testMapiMemory memory;
+			TestAddressBook book;
+			TestAddressBook conflict;
+			ConfigureMailbox(book);
+			ConfigureMailbox(conflict);
+			LPWSTR values[] = {const_cast<LPWSTR>(L"smtp:user@example.test")};
+			for (const auto recipient : {&book, &conflict})
+			{
+				recipient->mailboxProperties[2].Value.lpszW = const_cast<LPWSTR>(L"primary@example.test");
+				recipient->mailboxProperties.resize(4);
+				recipient->mailboxProperties[3].ulPropTag = PR_EMS_AB_PROXY_ADDRESSES_W;
+				recipient->mailboxProperties[3].Value.MVszW = {_countof(values), values};
+			}
+			conflict.mailboxProperties[1].Value.lpszW = const_cast<LPWSTR>(L"/o=Test/ou=Test/cn=Recipients/cn=Other");
+			book.searchContainers = {&book, &conflict};
+			std::wstring dn = L"stale";
+			Assert::AreEqual(MAPI_E_AMBIGUOUS_RECIP, mapi::ab::ResolveExchangeMailbox(&book, L"user@example.test", dn));
+			Assert::IsTrue(dn.empty());
+			Assert::AreEqual(1UL, book.refs());
+			Assert::AreEqual(1UL, conflict.refs());
+		}
+
 		TEST_METHOD(SearchesPastContactsAndNearMatchesForVerifiedExchangeMailbox)
 		{
 			unittest::testMapiMemory memory;
@@ -896,7 +1034,7 @@ namespace mapiabtest
 				Assert::AreEqual(S_OK, mapi::ab::ResolveExchangeMailbox(&book, L"user@example.test", dn));
 				Assert::AreEqual(std::wstring(L"/o=Test/ou=Test/cn=Recipients/cn=User"), dn);
 				Assert::AreEqual(2UL, book.containerOpenCalls);
-				Assert::AreEqual(1UL, book.resolveCalls);
+				Assert::AreEqual(2UL, book.resolveCalls);
 				Assert::AreEqual(1UL, exchange.resolveCalls);
 				Assert::AreEqual(1UL, book.refs());
 				Assert::AreEqual(1UL, exchange.refs());
