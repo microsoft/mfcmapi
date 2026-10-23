@@ -14,6 +14,7 @@
 namespace dialog::editor
 {
 	static constexpr int ADDIN_APPROVAL_PANE_ID = 30000;
+	static constexpr int ADDIN_DIAGNOSTICS_PANE_ID = 30001;
 
 	struct OptionValue
 	{
@@ -110,6 +111,11 @@ namespace dialog::editor
 			}
 			if (advanced && section == IDS_OPTIONS_ADDINS)
 			{
+				AddPane(viewpane::TextPane::CreateMultiLinePane(
+					ADDIN_DIAGNOSTICS_PANE_ID,
+					IDS_OPTIONS_DIAGNOSTICS,
+					addin::GetAddInReport(m_values.at(&registry::addInDirectory).text),
+					true));
 				AddPane(viewpane::AddInApprovalPane::Create(ADDIN_APPROVAL_PANE_ID));
 			}
 		}
@@ -272,6 +278,7 @@ namespace dialog::editor
 
 	void COptions::OnEditAction1()
 	{
+		m_values.at(&registry::addInDirectory).text = GetStringW(IDS_REGKEY_ADDINDIRECTORY);
 		COptions advancedOptions(this, m_values, true);
 		advancedOptions.DoModal();
 	}
