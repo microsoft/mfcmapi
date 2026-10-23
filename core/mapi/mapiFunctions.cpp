@@ -16,6 +16,37 @@
 
 namespace mapi
 {
+	_Check_return_ HRESULT
+	QueryRowsWithDiagnostics(_In_ LPMAPITABLE lpTable, LONG rowCount, ULONG flags, _Deref_out_ LPSRowSet* rows)
+	{
+		if (!lpTable || !rows) return EC_H(MAPI_E_INVALID_PARAMETER);
+
+		const auto hRes = lpTable->QueryRows(rowCount, flags, rows);
+		UINT message = 0;
+		if (hRes == MAPI_E_NO_SUPPORT)
+		{
+			LPSPropTagArray columns = nullptr;
+			const auto columnsResult = WC_MAPI(lpTable->QueryColumns(0, &columns));
+			if (SUCCEEDED(columnsResult) && columns)
+			{
+				for (ULONG i = 0; i < columns->cValues; ++i)
+				{
+					if (PROP_TYPE(columns->aulPropTag[i]) & MV_INSTANCE)
+					{
+						message = IDS_QUERYROWSMVINSTANCE;
+						break;
+					}
+				}
+			}
+
+			MAPIFreeBuffer(columns);
+		}
+
+		error::LogFunctionCall(
+			hRes, {}, true, true, false, message, "lpTable->QueryRows(rowCount, flags, rows)", __FILE__, __LINE__);
+		return hRes;
+	}
+
 	// Safely cast across MAPI interfaces. Result is addrefed and must be released.
 	// Adding interfaces:
 	// 1 Add else if to safe_cast

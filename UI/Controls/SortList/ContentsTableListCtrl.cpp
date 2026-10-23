@@ -569,7 +569,7 @@ namespace controls::sortlistctrl
 				if (FAILED(hRes)) break;
 
 				if (lpListCtrl->bAbortLoad()) break;
-				hRes = EC_MAPI(lpContentsTable->QueryRows(1, NULL, &pRows));
+				hRes = mapi::QueryRowsWithDiagnostics(lpContentsTable, 1, NULL, &pRows);
 			}
 			else
 			{
@@ -581,7 +581,7 @@ namespace controls::sortlistctrl
 					rowCount);
 				// Pull back a sizable block of rows to add to the list box
 				if (lpListCtrl->bAbortLoad()) break;
-				hRes = EC_MAPI(lpContentsTable->QueryRows(rowCount, NULL, &pRows));
+				hRes = mapi::QueryRowsWithDiagnostics(lpContentsTable, rowCount, NULL, &pRows);
 			}
 
 			if (FAILED(hRes) || !pRows || !pRows->cRows) break;
