@@ -12,6 +12,80 @@
 
 namespace mapi::ab
 {
+	bool IsMailboxSMTPAddress(const std::wstring& smtpAddress) noexcept
+	{
+		const auto at = smtpAddress.find(L'@');
+		return at != std::wstring::npos && at && at + 1 != smtpAddress.size() &&
+			   smtpAddress.find(L'@', at + 1) == std::wstring::npos &&
+			   smtpAddress.find_first_of(L" \t\r\n<>") == std::wstring::npos &&
+			   smtpAddress.find(L'\0') == std::wstring::npos;
+	}
+
+	_Check_return_ HRESULT
+	ResolveExchangeMailbox(_In_ LPADRBOOK addressBook, const std::wstring& smtpAddress, _Out_ std::wstring& mailboxDN)
+	{
+		mailboxDN.clear();
+		if (!addressBook || !IsMailboxSMTPAddress(smtpAddress)) return WC_H(MAPI_E_INVALID_PARAMETER);
+
+		auto recipients = AllocAdrList(1);
+		if (!recipients) return WC_H(MAPI_E_NOT_ENOUGH_MEMORY);
+		recipients->cEntries = 1;
+		recipients->aEntries[0].cValues = 1;
+		recipients->aEntries[0].rgPropVals[0].ulPropTag = PR_DISPLAY_NAME_W;
+		recipients->aEntries[0].rgPropVals[0].Value.lpszW = const_cast<LPWSTR>(smtpAddress.c_str());
+		auto hRes = WC_MAPI(addressBook->ResolveName(0, MAPI_UNICODE, nullptr, recipients));
+		LPMAPIPROP recipient{};
+		if (SUCCEEDED(hRes))
+		{
+			auto entryID =
+				recipients->cEntries == 1
+					? PpropFindProp(recipients->aEntries[0].rgPropVals, recipients->aEntries[0].cValues, PR_ENTRYID)
+					: nullptr;
+			if (!entryID || entryID->ulPropTag != PR_ENTRYID || !entryID->Value.bin.cb || !entryID->Value.bin.lpb)
+				hRes = WC_H(MAPI_E_NOT_FOUND);
+			else
+			{
+				ULONG objectType{};
+				hRes = WC_MAPI(addressBook->OpenEntry(
+					entryID->Value.bin.cb,
+					reinterpret_cast<LPENTRYID>(entryID->Value.bin.lpb),
+					&IID_IMAPIProp,
+					0,
+					&objectType,
+					reinterpret_cast<LPUNKNOWN*>(&recipient)));
+				if (SUCCEEDED(hRes) && (!recipient || objectType != MAPI_MAILUSER)) hRes = WC_H(MAPI_E_INVALID_OBJECT);
+			}
+		}
+		if (SUCCEEDED(hRes))
+		{
+			static const SizedSPropTagArray(3, tags) = {3, {PR_ADDRTYPE_W, PR_EMAIL_ADDRESS_W, PR_SMTP_ADDRESS_W}};
+			ULONG count{};
+			LPSPropValue properties{};
+			hRes = WC_MAPI(recipient->GetProps(LPSPropTagArray(&tags), MAPI_UNICODE, &count, &properties));
+			if (SUCCEEDED(hRes))
+			{
+				const auto type = properties ? PpropFindProp(properties, count, PR_ADDRTYPE_W) : nullptr;
+				const auto dn = properties ? PpropFindProp(properties, count, PR_EMAIL_ADDRESS_W) : nullptr;
+				const auto smtp = properties ? PpropFindProp(properties, count, PR_SMTP_ADDRESS_W) : nullptr;
+				// Verify the provider's actual primary address, not an unresolved input property or an ANR near-match.
+				if (!strings::CheckStringProp(type, PT_UNICODE) || _wcsicmp(type->Value.lpszW, L"EX") != 0 ||
+					!strings::CheckStringProp(dn, PT_UNICODE) || !dn->Value.lpszW[0] ||
+					!strings::CheckStringProp(smtp, PT_UNICODE) ||
+					_wcsicmp(smtp->Value.lpszW, smtpAddress.c_str()) != 0)
+					hRes = WC_H(MAPI_E_NOT_FOUND);
+				else
+				{
+					mailboxDN = dn->Value.lpszW;
+					hRes = S_OK;
+				}
+			}
+			MAPIFreeBuffer(properties);
+		}
+		if (recipient) recipient->Release();
+		FreePadrlist(recipients);
+		return hRes;
+	}
+
 	_Check_return_ HRESULT
 	DisplayDetails(_In_ LPADRBOOK lpAddrBook, HWND hwnd, ULONG cbEntryID, _In_ LPENTRYID lpEntryID)
 	{

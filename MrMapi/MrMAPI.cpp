@@ -19,6 +19,8 @@
 #include <core/utility/strings.h>
 #include <core/utility/import.h>
 #include <core/mapi/mapiStoreFunctions.h>
+#include <core/mapi/mapiABFunctions.h>
+#include <core/mapi/mapiFunctions.h>
 #include <mapistub/library/stubutils.h>
 #include <core/addin/addin.h>
 #include <core/utility/registry.h>
@@ -179,8 +181,22 @@ int wmain(_In_ int argc, _In_count_(argc) wchar_t* argv[])
 
 	auto ProgOpts = cli::OPTIONS{};
 	auto cl = cli::GetCommandLine(argc, argv);
+	const auto mailboxRequested = std::any_of(cl.begin(), cl.end(), [](const auto& arg) {
+		return cli::GetOption(arg, cli::g_options) == &cli::switchMailbox;
+	});
 	cli::ParseArgs(ProgOpts, cl, cli::g_options);
+	if (mailboxRequested && !cli::switchMailbox.isSet())
+	{
+		wprintf(L"-Mailbox requires a primary SMTP address.\n");
+		return 2;
+	}
 	PostParseCheck(ProgOpts);
+	const auto mailboxError = cli::ValidateMailboxOptions(ProgOpts);
+	if (!mailboxError.empty())
+	{
+		wprintf(L"%ws\n", mailboxError.c_str());
+		return 2;
+	}
 
 	// Must be first after ParseArgs and PostParseCheck
 	if (ProgOpts.flags & cli::OPT_INITMFC)
@@ -246,8 +262,46 @@ int wmain(_In_ int argc, _In_count_(argc) wchar_t* argv[])
 			lpMAPISession = MrMAPILogonEx(cli::switchProfile[0]);
 		}
 
+		if (cli::switchMailbox.isSet())
+		{
+			if (!lpMAPISession)
+			{
+				if (SUCCEEDED(hRes)) hRes = WC_H(MAPI_E_LOGON_FAILED);
+			}
+			else
+			{
+				LPADRBOOK addressBook{};
+				hRes = WC_MAPI(lpMAPISession->OpenAddressBook(0, nullptr, AB_NO_DIALOG, &addressBook));
+				std::wstring mailboxDN;
+				if (SUCCEEDED(hRes))
+					hRes = mapi::ab::ResolveExchangeMailbox(addressBook, cli::switchMailbox[0], mailboxDN);
+				if (addressBook) addressBook->Release();
+				if (SUCCEEDED(hRes))
+				{
+					auto primary = mapi::store::OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid);
+					if (primary)
+					{
+						lpMDB = mapi::store::OpenOtherUsersMailbox(
+							lpMAPISession, primary, {}, mailboxDN, cli::switchMailbox[0], 0, true);
+						primary->Release();
+					}
+					if (!lpMDB) hRes = WC_H(MAPI_E_CALL_FAILED);
+				}
+				if (SUCCEEDED(hRes) && (ProgOpts.flags & cli::OPT_NEEDFOLDER || ProgOpts.mode == cli::cmdmodeContents))
+				{
+					ULONG folder{};
+					lpFolder = strings::tryWstringToUlong(folder, cli::switchFolder[0], 10, true)
+								   ? mapi::OpenDefaultFolder(folder, lpMDB)
+								   : MAPIOpenFolderExW(lpMDB, cli::switchFolder[0]);
+					if (!lpFolder) hRes = WC_H(MAPI_E_NOT_FOUND);
+				}
+			}
+			if (FAILED(hRes))
+				wprintf(L"Cannot open requested mailbox/folder: 0x%08lX. No fallback mailbox was used.\n", hRes);
+		}
+
 		// If they need a folder get it and store at the same time from the folder id
-		if (lpMAPISession && ProgOpts.flags & cli::OPT_NEEDFOLDER)
+		if (!cli::switchMailbox.isSet() && lpMAPISession && ProgOpts.flags & cli::OPT_NEEDFOLDER)
 		{
 			hRes = WC_H(HrMAPIOpenStoreAndFolder(lpMAPISession, cli::switchFolder[0], &lpMDB, &lpFolder));
 			if (FAILED(hRes)) wprintf(L"HrMAPIOpenStoreAndFolder returned an error: 0x%08lx\n", hRes);
@@ -258,91 +312,91 @@ int wmain(_In_ int argc, _In_count_(argc) wchar_t* argv[])
 		auto gotStoreIndex = strings::tryWstringToUlong(ulStoreIndex, cli::switchStore[0], 10);
 		if (!gotStoreIndex) gotStoreIndex = strings::tryWstringToUlong(ulStoreIndex, cli::switchReceiveFolder[0], 10);
 
-		if (lpMAPISession && gotStoreIndex && !lpMDB)
+		if (!cli::switchMailbox.isSet() && lpMAPISession && gotStoreIndex && !lpMDB)
 		{
 			lpMDB = OpenStore(lpMAPISession, ulStoreIndex);
 			if (!lpMDB) wprintf(L"OpenStore failed\n");
 		}
 
-		if (lpMAPISession && ProgOpts.flags & cli::OPT_NEEDSTORE && !lpMDB)
+		if (!cli::switchMailbox.isSet() && lpMAPISession && ProgOpts.flags & cli::OPT_NEEDSTORE && !lpMDB)
 		{
 			// If they needed a store but didn't specify, get the default one
 			lpMDB = OpenExchangeOrDefaultMessageStore(lpMAPISession);
 			if (!lpMDB) wprintf(L"OpenExchangeOrDefaultMessageStore failed.\n");
 		}
 
-		switch (ProgOpts.mode)
-		{
-		case cli::cmdmodePropTag:
-			DoPropTags();
-			break;
-		case cli::cmdmodeGuid:
-			DoGUIDs();
-			break;
-		case cli::cmdmodeSmartView:
-			DoSmartView();
-			break;
-		case cli::cmdmodeAcls:
-			DoAcls(lpFolder);
-			break;
-		case cli::cmdmodeRules:
-			DoRules(lpFolder);
-			break;
-		case cli::cmdmodeErr:
-			DoErrorParse();
-			break;
-		case cli::cmdmodeContents:
-			DoContents(lpMDB, lpFolder);
-			break;
-		case cli::cmdmodeXML:
-			DoMSG();
-			break;
-		case cli::cmdmodeFidMid:
-			DoFidMid(lpMDB);
-			break;
-		case cli::cmdmodeStoreProperties:
-			DoStore(lpMAPISession, lpMDB);
-			break;
-		case cli::cmdmodeMAPIMIME:
-			DoMAPIMIME(lpMAPISession);
-			break;
-		case cli::cmdmodeChildFolders:
-			DoChildFolders(lpFolder);
-			break;
-		case cli::cmdmodeFlagSearch:
-			DoFlagSearch();
-			break;
-		case cli::cmdmodeFolderProps:
-			DoFolderProps(lpFolder);
-			break;
-		case cli::cmdmodeFolderSize:
-			DoFolderSize(lpFolder);
-			break;
-		case cli::cmdmodePST:
-			DoPST();
-			break;
-		case cli::cmdmodeProfile:
-			output::DoProfile();
-			break;
-		case cli::cmdmodeReceiveFolder:
-			DoReceiveFolder(lpMDB);
-			break;
-		case cli::cmdmodeSearchState:
-			DoSearchState(lpFolder);
-			break;
-		case cli::cmdmodeEnumAccounts:
-			DoAccounts(lpMAPISession);
-			break;
-		case cli::cmdmodeNamedProps:
-			DoNamedProps(lpMAPISession, lpMDB);
-			break;
-		case cli::cmdmodeUnknown:
-			break;
-		case cli::cmdmodeHelp:
-			break;
-		default:
-			break;
-		}
+		if (!cli::switchMailbox.isSet() || SUCCEEDED(hRes)) switch (ProgOpts.mode)
+			{
+			case cli::cmdmodePropTag:
+				DoPropTags();
+				break;
+			case cli::cmdmodeGuid:
+				DoGUIDs();
+				break;
+			case cli::cmdmodeSmartView:
+				DoSmartView();
+				break;
+			case cli::cmdmodeAcls:
+				DoAcls(lpFolder);
+				break;
+			case cli::cmdmodeRules:
+				DoRules(lpFolder);
+				break;
+			case cli::cmdmodeErr:
+				DoErrorParse();
+				break;
+			case cli::cmdmodeContents:
+				DoContents(lpMDB, lpFolder);
+				break;
+			case cli::cmdmodeXML:
+				DoMSG();
+				break;
+			case cli::cmdmodeFidMid:
+				DoFidMid(lpMDB);
+				break;
+			case cli::cmdmodeStoreProperties:
+				DoStore(lpMAPISession, lpMDB);
+				break;
+			case cli::cmdmodeMAPIMIME:
+				DoMAPIMIME(lpMAPISession);
+				break;
+			case cli::cmdmodeChildFolders:
+				DoChildFolders(lpFolder);
+				break;
+			case cli::cmdmodeFlagSearch:
+				DoFlagSearch();
+				break;
+			case cli::cmdmodeFolderProps:
+				DoFolderProps(lpFolder);
+				break;
+			case cli::cmdmodeFolderSize:
+				DoFolderSize(lpFolder);
+				break;
+			case cli::cmdmodePST:
+				DoPST();
+				break;
+			case cli::cmdmodeProfile:
+				output::DoProfile();
+				break;
+			case cli::cmdmodeReceiveFolder:
+				DoReceiveFolder(lpMDB);
+				break;
+			case cli::cmdmodeSearchState:
+				DoSearchState(lpFolder);
+				break;
+			case cli::cmdmodeEnumAccounts:
+				DoAccounts(lpMAPISession);
+				break;
+			case cli::cmdmodeNamedProps:
+				DoNamedProps(lpMAPISession, lpMDB);
+				break;
+			case cli::cmdmodeUnknown:
+				break;
+			case cli::cmdmodeHelp:
+				break;
+			default:
+				break;
+			}
 	}
 
 	if (bMAPIInit)
@@ -358,5 +412,5 @@ int wmain(_In_ int argc, _In_count_(argc) wchar_t* argv[])
 		addin::UnloadAddIns();
 	}
 
-	return 0;
+	return cli::switchMailbox.isSet() && FAILED(hRes) ? 1 : 0;
 }

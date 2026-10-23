@@ -1,6 +1,7 @@
 #include <UnitTest/stdafx.h>
 #include <UnitTest/UnitTest.h>
 #include <core/mapi/mapiABFunctions.h>
+#include <core/mapi/mapiMemory.h>
 #include <core/utility/error.h>
 #include <stdexcept>
 #include <thread>
@@ -20,9 +21,22 @@ namespace mapiabtest
 		ULONG STDMETHODCALLTYPE Release() override { return --m_refs; }
 		HRESULT STDMETHODCALLTYPE GetLastError(HRESULT, ULONG, LPMAPIERROR*) override { return MAPI_E_NO_SUPPORT; }
 		HRESULT STDMETHODCALLTYPE SaveChanges(ULONG) override { return MAPI_E_NO_SUPPORT; }
-		HRESULT STDMETHODCALLTYPE GetProps(LPSPropTagArray, ULONG, ULONG*, LPSPropValue*) override
+		HRESULT STDMETHODCALLTYPE
+		GetProps(LPSPropTagArray tags, ULONG flags, ULONG* count, LPSPropValue* props) override
 		{
-			return MAPI_E_NO_SUPPORT;
+			++getPropsCalls;
+			Assert::AreEqual(3UL, tags->cValues);
+			Assert::AreEqual(static_cast<ULONG>(MAPI_UNICODE), flags);
+			*count = static_cast<ULONG>(mailboxProperties.size());
+			*props = nullptr;
+			if (!mailboxProperties.empty())
+			{
+				*props =
+					mapi::allocate<LPSPropValue>(static_cast<ULONG>(mailboxProperties.size() * sizeof(SPropValue)));
+				Assert::IsNotNull(*props);
+				std::copy(mailboxProperties.begin(), mailboxProperties.end(), *props);
+			}
+			return getPropsResult;
 		}
 		HRESULT STDMETHODCALLTYPE GetPropList(ULONG, LPSPropTagArray*) override { return MAPI_E_NO_SUPPORT; }
 		HRESULT STDMETHODCALLTYPE OpenProperty(ULONG, LPCIID, ULONG, ULONG, LPUNKNOWN*) override
@@ -56,9 +70,19 @@ namespace mapiabtest
 		{
 			return MAPI_E_NO_SUPPORT;
 		}
-		HRESULT STDMETHODCALLTYPE OpenEntry(ULONG, LPENTRYID, LPCIID, ULONG, ULONG*, LPUNKNOWN*) override
+		HRESULT STDMETHODCALLTYPE
+		OpenEntry(ULONG cbEntryID, LPENTRYID addressEntry, LPCIID iid, ULONG flags, ULONG* type, LPUNKNOWN* object)
+			override
 		{
-			return MAPI_E_NO_SUPPORT;
+			++openCalls;
+			Assert::AreEqual(1UL, cbEntryID);
+			Assert::AreEqual(static_cast<BYTE>(42), *reinterpret_cast<LPBYTE>(addressEntry));
+			Assert::IsTrue(IsEqualIID(*iid, IID_IMAPIProp));
+			Assert::AreEqual(0UL, flags);
+			*type = resolvedObjectType;
+			*object = static_cast<IMAPIProp*>(this);
+			AddRef();
+			return openResult;
 		}
 		HRESULT STDMETHODCALLTYPE CompareEntryIDs(ULONG, LPENTRYID, ULONG, LPENTRYID, ULONG, ULONG*) override
 		{
@@ -78,9 +102,22 @@ namespace mapiabtest
 		{
 			return MAPI_E_NO_SUPPORT;
 		}
-		HRESULT STDMETHODCALLTYPE ResolveName(ULONG_PTR, ULONG, LPTSTR, LPADRLIST) override
+		HRESULT STDMETHODCALLTYPE
+		ResolveName(ULONG_PTR uiParam, ULONG flags, LPTSTR title, LPADRLIST recipients) override
 		{
-			return MAPI_E_NO_SUPPORT;
+			++resolveCalls;
+			Assert::AreEqual(ULONG_PTR{}, uiParam);
+			Assert::AreEqual(static_cast<ULONG>(MAPI_UNICODE), flags);
+			Assert::IsNull(title);
+			Assert::AreEqual(1UL, recipients->cEntries);
+			Assert::AreEqual(1UL, recipients->aEntries[0].cValues);
+			Assert::AreEqual(static_cast<ULONG>(PR_DISPLAY_NAME_W), recipients->aEntries[0].rgPropVals[0].ulPropTag);
+			requestedSMTP = recipients->aEntries[0].rgPropVals[0].Value.lpszW;
+			auto& prop = recipients->aEntries[0].rgPropVals[0];
+			prop = {};
+			prop.ulPropTag = resolvedEntryIDTag;
+			prop.Value.bin = {1, &resolvedEntryID};
+			return resolveResult;
 		}
 		HRESULT STDMETHODCALLTYPE Address(ULONG_PTR*, LPADRPARM, LPADRLIST*) override { return MAPI_E_NO_SUPPORT; }
 		HRESULT STDMETHODCALLTYPE Details(
@@ -127,6 +164,18 @@ namespace mapiabtest
 		LPENTRYID entry{};
 		ULONG detailsFlags{};
 		bool noCallbacks{};
+		HRESULT resolveResult{S_OK};
+		HRESULT openResult{S_OK};
+		HRESULT getPropsResult{S_OK};
+		ULONG resolvedEntryIDTag{PR_ENTRYID};
+		BYTE resolvedEntryID{42};
+		ULONG resolvedObjectType{MAPI_MAILUSER};
+		ULONG resolveCalls{};
+		ULONG openCalls{};
+		ULONG getPropsCalls{};
+		std::wstring requestedSMTP;
+		std::vector<SPropValue> mailboxProperties;
+		ULONG refs() const noexcept { return m_refs; }
 
 	private:
 		ULONG m_refs{1};
@@ -254,7 +303,146 @@ namespace mapiabtest
 			Assert::IsTrue(m_errors.empty());
 		}
 
+		TEST_METHOD(ChecksPrimarySMTPInputBeforeResolution)
+		{
+			unittest::testMapiMemory memory;
+			TestAddressBook book;
+			for (const auto& address : {L"", L"alias", L"@example.test", L"user@", L"a@b@c", L"a b@c", L"<a@b>"})
+			{
+				std::wstring dn = L"stale";
+				Assert::AreEqual(MAPI_E_INVALID_PARAMETER, mapi::ab::ResolveExchangeMailbox(&book, address, dn));
+				Assert::IsTrue(dn.empty());
+			}
+			std::wstring dn = L"stale";
+			Assert::AreEqual(
+				MAPI_E_INVALID_PARAMETER, mapi::ab::ResolveExchangeMailbox(nullptr, L"user@example.test", dn));
+			Assert::IsTrue(dn.empty());
+			Assert::AreEqual(0UL, book.resolveCalls);
+			Assert::IsTrue(mapi::ab::IsMailboxSMTPAddress(L"user@example.test"));
+		}
+
+		TEST_METHOD(ResolvesAndVerifiesExactPrimarySMTPWithoutUI)
+		{
+			unittest::testMapiMemory memory;
+			TestAddressBook book;
+			ConfigureMailbox(book);
+			std::wstring dn = L"stale";
+			Assert::AreEqual(S_OK, mapi::ab::ResolveExchangeMailbox(&book, L"User@Example.Test", dn));
+			Assert::AreEqual(std::wstring(L"/o=Test/ou=Test/cn=Recipients/cn=User"), dn);
+			Assert::AreEqual(std::wstring(L"User@Example.Test"), book.requestedSMTP);
+			Assert::AreEqual(1UL, book.resolveCalls);
+			Assert::AreEqual(1UL, book.openCalls);
+			Assert::AreEqual(1UL, book.getPropsCalls);
+			Assert::AreEqual(1UL, book.refs());
+		}
+
+		TEST_METHOD(RejectsANRNearMatchesAndNonExchangeRecipients)
+		{
+			unittest::testMapiMemory memory;
+			for (const auto wrongType : {false, true})
+			{
+				TestAddressBook book;
+				ConfigureMailbox(book);
+				if (wrongType)
+					book.mailboxProperties[0].Value.lpszW = const_cast<LPWSTR>(L"SMTP");
+				else
+					book.mailboxProperties[2].Value.lpszW = const_cast<LPWSTR>(L"other@example.test");
+				std::wstring dn = L"stale";
+				Assert::AreEqual(MAPI_E_NOT_FOUND, mapi::ab::ResolveExchangeMailbox(&book, L"user@example.test", dn));
+				Assert::IsTrue(dn.empty());
+				Assert::AreEqual(1UL, book.refs());
+			}
+		}
+
+		TEST_METHOD(RejectsMissingErrorAndEmptyIdentityProperties)
+		{
+			unittest::testMapiMemory memory;
+			for (const auto index : {0U, 1U, 2U})
+			{
+				TestAddressBook book;
+				ConfigureMailbox(book);
+				book.mailboxProperties[index].ulPropTag =
+					CHANGE_PROP_TYPE(book.mailboxProperties[index].ulPropTag, PT_ERROR);
+				book.mailboxProperties[index].Value.err = MAPI_E_NOT_FOUND;
+				book.getPropsResult = MAPI_W_ERRORS_RETURNED;
+				std::wstring dn = L"stale";
+				Assert::AreEqual(MAPI_E_NOT_FOUND, mapi::ab::ResolveExchangeMailbox(&book, L"user@example.test", dn));
+				Assert::IsTrue(dn.empty());
+				Assert::AreEqual(1UL, book.refs());
+			}
+			TestAddressBook book;
+			ConfigureMailbox(book);
+			book.mailboxProperties[1].Value.lpszW = const_cast<LPWSTR>(L"");
+			std::wstring dn;
+			Assert::AreEqual(MAPI_E_NOT_FOUND, mapi::ab::ResolveExchangeMailbox(&book, L"user@example.test", dn));
+		}
+
+		TEST_METHOD(PreservesResolutionAndOpenFailures)
+		{
+			unittest::testMapiMemory memory;
+			for (const auto failResolve : {false, true})
+			{
+				TestAddressBook book;
+				ConfigureMailbox(book);
+				if (failResolve)
+					book.resolveResult = MAPI_E_AMBIGUOUS_RECIP;
+				else
+					book.openResult = MAPI_E_NO_ACCESS;
+				std::wstring dn = L"stale";
+				Assert::AreEqual(
+					failResolve ? MAPI_E_AMBIGUOUS_RECIP : MAPI_E_NO_ACCESS,
+					mapi::ab::ResolveExchangeMailbox(&book, L"user@example.test", dn));
+				Assert::IsTrue(dn.empty());
+				Assert::AreEqual(1UL, book.refs());
+				Assert::AreEqual(0UL, book.getPropsCalls);
+			}
+		}
+
+		TEST_METHOD(PreservesGetPropsFailureAndReleasesReturnedBuffer)
+		{
+			unittest::testMapiMemory memory;
+			TestAddressBook book;
+			ConfigureMailbox(book);
+			book.getPropsResult = MAPI_E_NO_ACCESS;
+			std::wstring dn = L"stale";
+			Assert::AreEqual(MAPI_E_NO_ACCESS, mapi::ab::ResolveExchangeMailbox(&book, L"user@example.test", dn));
+			Assert::IsTrue(dn.empty());
+			Assert::AreEqual(1UL, book.refs());
+		}
+
+		TEST_METHOD(RejectsErrorEntryIDAndNonMailUserWithoutReadingIdentity)
+		{
+			unittest::testMapiMemory memory;
+			for (const auto errorEntry : {false, true})
+			{
+				TestAddressBook book;
+				ConfigureMailbox(book);
+				if (errorEntry)
+					book.resolvedEntryIDTag = CHANGE_PROP_TYPE(PR_ENTRYID, PT_ERROR);
+				else
+					book.resolvedObjectType = MAPI_DISTLIST;
+				std::wstring dn = L"stale";
+				Assert::AreEqual(
+					errorEntry ? MAPI_E_NOT_FOUND : MAPI_E_INVALID_OBJECT,
+					mapi::ab::ResolveExchangeMailbox(&book, L"user@example.test", dn));
+				Assert::IsTrue(dn.empty());
+				Assert::AreEqual(0UL, book.getPropsCalls);
+				Assert::AreEqual(1UL, book.refs());
+			}
+		}
+
 	private:
+		void ConfigureMailbox(TestAddressBook & book)
+		{
+			book.mailboxProperties.resize(3);
+			book.mailboxProperties[0].ulPropTag = PR_ADDRTYPE_W;
+			book.mailboxProperties[0].Value.lpszW = const_cast<LPWSTR>(L"EX");
+			book.mailboxProperties[1].ulPropTag = PR_EMAIL_ADDRESS_W;
+			book.mailboxProperties[1].Value.lpszW = const_cast<LPWSTR>(L"/o=Test/ou=Test/cn=Recipients/cn=User");
+			book.mailboxProperties[2].ulPropTag = PR_SMTP_ADDRESS_W;
+			book.mailboxProperties[2].Value.lpszW = const_cast<LPWSTR>(L"user@example.test");
+		}
+
 		HRESULT Display(TestAddressBook & book)
 		{
 			return mapi::ab::DisplayDetails(&book, nullptr, sizeof(m_entry), &m_entry);

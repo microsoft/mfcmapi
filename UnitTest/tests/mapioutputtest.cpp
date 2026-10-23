@@ -16,10 +16,14 @@
 #pragma comment(linker, "/export:MAPIAllocateBuffer@8=_TestMAPIAllocateBuffer@8")
 #pragma comment(linker, "/export:MAPIFreeBuffer@4=_TestMAPIFreeBuffer@4")
 #pragma comment(linker, "/export:FreeProws@4=_TestFreeProws@4")
+#pragma comment(linker, "/export:FreePadrlist@4=_TestFreePadrlist@4")
+#pragma comment(linker, "/export:PpropFindProp@12=_TestPpropFindProp@12")
 #else
 #pragma comment(linker, "/export:MAPIAllocateBuffer=TestMAPIAllocateBuffer")
 #pragma comment(linker, "/export:MAPIFreeBuffer=TestMAPIFreeBuffer")
 #pragma comment(linker, "/export:FreeProws=TestFreeProws")
+#pragma comment(linker, "/export:FreePadrlist=TestFreePadrlist")
+#pragma comment(linker, "/export:PpropFindProp=TestPpropFindProp")
 #endif
 
 namespace
@@ -79,6 +83,26 @@ extern "C" void STDAPICALLTYPE TestFreeProws(LPSRowSet rows)
 	}
 
 	TestMAPIFreeBuffer(rows);
+}
+
+extern "C" void STDAPICALLTYPE TestFreePadrlist(LPADRLIST recipients)
+{
+	if (!recipients) return;
+	for (ULONG row = 0; row < recipients->cEntries; ++row)
+		TestMAPIFreeBuffer(recipients->aEntries[row].rgPropVals);
+	TestMAPIFreeBuffer(recipients);
+}
+
+extern "C" LPSPropValue STDAPICALLTYPE TestPpropFindProp(LPSPropValue props, ULONG count, ULONG tag)
+{
+	if (!props) return nullptr;
+	for (ULONG index = 0; index < count; ++index)
+	{
+		if (props[index].ulPropTag == tag ||
+			(PROP_TYPE(tag) == PT_UNSPECIFIED && PROP_ID(props[index].ulPropTag) == PROP_ID(tag)))
+			return &props[index];
+	}
+	return nullptr;
 }
 
 namespace mapioutputtest
