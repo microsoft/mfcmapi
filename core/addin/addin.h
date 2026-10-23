@@ -31,6 +31,8 @@ namespace addin
 	_Check_return_ DWORD ValidateAddInDirectory(const std::wstring& directory);
 	_Check_return_ DWORD LoadAddIns(_In_ const AddInApprovalPrompt& approvalPrompt = {});
 	_Check_return_ bool ClearAddInApprovalCache();
+	std::wstring GetAddInReport();
+	std::wstring GetAddInReport(const std::wstring& configuredDirectory);
 	void UnloadAddIns();
 	void MergeAddInArrays();
 	std::wstring AddInSmartView(parserType iStructType, ULONG cbBin, _In_count_(cbBin) const BYTE* lpBin);
