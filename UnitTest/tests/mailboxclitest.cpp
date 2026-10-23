@@ -90,6 +90,26 @@ TEST_METHOD(CommandsWithoutMailboxKeepExistingValidation)
 	Assert::AreEqual(std::wstring(L"0"), cli::switchStore[0]);
 }
 
+TEST_METHOD(EntryIDRequestsWithoutMailboxKeepExistingValidation)
+{
+	const auto options = Parse({L"-EntryID", L"00AB", L"-Profile", L"Service", L"-Store", L"0", L"PR_SUBJECT_W"});
+	Assert::AreEqual(static_cast<int>(cli::cmdmodeEntryID), options.mode);
+	Assert::IsTrue(cli::ValidateMailboxOptions(options).empty());
+	Assert::IsFalse(cli::switchMailbox.isSet());
+	Assert::IsTrue(cli::switchEntryID.isSet());
+}
+
+TEST_METHOD(RejectsCombiningMailboxWithEntryIDLookup)
+{
+	auto args = BaseArguments();
+	args.insert(args.end(), {L"-EntryID", L"00AB", L"-Store", L"0", L"PR_SUBJECT_W"});
+	const auto options = Parse(args);
+	Assert::AreEqual(static_cast<int>(cli::cmdmodeHelp), options.mode);
+	Assert::IsFalse(cli::ValidateMailboxOptions(options).empty());
+	Assert::IsTrue(cli::switchMailbox.isSet());
+	Assert::IsTrue(cli::switchEntryID.isSet());
+}
+
 private:
 void ClearOptions()
 {

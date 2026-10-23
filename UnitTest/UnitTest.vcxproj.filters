@@ -38,9 +38,6 @@
     <ClCompile Include="tests\mailboxclitest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\MrMapi\MMcli.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="tests\mapifiletest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -60,6 +57,21 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="tests\clitest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tests\mmentryidtest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\MrMapi\mmcli.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\MrMapi\MMEntryID.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\MrMapi\MMSmartView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tests\mmsmartviewtest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="tests\namedproptest.cpp">

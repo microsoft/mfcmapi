@@ -2,6 +2,7 @@
 #include <UnitTest/UnitTest.h>
 #include <core/mapi/mapiMemory.h>
 #include <core/mapi/mapiOutput.h>
+#include <core/mapi/mapiFunctions.h>
 #include <core/utility/error.h>
 #include <core/utility/output.h>
 #include <core/utility/registry.h>
@@ -129,8 +130,24 @@ namespace mapioutputtest
 		HRESULT STDMETHODCALLTYPE Advise(ULONG, LPMAPIADVISESINK, ULONG_PTR*) override { return MAPI_E_NO_SUPPORT; }
 		HRESULT STDMETHODCALLTYPE Unadvise(ULONG_PTR) override { return MAPI_E_NO_SUPPORT; }
 		HRESULT STDMETHODCALLTYPE GetStatus(ULONG*, ULONG*) override { return MAPI_E_NO_SUPPORT; }
-		HRESULT STDMETHODCALLTYPE SetColumns(LPSPropTagArray, ULONG) override { return MAPI_E_NO_SUPPORT; }
-		HRESULT STDMETHODCALLTYPE QueryColumns(ULONG, LPSPropTagArray*) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE SetColumns(LPSPropTagArray, ULONG) override
+		{
+			++setColumnsCount;
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE QueryColumns(ULONG flags, LPSPropTagArray* tags) override
+		{
+			++queryColumnsCount;
+			Assert::AreEqual(0UL, flags);
+			*tags = nullptr;
+			if (nullColumns) return columnsResult;
+			const auto allocated = MAPIAllocateBuffer(
+				static_cast<ULONG>(CbNewSPropTagArray(columns.size())), reinterpret_cast<void**>(tags));
+			if (FAILED(allocated)) return allocated;
+			(*tags)->cValues = static_cast<ULONG>(columns.size());
+			std::copy(columns.begin(), columns.end(), (*tags)->aulPropTag);
+			return columnsResult;
+		}
 		HRESULT STDMETHODCALLTYPE GetRowCount(ULONG, ULONG*) override { return MAPI_E_NO_SUPPORT; }
 		HRESULT STDMETHODCALLTYPE SeekRow(BOOKMARK origin, LONG count, LONG* sought) override
 		{
@@ -148,15 +165,19 @@ namespace mapioutputtest
 		HRESULT STDMETHODCALLTYPE Restrict(LPSRestriction, ULONG) override { return MAPI_E_NO_SUPPORT; }
 		HRESULT STDMETHODCALLTYPE CreateBookmark(BOOKMARK*) override { return MAPI_E_NO_SUPPORT; }
 		HRESULT STDMETHODCALLTYPE FreeBookmark(BOOKMARK) override { return MAPI_E_NO_SUPPORT; }
-		HRESULT STDMETHODCALLTYPE SortTable(LPSSortOrderSet, ULONG) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE SortTable(LPSSortOrderSet, ULONG) override
+		{
+			++sortCount;
+			return MAPI_E_NO_SUPPORT;
+		}
 		HRESULT STDMETHODCALLTYPE QuerySortOrder(LPSSortOrderSet*) override { return MAPI_E_NO_SUPPORT; }
 		HRESULT STDMETHODCALLTYPE QueryRows(LONG requested, ULONG flags, LPSRowSet* rows) override
 		{
-			Assert::AreEqual(20L, requested);
-			Assert::AreEqual(0UL, flags);
+			Assert::AreEqual(expectedRequested, requested);
+			Assert::AreEqual(expectedFlags, flags);
 			++queryCount;
 			*rows = nullptr;
-			if (queryCount == failOnQuery && !returnRowsOnFailure) return MAPI_E_CALL_FAILED;
+			if (queryCount == failOnQuery && !returnRowsOnFailure) return queryResult;
 			if (position == m_rowCount && nullAtEnd) return S_OK;
 			const auto count = (std::min)({static_cast<ULONG>(requested), m_batchSize, m_rowCount - position});
 			*rows = mapi::allocate<LPSRowSet>(CbNewSRowSet(count));
@@ -178,7 +199,7 @@ namespace mapioutputtest
 			}
 
 			position += count;
-			return queryCount == failOnQuery ? MAPI_E_CALL_FAILED : S_OK;
+			return queryCount == failOnQuery ? queryResult : S_OK;
 		}
 		HRESULT STDMETHODCALLTYPE Abort() override { return MAPI_E_NO_SUPPORT; }
 		HRESULT STDMETHODCALLTYPE ExpandRow(ULONG, LPBYTE, ULONG, ULONG, LPSRowSet*, ULONG*) override
@@ -200,9 +221,18 @@ namespace mapioutputtest
 		ULONG seekCount{};
 		ULONG position{};
 		ULONG failOnQuery{};
+		ULONG queryColumnsCount{};
+		ULONG setColumnsCount{};
+		ULONG sortCount{};
+		LONG expectedRequested{20};
+		ULONG expectedFlags{};
+		HRESULT queryResult{MAPI_E_CALL_FAILED};
+		HRESULT columnsResult{S_OK};
+		std::vector<ULONG> columns;
 		HRESULT seekResult{S_OK};
 		bool returnRowsOnFailure{};
 		bool nullAtEnd{};
+		bool nullColumns{};
 
 	private:
 		ULONG m_refs{1};
@@ -321,6 +351,122 @@ namespace mapioutputtest
 		}
 
 		TEST_METHOD(Test_TableRowIndicesAcrossBatches) { CheckTable(41, 20); }
+
+		TEST_METHOD(QueryRowsExplainsUnsupportedMVInstanceColumns)
+		{
+			for (const ULONG tag : {0x81AF3003UL, 0x800A301FUL, 0x800B3102UL})
+			{
+				auto table = TestTable(0, 20);
+				table.columns = {PR_SUBJECT_W, tag};
+				table.failOnQuery = 1;
+				table.queryResult = MAPI_E_NO_SUPPORT;
+				CheckQueryDiagnostic(table, true);
+				Assert::AreEqual(1UL, table.queryColumnsCount);
+			}
+		}
+
+		TEST_METHOD(QueryRowsDoesNotSuggestMVSortForOrdinaryColumns)
+		{
+			for (const auto& columns :
+				 {std::vector<ULONG>{}, std::vector<ULONG>{PR_SUBJECT_W}, std::vector<ULONG>{0x81AF1003}})
+			{
+				auto table = TestTable(0, 20);
+				table.columns = columns;
+				table.failOnQuery = 1;
+				table.queryResult = MAPI_E_NO_SUPPORT;
+				CheckQueryDiagnostic(table, false);
+				Assert::AreEqual(1UL, table.queryColumnsCount);
+			}
+		}
+
+		TEST_METHOD(QueryRowsPreservesOtherFailuresWithoutQueryingColumns)
+		{
+			for (const auto result : {MAPI_E_CALL_FAILED, MAPI_E_NOT_FOUND, MAPI_E_INVALID_PARAMETER})
+			{
+				auto table = TestTable(0, 20);
+				table.columns = {0x81AF3003};
+				table.failOnQuery = 1;
+				table.queryResult = result;
+				CheckQueryDiagnostic(table, false);
+				Assert::AreEqual(0UL, table.queryColumnsCount);
+			}
+		}
+
+		TEST_METHOD(QueryRowsPreservesPrimaryFailureWhenColumnQueryFails)
+		{
+			auto table = TestTable(0, 20);
+			table.columns = {0x81AF3003};
+			table.columnsResult = MAPI_E_CALL_FAILED;
+			table.failOnQuery = 1;
+			table.queryResult = MAPI_E_NO_SUPPORT;
+			CheckQueryDiagnostic(table, false);
+			Assert::AreEqual(1UL, table.queryColumnsCount);
+		}
+
+		TEST_METHOD(QueryRowsHandlesUnavailableColumns)
+		{
+			for (const auto result : {S_OK, MAPI_E_CALL_FAILED})
+			{
+				auto table = TestTable(0, 20);
+				table.nullColumns = true;
+				table.columnsResult = result;
+				table.failOnQuery = 1;
+				table.queryResult = MAPI_E_NO_SUPPORT;
+				CheckQueryDiagnostic(table, false);
+			}
+		}
+
+		TEST_METHOD(QueryRowsForwardsCountFlagsAndRowsWithoutColumnInspection)
+		{
+			for (const LONG requested : {1L, 20L})
+			{
+				auto table = TestTable(1, 1, true);
+				table.expectedRequested = requested;
+				table.expectedFlags = TBL_NOADVANCE;
+				table.columns = {0x81AF3003};
+				LPSRowSet rows = nullptr;
+				Assert::AreEqual(S_OK, mapi::QueryRowsWithDiagnostics(&table, requested, TBL_NOADVANCE, &rows));
+				Assert::IsNotNull(rows);
+				Assert::AreEqual(1UL, rows->cRows);
+				Assert::AreEqual(numberTag, rows->aRow[0].lpProps[1].ulPropTag);
+				FreeProws(rows);
+				Assert::AreEqual(1UL, table.queryCount);
+				Assert::AreEqual(0UL, table.queryColumnsCount);
+				Assert::IsTrue(m_errors.empty());
+			}
+		}
+
+		TEST_METHOD(QueryRowsPreservesFailureRowOwnership)
+		{
+			auto table = TestTable(1, 1, true);
+			table.columns = {0x81AF3003};
+			table.failOnQuery = 1;
+			table.queryResult = MAPI_E_NO_SUPPORT;
+			table.returnRowsOnFailure = true;
+			CheckQueryDiagnostic(table, true, 1);
+			Assert::AreEqual(1UL, freedRowSets);
+		}
+
+		TEST_METHOD(QueryRowsPreservesWarningsWithoutMVGuidance)
+		{
+			auto table = TestTable(0, 20);
+			table.columns = {0x81AF3003};
+			table.failOnQuery = 1;
+			table.queryResult = MAPI_W_PARTIAL_COMPLETION;
+			CheckQueryDiagnostic(table, false);
+			Assert::AreEqual(0UL, table.queryColumnsCount);
+		}
+
+		TEST_METHOD(QueryRowsReportsInvalidArguments)
+		{
+			auto table = TestTable(0, 20);
+			LPSRowSet rows = nullptr;
+			Assert::AreEqual(MAPI_E_INVALID_PARAMETER, mapi::QueryRowsWithDiagnostics(nullptr, 20, 0, &rows));
+			Assert::AreEqual(MAPI_E_INVALID_PARAMETER, mapi::QueryRowsWithDiagnostics(&table, 20, 0, nullptr));
+			Assert::AreEqual(size_t{2}, m_errors.size());
+			Assert::AreEqual(0UL, table.queryCount);
+			Assert::AreEqual(0UL, table.queryColumnsCount);
+		}
 		TEST_METHOD(Test_TableRowIndicesShortBatches) { CheckTable(41, 7); }
 		TEST_METHOD(Test_TableRowIndicesSingleRowBatches) { CheckTable(21, 1); }
 
@@ -473,6 +619,43 @@ namespace mapioutputtest
 		}
 
 	private:
+		void CheckQueryDiagnostic(TestTable & table, bool expectGuidance, ULONG expectedRows = 0)
+		{
+			m_errors.clear();
+			LPSRowSet rows = nullptr;
+			const auto result = mapi::QueryRowsWithDiagnostics(&table, table.expectedRequested, 0, &rows);
+			Assert::AreEqual(table.queryResult, result);
+			if (expectedRows)
+			{
+				Assert::IsNotNull(rows);
+				Assert::AreEqual(expectedRows, rows->cRows);
+			}
+			else
+			{
+				Assert::IsNull(rows);
+			}
+
+			FreeProws(rows);
+			Assert::AreEqual(size_t{1}, m_errors.size());
+			Assert::IsTrue(m_errors[0].find(L"QueryRows") != std::wstring::npos);
+			Assert::IsTrue(m_errors[0].find(error::ErrorNameFromErrorCode(result)) != std::wstring::npos);
+			Assert::AreEqual(expectGuidance, m_errors[0].find(L"MV_INSTANCE") != std::wstring::npos);
+			if (expectGuidance)
+			{
+				const auto guidance = strings::loadstring(IDS_QUERYROWSMVINSTANCE);
+				Assert::IsFalse(guidance.empty());
+				Assert::IsTrue(m_errors[0].find(guidance) != std::wstring::npos);
+				Assert::IsTrue(guidance.find(L"sort order") != std::wstring::npos);
+				Assert::IsTrue(guidance.find(L"Table > Sort Table") != std::wstring::npos);
+			}
+
+			Assert::AreEqual(1UL, table.queryCount);
+			Assert::AreEqual(0UL, table.setColumnsCount);
+			Assert::AreEqual(0UL, table.sortCount);
+			Assert::AreEqual(0UL, table.seekCount);
+			Assert::IsTrue(buffers == nullptr, L"QueryRows diagnostics leaked or took ownership of MAPI buffers.");
+		}
+
 		void CheckTable(ULONG rowCount, ULONG batchSize, bool withProperties = false)
 		{
 			auto table = TestTable(rowCount, batchSize, withProperties);

@@ -29,6 +29,54 @@ std::vector<_AddIn> g_lpMyAddins;
 
 namespace addin
 {
+	namespace
+	{
+		struct AddInDiagnostic
+		{
+			std::wstring path;
+			UINT status;
+			DWORD error{};
+		};
+		std::vector<AddInDiagnostic> diagnostics;
+		std::wstring scannedDirectory;
+		DWORD scanError{};
+		bool scanned{};
+
+		void RecordDiagnostic(const std::wstring& path, UINT status, DWORD error = ERROR_SUCCESS)
+		{
+			const auto existing = std::find_if(
+				diagnostics.begin(), diagnostics.end(), [&path](const auto& entry) { return entry.path == path; });
+			if (existing != diagnostics.end())
+				*existing = {path, status, error};
+			else
+				diagnostics.push_back({path, status, error});
+		}
+	} // namespace
+
+	std::wstring GetAddInReport() { return GetAddInReport(registry::addInDirectory.szCurSTRING); }
+
+	std::wstring GetAddInReport(const std::wstring& configuredDirectory)
+	{
+		auto report = strings::loadstring(IDS_ADDINREPORTTITLE);
+		report += strings::formatmessage(
+			IDS_ADDINREPORTCONFIGURED,
+			configuredDirectory.empty() ? strings::loadstring(IDS_ADDINREPORTDISABLED).c_str()
+										: configuredDirectory.c_str());
+		if (!scanned) return report + strings::loadstring(IDS_ADDINREPORTNOTSCANNED);
+		report += strings::formatmessage(
+			IDS_ADDINREPORTSCANNED,
+			scannedDirectory.empty() ? strings::loadstring(IDS_ADDINREPORTDISABLED).c_str() : scannedDirectory.c_str());
+		if (scanError != ERROR_SUCCESS) report += strings::formatmessage(IDS_ADDINREPORTERROR, scanError);
+		if (diagnostics.empty()) report += strings::loadstring(IDS_ADDINREPORTNOFILES);
+		for (const auto& entry : diagnostics)
+		{
+			report += strings::formatmessage(
+				IDS_ADDINREPORTENTRY, entry.path.c_str(), strings::loadstring(entry.status).c_str());
+			if (entry.error != ERROR_SUCCESS) report += strings::formatmessage(IDS_ADDINREPORTERROR, entry.error);
+		}
+		return report;
+	}
+
 	template <typename T> T GetFunction(HMODULE hMod, LPCSTR szFuncName)
 	{
 		return WC_D(T, reinterpret_cast<T>(GetProcAddress(hMod, szFuncName)));
@@ -309,11 +357,10 @@ namespace addin
 			const auto hMod = LoadLibraryExW(path.c_str(), nullptr, flags);
 			if (!hMod)
 			{
+				const auto error = GetLastError();
+				RecordDiagnostic(path, IDS_ADDINREPORTLOADFAILED, error);
 				output::DebugPrint(
-					output::dbgLevel::AddInPlumbing,
-					L"LoadLibraryExW(\"%ws\") failed with %u\n",
-					path.c_str(),
-					GetLastError());
+					output::dbgLevel::AddInPlumbing, L"LoadLibraryExW(\"%ws\") failed with %u\n", path.c_str(), error);
 				return;
 			}
 
@@ -322,9 +369,11 @@ namespace addin
 			{
 				g_lpMyAddins.emplace_back();
 				LoadSingleAddIn(g_lpMyAddins.back(), hMod, pfnLoadAddIn);
+				RecordDiagnostic(path, IDS_ADDINREPORTLOADED);
 			}
 			else
 			{
+				RecordDiagnostic(path, IDS_ADDINREPORTINCOMPATIBLEAPI);
 				output::DebugPrint(
 					output::dbgLevel::AddInPlumbing, L"Approved DLL no longer has a compatible add-in export\n");
 				FreeLibrary(hMod);
@@ -423,7 +472,11 @@ namespace addin
 		output::DebugPrint(output::dbgLevel::AddInPlumbing, L"Loading AddIns\n");
 
 		const std::wstring directory = registry::addInDirectory;
+		diagnostics.clear();
+		scannedDirectory = directory;
+		scanned = true;
 		auto result = ValidateAddInDirectory(directory);
+		scanError = result;
 		if (result != ERROR_SUCCESS)
 		{
 			output::DebugPrint(
@@ -467,6 +520,7 @@ namespace addin
 					{
 						if (!candidateFile->HasCompatibleBitness())
 						{
+							RecordDiagnostic(path, IDS_ADDINREPORTBITNESS);
 							output::DebugPrint(
 								output::dbgLevel::AddInPlumbing,
 								L"Skipping add-in with incompatible bitness \"%ws\"\n",
@@ -483,15 +537,22 @@ namespace addin
 								if (!cache.IsDenied(candidate.approval.sha256) &&
 									cache.IsApproved(candidate.approval.sha256))
 								{
+									RecordDiagnostic(path, IDS_ADDINREPORTAPPROVED);
 									approved.emplace_back(std::move(candidate));
 								}
 								else if (!cache.IsDenied(candidate.approval.sha256))
 								{
+									RecordDiagnostic(path, IDS_ADDINREPORTPENDING);
 									unknown.emplace_back(std::move(candidate));
+								}
+								else
+								{
+									RecordDiagnostic(path, IDS_ADDINREPORTDENIED);
 								}
 							}
 							else
 							{
+								RecordDiagnostic(path, IDS_ADDINREPORTNOTADDIN);
 								output::DebugPrint(
 									output::dbgLevel::AddInPlumbing,
 									L"Skipping non-add-in or unreadable image \"%ws\"\n",
@@ -501,11 +562,13 @@ namespace addin
 					}
 					else
 					{
+						const auto error = GetLastError();
+						RecordDiagnostic(path, IDS_ADDINREPORTINSPECTFAILED, error);
 						output::DebugPrint(
 							output::dbgLevel::AddInPlumbing,
 							L"Could not inspect \"%ws\" (error %u)\n",
 							path.c_str(),
-							GetLastError());
+							error);
 					}
 
 					if (!FindNextFileW(findHandle, &findData))
@@ -555,6 +618,8 @@ namespace addin
 
 						if (!cache.Save())
 						{
+							for (const auto& candidate : unknown)
+								RecordDiagnostic(candidate.path, IDS_ADDINREPORTSAVEFAILED);
 							output::DebugPrint(
 								output::dbgLevel::AddInPlumbing,
 								L"Could not persist add-in approval decisions; newly approved add-ins will not "
@@ -564,7 +629,10 @@ namespace addin
 						{
 							for (size_t i = 0; i < unknown.size(); ++i)
 							{
-								if (decisions[decisionIndex[i]]) approved.emplace_back(std::move(unknown[i]));
+								if (decisions[decisionIndex[i]])
+									approved.emplace_back(std::move(unknown[i]));
+								else
+									RecordDiagnostic(unknown[i].path, IDS_ADDINREPORTDENIED);
 							}
 						}
 					}
@@ -587,6 +655,7 @@ namespace addin
 		}
 
 		MergeAddInArrays();
+		scanError = result;
 		output::DebugPrint(output::dbgLevel::AddInPlumbing, L"Done loading AddIns\n");
 		return result;
 	}

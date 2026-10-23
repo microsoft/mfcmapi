@@ -5,6 +5,7 @@
 #include <MrMapi/MMAcls.h>
 #include <MrMapi/MMContents.h>
 #include <MrMapi/MMErr.h>
+#include <MrMapi/MMEntryID.h>
 #include <MrMapi/MMFidMid.h>
 #include <MrMapi/MMFolder.h>
 #include <MrMapi/MMNamedProps.h>
@@ -184,6 +185,11 @@ int wmain(_In_ int argc, _In_count_(argc) wchar_t* argv[])
 	const auto mailboxRequested = std::any_of(cl.begin(), cl.end(), [](const auto& arg) {
 		return cli::GetOption(arg, cli::g_options) == &cli::switchMailbox;
 	});
+	bool entryIDRequested{};
+	for (const auto& arg : cl)
+	{
+		if (cli::GetOption(arg, cli::g_options) == &cli::switchEntryID) entryIDRequested = true;
+	}
 	cli::ParseArgs(ProgOpts, cl, cli::g_options);
 	if (mailboxRequested && !cli::switchMailbox.isSet())
 	{
@@ -195,6 +201,11 @@ int wmain(_In_ int argc, _In_count_(argc) wchar_t* argv[])
 	if (!mailboxError.empty())
 	{
 		wprintf(L"%ws\n", mailboxError.c_str());
+		return 2;
+	}
+	if (entryIDRequested && ProgOpts.mode == cli::cmdmodeHelp)
+	{
+		wprintf(L"Invalid -EntryID command. Use -Help for syntax.\n");
 		return 2;
 	}
 
@@ -298,7 +309,7 @@ int wmain(_In_ int argc, _In_count_(argc) wchar_t* argv[])
 
 		if (!cli::switchMailbox.isSet() && lpMAPISession && gotStoreIndex && !lpMDB)
 		{
-			lpMDB = OpenStore(lpMAPISession, ulStoreIndex);
+			lpMDB = OpenStore(lpMAPISession, ulStoreIndex, ProgOpts.mode == cli::cmdmodeEntryID);
 			if (!lpMDB) wprintf(L"OpenStore failed\n");
 		}
 
@@ -309,8 +320,14 @@ int wmain(_In_ int argc, _In_count_(argc) wchar_t* argv[])
 			if (!lpMDB) wprintf(L"OpenExchangeOrDefaultMessageStore failed.\n");
 		}
 
-		if (!cli::switchMailbox.isSet() || SUCCEEDED(hRes)) switch (ProgOpts.mode)
+		if (!cli::switchMailbox.isSet() || SUCCEEDED(hRes))
+		{
+			switch (ProgOpts.mode)
 			{
+			case cli::cmdmodeEntryID:
+				hRes = DoEntryID(lpMDB);
+				if (FAILED(hRes)) wprintf(L"EntryID property lookup failed: 0x%08lx\n", hRes);
+				break;
 			case cli::cmdmodePropTag:
 				DoPropTags();
 				break;
@@ -318,7 +335,7 @@ int wmain(_In_ int argc, _In_count_(argc) wchar_t* argv[])
 				DoGUIDs();
 				break;
 			case cli::cmdmodeSmartView:
-				DoSmartView();
+				hRes = DoSmartView();
 				break;
 			case cli::cmdmodeAcls:
 				DoAcls(lpFolder);
@@ -381,6 +398,7 @@ int wmain(_In_ int argc, _In_count_(argc) wchar_t* argv[])
 			default:
 				break;
 			}
+		}
 	}
 
 	if (bMAPIInit)
@@ -396,5 +414,9 @@ int wmain(_In_ int argc, _In_count_(argc) wchar_t* argv[])
 		addin::UnloadAddIns();
 	}
 
-	return cli::switchMailbox.isSet() && FAILED(hRes) ? 1 : 0;
+	return (cli::switchMailbox.isSet() || ProgOpts.mode == cli::cmdmodeEntryID ||
+			ProgOpts.mode == cli::cmdmodeSmartView) &&
+				   FAILED(hRes)
+			   ? 1
+			   : 0;
 }

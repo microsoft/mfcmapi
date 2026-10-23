@@ -59,6 +59,7 @@ namespace cli
 	extern option switchFindNamedProperty;
 	extern option switchRecurse;
 	extern option switchMailbox;
+	extern option switchEntryID;
 
 	extern std::vector<option*> g_options;
 
@@ -85,6 +86,7 @@ namespace cli
 		cmdmodeSearchState,
 		cmdmodeNamedProps,
 		cmdmodeEnumAccounts,
+		cmdmodeEntryID,
 	};
 
 	enum OPTIONFLAGS
