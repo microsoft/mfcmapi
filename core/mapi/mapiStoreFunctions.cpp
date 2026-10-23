@@ -283,12 +283,13 @@ namespace mapi::store
 		const std::wstring& smtpAddress,
 		ULONG ulFlags) // desired flags for CreateStoreEntryID
 	{
-		if (!lpMDB || (lpszMsgStoreDN.empty() && smtpAddress.empty()) || !StoreSupportsManageStoreEx(lpMDB))
+		if (!lpMDB || (lpszMsgStoreDN.empty() && lpszMailboxDN.empty() && smtpAddress.empty()) ||
+			!StoreSupportsManageStoreEx(lpMDB))
 		{
 			if (!lpMDB) output::DebugPrint(output::dbgLevel::Generic, L"CreateStoreEntryID2: MDB was NULL\n");
-			if (lpszMsgStoreDN.empty() && smtpAddress.empty())
+			if (lpszMsgStoreDN.empty() && lpszMailboxDN.empty() && smtpAddress.empty())
 				output::DebugPrint(
-					output::dbgLevel::Generic, L"CreateStoreEntryID2: Store DN and SMTP address were missing\n");
+					output::dbgLevel::Generic, L"CreateStoreEntryID2: Store DN, mailbox DN and SMTP address were missing\n");
 			return {};
 		}
 
@@ -496,7 +497,7 @@ namespace mapi::store
 		bool bForceServer) // Use CreateStoreEntryID2
 	{
 		if (!lpMAPISession || !lpMDB || szMailboxDN.empty()) return nullptr;
-		if (szServerName.empty() && !smtpAddress.empty() && bForceServer)
+		if (szServerName.empty() && bForceServer)
 			return MailboxLogon(lpMAPISession, lpMDB, {}, szMailboxDN, smtpAddress, ulFlags, true);
 		if (!StoreSupportsManageStore(lpMDB)) return nullptr;
 

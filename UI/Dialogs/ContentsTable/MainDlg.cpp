@@ -494,9 +494,7 @@ namespace dialog
 		}
 		else
 		{
-			auto bootstrap = prompt.GetMethod() == editor::MailboxMethod::AddressBook
-								 ? mapi::store::OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid)
-								 : mapi::store::OpenDefaultMessageStore(lpMAPISession);
+			auto bootstrap = mapi::store::OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid);
 			if (bootstrap)
 			{
 				mailbox = mapi::store::OpenOtherUsersMailbox(

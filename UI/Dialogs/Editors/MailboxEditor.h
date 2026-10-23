@@ -7,7 +7,6 @@ namespace dialog::editor
 	enum class MailboxMethod
 	{
 		SMTP,
-		AddressBook,
 		DN,
 		EntryID
 	};
@@ -42,6 +41,6 @@ namespace dialog::editor
 
 		LPMAPISESSION m_session; // Borrowed for the lifetime of the modal dialog.
 		MailboxMethod m_method{MailboxMethod::SMTP};
-		std::array<MailboxOptions, 4> m_options{};
+		std::array<MailboxOptions, 3> m_options{};
 	};
 } // namespace dialog::editor

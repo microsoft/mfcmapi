@@ -794,6 +794,42 @@ namespace mapiabtest
 			Assert::AreEqual(1UL, store.refs);
 		}
 
+		TEST_METHOD(DNOnlyMailboxOpenNeedsNeitherServerNorSMTP)
+		{
+			unittest::testMapiMemory memory;
+			ULONG prompts{};
+			mapi::store::promptServerName = [&] { ++prompts; return std::wstring{}; };
+			TestMailboxStore store;
+			store.expectedSMTP.clear();
+			TestSession session;
+			session.openedStore = &store;
+			session.storeOpenResult = S_OK;
+			const auto mailbox = mapi::store::OpenOtherUsersMailbox(
+				&session, &store, {}, L"/o=Test/ou=Test/cn=Recipients/cn=User", {}, 0, true);
+			Assert::IsTrue(mailbox == static_cast<IMsgStore*>(&store));
+			Assert::AreEqual(0UL, prompts);
+			Assert::AreEqual(1UL, store.createCalls);
+			Assert::AreEqual(1UL, session.storeOpenCalls);
+			mailbox->Release();
+			Assert::AreEqual(1UL, store.refs);
+		}
+
+		TEST_METHOD(DNOnlyMailboxOpenDoesNotPromptOrFallbackAfterProviderFailure)
+		{
+			unittest::testMapiMemory memory;
+			ULONG prompts{};
+			mapi::store::promptServerName = [&] { ++prompts; return std::wstring{}; };
+			TestMailboxStore store;
+			store.expectedSMTP.clear();
+			store.createResult = MAPI_E_NO_ACCESS;
+			TestSession session;
+			Assert::IsNull(mapi::store::OpenOtherUsersMailbox(
+				&session, &store, {}, L"/o=Test/ou=Test/cn=Recipients/cn=User", {}, 0, true));
+			Assert::AreEqual(0UL, prompts);
+			Assert::AreEqual(0UL, session.storeOpenCalls);
+			Assert::AreEqual(1UL, store.refs);
+		}
+
 		TEST_METHOD(SMTPMailboxLogonDoesNotOpenOnEntryIDFailure)
 		{
 			unittest::testMapiMemory memory;

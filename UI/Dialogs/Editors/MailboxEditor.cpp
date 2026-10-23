@@ -20,14 +20,12 @@ namespace dialog::editor
 			  0),
 		  m_session(session)
 	{
-		const UINT methods[] = {IDS_MAILBOXSMTP, IDS_MAILBOXADDRESSBOOK, IDS_MAILBOXDN, IDS_MAILBOXENTRYID};
+		const UINT methods[] = {IDS_MAILBOXSMTP, IDS_MAILBOXDN, IDS_MAILBOXENTRYID};
 		auto method = viewpane::DropDownPane::Create(0, IDS_MAILBOXMETHOD, _countof(methods), methods, true);
 		method->SetDropDownSelection(0);
 		AddPane(method);
 		AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_MAILBOXSMTP, false));
-		m_options[static_cast<size_t>(MailboxMethod::AddressBook)].forceServer = true;
-		m_options[static_cast<size_t>(MailboxMethod::DN)].flags =
-			OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP;
+		m_options[static_cast<size_t>(MailboxMethod::DN)].forceServer = true;
 		m_options[static_cast<size_t>(MailboxMethod::EntryID)].flags = MDB_WRITE;
 	}
 
@@ -40,10 +38,10 @@ namespace dialog::editor
 
 	void CMailboxEditor::UpdateMethod()
 	{
-		const UINT labels[] = {IDS_MAILBOXSMTP, IDS_MAILBOXADDRESSBOOKIDENTITY, IDS_USERDN, IDS_EID};
+		const UINT labels[] = {IDS_MAILBOXSMTP, IDS_MAILBOXDNIDENTITY, IDS_EID};
 		GetPane(1)->SetLabel(labels[static_cast<size_t>(m_method)]);
 		SetStringW(1, Options().identity);
-		GetDlgItem(IDD_EDITACTION1)->EnableWindow(m_method == MailboxMethod::AddressBook);
+		GetDlgItem(IDD_EDITACTION1)->EnableWindow(m_method == MailboxMethod::DN);
 		GetDlgItem(IDD_EDITACTION2)->EnableWindow(m_method != MailboxMethod::SMTP);
 		OnRecalcLayout();
 	}
@@ -51,6 +49,8 @@ namespace dialog::editor
 	ULONG CMailboxEditor::HandleChange(UINT nID)
 	{
 		const auto pane = CEditor::HandleChange(nID);
+		if (pane == 1 && m_method == MailboxMethod::DN && GetStringW(1) != Options().identity)
+			Options().smtp.clear();
 		if (pane == 0)
 		{
 			const auto method = GetDropDown(0);
@@ -66,7 +66,7 @@ namespace dialog::editor
 
 	void CMailboxEditor::OnEditAction1()
 	{
-		if (m_method != MailboxMethod::AddressBook) return;
+		if (m_method != MailboxMethod::DN) return;
 		LPADRBOOK addressBook{};
 		const auto openResult = EC_MAPI(
 			m_session->OpenAddressBook(reinterpret_cast<ULONG_PTR>(m_hWnd), nullptr, AB_NO_DIALOG, &addressBook));
@@ -90,11 +90,13 @@ namespace dialog::editor
 			const auto type = props ? PpropFindProp(props, count, PR_ADDRTYPE_W) : nullptr;
 			const auto smtp = props ? PpropFindProp(props, count, PR_SMTP_ADDRESS_W) : nullptr;
 			if (strings::CheckStringProp(type, PT_UNICODE) && _wcsicmp(type->Value.lpszW, L"EX") == 0 &&
-				strings::CheckStringProp(dn, PT_UNICODE) && dn->Value.lpszW[0] &&
-				strings::CheckStringProp(smtp, PT_UNICODE) && mapi::ab::IsMailboxSMTPAddress(smtp->Value.lpszW))
+				strings::CheckStringProp(dn, PT_UNICODE) && dn->Value.lpszW[0])
 			{
 				Options().identity = dn->Value.lpszW;
-				Options().smtp = smtp->Value.lpszW;
+				Options().smtp =
+					strings::CheckStringProp(smtp, PT_UNICODE) && mapi::ab::IsMailboxSMTPAddress(smtp->Value.lpszW)
+						? smtp->Value.lpszW
+						: std::wstring{};
 				SetStringW(1, Options().identity);
 			}
 			else
