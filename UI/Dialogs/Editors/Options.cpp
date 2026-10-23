@@ -14,6 +14,7 @@
 namespace dialog::editor
 {
 	static constexpr int ADDIN_APPROVAL_PANE_ID = 30000;
+	static constexpr int ADDIN_DIAGNOSTICS_PANE_ID = 30001;
 
 	struct OptionValue
 	{
@@ -34,9 +35,11 @@ namespace dialog::editor
 		void AddOptionPane(_In_ registry::__RegKey* regKey);
 		void OnOK() override;
 		void OnEditAction1() override;
+		_Check_return_ ULONG HandleChange(UINT nID) override;
 
 		OptionValues& m_values;
 		std::vector<registry::__RegKey*> m_options;
+		std::wstring m_reportDirectory;
 		bool m_advanced{};
 		bool m_bNeedPropRefresh{};
 	};
@@ -134,6 +137,12 @@ namespace dialog::editor
 					regKey->uiOptionsPrompt, regKey->uiOptionsPrompt, viewpane::pathType::directory, value.text);
 				pane->SetHelpText(IDS_ADDINDIRECTORYHELP);
 				AddPane(pane);
+				m_reportDirectory = value.text;
+				AddPane(viewpane::TextPane::CreateMultiLinePane(
+					ADDIN_DIAGNOSTICS_PANE_ID,
+					IDS_OPTIONS_DIAGNOSTICS,
+					addin::GetAddInReport(m_reportDirectory),
+					true));
 			}
 			else if (regKey == &registry::debugFileName)
 			{
@@ -175,6 +184,22 @@ namespace dialog::editor
 	}
 
 	COptions::~COptions() { TRACE_DESTRUCTOR(CLASS); }
+
+	_Check_return_ ULONG COptions::HandleChange(UINT nID)
+	{
+		const auto paneID = CEditor::HandleChange(nID);
+		if (!m_advanced)
+		{
+			const auto directory = GetStringW(IDS_REGKEY_ADDINDIRECTORY);
+			if (directory != m_reportDirectory)
+			{
+				m_reportDirectory = directory;
+				SetStringW(ADDIN_DIAGNOSTICS_PANE_ID, addin::GetAddInReport(directory));
+			}
+		}
+
+		return paneID;
+	}
 
 	void COptions::OnOK()
 	{

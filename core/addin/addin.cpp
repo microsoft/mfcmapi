@@ -53,13 +53,15 @@ namespace addin
 		}
 	} // namespace
 
-	std::wstring GetAddInReport()
+	std::wstring GetAddInReport() { return GetAddInReport(registry::addInDirectory.szCurSTRING); }
+
+	std::wstring GetAddInReport(const std::wstring& configuredDirectory)
 	{
 		auto report = strings::loadstring(IDS_ADDINREPORTTITLE);
-		const std::wstring configured = registry::addInDirectory;
 		report += strings::formatmessage(
 			IDS_ADDINREPORTCONFIGURED,
-			configured.empty() ? strings::loadstring(IDS_ADDINREPORTDISABLED).c_str() : configured.c_str());
+			configuredDirectory.empty() ? strings::loadstring(IDS_ADDINREPORTDISABLED).c_str()
+										: configuredDirectory.c_str());
 		if (!scanned) return report + strings::loadstring(IDS_ADDINREPORTNOTSCANNED);
 		report += strings::formatmessage(
 			IDS_ADDINREPORTSCANNED,
