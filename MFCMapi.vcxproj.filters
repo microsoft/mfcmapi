@@ -540,6 +540,12 @@
     <ClCompile Include="UI\Dialogs\Editors\SearchEditor.cpp">
       <Filter>Source Files\UI\Dialogs\Editors</Filter>
     </ClCompile>
+    <ClCompile Include="UI\Dialogs\Editors\MailboxEditor.cpp">
+      <Filter>Source Files\UI\Dialogs\Editors</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Dialogs\Editors\MailboxEditor.h">
+      <Filter>Source Files\UI\Dialogs\Editors</Filter>
+    </ClInclude>
     <ClInclude Include="UI\Dialogs\Editors\SearchEditor.h">
       <Filter>Source Files\UI\Dialogs\Editors</Filter>
     </ClInclude>

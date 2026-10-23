@@ -2,12 +2,91 @@
 #include <UnitTest/UnitTest.h>
 #include <core/mapi/mapiABFunctions.h>
 #include <core/mapi/mapiMemory.h>
+#include <core/mapi/mapiStoreFunctions.h>
 #include <core/utility/error.h>
 #include <stdexcept>
 #include <thread>
 
 namespace mapiabtest
 {
+	class TestSession final : public IMAPISession
+	{
+	public:
+		HRESULT STDMETHODCALLTYPE QueryInterface(REFIID, void** object) override
+		{
+			*object = nullptr;
+			return E_NOINTERFACE;
+		}
+		ULONG STDMETHODCALLTYPE AddRef() override { return 2; }
+		ULONG STDMETHODCALLTYPE Release() override { return 1; }
+		HRESULT STDMETHODCALLTYPE GetLastError(HRESULT, ULONG, LPMAPIERROR*) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE GetMsgStoresTable(ULONG, LPMAPITABLE* table) override
+		{
+			++storeTableCalls;
+			*table = nullptr;
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE OpenMsgStore(ULONG_PTR, ULONG, LPENTRYID, LPCIID, ULONG, LPMDB*) override
+		{
+			++storeOpenCalls;
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE OpenAddressBook(ULONG_PTR ui, LPCIID iid, ULONG flags, LPADRBOOK* book) override
+		{
+			++addressBookCalls;
+			Assert::AreEqual(ULONG_PTR{}, ui);
+			Assert::IsNull(iid);
+			Assert::AreEqual(static_cast<ULONG>(AB_NO_DIALOG), flags);
+			*book = addressBook;
+			if (*book) (*book)->AddRef();
+			return addressBookResult;
+		}
+		HRESULT STDMETHODCALLTYPE OpenProfileSection(LPMAPIUID, LPCIID, ULONG, LPPROFSECT*) override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE GetStatusTable(ULONG, LPMAPITABLE*) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE OpenEntry(ULONG, LPENTRYID, LPCIID, ULONG, ULONG*, LPUNKNOWN*) override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE CompareEntryIDs(ULONG, LPENTRYID, ULONG, LPENTRYID, ULONG, ULONG*) override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE Advise(ULONG, LPENTRYID, ULONG, LPMAPIADVISESINK, ULONG_PTR*) override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE Unadvise(ULONG_PTR) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE MessageOptions(ULONG_PTR, ULONG, LPTSTR, LPMESSAGE) override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE QueryDefaultMessageOpt(LPTSTR, ULONG, ULONG*, LPSPropValue*) override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE EnumAdrTypes(ULONG, ULONG*, LPTSTR**) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE QueryIdentity(ULONG*, LPENTRYID*) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE Logoff(ULONG_PTR, ULONG, ULONG) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE SetDefaultStore(ULONG, ULONG, LPENTRYID) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE AdminServices(ULONG, LPSERVICEADMIN*) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE
+		ShowForm(ULONG_PTR, LPMDB, LPMAPIFOLDER, LPCIID, ULONG_PTR, LPMESSAGE, ULONG, ULONG, ULONG, ULONG, LPSTR)
+			override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE PrepareForm(LPCIID, LPMESSAGE, ULONG_PTR*) override { return MAPI_E_NO_SUPPORT; }
+
+		LPADRBOOK addressBook{};
+		HRESULT addressBookResult{S_OK};
+		ULONG addressBookCalls{};
+		ULONG storeTableCalls{};
+		ULONG storeOpenCalls{};
+	};
+
 	class TestAddressBook final : public IAddrBook
 	{
 	public:
@@ -301,6 +380,70 @@ namespace mapiabtest
 			Assert::AreEqual(1UL, first.calls);
 			Assert::AreEqual(1UL, second.calls);
 			Assert::IsTrue(m_errors.empty());
+		}
+
+		TEST_METHOD(SMTPOpenValidatesBeforeCallingSession)
+		{
+			TestSession session;
+			LPMDB mailbox{};
+			Assert::AreEqual(
+				MAPI_E_INVALID_PARAMETER, mapi::store::OpenMailboxBySMTP(&session, L"user@example.test", nullptr));
+			Assert::AreEqual(
+				MAPI_E_INVALID_PARAMETER, mapi::store::OpenMailboxBySMTP(nullptr, L"user@example.test", &mailbox));
+			Assert::AreEqual(MAPI_E_INVALID_PARAMETER, mapi::store::OpenMailboxBySMTP(&session, L"alias", &mailbox));
+			Assert::IsNull(mailbox);
+			Assert::AreEqual(0UL, session.addressBookCalls);
+			Assert::AreEqual(0UL, session.storeTableCalls);
+		}
+
+		TEST_METHOD(SMTPOpenPropagatesAddressBookFailuresWithoutFallback)
+		{
+			for (const auto result : {MAPI_E_LOGON_FAILED, S_OK})
+			{
+				TestSession session;
+				session.addressBookResult = result;
+				LPMDB mailbox{};
+				Assert::AreEqual(
+					FAILED(result) ? result : MAPI_E_INVALID_PARAMETER,
+					mapi::store::OpenMailboxBySMTP(&session, L"user@example.test", &mailbox));
+				Assert::IsNull(mailbox);
+				Assert::AreEqual(1UL, session.addressBookCalls);
+				Assert::AreEqual(0UL, session.storeTableCalls);
+				Assert::AreEqual(0UL, session.storeOpenCalls);
+			}
+		}
+
+		TEST_METHOD(SMTPOpenRejectsWrongRecipientBeforeOpeningAnyStore)
+		{
+			unittest::testMapiMemory memory;
+			TestAddressBook book;
+			ConfigureMailbox(book);
+			book.mailboxProperties[2].Value.lpszW = const_cast<LPWSTR>(L"other@example.test");
+			TestSession session;
+			session.addressBook = &book;
+			LPMDB mailbox{};
+			Assert::AreEqual(
+				MAPI_E_NOT_FOUND, mapi::store::OpenMailboxBySMTP(&session, L"user@example.test", &mailbox));
+			Assert::IsNull(mailbox);
+			Assert::AreEqual(0UL, session.storeTableCalls);
+			Assert::AreEqual(0UL, session.storeOpenCalls);
+			Assert::AreEqual(1UL, book.refs());
+		}
+
+		TEST_METHOD(SMTPOpenRequiresPrimaryExchangeStoreWithoutFallback)
+		{
+			unittest::testMapiMemory memory;
+			TestAddressBook book;
+			ConfigureMailbox(book);
+			TestSession session;
+			session.addressBook = &book;
+			LPMDB mailbox{};
+			Assert::AreEqual(
+				MAPI_E_CALL_FAILED, mapi::store::OpenMailboxBySMTP(&session, L"user@example.test", &mailbox));
+			Assert::IsNull(mailbox);
+			Assert::AreEqual(1UL, session.storeTableCalls);
+			Assert::AreEqual(0UL, session.storeOpenCalls);
+			Assert::AreEqual(1UL, book.refs());
 		}
 
 		TEST_METHOD(ChecksPrimarySMTPInputBeforeResolution)

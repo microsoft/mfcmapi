@@ -63,9 +63,7 @@ namespace dialog
 		void OnOpenDefaultDir();
 		void OnOpenDefaultMessageStore();
 		void OnOpenFormContainer();
-		void OnOpenMailboxWithDN();
-		void OnOpenMessageStoreEID();
-		void OnOpenOtherUsersMailboxFromGAL();
+		void OnOpenOtherMailbox();
 		void OnOpenPAB();
 		void OnOpenPublicFolders();
 		void OnOpenPublicFolderWithDN();

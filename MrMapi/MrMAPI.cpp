@@ -270,23 +270,7 @@ int wmain(_In_ int argc, _In_count_(argc) wchar_t* argv[])
 			}
 			else
 			{
-				LPADRBOOK addressBook{};
-				hRes = WC_MAPI(lpMAPISession->OpenAddressBook(0, nullptr, AB_NO_DIALOG, &addressBook));
-				std::wstring mailboxDN;
-				if (SUCCEEDED(hRes))
-					hRes = mapi::ab::ResolveExchangeMailbox(addressBook, cli::switchMailbox[0], mailboxDN);
-				if (addressBook) addressBook->Release();
-				if (SUCCEEDED(hRes))
-				{
-					auto primary = mapi::store::OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid);
-					if (primary)
-					{
-						lpMDB = mapi::store::OpenOtherUsersMailbox(
-							lpMAPISession, primary, {}, mailboxDN, cli::switchMailbox[0], 0, true);
-						primary->Release();
-					}
-					if (!lpMDB) hRes = WC_H(MAPI_E_CALL_FAILED);
-				}
+				hRes = mapi::store::OpenMailboxBySMTP(lpMAPISession, cli::switchMailbox[0], &lpMDB);
 				if (SUCCEEDED(hRes) && (ProgOpts.flags & cli::OPT_NEEDFOLDER || ProgOpts.mode == cli::cmdmodeContents))
 				{
 					ULONG folder{};

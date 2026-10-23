@@ -9,6 +9,7 @@
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Dialogs/HierarchyTable/ABContDlg.h>
 #include <UI/Dialogs/Editors/Editor.h>
+#include <UI/Dialogs/Editors/MailboxEditor.h>
 #include <core/mapi/processor/dumpStore.h>
 #include <core/utility/file.h>
 #include <UI/Dialogs/ContentsTable/ProfileListDlg.h>
@@ -92,10 +93,8 @@ namespace dialog
 	ON_COMMAND(ID_OPENADDRESSBOOK, OnOpenAddressBook)
 	ON_COMMAND(ID_OPENDEFAULTMESSAGESTORE, OnOpenDefaultMessageStore)
 	ON_COMMAND(ID_OPENFORMCONTAINER, OnOpenFormContainer)
-	ON_COMMAND(ID_OPENMAILBOXWITHDN, OnOpenMailboxWithDN)
-	ON_COMMAND(ID_OPENMESSAGESTOREEID, OnOpenMessageStoreEID)
+	ON_COMMAND(ID_OPENOTHERMAILBOX, OnOpenOtherMailbox)
 	ON_COMMAND(ID_OPENMESSAGESTORETABLE, OnOpenMessageStoreTable)
-	ON_COMMAND(ID_OPENOTHERUSERSMAILBOXFROMGAL, OnOpenOtherUsersMailboxFromGAL)
 	ON_COMMAND(ID_OPENPUBLICFOLDERS, OnOpenPublicFolders)
 	ON_COMMAND(ID_OPENSELECTEDSTOREDELETEDFOLDERS, OnOpenSelectedStoreDeletedFolders)
 	ON_COMMAND(ID_QUERYDEFAULTMESSAGEOPT, OnQueryDefaultMessageOpt)
@@ -231,9 +230,7 @@ namespace dialog
 
 			pMenu->EnableMenuItem(ID_DUMPSERVERCONTENTSTOTEXT, DIM(lpMAPISession));
 
-			pMenu->EnableMenuItem(ID_OPENOTHERUSERSMAILBOXFROMGAL, DIM(lpMAPISession));
-			pMenu->EnableMenuItem(ID_OPENMAILBOXWITHDN, DIM(lpMAPISession));
-			pMenu->EnableMenuItem(ID_OPENMESSAGESTOREEID, DIM(lpMAPISession));
+			pMenu->EnableMenuItem(ID_OPENOTHERMAILBOX, DIM(lpMAPISession));
 
 			if (m_lpContentsTableListCtrl)
 			{
@@ -467,58 +464,66 @@ namespace dialog
 		if (lpMDB) lpMDB->Release();
 	}
 
-	void CMainDlg::OnOpenMessageStoreEID()
+	void CMainDlg::OnOpenOtherMailbox()
 	{
 		if (!m_lpMapiObjects) return;
 
 		const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 		if (!lpMAPISession) return;
 
-		editor::CEditor MyEID(
-			this, IDS_OPENSTOREEID, IDS_OPENSTOREEIDPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-
-		MyEID.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_EID, false));
-		MyEID.AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_FLAGS, false));
-		MyEID.SetHex(1, MDB_WRITE);
-		MyEID.AddPane(viewpane::CheckPane::Create(2, IDS_EIDBASE64ENCODED, false, false));
-		MyEID.AddPane(viewpane::CheckPane::Create(3, IDS_DISPLAYPROPS, false, false));
-		MyEID.AddPane(viewpane::CheckPane::Create(4, IDS_UNWRAPSTORE, false, false));
-
-		if (!MyEID.DisplayDialog()) return;
-
-		// Get the entry ID as a binary
-		const auto bin = MyEID.GetBinary(0, MyEID.GetCheck(2));
-
-		if (!bin.empty())
+		editor::CMailboxEditor prompt(this, lpMAPISession);
+		if (!prompt.DisplayDialog()) return;
+		const auto& options = prompt.GetOptions();
+		LPMDB mailbox{};
+		if (prompt.GetMethod() == editor::MailboxMethod::SMTP)
 		{
+			EC_H_S(mapi::store::OpenMailboxBySMTP(lpMAPISession, options.identity, &mailbox));
+		}
+		else if (prompt.GetMethod() == editor::MailboxMethod::EntryID)
+		{
+			const auto bin = prompt.GetBinary(1, options.base64);
 			auto sBin = SBinary{static_cast<ULONG>(bin.size()), const_cast<BYTE*>(bin.data())};
-			auto lpMDB = mapi::store::CallOpenMsgStore(
-				lpMAPISession, reinterpret_cast<ULONG_PTR>(m_hWnd), &sBin, MyEID.GetHex(1));
-
-			if (lpMDB)
+			mailbox =
+				mapi::store::CallOpenMsgStore(lpMAPISession, reinterpret_cast<ULONG_PTR>(m_hWnd), &sBin, options.flags);
+			if (mailbox && options.unwrap)
 			{
-				if (MyEID.GetCheck(4))
-				{
-					const auto lpUnwrappedMDB = mapi::store::HrUnWrapMDB(lpMDB);
-
-					// Ditch the old MDB and substitute the unwrapped one.
-					lpMDB->Release();
-					lpMDB = lpUnwrappedMDB;
-				}
-			}
-
-			if (lpMDB)
-			{
-				if (MyEID.GetCheck(3))
-				{
-					if (m_lpPropDisplay) m_lpPropDisplay->SetDataSource(lpMDB, nullptr, true);
-				}
-				else
-				{
-					EC_H_S(DisplayObject(lpMDB, NULL, objectType::store, this));
-				}
+				const auto unwrapped = mapi::store::HrUnWrapMDB(mailbox);
+				mailbox->Release();
+				mailbox = unwrapped;
 			}
 		}
+		else
+		{
+			auto bootstrap = prompt.GetMethod() == editor::MailboxMethod::GAL
+								 ? mapi::store::OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid)
+								 : mapi::store::OpenDefaultMessageStore(lpMAPISession);
+			if (bootstrap)
+			{
+				mailbox = mapi::store::OpenOtherUsersMailbox(
+					lpMAPISession,
+					bootstrap,
+					options.server,
+					options.identity,
+					options.smtp,
+					options.flags,
+					options.forceServer);
+				bootstrap->Release();
+			}
+		}
+		if (!mailbox)
+		{
+			if (prompt.GetMethod() != editor::MailboxMethod::SMTP) EC_H_S(MAPI_E_CALL_FAILED);
+			return;
+		}
+		if (prompt.GetMethod() == editor::MailboxMethod::EntryID && options.displayProps)
+		{
+			if (m_lpPropDisplay) m_lpPropDisplay->SetDataSource(mailbox, nullptr, true);
+		}
+		else
+		{
+			EC_H_S(DisplayObject(mailbox, NULL, objectType::store, this));
+		}
+		mailbox->Release();
 	}
 
 	void CMainDlg::OnOpenPublicFolders()
@@ -568,37 +573,6 @@ namespace dialog
 		}
 	}
 
-	void CMainDlg::OnOpenMailboxWithDN()
-	{
-		if (!m_lpMapiObjects) return;
-
-		const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
-		if (!lpMAPISession) return;
-
-		const auto szServerName = mapi::store::GetServerName(lpMAPISession);
-
-		auto lpMDB = mapi::store::OpenDefaultMessageStore(lpMAPISession);
-		if (!lpMDB) return;
-
-		if (mapi::store::StoreSupportsManageStore(lpMDB))
-		{
-			auto lpOtherMDB = ui::mapiui::OpenMailboxWithPrompt(
-				lpMAPISession,
-				lpMDB,
-				szServerName,
-				strings::emptystring,
-				OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP);
-			if (lpOtherMDB)
-			{
-				EC_H_S(DisplayObject(lpOtherMDB, NULL, objectType::store, this));
-
-				lpOtherMDB->Release();
-			}
-		}
-
-		lpMDB->Release();
-	}
-
 	void CMainDlg::OnOpenMessageStoreTable()
 	{
 		if (!m_lpContentsTableListCtrl) return;
@@ -617,26 +591,6 @@ namespace dialog
 			m_lpContentsTableListCtrl->SetContentsTable(pStoresTbl, tableDisplayFlags::dfNormal, MAPI_STORE);
 
 			pStoresTbl->Release();
-		}
-	}
-
-	void CMainDlg::OnOpenOtherUsersMailboxFromGAL()
-	{
-		if (!m_lpMapiObjects) return;
-
-		const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
-		if (!lpMAPISession) return;
-
-		const auto lpAddrBook = m_lpMapiObjects->GetAddrBook(true); // do not release
-		if (lpAddrBook)
-		{
-			auto lpMailboxMDB = ui::mapiui::OpenOtherUsersMailboxFromGal(lpMAPISession, lpAddrBook);
-			if (lpMailboxMDB)
-			{
-				EC_H_S(DisplayObject(lpMailboxMDB, NULL, objectType::store, this));
-
-				lpMailboxMDB->Release();
-			}
 		}
 	}
 

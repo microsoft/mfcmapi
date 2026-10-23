@@ -37,6 +37,8 @@ namespace mapi::store
 		ULONG ulFlags, // desired flags for CreateStoreEntryID
 		bool bForceServer); // Use CreateStoreEntryID2
 	_Check_return_ LPMDB OpenDefaultMessageStore(_In_ LPMAPISESSION lpMAPISession);
+	_Check_return_ HRESULT
+	OpenMailboxBySMTP(_In_ LPMAPISESSION session, const std::wstring& smtpAddress, _Out_ LPMDB* mailbox);
 	_Check_return_ LPMDB OpenOtherUsersMailbox(
 		_In_ LPMAPISESSION lpMAPISession,
 		_In_ LPMDB lpMDB,

@@ -9,6 +9,7 @@
 #include <core/utility/error.h>
 #include <core/mapi/mapiFunctions.h>
 #include <core/mapi/interfaces.h>
+#include <core/mapi/mapiABFunctions.h>
 
 namespace mapi::store
 {
@@ -459,6 +460,27 @@ namespace mapi::store
 	}
 
 	// Build DNs for call to MailboxLogon
+	_Check_return_ HRESULT
+	OpenMailboxBySMTP(_In_ LPMAPISESSION session, const std::wstring& smtpAddress, _Out_ LPMDB* mailbox)
+	{
+		if (!mailbox) return WC_H(MAPI_E_INVALID_PARAMETER);
+		*mailbox = nullptr;
+		if (!session || !ab::IsMailboxSMTPAddress(smtpAddress)) return WC_H(MAPI_E_INVALID_PARAMETER);
+
+		LPADRBOOK addressBook{};
+		auto hRes = WC_MAPI(session->OpenAddressBook(0, nullptr, AB_NO_DIALOG, &addressBook));
+		std::wstring mailboxDN;
+		if (SUCCEEDED(hRes)) hRes = ab::ResolveExchangeMailbox(addressBook, smtpAddress, mailboxDN);
+		if (addressBook) addressBook->Release();
+		if (FAILED(hRes)) return hRes;
+
+		auto primary = OpenMessageStoreGUID(session, pbExchangeProviderPrimaryUserGuid);
+		if (!primary) return WC_H(MAPI_E_CALL_FAILED);
+		*mailbox = OpenOtherUsersMailbox(session, primary, {}, mailboxDN, smtpAddress, 0, true);
+		primary->Release();
+		return *mailbox ? S_OK : WC_H(MAPI_E_CALL_FAILED);
+	}
+
 	_Check_return_ LPMDB OpenOtherUsersMailbox(
 		_In_ LPMAPISESSION lpMAPISession,
 		_In_ LPMDB lpMDB,
