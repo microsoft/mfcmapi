@@ -14,6 +14,8 @@ With a directory configured, MrMAPI loads previously approved add-ins without pr
 
 MrMAPI's registry option list contains only `AddInDirectory`; other saved MFCMAPI options do not change its console defaults or command-line behavior. The add-in loader uses the initialized option directly; it does not perform a separate registry read.
 
+In MFCMAPI, **Help > About** includes an add-in discovery report. It shows the currently configured directory separately from the directory used at startup, and lists each DLL candidate with its recorded outcome: loaded, awaiting approval, denied, incompatible, unreadable, or failed to load. A candidate's presence does not mean it was loaded. Windows errors are shown when available. Opening About does not rescan, load DLLs, prompt for approvals, or change decisions; restart after changing Options to run discovery again.
+
 The core of an MFCMAPI addin is the header file: [MFCMAPI.h](MFCMAPI.h). This file contains the definitions for the functions you'll need to implement and export from your DLL, as well as definitions for functions your add-in can import from MFCMAPI.
 
 To get you started, here's a test add-in: [TestAddIn.zip](TestAddIn.zip). It doesn't do much except exercise the various add-in entry points. It was developed in sync with the addition of add-ins to the code base as part of my testing.

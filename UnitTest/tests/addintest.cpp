@@ -379,6 +379,9 @@ namespace addintest
 			Assert::IsFalse(prompted);
 			Assert::IsTrue(g_lpMyAddins.empty());
 			Assert::IsFalse(PropTagArray.empty());
+			const auto report = addin::GetAddInReport();
+			Assert::IsTrue(report.find(strings::loadstring(IDS_ADDINREPORTDISABLED)) != std::wstring::npos);
+			Assert::IsTrue(report.find(strings::loadstring(IDS_ADDINREPORTNOFILES)) != std::wstring::npos);
 		}
 
 		TEST_METHOD(Test_AddInsOnlyScanConfiguredDirectory)
@@ -411,6 +414,12 @@ namespace addintest
 			Assert::AreEqual(size_t{1}, count);
 			Assert::IsTrue(g_lpMyAddins.empty());
 			Assert::IsFalse(PropTagArray.empty());
+			const auto report = addin::GetAddInReport();
+			Assert::IsTrue(report.find(L"selected.dll") != std::wstring::npos);
+			Assert::IsTrue(report.find(L"not-an-addin.dll") != std::wstring::npos);
+			Assert::IsTrue(report.find(strings::loadstring(IDS_ADDINREPORTPENDING)) != std::wstring::npos);
+			Assert::IsTrue(report.find(strings::loadstring(IDS_ADDINREPORTNOTADDIN)) != std::wstring::npos);
+			Assert::IsTrue(report.find(L"excluded.dll") == std::wstring::npos);
 		}
 
 		TEST_METHOD(Test_AddInsUnknownAndDenied)
@@ -424,6 +433,8 @@ namespace addintest
 			registry::addInDirectory = directory.path;
 			Assert::AreEqual(static_cast<DWORD>(ERROR_SUCCESS), addin::LoadAddIns());
 			Assert::IsTrue(g_lpMyAddins.empty());
+			Assert::IsTrue(
+				addin::GetAddInReport().find(strings::loadstring(IDS_ADDINREPORTPENDING)) != std::wstring::npos);
 
 			size_t prompts{};
 			const addin::AddInApprovalPrompt deny = [&prompts](const auto& candidates, auto& decisions) {
@@ -437,6 +448,57 @@ namespace addintest
 			Assert::AreEqual(static_cast<DWORD>(ERROR_SUCCESS), addin::LoadAddIns(deny));
 			Assert::AreEqual(size_t{1}, prompts);
 			Assert::IsTrue(g_lpMyAddins.empty());
+			const auto report = addin::GetAddInReport();
+			Assert::IsTrue(report.find(L"moved.dll") != std::wstring::npos);
+			Assert::IsTrue(report.find(L"unknown.dll") == std::wstring::npos);
+			Assert::IsTrue(report.find(strings::loadstring(IDS_ADDINREPORTDENIED)) != std::wstring::npos);
+		}
+
+		TEST_METHOD(Test_AddInReportShowsSkippedBitnessAndLoadFailure)
+		{
+			TestRegistry registry;
+			TestDirectory directory;
+			directory.Write(L"wrong-bitness.dll", MakePeImageWithExport("LoadAddIn", sizeof(void*) != 8));
+			directory.Write(L"invalid-load.dll", MakePeImageWithExport("LoadAddIn", sizeof(void*) == 8));
+			registry::addInDirectory = directory.path;
+			size_t prompted{};
+			Assert::AreEqual(
+				static_cast<DWORD>(ERROR_SUCCESS),
+				addin::LoadAddIns([&prompted](const auto& candidates, auto& decisions) {
+					prompted = candidates.size();
+					decisions.assign(candidates.size(), true);
+					return true;
+				}));
+			Assert::AreEqual(size_t{1}, prompted);
+			Assert::IsTrue(g_lpMyAddins.empty());
+			const auto report = addin::GetAddInReport();
+			Assert::IsTrue(report.find(L"wrong-bitness.dll") != std::wstring::npos);
+			Assert::IsTrue(report.find(strings::loadstring(IDS_ADDINREPORTBITNESS)) != std::wstring::npos);
+			Assert::IsTrue(report.find(L"invalid-load.dll") != std::wstring::npos);
+			Assert::IsTrue(report.find(strings::loadstring(IDS_ADDINREPORTLOADFAILED)) != std::wstring::npos);
+			Assert::IsTrue(report.find(L"Windows error:") != std::wstring::npos);
+			Assert::IsTrue(report.find(L"\r\n  Loaded.") == std::wstring::npos);
+		}
+
+		TEST_METHOD(Test_AddInReportDoesNotScanChangedConfiguration)
+		{
+			TestRegistry registry;
+			TestDirectory directory;
+			registry::addInDirectory = directory.path;
+			Assert::AreEqual(static_cast<DWORD>(ERROR_SUCCESS), addin::LoadAddIns());
+			directory.Write(L"not-scanned.dll", MakePeImageWithExport("LoadAddIn", sizeof(void*) == 8));
+			registry::addInDirectory.clear();
+			const auto report = addin::GetAddInReport();
+			Assert::IsTrue(
+				report.find(strings::formatmessage(
+					IDS_ADDINREPORTCONFIGURED, strings::loadstring(IDS_ADDINREPORTDISABLED).c_str())) !=
+				std::wstring::npos);
+			Assert::IsTrue(
+				report.find(strings::formatmessage(IDS_ADDINREPORTSCANNED, directory.path.c_str())) !=
+				std::wstring::npos);
+			Assert::IsTrue(report.find(L"not-scanned.dll") == std::wstring::npos);
+			Assert::AreEqual(static_cast<DWORD>(ERROR_SUCCESS), addin::LoadAddIns());
+			Assert::IsTrue(addin::GetAddInReport().find(directory.path) == std::wstring::npos);
 		}
 
 		TEST_METHOD(Test_ClearAddInDecisions)
@@ -485,6 +547,8 @@ namespace addintest
 			TestDirectory directory;
 			registry::addInDirectory = directory.path;
 			Assert::AreEqual(static_cast<DWORD>(ERROR_SUCCESS), addin::LoadAddIns());
+			Assert::IsTrue(
+				addin::GetAddInReport().find(strings::loadstring(IDS_ADDINREPORTNOFILES)) != std::wstring::npos);
 			registry::addInDirectory = directory.path + L"\\missing";
 			bool prompted{};
 			Assert::AreNotEqual(static_cast<DWORD>(ERROR_SUCCESS), addin::LoadAddIns([&prompted](const auto&, auto&) {
@@ -494,6 +558,9 @@ namespace addintest
 			Assert::IsFalse(prompted);
 			Assert::IsTrue(g_lpMyAddins.empty());
 			Assert::IsFalse(PropTagArray.empty());
+			const auto report = addin::GetAddInReport();
+			Assert::IsTrue(report.find(directory.path + L"\\missing") != std::wstring::npos);
+			Assert::IsTrue(report.find(L"Windows error:") != std::wstring::npos);
 		}
 
 		TEST_METHOD(Test_compareTypes)

@@ -5,6 +5,7 @@
 #include <core/utility/registry.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
+#include <core/addin/addin.h>
 
 namespace dialog
 {
@@ -86,6 +87,7 @@ namespace dialog
 		m_HelpText.SetFont(GetFont());
 
 		auto szHelpText = strings::formatmessage(IDS_HELPTEXT, szProductName.c_str());
+		szHelpText += L"\r\n\r\n" + addin::GetAddInReport();
 		::SetWindowTextW(m_HelpText.m_hWnd, szHelpText.c_str());
 		ui::UpdateEditTextColor(m_HelpText.m_hWnd, true);
 
