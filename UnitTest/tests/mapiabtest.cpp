@@ -3,6 +3,9 @@
 #include <core/mapi/mapiABFunctions.h>
 #include <core/mapi/mapiMemory.h>
 #include <core/mapi/mapiStoreFunctions.h>
+#include <core/mapi/interfaces.h>
+#include <core/mapi/extraPropTags.h>
+#include <core/utility/strings.h>
 #include <core/utility/error.h>
 #include <stdexcept>
 #include <thread>
@@ -26,10 +29,18 @@ namespace mapiabtest
 			*table = nullptr;
 			return MAPI_E_NO_SUPPORT;
 		}
-		HRESULT STDMETHODCALLTYPE OpenMsgStore(ULONG_PTR, ULONG, LPENTRYID, LPCIID, ULONG, LPMDB*) override
+		HRESULT STDMETHODCALLTYPE
+		OpenMsgStore(ULONG_PTR ui, ULONG size, LPENTRYID entry, LPCIID iid, ULONG flags, LPMDB* store) override
 		{
 			++storeOpenCalls;
-			return MAPI_E_NO_SUPPORT;
+			Assert::AreEqual(ULONG_PTR{}, ui);
+			Assert::AreEqual(1UL, size);
+			Assert::AreEqual(static_cast<BYTE>(42), *reinterpret_cast<LPBYTE>(entry));
+			Assert::IsNull(iid);
+			storeOpenFlags = flags;
+			*store = openedStore;
+			if (*store) (*store)->AddRef();
+			return storeOpenResult;
 		}
 		HRESULT STDMETHODCALLTYPE OpenAddressBook(ULONG_PTR ui, LPCIID iid, ULONG flags, LPADRBOOK* book) override
 		{
@@ -85,6 +96,147 @@ namespace mapiabtest
 		ULONG addressBookCalls{};
 		ULONG storeTableCalls{};
 		ULONG storeOpenCalls{};
+		ULONG storeOpenFlags{};
+		LPMDB openedStore{};
+		HRESULT storeOpenResult{MAPI_E_NO_SUPPORT};
+	};
+
+	class TestMailboxStore final : public IMsgStore, public IExchangeManageStoreEx
+	{
+	public:
+		HRESULT STDMETHODCALLTYPE QueryInterface(REFIID iid, void** object) override
+		{
+			*object = nullptr;
+			if (IsEqualIID(iid, IID_IExchangeManageStoreEx))
+				*object = static_cast<IExchangeManageStoreEx*>(this);
+			else
+				return E_NOINTERFACE;
+			AddRef();
+			return S_OK;
+		}
+		ULONG STDMETHODCALLTYPE AddRef() override { return ++refs; }
+		ULONG STDMETHODCALLTYPE Release() override { return --refs; }
+		HRESULT STDMETHODCALLTYPE GetLastError(HRESULT, ULONG, LPMAPIERROR*) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE SaveChanges(ULONG) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE GetProps(LPSPropTagArray, ULONG, ULONG*, LPSPropValue*) override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE GetPropList(ULONG, LPSPropTagArray*) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE OpenProperty(ULONG, LPCIID, ULONG, ULONG, LPUNKNOWN*) override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE SetProps(ULONG, LPSPropValue, LPSPropProblemArray*) override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE DeleteProps(LPSPropTagArray, LPSPropProblemArray*) override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE
+		CopyTo(ULONG, LPCIID, LPSPropTagArray, ULONG_PTR, LPMAPIPROGRESS, LPCIID, LPVOID, ULONG, LPSPropProblemArray*)
+			override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE
+		CopyProps(LPSPropTagArray, ULONG_PTR, LPMAPIPROGRESS, LPCIID, LPVOID, ULONG, LPSPropProblemArray*) override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE GetNamesFromIDs(LPSPropTagArray*, LPGUID, ULONG, ULONG*, LPMAPINAMEID**) override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE GetIDsFromNames(ULONG, LPMAPINAMEID*, ULONG, LPSPropTagArray*) override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE Advise(ULONG, LPENTRYID, ULONG, LPMAPIADVISESINK, ULONG_PTR*) override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE Unadvise(ULONG_PTR) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE CompareEntryIDs(ULONG, LPENTRYID, ULONG, LPENTRYID, ULONG, ULONG*) override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE OpenEntry(ULONG, LPENTRYID, LPCIID, ULONG, ULONG*, LPUNKNOWN*) override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE SetReceiveFolder(LPTSTR, ULONG, ULONG, LPENTRYID) override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE GetReceiveFolder(LPTSTR, ULONG, ULONG*, LPENTRYID*, LPTSTR*) override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE GetReceiveFolderTable(ULONG, LPMAPITABLE*) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE StoreLogoff(ULONG*) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE AbortSubmit(ULONG, LPENTRYID, ULONG) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE GetOutgoingQueue(ULONG, LPMAPITABLE*) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE SetLockState(LPMESSAGE, ULONG) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE FinishedMsg(ULONG, ULONG, LPENTRYID) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE NotifyNewMail(LPNOTIFICATION) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE CreateStoreEntryID(LPCSTR, LPCSTR, ULONG, ULONG*, LPENTRYID*) override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE EntryIDFromSourceKey(ULONG, LPBYTE, ULONG, LPBYTE, ULONG*, LPENTRYID*) override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE GetRights(ULONG, LPENTRYID, ULONG, LPENTRYID, ULONG*) override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE GetMailboxTable(LPSTR, LPMAPITABLE*, ULONG) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE GetPublicFolderTable(LPSTR, LPMAPITABLE*, ULONG) override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE
+		CreateStoreEntryID2(ULONG count, LPSPropValue props, ULONG flags, ULONG* size, LPENTRYID* entry) override
+		{
+			++createCalls;
+			Assert::AreEqual(expectedFlags, flags);
+			Assert::AreEqual(
+				static_cast<ULONG>(1 + (expectedServer.empty() ? 0 : 2) + (expectedSMTP.empty() ? 0 : 1)), count);
+			ULONG index{};
+			Assert::AreEqual(static_cast<ULONG>(PR_PROFILE_MAILBOX), props[index].ulPropTag);
+			Assert::AreEqual(
+				std::string("/o=Test/ou=Test/cn=Recipients/cn=User"), std::string(props[index++].Value.lpszA));
+			if (!expectedServer.empty())
+			{
+				Assert::AreEqual(static_cast<ULONG>(PR_PROFILE_MDB_DN), props[index].ulPropTag);
+				Assert::AreEqual(expectedServer, std::string(props[index++].Value.lpszA));
+				Assert::AreEqual(static_cast<ULONG>(PR_FORCE_USE_ENTRYID_SERVER), props[index].ulPropTag);
+				Assert::IsTrue(props[index++].Value.b != 0);
+			}
+			if (!expectedSMTP.empty())
+			{
+				Assert::AreEqual(static_cast<ULONG>(PR_PROFILE_USER_SMTP_EMAIL_ADDRESS_W), props[index].ulPropTag);
+				Assert::AreEqual(expectedSMTP, std::wstring(props[index++].Value.lpszW));
+			}
+			*size = 0;
+			*entry = nullptr;
+			if (FAILED(createResult)) return createResult;
+			const auto hr = MAPIAllocateBuffer(1, reinterpret_cast<LPVOID*>(entry));
+			if (FAILED(hr)) return hr;
+			*size = 1;
+			*reinterpret_cast<LPBYTE>(*entry) = 42;
+			return S_OK;
+		}
+		std::string expectedServer;
+		std::wstring expectedSMTP{L"user@example.test"};
+		ULONG expectedFlags{};
+		HRESULT createResult{S_OK};
+		ULONG refs{1};
+		ULONG createCalls{};
 	};
 
 	class TestAddressBook final : public IAddrBook
@@ -380,6 +532,78 @@ namespace mapiabtest
 			Assert::AreEqual(1UL, first.calls);
 			Assert::AreEqual(1UL, second.calls);
 			Assert::IsTrue(m_errors.empty());
+		}
+
+		TEST_METHOD(SMTPMailboxLogonOmitsServerAndForceProperties)
+		{
+			unittest::testMapiMemory memory;
+			TestMailboxStore store;
+			TestSession session;
+			session.openedStore = &store;
+			session.storeOpenResult = S_OK;
+			const auto mailbox = mapi::store::MailboxLogon(
+				&session, &store, {}, L"/o=Test/ou=Test/cn=Recipients/cn=User", L"user@example.test", 0, true);
+			Assert::IsTrue(mailbox == static_cast<IMsgStore*>(&store));
+			Assert::AreEqual(1UL, store.createCalls);
+			Assert::AreEqual(1UL, session.storeOpenCalls);
+			Assert::AreEqual(
+				static_cast<ULONG>(MDB_NO_DIALOG | MDB_NO_MAIL | MDB_TEMPORARY | MAPI_BEST_ACCESS),
+				session.storeOpenFlags & ~static_cast<ULONG>(MDB_ONLINE));
+			mailbox->Release();
+			Assert::AreEqual(1UL, store.refs);
+		}
+
+		TEST_METHOD(ForcedServerMailboxLogonPreservesAdvancedProperties)
+		{
+			unittest::testMapiMemory memory;
+			for (const auto smtp : {L"", L"user@example.test"})
+			{
+				TestMailboxStore store;
+				store.expectedServer = "/cn=Configuration/cn=Servers/cn=Test/cn=Microsoft Private MDB";
+				store.expectedSMTP = smtp;
+				store.expectedFlags = OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP;
+				TestSession session;
+				session.openedStore = &store;
+				session.storeOpenResult = S_OK;
+				const auto mailbox = mapi::store::MailboxLogon(
+					&session,
+					&store,
+					strings::LPCSTRToWstring(store.expectedServer.c_str()),
+					L"/o=Test/ou=Test/cn=Recipients/cn=User",
+					smtp,
+					store.expectedFlags,
+					true);
+				Assert::IsTrue(mailbox == static_cast<IMsgStore*>(&store));
+				Assert::AreEqual(1UL, store.createCalls);
+				mailbox->Release();
+				Assert::AreEqual(1UL, store.refs);
+			}
+		}
+
+		TEST_METHOD(SMTPMailboxLogonDoesNotOpenOnEntryIDFailure)
+		{
+			unittest::testMapiMemory memory;
+			TestMailboxStore store;
+			store.createResult = MAPI_E_NO_ACCESS;
+			TestSession session;
+			Assert::IsNull(mapi::store::MailboxLogon(
+				&session, &store, {}, L"/o=Test/ou=Test/cn=Recipients/cn=User", L"user@example.test", 0, true));
+			Assert::AreEqual(1UL, store.createCalls);
+			Assert::AreEqual(0UL, session.storeOpenCalls);
+			Assert::AreEqual(1UL, store.refs);
+		}
+
+		TEST_METHOD(SMTPMailboxLogonCleansUpAfterStoreOpenFailure)
+		{
+			unittest::testMapiMemory memory;
+			TestMailboxStore store;
+			TestSession session;
+			session.storeOpenResult = MAPI_E_NO_ACCESS;
+			Assert::IsNull(mapi::store::MailboxLogon(
+				&session, &store, {}, L"/o=Test/ou=Test/cn=Recipients/cn=User", L"user@example.test", 0, true));
+			Assert::AreEqual(1UL, store.createCalls);
+			Assert::AreEqual(1UL, session.storeOpenCalls);
+			Assert::AreEqual(1UL, store.refs);
 		}
 
 		TEST_METHOD(SMTPOpenValidatesBeforeCallingSession)
