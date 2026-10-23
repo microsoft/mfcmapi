@@ -295,7 +295,7 @@ int wmain(_In_ int argc, _In_count_(argc) wchar_t* argv[])
 			DoGUIDs();
 			break;
 		case cli::cmdmodeSmartView:
-			DoSmartView();
+			hRes = DoSmartView();
 			break;
 		case cli::cmdmodeAcls:
 			DoAcls(lpFolder);
@@ -373,5 +373,5 @@ int wmain(_In_ int argc, _In_count_(argc) wchar_t* argv[])
 		addin::UnloadAddIns();
 	}
 
-	return ProgOpts.mode == cli::cmdmodeEntryID && FAILED(hRes) ? 1 : 0;
+	return (ProgOpts.mode == cli::cmdmodeEntryID || ProgOpts.mode == cli::cmdmodeSmartView) && FAILED(hRes) ? 1 : 0;
 }

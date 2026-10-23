@@ -344,6 +344,9 @@ namespace cli
 				L"   -P   (or -%ws) Parser type (number). See list below for supported parsers.\n",
 				switchParser.name());
 			wprintf(L"   -B   (or -%ws) Input file is binary. Default is hex encoded text.\n", switchBinary.name());
+			wprintf(L"           Empty input is parsed as an empty blob.\n");
+			wprintf(L"           Input failures return a nonzero exit code without replacing output.\n");
+			wprintf(L"           Input and output must identify different files.\n");
 			wprintf(L"\n");
 			wprintf(L"   Rules Table:\n");
 			wprintf(L"   -R   (or -%ws) Output rules table. Profile optional.\n", switchRule.name());

@@ -801,10 +801,14 @@
     </ClCompile>
     <ClCompile Include="tests\clitest.cpp" />
     <ClCompile Include="tests\mmentryidtest.cpp" />
+    <ClCompile Include="tests\mmsmartviewtest.cpp" />
     <ClCompile Include="..\MrMapi\mmcli.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\MrMapi\MMEntryID.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\MrMapi\MMSmartView.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="tests\guidtest.cpp" />
