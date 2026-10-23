@@ -843,6 +843,7 @@
     <ClCompile Include="MMRules.cpp" />
     <ClCompile Include="MMSmartView.cpp" />
     <ClCompile Include="MMStore.cpp" />
+    <ClCompile Include="MMEntryID.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuildStep Include="..\mrmapi.exe.manifest" />

@@ -96,6 +96,9 @@
     <ClInclude Include="MMSmartView.h">
       <Filter>Source Files\MrMAPI</Filter>
     </ClInclude>
+    <ClCompile Include="MMEntryID.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="MMStore.cpp">
       <Filter>Source Files\MrMAPI</Filter>
     </ClCompile>
