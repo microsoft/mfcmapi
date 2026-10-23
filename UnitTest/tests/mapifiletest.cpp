@@ -33,11 +33,11 @@ namespace mapifiletest
 			m_originalDisplayError = std::move(error::displayError);
 			m_errors.clear();
 			error::displayError = [this](const std::wstring& text) { m_errors.push_back(text); };
-			wchar_t temporary[MAX_PATH]{};
+			wchar_t directory[MAX_PATH]{};
 			wchar_t path[MAX_PATH]{};
-			const auto length = GetTempPathW(_countof(temporary), temporary);
-			Assert::IsTrue(length != 0 && length < _countof(temporary));
-			Assert::IsTrue(GetTempFileNameW(temporary, L"mfi", 0, path) != 0);
+			const auto length = GetCurrentDirectoryW(_countof(directory), directory);
+			Assert::IsTrue(length != 0 && length < _countof(directory));
+			Assert::IsTrue(GetTempFileNameW(directory, L"mfi", 0, path) != 0);
 			m_path = path;
 			m_attributes = GetFileAttributesW(path);
 			Assert::IsTrue(m_attributes != INVALID_FILE_ATTRIBUTES);
@@ -141,7 +141,137 @@ namespace mapifiletest
 			Assert::AreEqual<HRESULT>(MAPI_E_INVALID_PARAMETER, file::MyStgOpenStorage(m_path, true, nullptr));
 		}
 
+		TEST_METHOD(MessageAttachmentNamesRequireAnExactExtension)
+		{
+			for (const auto name : {L"template.oft", L"template.OFT", L"message.msg", L"message.MsG"})
+				Assert::IsTrue(file::IsMessageFileName(name));
+			for (const auto name : {L"", L"template", L"template.oft.exe", L"file.doc", L"file.oft ", L"file.msgx"})
+				Assert::IsFalse(file::IsMessageFileName(name));
+			Assert::IsFalse(file::IsMessageAttachment(nullptr));
+		}
+
+		TEST_METHOD(AttachmentStorageOutlivesSourceAndIsAnIndependentCopy)
+		{
+			auto source = StorageStream();
+			// OpenMSGStorage must rewind even if the provider returns a stream positioned at EOF.
+			Assert::AreEqual<HRESULT>(S_OK, source->Seek({}, STREAM_SEEK_END, nullptr));
+			ComPtr<IStorage> storage;
+			Assert::AreEqual<HRESULT>(S_OK, file::OpenMSGStorage(source.Get(), storage.GetAddressOf()));
+			source.Reset();
+			ComPtr<IStream> contents;
+			Assert::AreEqual<HRESULT>(
+				S_OK,
+				storage->OpenStream(
+					L"sentinel", nullptr, STGM_READWRITE | STGM_SHARE_EXCLUSIVE, 0, contents.GetAddressOf()));
+			BYTE actual[sizeof(sentinel)]{};
+			ULONG read{};
+			Assert::AreEqual<HRESULT>(S_OK, contents->Read(actual, sizeof(actual), &read));
+			Assert::AreEqual<ULONG>(sizeof(sentinel), read);
+			Assert::IsTrue(memcmp(actual, sentinel, sizeof(sentinel)) == 0);
+			Assert::AreEqual<HRESULT>(S_OK, contents->Seek({}, STREAM_SEEK_SET, nullptr));
+			const BYTE changed = 0xAA;
+			Assert::AreEqual<HRESULT>(S_OK, contents->Write(&changed, sizeof(changed), nullptr));
+			contents.Reset();
+			Assert::AreEqual<HRESULT>(S_OK, storage->Commit(STGC_DEFAULT));
+			storage.Reset();
+			CheckOpened(false, STGM_READ);
+		}
+
+		TEST_METHOD(InvalidAttachmentStorageDoesNotResolveMAPI)
+		{
+			ComPtr<IStream> stream;
+			Assert::AreEqual<HRESULT>(S_OK, CreateStreamOnHGlobal(nullptr, true, stream.GetAddressOf()));
+			ComPtr<IStorage> storage;
+			Assert::IsTrue(FAILED(file::OpenMSGStorage(stream.Get(), storage.GetAddressOf())));
+			Assert::IsNull(storage.Get());
+			Assert::AreEqual<HRESULT>(S_OK, stream->Write(sentinel, sizeof(sentinel), nullptr));
+			Assert::IsTrue(FAILED(file::OpenMSGStorage(stream.Get(), storage.GetAddressOf())));
+			Assert::IsNull(storage.Get());
+		}
+
+		TEST_METHOD(AttachmentStorageCopiesMultipleChunks)
+		{
+			ComPtr<ILockBytes> bytes;
+			Assert::AreEqual<HRESULT>(S_OK, CreateILockBytesOnHGlobal(nullptr, true, bytes.GetAddressOf()));
+			ComPtr<IStorage> original;
+			Assert::AreEqual<HRESULT>(
+				S_OK,
+				StgCreateDocfileOnILockBytes(
+					bytes.Get(), STGM_CREATE | STGM_READWRITE | STGM_SHARE_EXCLUSIVE, 0, original.GetAddressOf()));
+			ComPtr<IStream> payload;
+			Assert::AreEqual<HRESULT>(
+				S_OK,
+				original->CreateStream(L"large", STGM_WRITE | STGM_SHARE_EXCLUSIVE, 0, 0, payload.GetAddressOf()));
+			std::vector<BYTE> expected(50000);
+			for (size_t i = 0; i < expected.size(); ++i)
+				expected[i] = static_cast<BYTE>(i);
+			Assert::AreEqual<HRESULT>(
+				S_OK, payload->Write(expected.data(), static_cast<ULONG>(expected.size()), nullptr));
+			payload.Reset();
+			Assert::AreEqual<HRESULT>(S_OK, original->Commit(STGC_DEFAULT));
+			original.Reset();
+			STATSTG stat{};
+			Assert::AreEqual<HRESULT>(S_OK, bytes->Stat(&stat, STATFLAG_NONAME));
+			std::vector<BYTE> raw(static_cast<size_t>(stat.cbSize.QuadPart));
+			Assert::AreEqual<HRESULT>(S_OK, bytes->ReadAt({}, raw.data(), static_cast<ULONG>(raw.size()), nullptr));
+			ComPtr<IStream> source;
+			Assert::AreEqual<HRESULT>(S_OK, CreateStreamOnHGlobal(nullptr, true, source.GetAddressOf()));
+			Assert::AreEqual<HRESULT>(S_OK, source->Write(raw.data(), static_cast<ULONG>(raw.size()), nullptr));
+			ComPtr<IStorage> storage;
+			Assert::AreEqual<HRESULT>(S_OK, file::OpenMSGStorage(source.Get(), storage.GetAddressOf()));
+			source.Reset();
+			bytes.Reset();
+			Assert::AreEqual<HRESULT>(
+				S_OK,
+				storage->OpenStream(L"large", nullptr, STGM_READ | STGM_SHARE_EXCLUSIVE, 0, payload.GetAddressOf()));
+			std::vector<BYTE> actual(expected.size());
+			ULONG read{};
+			Assert::AreEqual<HRESULT>(S_OK, payload->Read(actual.data(), static_cast<ULONG>(actual.size()), &read));
+			Assert::AreEqual<ULONG>(static_cast<ULONG>(actual.size()), read);
+			Assert::IsTrue(actual == expected);
+		}
+
+		TEST_METHOD(TruncatedAttachmentStorageIsRejected)
+		{
+			auto stream = StorageStream();
+			Assert::AreEqual<HRESULT>(S_OK, stream->SetSize(ULARGE_INTEGER{64}));
+			ComPtr<IStorage> storage;
+			Assert::IsTrue(FAILED(file::OpenMSGStorage(stream.Get(), storage.GetAddressOf())));
+			Assert::IsNull(storage.Get());
+		}
+
+		TEST_METHOD(NullAttachmentStorageParametersAreRejected)
+		{
+			ComPtr<IStorage> storage;
+			Assert::AreEqual<HRESULT>(MAPI_E_INVALID_PARAMETER, file::OpenMSGStorage(nullptr, storage.GetAddressOf()));
+			Assert::IsNull(storage.Get());
+			auto stream = StorageStream();
+			Assert::AreEqual<HRESULT>(MAPI_E_INVALID_PARAMETER, file::OpenMSGStorage(stream.Get(), nullptr));
+			auto result = S_OK;
+			ComPtr<IMessage> message;
+			message.Attach(file::LoadMSGToMessage(static_cast<LPSTORAGE>(nullptr), &result));
+			Assert::IsNull(message.Get());
+			Assert::AreEqual<HRESULT>(MAPI_E_INVALID_PARAMETER, result);
+		}
+
 	private:
+		ComPtr<IStream> StorageStream()
+		{
+			const auto handle = Lock(FILE_SHARE_READ | FILE_SHARE_WRITE);
+			LARGE_INTEGER size{};
+			Assert::IsTrue(GetFileSizeEx(handle.get(), &size) != FALSE);
+			Assert::IsTrue(size.QuadPart > 0 && size.QuadPart < MAXDWORD);
+			std::vector<BYTE> bytes(static_cast<size_t>(size.QuadPart));
+			DWORD read{};
+			Assert::IsTrue(
+				ReadFile(handle.get(), bytes.data(), static_cast<DWORD>(bytes.size()), &read, nullptr) != FALSE);
+			Assert::AreEqual<DWORD>(static_cast<DWORD>(bytes.size()), read);
+			ComPtr<IStream> stream;
+			Assert::AreEqual<HRESULT>(S_OK, CreateStreamOnHGlobal(nullptr, true, stream.GetAddressOf()));
+			Assert::AreEqual<HRESULT>(S_OK, stream->Write(bytes.data(), read, nullptr));
+			return stream;
+		}
+
 		FileHandle Lock(DWORD share)
 		{
 			const auto handle = CreateFileW(m_path.c_str(), GENERIC_READ, share, nullptr, OPEN_EXISTING, 0, nullptr);
