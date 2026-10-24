@@ -61,7 +61,7 @@ namespace controls::sortlistctrl
 		void OnEditGivenProperty();
 		void OnEditProp();
 		void OnEditPropAsRestriction(ULONG ulPropTag);
-		void OnEditPropAsStream(ULONG ulType, bool bEditAsRTF);
+		void OnEditPropAsStream(ULONG ulType);
 		void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 		void OnModifyExtraProps();
 		void OnOpenProperty() const;

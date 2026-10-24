@@ -154,7 +154,7 @@ namespace viewpane
 
 	int TextPane::GetLines()
 	{
-		if (collapsed())
+		if (!m_visible || collapsed())
 		{
 			return 0;
 		}
@@ -173,6 +173,7 @@ namespace viewpane
 	//    Edit box: variable
 	int TextPane::GetFixedHeight()
 	{
+		if (!m_visible) return 0;
 		auto iHeight = GetHeaderHeight();
 
 		if (!m_bMultiline)
@@ -190,6 +191,13 @@ namespace viewpane
 		_In_ const int width,
 		_In_ const int height)
 	{
+		m_Header.ShowWindow(m_visible ? SW_SHOW : SW_HIDE);
+		if (!m_visible)
+		{
+			m_EditBox.ShowWindow(SW_HIDE);
+			return hWinPosInfo;
+		}
+
 		auto curY = y;
 
 		// Layout our label

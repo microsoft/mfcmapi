@@ -44,6 +44,8 @@ namespace viewpane
 		void GetBinaryStream(_In_ LPSTREAM lpStreamOut) const;
 		void AppendString(_In_ const std::wstring& szMsg);
 		void ShowWindow(const int nCmdShow) { m_EditBox.ShowWindow(nCmdShow); }
+		void SetVisible(bool visible) noexcept { m_visible = visible; }
+		int GetMinWidth() override { return m_visible ? ViewPane::GetMinWidth() : 0; }
 
 		void SetReadOnly();
 		void SetMultiline();
@@ -86,6 +88,7 @@ namespace viewpane
 		std::wstring m_lpszW;
 		bool m_bCommitted{false};
 		bool m_bMultiline{false};
+		bool m_visible{true};
 		std::vector<Range> m_highlights;
 	};
 } // namespace viewpane

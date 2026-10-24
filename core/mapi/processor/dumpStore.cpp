@@ -12,6 +12,7 @@
 #include <core/utility/output.h>
 #include <core/mapi/mapiFile.h>
 #include <core/mapi/mapiFunctions.h>
+#include <core/mapi/compressedRtf.h>
 #include <core/mapi/cache/namedProps.h>
 #include <core/utility/error.h>
 #include <core/interpret/proptags.h>

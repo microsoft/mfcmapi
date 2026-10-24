@@ -60,7 +60,6 @@ namespace dialog
 	ON_COMMAND(ID_RTFSYNC, OnRTFSync)
 	ON_COMMAND(ID_TESTEDITBODY, OnTestEditBody)
 	ON_COMMAND(ID_TESTEDITHTML, OnTestEditHTML)
-	ON_COMMAND(ID_TESTEDITRTF, OnTestEditRTF)
 	ON_COMMAND(ID_SAVECHANGES, OnSaveChanges)
 	END_MESSAGE_MAP()
 
@@ -144,12 +143,7 @@ namespace dialog
 				m_lpMessage,
 				PR_BODY_W,
 				false, // No stream guessing
-				m_bIsAB,
-				false,
-				false,
-				0,
-				0,
-				0);
+				m_bIsAB);
 			MyEditor.DisableSave();
 
 			static_cast<void>(MyEditor.DisplayDialog());
@@ -173,41 +167,7 @@ namespace dialog
 				m_lpMessage,
 				PR_BODY_HTML,
 				false, // No stream guessing
-				m_bIsAB,
-				false,
-				false,
-				0,
-				0,
-				0);
-			MyEditor.DisableSave();
-
-			static_cast<void>(MyEditor.DisplayDialog());
-
-			static_cast<void>(m_lpPropDisplay->RefreshMAPIPropList());
-		}
-	}
-
-	void SingleMessageDialog::OnTestEditRTF()
-	{
-		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
-
-		if (m_lpMessage)
-		{
-			output::DebugPrint(output::dbgLevel::Generic, L"Testing body on %p\n", m_lpMessage);
-
-			editor::CStreamEditor MyEditor(
-				this,
-				IDS_PROPEDITOR,
-				IDS_STREAMEDITORPROMPT,
-				m_lpMessage,
-				PR_RTF_COMPRESSED,
-				false, // No stream guessing
-				m_bIsAB,
-				true,
-				false,
-				0,
-				0,
-				0);
+				m_bIsAB);
 			MyEditor.DisableSave();
 
 			static_cast<void>(MyEditor.DisplayDialog());

@@ -170,6 +170,9 @@ namespace controls
 			case BN_SETFOCUS:
 			case EN_SETFOCUS:
 			case CBN_SETFOCUS:
+			case EN_CHANGE:
+			case CBN_SELCHANGE:
+			case CBN_EDITCHANGE:
 				return ::SendMessage(m_parent, message, wParam, lParam);
 			}
 			break;
