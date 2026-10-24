@@ -101,12 +101,16 @@ namespace dialog
 		if (lpListData)
 		{
 			const auto contents = lpListData->cast<sortlistdata::contentsData>();
-			if (contents && contents->getAttachMethod() == ATTACH_EMBEDDED_MSG)
+			if (contents &&
+				(contents->getAttachMethod() == ATTACH_EMBEDDED_MSG || contents->getAttachMethod() == ATTACH_BY_VALUE))
 			{
 				const auto lpAttach = OpenAttach(contents->getAttachNum(), false);
 				if (lpAttach)
 				{
-					auto lpMessage = OpenEmbeddedMessage(lpAttach);
+					auto lpMessage =
+						contents->getAttachMethod() == ATTACH_EMBEDDED_MSG
+							? OpenEmbeddedMessage(lpAttach)
+							: (file::IsMessageAttachment(lpAttach) ? file::LoadMessageAttachment(lpAttach) : nullptr);
 					if (lpMessage)
 					{
 						WC_H_S(DisplayObject(lpMessage, MAPI_MESSAGE, objectType::otDefault, this));
@@ -217,7 +221,9 @@ namespace dialog
 				// Open/cache our attachment
 				const auto attach = OpenAttach(ulAttachNum, true);
 
-				if (attach && m_bDisplayAttachAsEmbeddedMessage && ATTACH_EMBEDDED_MSG == ulAttachMethod)
+				if (attach && m_bDisplayAttachAsEmbeddedMessage &&
+					(ATTACH_EMBEDDED_MSG == ulAttachMethod ||
+					 (ATTACH_BY_VALUE == ulAttachMethod && file::IsMessageAttachment(attach))))
 				{
 					// Reopening an embedded message can fail
 					// The view might be holding the embedded message we're trying to open, so we clear
@@ -225,7 +231,8 @@ namespace dialog
 					// TODO: Consider caching our embedded message so this isn't necessary
 					OnUpdateSingleMAPIPropListCtrl(nullptr, nullptr);
 					// Since we're not returning the attach we got, release it
-					lpRet = OpenEmbeddedMessage(attach);
+					lpRet = ATTACH_EMBEDDED_MSG == ulAttachMethod ? OpenEmbeddedMessage(attach)
+																  : file::LoadMessageAttachment(attach);
 					attach->Release();
 				}
 				else

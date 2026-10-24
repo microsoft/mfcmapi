@@ -8,6 +8,12 @@ namespace file
 	MyStgOpenStorage(_In_ const std::wstring& szMessageFile, bool bBestAccess, _Deref_out_ LPSTORAGE* lppStorage);
 	_Check_return_ LPMESSAGE
 	LoadMSGToMessage(_In_ const std::wstring& szMessageFile, _Out_opt_ HRESULT* lpResult = nullptr);
+	_Check_return_ LPMESSAGE LoadMSGToMessage(_In_ LPSTORAGE storage, _Out_opt_ HRESULT* result = nullptr);
+	// Copies a compound-file stream into owned memory; no attachment is written to disk.
+	_Check_return_ HRESULT OpenMSGStorage(_In_ LPSTREAM stream, _Out_ LPSTORAGE* storage);
+	bool IsMessageFileName(const std::wstring& name);
+	bool IsMessageAttachment(_In_ LPATTACH attach);
+	_Check_return_ LPMESSAGE LoadMessageAttachment(_In_ LPATTACH attach);
 	_Check_return_ HRESULT LoadFromMSG(_In_ const std::wstring& szMessageFile, _In_ LPMESSAGE lpMessage, HWND hWnd);
 	_Check_return_ HRESULT
 	LoadFromTNEF(_In_ const std::wstring& szMessageFile, _In_ LPADRBOOK lpAdrBook, _In_ LPMESSAGE lpMessage);
