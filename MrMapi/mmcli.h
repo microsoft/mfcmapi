@@ -58,6 +58,7 @@ namespace cli
 	extern option switchFindProperty;
 	extern option switchFindNamedProperty;
 	extern option switchRecurse;
+	extern option switchMailbox;
 	extern option switchEntryID;
 
 	extern std::vector<option*> g_options;
@@ -105,4 +106,5 @@ namespace cli
 
 	void DisplayUsage(BOOL bFull) noexcept;
 	void PostParseCheck(OPTIONS& _options);
+	std::wstring ValidateMailboxOptions(const OPTIONS& options);
 } // namespace cli

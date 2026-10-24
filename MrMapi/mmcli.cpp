@@ -2,6 +2,7 @@
 #include <MrMapi/mmcli.h>
 #include <core/utility/cli.h>
 #include <core/mapi/mapiFunctions.h>
+#include <core/mapi/mapiABFunctions.h>
 #include <core/addin/addin.h>
 #include <core/addin/mfcmapi.h>
 #include <core/utility/strings.h>
@@ -75,6 +76,7 @@ namespace cli
 	option switchFindProperty{L"FindProperty", cmdmodeContents, 1, USHRT_MAX, OPT_INITALL};
 	option switchFindNamedProperty{L"FindNamedProperty", cmdmodeContents, 1, USHRT_MAX, OPT_INITALL};
 	option switchRecurse{L"Recurse", cmdmodeContents, 0, 0, OPT_NOOPT};
+	option switchMailbox{L"Mailbox", cmdmodeUnknown, 1, 1, OPT_INITALL | OPT_NEEDSTORE};
 	// Share Store's parse mode so either switch order works; validation selects the final mode.
 	option switchEntryID{L"EntryID", cmdmodeStoreProperties, 1, 1, OPT_INITALL};
 
@@ -140,6 +142,7 @@ namespace cli
 		&switchFindProperty,
 		&switchFindNamedProperty,
 		&switchRecurse,
+		&switchMailbox,
 		&switchEntryID,
 		// If we want to add aliases for any switches, add them here
 		&switchHelpAlias,
@@ -171,6 +174,10 @@ namespace cli
 		}
 
 		wprintf(L"Usage:\n");
+		wprintf(L"   Add -Mailbox <SMTP address> -Profile <profile> to a store/folder command.\n");
+		wprintf(L"   Primary addresses and verified SMTP aliases are supported.\n");
+		wprintf(L"   Uses that profile's Exchange session and existing permissions; never falls back to its own "
+				L"mailbox.\n");
 		wprintf(L"   MrMAPI -EntryID <hex> -Profile <name> -Store <index> <property name|8-digit hex tag>\n");
 		wprintf(L"   MrMAPI -%ws\n", switchHelp.name());
 		wprintf(
@@ -570,6 +577,33 @@ namespace cli
 			wprintf(L"   MrMAPI -d -n 34050\n");
 			wprintf(L"\n");
 			wprintf(L"   MrMAPI -p 17 -i webview.txt -o parsed.txt");
+		}
+	}
+
+	std::wstring ValidateMailboxOptions(const OPTIONS& options)
+	{
+		if (!switchMailbox.isSet()) return {};
+		if (!mapi::ab::IsSMTPAddress(switchMailbox[0])) return L"-Mailbox requires an SMTP address.";
+		if (!switchProfile.isSet() || switchProfile[0].empty())
+			return L"-Mailbox requires an explicit nonempty -Profile.";
+		if (!switchStore.empty() || !switchReceiveFolder.empty() || switchFolder[0].find(L'#') == 0)
+			return L"-Mailbox cannot be combined with a store index or a #store folder prefix.";
+		switch (options.mode)
+		{
+		case cmdmodeContents:
+		case cmdmodeAcls:
+		case cmdmodeRules:
+		case cmdmodeChildFolders:
+		case cmdmodeFidMid:
+		case cmdmodeStoreProperties:
+		case cmdmodeFolderProps:
+		case cmdmodeFolderSize:
+		case cmdmodeReceiveFolder:
+		case cmdmodeSearchState:
+		case cmdmodeNamedProps:
+			return {};
+		default:
+			return L"-Mailbox requires a supported store or folder command; see -Help.";
 		}
 	}
 

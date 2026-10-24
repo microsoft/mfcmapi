@@ -9,6 +9,7 @@
 #include <core/utility/error.h>
 #include <core/mapi/mapiFunctions.h>
 #include <core/mapi/interfaces.h>
+#include <core/mapi/mapiABFunctions.h>
 
 namespace mapi::store
 {
@@ -282,11 +283,12 @@ namespace mapi::store
 		const std::wstring& smtpAddress,
 		ULONG ulFlags) // desired flags for CreateStoreEntryID
 	{
-		if (!lpMDB || lpszMsgStoreDN.empty() || !StoreSupportsManageStoreEx(lpMDB))
+		if (!lpMDB || (lpszMsgStoreDN.empty() && smtpAddress.empty()) || !StoreSupportsManageStoreEx(lpMDB))
 		{
 			if (!lpMDB) output::DebugPrint(output::dbgLevel::Generic, L"CreateStoreEntryID2: MDB was NULL\n");
-			if (lpszMsgStoreDN.empty())
-				output::DebugPrint(output::dbgLevel::Generic, L"CreateStoreEntryID2: lpszMsgStoreDN was missing\n");
+			if (lpszMsgStoreDN.empty() && smtpAddress.empty())
+				output::DebugPrint(
+					output::dbgLevel::Generic, L"CreateStoreEntryID2: Store DN and SMTP address were missing\n");
 			return {};
 		}
 
@@ -303,22 +305,27 @@ namespace mapi::store
 				smtpAddress.c_str(),
 				ulFlags);
 			SPropValue sProps[4] = {};
-			sProps[0].ulPropTag = PR_PROFILE_MAILBOX;
+			ULONG count{};
 			auto lpszMailboxDNA = strings::wstringTostring(lpszMailboxDN);
-			sProps[0].Value.lpszA = const_cast<LPSTR>(lpszMailboxDNA.c_str());
-
-			sProps[1].ulPropTag = PR_PROFILE_MDB_DN;
 			auto lpszMsgStoreDNA = strings::wstringTostring(lpszMsgStoreDN);
-			sProps[1].Value.lpszA = const_cast<LPSTR>(lpszMsgStoreDNA.c_str());
+			sProps[count].ulPropTag = PR_PROFILE_MAILBOX;
+			sProps[count++].Value.lpszA = const_cast<LPSTR>(lpszMailboxDNA.c_str());
+			if (!lpszMsgStoreDN.empty())
+			{
+				sProps[count].ulPropTag = PR_PROFILE_MDB_DN;
+				sProps[count++].Value.lpszA = const_cast<LPSTR>(lpszMsgStoreDNA.c_str());
+				sProps[count].ulPropTag = PR_FORCE_USE_ENTRYID_SERVER;
+				sProps[count++].Value.b = true;
+			}
 
-			sProps[2].ulPropTag = PR_FORCE_USE_ENTRYID_SERVER;
-			sProps[2].Value.b = true;
-
-			sProps[3].ulPropTag = PR_PROFILE_USER_SMTP_EMAIL_ADDRESS_W;
-			sProps[3].Value.lpszW = smtpAddress.empty() ? nullptr : const_cast<LPWSTR>(smtpAddress.c_str());
+			if (!smtpAddress.empty())
+			{
+				sProps[count].ulPropTag = PR_PROFILE_USER_SMTP_EMAIL_ADDRESS_W;
+				sProps[count++].Value.lpszW = const_cast<LPWSTR>(smtpAddress.c_str());
+			}
 
 			EC_MAPI_S(lpXManageStoreEx->CreateStoreEntryID2(
-				smtpAddress.empty() ? _countof(sProps) - 1 : _countof(sProps),
+				count,
 				reinterpret_cast<LPSPropValue>(&sProps),
 				ulFlags,
 				&eid.cb,
@@ -458,6 +465,27 @@ namespace mapi::store
 		return lpDefaultMDB;
 	}
 
+	_Check_return_ HRESULT
+	OpenMailboxBySMTP(_In_ LPMAPISESSION session, const std::wstring& smtpAddress, _Out_ LPMDB* mailbox)
+	{
+		if (!mailbox) return WC_H(MAPI_E_INVALID_PARAMETER);
+		*mailbox = nullptr;
+		if (!session || !ab::IsSMTPAddress(smtpAddress)) return WC_H(MAPI_E_INVALID_PARAMETER);
+
+		LPADRBOOK addressBook{};
+		auto hRes = WC_MAPI(session->OpenAddressBook(0, nullptr, AB_NO_DIALOG, &addressBook));
+		std::wstring mailboxDN;
+		if (SUCCEEDED(hRes)) hRes = ab::ResolveExchangeMailbox(addressBook, smtpAddress, mailboxDN);
+		if (addressBook) addressBook->Release();
+		if (FAILED(hRes)) return hRes;
+
+		auto primary = OpenMessageStoreGUID(session, pbExchangeProviderPrimaryUserGuid);
+		if (!primary) return WC_H(MAPI_E_CALL_FAILED);
+		*mailbox = MailboxLogon(session, primary, {}, mailboxDN, smtpAddress, 0, true);
+		primary->Release();
+		return *mailbox ? S_OK : WC_H(MAPI_E_CALL_FAILED);
+	}
+
 	// Build DNs for call to MailboxLogon
 	_Check_return_ LPMDB OpenOtherUsersMailbox(
 		_In_ LPMAPISESSION lpMAPISession,
@@ -468,7 +496,24 @@ namespace mapi::store
 		ULONG ulFlags, // desired flags for CreateStoreEntryID
 		bool bForceServer) // Use CreateStoreEntryID2
 	{
-		if (!lpMAPISession || !lpMDB || szMailboxDN.empty() || !StoreSupportsManageStore(lpMDB)) return nullptr;
+		if (!lpMAPISession || !lpMDB || szMailboxDN.empty()) return nullptr;
+		if (szServerName.empty() && bForceServer)
+		{
+			auto routingSMTP = smtpAddress;
+			if (routingSMTP.empty())
+			{
+				LPADRBOOK addressBook{};
+				auto hRes = EC_MAPI(lpMAPISession->OpenAddressBook(0, nullptr, AB_NO_DIALOG, &addressBook));
+				if (SUCCEEDED(hRes) && !addressBook) hRes = EC_H(MAPI_E_INVALID_OBJECT);
+				if (SUCCEEDED(hRes)) hRes = EC_H(ab::ResolveExchangeMailboxSMTP(addressBook, szMailboxDN, routingSMTP));
+				if (addressBook) addressBook->Release();
+				if (FAILED(hRes)) return nullptr;
+			}
+
+			return MailboxLogon(lpMAPISession, lpMDB, {}, szMailboxDN, routingSMTP, ulFlags, true);
+		}
+
+		if (!StoreSupportsManageStore(lpMDB)) return nullptr;
 
 		output::DebugPrint(
 			output::dbgLevel::Generic,

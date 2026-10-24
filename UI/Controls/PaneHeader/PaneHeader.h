@@ -26,8 +26,8 @@ namespace controls
 			int iSmallHeightMargin,
 			int iButtonHeight); // Height of buttons below the control
 
-		void SetLabel(const UINT uidLabel) { m_szLabel = strings::loadstring(uidLabel); }
-		void SetLabel(const std::wstring szLabel) { m_szLabel = szLabel; }
+		void SetLabel(const UINT uidLabel) { SetLabel(strings::loadstring(uidLabel)); }
+		void SetLabel(const std::wstring szLabel);
 		void SetSectionStyle() noexcept { m_bSection = true; }
 
 		// Returns the height of our control, accounting for an expand/collapse button
