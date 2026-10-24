@@ -55,6 +55,7 @@ namespace dialog::editor
 			if (identity != Options().identity) Options().smtp.clear();
 			Options().identity = identity;
 		}
+
 		if (pane == 0)
 		{
 			const auto method = GetDropDown(0);
@@ -65,6 +66,7 @@ namespace dialog::editor
 				UpdateMethod();
 			}
 		}
+
 		return pane;
 	}
 
@@ -80,6 +82,7 @@ namespace dialog::editor
 			if (SUCCEEDED(openResult)) EC_H_S(MAPI_E_INVALID_OBJECT);
 			return;
 		}
+
 		auto user = mapi::ab::SelectUser(addressBook, m_hWnd, nullptr);
 		addressBook->Release();
 		if (!user) return;
@@ -98,7 +101,7 @@ namespace dialog::editor
 			{
 				Options().identity = dn->Value.lpszW;
 				Options().smtp =
-					strings::CheckStringProp(smtp, PT_UNICODE) && mapi::ab::IsMailboxSMTPAddress(smtp->Value.lpszW)
+					strings::CheckStringProp(smtp, PT_UNICODE) && mapi::ab::IsSMTPAddress(smtp->Value.lpszW)
 						? smtp->Value.lpszW
 						: std::wstring{};
 				SetStringW(1, Options().identity);
@@ -108,6 +111,7 @@ namespace dialog::editor
 				EC_H_S(MAPI_E_NOT_FOUND);
 			}
 		}
+
 		MAPIFreeBuffer(props);
 		user->Release();
 	}
@@ -138,6 +142,7 @@ namespace dialog::editor
 			advanced.AddPane(viewpane::TextPane::CreateSingleLinePane(2, IDS_USER_SMTP_ADDRESS, options.smtp, false));
 			advanced.AddPane(viewpane::CheckPane::Create(3, IDS_FORCESERVER, options.forceServer, false));
 		}
+
 		if (!advanced.DisplayDialog()) return;
 		options.flags = advanced.GetHex(0);
 		if (entryID)
@@ -157,17 +162,19 @@ namespace dialog::editor
 	void CMailboxEditor::OnOK()
 	{
 		Options().identity = GetStringW(1);
-		if (m_method == MailboxMethod::SMTP && !mapi::ab::IsMailboxSMTPAddress(Options().identity))
+		if (m_method == MailboxMethod::SMTP && !mapi::ab::IsSMTPAddress(Options().identity))
 		{
 			ui::mapiui::displayError(strings::loadstring(IDS_MAILBOXINVALIDSMTP));
 			return;
 		}
+
 		if (Options().identity.empty() ||
 			(m_method == MailboxMethod::EntryID && GetBinary(1, Options().base64).empty()))
 		{
 			ui::mapiui::displayError(strings::loadstring(IDS_MAILBOXINVALIDIDENTITY));
 			return;
 		}
+
 		CEditor::OnOK();
 	}
 } // namespace dialog::editor

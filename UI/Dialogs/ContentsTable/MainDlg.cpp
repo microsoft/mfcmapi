@@ -513,6 +513,7 @@ namespace dialog
 			if (prompt.GetMethod() != editor::MailboxMethod::SMTP) EC_H_S(MAPI_E_CALL_FAILED);
 			return;
 		}
+
 		if (prompt.GetMethod() == editor::MailboxMethod::EntryID && options.displayProps)
 		{
 			if (m_lpPropDisplay) m_lpPropDisplay->SetDataSource(mailbox, nullptr, true);
@@ -521,6 +522,7 @@ namespace dialog
 		{
 			EC_H_S(DisplayObject(mailbox, NULL, objectType::store, this));
 		}
+
 		mailbox->Release();
 	}
 

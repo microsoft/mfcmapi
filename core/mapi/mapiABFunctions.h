@@ -3,7 +3,7 @@
 
 namespace mapi::ab
 {
-	bool IsMailboxSMTPAddress(const std::wstring& smtpAddress) noexcept;
+	bool IsSMTPAddress(const std::wstring& smtpAddress) noexcept;
 	_Check_return_ HRESULT
 	ResolveExchangeMailbox(_In_ LPADRBOOK addressBook, const std::wstring& smtpAddress, _Out_ std::wstring& mailboxDN);
 	_Check_return_ HRESULT ResolveExchangeMailboxSMTP(

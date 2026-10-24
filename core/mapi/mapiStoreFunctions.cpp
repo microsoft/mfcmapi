@@ -317,6 +317,7 @@ namespace mapi::store
 				sProps[count].ulPropTag = PR_FORCE_USE_ENTRYID_SERVER;
 				sProps[count++].Value.b = true;
 			}
+
 			if (!smtpAddress.empty())
 			{
 				sProps[count].ulPropTag = PR_PROFILE_USER_SMTP_EMAIL_ADDRESS_W;
@@ -469,7 +470,7 @@ namespace mapi::store
 	{
 		if (!mailbox) return WC_H(MAPI_E_INVALID_PARAMETER);
 		*mailbox = nullptr;
-		if (!session || !ab::IsMailboxSMTPAddress(smtpAddress)) return WC_H(MAPI_E_INVALID_PARAMETER);
+		if (!session || !ab::IsSMTPAddress(smtpAddress)) return WC_H(MAPI_E_INVALID_PARAMETER);
 
 		LPADRBOOK addressBook{};
 		auto hRes = WC_MAPI(session->OpenAddressBook(0, nullptr, AB_NO_DIALOG, &addressBook));
@@ -508,8 +509,10 @@ namespace mapi::store
 				if (addressBook) addressBook->Release();
 				if (FAILED(hRes)) return nullptr;
 			}
+
 			return MailboxLogon(lpMAPISession, lpMDB, {}, szMailboxDN, routingSMTP, ulFlags, true);
 		}
+
 		if (!StoreSupportsManageStore(lpMDB)) return nullptr;
 
 		output::DebugPrint(

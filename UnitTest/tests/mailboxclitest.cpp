@@ -6,6 +6,7 @@ namespace mailboxclitest
 {
 	TEST_CLASS(mailboxclitest){public : TEST_CLASS_INITIALIZE(initialize){unittest::init();
 }
+
 TEST_METHOD_INITIALIZE(clearOptions) { ClearOptions(); }
 TEST_METHOD_CLEANUP(restoreOptions) { ClearOptions(); }
 

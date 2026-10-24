@@ -583,7 +583,7 @@ namespace cli
 	std::wstring ValidateMailboxOptions(const OPTIONS& options)
 	{
 		if (!switchMailbox.isSet()) return {};
-		if (!mapi::ab::IsMailboxSMTPAddress(switchMailbox[0])) return L"-Mailbox requires an SMTP address.";
+		if (!mapi::ab::IsSMTPAddress(switchMailbox[0])) return L"-Mailbox requires an SMTP address.";
 		if (!switchProfile.isSet() || switchProfile[0].empty())
 			return L"-Mailbox requires an explicit nonempty -Profile.";
 		if (!switchStore.empty() || !switchReceiveFolder.empty() || switchFolder[0].find(L'#') == 0)

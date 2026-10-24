@@ -103,6 +103,7 @@ extern "C" LPSPropValue STDAPICALLTYPE TestPpropFindProp(LPSPropValue props, ULO
 			(PROP_TYPE(tag) == PT_UNSPECIFIED && PROP_ID(props[index].ulPropTag) == PROP_ID(tag)))
 			return &props[index];
 	}
+
 	return nullptr;
 }
 

@@ -29,6 +29,7 @@ namespace mapiabtest
 			*table = nullptr;
 			return MAPI_E_NO_SUPPORT;
 		}
+
 		HRESULT STDMETHODCALLTYPE
 		OpenMsgStore(ULONG_PTR ui, ULONG size, LPENTRYID entry, LPCIID iid, ULONG flags, LPMDB* store) override
 		{
@@ -42,6 +43,7 @@ namespace mapiabtest
 			if (*store) (*store)->AddRef();
 			return storeOpenResult;
 		}
+
 		HRESULT STDMETHODCALLTYPE OpenAddressBook(ULONG_PTR ui, LPCIID iid, ULONG flags, LPADRBOOK* book) override
 		{
 			++addressBookCalls;
@@ -52,32 +54,39 @@ namespace mapiabtest
 			if (*book) (*book)->AddRef();
 			return addressBookResult;
 		}
+
 		HRESULT STDMETHODCALLTYPE OpenProfileSection(LPMAPIUID, LPCIID, ULONG, LPPROFSECT*) override
 		{
 			return MAPI_E_NO_SUPPORT;
 		}
+
 		HRESULT STDMETHODCALLTYPE GetStatusTable(ULONG, LPMAPITABLE*) override { return MAPI_E_NO_SUPPORT; }
 		HRESULT STDMETHODCALLTYPE OpenEntry(ULONG, LPENTRYID, LPCIID, ULONG, ULONG*, LPUNKNOWN*) override
 		{
 			return MAPI_E_NO_SUPPORT;
 		}
+
 		HRESULT STDMETHODCALLTYPE CompareEntryIDs(ULONG, LPENTRYID, ULONG, LPENTRYID, ULONG, ULONG*) override
 		{
 			return MAPI_E_NO_SUPPORT;
 		}
+
 		HRESULT STDMETHODCALLTYPE Advise(ULONG, LPENTRYID, ULONG, LPMAPIADVISESINK, ULONG_PTR*) override
 		{
 			return MAPI_E_NO_SUPPORT;
 		}
+
 		HRESULT STDMETHODCALLTYPE Unadvise(ULONG_PTR) override { return MAPI_E_NO_SUPPORT; }
 		HRESULT STDMETHODCALLTYPE MessageOptions(ULONG_PTR, ULONG, LPTSTR, LPMESSAGE) override
 		{
 			return MAPI_E_NO_SUPPORT;
 		}
+
 		HRESULT STDMETHODCALLTYPE QueryDefaultMessageOpt(LPTSTR, ULONG, ULONG*, LPSPropValue*) override
 		{
 			return MAPI_E_NO_SUPPORT;
 		}
+
 		HRESULT STDMETHODCALLTYPE EnumAdrTypes(ULONG, ULONG*, LPTSTR**) override { return MAPI_E_NO_SUPPORT; }
 		HRESULT STDMETHODCALLTYPE QueryIdentity(ULONG*, LPENTRYID*) override { return MAPI_E_NO_SUPPORT; }
 		HRESULT STDMETHODCALLTYPE Logoff(ULONG_PTR, ULONG, ULONG) override { return MAPI_E_NO_SUPPORT; }
@@ -89,6 +98,7 @@ namespace mapiabtest
 		{
 			return MAPI_E_NO_SUPPORT;
 		}
+
 		HRESULT STDMETHODCALLTYPE PrepareForm(LPCIID, LPMESSAGE, ULONG_PTR*) override { return MAPI_E_NO_SUPPORT; }
 
 		LPADRBOOK addressBook{};
@@ -114,6 +124,7 @@ namespace mapiabtest
 			AddRef();
 			return S_OK;
 		}
+
 		ULONG STDMETHODCALLTYPE AddRef() override { return ++refs; }
 		ULONG STDMETHODCALLTYPE Release() override { return --refs; }
 		HRESULT STDMETHODCALLTYPE GetLastError(HRESULT, ULONG, LPMAPIERROR*) override { return MAPI_E_NO_SUPPORT; }
@@ -158,11 +169,13 @@ namespace mapiabtest
 		{
 			return MAPI_E_NO_SUPPORT;
 		}
+
 		HRESULT STDMETHODCALLTYPE Unadvise(ULONG_PTR) override { return MAPI_E_NO_SUPPORT; }
 		HRESULT STDMETHODCALLTYPE CompareEntryIDs(ULONG, LPENTRYID, ULONG, LPENTRYID, ULONG, ULONG*) override
 		{
 			return MAPI_E_NO_SUPPORT;
 		}
+
 		HRESULT STDMETHODCALLTYPE OpenEntry(ULONG, LPENTRYID, LPCIID, ULONG, ULONG*, LPUNKNOWN*) override
 		{
 			return MAPI_E_NO_SUPPORT;
@@ -171,10 +184,12 @@ namespace mapiabtest
 		{
 			return MAPI_E_NO_SUPPORT;
 		}
+
 		HRESULT STDMETHODCALLTYPE GetReceiveFolder(LPTSTR, ULONG, ULONG*, LPENTRYID*, LPTSTR*) override
 		{
 			return MAPI_E_NO_SUPPORT;
 		}
+
 		HRESULT STDMETHODCALLTYPE GetReceiveFolderTable(ULONG, LPMAPITABLE*) override { return MAPI_E_NO_SUPPORT; }
 		HRESULT STDMETHODCALLTYPE StoreLogoff(ULONG*) override { return MAPI_E_NO_SUPPORT; }
 		HRESULT STDMETHODCALLTYPE AbortSubmit(ULONG, LPENTRYID, ULONG) override { return MAPI_E_NO_SUPPORT; }
@@ -186,19 +201,23 @@ namespace mapiabtest
 		{
 			return MAPI_E_NO_SUPPORT;
 		}
+
 		HRESULT STDMETHODCALLTYPE EntryIDFromSourceKey(ULONG, LPBYTE, ULONG, LPBYTE, ULONG*, LPENTRYID*) override
 		{
 			return MAPI_E_NO_SUPPORT;
 		}
+
 		HRESULT STDMETHODCALLTYPE GetRights(ULONG, LPENTRYID, ULONG, LPENTRYID, ULONG*) override
 		{
 			return MAPI_E_NO_SUPPORT;
 		}
+
 		HRESULT STDMETHODCALLTYPE GetMailboxTable(LPSTR, LPMAPITABLE*, ULONG) override { return MAPI_E_NO_SUPPORT; }
 		HRESULT STDMETHODCALLTYPE GetPublicFolderTable(LPSTR, LPMAPITABLE*, ULONG) override
 		{
 			return MAPI_E_NO_SUPPORT;
 		}
+
 		HRESULT STDMETHODCALLTYPE
 		CreateStoreEntryID2(ULONG count, LPSPropValue props, ULONG flags, ULONG* size, LPENTRYID* entry) override
 		{
@@ -217,11 +236,13 @@ namespace mapiabtest
 				Assert::AreEqual(static_cast<ULONG>(PR_FORCE_USE_ENTRYID_SERVER), props[index].ulPropTag);
 				Assert::IsTrue(props[index++].Value.b != 0);
 			}
+
 			if (!expectedSMTP.empty())
 			{
 				Assert::AreEqual(static_cast<ULONG>(PR_PROFILE_USER_SMTP_EMAIL_ADDRESS_W), props[index].ulPropTag);
 				Assert::AreEqual(expectedSMTP, std::wstring(props[index++].Value.lpszW));
 			}
+
 			*size = 0;
 			*entry = nullptr;
 			if (FAILED(createResult)) return createResult;
@@ -231,6 +252,7 @@ namespace mapiabtest
 			*reinterpret_cast<LPBYTE>(*entry) = 42;
 			return S_OK;
 		}
+
 		std::string expectedServer;
 		std::wstring expectedSMTP{L"user@example.test"};
 		ULONG expectedFlags{};
@@ -248,6 +270,7 @@ namespace mapiabtest
 			*object = nullptr;
 			return E_NOINTERFACE;
 		}
+
 		ULONG STDMETHODCALLTYPE AddRef() override { return ++m_refs; }
 		ULONG STDMETHODCALLTYPE Release() override { return --m_refs; }
 		HRESULT STDMETHODCALLTYPE GetLastError(HRESULT, ULONG, LPMAPIERROR*) override { return MAPI_E_NO_SUPPORT; }
@@ -267,40 +290,49 @@ namespace mapiabtest
 				Assert::IsNotNull(*props);
 				std::copy(mailboxProperties.begin(), mailboxProperties.end(), *props);
 			}
+
 			return getPropsResult;
 		}
+
 		HRESULT STDMETHODCALLTYPE GetPropList(ULONG, LPSPropTagArray*) override { return MAPI_E_NO_SUPPORT; }
 		HRESULT STDMETHODCALLTYPE OpenProperty(ULONG, LPCIID, ULONG, ULONG, LPUNKNOWN*) override
 		{
 			return MAPI_E_NO_SUPPORT;
 		}
+
 		HRESULT STDMETHODCALLTYPE SetProps(ULONG, LPSPropValue, LPSPropProblemArray*) override
 		{
 			return MAPI_E_NO_SUPPORT;
 		}
+
 		HRESULT STDMETHODCALLTYPE DeleteProps(LPSPropTagArray, LPSPropProblemArray*) override
 		{
 			return MAPI_E_NO_SUPPORT;
 		}
+
 		HRESULT STDMETHODCALLTYPE
 		CopyTo(ULONG, LPCIID, LPSPropTagArray, ULONG_PTR, LPMAPIPROGRESS, LPCIID, LPVOID, ULONG, LPSPropProblemArray*)
 			override
 		{
 			return MAPI_E_NO_SUPPORT;
 		}
+
 		HRESULT STDMETHODCALLTYPE
 		CopyProps(LPSPropTagArray, ULONG_PTR, LPMAPIPROGRESS, LPCIID, LPVOID, ULONG, LPSPropProblemArray*) override
 		{
 			return MAPI_E_NO_SUPPORT;
 		}
+
 		HRESULT STDMETHODCALLTYPE GetNamesFromIDs(LPSPropTagArray*, LPGUID, ULONG, ULONG*, LPMAPINAMEID**) override
 		{
 			return MAPI_E_NO_SUPPORT;
 		}
+
 		HRESULT STDMETHODCALLTYPE GetIDsFromNames(ULONG, LPMAPINAMEID*, ULONG, LPSPropTagArray*) override
 		{
 			return MAPI_E_NO_SUPPORT;
 		}
+
 		HRESULT STDMETHODCALLTYPE
 		OpenEntry(ULONG cbEntryID, LPENTRYID addressEntry, LPCIID iid, ULONG flags, ULONG* type, LPUNKNOWN* object)
 			override
@@ -318,6 +350,7 @@ namespace mapiabtest
 				activeContainer->AddRef();
 				return containerOpenResult;
 			}
+
 			const auto index = static_cast<size_t>(*reinterpret_cast<LPBYTE>(addressEntry) - 42);
 			Assert::IsTrue(index < activeContainer->tableRecipients.size());
 			auto& recipient = *activeContainer->tableRecipients[index];
@@ -328,6 +361,7 @@ namespace mapiabtest
 			recipient.AddRef();
 			return recipient.openResult;
 		}
+
 		HRESULT STDMETHODCALLTYPE GetContentsTable(ULONG flags, LPMAPITABLE* table) override
 		{
 			++contentsTableCalls;
@@ -337,23 +371,28 @@ namespace mapiabtest
 			tablePosition = 0;
 			return contentsTableResult;
 		}
+
 		HRESULT STDMETHODCALLTYPE GetHierarchyTable(ULONG, LPMAPITABLE*) override { return MAPI_E_NO_SUPPORT; }
 		HRESULT STDMETHODCALLTYPE SetSearchCriteria(LPSRestriction, LPENTRYLIST, ULONG) override
 		{
 			return MAPI_E_NO_SUPPORT;
 		}
+
 		HRESULT STDMETHODCALLTYPE GetSearchCriteria(ULONG, LPSRestriction*, LPENTRYLIST*, ULONG*) override
 		{
 			return MAPI_E_NO_SUPPORT;
 		}
+
 		HRESULT STDMETHODCALLTYPE CreateEntry(ULONG, LPENTRYID, ULONG, LPMAPIPROP*) override
 		{
 			return MAPI_E_NO_SUPPORT;
 		}
+
 		HRESULT STDMETHODCALLTYPE CopyEntries(LPENTRYLIST, ULONG_PTR, LPMAPIPROGRESS, ULONG) override
 		{
 			return MAPI_E_NO_SUPPORT;
 		}
+
 		HRESULT STDMETHODCALLTYPE DeleteEntries(LPENTRYLIST, ULONG) override { return MAPI_E_NO_SUPPORT; }
 		HRESULT STDMETHODCALLTYPE Advise(ULONG, LPMAPIADVISESINK, ULONG_PTR*) override { return MAPI_E_NO_SUPPORT; }
 		HRESULT STDMETHODCALLTYPE GetStatus(ULONG*, ULONG*) override { return MAPI_E_NO_SUPPORT; }
@@ -364,6 +403,7 @@ namespace mapiabtest
 			Assert::AreEqual(0UL, flags);
 			return columnsResult;
 		}
+
 		HRESULT STDMETHODCALLTYPE QueryColumns(ULONG, LPSPropTagArray*) override { return MAPI_E_NO_SUPPORT; }
 		HRESULT STDMETHODCALLTYPE GetRowCount(ULONG, ULONG*) override { return MAPI_E_NO_SUPPORT; }
 		HRESULT STDMETHODCALLTYPE SeekRow(BOOKMARK, LONG, LONG*) override { return MAPI_E_NO_SUPPORT; }
@@ -380,6 +420,7 @@ namespace mapiabtest
 			Assert::AreEqual(requestedSMTP, std::wstring(restriction->res.resProperty.lpProp->Value.lpszW));
 			return restrictResult;
 		}
+
 		HRESULT STDMETHODCALLTYPE CreateBookmark(BOOKMARK*) override { return MAPI_E_NO_SUPPORT; }
 		HRESULT STDMETHODCALLTYPE FreeBookmark(BOOKMARK) override { return MAPI_E_NO_SUPPORT; }
 		HRESULT STDMETHODCALLTYPE SortTable(LPSSortOrderSet, ULONG) override { return MAPI_E_NO_SUPPORT; }
@@ -405,24 +446,29 @@ namespace mapiabtest
 				row.lpProps[0].Value.bin = {1, reinterpret_cast<LPBYTE>(row.lpProps + 1)};
 				*row.lpProps[0].Value.bin.lpb = static_cast<BYTE>(42 + tablePosition + index);
 			}
+
 			tablePosition += count;
 			return queryResult;
 		}
+
 		HRESULT STDMETHODCALLTYPE Abort() override { return MAPI_E_NO_SUPPORT; }
 		HRESULT STDMETHODCALLTYPE ExpandRow(ULONG, LPBYTE, ULONG, ULONG, LPSRowSet*, ULONG*) override
 		{
 			return MAPI_E_NO_SUPPORT;
 		}
+
 		HRESULT STDMETHODCALLTYPE CollapseRow(ULONG, LPBYTE, ULONG, ULONG*) override { return MAPI_E_NO_SUPPORT; }
 		HRESULT STDMETHODCALLTYPE WaitForCompletion(ULONG, ULONG, ULONG*) override { return MAPI_E_NO_SUPPORT; }
 		HRESULT STDMETHODCALLTYPE GetCollapseState(ULONG, ULONG, LPBYTE, ULONG*, LPBYTE*) override
 		{
 			return MAPI_E_NO_SUPPORT;
 		}
+
 		HRESULT STDMETHODCALLTYPE SetCollapseState(ULONG, ULONG, LPBYTE, BOOKMARK*) override
 		{
 			return MAPI_E_NO_SUPPORT;
 		}
+
 		HRESULT STDMETHODCALLTYPE
 		ResolveNames(LPSPropTagArray tags, ULONG flags, LPADRLIST recipients, LPFlagList status) override
 		{
@@ -435,6 +481,7 @@ namespace mapiabtest
 																									: resolutionStatus;
 			return hr;
 		}
+
 		HRESULT STDMETHODCALLTYPE CompareEntryIDs(ULONG, LPENTRYID, ULONG, LPENTRYID, ULONG, ULONG*) override
 		{
 			return MAPI_E_NO_SUPPORT;
@@ -457,6 +504,7 @@ namespace mapiabtest
 		{
 			return ResolveRecipient(ui, flags, title, recipients);
 		}
+
 		HRESULT ResolveRecipient(ULONG_PTR uiParam, ULONG flags, LPTSTR title, LPADRLIST recipients)
 		{
 			++resolveCalls;
@@ -523,8 +571,10 @@ namespace mapiabtest
 				row.lpProps[0].Value.bin = {1, reinterpret_cast<LPBYTE>(row.lpProps + 1)};
 				*row.lpProps[0].Value.bin.lpb = static_cast<BYTE>(index);
 			}
+
 			return searchPathResult;
 		}
+
 		HRESULT STDMETHODCALLTYPE SetSearchPath(ULONG, LPSRowSet) override { return MAPI_E_NO_SUPPORT; }
 		HRESULT STDMETHODCALLTYPE PrepareRecips(ULONG, LPSPropTagArray, LPADRLIST) override
 		{
@@ -877,6 +927,7 @@ namespace mapiabtest
 				Assert::AreEqual(MAPI_E_INVALID_PARAMETER, mapi::ab::ResolveExchangeMailboxSMTP(&book, dn, smtp));
 				Assert::IsTrue(smtp.empty());
 			}
+
 			Assert::AreEqual(0UL, book.resolveCalls);
 		}
 
@@ -939,6 +990,7 @@ namespace mapiabtest
 					book.mailboxProperties[index].Value.err = MAPI_E_NOT_FOUND;
 					book.getPropsResult = MAPI_W_ERRORS_RETURNED;
 				}
+
 				if (stage == 3) book.mailboxProperties[2].Value.lpszW = const_cast<LPWSTR>(L"invalid-smtp");
 				if (stage == 6) book.mailboxProperties[2].Value.lpszW = const_cast<LPWSTR>(L"");
 				if (stage == 7) book.mailboxProperties[1].Value.lpszW = const_cast<LPWSTR>(L"");
@@ -992,6 +1044,7 @@ namespace mapiabtest
 					session.addressBook = &book;
 					session.addressBookResult = MAPI_E_NO_ACCESS;
 				}
+
 				Assert::IsNull(mapi::store::OpenOtherUsersMailbox(
 					&session, &store, {}, L"/o=Test/ou=Test/cn=Recipients/cn=User", {}, 0, true));
 				Assert::AreEqual(0UL, prompts);
@@ -1001,6 +1054,7 @@ namespace mapiabtest
 				Assert::AreEqual(0UL, store.createCalls);
 				Assert::AreEqual(0UL, session.storeOpenCalls);
 			}
+
 			Assert::IsFalse(m_errors.empty());
 		}
 
@@ -1130,12 +1184,13 @@ namespace mapiabtest
 				Assert::AreEqual(MAPI_E_INVALID_PARAMETER, mapi::ab::ResolveExchangeMailbox(&book, address, dn));
 				Assert::IsTrue(dn.empty());
 			}
+
 			std::wstring dn = L"stale";
 			Assert::AreEqual(
 				MAPI_E_INVALID_PARAMETER, mapi::ab::ResolveExchangeMailbox(nullptr, L"user@example.test", dn));
 			Assert::IsTrue(dn.empty());
 			Assert::AreEqual(0UL, book.resolveCalls);
-			Assert::IsTrue(mapi::ab::IsMailboxSMTPAddress(L"user@example.test"));
+			Assert::IsTrue(mapi::ab::IsSMTPAddress(L"user@example.test"));
 		}
 
 		TEST_METHOD(ResolvesAndVerifiesExactSMTPWithoutUI)
@@ -1250,6 +1305,7 @@ namespace mapiabtest
 					proxies.ulPropTag = CHANGE_PROP_TYPE(PR_EMS_AB_PROXY_ADDRESSES_W, PT_ERROR);
 					proxies.Value.err = MAPI_E_NOT_FOUND;
 				}
+
 				std::wstring dn = L"stale";
 				Assert::AreEqual(MAPI_E_NOT_FOUND, mapi::ab::ResolveExchangeMailbox(&book, L"user@example.test", dn));
 				Assert::IsTrue(dn.empty());
@@ -1294,6 +1350,7 @@ namespace mapiabtest
 				recipient->mailboxProperties[3].ulPropTag = PR_EMS_AB_PROXY_ADDRESSES_W;
 				recipient->mailboxProperties[3].Value.MVszW = {_countof(values), values};
 			}
+
 			conflict.mailboxProperties[1].Value.lpszW = const_cast<LPWSTR>(L"/o=Test/ou=Test/cn=Recipients/cn=Other");
 			book.searchContainers = {&book, &conflict};
 			std::wstring dn = L"stale";
@@ -1448,6 +1505,7 @@ namespace mapiabtest
 				Assert::IsTrue(dn.empty());
 				Assert::AreEqual(0UL, book.containerOpenCalls);
 			}
+
 			TestAddressBook empty;
 			empty.searchContainers.clear();
 			std::wstring dn = L"stale";
@@ -1555,6 +1613,7 @@ namespace mapiabtest
 				Assert::IsTrue(dn.empty());
 				Assert::AreEqual(1UL, book.refs());
 			}
+
 			TestAddressBook book;
 			ConfigureMailbox(book);
 			book.mailboxProperties[1].Value.lpszW = const_cast<LPWSTR>(L"");

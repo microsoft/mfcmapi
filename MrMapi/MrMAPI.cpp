@@ -196,6 +196,7 @@ int wmain(_In_ int argc, _In_count_(argc) wchar_t* argv[])
 		wprintf(L"-Mailbox requires an SMTP address.\n");
 		return 2;
 	}
+
 	PostParseCheck(ProgOpts);
 	const auto mailboxError = cli::ValidateMailboxOptions(ProgOpts);
 	if (!mailboxError.empty())
@@ -203,6 +204,7 @@ int wmain(_In_ int argc, _In_count_(argc) wchar_t* argv[])
 		wprintf(L"%ws\n", mailboxError.c_str());
 		return 2;
 	}
+
 	if (entryIDRequested && ProgOpts.mode == cli::cmdmodeHelp)
 	{
 		wprintf(L"Invalid -EntryID command. Use -Help for syntax.\n");
@@ -291,6 +293,7 @@ int wmain(_In_ int argc, _In_count_(argc) wchar_t* argv[])
 					if (!lpFolder) hRes = WC_H(MAPI_E_NOT_FOUND);
 				}
 			}
+
 			if (FAILED(hRes))
 				wprintf(L"Cannot open requested mailbox/folder: 0x%08lX. No fallback mailbox was used.\n", hRes);
 		}
