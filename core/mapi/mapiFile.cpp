@@ -9,6 +9,7 @@
 #include <core/utility/error.h>
 #include <core/mapi/mapiFunctions.h>
 #include <core/mapi/mapiOutput.h>
+#include <wrl/client.h>
 
 namespace file
 {
@@ -45,6 +46,20 @@ namespace file
 		auto hRes = EC_H(MyStgOpenStorage(szMessageFile, true, &pStorage));
 		if (pStorage)
 		{
+			lpMessage = LoadMSGToMessage(pStorage, &hRes);
+			pStorage->Release();
+		}
+
+		if (lpResult) *lpResult = hRes;
+		return lpMessage;
+	}
+
+	_Check_return_ LPMESSAGE LoadMSGToMessage(_In_ LPSTORAGE storage, _Out_opt_ HRESULT* result)
+	{
+		LPMESSAGE lpMessage = nullptr;
+		auto hRes = MAPI_E_INVALID_PARAMETER;
+		if (storage)
+		{
 			const auto lpMalloc = MAPIGetDefaultMalloc();
 			if (lpMalloc)
 			{
@@ -56,7 +71,7 @@ namespace file
 					MAPIFreeBuffer,
 					lpMalloc,
 					nullptr,
-					pStorage,
+					storage,
 					nullptr,
 					0,
 					0,
@@ -66,12 +81,86 @@ namespace file
 			{
 				hRes = EC_H(MAPI_E_CALL_FAILED);
 			}
-
-			pStorage->Release();
 		}
 
-		if (lpResult) *lpResult = hRes;
+		if (result) *result = hRes;
 		return lpMessage;
+	}
+
+	bool IsMessageFileName(const std::wstring& name)
+	{
+		const auto extension = name.find_last_of(L'.');
+		if (extension == std::wstring::npos) return false;
+		const auto suffix = name.substr(extension);
+		return suffix.size() == 4 && (_wcsicmp(suffix.c_str(), L".oft") == 0 || _wcsicmp(suffix.c_str(), L".msg") == 0);
+	}
+
+	bool IsMessageAttachment(_In_ LPATTACH attach)
+	{
+		if (!attach) return false;
+		// Prefer the long filename. Do not reinterpret arbitrary compound files as messages.
+		for (const auto tag :
+			 {PR_ATTACH_LONG_FILENAME_W, PR_ATTACH_LONG_FILENAME_A, PR_ATTACH_FILENAME_W, PR_ATTACH_FILENAME_A})
+		{
+			LPSPropValue value = nullptr;
+			const auto hRes = HrGetOneProp(attach, tag, &value);
+			std::wstring name;
+			if (SUCCEEDED(hRes) && value)
+			{
+				if (value->ulPropTag == CHANGE_PROP_TYPE(tag, PT_UNICODE) && value->Value.lpszW)
+					name = value->Value.lpszW;
+				else if (value->ulPropTag == CHANGE_PROP_TYPE(tag, PT_STRING8) && value->Value.lpszA)
+					name = strings::LPCSTRToWstring(value->Value.lpszA);
+			}
+			MAPIFreeBuffer(value);
+			if (!name.empty()) return IsMessageFileName(name);
+		}
+		return false;
+	}
+
+	_Check_return_ HRESULT OpenMSGStorage(_In_ LPSTREAM stream, _Out_ LPSTORAGE* storage)
+	{
+		if (!storage) return MAPI_E_INVALID_PARAMETER;
+		*storage = nullptr;
+		if (!stream) return MAPI_E_INVALID_PARAMETER;
+		Microsoft::WRL::ComPtr<ILockBytes> bytes;
+		auto hRes = CreateILockBytesOnHGlobal(nullptr, true, bytes.GetAddressOf());
+		if (FAILED(hRes)) return hRes;
+		hRes = stream->Seek({}, STREAM_SEEK_SET, nullptr);
+		if (FAILED(hRes)) return hRes;
+		ULARGE_INTEGER offset{};
+		for (;;)
+		{
+			BYTE buffer[16384];
+			ULONG read{};
+			hRes = stream->Read(buffer, sizeof(buffer), &read);
+			if (FAILED(hRes)) return hRes;
+			if (!read) break;
+			ULONG written{};
+			hRes = bytes->WriteAt(offset, buffer, read, &written);
+			if (FAILED(hRes)) return hRes;
+			if (written != read) return STG_E_WRITEFAULT;
+			offset.QuadPart += read;
+		}
+		return StgOpenStorageOnILockBytes(
+			bytes.Get(), nullptr, STGM_READWRITE | STGM_SHARE_EXCLUSIVE, nullptr, 0, storage);
+	}
+
+	_Check_return_ LPMESSAGE LoadMessageAttachment(_In_ LPATTACH attach)
+	{
+		if (!attach) return nullptr;
+		Microsoft::WRL::ComPtr<IStream> stream;
+		auto hRes = EC_MAPI(attach->OpenProperty(
+			PR_ATTACH_DATA_BIN,
+			const_cast<LPIID>(&IID_IStream),
+			0,
+			0,
+			reinterpret_cast<LPUNKNOWN*>(stream.GetAddressOf())));
+		if (FAILED(hRes)) return nullptr;
+		Microsoft::WRL::ComPtr<IStorage> storage;
+		hRes = EC_H(OpenMSGStorage(stream.Get(), storage.GetAddressOf()));
+		if (FAILED(hRes)) return nullptr;
+		return LoadMSGToMessage(storage.Get());
 	}
 
 	// Loads the MSG file into an LPMESSAGE pointer, then copies it into the passed in message
