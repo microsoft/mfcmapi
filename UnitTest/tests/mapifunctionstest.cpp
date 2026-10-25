@@ -1,16 +1,45 @@
 #include <UnitTest/stdafx.h>
 #include <UnitTest/UnitTest.h>
 #include <core/mapi/mapiABFunctions.h>
+#include <core/mapi/mapiBinaryFunctions.h>
 #include <core/mapi/mapiMemory.h>
 #include <core/mapi/mapiStoreFunctions.h>
 #include <core/mapi/interfaces.h>
 #include <core/mapi/extraPropTags.h>
+#include <core/mapi/columnTags.h>
+#include <core/interpret/guid.h>
 #include <core/utility/strings.h>
 #include <core/utility/error.h>
 #include <stdexcept>
 #include <thread>
 
-namespace mapiabtest
+static std::function<
+	SCODE(LPCIID, ALLOCATEBUFFER*, ALLOCATEMORE*, FREEBUFFER*, LPVOID, ULONG, ULONG, LPSPropTagArray, LPTABLEDATA*)>
+	testCreateTable;
+
+#ifdef _M_IX86
+#pragma comment(linker, "/export:CreateTable@36=_TestCreateTable@36")
+#else
+#pragma comment(linker, "/export:CreateTable=TestCreateTable")
+#endif
+
+extern "C" SCODE STDAPICALLTYPE TestCreateTable(
+	LPCIID iid,
+	ALLOCATEBUFFER* allocate,
+	ALLOCATEMORE* more,
+	FREEBUFFER* free,
+	LPVOID reserved,
+	ULONG type,
+	ULONG index,
+	LPSPropTagArray columns,
+	LPTABLEDATA* data)
+{
+	if (!testCreateTable) return MAPI_E_NO_SUPPORT;
+
+	return testCreateTable(iid, allocate, more, free, reserved, type, index, columns, data);
+}
+
+namespace mapifunctionstest
 {
 	class TestSession final : public IMAPISession
 	{
@@ -61,8 +90,10 @@ namespace mapiabtest
 		}
 
 		HRESULT STDMETHODCALLTYPE GetStatusTable(ULONG, LPMAPITABLE*) override { return MAPI_E_NO_SUPPORT; }
-		HRESULT STDMETHODCALLTYPE OpenEntry(ULONG, LPENTRYID, LPCIID, ULONG, ULONG*, LPUNKNOWN*) override
+		HRESULT STDMETHODCALLTYPE
+		OpenEntry(ULONG size, LPENTRYID entry, LPCIID iid, ULONG flags, ULONG* type, LPUNKNOWN* object) override
 		{
+			if (onOpenEntry) return onOpenEntry(size, entry, iid, flags, type, object);
 			return MAPI_E_NO_SUPPORT;
 		}
 
@@ -109,6 +140,7 @@ namespace mapiabtest
 		ULONG storeOpenFlags{};
 		LPMDB openedStore{};
 		HRESULT storeOpenResult{MAPI_E_NO_SUPPORT};
+		std::function<HRESULT(ULONG, LPENTRYID, LPCIID, ULONG, ULONG*, LPUNKNOWN*)> onOpenEntry;
 	};
 
 	class TestMailboxStore final : public IMsgStore, public IExchangeManageStoreEx
@@ -264,20 +296,28 @@ namespace mapiabtest
 	class TestAddressBook final : public IAddrBook, public IABContainer, public IMAPITable
 	{
 	public:
-		HRESULT STDMETHODCALLTYPE QueryInterface(REFIID, void** object) override
+		HRESULT STDMETHODCALLTYPE QueryInterface(REFIID iid, void** object) override
 		{
 			if (!object) return E_POINTER;
 			*object = nullptr;
+			if (exposeProperties && iid == IID_IMAPIProp)
+			{
+				*object = static_cast<IMAPIProp*>(static_cast<IAddrBook*>(this));
+				AddRef();
+				return S_OK;
+			}
 			return E_NOINTERFACE;
 		}
 
 		ULONG STDMETHODCALLTYPE AddRef() override { return ++m_refs; }
 		ULONG STDMETHODCALLTYPE Release() override { return --m_refs; }
+		ULONG References() const { return m_refs; }
 		HRESULT STDMETHODCALLTYPE GetLastError(HRESULT, ULONG, LPMAPIERROR*) override { return MAPI_E_NO_SUPPORT; }
 		HRESULT STDMETHODCALLTYPE SaveChanges(ULONG) override { return MAPI_E_NO_SUPPORT; }
 		HRESULT STDMETHODCALLTYPE
 		GetProps(LPSPropTagArray tags, ULONG flags, ULONG* count, LPSPropValue* props) override
 		{
+			if (onGetProps) return onGetProps(tags, flags, count, props);
 			++getPropsCalls;
 			Assert::AreEqual(5UL, tags->cValues);
 			Assert::AreEqual(static_cast<ULONG>(MAPI_UNICODE), flags);
@@ -328,8 +368,10 @@ namespace mapiabtest
 			return MAPI_E_NO_SUPPORT;
 		}
 
-		HRESULT STDMETHODCALLTYPE GetIDsFromNames(ULONG, LPMAPINAMEID*, ULONG, LPSPropTagArray*) override
+		HRESULT STDMETHODCALLTYPE
+		GetIDsFromNames(ULONG count, LPMAPINAMEID* names, ULONG flags, LPSPropTagArray* tags) override
 		{
+			if (onGetIDs) return onGetIDs(count, names, flags, tags);
 			return MAPI_E_NO_SUPPORT;
 		}
 
@@ -337,6 +379,7 @@ namespace mapiabtest
 		OpenEntry(ULONG cbEntryID, LPENTRYID addressEntry, LPCIID iid, ULONG flags, ULONG* type, LPUNKNOWN* object)
 			override
 		{
+			if (onOpenEntry) return onOpenEntry(cbEntryID, addressEntry, iid, flags, type, object);
 			Assert::AreEqual(1UL, cbEntryID);
 			Assert::AreEqual(0UL, flags);
 			if (IsEqualIID(*iid, IID_IABContainer))
@@ -582,6 +625,9 @@ namespace mapiabtest
 		}
 
 		std::function<void()> onDetails;
+		std::function<HRESULT(LPSPropTagArray, ULONG, ULONG*, LPSPropValue*)> onGetProps;
+		std::function<HRESULT(ULONG, LPMAPINAMEID*, ULONG, LPSPropTagArray*)> onGetIDs;
+		std::function<HRESULT(ULONG, LPENTRYID, LPCIID, ULONG, ULONG*, LPUNKNOWN*)> onOpenEntry;
 		HRESULT result{S_OK};
 		ULONG calls{};
 		ULONG_PTR owner{};
@@ -620,12 +666,560 @@ namespace mapiabtest
 		bool accountLookupOnly{};
 		std::vector<SPropValue> mailboxProperties;
 		ULONG refs() const noexcept { return m_refs; }
+		bool exposeProperties{};
 
 	private:
 		ULONG m_refs{1};
 	};
 
-	TEST_CLASS(mapiabtest)
+	namespace
+	{
+		std::vector<BYTE> OneOff(bool unicode)
+		{
+			std::vector<BYTE> bytes(24);
+			Assert::AreEqual(0, memcpy_s(bytes.data() + 4, bytes.size() - 4, &guid::muidOOP, sizeof(GUID)));
+			const DWORD flags = unicode ? MAPI_UNICODE : 0;
+			Assert::AreEqual(0, memcpy_s(bytes.data() + 20, bytes.size() - 20, &flags, sizeof(flags)));
+			if (unicode)
+			{
+				const wchar_t values[] = L"Alice\0SMTP\0alice@example.test";
+				const auto begin = reinterpret_cast<const BYTE*>(values);
+				bytes.insert(bytes.end(), begin, begin + sizeof(values));
+			}
+			else
+			{
+				const char values[] = "Alice\0SMTP\0alice@example.test";
+				const auto begin = reinterpret_cast<const BYTE*>(values);
+				bytes.insert(bytes.end(), begin, begin + sizeof(values));
+			}
+			return bytes;
+		}
+
+		std::vector<BYTE> Wrapped(const std::vector<BYTE>& embedded)
+		{
+			std::vector<BYTE> bytes(21);
+			Assert::AreEqual(0, memcpy_s(bytes.data() + 4, bytes.size() - 4, &guid::WAB_GUID, sizeof(GUID)));
+			bytes[20] = 0x85;
+			bytes.insert(bytes.end(), embedded.begin(), embedded.end());
+			return bytes;
+		}
+
+		mapi::binary::BinaryTableRow Decode(std::vector<BYTE>& bytes)
+		{
+			return mapi::binary::DecodeEntryID({static_cast<ULONG>(bytes.size()), bytes.data()});
+		}
+	} // namespace
+
+	TEST_CLASS(entryidtest)
+	{
+	public:
+		static const bool dummy_var = true;
+		TEST_CLASS_INITIALIZE(initialize) { unittest::init(); }
+
+		TEST_METHOD(DecodesAnsiAndUnicodeOneOffMembers)
+		{
+			for (const auto unicode : {false, true})
+			{
+				auto bytes = OneOff(unicode);
+				const auto member = Decode(bytes);
+				Assert::AreEqual(S_OK, member.status);
+				Assert::AreEqual(std::wstring(L"Alice"), member.name);
+				Assert::AreEqual(std::wstring(L"SMTP"), member.addressType);
+				Assert::AreEqual(std::wstring(L"alice@example.test"), member.address);
+				Assert::IsTrue(member.entryID == bytes && member.openEntryID == bytes);
+				Assert::IsTrue(member.decoded.find(L"alice@example.test") != std::wstring::npos);
+			}
+		}
+
+		TEST_METHOD(UnwrapsMembersWithoutLosingOriginalEntryID)
+		{
+			auto original = OneOff(true);
+			auto bytes = Wrapped(Wrapped(original));
+			const auto member = Decode(bytes);
+			Assert::AreEqual(S_OK, member.status);
+			Assert::IsTrue(member.entryID == bytes);
+			Assert::IsTrue(member.openEntryID == original);
+			Assert::AreEqual(std::wstring(L"Alice"), member.name);
+		}
+
+		TEST_METHOD(KeepsDirectoryAndUnknownEntriesWithoutInventingContactData)
+		{
+			std::vector<BYTE> directory(28);
+			Assert::AreEqual(0, memcpy_s(directory.data() + 4, directory.size() - 4, &guid::muidEMSAB, sizeof(GUID)));
+			const char dn[] = "/o=Example/ou=Users/cn=Directory Member";
+			directory.insert(directory.end(), dn, dn + sizeof(dn));
+			auto member = Decode(directory);
+			Assert::AreEqual(S_OK, member.status);
+			Assert::IsTrue(member.name.empty() && member.address.empty());
+			Assert::IsTrue(member.decoded.find(L"Directory Member") != std::wstring::npos);
+			Assert::IsNull(mapi::binary::OpenEntryID(nullptr, nullptr, member));
+			Assert::AreEqual(MAPI_E_NO_SUPPORT, member.status);
+			Assert::IsTrue(member.entryID == directory);
+			std::vector<BYTE> unknown(20, 0x42);
+			member = Decode(unknown);
+			Assert::IsTrue(member.entryID == unknown);
+			Assert::IsTrue(member.name.empty() && member.address.empty());
+		}
+
+		TEST_METHOD(PreservesMalformedAndTruncatedEntries)
+		{
+			auto bytes = OneOff(true);
+			for (size_t size = 0; size < bytes.size(); ++size)
+			{
+				std::vector<BYTE> truncated(bytes.begin(), bytes.begin() + size);
+				const auto member = Decode(truncated);
+				Assert::AreEqual(MAPI_E_INVALID_ENTRYID, member.status);
+				Assert::IsTrue(member.entryID == truncated);
+			}
+			auto nested = OneOff(false);
+			for (unsigned i = 0; i < 26; ++i)
+				nested = Wrapped(nested);
+			Assert::AreEqual(MAPI_E_INVALID_ENTRYID, Decode(nested).status);
+			Assert::AreEqual(MAPI_E_INVALID_ENTRYID, mapi::binary::DecodeEntryID({20, nullptr}).status);
+		}
+
+		TEST_METHOD(ValidatesContactWrapperLengthBeforeLegacyUnwrap)
+		{
+			std::vector<BYTE> bytes(36);
+			Assert::AreEqual(0, memcpy_s(bytes.data() + 4, bytes.size() - 4, &guid::muidContabDLL, sizeof(GUID)));
+			ULONG type = CONTAB_USER;
+			Assert::AreEqual(0, memcpy_s(bytes.data() + 24, bytes.size() - 24, &type, sizeof(type)));
+			const auto embedded = OneOff(false);
+			ULONG size = static_cast<ULONG>(embedded.size());
+			Assert::AreEqual(0, memcpy_s(bytes.data() + 32, bytes.size() - 32, &size, sizeof(size)));
+			bytes.insert(bytes.end(), embedded.begin(), embedded.end());
+			Assert::AreEqual(S_OK, Decode(bytes).status);
+			size = ULONG_MAX;
+			Assert::AreEqual(0, memcpy_s(bytes.data() + 32, bytes.size() - 32, &size, sizeof(size)));
+			Assert::AreEqual(MAPI_E_INVALID_ENTRYID, Decode(bytes).status);
+		}
+
+		TEST_METHOD(ValidatesPropertyTypesAndPreservesAllRowsAndOwnership)
+		{
+			std::vector<mapi::binary::BinaryTableRow> members;
+			const ULONG tag = PROP_TAG(PT_MV_BINARY, 0x9234);
+			SPropValue property{};
+			property.ulPropTag = tag;
+			Assert::AreEqual(S_OK, mapi::binary::ExtractBinaryTableRows(property, tag, members, true));
+			Assert::IsTrue(members.empty());
+			property.Value.MVbin.cValues = 1;
+			Assert::AreEqual(
+				MAPI_E_INVALID_PARAMETER, mapi::binary::ExtractBinaryTableRows(property, tag, members, true));
+			auto bytes = OneOff(false);
+			SBinary entries[] = {{static_cast<ULONG>(bytes.size()), bytes.data()}, {0, nullptr}, {10, nullptr}};
+			property.Value.MVbin = {3, entries};
+			Assert::AreEqual(S_OK, mapi::binary::ExtractBinaryTableRows(property, tag, members, true));
+			Assert::AreEqual(size_t{3}, members.size());
+			Assert::AreEqual(S_OK, members[0].status);
+			Assert::AreEqual(MAPI_E_INVALID_ENTRYID, members[1].status);
+			Assert::AreEqual(MAPI_E_INVALID_ENTRYID, members[2].status);
+			bytes[0] = 42;
+			Assert::AreEqual(BYTE{0}, members[0].entryID[0]);
+			property.ulPropTag = CHANGE_PROP_TYPE(tag, PT_BINARY);
+			Assert::AreEqual(MAPI_E_INVALID_TYPE, mapi::binary::ExtractBinaryTableRows(property, tag, members, true));
+			Assert::IsTrue(members.empty());
+			property.ulPropTag = PROP_TAG(PT_MV_BINARY, 0x9999);
+			Assert::AreEqual(MAPI_E_INVALID_TYPE, mapi::binary::ExtractBinaryTableRows(property, tag, members, true));
+			property.ulPropTag = CHANGE_PROP_TYPE(tag, PT_ERROR);
+			property.Value.err = MAPI_E_NOT_FOUND;
+			Assert::AreEqual(MAPI_E_NOT_FOUND, mapi::binary::ExtractBinaryTableRows(property, tag, members, true));
+			property.Value.err = S_OK;
+			Assert::AreEqual(MAPI_E_INVALID_TYPE, mapi::binary::ExtractBinaryTableRows(property, tag, members, true));
+			property.ulPropTag = tag;
+			property.Value.MVbin = {ULONG_MAX, entries};
+			Assert::AreEqual(MAPI_E_TOO_COMPLEX, mapi::binary::ExtractBinaryTableRows(property, tag, members, true));
+		}
+
+		TEST_METHOD(ReadsBinaryPropertyWithoutNamedPropertyLookup)
+		{
+			unittest::testMapiMemory memory;
+			TestAddressBook message;
+			auto bytes = OneOff(false);
+			SBinary entry{static_cast<ULONG>(bytes.size()), bytes.data()};
+			ULONG tag = 0;
+			unsigned mappingCalls = 0;
+			message.onGetIDs = [&](ULONG, LPMAPINAMEID*, ULONG, LPSPropTagArray*) -> HRESULT {
+				++mappingCalls;
+				return E_UNEXPECTED;
+			};
+			message.onGetProps = [&](LPSPropTagArray tags, ULONG flags, ULONG* count, LPSPropValue* properties) {
+				Assert::AreEqual(0UL, flags);
+				Assert::AreEqual(1UL, tags->cValues);
+				Assert::AreEqual(tag, tags->aulPropTag[0]);
+				const auto result = MAPIAllocateBuffer(sizeof(SPropValue), reinterpret_cast<void**>(properties));
+				if (FAILED(result)) return result;
+				*count = 1;
+				**properties = {};
+				(*properties)->ulPropTag = tag;
+				(*properties)->Value.MVbin = {1, &entry};
+				return S_OK;
+			};
+			std::vector<mapi::binary::BinaryTableRow> rows;
+			for (const ULONG id : {0x1234, 0x9234})
+			{
+				tag = PROP_TAG(PT_MV_BINARY, id);
+				for (const auto entryIDs : {false, true})
+				{
+					Assert::AreEqual(
+						S_OK,
+						mapi::binary::ReadBinaryTableRows(static_cast<IAddrBook*>(&message), tag, rows, entryIDs));
+					Assert::AreEqual(size_t{1}, rows.size());
+					Assert::IsTrue(rows[0].entryID == bytes);
+					Assert::AreEqual(std::wstring(entryIDs ? L"Alice" : L""), rows[0].name);
+				}
+			}
+
+			Assert::AreEqual(0U, mappingCalls);
+		}
+
+		TEST_METHOD(ReportsBinaryPropertyReadFailuresAndClearsRows)
+		{
+			unittest::testMapiMemory memory;
+			TestAddressBook message;
+			const auto tag = PROP_TAG(PT_MV_BINARY, 0x9234);
+			std::vector<mapi::binary::BinaryTableRow> rows(1);
+			Assert::AreEqual(MAPI_E_INVALID_PARAMETER, mapi::binary::ReadBinaryTableRows(nullptr, tag, rows, false));
+			Assert::IsTrue(rows.empty());
+			Assert::AreEqual(
+				MAPI_E_INVALID_TYPE,
+				mapi::binary::ReadBinaryTableRows(
+					static_cast<IAddrBook*>(&message), CHANGE_PROP_TYPE(tag, PT_BINARY), rows, false));
+			message.onGetProps = [](LPSPropTagArray, ULONG, ULONG*, LPSPropValue*) { return MAPI_E_CALL_FAILED; };
+			Assert::AreEqual(
+				MAPI_E_CALL_FAILED,
+				mapi::binary::ReadBinaryTableRows(static_cast<IAddrBook*>(&message), tag, rows, false));
+			message.onGetProps = [](LPSPropTagArray, ULONG, ULONG* count, LPSPropValue* properties) {
+				*count = 0;
+				*properties = nullptr;
+				return S_OK;
+			};
+			Assert::AreEqual(
+				MAPI_E_NOT_FOUND,
+				mapi::binary::ReadBinaryTableRows(static_cast<IAddrBook*>(&message), tag, rows, false));
+			Assert::IsTrue(rows.empty());
+		}
+
+		TEST_METHOD(OpensEmbeddedAddressBookEntryReadOnlyAndPreservesProviderError)
+		{
+			TestAddressBook book;
+			auto original = OneOff(false);
+			auto wrapped = Wrapped(original);
+			auto member = Decode(wrapped);
+			unsigned calls = 0;
+			book.onOpenEntry = [&](ULONG size, LPENTRYID entry, LPCIID, ULONG flags, ULONG*, LPUNKNOWN* object) {
+				++calls;
+				Assert::AreEqual(0UL, flags);
+				Assert::AreEqual(static_cast<ULONG>(original.size()), size);
+				Assert::IsTrue(memcmp(entry, original.data(), size) == 0);
+				*object = nullptr;
+				return MAPI_E_LOGON_FAILED;
+			};
+			Assert::IsNull(mapi::binary::OpenEntryID(&book, nullptr, member));
+			Assert::AreEqual(1U, calls);
+			Assert::AreEqual(MAPI_E_LOGON_FAILED, member.status);
+			Assert::IsTrue(member.entryID == wrapped);
+		}
+
+		TEST_METHOD(ReturnsOpenedMemberWithOwnedInterfaceReference)
+		{
+			TestAddressBook book;
+			book.exposeProperties = true;
+			auto bytes = OneOff(false);
+			auto member = Decode(bytes);
+			book.onOpenEntry = [&](ULONG, LPENTRYID, LPCIID, ULONG flags, ULONG* type, LPUNKNOWN* object) {
+				Assert::AreEqual(0UL, flags);
+				*type = MAPI_MAILUSER;
+				*object = static_cast<IAddrBook*>(&book);
+				book.AddRef();
+				return S_OK;
+			};
+			const auto object = mapi::binary::OpenEntryID(&book, nullptr, member);
+			Assert::IsTrue(object == static_cast<IAddrBook*>(&book));
+			Assert::AreEqual(S_OK, member.status);
+			Assert::AreEqual(2UL, book.References());
+			object->Release();
+			Assert::AreEqual(1UL, book.References());
+		}
+
+		TEST_METHOD(ReportsSessionFallbackErrorAndNeverRequestsModify)
+		{
+			TestAddressBook book;
+			TestSession session;
+			book.onOpenEntry = [](ULONG, LPENTRYID, LPCIID, ULONG flags, ULONG*, LPUNKNOWN* object) {
+				Assert::AreEqual(0UL, flags);
+				*object = nullptr;
+				return MAPI_E_NOT_FOUND;
+			};
+			auto bytes = OneOff(false);
+			auto member = Decode(bytes);
+			session.onOpenEntry = [&](ULONG size, LPENTRYID entry, LPCIID, ULONG flags, ULONG*, LPUNKNOWN* object) {
+				Assert::AreEqual(0UL, flags);
+				Assert::AreEqual(static_cast<ULONG>(bytes.size()), size);
+				Assert::IsTrue(memcmp(entry, bytes.data(), size) == 0);
+				*object = nullptr;
+				return MAPI_E_LOGON_FAILED;
+			};
+			Assert::IsNull(mapi::binary::OpenEntryID(&book, &session, member));
+			Assert::AreEqual(MAPI_E_LOGON_FAILED, member.status);
+		}
+	};
+
+	class TestMemberTableData final : public ITableData
+	{
+	public:
+		HRESULT STDMETHODCALLTYPE QueryInterface(REFIID, void** object) override
+		{
+			*object = nullptr;
+			return E_NOINTERFACE;
+		}
+		ULONG STDMETHODCALLTYPE AddRef() override { return ++refs; }
+		ULONG STDMETHODCALLTYPE Release() override { return --refs; }
+		HRESULT STDMETHODCALLTYPE
+		HrGetView(LPSSortOrderSet sort, CALLERRELEASE* callback, ULONG_PTR context, LPMAPITABLE* table) override
+		{
+			++viewCalls;
+			Assert::IsNull(sort);
+			Assert::IsNull(callback);
+			Assert::AreEqual(ULONG_PTR{}, context);
+			*table = nullptr;
+			if (FAILED(viewResult)) return viewResult;
+
+			*table = static_cast<IMAPITable*>(&view);
+			(*table)->AddRef();
+			return S_OK;
+		}
+		HRESULT STDMETHODCALLTYPE HrModifyRow(LPSRow row) override
+		{
+			++rowCalls;
+			if (FAILED(rowResult)) return rowResult;
+
+			const auto tags = binary ? &columns::sptBinaryCols.tags : &columns::sptEntryIDCols.tags;
+			Assert::AreEqual(tags->cValues, row->cValues);
+			for (ULONG i = 0; i < row->cValues; ++i)
+			{
+				Assert::AreEqual(tags->aulPropTag[i], row->lpProps[i].ulPropTag);
+			}
+
+			const auto props = row->lpProps;
+			const auto rowID = props[columns::eidtagPR_ROWID].Value.l;
+			Assert::AreEqual(static_cast<LONG>(members.size() + 1), rowID);
+			const auto key = props[columns::eidtagPR_INSTANCE_KEY].Value.bin;
+			Assert::AreEqual(static_cast<ULONG>(sizeof(rowID)), key.cb);
+			Assert::IsTrue(memcmp(key.lpb, &rowID, sizeof(rowID)) == 0);
+
+			mapi::binary::BinaryTableRow member;
+			if (binary)
+			{
+				Assert::AreEqual(0UL, props[1].Value.bin.cb);
+				const auto value = props[4].Value.bin;
+				Assert::AreEqual(static_cast<LONG>(value.cb), props[3].Value.l);
+				if (value.cb) member.entryID.assign(value.lpb, value.lpb + value.cb);
+				members.push_back(std::move(member));
+				return S_OK;
+			}
+
+			const auto entry = props[columns::eidtagPR_ENTRYID].Value.bin;
+			if (entry.cb) member.entryID.assign(entry.lpb, entry.lpb + entry.cb);
+			member.name = props[columns::eidtagPR_DISPLAY_NAME].Value.lpszW;
+			member.addressType = props[columns::eidtagPR_ADDRTYPE].Value.lpszW;
+			member.address = props[columns::eidtagPR_EMAIL_ADDRESS].Value.lpszW;
+			member.status = props[columns::eidtagPR_STATUS_CODE].Value.l;
+			member.decoded = props[columns::eidtagPR_BODY].Value.lpszW;
+			members.push_back(std::move(member));
+			return S_OK;
+		}
+		HRESULT STDMETHODCALLTYPE HrDeleteRow(LPSPropValue) override { return E_NOTIMPL; }
+		HRESULT STDMETHODCALLTYPE HrQueryRow(LPSPropValue, LPSRow*, ULONG*) override { return E_NOTIMPL; }
+		HRESULT STDMETHODCALLTYPE HrEnumRow(ULONG, LPSRow*) override { return E_NOTIMPL; }
+		HRESULT STDMETHODCALLTYPE HrNotify(ULONG, ULONG, LPSPropValue) override { return E_NOTIMPL; }
+		HRESULT STDMETHODCALLTYPE HrInsertRow(ULONG, LPSRow) override { return E_NOTIMPL; }
+		HRESULT STDMETHODCALLTYPE HrModifyRows(ULONG, LPSRowSet) override { return E_NOTIMPL; }
+		HRESULT STDMETHODCALLTYPE HrDeleteRows(ULONG, LPSRowSet, ULONG*) override { return E_NOTIMPL; }
+
+		ULONG refs{};
+		bool binary{};
+		ULONG rowCalls{}, viewCalls{};
+		HRESULT rowResult{S_OK}, viewResult{S_OK};
+		TestAddressBook view;
+		std::vector<mapi::binary::BinaryTableRow> members;
+	};
+
+	TEST_CLASS(binarytabletest)
+	{
+	public:
+		static const bool dummy_var = true;
+		TEST_CLASS_INITIALIZE(initialize) { unittest::init(); }
+		TEST_METHOD_INITIALIZE(mockTable)
+		{
+			testCreateTable = [this](
+								  LPCIID iid,
+								  ALLOCATEBUFFER* allocate,
+								  ALLOCATEMORE* more,
+								  FREEBUFFER* free,
+								  LPVOID reserved,
+								  ULONG type,
+								  ULONG index,
+								  LPSPropTagArray tags,
+								  LPTABLEDATA* data) {
+				++m_createCalls;
+				Assert::IsTrue(*iid == IID_IMAPITableData);
+				Assert::IsTrue(allocate == MAPIAllocateBuffer && more == MAPIAllocateMore && free == MAPIFreeBuffer);
+				Assert::IsNull(reserved);
+				Assert::AreEqual(static_cast<ULONG>(TBLTYPE_SNAPSHOT), type);
+				Assert::AreEqual(PR_ROWID, index);
+				const auto expected = m_data.binary ? &columns::sptBinaryCols.tags : &columns::sptEntryIDCols.tags;
+				Assert::AreEqual(expected->cValues, tags->cValues);
+				for (ULONG i = 0; i < tags->cValues; ++i)
+					Assert::AreEqual(expected->aulPropTag[i], tags->aulPropTag[i]);
+
+				*data = nullptr;
+				if (FAILED(m_createResult) || m_nullData) return m_createResult;
+
+				*data = &m_data;
+				m_data.AddRef();
+				return S_OK;
+			};
+		}
+		TEST_METHOD_CLEANUP(restoreTable)
+		{
+			testCreateTable = {};
+			Assert::AreEqual(0UL, m_data.refs);
+			Assert::AreEqual(1UL, m_data.view.References());
+		}
+
+		TEST_METHOD(PreservesArbitraryBinaryWithoutEntryIDInterpretation)
+		{
+			unittest::testMapiMemory memory;
+			m_data.binary = true;
+			std::vector<BYTE> bytes{0, 0xFF, 0x42, 0, 1};
+			SBinary values[] = {
+				{static_cast<ULONG>(bytes.size()), bytes.data()},
+				{0, nullptr},
+				{static_cast<ULONG>(bytes.size()), bytes.data()}};
+			SPropValue property{};
+			property.ulPropTag = PROP_TAG(PT_MV_BINARY, 0x1234);
+			property.Value.MVbin = {_countof(values), values};
+			std::vector<mapi::binary::BinaryTableRow> members;
+			Assert::AreEqual(S_OK, mapi::binary::ExtractBinaryTableRows(property, property.ulPropTag, members, false));
+			Assert::AreEqual(size_t{3}, members.size());
+			for (const auto& member : members)
+			{
+				Assert::AreEqual(S_OK, member.status);
+				Assert::IsTrue(member.openEntryID.empty() && member.decoded.empty() && member.name.empty());
+			}
+
+			LPMAPITABLE table = nullptr;
+			Assert::AreEqual(S_OK, mapi::binary::CreateBinaryTable(members, &table, false));
+			Assert::IsTrue(m_data.members[0].entryID == bytes && m_data.members[2].entryID == bytes);
+			Assert::IsTrue(m_data.members[1].entryID.empty());
+			table->Release();
+			values[0].lpb = nullptr;
+			Assert::AreEqual(
+				MAPI_E_INVALID_PARAMETER,
+				mapi::binary::ExtractBinaryTableRows(property, property.ulPropTag, members, false));
+			Assert::IsTrue(members.empty());
+		}
+
+		TEST_METHOD(CreatesEmptyGenericBinaryTable)
+		{
+			unittest::testMapiMemory memory;
+			m_data.binary = true;
+			LPMAPITABLE table = nullptr;
+			Assert::AreEqual(S_OK, mapi::binary::CreateBinaryTable({}, &table, false));
+			Assert::AreEqual(0UL, m_data.rowCalls);
+			Assert::AreEqual(1UL, m_data.viewCalls);
+			table->Release();
+		}
+
+		TEST_METHOD(PassesOwnedValuesForDuplicatesAndMalformedRows)
+		{
+			unittest::testMapiMemory memory;
+			auto bytes = OneOff(true);
+			auto member = Decode(bytes);
+			std::vector<mapi::binary::BinaryTableRow> members{member, member, {}};
+			members[1].name = L"Bob";
+			members[1].status = MAPI_E_NOT_FOUND;
+			members[2].status = MAPI_E_INVALID_ENTRYID;
+			LPMAPITABLE table = nullptr;
+			Assert::AreEqual(S_OK, mapi::binary::CreateBinaryTable(members, &table, true));
+			Assert::IsNotNull(table);
+			members.clear();
+			bytes.clear();
+
+			Assert::AreEqual(1UL, m_createCalls);
+			Assert::AreEqual(3UL, m_data.rowCalls);
+			Assert::AreEqual(1UL, m_data.viewCalls);
+			Assert::AreEqual(size_t{3}, m_data.members.size());
+			for (size_t i = 0; i < m_data.members.size(); ++i)
+			{
+				const auto& captured = m_data.members[i];
+				if (i < 2)
+				{
+					Assert::IsTrue(captured.entryID == member.entryID);
+					Assert::AreEqual(std::wstring(i ? L"Bob" : L"Alice"), captured.name);
+					Assert::AreEqual(member.addressType, captured.addressType);
+					Assert::AreEqual(member.address, captured.address);
+					Assert::AreEqual(i ? MAPI_E_NOT_FOUND : S_OK, captured.status);
+					Assert::AreEqual(member.decoded, captured.decoded);
+				}
+				else
+				{
+					Assert::IsTrue(captured.entryID.empty());
+					Assert::AreEqual(MAPI_E_INVALID_ENTRYID, captured.status);
+				}
+			}
+
+			table->Release();
+		}
+
+		TEST_METHOD(CreatesEmptyTableWithAllColumns)
+		{
+			unittest::testMapiMemory memory;
+			LPMAPITABLE table = nullptr;
+			Assert::AreEqual(S_OK, mapi::binary::CreateBinaryTable({}, &table, true));
+			Assert::IsNotNull(table);
+			Assert::AreEqual(0UL, m_data.rowCalls);
+			Assert::AreEqual(1UL, m_data.viewCalls);
+			table->Release();
+			Assert::AreEqual(MAPI_E_INVALID_PARAMETER, mapi::binary::CreateBinaryTable({}, nullptr, true));
+		}
+
+		TEST_METHOD(PropagatesCreationAndRowAndViewFailures)
+		{
+			unittest::testMapiMemory memory;
+			LPMAPITABLE table = nullptr;
+			m_createResult = MAPI_E_NOT_ENOUGH_MEMORY;
+			Assert::AreEqual(m_createResult, mapi::binary::CreateBinaryTable({}, &table, true));
+			Assert::IsNull(table);
+			Assert::AreEqual(0UL, m_data.viewCalls);
+
+			m_createResult = S_OK;
+			m_nullData = true;
+			Assert::AreEqual(E_UNEXPECTED, mapi::binary::CreateBinaryTable({}, &table, true));
+			Assert::IsNull(table);
+			m_nullData = false;
+
+			m_data.rowResult = MAPI_E_CALL_FAILED;
+			Assert::AreEqual(m_data.rowResult, mapi::binary::CreateBinaryTable({{}, {}}, &table, true));
+			Assert::IsNull(table);
+			Assert::AreEqual(1UL, m_data.rowCalls);
+			Assert::AreEqual(0UL, m_data.viewCalls);
+			Assert::AreEqual(0UL, m_data.refs);
+
+			m_data.viewResult = MAPI_E_NO_SUPPORT;
+			Assert::AreEqual(m_data.viewResult, mapi::binary::CreateBinaryTable({}, &table, true));
+			Assert::IsNull(table);
+			Assert::AreEqual(1UL, m_data.viewCalls);
+		}
+
+	private:
+		TestMemberTableData m_data;
+		ULONG m_createCalls{};
+		HRESULT m_createResult{S_OK};
+		bool m_nullData{};
+	};
+
+	TEST_CLASS(mapifunctionstest)
 	{
 	public:
 		TEST_CLASS_INITIALIZE(initialize) { unittest::init(); }
@@ -1695,4 +2289,4 @@ namespace mapiabtest
 		std::function<void(const std::wstring&)> m_originalDisplayError;
 		std::function<std::wstring()> m_originalServerPrompt;
 	};
-} // namespace mapiabtest
+} // namespace mapifunctionstest

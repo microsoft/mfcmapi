@@ -66,6 +66,7 @@ namespace controls::sortlistctrl
 		void OnModifyExtraProps();
 		void OnOpenProperty() const;
 		void OnOpenPropertyAsTable();
+		void OnOpenBinaryAsTable(bool entryIDs);
 		void OnPasteNamedProps();
 
 		// Custom messages

@@ -10,6 +10,7 @@
 #define USES_IID_IMAPIViewContext
 #define USES_IID_IMAPIViewAdviseSink
 #define USES_IID_IMAPITable
+#define USES_IID_IMAPITableData
 #define USES_IID_IMAPIFolder
 #define USES_IID_IMAPIContainer
 #define USES_IID_IMAPIForm

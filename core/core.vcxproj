@@ -839,6 +839,7 @@
     <ClInclude Include="utility\clipboard.h" />
     <ClInclude Include="mapi\interfaces.h" />
     <ClInclude Include="mapi\mapiABFunctions.h" />
+    <ClInclude Include="mapi\mapiBinaryFunctions.h" />
     <ClInclude Include="mapi\mapiFile.h" />
     <ClInclude Include="mapi\mapiFunctions.h" />
     <ClInclude Include="mapi\mapiMemory.h" />
@@ -945,6 +946,7 @@
     <ClCompile Include="smartview\SD\ACEBin.cpp" />
     <ClCompile Include="utility\clipboard.cpp" />
     <ClCompile Include="mapi\mapiABFunctions.cpp" />
+    <ClCompile Include="mapi\mapiBinaryFunctions.cpp" />
     <ClCompile Include="mapi\mapiFile.cpp" />
     <ClCompile Include="mapi\mapiFunctions.cpp" />
     <ClCompile Include="mapi\mapiMime.cpp" />
