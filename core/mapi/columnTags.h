@@ -25,6 +25,45 @@ namespace columns
 	// The following enums and structures define the columns and
 	// properties used by ContentsTableListCtrl objects.
 
+	// Multi-valued binary and EntryID tables
+	static SizedSPropTagArray2(5, sptBinaryCols) = {
+		5,
+		{PR_INSTANCE_KEY, PR_ENTRYID, PR_ROWID, PR_ATTACH_SIZE, PR_ATTACH_DATA_BIN}};
+
+	static std::vector<TagNames> BinaryColumns = {{2, IDS_SHARP}, {3, IDS_BINARYLENGTH}, {4, IDS_BINARYVALUE}};
+
+	enum
+	{
+		eidtagPR_INSTANCE_KEY,
+		eidtagPR_ENTRYID,
+		eidtagPR_ROWID,
+		eidtagPR_DISPLAY_NAME,
+		eidtagPR_ADDRTYPE,
+		eidtagPR_EMAIL_ADDRESS,
+		eidtagPR_STATUS_CODE,
+		eidtagPR_BODY,
+		ENTRYIDTAGS_NUM_COLS
+	};
+
+	static SizedSPropTagArray2(ENTRYIDTAGS_NUM_COLS, sptEntryIDCols) = {
+		ENTRYIDTAGS_NUM_COLS,
+		{PR_INSTANCE_KEY,
+		 PR_ENTRYID,
+		 PR_ROWID,
+		 PR_DISPLAY_NAME_W,
+		 PR_ADDRTYPE_W,
+		 PR_EMAIL_ADDRESS_W,
+		 PR_STATUS_CODE,
+		 PR_BODY_W}};
+
+	static std::vector<TagNames> EntryIDColumns = {
+		{eidtagPR_ROWID, IDS_SHARP},
+		{eidtagPR_DISPLAY_NAME, IDS_ENTRYIDNAME},
+		{eidtagPR_ADDRTYPE, IDS_ENTRYIDTYPE},
+		{eidtagPR_EMAIL_ADDRESS, IDS_ENTRYIDADDRESS},
+		{eidtagPR_STATUS_CODE, IDS_ENTRYIDOPENSTATUS},
+		{eidtagPR_ENTRYID, IDS_ENTRYIDENTRYID}};
+
 	// Default properties and columns
 	enum
 	{

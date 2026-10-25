@@ -57,6 +57,7 @@ namespace controls::sortlistctrl
 		void OnOutputTable(const std::wstring& szFileName) const;
 		void SetSortTable(_In_ LPSSortOrderSet lpSortOrderSet, ULONG ulFlags) const;
 		void SetUIColumns(_In_ LPSPropTagArray lpTags);
+		void SetNamedColumnsOnly() noexcept { m_namedColumnsOnly = true; }
 		_Check_return_ bool IsLoading() const noexcept;
 		void ClearLoading() noexcept;
 		void SetRestriction(_In_opt_ const _SRestriction* lpRes) noexcept;
@@ -105,6 +106,7 @@ namespace controls::sortlistctrl
 		std::vector<columns::TagNames> m_lpDefaultDisplayColumns{};
 		LPSPropTagArray m_sptDefaultDisplayColumnTags{};
 		ULONG m_ulHeaderColumns{};
+		bool m_namedColumnsOnly{};
 		ULONG_PTR m_ulAdviseConnection{};
 		ULONG m_ulDisplayNameColumn{NODISPLAYNAME};
 		UINT m_nIDContextMenu{};

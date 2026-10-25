@@ -107,6 +107,9 @@ namespace smartview
 
 	class OneOffRecipientObject : public block
 	{
+	public:
+		bool getRecipient(std::wstring& name, std::wstring& type, std::wstring& address) const;
+
 	private:
 		void parse() override;
 		void parseBlocks() override;
