@@ -166,7 +166,6 @@ ID_HIERARCHY									"Display hierarchy for this folder"
 ID_HEXEDITOR									"Open Hex Editor"
 ID_INSTALLFORM									"Install form"
 ID_ISATTACHMENTBLOCKED							"Determine if a particular filename would be blocked"
-ID_LAUNCHPROFILEWIZARD							"Use the LAUNCHWIZARD entrypoint in mapi32.dll to configure profiles"
 ID_LOADFROMEML									"Load a message from a .EML file using IConverterSession"
 ID_LOADFROMMSG									"Load a message from a .MSG file"
 ID_LOADFROMTNEF									"Load a message from a TNEF encoded file, such as Winmail.dat"
@@ -615,13 +614,6 @@ IDS_SETDEFSTOREPROMPT            "Enter flags for SetDefaultStore (flags are mut
 0x00000004 MAPI_SIMPLE_STORE_PERMANENT For simple MAPI and CMC\r\n\
 0x00000008 MAPI_PRIMARY_STORE          Used by some clients\r\n\
 0x00000010 MAPI_SECONDARY_STORE        Used by some clients"
-IDS_LAUNCHPROFWIZ                "Launch Profile Wizard"
-IDS_LAUNCHPROFWIZPROMPT          "Flags for LaunchWizard:\r\n\
-0x00000001 MAPI_PW_FIRST_PROFILE\r\n\
-0x00000002 MAPI_PW_LAUNCHED_BY_CONFIG\r\n\
-0x00000004 MAPI_PW_ADD_SERVICE_ONLY\r\n\
-0x00000008 MAPI_PW_PROVIDER_UI_ONLY\r\n\
-0x00000010 MAPI_PW_HIDE_SERVICES_LIST"
 
 // mapiprofilefunctions.cpp
 IDS_ADDSERVICESTOINF             "Add Services To MAPISvc.inf"
@@ -1340,7 +1332,6 @@ IDS_NOCLASSHANDLER "Could not find handler for message class"
 IDS_NOPROPLIST "Couldn't get property list from object"
 IDS_GETSPECIALFOLDERINBOXMISSINGPROP "GetSpecialFolderEID: Failed to get property from Inbox"
 IDS_GETSPECIALFOLDERROOTMISSINGPROP "GetSpecialFolderEID: Failed to get property from Root Folder"
-IDS_LAUNCHWIZARDFAILED "Failed to configure profile, perhaps because MAPI is requiring the use of mlcfg.cpl from system32, and it doesn't exist. Use Profile Action menu to create profiles and add Exchange services instead."
 IDS_CREATEMSGSERVICEFAILED "Could not add service to profile. Perhaps service is not in MAPISVC.INF?"
 IDS_DUPLICATEPROFILE "Failed to create profile, most likely because profile with this name already exists"
 IDS_STREAMSEEKFAILED "This might be expected with PR_RTF_COMPRESSED"
