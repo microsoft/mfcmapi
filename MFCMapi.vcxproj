@@ -986,6 +986,7 @@
     <ClInclude Include="UI\Dialogs\Editors\SearchEditor.h" />
     <ClInclude Include="UI\Dialogs\Editors\AutoDiscoverEditor.h" />
     <ClInclude Include="UI\Dialogs\Editors\MailboxEditor.h" />
+    <ClInclude Include="UI\Dialogs\ContentsTable\BinaryTableDlg.h" />
     <ClInclude Include="UI\Dialogs\ContentsTable\AttachmentsDlg.h" />
     <ClInclude Include="UI\Dialogs\BaseDialog.h" />
     <ClInclude Include="UI\DoubleBuffer.h" />
@@ -1101,6 +1102,7 @@
     <ClCompile Include="UI\Dialogs\Editors\SearchEditor.cpp" />
     <ClCompile Include="UI\Dialogs\Editors\AutoDiscoverEditor.cpp" />
     <ClCompile Include="UI\Dialogs\Editors\MailboxEditor.cpp" />
+    <ClCompile Include="UI\Dialogs\ContentsTable\BinaryTableDlg.cpp" />
     <ClCompile Include="UI\Dialogs\BaseDialog.cpp" />
     <ClCompile Include="UI\DoubleBuffer.cpp" />
     <ClCompile Include="UI\Dialogs\ContentsTable\ContentsTableDlg.cpp" />

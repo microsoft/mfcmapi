@@ -813,7 +813,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="tests\guidtest.cpp" />
-    <ClCompile Include="tests\mapiabtest.cpp" />
+    <ClCompile Include="tests\mapifunctionstest.cpp" />
     <ClCompile Include="tests\mailboxclitest.cpp" />
     <ClCompile Include="tests\mapifiletest.cpp" />
     <ClCompile Include="tests\mapioutputtest.cpp" />

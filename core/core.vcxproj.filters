@@ -243,6 +243,9 @@
     <ClInclude Include="mapi\mapiABFunctions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="mapi\mapiBinaryFunctions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="mapi\mapiProfileFunctions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -537,6 +540,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="mapi\mapiABFunctions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mapi\mapiBinaryFunctions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="mapi\mapiProfileFunctions.cpp">
