@@ -6,7 +6,6 @@
 #include <core/utility/strings.h>
 #include <UI/ViewPane/CountedTextPane.h>
 #include <UI/ViewPane/SmartViewPane.h>
-#include <core/interpret/flags.h>
 #include <core/addin/mfcmapi.h>
 #include <core/interpret/proptags.h>
 #include <core/utility/output.h>
@@ -15,8 +14,6 @@ namespace dialog::editor
 {
 	enum __StreamEditorTypes
 	{
-		EDITOR_RTF,
-		EDITOR_RTF_UNICODE,
 		EDITOR_STREAM_BINARY,
 		EDITOR_STREAM_ANSI,
 		EDITOR_STREAM_UNICODE,
@@ -55,7 +52,7 @@ namespace dialog::editor
 		return ulPropTag;
 	}
 
-	// Create an editor for a MAPI property - can be used to initialize stream and rtf stream editing as well
+	// Create a stream editor for a MAPI property.
 	// Takes LPMAPIPROP and ulPropTag as input - will pull SPropValue from the LPMAPIPROP
 	CStreamEditor::CStreamEditor(
 		_In_ CWnd* pParentWnd,
@@ -64,12 +61,7 @@ namespace dialog::editor
 		_In_ LPMAPIPROP lpMAPIProp,
 		ULONG ulPropTag,
 		bool bGuessType,
-		bool bIsAB,
-		bool bEditPropAsRTF,
-		bool bUseWrapEx,
-		ULONG ulRTFFlags,
-		ULONG ulInCodePage,
-		ULONG ulOutCodePage)
+		bool bIsAB)
 		: CEditor(pParentWnd, uidTitle, uidPrompt, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
@@ -81,72 +73,42 @@ namespace dialog::editor
 		if (m_bAllowTypeGuessing)
 		{
 			m_ulPropTag = PreferredStreamType(m_ulPropTag);
-
-			// If we're guessing and happen to be handed PR_RTF_COMPRESSED, turn on our RTF editor
-			if (PR_RTF_COMPRESSED == m_ulPropTag)
-			{
-				bEditPropAsRTF = true;
-			}
 		}
 
 		m_bIsAB = bIsAB;
-		m_bUseWrapEx = bUseWrapEx;
-		m_ulRTFFlags = ulRTFFlags;
-		m_ulInCodePage = ulInCodePage;
-		m_ulOutCodePage = ulOutCodePage;
-		m_ulStreamFlags = NULL;
 		m_bDocFile = false;
 		m_lpStream = nullptr;
 		m_StreamError = S_OK;
 		m_bDisableSave = false;
 
 		m_iTextBox = 0;
-		if (bUseWrapEx)
-		{
-			m_iFlagBox = 1;
-			m_iCodePageBox = 2;
-			m_iBinBox = 3;
-		}
-		else
-		{
-			m_iFlagBox = 0xFFFFFFFF;
-			m_iCodePageBox = 0xFFFFFFFF;
-			m_iBinBox = 1;
-		}
+		m_iBinBox = 1;
 
 		m_iSmartViewBox = 0xFFFFFFFF;
 		m_bDoSmartView = false;
 
 		// Go ahead and open our property stream in case we decide to change our stream type
 		// This way we can pick the right display elements
-		OpenPropertyStream(false, bEditPropAsRTF);
+		OpenPropertyStream(false);
 
-		if (!m_bUseWrapEx && PT_BINARY == PROP_TYPE(m_ulPropTag))
+		if (PT_BINARY == PROP_TYPE(m_ulPropTag))
 		{
 			m_bDoSmartView = true;
 			m_iSmartViewBox = m_iBinBox + 1;
 		}
 
-		if (bEditPropAsRTF)
-			m_ulEditorType =
-				m_bUseWrapEx && ulOutCodePage == CP_UNICODE && !(m_ulStreamFlags & MAPI_NATIVE_BODY_TYPE_RTF)
-					? EDITOR_RTF_UNICODE
-					: EDITOR_RTF;
-		else
+		switch (PROP_TYPE(m_ulPropTag))
 		{
-			switch (PROP_TYPE(m_ulPropTag))
-			{
-			case PT_STRING8:
-				m_ulEditorType = EDITOR_STREAM_ANSI;
-				break;
-			case PT_UNICODE:
-				m_ulEditorType = EDITOR_STREAM_UNICODE;
-				break;
-			case PT_BINARY:
-			default:
-				m_ulEditorType = EDITOR_STREAM_BINARY;
-				break;
-			}
+		case PT_STRING8:
+			m_ulEditorType = EDITOR_STREAM_ANSI;
+			break;
+		case PT_UNICODE:
+			m_ulEditorType = EDITOR_STREAM_UNICODE;
+			break;
+		case PT_BINARY:
+		default:
+			m_ulEditorType = EDITOR_STREAM_BINARY;
+			break;
 		}
 
 		const auto szPromptPostFix = strings::format(
@@ -156,11 +118,6 @@ namespace dialog::editor
 		// Let's crack our property open and see what kind of controls we'll need for it
 		// One control for text stream, one for binary
 		AddPane(viewpane::TextPane::CreateCollapsibleTextPane(m_iTextBox, IDS_STREAMTEXT, false));
-		if (bUseWrapEx)
-		{
-			AddPane(viewpane::TextPane::CreateSingleLinePane(m_iFlagBox, IDS_STREAMFLAGS, true));
-			AddPane(viewpane::TextPane::CreateSingleLinePane(m_iCodePageBox, IDS_CODEPAGE, true));
-		}
 
 		AddPane(viewpane::CountedTextPane::Create(m_iBinBox, IDS_STREAMBIN, false, IDS_CB));
 		if (m_bDoSmartView)
@@ -211,7 +168,7 @@ namespace dialog::editor
 		CMyDialog::OnOK(); // don't need to call CEditor::OnOK
 	}
 
-	void CStreamEditor::OpenPropertyStream(bool bWrite, bool bRTF)
+	void CStreamEditor::OpenPropertyStream(bool bWrite)
 	{
 		if (!m_lpMAPIProp) return;
 
@@ -221,7 +178,6 @@ namespace dialog::editor
 
 		auto hRes = S_OK;
 		LPSTREAM lpTmpStream = nullptr;
-		auto ulRTFFlags = m_ulRTFFlags;
 
 		output::DebugPrintEx(
 			output::dbgLevel::Stream,
@@ -237,7 +193,6 @@ namespace dialog::editor
 		{
 			constexpr auto ulStgFlags = STGM_READWRITE;
 			constexpr auto ulFlags = MAPI_CREATE | MAPI_MODIFY;
-			ulRTFFlags |= MAPI_MODIFY;
 
 			if (m_bDocFile)
 			{
@@ -307,18 +262,7 @@ namespace dialog::editor
 			}
 		}
 
-		if (!bRTF)
-		{
-			m_lpStream = lpTmpStream;
-			lpTmpStream = nullptr;
-		}
-		else if (lpTmpStream)
-		{
-			hRes = EC_H(mapi::WrapStreamForRTF(
-				lpTmpStream, m_bUseWrapEx, ulRTFFlags, m_ulInCodePage, m_ulOutCodePage, &m_lpStream, &m_ulStreamFlags));
-		}
-
-		if (lpTmpStream) lpTmpStream->Release();
+		m_lpStream = lpTmpStream;
 
 		// Save off any error we got to display later
 		m_StreamError = hRes;
@@ -348,12 +292,6 @@ namespace dialog::editor
 			return;
 		}
 
-		if (m_bUseWrapEx) // if m_bUseWrapEx, we're read only
-		{
-			SetEditReadOnly(m_iTextBox);
-			SetEditReadOnly(m_iBinBox);
-		}
-
 		if (m_lpStream)
 		{
 			auto lpPane = std::dynamic_pointer_cast<viewpane::TextPane>(GetPane(m_iBinBox));
@@ -364,17 +302,15 @@ namespace dialog::editor
 		}
 	}
 
-	// this will not work if we're using WrapCompressedRTFStreamEx
 	void CStreamEditor::WriteTextStreamToProperty()
 	{
 		// If we couldn't get a read stream, we won't be able to get a write stream
 		if (!m_lpStream) return;
 		if (!m_lpMAPIProp) return;
 		if (!IsDirty(m_iBinBox) && !IsDirty(m_iTextBox)) return; // If we didn't change it, don't write
-		if (m_bUseWrapEx) return;
 
 		// Reopen the property stream as writeable
-		OpenPropertyStream(true, m_ulEditorType == EDITOR_RTF || m_ulEditorType == EDITOR_RTF_UNICODE);
+		OpenPropertyStream(true);
 
 		// We started with a binary stream, pull binary back into the stream
 		if (m_lpStream)
@@ -423,7 +359,6 @@ namespace dialog::editor
 			switch (m_ulEditorType)
 			{
 			case EDITOR_STREAM_ANSI:
-			case EDITOR_RTF:
 			case EDITOR_STREAM_BINARY:
 			default:
 			{
@@ -433,7 +368,6 @@ namespace dialog::editor
 				lpBinPane->SetCount(lpszA.length() * sizeof(CHAR));
 				break;
 			}
-			case EDITOR_RTF_UNICODE:
 			case EDITOR_STREAM_UNICODE:
 				auto lpszW = GetStringW(m_iTextBox);
 
@@ -450,14 +384,12 @@ namespace dialog::editor
 				switch (m_ulEditorType)
 				{
 				case EDITOR_STREAM_ANSI:
-				case EDITOR_RTF:
 				case EDITOR_STREAM_BINARY:
 				default:
 					SetStringA(
 						m_iTextBox, std::string(reinterpret_cast<LPCSTR>(bin.data()), bin.size() / sizeof(CHAR)));
 					if (lpBinPane) lpBinPane->SetCount(bin.size());
 					break;
-				case EDITOR_RTF_UNICODE:
 				case EDITOR_STREAM_UNICODE:
 					SetStringW(
 						m_iTextBox, std::wstring(strings::LPCBYTEToLPCWSTR(bin.data()), bin.size() / sizeof(WCHAR)));
@@ -474,13 +406,6 @@ namespace dialog::editor
 			{
 				lpSmartView->Parse(GetBinary(m_iBinBox));
 			}
-		}
-
-		if (m_bUseWrapEx)
-		{
-			auto szFlags = flags::InterpretFlags(flagStreamFlag, m_ulStreamFlags);
-			SetStringf(m_iFlagBox, L"0x%08X = %ws", m_ulStreamFlags, szFlags.c_str()); // STRING_OK
-			SetStringW(m_iCodePageBox, strings::formatmessage(IDS_CODEPAGES, m_ulInCodePage, m_ulOutCodePage));
 		}
 
 		OnRecalcLayout();

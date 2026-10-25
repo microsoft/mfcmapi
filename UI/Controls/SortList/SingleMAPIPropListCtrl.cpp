@@ -18,6 +18,7 @@
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/Editors/restriction/RestrictEditor.h>
 #include <UI/Dialogs/Editors/StreamEditor.h>
+#include <UI/Dialogs/Editors/CompressedRtfEditor.h>
 #include <UI/Dialogs/Editors/TagArrayEditor.h>
 #include <UI/Dialogs/Editors/propeditor/ipropeditor.h>
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
@@ -179,7 +180,6 @@ namespace controls::sortlistctrl
 			pMenu->EnableMenuItem(ID_EDITPROPERTY, DIM(bPropSelected));
 			pMenu->EnableMenuItem(ID_EDITPROPERTYASASCIISTREAM, DIM(bHasSource && bPropSelected));
 			pMenu->EnableMenuItem(ID_EDITPROPERTYASUNICODESTREAM, DIM(bHasSource && bPropSelected));
-			pMenu->EnableMenuItem(ID_EDITPROPERTYASPRRTFCOMPRESSEDSTREAM, DIM(bHasSource && bPropSelected));
 			pMenu->EnableMenuItem(ID_OPEN_PROPERTY, DIM(bPropSelected));
 
 			pMenu->EnableMenuItem(ID_SAVEPROPERTIES, DIM(bHasSource));
@@ -232,16 +232,13 @@ namespace controls::sortlistctrl
 			OnEditProp();
 			return true;
 		case ID_EDITPROPASBINARYSTREAM:
-			OnEditPropAsStream(PT_BINARY, false);
+			OnEditPropAsStream(PT_BINARY);
 			return true;
 		case ID_EDITPROPERTYASASCIISTREAM:
-			OnEditPropAsStream(PT_STRING8, false);
+			OnEditPropAsStream(PT_STRING8);
 			return true;
 		case ID_EDITPROPERTYASUNICODESTREAM:
-			OnEditPropAsStream(PT_UNICODE, false);
-			return true;
-		case ID_EDITPROPERTYASPRRTFCOMPRESSEDSTREAM:
-			OnEditPropAsStream(PT_BINARY, true);
+			OnEditPropAsStream(PT_UNICODE);
 			return true;
 		case ID_FINDALLNAMEDPROPS:
 			FindAllNamedProps();
@@ -994,17 +991,16 @@ namespace controls::sortlistctrl
 		}
 
 		const auto lpSourceObj = lpPropBag->GetMAPIProp();
+		if (lpSourceObj && PROP_ID(PR_RTF_COMPRESSED) == PROP_ID(ulPropTag))
+		{
+			dialog::editor::CCompressedRtfEditor rtfEditor(this, lpSourceObj);
+			static_cast<void>(rtfEditor.DisplayDialog());
+			if (rtfEditor.WasSaved()) RefreshMAPIPropList();
+			return;
+		}
 
 		auto bUseStream = false;
-
-		if (PROP_ID(PR_RTF_COMPRESSED) == PROP_ID(ulPropTag))
-		{
-			bUseStream = true;
-		}
-		else
-		{
-			lpEditProp = lpPropBag->GetOneProp(ulPropTag, name);
-		}
+		lpEditProp = lpPropBag->GetOneProp(ulPropTag, name);
 
 		if (lpEditProp && PROP_TYPE(lpEditProp->ulPropTag) == PT_ERROR &&
 			lpEditProp->Value.err == MAPI_E_NOT_ENOUGH_MEMORY)
@@ -1021,12 +1017,7 @@ namespace controls::sortlistctrl
 				lpSourceObj,
 				ulPropTag,
 				true, // Guess the type of stream to use
-				lpPropBag->IsAB(),
-				false,
-				false,
-				NULL,
-				NULL,
-				NULL);
+				lpPropBag->IsAB());
 
 			if (MyEditor.DisplayDialog())
 			{
@@ -1068,7 +1059,7 @@ namespace controls::sortlistctrl
 	}
 
 	// Display the selected property as a stream using CStreamEditor
-	void CSingleMAPIPropListCtrl::OnEditPropAsStream(ULONG ulType, bool bEditAsRTF)
+	void CSingleMAPIPropListCtrl::OnEditPropAsStream(ULONG ulType)
 	{
 		if (!m_lpPropBag) return;
 		auto lpPropBag = m_lpPropBag; // Hold the prop bag so it doesn't get deleted under us
@@ -1084,55 +1075,13 @@ namespace controls::sortlistctrl
 				output::dbgLevel::Generic,
 				CLASS,
 				L"OnEditPropAsStream",
-				L"editing property 0x%X (= %ws) as stream, ulType = 0x%08X, bEditAsRTF = 0x%X\n",
+				L"editing property 0x%X (= %ws) as stream, ulType = 0x%08X\n",
 				ulPropTag,
 				proptags::TagToString(ulPropTag, lpPropBag->GetMAPIProp(), lpPropBag->IsAB(), true).c_str(),
-				ulType,
-				bEditAsRTF);
+				ulType);
 		}
 
 		ulPropTag = CHANGE_PROP_TYPE(ulPropTag, ulType);
-
-		auto bUseWrapEx = false;
-		ULONG ulRTFFlags = NULL;
-		ULONG ulInCodePage = NULL;
-		ULONG ulOutCodePage = CP_ACP; // Default to ANSI - check if this is valid for UNICODE builds
-
-		if (bEditAsRTF)
-		{
-			dialog::editor::CEditor MyPrompt(
-				this, IDS_USEWRAPEX, IDS_USEWRAPEXPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-			MyPrompt.AddPane(viewpane::CheckPane::Create(0, IDS_USEWRAPEX, true, false));
-
-			if (!MyPrompt.DisplayDialog()) return;
-
-			if (MyPrompt.GetCheck(0))
-			{
-				bUseWrapEx = true;
-				const auto lpProp = lpPropBag->GetOneProp(PR_INTERNET_CPID, {});
-				if (lpProp && PT_LONG == PROP_TYPE(lpProp[0].ulPropTag))
-				{
-					ulInCodePage = lpProp[0].Value.l;
-				}
-
-				lpPropBag->FreeBuffer(lpProp);
-
-				dialog::editor::CEditor MyPrompt2(
-					this, IDS_WRAPEXFLAGS, IDS_WRAPEXFLAGSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-				MyPrompt2.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_WRAPEXFLAGS, false));
-				MyPrompt2.SetHex(0, MAPI_NATIVE_BODY);
-				MyPrompt2.AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_ULINCODEPAGE, false));
-				MyPrompt2.SetDecimal(1, ulInCodePage);
-				MyPrompt2.AddPane(viewpane::TextPane::CreateSingleLinePane(2, IDS_ULOUTCODEPAGE, false));
-				MyPrompt2.SetDecimal(2, CP_UNICODE);
-
-				if (!MyPrompt2.DisplayDialog()) return;
-
-				ulRTFFlags = MyPrompt2.GetHex(0);
-				ulInCodePage = MyPrompt2.GetDecimal(1);
-				ulOutCodePage = MyPrompt2.GetDecimal(2);
-			}
-		}
 
 		dialog::editor::CStreamEditor MyEditor(
 			this,
@@ -1141,12 +1090,7 @@ namespace controls::sortlistctrl
 			lpPropBag->GetMAPIProp(),
 			ulPropTag,
 			false, // No stream guessing
-			lpPropBag->IsAB(),
-			bEditAsRTF,
-			bUseWrapEx,
-			ulRTFFlags,
-			ulInCodePage,
-			ulOutCodePage);
+			lpPropBag->IsAB());
 
 		if (MyEditor.DisplayDialog())
 		{

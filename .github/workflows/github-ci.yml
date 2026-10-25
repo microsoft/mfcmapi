@@ -88,7 +88,10 @@ jobs:
         </RunSettings>
         '@ | Set-Content -LiteralPath $settings -Encoding utf8
         $assembly = Join-Path $env:GITHUB_WORKSPACE 'bin\${{matrix.platform}}\UnitTest\${{matrix.configuration}}\UnitTest.dll'
+        # Hosted runners have no matching-bitness Outlook MAPI runtime.
+        # Run these integration tests locally on an Outlook-equipped machine.
         & $env:VSDevTestCmd /Parallel /EnableCodeCoverage /Logger:trx `
+          '/TestCaseFilter:FullyQualifiedName!~compressedrtfintegrationtest' `
           "/Settings:$settings" "/ResultsDirectory:$results" "/Diag:$results\vstest.log" `
           '/Blame:CollectHangDump;TestTimeout=2min;HangDumpType=mini' $assembly
         exit $LASTEXITCODE

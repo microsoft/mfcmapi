@@ -13,19 +13,14 @@ namespace dialog::editor
 			_In_ LPMAPIPROP lpMAPIProp,
 			ULONG ulPropTag,
 			bool bGuessType,
-			bool bIsAB,
-			bool bEditPropAsRTF,
-			bool bUseWrapEx,
-			ULONG ulRTFFlags,
-			ULONG ulInCodePage,
-			ULONG ulOutCodePage);
+			bool bIsAB);
 		~CStreamEditor();
 
 		void DisableSave() noexcept;
 
 	private:
 		BOOL OnInitDialog() override;
-		void OpenPropertyStream(bool bWrite, bool bRTF);
+		void OpenPropertyStream(bool bWrite);
 		void ReadTextStreamFromProperty() const;
 		void WriteTextStreamToProperty();
 		_Check_return_ ULONG HandleChange(UINT nID) override;
@@ -37,15 +32,8 @@ namespace dialog::editor
 		LPSTREAM m_lpStream;
 		ULONG m_ulPropTag;
 		bool m_bIsAB; // whether the tag is from the AB or not
-		bool m_bUseWrapEx;
-		ULONG m_ulRTFFlags;
-		ULONG m_ulInCodePage;
-		ULONG m_ulOutCodePage;
-		ULONG m_ulStreamFlags; // returned from WrapCompressedRTFStreamEx
 
 		UINT m_iTextBox;
-		UINT m_iFlagBox;
-		UINT m_iCodePageBox;
 		UINT m_iBinBox;
 		UINT m_iSmartViewBox;
 		bool m_bDoSmartView;

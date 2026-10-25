@@ -818,6 +818,7 @@
     <ClCompile Include="tests\mapifiletest.cpp" />
     <ClCompile Include="tests\mapioutputtest.cpp" />
     <ClCompile Include="tests\mapiproptest.cpp" />
+    <ClCompile Include="tests\compressedrtftest.cpp" />
     <ClCompile Include="tests\namedproptest.cpp" />
     <ClCompile Include="tests\propertytest.cpp" />
     <ClCompile Include="tests\sidtest.cpp" />
