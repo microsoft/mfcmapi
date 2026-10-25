@@ -199,15 +199,6 @@ namespace mapi
 		_In_ const std::wstring& szBody,
 		_In_ const std::wstring& szSubject,
 		_In_ const std::wstring& szClass);
-	_Check_return_ HRESULT WrapStreamForRTF(
-		_In_ LPSTREAM lpCompressedRTFStream,
-		bool bUseWrapEx,
-		ULONG ulFlags,
-		ULONG ulInCodePage,
-		ULONG ulOutCodePage,
-		_Deref_out_ LPSTREAM* lpUncompressedRTFStream,
-		_Out_opt_ ULONG* pulStreamFlags);
-
 	_Check_return_ LPSPropTagArray GetNamedPropsByGUID(_In_ LPMAPIPROP lpSource, _In_ LPGUID lpPropSetGUID);
 	_Check_return_ HRESULT CopyNamedProps(
 		_In_ LPMAPIPROP lpSource,

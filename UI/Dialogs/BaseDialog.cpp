@@ -5,6 +5,7 @@
 #include <UI/Controls/SortList/SingleMAPIPropListCtrl.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/Editors/HexEditor.h>
+#include <UI/Dialogs/Editors/CompressedRtfEditor.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/UIFunctions.h>
 #include <UI/Dialogs/AboutDlg.h>
@@ -248,6 +249,12 @@ namespace dialog
 			output::dbgLevel::Menu, L"CBaseDialog::HandleMenu wMenuSelect = 0x%X = %u\n", wMenuSelect, wMenuSelect);
 		switch (wMenuSelect)
 		{
+		case ID_COMPRESSEDRTFEDITOR:
+		{
+			editor::CCompressedRtfEditor rtfEditor(this);
+			static_cast<void>(rtfEditor.DisplayDialog());
+			return true;
+		}
 		case ID_HEXEDITOR:
 			OnHexEditor();
 			return true;

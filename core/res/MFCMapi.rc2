@@ -146,7 +146,6 @@ ID_DUMPSTORECONTENTS							"Export contents of the selected message store to tex
 ID_EDITGIVENPROPERTY							"Prompt for a property number, then display an edit dialog."
 ID_EDITPROPERTY									"Display dialog for editing and copying selected property"
 ID_EDITPROPASBINARYSTREAM						"Interpret property as a PT_BINARY and read using stream interface. Display read only view of the stream."
-ID_EDITPROPERTYASPRRTFCOMPRESSEDSTREAM			"Interpret property as an RTF compressed stream for editing. Use with PR_RTF_COMPRESSED."
 ID_EDITPROPERTYASASCIISTREAM					"Interpret property as an ASCII stream for editing. Use with PR_BODY and most other PT_TSTRING properties."
 ID_EDITPROPERTYASUNICODESTREAM					"Interpret property as a Unicode stream for editing. Use with PR_BODY and most other PT_TSTRING properties."
 ID_EDITRESTRICTION								"Edit current restriction or create a new one"
@@ -355,6 +354,39 @@ IDS_COMPAREEIDBOOL               "0x%1!08X! = %2!ws!"
 IDS_STOREHASHVAL                 "Store Hash = 0x%1!08X!"
 IDS_STOREHASHDOUBLEVAL           "EntryID Hash = 0x%1!08X!\r\nMapping Signature Hash = 0x%2!08X!"
 IDS_LOADMAPISTATUS               "Load MAPI from %1!ws!"
+
+// CompressedRtfEditor.cpp
+IDS_COMPRESSEDRTFEDITOR          "Compressed RTF Editor"
+IDS_COMPRESSEDRTFPROMPT          "Edit compressed hex, RTF source (not rendered rich text), or exact uncompressed hex. Conversion runs after a short typing delay. Convert processes the last edited field immediately, even while live conversion is paused. Hex accepts whitespace and a leading 0x. WrapEx provides read-only native-body/code-page inspection. Live conversion never saves to a message."
+IDS_CONVERTRTF                  "Convert"
+IDS_COMPRESSEDRTFINPUT           "Compressed RTF (hex)"
+IDS_COMPRESSEDRTFSTATUS          "Result"
+IDS_COMPRESSEDRTFTEXT            "Uncompressed RTF source (ANSI)"
+IDS_COMPRESSEDRTFHEX             "Decompressed bytes (hex, exact)"
+IDS_COMPRESSEDRTFAPIERROR        "RTF operation failed (0x%08X). Check message access when loading or saving, and verify that a matching-bitness MAPI implementation is available."
+IDS_COMPRESSEDRTFBADHEX          "Enter complete, valid hex byte pairs (0x%08X)."
+IDS_COMPRESSEDRTFBADDATA         "Invalid compressed RTF: check the header, sizes, checksum, and payload (0x%08X)."
+IDS_COMPRESSEDRTFTOOBIG          "The data exceeds the size supported by the MAPI/stream API or this process (0x%08X)."
+IDS_COMPRESSEDRTFSUCCESS         "Decompressed successfully. Copy the source or the exact output bytes below."
+IDS_COMPRESSEDRTFREADY           "Edit a data field to convert automatically, or select Convert."
+IDS_SAVERTFTOMESSAGE            "Save to message"
+IDS_PAUSERTFCONVERSION          "Pause live conversion"
+IDS_COMPRESSEDRTFMESSAGEPROMPT  "\r\nLoaded from this message's PR_RTF_COMPRESSED. Save to message explicitly replaces that property and calls SaveChanges; it does not call RTFSync. Closing does not undo an explicit save."
+IDS_COMPRESSEDRTFCOMPRESSED     "Compressed successfully. The complete RTFCP bytes are in the compressed hex field."
+IDS_COMPRESSEDRTFSAVED          "PR_RTF_COMPRESSED saved to the message successfully."
+IDS_COMPRESSEDRTFPAUSED         "Live conversion paused. Use Convert; Save to message converts the latest edit before saving."
+IDS_RTFWRAPEX                  "WrapEx..."
+IDS_RTFWRAPEXPROMPT            "Enable WrapCompressedRTFStreamEx to preview the native body using the flags and code pages below. RTF editing and compression remain available; the separate native-body text and exact hex panes are read-only and refresh after conversion. Save to message saves only PR_RTF_COMPRESSED."
+IDS_RTFNATIVETEXT              "WrapEx native body (read-only source)"
+IDS_RTFNATIVEHEX               "WrapEx native bytes (hex, exact)"
+IDS_RTFWRAPEXFLAGREFERENCE     "WrapEx flag reference"
+IDS_RTFWRAPEXFLAGSHELP         "0x00000000: Decompress RTF without native-body conversion.\r\n\
+0x00000001 MAPI_MODIFY: Request a writable wrapped stream.\r\n\
+0x00008000 STORE_UNCOMPRESSED_RTF: Store RTF uncompressed when writing.\r\n\
+0x00010000 MAPI_NATIVE_BODY: Return the native body (RTF, HTML, or plain text).\r\n\
+MAPI_NATIVE_BODY cannot be combined with MAPI_MODIFY. This viewer only reads the returned stream.\r\n\
+Input/output code pages apply to native-body conversion; output code page 0 lets MAPI choose.\r\n\
+https://learn.microsoft.com/en-us/office/client-developer/outlook/mapi/rtf_wcsinfo"
 
 // contentstabledlg.cpp
 IDS_CREATEPROPRES                "Create Property String Restriction"
