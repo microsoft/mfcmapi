@@ -402,7 +402,7 @@ namespace controls::sortlistctrl
 		m_ulHeaderColumns = lpCurColTagArray->cValues;
 
 		ULONG ulCurHeaderCol = 0;
-		if (registry::doColumnNames)
+		if (registry::doColumnNames || m_namedColumnsOnly)
 		{
 			output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"AddColumns", L"Adding named columns\n");
 			// If we have named columns, put them up front
@@ -433,12 +433,14 @@ namespace controls::sortlistctrl
 		// Now, walk through the current tag table and add each unstruck column to our list
 		for (ULONG ulCurTableCol = 0; ulCurTableCol < lpCurColTagArray->cValues; ulCurTableCol++)
 		{
-			if (mapi::getTag(lpCurColTagArray, ulCurTableCol) != NULL)
+			if (!m_namedColumnsOnly && mapi::getTag(lpCurColTagArray, ulCurTableCol) != NULL)
 			{
 				AddColumn(NULL, ulCurHeaderCol, ulCurTableCol, mapi::getTag(lpCurColTagArray, ulCurTableCol));
 				ulCurHeaderCol++;
 			}
 		}
+
+		if (m_namedColumnsOnly) m_ulHeaderColumns = ulCurHeaderCol;
 
 		if (ulCurHeaderCol)
 		{
