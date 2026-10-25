@@ -216,7 +216,7 @@ ID_OPENSELECTEDSTOREDELETEDFOLDERS				"Display deleted folders for selected stor
 ID_OPENWITHFLAGS								"Allow entry of flags for CreateStoreEntryID"
 ID_OPTIONS										"Set options"
 ID_OUTLOOKVERSION								"Get version of Outlook"
-ID_OUTPUTTABLE									"Output table to file"
+ID_OUTPUTTABLE									"Export detailed table data or loaded displayed rows as CSV"
 ID_PASTE										"Paste copied item(s)"
 ID_PASTE_NAMEDPROPS								"Paste named properties from source to target"
 ID_PASTE_PROPERTY								"Paste copied property from source to target"
@@ -406,6 +406,14 @@ Input/output code pages apply to native-body conversion; output code page 0 lets
 https://learn.microsoft.com/en-us/office/client-developer/outlook/mapi/rtf_wcsinfo"
 
 // contentstabledlg.cpp
+IDS_TABLEEXPORTTITLE             "Export table"
+IDS_TABLEEXPORTPROMPT            "Choose detailed table data or a CSV snapshot of the currently loaded displayed rows."
+IDS_TABLEEXPORTFORMAT            "Export format"
+IDS_TABLEEXPORTDETAILED          "XML property dump"
+IDS_CSVTITLE                     "Export loaded displayed rows as CSV"
+IDS_CSVFILES                     "CSV files (*.csv)|*.csv|All files (*.*)|*.*||"
+IDS_CSVWARNING                   "Export a snapshot of ALL currently loaded displayed rows (not just selected rows), in current visual row and column order. This is not a complete provider-table export. Zero-width columns are omitted.\n\nCSV preserves displayed text exactly, including values that spreadsheets may execute as formulas. Quoting does NOT prevent formula execution. Do not double-click this file in Excel or another spreadsheet. Import it with ALL columns explicitly set to TEXT, or use a text editor. No protective apostrophes or other text changes are added.\n\nContinue with this unmodified-text export?"
+IDS_CSVLOADING                   "Wait for the table to finish loading, or cancel the table load, before exporting displayed rows."
 IDS_CREATEPROPRES                "Create Property String Restriction"
 IDS_CREATERANGERES               "Create Range Restriction"
 IDS_RANGESEARCHCRITERIAPROMPT    "Type substring that subjects should be greater than"
