@@ -32,7 +32,6 @@ namespace dialog
 		void OnGetMAPISVC();
 		void OnGetProfileServiceVersion();
 		void OnInitMenu(_In_ CMenu* pMenu) override;
-		void OnLaunchProfileWizard();
 		void OnRemoveServicesFromMAPISVC();
 		void OnSetDefaultProfile();
 		void OnOpenProfileByName();

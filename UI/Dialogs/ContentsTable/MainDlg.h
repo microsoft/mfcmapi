@@ -50,7 +50,6 @@ namespace dialog
 		void OnGetMAPISVC();
 		void OnIsAttachmentBlocked();
 		void OnLoadMAPI();
-		void OnLaunchProfileWizard();
 		void OnLogoff();
 		void OnLogoffWithFlags();
 		void OnLogon();
