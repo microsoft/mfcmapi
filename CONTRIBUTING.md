@@ -74,7 +74,6 @@ The npm scripts automatically find MSBuild via vswhere, so no Developer Command 
   * *Make sure to substitute your own name and topic in this command* *
 * Once you have a branch, make your changes and commit them to the local branch.
 * Run `npm run test` to verify your changes don't break existing tests.
-* Native unit tests must run without installed Outlook/MAPI, profiles, or mailbox access. Mock MAPI entry points and provider interfaces; do not add live-MAPI integration tests to the unit-test project.
 * All submissions require a review and pull requests are how those happen. Consult
 [GitHub Help](https://help.github.com/articles/about-pull-requests/) for more
 information on pull requests.
