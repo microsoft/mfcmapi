@@ -34,8 +34,6 @@ winget update mfcmapi
 
 Match your **Outlook installation**, not Windows: use x64 for 64-bit Outlook or x86 for 32-bit Outlook. Check under **File > Office Account > About Outlook**.
 
-MFCMAPI uses an installed MAPI implementation, normally supplied by classic Outlook. New Outlook for Windows does not supply classic Outlook's MAPI implementation.
-
 ### Download portable ZIPs
 
 **[Download the latest release](https://github.com/microsoft/mfcmapi/releases/latest)** and extract the appropriate archive:
@@ -50,6 +48,11 @@ Here, `<version>` is the release version. Run `MFCMapi.exe` from the extracted f
 **Looking for MrMAPI?** Download it from the same release page: `MrMAPI.x64.exe.<version>.zip` for 64-bit Outlook or `MrMAPI.exe.<version>.zip` for 32-bit Outlook.
 
 Matching PDB archives for debugging are also available on the release page. Match the release and architecture when downloading these files.
+
+## Dependencies
+
+- **MAPI:** Accessing profiles and mailboxes requires an installed MAPI implementation, normally supplied by classic Outlook. New Outlook for Windows does not supply classic Outlook's MAPI implementation. Match MFCMAPI/MrMAPI's architecture to the installed MAPI provider.
+- **Visual C++ runtime:** MFCMAPI and MrMAPI statically link their own C++ runtime, but Outlook's MAPI DLLs can require the Microsoft Visual C++ Redistributable. If a missing runtime such as `VCRUNTIME140_1.dll` prevents MAPI from loading, install or repair the [latest supported Visual C++ Redistributable](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist) matching Outlook's architecture (x64 or x86), not just Windows. A missing dependency can cause a "module could not be found" error even when the MAPI DLL itself exists.
 
 ## Help and feedback
 
