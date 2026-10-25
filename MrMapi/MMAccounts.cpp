@@ -16,7 +16,7 @@ void LogProp(LPOLKACCOUNT lpAccount, ULONG ulPropTag)
 		const auto name = proptags::PropTagToPropName(ulPropTag, false).bestGuess;
 		const auto tag = proptype::TypeToString(PROP_TYPE(ulPropTag));
 
-		wprintf(
+		wprintf_s(
 			L"Prop = %ws, Type = %ws, ",
 			name.empty() ? strings::format(L"0x%08X", ulPropTag).c_str() : name.c_str(),
 			tag.c_str());
@@ -25,20 +25,20 @@ void LogProp(LPOLKACCOUNT lpAccount, ULONG ulPropTag)
 		case PT_UNICODE:
 			if (pProp.Val.pwsz)
 			{
-				wprintf(L"\"%ws\"", pProp.Val.pwsz);
+				wprintf_s(L"\"%ws\"", pProp.Val.pwsz);
 				WC_H_S(lpAccount->FreeMemory(reinterpret_cast<LPBYTE>(pProp.Val.pwsz)));
 			}
 			break;
 		case PT_LONG:
-			wprintf(L"0x%08lX", pProp.Val.dw);
+			wprintf_s(L"0x%08lX", pProp.Val.dw);
 			break;
 		case PT_BINARY:
-			wprintf(L"%ws", strings::BinToHexString(pProp.Val.bin.pb, pProp.Val.bin.cb, true).c_str());
+			wprintf_s(L"%ws", strings::BinToHexString(pProp.Val.bin.pb, pProp.Val.bin.cb, true).c_str());
 			WC_H_S(lpAccount->FreeMemory(pProp.Val.bin.pb));
 			break;
 		}
 
-		wprintf(L"\n");
+		wprintf_s(L"\n");
 	}
 }
 
@@ -46,7 +46,7 @@ void IterateAllProps(LPOLKACCOUNT lpAccount)
 {
 	if (!lpAccount) return;
 
-	wprintf(L"Iterating all properties\n");
+	wprintf_s(L"Iterating all properties\n");
 
 	for (auto i = 0; i < 0x8000; i++)
 	{
@@ -55,7 +55,7 @@ void IterateAllProps(LPOLKACCOUNT lpAccount)
 		LogProp(lpAccount, PROP_TAG(PT_BINARY, i));
 	}
 
-	wprintf(L"Done iterating all properties\n");
+	wprintf_s(L"Done iterating all properties\n");
 }
 
 void EnumerateAccounts(
@@ -66,7 +66,7 @@ void EnumerateAccounts(
 {
 	LPOLKENUM lpAcctEnum = nullptr;
 
-	wprintf(L"Category: %ws\n", szCat.c_str());
+	wprintf_s(L"Category: %ws\n", szCat.c_str());
 	EC_H_S(lpAcctMgr->EnumerateAccounts(pclsidCategory, nullptr, OLK_ACCOUNT_NO_FLAGS, &lpAcctEnum));
 	if (lpAcctEnum)
 	{
@@ -78,8 +78,8 @@ void EnumerateAccounts(
 			EC_H_S(lpAcctEnum->Reset());
 			for (DWORD i = 0; i < cAccounts; i++)
 			{
-				if (i > 0) wprintf(L"\n");
-				wprintf(L"Account #%lu\n", i + 1);
+				if (i > 0) wprintf_s(L"\n");
+				wprintf_s(L"Account #%lu\n", i + 1);
 				LPUNKNOWN lpUnk = nullptr;
 
 				EC_H_S(lpAcctEnum->GetNext(&lpUnk));
@@ -149,7 +149,7 @@ void DoAccounts(_In_opt_ LPMAPISESSION lpMAPISession)
 	const auto bWizard = cli::switchWizard.isSet();
 	const auto profileName = mapi::GetProfileName(lpMAPISession);
 
-	wprintf(L"Enum Accounts\n");
+	wprintf_s(L"Enum Accounts\n");
 
 	if (!profileName.empty())
 	{

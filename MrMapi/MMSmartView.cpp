@@ -21,7 +21,7 @@ namespace smartviewfile
 
 		HRESULT Failure(const wchar_t* message, HRESULT result)
 		{
-			wprintf(L"SmartView: %ws (0x%08lX).\n", message, result);
+			wprintf_s(L"SmartView: %ws (0x%08lX).\n", message, result);
 			return WC_H(result);
 		}
 
@@ -110,7 +110,7 @@ namespace smartviewfile
 			const auto szString = operations.parse(sBin, parser);
 			if (output.empty())
 			{
-				if (!szString.empty() && wprintf(L"%ws\n", strings::StripCarriage(szString).c_str()) < 0)
+				if (!szString.empty() && wprintf_s(L"%ws\n", strings::StripCarriage(szString).c_str()) < 0)
 					return Failure(L"Cannot write parsed output", HRESULT_FROM_WIN32(ERROR_WRITE_FAULT));
 			}
 			else
@@ -147,7 +147,7 @@ HRESULT DoSmartView()
 	const auto parser = cli::switchParser.atULONG(0);
 	if (!parser || parser >= SmartViewParserTypeArray.size())
 	{
-		wprintf(L"SmartView: Invalid parser type.\n");
+		wprintf_s(L"SmartView: Invalid parser type.\n");
 		return WC_H(E_INVALIDARG);
 	}
 	return smartviewfile::ParseFile(
