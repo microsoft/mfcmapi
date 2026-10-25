@@ -90,7 +90,7 @@ namespace smartview
 		addLabeledChild(L"Pad", Pad);
 	}
 
-	void MessageObject ::parse()
+	void MessageObject::parse()
 	{
 		Type = blockT<WORD>::parse(parser);
 		FolderDatabaseGUID = blockT<GUID>::parse(parser);
@@ -102,7 +102,7 @@ namespace smartview
 		Pad2 = blockBytes::parse(parser, 2);
 	}
 
-	void MessageObject ::parseBlocks()
+	void MessageObject::parseBlocks()
 	{
 		setText(L"Exchange Message Entry ID");
 		auto szType = flags::InterpretFlags(flagMessageDatabaseObjectType, *Type);
@@ -124,7 +124,7 @@ namespace smartview
 		addLabeledChild(L"Pad2", Pad2);
 	}
 
-	void MessageDatabaseObject ::parse()
+	void MessageDatabaseObject::parse()
 	{
 		Version = blockT<byte>::parse(parser);
 		Flag = blockT<byte>::parse(parser);
@@ -193,7 +193,7 @@ namespace smartview
 		}
 	}
 
-	void MessageDatabaseObject ::parseBlocks()
+	void MessageDatabaseObject::parseBlocks()
 	{
 		setText(L"MAPI Message Store Entry ID");
 		auto szVersion = flags::InterpretFlags(flagMDBVersion, *Version);
@@ -229,13 +229,13 @@ namespace smartview
 		}
 	}
 
-	void EphemeralObject ::parse()
+	void EphemeralObject::parse()
 	{
 		Version = blockT<DWORD>::parse(parser);
 		Type = blockT<DWORD>::parse(parser);
 	}
 
-	void EphemeralObject ::parseBlocks()
+	void EphemeralObject::parseBlocks()
 	{
 		setText(L"Ephemeral Entry ID");
 		auto szVersion = flags::InterpretFlags(flagExchangeABVersion, *Version);
@@ -245,7 +245,7 @@ namespace smartview
 		addChild(Type, L"Type = 0x%1!08X! = %2!ws!", Type->getData(), szType.c_str());
 	}
 
-	void OneOffRecipientObject ::parse()
+	void OneOffRecipientObject::parse()
 	{
 		Bitmask = blockT<DWORD>::parse(parser);
 		if (*Bitmask & MAPI_UNICODE)
@@ -262,7 +262,31 @@ namespace smartview
 		}
 	}
 
-	void OneOffRecipientObject ::parseBlocks()
+	bool OneOffRecipientObject::getRecipient(std::wstring& name, std::wstring& type, std::wstring& address) const
+	{
+		if (!Bitmask->isSet()) return false;
+
+		if (*Bitmask & MAPI_UNICODE)
+		{
+			if (!DisplayNameW->isSet() || !AddressTypeW->isSet() || !EmailAddressW->isSet()) return false;
+
+			name = DisplayNameW->c_str();
+			type = AddressTypeW->c_str();
+			address = EmailAddressW->c_str();
+		}
+		else
+		{
+			if (!DisplayNameA->isSet() || !AddressTypeA->isSet() || !EmailAddressA->isSet()) return false;
+
+			name = strings::stringTowstring(DisplayNameA->c_str());
+			type = strings::stringTowstring(AddressTypeA->c_str());
+			address = strings::stringTowstring(EmailAddressA->c_str());
+		}
+
+		return true;
+	}
+
+	void OneOffRecipientObject::parseBlocks()
 	{
 		setText(L"MAPI One Off Recipient Entry ID");
 		auto szFlags = flags::InterpretFlags(flagOneOffEntryId, *Bitmask);
@@ -282,14 +306,14 @@ namespace smartview
 		}
 	}
 
-	void AddressBookObject ::parse()
+	void AddressBookObject::parse()
 	{
 		Version = blockT<DWORD>::parse(parser);
 		Type = blockT<DWORD>::parse(parser);
 		X500DN = blockStringA::parse(parser);
 	}
 
-	void AddressBookObject ::parseBlocks()
+	void AddressBookObject::parseBlocks()
 	{
 		setText(L"Exchange Address Entry ID");
 		auto szVersion = flags::InterpretFlags(flagExchangeABVersion, *Version);
@@ -299,7 +323,7 @@ namespace smartview
 		addChild(X500DN, L"X500DN = %1!hs!", X500DN->c_str());
 	}
 
-	void ContactAddressBookObject ::parse()
+	void ContactAddressBookObject::parse()
 	{
 		Version = blockT<DWORD>::parse(parser);
 		Type = blockT<DWORD>::parse(parser);
@@ -326,7 +350,7 @@ namespace smartview
 		lpEntryID = block::parse<EntryIdStruct>(parser, cbRemainingBytes, false);
 	}
 
-	void ContactAddressBookObject ::parseBlocks()
+	void ContactAddressBookObject::parseBlocks()
 	{
 		setText(L"Contact Address Book / PDL Entry ID");
 		auto szVersion = flags::InterpretFlags(flagContabVersion, *Version);

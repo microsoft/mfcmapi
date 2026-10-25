@@ -2,6 +2,7 @@
 #include <UI/Controls/SortList/SingleMAPIPropListCtrl.h>
 #include <core/mapi/columnTags.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
+#include <UI/Dialogs/ContentsTable/BinaryTableDlg.h>
 #include <UI/UIFunctions.h>
 #include <UI/MySecInfo.h>
 #include <core/interpret/guid.h>
@@ -181,6 +182,12 @@ namespace controls::sortlistctrl
 			pMenu->EnableMenuItem(ID_EDITPROPERTYASASCIISTREAM, DIM(bHasSource && bPropSelected));
 			pMenu->EnableMenuItem(ID_EDITPROPERTYASUNICODESTREAM, DIM(bHasSource && bPropSelected));
 			pMenu->EnableMenuItem(ID_OPEN_PROPERTY, DIM(bPropSelected));
+			const auto selected = GetSelectedPropModelData();
+			pMenu->EnableMenuItem(
+				ID_OPENBINARYASTABLE, DIM(bHasSource && selected && PROP_TYPE(selected->getPropTag()) == PT_MV_BINARY));
+			pMenu->EnableMenuItem(
+				ID_OPENENTRYIDASTABLE,
+				DIM(bHasSource && selected && PROP_TYPE(selected->getPropTag()) == PT_MV_BINARY));
 
 			pMenu->EnableMenuItem(ID_SAVEPROPERTIES, DIM(bHasSource));
 			pMenu->EnableMenuItem(ID_EDITGIVENPROPERTY, DIM(bHasSource));
@@ -254,6 +261,12 @@ namespace controls::sortlistctrl
 			return true;
 		case ID_OPENPROPERTYASTABLE:
 			OnOpenPropertyAsTable();
+			return true;
+		case ID_OPENBINARYASTABLE:
+			OnOpenBinaryAsTable(false);
+			return true;
+		case ID_OPENENTRYIDASTABLE:
+			OnOpenBinaryAsTable(true);
 			return true;
 		case ID_PASTE_NAMEDPROPS:
 			OnPasteNamedProps();
@@ -1361,6 +1374,39 @@ namespace controls::sortlistctrl
 		}
 	}
 
+	void CSingleMAPIPropListCtrl::OnOpenBinaryAsTable(bool entryIDs)
+	{
+		if (!m_lpPropBag) return;
+		auto lpPropBag = m_lpPropBag; // Hold the prop bag so it doesn't get deleted under us
+
+		const auto selected = GetSelectedPropModelData();
+		if (selected && PROP_TYPE(selected->getPropTag()) == PT_MV_BINARY)
+		{
+			if (lpPropBag->GetMAPIProp())
+			{
+				EC_H_S(dialog::DisplayBinaryTable(
+					lpPropBag->GetMAPIProp(), selected->getPropTag(), entryIDs, lpPropBag->IsAB(), m_lpHostDlg));
+			}
+			else
+			{
+				const auto property = lpPropBag->GetOneProp(selected->getPropTag(), {});
+				if (property)
+				{
+					EC_H_S(dialog::DisplayBinaryTable(*property, entryIDs, m_lpHostDlg));
+					lpPropBag->FreeBuffer(property);
+				}
+				else
+				{
+					EC_H_S(MAPI_E_NOT_FOUND);
+				}
+			}
+
+			return;
+		}
+
+		EC_H_S(MAPI_E_INVALID_TYPE);
+	}
+
 	void CSingleMAPIPropListCtrl::OnOpenPropertyAsTable()
 	{
 		if (!m_lpPropBag) return;
@@ -1378,10 +1424,18 @@ namespace controls::sortlistctrl
 		dialog::editor::CEditor MyData(
 			this, IDS_OPENPROPASTABLE, IDS_OPENPROPASTABLEPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		MyData.AddPane(viewpane::CheckPane::Create(0, IDS_OPENASEXTABLE, false, false));
+		const auto propTag = MyPropertyTag.GetPropertyTag();
+		const auto binary = PROP_TYPE(propTag) == PT_MV_BINARY;
+		MyData.AddPane(
+			viewpane::CheckPane::Create(0, binary ? IDS_INTERPRETASENTRYIDS : IDS_OPENASEXTABLE, false, false));
 		if (!MyData.DisplayDialog()) return;
 
-		if (MyData.GetCheck(0))
+		if (binary)
+		{
+			EC_H_S(dialog::DisplayBinaryTable(
+				lpPropBag->GetMAPIProp(), propTag, MyData.GetCheck(0), lpPropBag->IsAB(), m_lpHostDlg));
+		}
+		else if (MyData.GetCheck(0))
 		{
 			EC_H_S(DisplayExchangeTable(
 				lpPropBag->GetMAPIProp(),
