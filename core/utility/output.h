@@ -64,20 +64,20 @@ namespace output
 #ifdef CHECKFORMATPARAMS
 #undef Outputf
 #define Outputf(ulDbgLvl, fFile, bPrintThreadTime, szMsg, ...) \
-	Outputf((wprintf(szMsg, __VA_ARGS__), ulDbgLvl), fFile, bPrintThreadTime, szMsg, __VA_ARGS__)
+	Outputf((wprintf_s(szMsg, __VA_ARGS__), ulDbgLvl), fFile, bPrintThreadTime, szMsg, __VA_ARGS__)
 #endif
 
 #define OutputToFile(fFile, szMsg) Output((output::dbgLevel::NoDebug), (fFile), true, (szMsg))
 	void __cdecl OutputToFilef(_In_opt_ FILE* fFile, LPCWSTR szMsg, ...);
 #ifdef CHECKFORMATPARAMS
 #undef OutputToFilef
-#define OutputToFilef(fFile, szMsg, ...) OutputToFilef((wprintf(szMsg, __VA_ARGS__), fFile), szMsg, __VA_ARGS__)
+#define OutputToFilef(fFile, szMsg, ...) OutputToFilef((wprintf_s(szMsg, __VA_ARGS__), fFile), szMsg, __VA_ARGS__)
 #endif
 
 	void __cdecl DebugPrint(dbgLevel ulDbgLvl, LPCWSTR szMsg, ...);
 #ifdef CHECKFORMATPARAMS
 #undef DebugPrint
-#define DebugPrint(ulDbgLvl, szMsg, ...) DebugPrint((wprintf(szMsg, __VA_ARGS__), ulDbgLvl), szMsg, __VA_ARGS__)
+#define DebugPrint(ulDbgLvl, szMsg, ...) DebugPrint((wprintf_s(szMsg, __VA_ARGS__), ulDbgLvl), szMsg, __VA_ARGS__)
 #endif
 	void __cdecl DebugPrint(dbgLevel ulDbgLvl, LPCWSTR szMsg, va_list argList);
 
@@ -90,7 +90,7 @@ namespace output
 #ifdef CHECKFORMATPARAMS
 #undef DebugPrintEx
 #define DebugPrintEx(ulDbgLvl, szClass, szFunc, szMsg, ...) \
-	DebugPrintEx((wprintf(szMsg, __VA_ARGS__), ulDbgLvl), szClass, szFunc, szMsg, __VA_ARGS__)
+	DebugPrintEx((wprintf_s(szMsg, __VA_ARGS__), ulDbgLvl), szClass, szFunc, szMsg, __VA_ARGS__)
 #endif
 
 	// We'll only output this information in debug builds.

@@ -8,8 +8,8 @@ namespace output
 {
 	void ExportProfileList()
 	{
-		wprintf(L"Profile List\n");
-		wprintf(L" # Default Name\n");
+		wprintf_s(L"Profile List\n");
+		wprintf_s(L" # Default Name\n");
 		LPMAPITABLE lpProfTable = nullptr;
 		LPPROFADMIN lpProfAdmin = nullptr;
 
@@ -36,30 +36,30 @@ namespace output
 			{
 				if (lpRows->cRows == 0)
 				{
-					wprintf(L"No profiles exist\n");
+					wprintf_s(L"No profiles exist\n");
 				}
 				else
 				{
 					for (ULONG i = 0; i < lpRows->cRows; i++)
 					{
-						wprintf(L"%2ul ", i);
+						wprintf_s(L"%2ul ", i);
 						if (PR_DEFAULT_PROFILE == lpRows->aRow[i].lpProps[0].ulPropTag &&
 							lpRows->aRow[i].lpProps[0].Value.b)
 						{
-							wprintf(L"*       ");
+							wprintf_s(L"*       ");
 						}
 						else
 						{
-							wprintf(L"        ");
+							wprintf_s(L"        ");
 						}
 
 						if (strings::CheckStringProp(&lpRows->aRow[i].lpProps[1], PT_STRING8))
 						{
-							wprintf(L"%hs\n", lpRows->aRow[i].lpProps[1].Value.lpszA);
+							wprintf_s(L"%hs\n", lpRows->aRow[i].lpProps[1].Value.lpszA);
 						}
 						else
 						{
-							wprintf(L"UNKNOWN\n");
+							wprintf_s(L"UNKNOWN\n");
 						}
 					}
 				}
@@ -80,11 +80,11 @@ namespace output
 		{
 			const auto szProfile = cli::switchProfile[0];
 			const auto szProfileSection = cli::switchProfileSection[0];
-			wprintf(L"Profile Export\n");
-			wprintf(L"Options specified:\n");
-			wprintf(L"   Profile: %ws\n", szProfile.c_str());
-			wprintf(L"   Profile section: %ws\n", szProfileSection.c_str());
-			wprintf(L"   Output File: %ws\n", output.c_str());
+			wprintf_s(L"Profile Export\n");
+			wprintf_s(L"Options specified:\n");
+			wprintf_s(L"   Profile: %ws\n", szProfile.c_str());
+			wprintf_s(L"   Profile section: %ws\n", szProfileSection.c_str());
+			wprintf_s(L"   Output File: %ws\n", output.c_str());
 			ExportProfile(szProfile, szProfileSection, cli::switchByteSwapped.isSet(), output);
 		}
 		else

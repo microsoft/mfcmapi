@@ -24,7 +24,7 @@ namespace smartview
 
 		bool empty() const noexcept { return offset == size; }
 		void advance(size_t cb) noexcept { offset += cb; }
-		void rewind() noexcept { offset = 0; }
+		void rewindToStart() noexcept { offset = 0; }
 		size_t getOffset() const noexcept { return offset; }
 		void setOffset(size_t _offset) noexcept { offset = _offset; }
 		const BYTE* getAddress() const noexcept { return bin.data() + offset; }
