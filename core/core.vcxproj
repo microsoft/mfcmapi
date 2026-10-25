@@ -841,6 +841,7 @@
     <ClInclude Include="mapi\mapiABFunctions.h" />
     <ClInclude Include="mapi\mapiFile.h" />
     <ClInclude Include="mapi\mapiFunctions.h" />
+    <ClInclude Include="mapi\autoDiscover.h" />
     <ClInclude Include="mapi\compressedRtf.h" />
     <ClInclude Include="mapi\mapiMemory.h" />
     <ClInclude Include="mapi\mapiMime.h" />
@@ -948,6 +949,7 @@
     <ClCompile Include="mapi\mapiABFunctions.cpp" />
     <ClCompile Include="mapi\mapiFile.cpp" />
     <ClCompile Include="mapi\mapiFunctions.cpp" />
+    <ClCompile Include="mapi\autoDiscover.cpp" />
     <ClCompile Include="mapi\compressedRtf.cpp" />
     <ClCompile Include="mapi\mapiMime.cpp" />
     <ClCompile Include="mapi\mapiOutput.cpp" />

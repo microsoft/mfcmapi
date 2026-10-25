@@ -114,6 +114,9 @@
     <ClInclude Include="mapi\mapiFunctions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="mapi\autoDiscover.h">
+      <Filter>Source Files\mapi</Filter>
+    </ClInclude>
     <ClInclude Include="mapi\compressedRtf.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -421,6 +424,9 @@
     </ClCompile>
     <ClCompile Include="mapi\mapiFunctions.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mapi\autoDiscover.cpp">
+      <Filter>Source Files\mapi</Filter>
     </ClCompile>
     <ClCompile Include="mapi\compressedRtf.cpp">
       <Filter>Source Files</Filter>

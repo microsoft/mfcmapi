@@ -47,6 +47,7 @@ namespace dialog
 		void OnDumpServerContents();
 		void OnFastShutdown();
 		void OnGetCapabilities();
+		void OnGetAutoDiscoverXML();
 		void OnGetMAPISVC();
 		void OnIsAttachmentBlocked();
 		void OnLoadMAPI();
