@@ -1426,8 +1426,8 @@ namespace controls::sortlistctrl
 
 		const auto propTag = MyPropertyTag.GetPropertyTag();
 		const auto binary = PROP_TYPE(propTag) == PT_MV_BINARY;
-		MyData.AddPane(viewpane::CheckPane::Create(
-			0, binary ? IDS_INTERPRETASENTRYIDS : IDS_OPENASEXTABLE, false, false));
+		MyData.AddPane(
+			viewpane::CheckPane::Create(0, binary ? IDS_INTERPRETASENTRYIDS : IDS_OPENASEXTABLE, false, false));
 		if (!MyData.DisplayDialog()) return;
 
 		if (binary)
