@@ -203,8 +203,13 @@ namespace dialog::editor
 				else
 				{
 					std::wstring text(native.size() / sizeof(wchar_t), L'\0');
-					if (!native.empty()) memcpy(text.data(), native.data(), native.size());
-					SetStringW(RTF_NATIVE_TEXT, text);
+					if (!native.empty() &&
+						memcpy_s(text.data(), text.size() * sizeof(wchar_t), native.data(), native.size()) != 0)
+					{
+						hRes = WC_H(E_INVALIDARG);
+					}
+
+					if (SUCCEEDED(hRes)) SetStringW(RTF_NATIVE_TEXT, text);
 				}
 			}
 			else

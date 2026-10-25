@@ -558,7 +558,8 @@ public:
 	{
 		auto bytes = strings::HexStringToBin(lzfu);
 		const ULONG rawSize = ULONG_MAX;
-		memcpy(bytes.data() + sizeof(ULONG), &rawSize, sizeof(rawSize));
+		Assert::AreEqual(
+			0, memcpy_s(bytes.data() + sizeof(ULONG), bytes.size() - sizeof(ULONG), &rawSize, sizeof(rawSize)));
 		std::vector<BYTE> output{1};
 		Assert::AreEqual(MAPI_E_CORRUPT_DATA, mapi::DecompressRtf(bytes, output));
 		Assert::IsTrue(output.empty());

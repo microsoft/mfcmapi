@@ -53,7 +53,7 @@ namespace mapi
 		// https://learn.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxrtfcp/a1f226ed-31e3-4565-9d26-af3c6714c93f
 		ULONG header[4]{};
 		if (compressed.size() < sizeof(header)) return WC_H(MAPI_E_CORRUPT_DATA);
-		memcpy(header, compressed.data(), sizeof(header));
+		if (memcpy_s(header, sizeof(header), compressed.data(), sizeof(header)) != 0) return WC_H(E_INVALIDARG);
 		if (header[0] != compressed.size() - sizeof(ULONG)) return WC_H(MAPI_E_CORRUPT_DATA);
 		constexpr ULONG lzfu = 0x75465A4C;
 		constexpr ULONG mela = 0x414C454D;
