@@ -33,7 +33,11 @@ namespace controls
 		// Returns the height of our control, accounting for an expand/collapse button
 		// Will return 0 if we have no label or button
 		int GetFixedHeight() const noexcept;
-		void makeCollapsible() noexcept { m_bCollapsible = true; }
+		void makeCollapsible(bool initiallyCollapsed = false) noexcept
+		{
+			m_bCollapsible = true;
+			m_bCollapsed = initiallyCollapsed;
+		}
 		bool collapsible() const noexcept { return m_bCollapsible; }
 		bool collapsed() const noexcept { return m_bCollapsed; }
 		bool containsWindow(HWND hWnd) const noexcept;

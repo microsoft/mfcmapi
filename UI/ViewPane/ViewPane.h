@@ -35,7 +35,7 @@ namespace viewpane
 		virtual void UpdateButtons();
 		int GetID() const noexcept { return m_paneID; }
 		UINT GetNID() const noexcept { return m_nID; }
-		void makeCollapsible() noexcept { m_Header.makeCollapsible(); }
+		void makeCollapsible(bool initiallyCollapsed = false) noexcept { m_Header.makeCollapsible(initiallyCollapsed); }
 		bool collapsible() const noexcept { m_Header.collapsible(); }
 		bool collapsed() const noexcept { return m_Header.collapsed(); }
 		virtual bool containsWindow(HWND hWnd) const noexcept { return m_Header.containsWindow(hWnd); }

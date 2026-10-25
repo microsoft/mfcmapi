@@ -2028,43 +2028,6 @@ namespace mapi
 		return hRes;
 	}
 
-	_Check_return_ HRESULT WrapStreamForRTF(
-		_In_ LPSTREAM lpCompressedRTFStream,
-		bool bUseWrapEx,
-		ULONG ulFlags,
-		ULONG ulInCodePage,
-		ULONG ulOutCodePage,
-		_Deref_out_ LPSTREAM* lpUncompressedRTFStream,
-		_Out_opt_ ULONG* pulStreamFlags)
-	{
-		if (pulStreamFlags) *pulStreamFlags = {};
-		if (!lpCompressedRTFStream || !lpUncompressedRTFStream) return MAPI_E_INVALID_PARAMETER;
-		auto hRes = S_OK;
-
-		if (!bUseWrapEx)
-		{
-			hRes = WC_MAPI(WrapCompressedRTFStream(lpCompressedRTFStream, ulFlags, lpUncompressedRTFStream));
-		}
-		else
-		{
-			RTF_WCSINFO wcsinfo = {};
-			RTF_WCSRETINFO retinfo = {};
-
-			retinfo.size = sizeof(RTF_WCSRETINFO);
-
-			wcsinfo.size = sizeof(RTF_WCSINFO);
-			wcsinfo.ulFlags = ulFlags;
-			wcsinfo.ulInCodePage = ulInCodePage; // Get ulCodePage from PR_INTERNET_CPID on the IMessage
-			wcsinfo.ulOutCodePage = ulOutCodePage; // Desired code page for return
-
-			hRes =
-				WC_MAPI(WrapCompressedRTFStreamEx(lpCompressedRTFStream, &wcsinfo, lpUncompressedRTFStream, &retinfo));
-			if (pulStreamFlags) *pulStreamFlags = retinfo.ulStreamFlags;
-		}
-
-		return hRes;
-	}
-
 	_Check_return_ HRESULT CopyNamedProps(
 		_In_ LPMAPIPROP lpSource,
 		_In_ LPGUID lpPropSetGUID,

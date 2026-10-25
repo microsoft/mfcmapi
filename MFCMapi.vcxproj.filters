@@ -501,9 +501,15 @@
     <ClInclude Include="UI\Dialogs\Editors\Editor.h">
       <Filter>Source Files\UI\Dialogs\Editors</Filter>
     </ClInclude>
+    <ClCompile Include="UI\Dialogs\Editors\CompressedRtfEditor.cpp">
+      <Filter>Source Files\UI\Dialogs\Editors</Filter>
+    </ClCompile>
     <ClCompile Include="UI\Dialogs\Editors\HexEditor.cpp">
       <Filter>Source Files\UI\Dialogs\Editors</Filter>
     </ClCompile>
+    <ClInclude Include="UI\Dialogs\Editors\CompressedRtfEditor.h">
+      <Filter>Source Files\UI\Dialogs\Editors</Filter>
+    </ClInclude>
     <ClInclude Include="UI\Dialogs\Editors\HexEditor.h">
       <Filter>Source Files\UI\Dialogs\Editors</Filter>
     </ClInclude>

@@ -999,6 +999,7 @@
     <ClInclude Include="UI\Dialogs\ContentsTable\FolderDlg.h" />
     <ClInclude Include="UI\Dialogs\ContentsTable\FormContainerDlg.h" />
     <ClInclude Include="UI\Dialogs\Editors\HexEditor.h" />
+    <ClInclude Include="UI\Dialogs\Editors\CompressedRtfEditor.h" />
     <ClInclude Include="UI\Dialogs\HierarchyTable\HierarchyTableDlg.h" />
     <ClInclude Include="UI\Controls\StyleTree\HierarchyTableTreeCtrl.h" />
     <ClInclude Include="UI\Dialogs\ContentsTable\MailboxTableDlg.h" />
@@ -1112,6 +1113,7 @@
     <ClCompile Include="UI\Dialogs\ContentsTable\FolderDlg.cpp" />
     <ClCompile Include="UI\Dialogs\ContentsTable\FormContainerDlg.cpp" />
     <ClCompile Include="UI\Dialogs\Editors\HexEditor.cpp" />
+    <ClCompile Include="UI\Dialogs\Editors\CompressedRtfEditor.cpp" />
     <ClCompile Include="UI\Dialogs\HierarchyTable\HierarchyTableDlg.cpp" />
     <ClCompile Include="UI\Controls\StyleTree\HierarchyTableTreeCtrl.cpp" />
     <ClCompile Include="UI\Dialogs\ContentsTable\MailboxTableDlg.cpp" />
