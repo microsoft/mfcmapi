@@ -186,8 +186,8 @@ void PrintObjectProperties(const std::wstring& szObjType, _In_ LPMAPIPROP lpMAPI
 	auto hRes = S_OK;
 	if (!lpMAPIProp) return;
 
-	wprintf(output::g_szXMLHeader.c_str());
-	wprintf(L"<%ws>\n", szObjType.c_str());
+	wprintf_s(output::g_szXMLHeader.c_str());
+	wprintf_s(L"<%ws>\n", szObjType.c_str());
 
 	LPSPropValue lpAllProps = nullptr;
 	ULONG cValues = 0L;
@@ -205,20 +205,20 @@ void PrintObjectProperties(const std::wstring& szObjType, _In_ LPMAPIPROP lpMAPI
 
 	if (FAILED(hRes))
 	{
-		wprintf(L"<properties error=\"0x%08X\" />\n", hRes);
+		wprintf_s(L"<properties error=\"0x%08X\" />\n", hRes);
 	}
 	else if (lpAllProps)
 	{
-		wprintf(L"<properties>\n");
+		wprintf_s(L"<properties>\n");
 
 		output::outputProperties(output::dbgLevel::NoDebug, stdout, cValues, lpAllProps, lpMAPIProp, true);
 
-		wprintf(L"</properties>\n");
+		wprintf_s(L"</properties>\n");
 
 		MAPIFreeBuffer(lpAllProps);
 	}
 
-	wprintf(L"</%ws>\n", szObjType.c_str());
+	wprintf_s(L"</%ws>\n", szObjType.c_str());
 }
 
 void PrintStoreProperty(_In_ LPMAPISESSION lpMAPISession, ULONG ulIndex, ULONG ulPropTag)
@@ -245,8 +245,8 @@ void PrintStoreTable(_In_ LPMAPISESSION lpMAPISession, ULONG ulPropTag)
 	LPMAPITABLE lpStoreTable = nullptr;
 	if (!lpMAPISession) return;
 
-	wprintf(output::g_szXMLHeader.c_str());
-	wprintf(L"<storetable>\n");
+	wprintf_s(output::g_szXMLHeader.c_str());
+	wprintf_s(L"<storetable>\n");
 	WC_MAPI_S(lpMAPISession->GetMsgStoresTable(0, &lpStoreTable));
 
 	if (lpStoreTable)
@@ -275,7 +275,7 @@ void PrintStoreTable(_In_ LPMAPISESSION lpMAPISession, ULONG ulPropTag)
 
 					for (ULONG i = 0; i < lpRows->cRows; i++)
 					{
-						wprintf(L"<properties index=\"%u\">\n", iCurStore);
+						wprintf_s(L"<properties index=\"%u\">\n", iCurStore);
 						if (ulPropTag && lpRows->aRow[0].lpProps &&
 							PT_ERROR == PROP_TYPE(lpRows->aRow[0].lpProps->ulPropTag) &&
 							MAPI_E_NOT_FOUND == lpRows->aRow[0].lpProps->Value.err)
@@ -293,7 +293,7 @@ void PrintStoreTable(_In_ LPMAPISESSION lpMAPISession, ULONG ulPropTag)
 								false);
 						}
 
-						wprintf(L"</properties>\n");
+						wprintf_s(L"</properties>\n");
 						iCurStore++;
 					}
 				}
@@ -302,7 +302,7 @@ void PrintStoreTable(_In_ LPMAPISESSION lpMAPISession, ULONG ulPropTag)
 		}
 	}
 
-	wprintf(L"</storetable>\n");
+	wprintf_s(L"</storetable>\n");
 	if (lpStoreTable) lpStoreTable->Release();
 }
 

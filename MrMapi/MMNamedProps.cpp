@@ -24,7 +24,7 @@ void WriteOutput(_In_opt_ FILE* fOut, _Printf_format_string_ LPCWSTR szMsg, Argu
 	}
 	else
 	{
-		wprintf(L"%ws", szString.c_str());
+		wprintf_s(L"%ws", szString.c_str());
 	}
 }
 
@@ -175,12 +175,12 @@ void DoNamedProps(_In_opt_ LPMAPISESSION lpSession, _In_opt_ LPMDB lpMDB)
 		fOut = output::MyOpenFileMode(output, L"wb");
 		if (!fOut)
 		{
-			wprintf(L"Cannot open output file %ws\n", output.c_str());
+			wprintf_s(L"Cannot open output file %ws\n", output.c_str());
 			return exit(-1);
 		}
 	}
 
-	wprintf(L"Dumping named properties...\n\n");
+	wprintf_s(L"Dumping named properties...\n\n");
 
 	// Print the name of the profile and the parsed store entry-id so we can tell which mailbox this is
 	const auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
@@ -245,6 +245,6 @@ void DoNamedProps(_In_opt_ LPMAPISESSION lpSession, _In_opt_ LPMDB lpMDB)
 			cache::NamedPropertyToString(*name->getMapiNameId()).c_str());
 	}
 
-	wprintf(L"Completed.\n");
+	wprintf_s(L"Completed.\n");
 	if (fOut) fclose(fOut);
 }

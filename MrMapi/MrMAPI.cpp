@@ -42,7 +42,7 @@ bool PromptForAddInApproval(
 
 	for (const auto& candidate : candidates)
 	{
-		wprintf(L"Load add-in \"%ws\" (SHA-256: %ws)? [y/N] ", candidate.fileName.c_str(), candidate.sha256.c_str());
+		wprintf_s(L"Load add-in \"%ws\" (SHA-256: %ws)? [y/N] ", candidate.fileName.c_str(), candidate.sha256.c_str());
 		fflush(stdout);
 
 		WCHAR response[16] = {};
@@ -62,7 +62,7 @@ _Check_return_ LPMAPISESSION MrMAPILogonEx(const std::wstring& lpszProfile)
 	LPMAPISESSION lpSession = nullptr;
 	const auto hRes = WC_MAPI(
 		MAPILogonEx(NULL, LPTSTR((lpszProfile.empty() ? nullptr : lpszProfile.c_str())), nullptr, ulFlags, &lpSession));
-	if (FAILED(hRes)) wprintf(L"MAPILogonEx returned an error: 0x%08lx\n", hRes);
+	if (FAILED(hRes)) wprintf_s(L"MAPILogonEx returned an error: 0x%08lx\n", hRes);
 	return lpSession;
 }
 
@@ -95,7 +95,7 @@ bool LoadMAPIVersion(const std::wstring& lpszVersion)
 		for (const auto& path : paths)
 		{
 
-			wprintf(L"MAPI path: %ws\n", strings::wstringToLower(path).c_str());
+			wprintf_s(L"MAPI path: %ws\n", strings::wstringToLower(path).c_str());
 		}
 		return true;
 	}
@@ -193,7 +193,7 @@ int wmain(_In_ int argc, _In_count_(argc) wchar_t* argv[])
 	cli::ParseArgs(ProgOpts, cl, cli::g_options);
 	if (mailboxRequested && !cli::switchMailbox.isSet())
 	{
-		wprintf(L"-Mailbox requires an SMTP address.\n");
+		wprintf_s(L"-Mailbox requires an SMTP address.\n");
 		return 2;
 	}
 
@@ -201,13 +201,13 @@ int wmain(_In_ int argc, _In_count_(argc) wchar_t* argv[])
 	const auto mailboxError = cli::ValidateMailboxOptions(ProgOpts);
 	if (!mailboxError.empty())
 	{
-		wprintf(L"%ws\n", mailboxError.c_str());
+		wprintf_s(L"%ws\n", mailboxError.c_str());
 		return 2;
 	}
 
 	if (entryIDRequested && ProgOpts.mode == cli::cmdmodeHelp)
 	{
-		wprintf(L"Invalid -EntryID command. Use -Help for syntax.\n");
+		wprintf_s(L"Invalid -EntryID command. Use -Help for syntax.\n");
 		return 2;
 	}
 
@@ -262,7 +262,7 @@ int wmain(_In_ int argc, _In_count_(argc) wchar_t* argv[])
 			hRes = WC_MAPI(MAPIInitialize(nullptr));
 			if (FAILED(hRes))
 			{
-				wprintf(L"Error initializing MAPI: 0x%08lx\n", hRes);
+				wprintf_s(L"Error initializing MAPI: 0x%08lx\n", hRes);
 			}
 			else
 			{
@@ -295,14 +295,14 @@ int wmain(_In_ int argc, _In_count_(argc) wchar_t* argv[])
 			}
 
 			if (FAILED(hRes))
-				wprintf(L"Cannot open requested mailbox/folder: 0x%08lX. No fallback mailbox was used.\n", hRes);
+				wprintf_s(L"Cannot open requested mailbox/folder: 0x%08lX. No fallback mailbox was used.\n", hRes);
 		}
 
 		// If they need a folder get it and store at the same time from the folder id
 		if (!cli::switchMailbox.isSet() && lpMAPISession && ProgOpts.flags & cli::OPT_NEEDFOLDER)
 		{
 			hRes = WC_H(HrMAPIOpenStoreAndFolder(lpMAPISession, cli::switchFolder[0], &lpMDB, &lpFolder));
-			if (FAILED(hRes)) wprintf(L"HrMAPIOpenStoreAndFolder returned an error: 0x%08lx\n", hRes);
+			if (FAILED(hRes)) wprintf_s(L"HrMAPIOpenStoreAndFolder returned an error: 0x%08lx\n", hRes);
 		}
 
 		// If they passed a store index then open it
@@ -313,14 +313,14 @@ int wmain(_In_ int argc, _In_count_(argc) wchar_t* argv[])
 		if (!cli::switchMailbox.isSet() && lpMAPISession && gotStoreIndex && !lpMDB)
 		{
 			lpMDB = OpenStore(lpMAPISession, ulStoreIndex, ProgOpts.mode == cli::cmdmodeEntryID);
-			if (!lpMDB) wprintf(L"OpenStore failed\n");
+			if (!lpMDB) wprintf_s(L"OpenStore failed\n");
 		}
 
 		if (!cli::switchMailbox.isSet() && lpMAPISession && ProgOpts.flags & cli::OPT_NEEDSTORE && !lpMDB)
 		{
 			// If they needed a store but didn't specify, get the default one
 			lpMDB = OpenExchangeOrDefaultMessageStore(lpMAPISession);
-			if (!lpMDB) wprintf(L"OpenExchangeOrDefaultMessageStore failed.\n");
+			if (!lpMDB) wprintf_s(L"OpenExchangeOrDefaultMessageStore failed.\n");
 		}
 
 		if (!cli::switchMailbox.isSet() || SUCCEEDED(hRes))
@@ -329,7 +329,7 @@ int wmain(_In_ int argc, _In_count_(argc) wchar_t* argv[])
 			{
 			case cli::cmdmodeEntryID:
 				hRes = DoEntryID(lpMDB);
-				if (FAILED(hRes)) wprintf(L"EntryID property lookup failed: 0x%08lx\n", hRes);
+				if (FAILED(hRes)) wprintf_s(L"EntryID property lookup failed: 0x%08lx\n", hRes);
 				break;
 			case cli::cmdmodePropTag:
 				DoPropTags();

@@ -29,9 +29,9 @@ HRESULT DoEntryID(_In_opt_ LPMDB lpMDB)
 		hRes = WC_H_GETPROPS(message->GetProps(&tags, fMapiUnicode, &count, &props));
 		if (SUCCEEDED(hRes) && props && count == 1)
 		{
-			wprintf(L"%ws<messageprops>\n", output::g_szXMLHeader.c_str());
+			wprintf_s(L"%ws<messageprops>\n", output::g_szXMLHeader.c_str());
 			output::outputProperties(output::dbgLevel::NoDebug, stdout, count, props, message, true);
-			wprintf(L"</messageprops>\n");
+			wprintf_s(L"</messageprops>\n");
 			if (PROP_TYPE(props[0].ulPropTag) == PT_ERROR) hRes = props[0].Value.err;
 		}
 		else if (SUCCEEDED(hRes))

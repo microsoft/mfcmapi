@@ -100,7 +100,7 @@ namespace smartview
 		}
 
 		// Now we parse for real
-		parser->rewind();
+		parser->rewindToStart();
 
 		if (ulNumFlags && ulNumFlags < _MaxEntriesSmall)
 		{

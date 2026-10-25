@@ -13,8 +13,8 @@ namespace strings
 	std::wstring format(LPCWSTR szMsg, ...);
 #ifdef CHECKFORMATPARAMS
 #undef format
-// Yes, this is awkward, but it allows wprintf to be evaluated for format paramater checking without breaking namespaces.
-#define format(fmt, ...) format((wprintf(fmt, __VA_ARGS__), fmt), __VA_ARGS__)
+// Allows format parameter checking without breaking namespaces.
+#define format(fmt, ...) format((wprintf_s(fmt, __VA_ARGS__), fmt), __VA_ARGS__)
 #endif
 
 	std::wstring formatmessagesys(DWORD dwID);

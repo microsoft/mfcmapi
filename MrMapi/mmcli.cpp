@@ -150,74 +150,74 @@ namespace cli
 
 	void DisplayUsage(BOOL bFull) noexcept
 	{
-		wprintf(L"MAPI data collection and parsing tool. Supports property tag lookup, error translation,\n");
-		wprintf(L"   smart view processing, rule tables, ACL tables, contents tables, and MAPI<->MIME conversion.\n");
+		wprintf_s(L"MAPI data collection and parsing tool. Supports property tag lookup, error translation,\n");
+		wprintf_s(L"   smart view processing, rule tables, ACL tables, contents tables, and MAPI<->MIME conversion.\n");
 		if (bFull)
 		{
 			if (!g_lpMyAddins.empty())
 			{
-				wprintf(L"Addins Loaded:\n");
+				wprintf_s(L"Addins Loaded:\n");
 				for (const auto& addIn : g_lpMyAddins)
 				{
-					wprintf(L"   %ws\n", addIn.szName);
+					wprintf_s(L"   %ws\n", addIn.szName);
 				}
 			}
 
-			wprintf(L"MrMAPI currently knows:\n");
-			wprintf(L"%6u property tags\n", static_cast<UINT>(PropTagArray.size()));
-			wprintf(L"%6u dispids\n", static_cast<UINT>(NameIDArray.size()));
-			wprintf(L"%6u types\n", static_cast<UINT>(PropTypeArray.size()));
-			wprintf(L"%6u guids\n", static_cast<UINT>(PropGuidArray.size()));
-			wprintf(L"%6lu errors\n", error::g_ulErrorArray);
-			wprintf(L"%6u smart view parsers\n", static_cast<UINT>(SmartViewParserTypeArray.size()) - 1);
-			wprintf(L"\n");
+			wprintf_s(L"MrMAPI currently knows:\n");
+			wprintf_s(L"%6u property tags\n", static_cast<UINT>(PropTagArray.size()));
+			wprintf_s(L"%6u dispids\n", static_cast<UINT>(NameIDArray.size()));
+			wprintf_s(L"%6u types\n", static_cast<UINT>(PropTypeArray.size()));
+			wprintf_s(L"%6u guids\n", static_cast<UINT>(PropGuidArray.size()));
+			wprintf_s(L"%6lu errors\n", error::g_ulErrorArray);
+			wprintf_s(L"%6u smart view parsers\n", static_cast<UINT>(SmartViewParserTypeArray.size()) - 1);
+			wprintf_s(L"\n");
 		}
 
-		wprintf(L"Usage:\n");
-		wprintf(L"   Add -Mailbox <SMTP address> -Profile <profile> to a store/folder command.\n");
-		wprintf(L"   Primary addresses and verified SMTP aliases are supported.\n");
-		wprintf(L"   Uses that profile's Exchange session and existing permissions; never falls back to its own "
-				L"mailbox.\n");
-		wprintf(L"   MrMAPI -EntryID <hex> -Profile <name> -Store <index> <property name|8-digit hex tag>\n");
-		wprintf(L"   MrMAPI -%ws\n", switchHelp.name());
-		wprintf(
+		wprintf_s(L"Usage:\n");
+		wprintf_s(L"   Add -Mailbox <SMTP address> -Profile <profile> to a store/folder command.\n");
+		wprintf_s(L"   Primary addresses and verified SMTP aliases are supported.\n");
+		wprintf_s(L"   Uses that profile's Exchange session and existing permissions; never falls back to its own "
+				  L"mailbox.\n");
+		wprintf_s(L"   MrMAPI -EntryID <hex> -Profile <name> -Store <index> <property name|8-digit hex tag>\n");
+		wprintf_s(L"   MrMAPI -%ws\n", switchHelp.name());
+		wprintf_s(
 			L"   MrMAPI [-%ws] [-%ws] [-%ws] [-%ws <type>] <property number>|<property name>\n",
 			switchSearch.name(),
 			switchDispid.name(),
 			switchDecimal.name(),
 			switchType.name());
-		wprintf(L"   MrMAPI -%ws\n", switchGuid.name());
-		wprintf(L"   MrMAPI -%ws <error>\n", switchError.name());
-		wprintf(
+		wprintf_s(L"   MrMAPI -%ws\n", switchGuid.name());
+		wprintf_s(L"   MrMAPI -%ws <error>\n", switchError.name());
+		wprintf_s(
 			L"   MrMAPI -%ws <type> -%ws <input file> [-%ws] [-%ws <output file>]\n",
 			switchParser.name(),
 			switchInput.name(),
 			switchBinary.name(),
 			switchOutput.name());
-		wprintf(
+		wprintf_s(
 			L"   MrMAPI -%ws <flag value> [-%ws] [-%ws] <property number>|<property name>\n",
 			switchFlag.name(),
 			switchDispid.name(),
 			switchDecimal.name());
-		wprintf(L"   MrMAPI -%ws <flag name>\n", switchFlag.name());
-		wprintf(
+		wprintf_s(L"   MrMAPI -%ws <flag name>\n", switchFlag.name());
+		wprintf_s(
 			L"   MrMAPI -%ws [-%ws <profile>] [-%ws <folder>]\n",
 			switchRule.name(),
 			switchProfile.name(),
 			switchFolder.name());
-		wprintf(
+		wprintf_s(
 			L"   MrMAPI -%ws [-%ws <profile>] [-%ws <folder>]\n",
 			switchAcl.name(),
 			switchProfile.name(),
 			switchFolder.name());
-		wprintf(
+		wprintf_s(
 			L"   MrMAPI -%ws | -%ws [-%ws <profile>] [-%ws <folder>] [-%ws <output directory>]\n",
 			switchContents.name(),
 			switchAssociatedContents.name(),
 			switchProfile.name(),
 			switchFolder.name(),
 			switchOutput.name());
-		wprintf(
+		wprintf_s(
 			L"          [-%ws <subject>] [-%ws <message class>] [-%ws] [-%ws] [-%ws <count>] [-%ws]\n",
 			switchSubject.name(),
 			switchMessageClass.name(),
@@ -225,81 +225,81 @@ namespace cli
 			switchList.name(),
 			switchRecent.name(),
 			switchSkip.name());
-		wprintf(
+		wprintf_s(
 			L"          [-%ws <property names>] [-%ws <dispid names>] [-%ws]\n",
 			switchFindProperty.name(),
 			switchFindNamedProperty.name(),
 			switchRecurse.name());
-		wprintf(
+		wprintf_s(
 			L"   MrMAPI -%ws [-%ws <profile>] [-%ws <folder>]\n",
 			switchChildFolders.name(),
 			switchProfile.name(),
 			switchFolder.name());
-		wprintf(
+		wprintf_s(
 			L"   MrMAPI -%ws -%ws <path to input file> -%ws <path to output file> [-%ws]\n",
 			switchXML.name(),
 			switchInput.name(),
 			switchOutput.name(),
 			switchSkip.name());
-		wprintf(
+		wprintf_s(
 			L"   MrMAPI -%ws [fid] [-%ws [mid]] [-%ws <profile>]\n",
 			switchFid.name(),
 			switchMid.name(),
 			switchProfile.name());
-		wprintf(
+		wprintf_s(
 			L"   MrMAPI [<property number>|<property name>] -%ws [<store num>] [-%ws <profile>]\n",
 			switchStore.name(),
 			switchProfile.name());
-		wprintf(
+		wprintf_s(
 			L"   MrMAPI [<property number>|<property name>] -%ws <folder> [-%ws <profile>]\n",
 			switchFolder.name(),
 			switchProfile.name());
-		wprintf(
+		wprintf_s(
 			L"   MrMAPI -%ws -%ws <folder> [-%ws <profile>]\n",
 			switchSize.name(),
 			switchFolder.name(),
 			switchProfile.name());
-		wprintf(
+		wprintf_s(
 			L"   MrMAPI -%ws | -%ws -%ws <path to input file> -%ws <path to output file> [-%ws <conversion flags>]\n",
 			switchMAPI.name(),
 			switchMIME.name(),
 			switchInput.name(),
 			switchOutput.name(),
 			switchCCSFFlags.name());
-		wprintf(
+		wprintf_s(
 			L"          [-%ws] [-%ws <Decimal number of characters>] [-%ws <Decimal number indicating encoding>]\n",
 			switchRFC822.name(),
 			switchWrap.name(),
 			switchEncoding.name());
-		wprintf(
+		wprintf_s(
 			L"          [-%ws] [-%ws] [-%ws CodePage CharSetType CharSetApplyType]\n",
 			switchAddressBook.name(),
 			switchUnicode.name(),
 			switchCharset.name());
-		wprintf(L"   MrMAPI -%ws -%ws <path to input file>\n", switchPST.name(), switchInput.name());
-		wprintf(
+		wprintf_s(L"   MrMAPI -%ws -%ws <path to input file>\n", switchPST.name(), switchInput.name());
+		wprintf_s(
 			L"   MrMAPI -%ws [<profile> [-%ws <profilesection> [-%ws]] -%ws <output file>]\n",
 			switchProfile.name(),
 			switchProfileSection.name(),
 			switchByteSwapped.name(),
 			switchOutput.name());
-		wprintf(L"   MrMAPI -%ws [<store num>] [-%ws <profile>]\n", switchReceiveFolder.name(), switchProfile.name());
-		wprintf(
+		wprintf_s(L"   MrMAPI -%ws [<store num>] [-%ws <profile>]\n", switchReceiveFolder.name(), switchProfile.name());
+		wprintf_s(
 			L"   MrMAPI -%ws -%ws <folder> [-%ws <profile>]\n",
 			switchSearchState.name(),
 			switchFolder.name(),
 			switchProfile.name());
-		wprintf(
+		wprintf_s(
 			L"   MrMAPI -%ws [-%ws <profile>] [-%ws <path to output file>]\n",
 			switchNamedProps.name(),
 			switchProfile.name(),
 			switchOutput.name());
-		wprintf(
+		wprintf_s(
 			L"   MrMAPI -%ws [-%ws] [-%ws <profile>]\n",
 			switchAccounts.name(),
 			switchIterate.name(),
 			switchProfile.name());
-		wprintf(
+		wprintf_s(
 			L"   MrMAPI -%ws -%ws [-%ws <flags>] [-%ws <profile>]\n",
 			switchAccounts.name(),
 			switchWizard.name(),
@@ -308,275 +308,279 @@ namespace cli
 
 		if (bFull)
 		{
-			wprintf(L"\n   Message by EntryID:\n");
-			wprintf(L"   -EntryID opens one message read-only in the explicitly selected profile and store.\n");
-			wprintf(L"           Hex must be contiguous pairs (1-8192 bytes), without 0x, spaces or separators.\n");
-			wprintf(L"           -Profile <name> and -Store <zero-based decimal index> are required; no defaults.\n");
-			wprintf(L"           Specify one known property name or full typed hex tag (optional 0x prefix).\n");
-			wprintf(L"           Output is MrMAPI property XML on stdout, not a bare value. No file is written.\n");
-			wprintf(L"           Only -NoAddins, -Verbose, -Online and -Version are also accepted.\n");
-			wprintf(L"           Exit codes: 0 success/help, 2 invalid input, 1 MAPI/property failure.\n");
-			wprintf(L"           Example: MrMAPI -EntryID 00000000... -Profile \"Test\" -Store 0 PR_SUBJECT_W\n");
-			wprintf(L"\n");
-			wprintf(L"All switches may be shortened if the intended switch is unambiguous.\n");
-			wprintf(L"For example, -T may be used instead of -%ws.\n", switchType.name());
+			wprintf_s(L"\n   Message by EntryID:\n");
+			wprintf_s(L"   -EntryID opens one message read-only in the explicitly selected profile and store.\n");
+			wprintf_s(L"           Hex must be contiguous pairs (1-8192 bytes), without 0x, spaces or separators.\n");
+			wprintf_s(L"           -Profile <name> and -Store <zero-based decimal index> are required; no defaults.\n");
+			wprintf_s(L"           Specify one known property name or full typed hex tag (optional 0x prefix).\n");
+			wprintf_s(L"           Output is MrMAPI property XML on stdout, not a bare value. No file is written.\n");
+			wprintf_s(L"           Only -NoAddins, -Verbose, -Online and -Version are also accepted.\n");
+			wprintf_s(L"           Exit codes: 0 success/help, 2 invalid input, 1 MAPI/property failure.\n");
+			wprintf_s(L"           Example: MrMAPI -EntryID 00000000... -Profile \"Test\" -Store 0 PR_SUBJECT_W\n");
+			wprintf_s(L"\n");
+			wprintf_s(L"All switches may be shortened if the intended switch is unambiguous.\n");
+			wprintf_s(L"For example, -T may be used instead of -%ws.\n", switchType.name());
 		}
-		wprintf(L"\n");
-		wprintf(L"   Help:\n");
-		wprintf(L"   -%ws   Display expanded help.\n", switchHelp.name());
+		wprintf_s(L"\n");
+		wprintf_s(L"   Help:\n");
+		wprintf_s(L"   -%ws   Display expanded help.\n", switchHelp.name());
 		if (bFull)
 		{
-			wprintf(L"\n");
-			wprintf(L"   Property Tag Lookup:\n");
-			wprintf(L"   -S   (or -%ws) Perform substring search.\n", switchSearch.name());
-			wprintf(L"           With no parameters prints all known properties.\n");
-			wprintf(L"   -D   (or -%ws) Search dispids.\n", switchDispid.name());
-			wprintf(L"   -N   (or -%ws) Number is in decimal. Ignored for non-numbers.\n", switchDecimal.name());
-			wprintf(L"   -T   (or -%ws) Print information on specified type.\n", switchType.name());
-			wprintf(L"           With no parameters prints list of known types.\n");
-			wprintf(L"           When combined with -S, restrict output to given type.\n");
-			wprintf(L"   -G   (or -%ws) Display list of known guids.\n", switchGuid.name());
-			wprintf(L"\n");
-			wprintf(L"   Flag Lookup:\n");
-			wprintf(L"   -Fl  (or -%ws) Look up flags for specified property.\n", switchFlag.name());
-			wprintf(L"           May be combined with -D and -N switches, but all flag values must be in hex.\n");
-			wprintf(L"   -Fl  (or -%ws) Look up flag name and output its value.\n", switchFlag.name());
-			wprintf(L"\n");
-			wprintf(L"   Error Parsing:\n");
-			wprintf(L"   -E   (or -%ws) Map an error code to its name and vice versa.\n", switchError.name());
-			wprintf(L"           May be combined with -S and -N switches.\n");
-			wprintf(L"\n");
-			wprintf(L"   Smart View Parsing:\n");
-			wprintf(
+			wprintf_s(L"\n");
+			wprintf_s(L"   Property Tag Lookup:\n");
+			wprintf_s(L"   -S   (or -%ws) Perform substring search.\n", switchSearch.name());
+			wprintf_s(L"           With no parameters prints all known properties.\n");
+			wprintf_s(L"   -D   (or -%ws) Search dispids.\n", switchDispid.name());
+			wprintf_s(L"   -N   (or -%ws) Number is in decimal. Ignored for non-numbers.\n", switchDecimal.name());
+			wprintf_s(L"   -T   (or -%ws) Print information on specified type.\n", switchType.name());
+			wprintf_s(L"           With no parameters prints list of known types.\n");
+			wprintf_s(L"           When combined with -S, restrict output to given type.\n");
+			wprintf_s(L"   -G   (or -%ws) Display list of known guids.\n", switchGuid.name());
+			wprintf_s(L"\n");
+			wprintf_s(L"   Flag Lookup:\n");
+			wprintf_s(L"   -Fl  (or -%ws) Look up flags for specified property.\n", switchFlag.name());
+			wprintf_s(L"           May be combined with -D and -N switches, but all flag values must be in hex.\n");
+			wprintf_s(L"   -Fl  (or -%ws) Look up flag name and output its value.\n", switchFlag.name());
+			wprintf_s(L"\n");
+			wprintf_s(L"   Error Parsing:\n");
+			wprintf_s(L"   -E   (or -%ws) Map an error code to its name and vice versa.\n", switchError.name());
+			wprintf_s(L"           May be combined with -S and -N switches.\n");
+			wprintf_s(L"\n");
+			wprintf_s(L"   Smart View Parsing:\n");
+			wprintf_s(
 				L"   -P   (or -%ws) Parser type (number). See list below for supported parsers.\n",
 				switchParser.name());
-			wprintf(L"   -B   (or -%ws) Input file is binary. Default is hex encoded text.\n", switchBinary.name());
-			wprintf(L"           Empty input is parsed as an empty blob.\n");
-			wprintf(L"           Input failures return a nonzero exit code without replacing output.\n");
-			wprintf(L"           Input and output must identify different files.\n");
-			wprintf(L"\n");
-			wprintf(L"   Rules Table:\n");
-			wprintf(L"   -R   (or -%ws) Output rules table. Profile optional.\n", switchRule.name());
-			wprintf(L"\n");
-			wprintf(L"   ACL Table:\n");
-			wprintf(L"   -A   (or -%ws) Output ACL table. Profile optional.\n", switchAcl.name());
-			wprintf(L"\n");
-			wprintf(L"   Contents Table:\n");
-			wprintf(
+			wprintf_s(L"   -B   (or -%ws) Input file is binary. Default is hex encoded text.\n", switchBinary.name());
+			wprintf_s(L"           Empty input is parsed as an empty blob.\n");
+			wprintf_s(L"           Input failures return a nonzero exit code without replacing output.\n");
+			wprintf_s(L"           Input and output must identify different files.\n");
+			wprintf_s(L"\n");
+			wprintf_s(L"   Rules Table:\n");
+			wprintf_s(L"   -R   (or -%ws) Output rules table. Profile optional.\n", switchRule.name());
+			wprintf_s(L"\n");
+			wprintf_s(L"   ACL Table:\n");
+			wprintf_s(L"   -A   (or -%ws) Output ACL table. Profile optional.\n", switchAcl.name());
+			wprintf_s(L"\n");
+			wprintf_s(L"   Contents Table:\n");
+			wprintf_s(
 				L"   -C   (or -%ws) Output contents table. May be combined with -H. Profile optional.\n",
 				switchContents.name());
-			wprintf(
+			wprintf_s(
 				L"   -H   (or -%ws) Output associated contents table. May be combined with -C. Profile optional\n",
 				switchAssociatedContents.name());
-			wprintf(L"   -Chi (or -%ws) Recurse into child folders of selected folder.\n", switchChildFolders.name());
-			wprintf(L"   -Su  (or -%ws) Subject of messages to output.\n", switchSubject.name());
-			wprintf(L"   -Me  (or -%ws) Message class of messages to output.\n", switchMessageClass.name());
-			wprintf(L"   -Ms  (or -%ws) Output as .MSG instead of XML.\n", switchMSG.name());
-			wprintf(L"   -L   (or -%ws) List details to screen and do not output files.\n", switchList.name());
-			wprintf(L"   -Res (or -%ws) Restrict output to the 'count' most recent messages.\n", switchRecent.name());
-			wprintf(
+			wprintf_s(L"   -Chi (or -%ws) Recurse into child folders of selected folder.\n", switchChildFolders.name());
+			wprintf_s(L"   -Su  (or -%ws) Subject of messages to output.\n", switchSubject.name());
+			wprintf_s(L"   -Me  (or -%ws) Message class of messages to output.\n", switchMessageClass.name());
+			wprintf_s(L"   -Ms  (or -%ws) Output as .MSG instead of XML.\n", switchMSG.name());
+			wprintf_s(L"   -L   (or -%ws) List details to screen and do not output files.\n", switchList.name());
+			wprintf_s(L"   -Res (or -%ws) Restrict output to the 'count' most recent messages.\n", switchRecent.name());
+			wprintf_s(
 				L"   -FindP  (or -%ws) Restrict output to messages which contain given properties.\n",
 				switchFindProperty.name());
-			wprintf(
+			wprintf_s(
 				L"   -FindN  (or -%ws) Restrict output to messages which contain given named properties.\n",
 				switchFindNamedProperty.name());
-			wprintf(L"   -Recur  (or -%ws) Recurse into subfolders.\n", switchRecurse.name());
-			wprintf(L"\n");
-			wprintf(L"   Child Folders:\n");
-			wprintf(L"   -Chi (or -%ws) List child folders of selected folder.\n", switchChildFolders.name());
-			wprintf(L"\n");
-			wprintf(L"   MSG File Properties\n");
-			wprintf(L"   -X   (or -%ws) Output properties of an MSG file as XML.\n", switchXML.name());
-			wprintf(L"\n");
-			wprintf(L"   MID/FID Lookup\n");
-			wprintf(L"   -Fi  (or -%ws) Folder ID (FID) to search for.\n", switchFid.name());
-			wprintf(L"           If -%ws is specified without a FID, search/display all folders\n", switchFid.name());
-			wprintf(L"   -Mid (or -%ws) Message ID (MID) to search for.\n", switchMid.name());
-			wprintf(
+			wprintf_s(L"   -Recur  (or -%ws) Recurse into subfolders.\n", switchRecurse.name());
+			wprintf_s(L"\n");
+			wprintf_s(L"   Child Folders:\n");
+			wprintf_s(L"   -Chi (or -%ws) List child folders of selected folder.\n", switchChildFolders.name());
+			wprintf_s(L"\n");
+			wprintf_s(L"   MSG File Properties\n");
+			wprintf_s(L"   -X   (or -%ws) Output properties of an MSG file as XML.\n", switchXML.name());
+			wprintf_s(L"\n");
+			wprintf_s(L"   MID/FID Lookup\n");
+			wprintf_s(L"   -Fi  (or -%ws) Folder ID (FID) to search for.\n", switchFid.name());
+			wprintf_s(L"           If -%ws is specified without a FID, search/display all folders\n", switchFid.name());
+			wprintf_s(L"   -Mid (or -%ws) Message ID (MID) to search for.\n", switchMid.name());
+			wprintf_s(
 				L"           If -%ws is specified without a MID, display all messages in folders specified by the FID "
 				"parameter.\n",
 				switchMid.name());
-			wprintf(L"\n");
-			wprintf(L"   Store Properties\n");
-			wprintf(L"   -St  (or -%ws) Output properties of stores as XML.\n", switchStore.name());
-			wprintf(L"           If store number is specified, outputs properties of a single store.\n");
-			wprintf(L"           If a property is specified, outputs only that property.\n");
-			wprintf(L"\n");
-			wprintf(L"   Folder Properties\n");
-			wprintf(L"   -F   (or -%ws) Output properties of a folder as XML.\n", switchFolder.name());
-			wprintf(L"           If a property is specified, outputs only that property.\n");
-			wprintf(L"   -Size         Output size of a folder and all subfolders.\n");
-			wprintf(L"           Use -%ws to specify which folder to scan.\n", switchFolder.name());
-			wprintf(L"   -SearchState  Output search folder state.\n");
-			wprintf(L"           Use -%ws to specify which folder to scan.\n", switchFolder.name());
-			wprintf(L"\n");
-			wprintf(L"   MAPI <-> MIME Conversion:\n");
-			wprintf(L"   -Ma  (or -%ws) Convert an EML file to MAPI format (MSG file).\n", switchMAPI.name());
-			wprintf(L"   -Mi  (or -%ws) Convert an MSG file to MIME format (EML file).\n", switchMIME.name());
-			wprintf(
+			wprintf_s(L"\n");
+			wprintf_s(L"   Store Properties\n");
+			wprintf_s(L"   -St  (or -%ws) Output properties of stores as XML.\n", switchStore.name());
+			wprintf_s(L"           If store number is specified, outputs properties of a single store.\n");
+			wprintf_s(L"           If a property is specified, outputs only that property.\n");
+			wprintf_s(L"\n");
+			wprintf_s(L"   Folder Properties\n");
+			wprintf_s(L"   -F   (or -%ws) Output properties of a folder as XML.\n", switchFolder.name());
+			wprintf_s(L"           If a property is specified, outputs only that property.\n");
+			wprintf_s(L"   -Size         Output size of a folder and all subfolders.\n");
+			wprintf_s(L"           Use -%ws to specify which folder to scan.\n", switchFolder.name());
+			wprintf_s(L"   -SearchState  Output search folder state.\n");
+			wprintf_s(L"           Use -%ws to specify which folder to scan.\n", switchFolder.name());
+			wprintf_s(L"\n");
+			wprintf_s(L"   MAPI <-> MIME Conversion:\n");
+			wprintf_s(L"   -Ma  (or -%ws) Convert an EML file to MAPI format (MSG file).\n", switchMAPI.name());
+			wprintf_s(L"   -Mi  (or -%ws) Convert an MSG file to MIME format (EML file).\n", switchMIME.name());
+			wprintf_s(
 				L"   -I   (or -%ws) Indicates the input file for conversion, either a MIME-formatted EML file or an "
 				L"MSG "
 				"file.\n",
 				switchInput.name());
-			wprintf(L"   -O   (or -%ws) Indicates the output file for the conversion.\n", switchOutput.name());
-			wprintf(L"   -Cc  (or -%ws) Indicates specific flags to pass to the converter.\n", switchCCSFFlags.name());
-			wprintf(L"           Available values (these may be OR'ed together):\n");
-			wprintf(L"              MIME -> MAPI:\n");
-			wprintf(L"                CCSF_SMTP:        0x02\n");
-			wprintf(L"                CCSF_INCLUDE_BCC: 0x20\n");
-			wprintf(L"                CCSF_USE_RTF:     0x80\n");
-			wprintf(L"              MAPI -> MIME:\n");
-			wprintf(L"                CCSF_NOHEADERS:        0x000004\n");
-			wprintf(L"                CCSF_USE_TNEF:         0x000010\n");
-			wprintf(L"                CCSF_8BITHEADERS:      0x000040\n");
-			wprintf(L"                CCSF_PLAIN_TEXT_ONLY:  0x001000\n");
-			wprintf(L"                CCSF_NO_MSGID:         0x004000\n");
-			wprintf(L"                CCSF_EMBEDDED_MESSAGE: 0x008000\n");
-			wprintf(L"                CCSF_PRESERVE_SOURCE:  0x040000\n");
-			wprintf(L"                CCSF_GLOBAL_MESSAGE:   0x200000\n");
-			wprintf(
+			wprintf_s(L"   -O   (or -%ws) Indicates the output file for the conversion.\n", switchOutput.name());
+			wprintf_s(
+				L"   -Cc  (or -%ws) Indicates specific flags to pass to the converter.\n", switchCCSFFlags.name());
+			wprintf_s(L"           Available values (these may be OR'ed together):\n");
+			wprintf_s(L"              MIME -> MAPI:\n");
+			wprintf_s(L"                CCSF_SMTP:        0x02\n");
+			wprintf_s(L"                CCSF_INCLUDE_BCC: 0x20\n");
+			wprintf_s(L"                CCSF_USE_RTF:     0x80\n");
+			wprintf_s(L"              MAPI -> MIME:\n");
+			wprintf_s(L"                CCSF_NOHEADERS:        0x000004\n");
+			wprintf_s(L"                CCSF_USE_TNEF:         0x000010\n");
+			wprintf_s(L"                CCSF_8BITHEADERS:      0x000040\n");
+			wprintf_s(L"                CCSF_PLAIN_TEXT_ONLY:  0x001000\n");
+			wprintf_s(L"                CCSF_NO_MSGID:         0x004000\n");
+			wprintf_s(L"                CCSF_EMBEDDED_MESSAGE: 0x008000\n");
+			wprintf_s(L"                CCSF_PRESERVE_SOURCE:  0x040000\n");
+			wprintf_s(L"                CCSF_GLOBAL_MESSAGE:   0x200000\n");
+			wprintf_s(
 				L"   -Rf  (or -%ws) (MAPI->MIME only) Indicates the EML should be generated in RFC822 format.\n",
 				switchRFC822.name());
-			wprintf(L"           If not present, RFC1521 is used instead.\n");
-			wprintf(
+			wprintf_s(L"           If not present, RFC1521 is used instead.\n");
+			wprintf_s(
 				L"   -W   (or -%ws) (MAPI->MIME only) Indicates the maximum number of characters in each line in the\n",
 				switchWrap.name());
-			wprintf(L"           generated EML. Default value is 74. A value of 0 indicates no wrapping.\n");
-			wprintf(
+			wprintf_s(L"           generated EML. Default value is 74. A value of 0 indicates no wrapping.\n");
+			wprintf_s(
 				L"   -En  (or -%ws) (MAPI->MIME only) Indicates the encoding type to use. Supported values are:\n",
 				switchEncoding.name());
-			wprintf(L"              1 - Base64\n");
-			wprintf(L"              2 - UUENCODE\n");
-			wprintf(L"              3 - Quoted-Printable\n");
-			wprintf(L"              4 - 7bit (DEFAULT)\n");
-			wprintf(L"              5 - 8bit\n");
-			wprintf(
+			wprintf_s(L"              1 - Base64\n");
+			wprintf_s(L"              2 - UUENCODE\n");
+			wprintf_s(L"              3 - Quoted-Printable\n");
+			wprintf_s(L"              4 - 7bit (DEFAULT)\n");
+			wprintf_s(L"              5 - 8bit\n");
+			wprintf_s(
 				L"   -Ad  (or -%ws) Pass MAPI Address Book into converter. Profile optional.\n",
 				switchAddressBook.name());
-			wprintf(
+			wprintf_s(
 				L"   -U   (or -%ws) (MIME->MAPI only) The resulting MSG file should be unicode.\n",
 				switchUnicode.name());
-			wprintf(
+			wprintf_s(
 				L"   -Ch  (or -%ws) (MIME->MAPI only) Character set - three required parameters:\n",
 				switchCharset.name());
-			wprintf(L"           CodePage - common values (others supported)\n");
-			wprintf(L"              1252  - CP_USASCII      - Indicates the USASCII character set, Windows code page "
-					"1252\n");
-			wprintf(L"              1200  - CP_UNICODE      - Indicates the Unicode character set, Windows code page "
-					"1200\n");
-			wprintf(L"              50932 - CP_JAUTODETECT  - Indicates Japanese auto-detect (50932)\n");
-			wprintf(L"              50949 - CP_KAUTODETECT  - Indicates Korean auto-detect (50949)\n");
-			wprintf(L"              50221 - CP_ISO2022JPESC - Indicates the Internet character set ISO-2022-JP-ESC\n");
-			wprintf(L"              50222 - CP_ISO2022JPSIO - Indicates the Internet character set ISO-2022-JP-SIO\n");
-			wprintf(L"           CharSetType - supported values (see CHARSETTYPE)\n");
-			wprintf(L"              0 - CHARSET_BODY\n");
-			wprintf(L"              1 - CHARSET_HEADER\n");
-			wprintf(L"              2 - CHARSET_WEB\n");
-			wprintf(L"           CharSetApplyType - supported values (see CSETAPPLYTYPE)\n");
-			wprintf(L"              0 - CSET_APPLY_UNTAGGED\n");
-			wprintf(L"              1 - CSET_APPLY_ALL\n");
-			wprintf(L"              2 - CSET_APPLY_TAG_ALL\n");
-			wprintf(L"\n");
-			wprintf(L"   PST Analysis\n");
-			wprintf(L"   -PST Output statistics of a PST file.\n");
-			wprintf(L"           If a property is specified, outputs only that property.\n");
-			wprintf(L"   -I   (or -%ws) PST file to be analyzed.\n", switchInput.name());
-			wprintf(L"\n");
-			wprintf(L"   Profiles\n");
-			wprintf(L"   -Pr  (or -%ws) Output list of profiles\n", switchProfile.name());
-			wprintf(L"           If a profile is specified, exports that profile.\n");
-			wprintf(L"   -ProfileSection If specified, output specific profile section.\n");
-			wprintf(
+			wprintf_s(L"           CodePage - common values (others supported)\n");
+			wprintf_s(L"              1252  - CP_USASCII      - Indicates the USASCII character set, Windows code page "
+					  "1252\n");
+			wprintf_s(L"              1200  - CP_UNICODE      - Indicates the Unicode character set, Windows code page "
+					  "1200\n");
+			wprintf_s(L"              50932 - CP_JAUTODETECT  - Indicates Japanese auto-detect (50932)\n");
+			wprintf_s(L"              50949 - CP_KAUTODETECT  - Indicates Korean auto-detect (50949)\n");
+			wprintf_s(
+				L"              50221 - CP_ISO2022JPESC - Indicates the Internet character set ISO-2022-JP-ESC\n");
+			wprintf_s(
+				L"              50222 - CP_ISO2022JPSIO - Indicates the Internet character set ISO-2022-JP-SIO\n");
+			wprintf_s(L"           CharSetType - supported values (see CHARSETTYPE)\n");
+			wprintf_s(L"              0 - CHARSET_BODY\n");
+			wprintf_s(L"              1 - CHARSET_HEADER\n");
+			wprintf_s(L"              2 - CHARSET_WEB\n");
+			wprintf_s(L"           CharSetApplyType - supported values (see CSETAPPLYTYPE)\n");
+			wprintf_s(L"              0 - CSET_APPLY_UNTAGGED\n");
+			wprintf_s(L"              1 - CSET_APPLY_ALL\n");
+			wprintf_s(L"              2 - CSET_APPLY_TAG_ALL\n");
+			wprintf_s(L"\n");
+			wprintf_s(L"   PST Analysis\n");
+			wprintf_s(L"   -PST Output statistics of a PST file.\n");
+			wprintf_s(L"           If a property is specified, outputs only that property.\n");
+			wprintf_s(L"   -I   (or -%ws) PST file to be analyzed.\n", switchInput.name());
+			wprintf_s(L"\n");
+			wprintf_s(L"   Profiles\n");
+			wprintf_s(L"   -Pr  (or -%ws) Output list of profiles\n", switchProfile.name());
+			wprintf_s(L"           If a profile is specified, exports that profile.\n");
+			wprintf_s(L"   -ProfileSection If specified, output specific profile section.\n");
+			wprintf_s(
 				L"   -B   (or -%ws) If specified, profile section guid is byte swapped.\n", switchByteSwapped.name());
-			wprintf(L"   -O   (or -%ws) Indicates the output file for profile export.\n", switchOutput.name());
-			wprintf(L"           Required if a profile is specified.\n");
-			wprintf(L"\n");
-			wprintf(L"   Receive Folder Table\n");
-			wprintf(L"   -%ws Displays Receive Folder Table for the specified store\n", switchReceiveFolder.name());
-			wprintf(L"\n");
-			wprintf(L"   Universal Options:\n");
-			wprintf(L"   -I   (or -%ws) Input file.\n", switchInput.name());
-			wprintf(L"   -O   (or -%ws) Output file or directory.\n", switchOutput.name());
-			wprintf(
+			wprintf_s(L"   -O   (or -%ws) Indicates the output file for profile export.\n", switchOutput.name());
+			wprintf_s(L"           Required if a profile is specified.\n");
+			wprintf_s(L"\n");
+			wprintf_s(L"   Receive Folder Table\n");
+			wprintf_s(L"   -%ws Displays Receive Folder Table for the specified store\n", switchReceiveFolder.name());
+			wprintf_s(L"\n");
+			wprintf_s(L"   Universal Options:\n");
+			wprintf_s(L"   -I   (or -%ws) Input file.\n", switchInput.name());
+			wprintf_s(L"   -O   (or -%ws) Output file or directory.\n", switchOutput.name());
+			wprintf_s(
 				L"   -F   (or -%ws) Folder to scan. Default is Inbox. See list below for supported folders.\n",
 				switchFolder.name());
-			wprintf(L"           Folders may also be specified by path:\n");
-			wprintf(L"              \"Top of Information Store\\Calendar\"\n");
-			wprintf(L"           Path may be preceeded by entry IDs for special folders using @ notation:\n");
-			wprintf(L"              \"@PR_IPM_SUBTREE_ENTRYID\\Calendar\"\n");
-			wprintf(
+			wprintf_s(L"           Folders may also be specified by path:\n");
+			wprintf_s(L"              \"Top of Information Store\\Calendar\"\n");
+			wprintf_s(L"           Path may be preceeded by entry IDs for special folders using @ notation:\n");
+			wprintf_s(L"              \"@PR_IPM_SUBTREE_ENTRYID\\Calendar\"\n");
+			wprintf_s(
 				L"           Path may further be preceeded by store number using # notation, which may either use a "
 				"store number:\n");
-			wprintf(L"              \"#0\\@PR_IPM_SUBTREE_ENTRYID\\Calendar\"\n");
-			wprintf(L"           Or an entry ID:\n");
-			wprintf(L"              \"#00112233445566...778899AABBCC\\@PR_IPM_SUBTREE_ENTRYID\\Calendar\"\n");
-			wprintf(L"           MrMAPI's special folder constants may also be used:\n");
-			wprintf(L"              \"@12\\Calendar\"\n");
-			wprintf(L"              \"@1\"\n");
-			wprintf(L"   -Pr  (or -%ws) Profile for MAPILogonEx.\n", switchProfile.name());
-			wprintf(
+			wprintf_s(L"              \"#0\\@PR_IPM_SUBTREE_ENTRYID\\Calendar\"\n");
+			wprintf_s(L"           Or an entry ID:\n");
+			wprintf_s(L"              \"#00112233445566...778899AABBCC\\@PR_IPM_SUBTREE_ENTRYID\\Calendar\"\n");
+			wprintf_s(L"           MrMAPI's special folder constants may also be used:\n");
+			wprintf_s(L"              \"@12\\Calendar\"\n");
+			wprintf_s(L"              \"@1\"\n");
+			wprintf_s(L"   -Pr  (or -%ws) Profile for MAPILogonEx.\n", switchProfile.name());
+			wprintf_s(
 				L"   -M   (or -%ws) More properties. Tries harder to get stream properties. May take longer.\n",
 				switchMoreProperties.name());
-			wprintf(L"   -Sk  (or -%ws) Skip embedded message attachments on export.\n", switchSkip.name());
-			wprintf(L"   -No  (or -%ws) No Addins. Don't load any add-ins.\n", switchNoAddins.name());
-			wprintf(
+			wprintf_s(L"   -Sk  (or -%ws) Skip embedded message attachments on export.\n", switchSkip.name());
+			wprintf_s(L"   -No  (or -%ws) No Addins. Don't load any add-ins.\n", switchNoAddins.name());
+			wprintf_s(
 				L"   -%ws Prompt to approve add-ins not previously approved or denied.\n", switchApproveAddins.name());
-			wprintf(L"           Add-ins are disabled unless an add-in directory is configured in MFCMAPI Options.\n");
-			wprintf(L"   -On  (or -%ws) Online mode. Bypass cached mode.\n", switchOnline.name());
-			wprintf(L"   -V   (or -%ws) Verbose. Turn on all debug output.\n", switchVerbose.name());
-			wprintf(L"\n");
-			wprintf(L"   MAPI Implementation Options:\n");
-			wprintf(L"   -%ws MAPI Version to load - supported values\n", switchVersion.name());
-			wprintf(L"           Supported values\n");
-			wprintf(L"              0  - List all available MAPI binaries\n");
-			wprintf(L"              1  - System MAPI\n");
-			wprintf(L"              11 - Outlook 2003 (11)\n");
-			wprintf(L"              12 - Outlook 2007 (12)\n");
-			wprintf(L"              14 - Outlook 2010 (14)\n");
-			wprintf(L"              15 - Outlook 2013 (15)\n");
-			wprintf(L"              16 - Outlook 2016 (16)\n");
-			wprintf(L"           You can also pass a string, which will load the first MAPI whose path contains the "
-					"string.\n");
-			wprintf(L"\n");
-			wprintf(L"Smart View Parsers:\n");
+			wprintf_s(
+				L"           Add-ins are disabled unless an add-in directory is configured in MFCMAPI Options.\n");
+			wprintf_s(L"   -On  (or -%ws) Online mode. Bypass cached mode.\n", switchOnline.name());
+			wprintf_s(L"   -V   (or -%ws) Verbose. Turn on all debug output.\n", switchVerbose.name());
+			wprintf_s(L"\n");
+			wprintf_s(L"   MAPI Implementation Options:\n");
+			wprintf_s(L"   -%ws MAPI Version to load - supported values\n", switchVersion.name());
+			wprintf_s(L"           Supported values\n");
+			wprintf_s(L"              0  - List all available MAPI binaries\n");
+			wprintf_s(L"              1  - System MAPI\n");
+			wprintf_s(L"              11 - Outlook 2003 (11)\n");
+			wprintf_s(L"              12 - Outlook 2007 (12)\n");
+			wprintf_s(L"              14 - Outlook 2010 (14)\n");
+			wprintf_s(L"              15 - Outlook 2013 (15)\n");
+			wprintf_s(L"              16 - Outlook 2016 (16)\n");
+			wprintf_s(L"           You can also pass a string, which will load the first MAPI whose path contains the "
+					  "string.\n");
+			wprintf_s(L"\n");
+			wprintf_s(L"Smart View Parsers:\n");
 			// Print smart view options
 			for (ULONG i = 1; i < SmartViewParserTypeArray.size(); i++)
 			{
-				wprintf(L"   %2lu %ws\n", i, SmartViewParserTypeArray[i].lpszName);
+				wprintf_s(L"   %2lu %ws\n", i, SmartViewParserTypeArray[i].lpszName);
 			}
 
-			wprintf(L"\n");
-			wprintf(L"Folders:\n");
+			wprintf_s(L"\n");
+			wprintf_s(L"Folders:\n");
 			// Print Folders
 			for (ULONG i = 1; i < mapi::NUM_DEFAULT_PROPS; i++)
 			{
-				wprintf(L"   %2lu %ws\n", i, mapi::FolderNames[i]);
+				wprintf_s(L"   %2lu %ws\n", i, mapi::FolderNames[i]);
 			}
 
-			wprintf(L"\n");
-			wprintf(L"Examples:\n");
-			wprintf(L"   MrMAPI PR_DISPLAY_NAME\n");
-			wprintf(L"\n");
-			wprintf(L"   MrMAPI 0x3001001e\n");
-			wprintf(L"   MrMAPI 3001001e\n");
-			wprintf(L"   MrMAPI 3001\n");
-			wprintf(L"\n");
-			wprintf(L"   MrMAPI -n 12289\n");
-			wprintf(L"\n");
-			wprintf(L"   MrMAPI -t PT_LONG\n");
-			wprintf(L"   MrMAPI -t 3102\n");
-			wprintf(L"   MrMAPI -t\n");
-			wprintf(L"\n");
-			wprintf(L"   MrMAPI -s display\n");
-			wprintf(L"   MrMAPI -s display -t PT_LONG\n");
-			wprintf(L"   MrMAPI -t 102 -s display\n");
-			wprintf(L"\n");
-			wprintf(L"   MrMAPI -d dispidReminderTime\n");
-			wprintf(L"   MrMAPI -d 0x8502\n");
-			wprintf(L"   MrMAPI -d -s reminder\n");
-			wprintf(L"   MrMAPI -d -n 34050\n");
-			wprintf(L"\n");
-			wprintf(L"   MrMAPI -p 17 -i webview.txt -o parsed.txt");
+			wprintf_s(L"\n");
+			wprintf_s(L"Examples:\n");
+			wprintf_s(L"   MrMAPI PR_DISPLAY_NAME\n");
+			wprintf_s(L"\n");
+			wprintf_s(L"   MrMAPI 0x3001001e\n");
+			wprintf_s(L"   MrMAPI 3001001e\n");
+			wprintf_s(L"   MrMAPI 3001\n");
+			wprintf_s(L"\n");
+			wprintf_s(L"   MrMAPI -n 12289\n");
+			wprintf_s(L"\n");
+			wprintf_s(L"   MrMAPI -t PT_LONG\n");
+			wprintf_s(L"   MrMAPI -t 3102\n");
+			wprintf_s(L"   MrMAPI -t\n");
+			wprintf_s(L"\n");
+			wprintf_s(L"   MrMAPI -s display\n");
+			wprintf_s(L"   MrMAPI -s display -t PT_LONG\n");
+			wprintf_s(L"   MrMAPI -t 102 -s display\n");
+			wprintf_s(L"\n");
+			wprintf_s(L"   MrMAPI -d dispidReminderTime\n");
+			wprintf_s(L"   MrMAPI -d 0x8502\n");
+			wprintf_s(L"   MrMAPI -d -s reminder\n");
+			wprintf_s(L"   MrMAPI -d -n 34050\n");
+			wprintf_s(L"\n");
+			wprintf_s(L"   MrMAPI -p 17 -i webview.txt -o parsed.txt");
 		}
 	}
 
@@ -638,7 +642,8 @@ namespace cli
 
 			options.mode = valid ? cmdmodeEntryID : cmdmodeHelp;
 			if (!valid)
-				wprintf(L"Invalid -EntryID request: supply hex, an explicit profile/store, and one typed property.\n");
+				wprintf_s(
+					L"Invalid -EntryID request: supply hex, an explicit profile/store, and one typed property.\n");
 			return;
 		}
 
