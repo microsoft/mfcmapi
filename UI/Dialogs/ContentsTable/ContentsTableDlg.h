@@ -65,6 +65,7 @@ namespace dialog
 		void OnNotificationOff();
 		void OnNotificationOn();
 		void OnOutputTable();
+		void OnOutputDisplayedCsv();
 		void OnSetColumns();
 		void OnSortTable();
 
