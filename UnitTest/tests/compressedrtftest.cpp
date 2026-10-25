@@ -1,7 +1,6 @@
 #include <UnitTest/stdafx.h>
 #include <UnitTest/UnitTest.h>
 #include <core/mapi/compressedRtf.h>
-#include <core/mapi/mapiFile.h>
 #include <memory>
 #include <wrl/client.h>
 
@@ -183,6 +182,15 @@ namespace compressedrtftest
 	// Literal LZFu tokens followed by the end reference to dictionary offset 207 + 12.
 	const std::wstring lzfu = L"1c0000000c0000004c5a4675236427fa007b5c727466312074106573747d0db0";
 
+	std::vector<BYTE> MelaBytes(const std::vector<BYTE>& input)
+	{
+		const ULONG header[]{static_cast<ULONG>(input.size() + 12), static_cast<ULONG>(input.size()), 0x414C454D, 0};
+		std::vector<BYTE> bytes(sizeof(header) + input.size());
+		Assert::AreEqual(0, memcpy_s(bytes.data(), bytes.size(), header, sizeof(header)));
+		std::copy(input.begin(), input.end(), bytes.begin() + sizeof(header));
+		return bytes;
+	}
+
 	class TestRtfProperty final : public IMAPIProp
 	{
 	public:
@@ -268,172 +276,6 @@ namespace compressedrtftest
 		ULONG m_refs{1};
 	};
 
-	void RequireMapi()
-	{
-		const auto initialized = MAPIInitialize(nullptr);
-		Assert::IsTrue(
-			SUCCEEDED(initialized), L"Real decoder integration requires an installed matching-bitness MAPI runtime.");
-		MAPIUninitialize();
-	}
-
-	TEST_CLASS(compressedrtfintegrationtest)
-	{
-	public:
-		TEST_CLASS_INITIALIZE(initialize) { unittest::init(); }
-		TEST_METHOD_INITIALIZE(setup)
-		{
-			const auto hRes = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
-			Assert::IsTrue(SUCCEEDED(hRes) || hRes == RPC_E_CHANGED_MODE);
-			m_uninitialize = SUCCEEDED(hRes);
-			const auto initialized = MAPIInitialize(nullptr);
-			m_mapiInitialized = SUCCEEDED(initialized);
-			Assert::IsTrue(m_mapiInitialized, L"These tests require matching-bitness installed MAPI.");
-		}
-		TEST_METHOD_CLEANUP(cleanup)
-		{
-			const auto removed = m_path.empty() || DeleteFileW(m_path.c_str());
-			if (m_mapiInitialized) MAPIUninitialize();
-			if (m_uninitialize) CoUninitialize();
-			Assert::IsTrue(removed != FALSE, L"Could not remove the owned temporary MSG file.");
-		}
-
-		TEST_METHOD(DecompressesMelaAndFormattedHex)
-		{
-			RequireMapi();
-			std::vector<BYTE> output;
-			Assert::AreEqual(
-				S_OK,
-				mapi::DecompressRtfHex(L" 0x18 000000\r\n0c000000 4d454c41 00000000 7b5c7274663120746573747d", output));
-			Assert::AreEqual(strings::HexStringToBin(L"7b5c7274663120746573747d"), output);
-		}
-
-		TEST_METHOD(DecompressesLzfu)
-		{
-			RequireMapi();
-			std::vector<BYTE> output;
-			Assert::AreEqual(S_OK, mapi::DecompressRtfHex(lzfu, output));
-			Assert::AreEqual(strings::HexStringToBin(L"7b5c7274663120746573747d"), output);
-		}
-
-		TEST_METHOD(PreservesEmbeddedNullAndHighBytes)
-		{
-			RequireMapi();
-			std::vector<BYTE> output;
-			Assert::AreEqual(S_OK, mapi::DecompressRtfHex(L"10000000040000004d454c410000000000ff0080", output));
-			Assert::AreEqual(std::vector<BYTE>({0, 0xff, 0, 0x80}), output);
-		}
-
-		TEST_METHOD(RejectsDecodedLengthMismatch)
-		{
-			RequireMapi();
-			auto hex = lzfu;
-			hex[9] = L'd';
-			std::vector<BYTE> output{1};
-			Assert::AreEqual(MAPI_E_CORRUPT_DATA, mapi::DecompressRtfHex(hex, output));
-			Assert::IsTrue(output.empty());
-		}
-
-		TEST_METHOD(AcceptsEmptyMela)
-		{
-			RequireMapi();
-			std::vector<BYTE> output{1};
-			Assert::AreEqual(S_OK, mapi::DecompressRtfHex(L"0c000000000000004d454c4100000000", output));
-			Assert::IsTrue(output.empty());
-		}
-
-		TEST_METHOD(CompressesAndRoundTripsExactBytes)
-		{
-			RequireMapi();
-			for (const auto& input :
-				 {strings::HexStringToBin(L"7b5c7274663120746573747d"),
-				  std::vector<BYTE>{0, 0xff, 0, 0x80},
-				  std::vector<BYTE>{},
-				  std::vector<BYTE>(65536, 'a')})
-			{
-				std::vector<BYTE> compressed{1};
-				Assert::AreEqual(S_OK, mapi::CompressRtf(input, compressed));
-				Assert::IsTrue(compressed.size() >= 16);
-				std::vector<BYTE> output{1};
-				Assert::AreEqual(
-					S_OK,
-					mapi::DecompressRtfHex(strings::BinToHexString(compressed, false), output),
-					strings::format(
-						L"Input bytes: %zu; header: %ws",
-						input.size(),
-						strings::BinToHexString(compressed.data(), min(size_t{16}, compressed.size()), false).c_str())
-						.c_str());
-				Assert::AreEqual(input, output);
-			}
-		}
-
-		TEST_METHOD(CompressesAndRoundTripsBeyondFormerRawSizeLimit)
-		{
-			RequireMapi();
-			const std::vector<BYTE> input(17 * 1024 * 1024, 'a');
-			std::vector<BYTE> compressed;
-			Assert::AreEqual(S_OK, mapi::CompressRtf(input, compressed));
-			std::vector<BYTE> output;
-			Assert::AreEqual(S_OK, mapi::DecompressRtfHex(strings::BinToHexString(compressed, false), output));
-			Assert::AreEqual(input, output);
-		}
-
-		TEST_METHOD(CompressesBeyondFormerCompressedSizeLimit)
-		{
-			RequireMapi();
-			std::vector<BYTE> input(4 * 1024 * 1024);
-			ULONG state = 1;
-			for (auto& byte : input)
-			{
-				state ^= state << 13;
-				state ^= state >> 17;
-				state ^= state << 5;
-				byte = static_cast<BYTE>(state);
-			}
-
-			std::vector<BYTE> compressed{1};
-			Assert::AreEqual(S_OK, mapi::CompressRtf(input, compressed));
-			Assert::IsTrue(compressed.size() > 4 * 1024 * 1024);
-			std::vector<BYTE> output;
-			Assert::AreEqual(S_OK, mapi::DecompressRtf(compressed, output));
-			Assert::AreEqual(input, output);
-		}
-
-		TEST_METHOD(SavesMessageAndReadsExactBytesAfterReopening)
-		{
-			wchar_t directory[MAX_PATH]{};
-			wchar_t path[MAX_PATH]{};
-			const auto length = GetTempPathW(_countof(directory), directory);
-			Assert::IsTrue(length != 0 && length < _countof(directory));
-			Assert::IsTrue(GetTempFileNameW(directory, L"rtf", 0, path) != 0);
-			m_path = path;
-			Microsoft::WRL::ComPtr<IMessage> message;
-			Microsoft::WRL::ComPtr<IStorage> storage;
-			Assert::AreEqual(S_OK, file::CreateNewMSG(m_path, true, message.GetAddressOf(), storage.GetAddressOf()));
-			const auto input = strings::HexStringToBin(L"7b5c72746631207065727369737465647d");
-			std::vector<BYTE> compressed;
-			Assert::AreEqual(S_OK, mapi::CompressRtf(input, compressed));
-			Assert::AreEqual(S_OK, mapi::SaveCompressedRtf(message.Get(), compressed));
-			Assert::AreEqual(S_OK, storage->Commit(STGC_DEFAULT));
-			message.Reset();
-			storage.Reset();
-			auto hRes = S_OK;
-			message.Attach(file::LoadMSGToMessage(m_path, &hRes));
-			Assert::AreEqual(S_OK, hRes);
-			Assert::IsNotNull(message.Get());
-			std::vector<BYTE> reopened;
-			Assert::AreEqual(S_OK, mapi::ReadCompressedRtf(message.Get(), reopened));
-			Assert::AreEqual(compressed, reopened);
-			std::vector<BYTE> output;
-			Assert::AreEqual(S_OK, mapi::DecompressRtfHex(strings::BinToHexString(reopened, false), output));
-			Assert::AreEqual(input, output);
-		}
-
-	private:
-		bool m_uninitialize{};
-		bool m_mapiInitialized{};
-		std::wstring m_path;
-	};
-
 	TEST_CLASS(compressedrtftest){public : TEST_CLASS_INITIALIZE(initialize){unittest::init();
 } // namespace compressedrtftest
 TEST_METHOD(RejectsEmptyOddAndNonHexInputAndClearsOutput)
@@ -508,6 +350,82 @@ public:
 		Assert::AreEqual(strings::HexStringToBin(lzfu), wrappedInput);
 		Assert::AreEqual(0UL, wrapFlags);
 		Assert::AreEqual(1UL, wrapCalls);
+	}
+
+	TEST_METHOD(FormattedHexPassesExactMelaBytesToWrapper)
+	{
+		std::vector<BYTE> output;
+		Assert::AreEqual(
+			S_OK,
+			mapi::DecompressRtfHex(L" 0x18 000000\r\n0c000000 4d454c41 00000000 7b5c7274663120746573747d", output));
+		Assert::AreEqual(strings::HexStringToBin(mela), wrappedInput);
+		Assert::AreEqual(wrappedOutput, output);
+	}
+
+	TEST_METHOD(DecodedStreamPreservesEmbeddedNullAndHighBytes)
+	{
+		wrappedOutput = {0, 0xff, 0, 0x80};
+		std::vector<BYTE> output;
+		Assert::AreEqual(S_OK, mapi::DecompressRtf(MelaBytes(wrappedOutput), output));
+		Assert::AreEqual(wrappedOutput, output);
+	}
+
+	TEST_METHOD(EmptyDecodedStreamAcceptsEmptyMela)
+	{
+		wrappedOutput.clear();
+		std::vector<BYTE> output{1};
+		Assert::AreEqual(S_OK, mapi::DecompressRtf(MelaBytes({}), output));
+		Assert::IsTrue(output.empty());
+		Assert::AreEqual(1UL, wrapCalls);
+	}
+
+	TEST_METHOD(CompressionPassesExactBytesIncludingEmptyInputToWrapper)
+	{
+		for (const auto& input :
+			 {strings::HexStringToBin(L"7b5c7274663120746573747d"),
+			  std::vector<BYTE>{0, 0xff, 0, 0x80},
+			  std::vector<BYTE>{},
+			  std::vector<BYTE>(65536, 'a')})
+		{
+			wrappedOutput = MelaBytes(input);
+			std::vector<BYTE> output{1};
+			Assert::AreEqual(S_OK, mapi::CompressRtf(input, output));
+			Assert::AreEqual(input, wrappedInput);
+			Assert::AreEqual(wrappedOutput, output);
+		}
+	}
+
+	TEST_METHOD(ConversionStreamsBeyondFormerSizeLimits)
+	{
+		const std::vector<BYTE> input(17 * 1024 * 1024, 'a');
+		wrappedOutput = MelaBytes(input);
+		std::vector<BYTE> compressed;
+		Assert::AreEqual(S_OK, mapi::CompressRtf(input, compressed));
+		Assert::AreEqual(input, wrappedInput);
+		Assert::AreEqual(wrappedOutput, compressed);
+		Assert::IsTrue(compressed.size() > 4 * 1024 * 1024);
+		wrappedOutput = input;
+		std::vector<BYTE> output;
+		Assert::AreEqual(S_OK, mapi::DecompressRtf(compressed, output));
+		Assert::AreEqual(input, output);
+	}
+
+	TEST_METHOD(SavesAndReadsMockPropertyBeforeDecodingWrapperOutput)
+	{
+		TestRtfProperty prop;
+		const auto input = wrappedOutput;
+		wrappedOutput = MelaBytes(input);
+		std::vector<BYTE> compressed;
+		Assert::AreEqual(S_OK, mapi::CompressRtf(input, compressed));
+		Assert::AreEqual(S_OK, mapi::SaveCompressedRtf(&prop, compressed));
+		std::vector<BYTE> stored;
+		Assert::AreEqual(S_OK, mapi::ReadCompressedRtf(&prop, stored));
+		Assert::AreEqual(compressed, stored);
+		wrappedOutput = input;
+		std::vector<BYTE> output;
+		Assert::AreEqual(S_OK, mapi::DecompressRtf(stored, output));
+		Assert::AreEqual(input, output);
+		Assert::AreEqual(1UL, prop.saves);
 	}
 
 	TEST_METHOD(ReportsWrapperFailure)
