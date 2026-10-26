@@ -12,34 +12,6 @@
 
 namespace ui::profile
 {
-	std::wstring LaunchProfileWizard(_In_ HWND hParentWnd, ULONG ulFlags, _In_ const std::wstring& szServiceNameToAdd)
-	{
-		CHAR szProfName[80] = {0};
-		constexpr ULONG cchProfName = _countof(szProfName);
-		const auto szServiceNameToAddA = strings::wstringTostring(szServiceNameToAdd);
-		LPCSTR szServices[] = {szServiceNameToAddA.c_str(), nullptr};
-
-		output::DebugPrint(
-			output::dbgLevel::Generic, L"LaunchProfileWizard: Using LAUNCHWIZARDENTRY to launch wizard API.\n");
-
-		// Call LaunchWizard to add the service.
-		const auto hRes = WC_MAPI(LaunchWizard(hParentWnd, ulFlags, szServices, cchProfName, szProfName));
-		if (hRes == MAPI_E_CALL_FAILED)
-		{
-			CHECKHRESMSG(hRes, IDS_LAUNCHWIZARDFAILED);
-		}
-		else
-			CHECKHRES(hRes);
-
-		if (SUCCEEDED(hRes))
-		{
-			output::DebugPrint(
-				output::dbgLevel::Generic, L"LaunchProfileWizard: Profile \"%hs\" configured.\n", szProfName);
-		}
-
-		return strings::LPCSTRToWstring(szProfName);
-	}
-
 	void DisplayMAPISVCPath(_In_ CWnd* pParentWnd)
 	{
 		output::DebugPrint(output::dbgLevel::Generic, L"DisplayMAPISVCPath()\n");

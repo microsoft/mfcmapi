@@ -31,7 +31,7 @@ void test(const SBinary hex)
 	for (const auto parser : SmartViewParserTypeArray)
 	{
 		if (parser.type == parserType::NOPARSING) continue;
-		//wprintf(L"Testing %ws\r\n", addin::AddInStructTypeToString(parser.type).c_str());
+		//wprintf_s(L"Testing %ws\r\n", addin::AddInStructTypeToString(parser.type).c_str());
 		const auto start = std::chrono::high_resolution_clock::now();
 		(void) smartview::InterpretBinary(hex, parser.type, nullptr);
 		const auto end = std::chrono::high_resolution_clock::now();
@@ -40,12 +40,12 @@ void test(const SBinary hex)
 
 	if (doLog)
 	{
-		wprintf(L"Test %lld\r\n", testnum);
-		wprintf(L"%-40s %-15s %-15s\n", L"Parser Type", L"Total Time (ms)", L"Time per Test (ms)");
+		wprintf_s(L"Test %lld\r\n", testnum);
+		wprintf_s(L"%-40s %-15s %-15s\n", L"Parser Type", L"Total Time (ms)", L"Time per Test (ms)");
 		for (const auto parser : SmartViewParserTypeArray)
 		{
 			if (parser.type == parserType::NOPARSING) continue;
-			wprintf(
+			wprintf_s(
 				L"%-40ws %-15f %-15f\n",
 				addin::AddInStructTypeToString(parser.type).c_str(),
 				runtimes[static_cast<size_t>(parser.type)].count(),
@@ -63,7 +63,7 @@ FUZZ_EXPORT int __cdecl LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
 {
 	std::call_once(_initFlag, EnsureInit);
 	const SBinary input = {static_cast<ULONG>(size), (LPBYTE) (data)};
-	//wprintf(L"Fuzzing: %ws\r\n", strings::BinToHexString(&input, true).c_str());
+	//wprintf_s(L"Fuzzing: %ws\r\n", strings::BinToHexString(&input, true).c_str());
 	test(input);
 	return 0;
 }

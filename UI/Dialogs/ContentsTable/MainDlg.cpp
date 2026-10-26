@@ -116,7 +116,6 @@ namespace dialog
 	ON_COMMAND(ID_GETMAPISVCINF, OnGetMAPISVC)
 	ON_COMMAND(ID_ADDSERVICESTOMAPISVCINF, OnAddServicesToMAPISVC)
 	ON_COMMAND(ID_REMOVESERVICESFROMMAPISVCINF, OnRemoveServicesFromMAPISVC)
-	ON_COMMAND(ID_LAUNCHPROFILEWIZARD, OnLaunchProfileWizard)
 	ON_COMMAND(ID_VIEWMSGPROPERTIES, OnViewMSGProperties)
 	ON_COMMAND(ID_CONVERTMSGTOEML, OnConvertMSGToEML)
 	ON_COMMAND(ID_CONVERTEMLTOMSG, OnConvertEMLToMSG)
@@ -1290,24 +1289,6 @@ namespace dialog
 		}
 
 		lpProfAdmin->Release();
-	}
-
-	void CMainDlg::OnLaunchProfileWizard()
-	{
-		cache::CGlobalCache::getInstance().MAPIInitialize(NULL);
-		if (!cache::CGlobalCache::getInstance().bMAPIInitialized()) return;
-
-		editor::CEditor MyData(
-			this, IDS_LAUNCHPROFWIZ, IDS_LAUNCHPROFWIZPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_FLAGS, false));
-		MyData.SetHex(0, MAPI_PW_LAUNCHED_BY_CONFIG);
-		MyData.AddPane(
-			viewpane::TextPane::CreateSingleLinePane(1, IDS_SERVICE, std::wstring(L"MSEMS"), false)); // STRING_OK
-
-		if (MyData.DisplayDialog())
-		{
-			auto szProfName = ui::profile::LaunchProfileWizard(m_hWnd, MyData.GetHex(0), MyData.GetStringW(1));
-		}
 	}
 
 	void CMainDlg::OnGetMAPISVC() { ui::profile::DisplayMAPISVCPath(this); }

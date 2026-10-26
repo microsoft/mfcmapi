@@ -50,7 +50,6 @@ namespace dialog
 	ON_COMMAND(ID_ADDSERVICESTOMAPISVCINF, OnAddServicesToMAPISVC)
 	ON_COMMAND(ID_REMOVESERVICESFROMMAPISVCINF, OnRemoveServicesFromMAPISVC)
 	ON_COMMAND(ID_DELETESELECTEDITEM, OnDeleteSelectedItem)
-	ON_COMMAND(ID_LAUNCHPROFILEWIZARD, OnLaunchProfileWizard)
 	ON_COMMAND(ID_ADDEXCHANGETOPROFILE, OnAddExchangeToProfile)
 	ON_COMMAND(ID_ADDPSTTOPROFILE, OnAddPSTToProfile)
 	ON_COMMAND(ID_ADDUNICODEPSTTOPROFILE, OnAddUnicodePSTToProfile)
@@ -135,21 +134,6 @@ namespace dialog
 				new CMsgServiceTableDlg(m_lpMapiObjects, contents->getProfileDisplayName());
 			}
 		}
-	}
-
-	void CProfileListDlg::OnLaunchProfileWizard()
-	{
-		editor::CEditor MyData(
-			this, IDS_LAUNCHPROFWIZ, IDS_LAUNCHPROFWIZPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_FLAGS, false));
-		MyData.SetHex(0, MAPI_PW_LAUNCHED_BY_CONFIG);
-		MyData.AddPane(
-			viewpane::TextPane::CreateSingleLinePane(1, IDS_SERVICE, std::wstring(L"MSEMS"), false)); // STRING_OK
-
-		if (!MyData.DisplayDialog()) return;
-
-		auto szProfName = ui::profile::LaunchProfileWizard(m_hWnd, MyData.GetHex(0), MyData.GetStringW(1));
-		OnRefreshView(); // Update the view since we don't have notifications here.
 	}
 
 	void CProfileListDlg::OnGetMAPISVC() { ui::profile::DisplayMAPISVCPath(this); }

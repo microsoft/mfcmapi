@@ -48,6 +48,9 @@
     <ClInclude Include="mapi\interfaces.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="utility\csv.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="utility\file.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -372,6 +375,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="interpret\guid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="utility\csv.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="utility\file.cpp">

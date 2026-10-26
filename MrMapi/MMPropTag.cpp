@@ -30,35 +30,35 @@ void PrintType(_In_ ULONG ulPropTag) noexcept
 		if (PROP_TYPE(ulPropTag) == propType.ulValue)
 		{
 			bFound = true;
-			wprintf(L"%ws", propType.lpszName);
+			wprintf_s(L"%ws", propType.lpszName);
 			break;
 		}
 	}
 
-	if (!bFound) wprintf(L"0x%04lX = Unknown type", PROP_TYPE(ulPropTag));
+	if (!bFound) wprintf_s(L"0x%04lX = Unknown type", PROP_TYPE(ulPropTag));
 
-	if (bNeedInstance) wprintf(L" | MV_INSTANCE");
+	if (bNeedInstance) wprintf_s(L" | MV_INSTANCE");
 }
 
 void PrintKnownTypes() noexcept
 {
 	// Do a linear search through PropTypeArray - ulPropTypeArray will be small
-	wprintf(L"%-18s%-9s%ws\n", L"Type", L"Hex", L"Decimal");
+	wprintf_s(L"%-18s%-9s%ws\n", L"Type", L"Hex", L"Decimal");
 	for (const auto& propType : PropTypeArray)
 	{
-		wprintf(L"%-15ws = 0x%04lX = %lu\n", propType.lpszName, propType.ulValue, propType.ulValue);
+		wprintf_s(L"%-15ws = 0x%04lX = %lu\n", propType.lpszName, propType.ulValue, propType.ulValue);
 	}
 
-	wprintf(L"\n");
-	wprintf(L"Types may also have the flag 0x%04X = %ws\n", MV_INSTANCE, L"MV_INSTANCE");
+	wprintf_s(L"\n");
+	wprintf_s(L"Types may also have the flag 0x%04X = %ws\n", MV_INSTANCE, L"MV_INSTANCE");
 }
 
 // Print the tag found in the array at ulRow
 void PrintTag(_In_ ULONG ulRow) noexcept
 {
-	wprintf(L"0x%08lX,%ws,", PropTagArray[ulRow].ulValue, PropTagArray[ulRow].lpszName);
+	wprintf_s(L"0x%08lX,%ws,", PropTagArray[ulRow].ulValue, PropTagArray[ulRow].lpszName);
 	PrintType(PropTagArray[ulRow].ulValue);
-	wprintf(L"\n");
+	wprintf_s(L"\n");
 }
 
 // Given a property tag, output the matching names and partially matching names
@@ -88,12 +88,12 @@ void PrintTagFromNum(_In_ ULONG ulPropTag)
 		ulPropID = ulPropTag;
 	}
 
-	wprintf(L"Property tag 0x%08lX:\n", ulPropTag);
+	wprintf_s(L"Property tag 0x%08lX:\n", ulPropTag);
 
 	if (ulPropID & 0x8000)
 	{
-		wprintf(L"Since this property ID is greater than 0x8000 there is a good chance it is a named property.\n");
-		wprintf(L"Only trust the following output if this property is known to be an address book property.\n");
+		wprintf_s(L"Since this property ID is greater than 0x8000 there is a good chance it is a named property.\n");
+		wprintf_s(L"Only trust the following output if this property is known to be an address book property.\n");
 	}
 
 	std::vector<ULONG> ulExacts;
@@ -102,7 +102,7 @@ void PrintTagFromNum(_In_ ULONG ulPropTag)
 
 	if (!ulExacts.empty())
 	{
-		wprintf(L"\nExact matches:\n");
+		wprintf_s(L"\nExact matches:\n");
 		for (const auto& ulCur : ulExacts)
 		{
 			PrintTag(ulCur);
@@ -111,7 +111,7 @@ void PrintTagFromNum(_In_ ULONG ulPropTag)
 
 	if (!ulPartials.empty())
 	{
-		wprintf(L"\nPartial matches:\n");
+		wprintf_s(L"\nPartial matches:\n");
 		// let's print our partial matches
 		for (const auto& ulCur : ulPartials)
 		{
@@ -127,9 +127,9 @@ void PrintTagFromName(_In_z_ LPCWSTR lpszPropName, _In_ ULONG ulType)
 
 	if (cache::ulNoMatch != ulType)
 	{
-		wprintf(L"Restricting output to ");
+		wprintf_s(L"Restricting output to ");
 		PrintType(ulType);
-		wprintf(L"\n");
+		wprintf_s(L"\n");
 	}
 
 	auto bMatchFound = false;
@@ -155,7 +155,7 @@ void PrintTagFromName(_In_z_ LPCWSTR lpszPropName, _In_ ULONG ulType)
 			{
 				if (cache::ulNoMatch == ulType)
 				{
-					wprintf(L"\nOther exact matches:\n");
+					wprintf_s(L"\nOther exact matches:\n");
 				}
 
 				for (const auto& ulMatch : ulExacts)
@@ -170,7 +170,7 @@ void PrintTagFromName(_In_z_ LPCWSTR lpszPropName, _In_ ULONG ulType)
 			{
 				if (cache::ulNoMatch == ulType)
 				{
-					wprintf(L"\nOther partial matches:\n");
+					wprintf_s(L"\nOther partial matches:\n");
 				}
 
 				for (const auto& ulMatch : ulPartials)
@@ -187,7 +187,7 @@ void PrintTagFromName(_In_z_ LPCWSTR lpszPropName, _In_ ULONG ulType)
 		}
 	}
 
-	if (!bMatchFound) wprintf(L"Property tag \"%ws\" not found\n", lpszPropName);
+	if (!bMatchFound) wprintf_s(L"Property tag \"%ws\" not found\n", lpszPropName);
 }
 
 // Search for properties matching lpszPropName on a substring
@@ -195,15 +195,15 @@ void PrintTagFromName(_In_z_ LPCWSTR lpszPropName, _In_ ULONG ulType)
 void PrintTagFromPartialName(_In_opt_z_ LPCWSTR lpszPropName, _In_ ULONG ulType) noexcept
 {
 	if (lpszPropName)
-		wprintf(L"Searching for \"%ws\"\n", lpszPropName);
+		wprintf_s(L"Searching for \"%ws\"\n", lpszPropName);
 	else
-		wprintf(L"Searching for all properties\n");
+		wprintf_s(L"Searching for all properties\n");
 
 	if (cache::ulNoMatch != ulType)
 	{
-		wprintf(L"Restricting output to ");
+		wprintf_s(L"Restricting output to ");
 		PrintType(ulType);
-		wprintf(L"\n");
+		wprintf_s(L"\n");
 	}
 
 	ULONG ulNumMatches = 0;
@@ -218,7 +218,7 @@ void PrintTagFromPartialName(_In_opt_z_ LPCWSTR lpszPropName, _In_ ULONG ulType)
 		}
 	}
 
-	wprintf(L"Found %lu matches.\n", ulNumMatches);
+	wprintf_s(L"Found %lu matches.\n", ulNumMatches);
 }
 
 void PrintGUID(_In_ LPCGUID lpGUID) noexcept
@@ -226,11 +226,11 @@ void PrintGUID(_In_ LPCGUID lpGUID) noexcept
 	// PSUNKNOWN isn't a real guid - just a placeholder - don't print it
 	if (!lpGUID || IsEqualGUID(*lpGUID, guid::PSUNKNOWN))
 	{
-		wprintf(L",");
+		wprintf_s(L",");
 		return;
 	}
 
-	wprintf(
+	wprintf_s(
 		L"{%.8lX-%.4X-%.4X-%.2X%.2X-%.2X%.2X%.2X%.2X%.2X%.2X}",
 		lpGUID->Data1,
 		lpGUID->Data2,
@@ -244,12 +244,12 @@ void PrintGUID(_In_ LPCGUID lpGUID) noexcept
 		lpGUID->Data4[6],
 		lpGUID->Data4[7]);
 
-	wprintf(L",");
+	wprintf_s(L",");
 	for (const auto& guid : PropGuidArray)
 	{
 		if (IsEqualGUID(*lpGUID, *guid.lpGuid))
 		{
-			wprintf(L"%ws", guid.lpszName);
+			wprintf_s(L"%ws", guid.lpszName);
 			break;
 		}
 	}
@@ -259,7 +259,7 @@ void PrintGUIDs() noexcept
 {
 	for (const auto& guid : PropGuidArray)
 	{
-		wprintf(
+		wprintf_s(
 			L"{%.8lX-%.4X-%.4X-%.2X%.2X-%.2X%.2X%.2X%.2X%.2X%.2X}",
 			guid.lpGuid->Data1,
 			guid.lpGuid->Data2,
@@ -272,27 +272,27 @@ void PrintGUIDs() noexcept
 			guid.lpGuid->Data4[5],
 			guid.lpGuid->Data4[6],
 			guid.lpGuid->Data4[7]);
-		wprintf(L",%ws\n", guid.lpszName);
+		wprintf_s(L",%ws\n", guid.lpszName);
 	}
 }
 
 void PrintDispID(_In_ ULONG ulRow) noexcept
 {
-	wprintf(L"0x%04lX,%ws,", NameIDArray[ulRow].lValue, NameIDArray[ulRow].lpszName);
+	wprintf_s(L"0x%04lX,%ws,", NameIDArray[ulRow].lValue, NameIDArray[ulRow].lpszName);
 	PrintGUID(NameIDArray[ulRow].lpGuid);
-	wprintf(L",");
+	wprintf_s(L",");
 	if (PT_UNSPECIFIED != NameIDArray[ulRow].ulType)
 	{
 		PrintType(PROP_TAG(NameIDArray[ulRow].ulType, 0));
 	}
 
-	wprintf(L",");
+	wprintf_s(L",");
 	if (NameIDArray[ulRow].lpszArea)
 	{
-		wprintf(L"%ws", NameIDArray[ulRow].lpszArea);
+		wprintf_s(L"%ws", NameIDArray[ulRow].lpszArea);
 	}
 
-	wprintf(L"\n");
+	wprintf_s(L"\n");
 }
 
 void PrintDispIDFromNum(_In_ ULONG ulDispID) noexcept
@@ -300,13 +300,13 @@ void PrintDispIDFromNum(_In_ ULONG ulDispID) noexcept
 	ULONG ulNumExacts = NULL;
 	ULONG ulFirstExactMatch = cache::ulNoMatch;
 
-	wprintf(L"Dispid tag 0x%04lX:\n", ulDispID);
+	wprintf_s(L"Dispid tag 0x%04lX:\n", ulDispID);
 
 	cache::FindNameIDArrayMatches(ulDispID, &ulNumExacts, &ulFirstExactMatch);
 
 	if (ulNumExacts > 0 && cache::ulNoMatch != ulFirstExactMatch)
 	{
-		wprintf(L"\nExact matches:\n");
+		wprintf_s(L"\nExact matches:\n");
 		for (auto ulCur = ulFirstExactMatch; ulCur < ulFirstExactMatch + ulNumExacts; ulCur++)
 		{
 			PrintDispID(ulCur);
@@ -336,7 +336,7 @@ void PrintDispIDFromName(_In_opt_z_ LPCWSTR lpszDispIDName) noexcept
 			// We're gonna skip at least one, so only print if we have more than one
 			if (ulNumExacts > 1)
 			{
-				wprintf(L"\nOther exact matches:\n");
+				wprintf_s(L"\nOther exact matches:\n");
 				for (ulCur = ulFirstExactMatch; ulCur < ulFirstExactMatch + ulNumExacts; ulCur++)
 				{
 					if (ulExactMatch == ulCur) continue; // skip this one
@@ -349,16 +349,16 @@ void PrintDispIDFromName(_In_opt_z_ LPCWSTR lpszDispIDName) noexcept
 		}
 	}
 
-	if (!bMatchFound) wprintf(L"Property tag \"%ws\" not found\n", lpszDispIDName);
+	if (!bMatchFound) wprintf_s(L"Property tag \"%ws\" not found\n", lpszDispIDName);
 }
 
 // Search for properties matching lpszPropName on a substring
 void PrintDispIDFromPartialName(_In_opt_z_ LPCWSTR lpszDispIDName, _In_ ULONG ulType) noexcept
 {
 	if (lpszDispIDName)
-		wprintf(L"Searching for \"%ws\"\n", lpszDispIDName);
+		wprintf_s(L"Searching for \"%ws\"\n", lpszDispIDName);
 	else
-		wprintf(L"Searching for all properties\n");
+		wprintf_s(L"Searching for all properties\n");
 
 	ULONG ulNumMatches = 0;
 
@@ -372,7 +372,7 @@ void PrintDispIDFromPartialName(_In_opt_z_ LPCWSTR lpszDispIDName, _In_ ULONG ul
 		}
 	}
 
-	wprintf(L"Found %lu matches.\n", ulNumMatches);
+	wprintf_s(L"Found %lu matches.\n", ulNumMatches);
 }
 
 void PrintFlag(_In_ ULONG ulPropNum, _In_opt_z_ LPCWSTR lpszPropName, _In_ bool bIsDispid, _In_ ULONG ulFlagValue)
@@ -408,9 +408,9 @@ void PrintFlag(_In_ ULONG ulPropNum, _In_opt_z_ LPCWSTR lpszPropName, _In_ bool 
 
 		if (ulCur != NameIDArray.size())
 		{
-			wprintf(L"Found named property %ws (0x%04lX) ", NameIDArray[ulCur].lpszName, NameIDArray[ulCur].lValue);
+			wprintf_s(L"Found named property %ws (0x%04lX) ", NameIDArray[ulCur].lpszName, NameIDArray[ulCur].lValue);
 			PrintGUID(NameIDArray[ulCur].lpGuid);
-			wprintf(L".\n");
+			wprintf_s(L".\n");
 			szFlags = smartview::InterpretNumberAsStringNamedProp(
 				ulFlagValue, NameIDArray[ulCur].lValue, NameIDArray[ulCur].lpGuid);
 		}
@@ -440,18 +440,18 @@ void PrintFlag(_In_ ULONG ulPropNum, _In_opt_z_ LPCWSTR lpszPropName, _In_ bool 
 
 		if (ulCur != PropTagArray.size())
 		{
-			wprintf(L"Found property %ws (0x%08lX).\n", PropTagArray[ulCur].lpszName, PropTagArray[ulCur].ulValue);
+			wprintf_s(L"Found property %ws (0x%08lX).\n", PropTagArray[ulCur].lpszName, PropTagArray[ulCur].ulValue);
 			szFlags = smartview::InterpretNumberAsStringProp(ulFlagValue, PropTagArray[ulCur].ulValue);
 		}
 	}
 
 	if (!szFlags.empty())
 	{
-		wprintf(L"0x%08lX = %ws\n", ulFlagValue, szFlags.c_str());
+		wprintf_s(L"0x%08lX = %ws\n", ulFlagValue, szFlags.c_str());
 	}
 	else
 	{
-		wprintf(L"No flag parsing found.\n");
+		wprintf_s(L"No flag parsing found.\n");
 	}
 }
 
@@ -507,8 +507,8 @@ void DoPropTags()
 		if (cache::ulNoMatch != ulTypeNum)
 		{
 			PrintType(PROP_TAG(ulTypeNum, 0));
-			wprintf(L" = 0x%04lX = %lu", ulTypeNum, ulTypeNum);
-			wprintf(L"\n");
+			wprintf_s(L" = 0x%04lX = %lu", ulTypeNum, ulTypeNum);
+			wprintf_s(L"\n");
 		}
 		else
 		{
@@ -530,7 +530,7 @@ void DoFlagSearch() noexcept
 	{
 		if (strings::compareInsensitive(flag.lpszName, lpszFlagName))
 		{
-			wprintf(L"%ws = 0x%08lX\n", flag.lpszName, flag.lFlagValue);
+			wprintf_s(L"%ws = 0x%08lX\n", flag.lpszName, flag.lFlagValue);
 			break;
 		}
 	}

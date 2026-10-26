@@ -13,7 +13,7 @@ namespace mapiprocessor
 {
 	void PrintFolder(const std::wstring& szFid, const std::wstring& szFolder) noexcept
 	{
-		wprintf(L"%-15ws %ws\n", szFid.c_str(), szFolder.c_str());
+		wprintf_s(L"%-15ws %ws\n", szFid.c_str(), szFolder.c_str());
 	}
 
 	void PrintMessage(
@@ -22,7 +22,7 @@ namespace mapiprocessor
 		const std::wstring& szSubject,
 		const std::wstring& szClass) noexcept
 	{
-		wprintf(
+		wprintf_s(
 			L" %-15ws %wc %ws (%ws)\n", szMid.c_str(), fAssociated ? L'A' : L'R', szSubject.c_str(), szClass.c_str());
 	}
 

@@ -18,67 +18,67 @@ void DoMAPIMIME(_In_opt_ LPMAPISESSION lpMAPISession)
 	const auto cSetType = static_cast<CHARSETTYPE>(cli::switchCharset.atULONG(1));
 	const auto cSetApplyType = static_cast<CSETAPPLYTYPE>(cli::switchCharset.atULONG(2));
 
-	wprintf(L"Message File Converter\n");
-	wprintf(L"Options specified:\n");
-	wprintf(L"   Input File: %ws\n", input.c_str());
-	wprintf(L"   Output File: %ws\n", output.c_str());
-	wprintf(L"   Conversion Type: ");
+	wprintf_s(L"Message File Converter\n");
+	wprintf_s(L"Options specified:\n");
+	wprintf_s(L"   Input File: %ws\n", input.c_str());
+	wprintf_s(L"   Output File: %ws\n", output.c_str());
+	wprintf_s(L"   Conversion Type: ");
 	if (cli::switchMAPI.isSet())
 	{
-		wprintf(L"MAPI -> MIME\n");
+		wprintf_s(L"MAPI -> MIME\n");
 
-		wprintf(L"   Save Format: %ws\n", cli::switchRFC822.isSet() ? L"RFC822" : L"RFC1521");
+		wprintf_s(L"   Save Format: %ws\n", cli::switchRFC822.isSet() ? L"RFC822" : L"RFC1521");
 
 		if (cli::switchWrap.isSet())
 		{
-			wprintf(L"   Line Wrap: ");
+			wprintf_s(L"   Line Wrap: ");
 			if (ulWrapLines == 0)
-				wprintf(L"OFF\n");
+				wprintf_s(L"OFF\n");
 			else
-				wprintf(L"%lu\n", ulWrapLines);
+				wprintf_s(L"%lu\n", ulWrapLines);
 		}
 	}
 	else if (cli::switchMAPI.isSet())
 	{
-		wprintf(L"MIME -> MAPI\n");
+		wprintf_s(L"MIME -> MAPI\n");
 		if (cli::switchUnicode.isSet())
 		{
-			wprintf(L"   Building Unicode MSG file\n");
+			wprintf_s(L"   Building Unicode MSG file\n");
 		}
 
 		if (cli::switchCharset.isSet())
 		{
-			wprintf(L"   CodePage: %lu\n", ulCodePage);
-			wprintf(L"   CharSetType: ");
+			wprintf_s(L"   CodePage: %lu\n", ulCodePage);
+			wprintf_s(L"   CharSetType: ");
 			switch (cSetType)
 			{
 			case CHARSET_BODY:
-				wprintf(L"CHARSET_BODY");
+				wprintf_s(L"CHARSET_BODY");
 				break;
 			case CHARSET_HEADER:
-				wprintf(L"CHARSET_HEADER");
+				wprintf_s(L"CHARSET_HEADER");
 				break;
 			case CHARSET_WEB:
-				wprintf(L"CHARSET_WEB");
+				wprintf_s(L"CHARSET_WEB");
 				break;
 			}
 
-			wprintf(L"\n");
-			wprintf(L"   CharSetApplyType: ");
+			wprintf_s(L"\n");
+			wprintf_s(L"   CharSetApplyType: ");
 			switch (cSetApplyType)
 			{
 			case CSET_APPLY_UNTAGGED:
-				wprintf(L"CSET_APPLY_UNTAGGED");
+				wprintf_s(L"CSET_APPLY_UNTAGGED");
 				break;
 			case CSET_APPLY_ALL:
-				wprintf(L"CSET_APPLY_ALL");
+				wprintf_s(L"CSET_APPLY_ALL");
 				break;
 			case CSET_APPLY_TAG_ALL:
-				wprintf(L"CSET_APPLY_TAG_ALL");
+				wprintf_s(L"CSET_APPLY_TAG_ALL");
 				break;
 			}
 
-			wprintf(L"\n");
+			wprintf_s(L"\n");
 		}
 	}
 
@@ -87,7 +87,7 @@ void DoMAPIMIME(_In_opt_ LPMAPISESSION lpMAPISession)
 		auto szFlags = flags::InterpretFlags(flagCcsf, convertFlags);
 		if (!szFlags.empty())
 		{
-			wprintf(L"   Conversion Flags: %ws\n", szFlags.c_str());
+			wprintf_s(L"   Conversion Flags: %ws\n", szFlags.c_str());
 		}
 	}
 
@@ -96,13 +96,13 @@ void DoMAPIMIME(_In_opt_ LPMAPISESSION lpMAPISession)
 		auto szType = flags::InterpretFlags(flagIet, ulEncodingType);
 		if (!szType.empty())
 		{
-			wprintf(L"   Encoding Type: %ws\n", szType.c_str());
+			wprintf_s(L"   Encoding Type: %ws\n", szType.c_str());
 		}
 	}
 
 	if (cli::switchAddressBook.isSet())
 	{
-		wprintf(L"   Using Address Book\n");
+		wprintf_s(L"   Using Address Book\n");
 	}
 
 	auto hRes = S_OK;
@@ -111,7 +111,7 @@ void DoMAPIMIME(_In_opt_ LPMAPISESSION lpMAPISession)
 	if (cli::switchAddressBook.isSet() && lpMAPISession)
 	{
 		hRes = WC_MAPI(lpMAPISession->OpenAddressBook(NULL, nullptr, AB_NO_DIALOG, &lpAdrBook));
-		if (FAILED(hRes)) wprintf(L"OpenAddressBook returned an error: 0x%08lx\n", hRes);
+		if (FAILED(hRes)) wprintf_s(L"OpenAddressBook returned an error: 0x%08lx\n", hRes);
 	}
 
 	if (cli::switchMIME.isSet())
@@ -135,7 +135,7 @@ void DoMAPIMIME(_In_opt_ LPMAPISESSION lpMAPISession)
 			hRes = WC_H(import::MyMimeOleGetCodePageCharset(ulCodePage, cSetType, &hCharSet));
 			if (FAILED(hRes))
 			{
-				wprintf(L"MimeOleGetCodePageCharset returned 0x%08lX\n", hRes);
+				wprintf_s(L"MimeOleGetCodePageCharset returned 0x%08lX\n", hRes);
 			}
 		}
 
@@ -155,15 +155,15 @@ void DoMAPIMIME(_In_opt_ LPMAPISESSION lpMAPISession)
 
 	if (SUCCEEDED(hRes))
 	{
-		wprintf(L"File converted successfully.\n");
+		wprintf_s(L"File converted successfully.\n");
 	}
 	else if (REGDB_E_CLASSNOTREG == hRes)
 	{
-		wprintf(L"MAPI <-> MIME converter not found. Perhaps Outlook is not installed.\n");
+		wprintf_s(L"MAPI <-> MIME converter not found. Perhaps Outlook is not installed.\n");
 	}
 	else
 	{
-		wprintf(L"Conversion returned an error: 0x%08lx\n", hRes);
+		wprintf_s(L"Conversion returned an error: 0x%08lx\n", hRes);
 	}
 
 	if (lpAdrBook) lpAdrBook->Release();
