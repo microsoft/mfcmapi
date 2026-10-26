@@ -790,6 +790,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="tests\addintest.cpp" />
+    <ClCompile Include="tests\autodiscovertest.cpp" />
     <ClCompile Include="tests\csvtest.cpp" />
     <ClCompile Include="tests\filetest.cpp" />
     <ClCompile Include="tests\flagtest.cpp" />

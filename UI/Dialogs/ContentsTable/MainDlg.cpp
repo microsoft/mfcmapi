@@ -34,6 +34,8 @@
 #include <core/interpret/flags.h>
 #include <core/interpret/proptags.h>
 #include <core/mapi/mapiFunctions.h>
+#include <core/mapi/autoDiscover.h>
+#include <UI/Dialogs/Editors/AutoDiscoverEditor.h>
 #include <core/mapi/mapiABFunctions.h>
 #include <core/property/parseProperty.h>
 #include <core/mapi/processor/dumpStore.h>
@@ -80,6 +82,7 @@ namespace dialog
 	ON_COMMAND(ID_DUMPSERVERCONTENTSTOTEXT, OnDumpServerContents)
 	ON_COMMAND(ID_FASTSHUTDOWN, OnFastShutdown)
 	ON_COMMAND(ID_GETCAPABILITIES, OnGetCapabilities)
+	ON_COMMAND(ID_GETAUTODISCOVERXML, OnGetAutoDiscoverXML)
 	ON_COMMAND(ID_ISATTACHMENTBLOCKED, OnIsAttachmentBlocked)
 	ON_COMMAND(ID_LOADMAPI, OnLoadMAPI)
 	ON_COMMAND(ID_LOGOFF, OnLogoff)
@@ -199,6 +202,7 @@ namespace dialog
 			pMenu->EnableMenuItem(ID_LOADMAPI, DIM(!hMAPI && !bInLoadOp));
 			pMenu->EnableMenuItem(ID_UNLOADMAPI, DIM(hMAPI && !bInLoadOp));
 			pMenu->EnableMenuItem(ID_DISPLAYMAPIPATH, DIM(hMAPI && !bInLoadOp));
+			pMenu->EnableMenuItem(ID_GETAUTODISCOVERXML, DIM(!bInLoadOp));
 			pMenu->CheckMenuItem(ID_LOADMAPI, CHECK(hMAPI && !bInLoadOp));
 			pMenu->EnableMenuItem(ID_MAPIINITIALIZE, DIM(!bMAPIInitialized && !bInLoadOp));
 			pMenu->EnableMenuItem(ID_MAPIUNINITIALIZE, DIM(bMAPIInitialized && !bInLoadOp));
@@ -1351,6 +1355,28 @@ namespace dialog
 		if (!m_lpMapiObjects) return;
 
 		DisplayPublicFolderTable(m_lpMapiObjects);
+	}
+
+	void CMainDlg::OnGetAutoDiscoverXML()
+	{
+		editor::CEditor input(
+			this, IDS_AUTODISCOVER, IDS_AUTODISCOVERPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+		input.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_AUTODISCOVERADDRESS, false));
+		if (!input.DisplayDialog()) return;
+
+		cache::CGlobalCache::getInstance().MAPIInitialize(0);
+		if (!cache::CGlobalCache::getInstance().bMAPIInitialized()) return;
+
+		std::vector<BYTE> xml;
+		auto hRes = EC_H(mapi::GetAutoDiscoverXML(input.GetStringW(0), xml));
+		if (FAILED(hRes)) return;
+
+		std::wstring text;
+		hRes = EC_H(mapi::AutoDiscoverXMLToText(xml, text));
+		if (FAILED(hRes)) return;
+
+		editor::CAutoDiscoverEditor viewer(this, xml, text);
+		(void) viewer.DisplayDialog();
 	}
 
 	void CMainDlg::OnViewMSGProperties()
