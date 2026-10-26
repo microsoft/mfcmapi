@@ -238,7 +238,7 @@ namespace mapi::processor
 		if (m_szFolderPath.empty()) return;
 		if (m_bOutputList)
 		{
-			wprintf(L"Subject, Message Class, Filename\n");
+			wprintf_s(L"Subject, Message Class, Filename\n");
 			return;
 		}
 
@@ -290,16 +290,16 @@ namespace mapi::processor
 		const auto lpMessageClass =
 			PpropFindProp(lpSRow->lpProps, lpSRow->cValues, CHANGE_PROP_TYPE(PR_MESSAGE_CLASS, PT_UNSPECIFIED));
 
-		wprintf(L"\"%ws\"", szSubj.c_str());
+		wprintf_s(L"\"%ws\"", szSubj.c_str());
 		if (lpMessageClass)
 		{
 			if (PT_STRING8 == PROP_TYPE(lpMessageClass->ulPropTag))
 			{
-				wprintf(L",\"%hs\"", lpMessageClass->Value.lpszA ? lpMessageClass->Value.lpszA : "");
+				wprintf_s(L",\"%hs\"", lpMessageClass->Value.lpszA ? lpMessageClass->Value.lpszA : "");
 			}
 			else if (PT_UNICODE == PROP_TYPE(lpMessageClass->ulPropTag))
 			{
-				wprintf(L",\"%ws\"", lpMessageClass->Value.lpszW ? lpMessageClass->Value.lpszW : L"");
+				wprintf_s(L",\"%ws\"", lpMessageClass->Value.lpszW ? lpMessageClass->Value.lpszW : L"");
 			}
 		}
 
@@ -307,7 +307,7 @@ namespace mapi::processor
 		if (bOutputMSG) szExt = L".msg"; // STRING_OK
 
 		auto szFileName = file::BuildFileNameAndPath(szExt, szSubj, szFolderPath, &recordKey);
-		wprintf(L",\"%ws\"\n", szFileName.c_str());
+		wprintf_s(L",\"%ws\"\n", szFileName.c_str());
 	}
 
 	bool dumpStore::DoContentsTablePerRowWork(_In_ const _SRow* lpSRow, ULONG ulCurRow)

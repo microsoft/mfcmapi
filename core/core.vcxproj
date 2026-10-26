@@ -920,6 +920,7 @@
     <ClInclude Include="utility\memory.h" />
     <ClInclude Include="utility\cli.h" />
     <ClInclude Include="utility\error.h" />
+    <ClInclude Include="utility\csv.h" />
     <ClInclude Include="utility\file.h" />
     <ClInclude Include="utility\import.h" />
     <ClInclude Include="utility\output.h" />
@@ -1018,6 +1019,7 @@
     <ClCompile Include="utility\memory.cpp" />
     <ClCompile Include="utility\cli.cpp" />
     <ClCompile Include="utility\error.cpp" />
+    <ClCompile Include="utility\csv.cpp" />
     <ClCompile Include="utility\file.cpp" />
     <ClCompile Include="utility\import.cpp" />
     <ClCompile Include="utility\output.cpp" />

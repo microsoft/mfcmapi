@@ -17,6 +17,7 @@
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 #include <core/mapi/mapiFunctions.h>
+#include <core/utility/csv.h>
 
 namespace dialog
 {
@@ -368,17 +369,82 @@ namespace dialog
 	void CContentsTableDlg::OnOutputTable()
 	{
 		if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
+
+		if (m_lpContentsTableListCtrl->IsLoading())
+		{
+			::MessageBoxW(
+				m_hWnd,
+				strings::loadstring(IDS_CSVLOADING).c_str(),
+				strings::loadstring(IDS_TABLEEXPORTTITLE).c_str(),
+				MB_OK | MB_ICONWARNING);
+			return;
+		}
+
+		editor::CEditor MyExport(
+			this, IDS_TABLEEXPORTTITLE, IDS_TABLEEXPORTPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+		const UINT formats[] = {IDS_TABLEEXPORTDETAILED, IDS_CSVTITLE};
+		auto format = viewpane::DropDownPane::Create(0, IDS_TABLEEXPORTFORMAT, _countof(formats), formats, true);
+		format->SetDropDownSelection(0);
+		MyExport.AddPane(format);
+
+		if (!MyExport.DisplayDialog()) return;
+
+		if (MyExport.GetDropDown(0) == 1)
+		{
+			OnOutputDisplayedCsv();
+			return;
+		}
+
 		auto szFileName = file::CFileDialogExW::SaveAs(
-			L"txt", // STRING_OK
-			L"table.txt", // STRING_OK
+			L"xml", // STRING_OK
+			L"table.xml", // STRING_OK
 			OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-			strings::loadstring(IDS_TEXTFILES),
+			strings::loadstring(IDS_XMLFILES),
 			this);
 		if (!szFileName.empty())
 		{
 			output::DebugPrintEx(
 				output::dbgLevel::Generic, CLASS, L"OnOutputTable", L"saving to %ws\n", szFileName.c_str());
 			m_lpContentsTableListCtrl->OnOutputTable(szFileName);
+		}
+	}
+
+	void CContentsTableDlg::OnOutputDisplayedCsv()
+	{
+		if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
+		const auto title = strings::loadstring(IDS_CSVTITLE);
+		if (m_lpContentsTableListCtrl->IsLoading())
+		{
+			::MessageBoxW(m_hWnd, strings::loadstring(IDS_CSVLOADING).c_str(), title.c_str(), MB_OK | MB_ICONWARNING);
+			return;
+		}
+
+		// Capture before modal dialogs pump table notifications.
+		csv::Table table;
+		auto hRes = EC_H(csv::Snapshot(m_lpContentsTableListCtrl->GetSafeHwnd(), table));
+		if (FAILED(hRes)) return;
+		std::string bytes;
+		hRes = EC_H(csv::Format(table, bytes));
+		if (FAILED(hRes)) return;
+
+		if (::MessageBoxW(
+				m_hWnd,
+				strings::loadstring(IDS_CSVWARNING).c_str(),
+				title.c_str(),
+				MB_OKCANCEL | MB_ICONWARNING | MB_DEFBUTTON2) != IDOK)
+		{
+			return;
+		}
+
+		const auto path = file::CFileDialogExW::SaveAs(
+			L"csv",
+			L"displayed-table.csv",
+			OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
+			strings::loadstring(IDS_CSVFILES),
+			this);
+		if (!path.empty())
+		{
+			EC_H_S(csv::Write(path, bytes));
 		}
 	}
 

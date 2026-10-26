@@ -50,7 +50,7 @@ namespace dialog::editor
 		void SetStringf(ULONG id, LPCWSTR szMsg, ...) const;
 #ifdef CHECKFORMATPARAMS
 #undef SetStringf
-#define SetStringf(i, fmt, ...) SetStringf(i, fmt, __VA_ARGS__), wprintf(fmt, __VA_ARGS__)
+#define SetStringf(i, fmt, ...) SetStringf(i, fmt, __VA_ARGS__), wprintf_s(fmt, __VA_ARGS__)
 #endif
 
 		void LoadString(ULONG id, UINT uidMsg) const;

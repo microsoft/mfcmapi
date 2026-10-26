@@ -116,7 +116,7 @@ namespace smartview
 		}
 
 		// Now we parse for real
-		parser->rewind();
+		parser->rewindToStart();
 
 		if (wPersistDataCount && wPersistDataCount < _MaxEntriesSmall)
 		{

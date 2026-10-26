@@ -188,7 +188,7 @@ namespace output
 			}
 			else
 			{
-				wprintf(L"%ws", szMsg.c_str());
+				wprintf_s(L"%ws", szMsg.c_str());
 			}
 
 			// print to to our debug output log file
