@@ -43,11 +43,6 @@ namespace ui
 	uiTheme g_EffectiveTheme = uiTheme::Light;
 	const theme::ThemeDefinition* g_ActiveTheme = &theme::GetDefaultTheme();
 
-	const theme::ThemeDefinition* ResolveActiveTheme() noexcept
-	{
-		return &theme::ResolveTheme(registry::activeTheme.szCurSTRING, registry::themesEnabled);
-	}
-
 	_Check_return_ LPMENUENTRY CreateMenuEntry(_In_ const std::wstring& szMenu)
 	{
 		auto lpMenu = new (std::nothrow) MenuEntry;
@@ -537,13 +532,13 @@ namespace ui
 	void InitializeGDI() noexcept
 	{
 		g_EffectiveTheme = ResolveEffectiveTheme();
-		g_ActiveTheme = ResolveActiveTheme();
+		g_ActiveTheme = &theme::ResolveActiveTheme();
 	}
 
 	void RefreshTheme() noexcept
 	{
 		g_EffectiveTheme = ResolveEffectiveTheme();
-		g_ActiveTheme = ResolveActiveTheme();
+		g_ActiveTheme = &theme::ResolveActiveTheme();
 
 		for (auto& brush : g_ThemeBrushes)
 		{

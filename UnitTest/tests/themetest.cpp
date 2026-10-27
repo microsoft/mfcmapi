@@ -1,6 +1,7 @@
 #include <UnitTest/stdafx.h>
 #include <UnitTest/UnitTest.h>
 #include <UI/Themes/Theme.h>
+#include <algorithm>
 
 namespace themetest
 {
@@ -57,6 +58,110 @@ namespace themetest
 				Assert::AreEqual(GetSysColor(COLOR_HIGHLIGHT),
 								 ui::theme::GetColor(theme, ui::uiTheme::HighContrast, role));
 			}
+		}
+
+		TEST_METHOD(SeasonalSchedulingCoversEveryDateInBothHemispheres)
+		{
+			using namespace std::chrono;
+			const std::wstring_view seasons[] = {
+				L"season.winter", L"season.spring", L"season.summer", L"season.autumn"};
+			for (const auto year : {2023, 2024})
+			{
+				for (auto date = sys_days{std::chrono::year{year} / January / 1};
+					 date < sys_days{std::chrono::year{year + 1} / January / 1};
+					 date += days{1})
+				{
+					const auto calendar = year_month_day{date};
+					const auto season = unsigned(calendar.month()) % 12 / 3;
+					for (const auto southern : {false, true})
+					{
+						const auto selected = ui::theme::FindScheduledTheme(ui::theme::GetThemes(), calendar, southern);
+						Assert::IsNotNull(selected);
+						Assert::IsTrue(selected->stableId == seasons[(season + (southern ? 2 : 0)) % 4]);
+					}
+				}
+			}
+		}
+
+		TEST_METHOD(EventDatesDoNotShiftAndResumeTheSeasonAfterwards)
+		{
+			using namespace std::chrono;
+			auto themes = ui::theme::GetThemes();
+			auto event = ui::theme::GetDefaultTheme();
+			event.stableId = L"test.event";
+			event.schedule = {ui::theme::ScheduleKind::AnnualDateRange, 10, 25, 10, 31, 10};
+			themes.push_back(event);
+
+			for (const auto southern : {false, true})
+			{
+				const auto baseline = southern ? L"season.spring" : L"season.autumn";
+				Assert::IsTrue(ui::theme::FindScheduledTheme(themes, year{2024} / October / 24, southern)->stableId ==
+							   baseline);
+				for (auto day = 25; day <= 31; ++day)
+				{
+					Assert::IsTrue(
+						ui::theme::FindScheduledTheme(themes, year{2024} / October / day, southern)->stableId ==
+						event.stableId);
+				}
+
+				Assert::IsTrue(ui::theme::FindScheduledTheme(themes, year{2024} / November / 1, southern)->stableId ==
+							   baseline);
+			}
+		}
+
+		TEST_METHOD(OverlapsUsePriorityThenDurationThenIdNotCatalogOrder)
+		{
+			using namespace std::chrono;
+			auto season = ui::theme::GetDefaultTheme();
+			season.stableId = L"test.season";
+			season.schedule = {ui::theme::ScheduleKind::AnnualDateRange, 9, 1, 11, 30, 2};
+			auto event = season;
+			event.stableId = L"test.event";
+			event.schedule = {ui::theme::ScheduleKind::AnnualDateRange, 10, 25, 10, 31, 1};
+			std::vector<ui::theme::ThemeDefinition> themes{event, season};
+			const auto date = year{2024} / October / 27;
+			Assert::IsTrue(ui::theme::FindScheduledTheme(themes, date, false)->stableId == season.stableId);
+
+			themes[0].schedule.priority = 2;
+			Assert::IsTrue(ui::theme::FindScheduledTheme(themes, date, false)->stableId == event.stableId);
+
+			auto tied = themes[0];
+			tied.stableId = L"test.a";
+			themes.push_back(tied);
+			Assert::IsTrue(ui::theme::FindScheduledTheme(themes, date, false)->stableId == tied.stableId);
+			std::reverse(themes.begin(), themes.end());
+			Assert::IsTrue(ui::theme::FindScheduledTheme(themes, date, false)->stableId == tied.stableId);
+		}
+
+		TEST_METHOD(OverlapDurationUsesTheActualYearCrossingOccurrence)
+		{
+			using namespace std::chrono;
+			auto winter = ui::theme::GetDefaultTheme();
+			winter.stableId = L"z.winter";
+			winter.schedule = {ui::theme::ScheduleKind::AnnualDateRange, 12, 1, 3, 1};
+			auto other = winter;
+			other.stableId = L"a.other";
+			other.schedule = {ui::theme::ScheduleKind::AnnualDateRange, 11, 1, 1, 31};
+			const std::vector<ui::theme::ThemeDefinition> themes{winter, other};
+
+			Assert::IsTrue(ui::theme::FindScheduledTheme(themes, year{2023} / January / 1, false)->stableId ==
+						   winter.stableId);
+			Assert::IsTrue(ui::theme::FindScheduledTheme(themes, year{2024} / January / 1, false)->stableId ==
+						   other.stableId);
+			Assert::IsNull(ui::theme::FindScheduledTheme(themes, year{2024} / July / 1, false));
+		}
+
+		TEST_METHOD(AutomaticSelectionHonorsEnablementAndLeavesManualFallbackIndependent)
+		{
+			using namespace std::chrono;
+			const auto date = year{2024} / July / 1;
+			const auto& manual = ui::theme::GetDefaultTheme();
+			Assert::IsTrue(&ui::theme::ResolveTheme(manual.stableId, true, false, date, false) == &manual);
+			Assert::IsTrue(&ui::theme::ResolveTheme(L"season.spring", false, true, date, false) == &manual);
+			Assert::IsTrue(ui::theme::ResolveTheme(manual.stableId, true, true, date, false).stableId ==
+						   L"season.summer");
+			Assert::IsTrue(ui::theme::ResolveTheme(manual.stableId, true, true, date, true).stableId ==
+						   L"season.winter");
 		}
 
 		TEST_METHOD(CyclingUsesCatalogOrderAndWraps)

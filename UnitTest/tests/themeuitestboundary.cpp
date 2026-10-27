@@ -16,6 +16,11 @@ namespace ui
 		Microsoft::VisualStudio::CppUnitTestFramework::Assert::Fail(
 			L"Catalog operation queried application appearance.");
 	}
+
+	const theme::ThemeDefinition& GetActiveTheme() noexcept
+	{
+		Microsoft::VisualStudio::CppUnitTestFramework::Assert::Fail(L"Catalog operation queried the applied theme.");
+	}
 } // namespace ui
 
 namespace dialog

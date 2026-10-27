@@ -29,9 +29,23 @@ namespace dialog::editor
 	{
 		THEME_APPEARANCE,
 		THEME_ENABLED,
+		THEME_AUTOMATIC,
 		THEME_SELECTION,
 		THEME_PREVIEW
 	};
+
+	std::wstring GetScheduledThemeLabel()
+	{
+		auto localTime = SYSTEMTIME{};
+		GetLocalTime(&localTime);
+
+		const auto date = std::chrono::year{localTime.wYear} / std::chrono::month{localTime.wMonth} /
+						  std::chrono::day{localTime.wDay};
+		const auto& scheduled = ui::theme::ResolveTheme(
+			registry::activeTheme.szCurSTRING, true, true, date, ui::theme::UsesSouthernSeasons());
+
+		return strings::formatmessage(IDS_THEME_AUTOMATIC, std::wstring(scheduled.name).c_str());
+	}
 
 	CThemes::CThemes(_In_ CWnd* parent, const std::wstring& selectedTheme)
 		: CEditor(parent, IDS_THEME_SELECTION_TITLE, NULL, CEDITOR_BUTTON_OK),
@@ -53,6 +67,8 @@ namespace dialog::editor
 		AddPane(appearance);
 
 		AddPane(viewpane::CheckPane::Create(THEME_ENABLED, IDS_THEMES_ENABLED, registry::themesEnabled, false));
+		AddPane(
+			viewpane::CheckPane::Create(THEME_AUTOMATIC, GetScheduledThemeLabel(), registry::automaticThemes, false));
 
 		const auto& themes = ui::theme::GetThemes();
 		const auto choices =
@@ -83,6 +99,14 @@ namespace dialog::editor
 	{
 		const auto appearance = std::dynamic_pointer_cast<viewpane::DropDownPane>(GetPane(THEME_APPEARANCE));
 		if (appearance) appearance->SetDropDownSelection(static_cast<int>(registry::uiTheme.ulCurDWORD));
+
+		const auto automatic = std::dynamic_pointer_cast<viewpane::CheckPane>(GetPane(THEME_AUTOMATIC));
+		if (automatic)
+		{
+			automatic->SetCheck(registry::automaticThemes);
+			automatic->SetCheckLabel(GetScheduledThemeLabel());
+			OnRecalcLayout();
+		}
 
 		const auto& definition = ui::theme::ResolveTheme(registry::activeTheme.szCurSTRING, true);
 		m_selectedTheme = std::wstring(definition.stableId);
@@ -116,6 +140,10 @@ namespace dialog::editor
 		else if (paneID == THEME_ENABLED)
 		{
 			ui::theme::SetThemesEnabled(GetCheck(THEME_ENABLED));
+		}
+		else if (paneID == THEME_AUTOMATIC)
+		{
+			ui::theme::SetAutomaticThemes(GetCheck(THEME_AUTOMATIC));
 		}
 		else if (paneID == THEME_SELECTION)
 		{

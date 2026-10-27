@@ -4,6 +4,7 @@
 #include <core/utility/import.h>
 #include <UI/MyWinApp.h>
 #include <UI/UIFunctions.h>
+#include <UI/Themes/Theme.h>
 #include <mapistub/library/stubutils.h>
 #include <core/addin/addin.h>
 #include <core/addin/mfcmapi.h>
@@ -98,6 +99,7 @@ namespace ui
 
 		// Initialize objects for theming
 		InitializeGDI();
+		theme::StartThemeSchedule();
 
 		m_cRef = 1;
 
@@ -123,6 +125,7 @@ namespace ui
 		// We call AfxPostQuitMessage instead
 		TRACE_DESTRUCTOR(CLASS);
 		s_parentWnd = nullptr;
+		theme::StopThemeSchedule();
 		UninitializeGDI();
 		addin::UnloadAddIns();
 		if (m_hwinEventHook) UnhookWinEvent(m_hwinEventHook);

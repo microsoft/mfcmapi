@@ -207,5 +207,6 @@ namespace registry
 	extern dwordRegKey namedPropBatchSize;
 	extern dwordRegKey uiTheme;
 	extern boolRegKey themesEnabled;
+	extern boolRegKey automaticThemes;
 	extern wstringRegKey activeTheme;
 } // namespace registry

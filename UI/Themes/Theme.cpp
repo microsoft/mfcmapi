@@ -5,10 +5,93 @@
 #include <UI/Dialogs/BaseDialog.h>
 #include <core/utility/registry.h>
 #include <core/utility/strings.h>
+#include <core/utility/output.h>
 #include <algorithm>
+#include <optional>
 
 namespace ui::theme
 {
+	static UINT_PTR scheduleTimer = 0;
+
+	static void CALLBACK ThemeScheduleTimerProc(HWND, UINT, UINT_PTR, DWORD) { RefreshScheduledTheme(); }
+
+	const ThemeDefinition& ResolveActiveTheme()
+	{
+		if (!registry::themesEnabled || !registry::automaticThemes)
+		{
+			return ResolveTheme(registry::activeTheme.szCurSTRING, registry::themesEnabled);
+		}
+
+		auto localTime = SYSTEMTIME{};
+		GetLocalTime(&localTime);
+
+		const auto date = std::chrono::year{localTime.wYear} / std::chrono::month{localTime.wMonth} /
+						  std::chrono::day{localTime.wDay};
+
+		return ResolveTheme(registry::activeTheme.szCurSTRING, true, true, date, UsesSouthernSeasons());
+	}
+
+	void StopThemeSchedule() noexcept
+	{
+		if (!scheduleTimer) return;
+
+		WC_B_S(KillTimer(nullptr, scheduleTimer));
+		scheduleTimer = 0;
+	}
+
+	void StartThemeSchedule() noexcept
+	{
+		StopThemeSchedule();
+
+		auto localTime = SYSTEMTIME{};
+		GetLocalTime(&localTime);
+
+		const auto today = std::chrono::year{localTime.wYear} / std::chrono::month{localTime.wMonth} /
+						   std::chrono::day{localTime.wDay};
+		const auto tomorrow = std::chrono::year_month_day{std::chrono::sys_days{today} + std::chrono::days{1}};
+
+		auto midnight = SYSTEMTIME{};
+		midnight.wYear = static_cast<WORD>(static_cast<int>(tomorrow.year()));
+		midnight.wMonth = static_cast<WORD>(static_cast<unsigned int>(tomorrow.month()));
+		midnight.wDay = static_cast<WORD>(static_cast<unsigned int>(tomorrow.day()));
+
+		auto utcMidnight = SYSTEMTIME{};
+		if (!WC_B(TzSpecificLocalTimeToSystemTime(nullptr, &midnight, &utcMidnight))) return;
+
+		auto deadline = FILETIME{};
+		if (!WC_B(SystemTimeToFileTime(&utcMidnight, &deadline))) return;
+
+		auto now = FILETIME{};
+		GetSystemTimeAsFileTime(&now);
+
+		const auto getTicks = [](const FILETIME& time) {
+			return (static_cast<ULONGLONG>(time.dwHighDateTime) << 32) | time.dwLowDateTime;
+		};
+		const auto delay = getTicks(deadline) > getTicks(now) ? (getTicks(deadline) - getTicks(now)) / 10000 + 1 : 1;
+
+		scheduleTimer = WC_D(UINT_PTR, SetTimer(nullptr, 0, static_cast<UINT>(delay), ThemeScheduleTimerProc));
+	}
+
+	void RefreshScheduledTheme() noexcept
+	{
+		if (&ui::GetActiveTheme() != &ResolveActiveTheme())
+		{
+			ApplyThemeToAllWindows();
+		}
+		else
+		{
+			EnumThreadWindows(
+				GetCurrentThreadId(),
+				[](HWND hWnd, LPARAM) -> BOOL {
+					::SendMessage(hWnd, WM_MFCMAPI_THEMECHANGED, 0, 0);
+					return true;
+				},
+				0);
+		}
+
+		StartThemeSchedule();
+	}
+
 	void SetAppearance(const uiThemePreference appearance)
 	{
 		if (appearance != uiThemePreference::System && appearance != uiThemePreference::Light &&
@@ -43,8 +126,9 @@ namespace ui::theme
 			return;
 		}
 
-		if (registry::activeTheme.szCurSTRING == stableId) return;
+		if (registry::activeTheme.szCurSTRING == stableId && !registry::automaticThemes) return;
 
+		registry::automaticThemes = false;
 		registry::activeTheme = std::wstring(stableId);
 		registry::WriteToRegistry();
 		ApplyThemeToAllWindows();
@@ -63,7 +147,7 @@ namespace ui::theme
 	{
 		if (!registry::themesEnabled) return;
 
-		const auto& next = GetNextTheme(registry::activeTheme.szCurSTRING);
+		const auto& next = GetNextTheme(ui::GetActiveTheme().stableId);
 		SetSelectedTheme(next.stableId);
 
 		const auto activeWindow = GetActiveWindow();
@@ -74,6 +158,15 @@ namespace ui::theme
 				statusPane::infoText,
 				strings::formatmessage(IDS_THEME_CYCLE_STATUS, std::wstring(next.name).c_str()));
 		}
+	}
+
+	void SetAutomaticThemes(const bool enabled)
+	{
+		if (static_cast<bool>(registry::automaticThemes) == enabled) return;
+
+		registry::automaticThemes = enabled;
+		registry::WriteToRegistry();
+		ApplyThemeToAllWindows();
 	}
 
 	const std::vector<ThemeDefinition>& GetThemes()
@@ -103,6 +196,126 @@ namespace ui::theme
 		}
 
 		return GetDefaultTheme();
+	}
+
+	const ThemeDefinition& ResolveTheme(
+		const std::wstring_view selectedTheme,
+		const bool enabled,
+		const bool automatic,
+		const std::chrono::year_month_day date,
+		const bool southernHemisphere)
+	{
+		if (enabled && automatic)
+		{
+			if (const auto scheduled = FindScheduledTheme(GetThemes(), date, southernHemisphere)) return *scheduled;
+		}
+
+		return ResolveTheme(selectedTheme, enabled);
+	}
+
+	bool UsesSouthernSeasons()
+	{
+		const auto region = GetUserGeoID(GEOCLASS_NATION);
+		if (region != GEOID_NOT_AVAILABLE)
+		{
+			wchar_t latitude[32]{};
+
+			if (WC_D(int, GetGeoInfoW(region, GEO_LATITUDE, latitude, _countof(latitude), 0)))
+			{
+				return latitude[0] == L'-';
+			}
+		}
+
+		output::DebugPrint(
+			output::dbgLevel::Generic,
+			L"Theme scheduling: Windows region latitude unavailable; using Northern Hemisphere seasons.\n");
+
+		return false;
+	}
+
+	static std::chrono::year_month_day
+	ScheduleBoundary(const std::chrono::year year, const unsigned int month, const unsigned int day, const bool shift)
+	{
+		using namespace std::chrono;
+
+		const auto sourceMonth = std::chrono::month{month};
+		const auto targetMonth = shift ? sourceMonth + months{6} : sourceMonth;
+		const auto lastDay = year_month_day{year / targetMonth / last}.day();
+
+		// Shift full-month seasonal boundaries as full months, including February.
+		const auto sourceLastDay = year_month_day{std::chrono::year{2000} / sourceMonth / last}.day();
+		const auto targetDay =
+			shift && day == static_cast<unsigned int>(sourceLastDay) ? lastDay : min(std::chrono::day{day}, lastDay);
+
+		return year / targetMonth / targetDay;
+	}
+
+	static std::optional<std::chrono::days>
+	MatchingDuration(const Schedule& schedule, const std::chrono::year_month_day date, const bool southernHemisphere)
+	{
+		using namespace std::chrono;
+
+		if (schedule.kind == ScheduleKind::None) return std::nullopt;
+
+		const auto startDate = year{2000} / month{schedule.startMonth} / day{schedule.startDay};
+		const auto endDate = year{2000} / month{schedule.endMonth} / day{schedule.endDay};
+
+		if (schedule.kind != ScheduleKind::AnnualDateRange || !startDate.ok() || !endDate.ok())
+		{
+			WC_H_S(E_INVALIDARG);
+			return std::nullopt;
+		}
+
+		const auto shift = southernHemisphere && schedule.seasonal;
+		auto start = ScheduleBoundary(date.year(), schedule.startMonth, schedule.startDay, shift);
+		auto end = ScheduleBoundary(date.year(), schedule.endMonth, schedule.endDay, shift);
+
+		if (sys_days{end} < sys_days{start})
+		{
+			if (sys_days{date} < sys_days{start})
+			{
+				start = ScheduleBoundary(date.year() - years{1}, schedule.startMonth, schedule.startDay, shift);
+			}
+			else
+			{
+				end = ScheduleBoundary(date.year() + years{1}, schedule.endMonth, schedule.endDay, shift);
+			}
+		}
+
+		if (sys_days{date} < sys_days{start} || sys_days{date} > sys_days{end}) return std::nullopt;
+
+		return sys_days{end} - sys_days{start} + days{1};
+	}
+	const ThemeDefinition* FindScheduledTheme(
+		const std::vector<ThemeDefinition>& themes,
+		const std::chrono::year_month_day date,
+		const bool southernHemisphere)
+	{
+		if (!date.ok())
+		{
+			WC_H_S(E_INVALIDARG);
+			return nullptr;
+		}
+
+		const ThemeDefinition* selected = nullptr;
+		auto selectedDuration = std::chrono::days{};
+
+		for (const auto& theme : themes)
+		{
+			const auto duration = MatchingDuration(theme.schedule, date, southernHemisphere);
+			if (!duration) continue;
+
+			if (!selected || theme.schedule.priority > selected->schedule.priority ||
+				(theme.schedule.priority == selected->schedule.priority &&
+				 (*duration < selectedDuration ||
+				  (*duration == selectedDuration && theme.stableId < selected->stableId))))
+			{
+				selected = &theme;
+				selectedDuration = *duration;
+			}
+		}
+
+		return selected;
 	}
 
 	COLORREF GetColor(const ThemeDefinition& definition, const uiTheme appearance, const uiColor role) noexcept

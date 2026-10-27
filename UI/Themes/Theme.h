@@ -2,6 +2,7 @@
 
 #include <Windows.h>
 #include <array>
+#include <chrono>
 #include <string_view>
 #include <vector>
 
@@ -87,6 +88,8 @@ namespace ui::theme
 		unsigned int startDay;
 		unsigned int endMonth;
 		unsigned int endDay;
+		int priority = 0;
+		bool seasonal = false;
 	};
 
 	struct ThemeColor
@@ -116,12 +119,28 @@ namespace ui::theme
 	const ThemeDefinition* FindTheme(std::wstring_view stableId);
 	const ThemeDefinition& GetDefaultTheme();
 	const ThemeDefinition& ResolveTheme(std::wstring_view selectedTheme, bool enabled);
+	const ThemeDefinition& ResolveTheme(
+		std::wstring_view selectedTheme,
+		bool enabled,
+		bool automatic,
+		std::chrono::year_month_day date,
+		bool southernHemisphere);
+	const ThemeDefinition* FindScheduledTheme(
+		const std::vector<ThemeDefinition>& themes,
+		std::chrono::year_month_day date,
+		bool southernHemisphere);
+	bool UsesSouthernSeasons();
+	const ThemeDefinition& ResolveActiveTheme();
+	void StartThemeSchedule() noexcept;
+	void StopThemeSchedule() noexcept;
+	void RefreshScheduledTheme() noexcept;
 	COLORREF GetColor(const ThemeDefinition& definition, uiTheme appearance, uiColor role) noexcept;
 	const ThemeDefinition& GetNextTheme(std::wstring_view stableId);
 	void SetAppearance(uiThemePreference appearance);
 	void ToggleAppearance();
 	void SetSelectedTheme(std::wstring_view stableId);
 	void SetThemesEnabled(bool enabled);
+	void SetAutomaticThemes(bool enabled);
 	void CycleTheme();
 	bool TryGetColor(
 		const ThemeDefinition& definition,

@@ -289,6 +289,13 @@ namespace dialog
 		case WM_SYSCOLORCHANGE:
 		case WM_THEMECHANGED:
 			ui::ApplyThemeToAllWindows();
+			ui::theme::StartThemeSchedule();
+			break;
+		case WM_TIMECHANGE:
+			ui::theme::RefreshScheduledTheme();
+			break;
+		case WM_POWERBROADCAST:
+			if (wParam == PBT_APMRESUMEAUTOMATIC || wParam == PBT_APMRESUMESUSPEND) ui::theme::RefreshScheduledTheme();
 			break;
 		case WM_CREATE:
 			// Ensure all windows group together by enforcing a consistent App User Model ID.

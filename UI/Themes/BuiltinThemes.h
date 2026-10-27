@@ -75,7 +75,7 @@ namespace ui::theme::builtin
 			theme.stableId = L"season.spring";
 			theme.name = L"Spring";
 			theme.category = L"Seasonal";
-			theme.schedule = {ScheduleKind::AnnualDateRange, 3, 1, 5, 31};
+			theme.schedule = {ScheduleKind::AnnualDateRange, 3, 1, 5, 31, 0, true};
 
 			theme.light.values[static_cast<size_t>(uiColor::Glow)] = {color::DarkGreen, -1, COLOR_HIGHLIGHT};
 			theme.light.values[static_cast<size_t>(uiColor::GlowBackground)] = {color::Honeydew, -1, COLOR_HIGHLIGHT};
@@ -113,7 +113,7 @@ namespace ui::theme::builtin
 			theme.stableId = L"season.summer";
 			theme.name = L"Summer";
 			theme.category = L"Seasonal";
-			theme.schedule = {ScheduleKind::AnnualDateRange, 6, 1, 8, 31};
+			theme.schedule = {ScheduleKind::AnnualDateRange, 6, 1, 8, 31, 0, true};
 
 			theme.light.values[static_cast<size_t>(uiColor::Glow)] = {color::Teal, -1, COLOR_HIGHLIGHT};
 			theme.light.values[static_cast<size_t>(uiColor::GlowBackground)] = {color::Azure, -1, COLOR_HIGHLIGHT};
@@ -149,7 +149,7 @@ namespace ui::theme::builtin
 			theme.stableId = L"season.autumn";
 			theme.name = L"Autumn";
 			theme.category = L"Seasonal";
-			theme.schedule = {ScheduleKind::AnnualDateRange, 9, 1, 11, 30};
+			theme.schedule = {ScheduleKind::AnnualDateRange, 9, 1, 11, 30, 0, true};
 
 			theme.light.values[static_cast<size_t>(uiColor::Glow)] = {color::SaddleBrown, -1, COLOR_HIGHLIGHT};
 			theme.light.values[static_cast<size_t>(uiColor::GlowBackground)] = {color::OldLace, -1, COLOR_HIGHLIGHT};
@@ -184,7 +184,7 @@ namespace ui::theme::builtin
 			theme.stableId = L"season.winter";
 			theme.name = L"Winter";
 			theme.category = L"Seasonal";
-			theme.schedule = {ScheduleKind::AnnualDateRange, 12, 1, 2, 28};
+			theme.schedule = {ScheduleKind::AnnualDateRange, 12, 1, 2, 29, 0, true};
 
 			theme.light.values[static_cast<size_t>(uiColor::Glow)] = {color::RoyalBlue, -1, COLOR_HIGHLIGHT};
 			theme.light.values[static_cast<size_t>(uiColor::GlowBackground)] = {color::AliceBlue, -1, COLOR_HIGHLIGHT};
