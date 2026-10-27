@@ -2,53 +2,10 @@
 // Common UI functions for MFC MAPI
 
 #include <oleacc.h>
+#include <UI/Themes/Theme.h>
 
 namespace ui
 {
-	enum class uiThemePreference : DWORD
-	{
-		System,
-		Light,
-		Dark,
-	};
-
-	enum class uiTheme
-	{
-		Light,
-		Dark,
-		HighContrast,
-	};
-
-	enum class uiColor
-	{
-		Background,
-		BackgroundReadOnly,
-		Glow,
-		GlowBackground,
-		GlowText,
-		FrameSelected,
-		FrameUnselected,
-		SelectedBackground,
-		Arrow,
-		Text,
-		TextDisabled,
-		TextReadOnly,
-		BitmapTransBack,
-		BitmapTransFore,
-		Status,
-		StatusText,
-		PaneHeaderBackground,
-		PaneHeaderText,
-		TextHighlightBackground,
-		TextHighlight,
-		TestPink,
-		TestLavender,
-		TestRed,
-		TestGreen,
-		TestOrange,
-		UIEnd
-	};
-
 	enum class uiPen
 	{
 		SolidPen,
@@ -90,6 +47,7 @@ namespace ui
 	void StyleScrollHost(_In_ HWND hWnd) noexcept;
 	void PaintScrollCorner(_In_ HWND hWnd) noexcept;
 	_Check_return_ uiTheme GetEffectiveTheme() noexcept;
+	const theme::ThemeDefinition& GetActiveTheme() noexcept;
 
 	void UpdateMenuString(_In_ HWND hWnd, UINT uiMenuTag, UINT uidNewString);
 

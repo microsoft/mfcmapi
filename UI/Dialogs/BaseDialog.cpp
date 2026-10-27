@@ -17,6 +17,7 @@
 #include <UI/Dialogs/ContentsTable/MainDlg.h>
 #include <UI/Dialogs/Editors/DbgView.h>
 #include <UI/Dialogs/Editors/Options.h>
+#include <UI/Dialogs/Editors/Themes.h>
 #include <Windows.h>
 #include <malloc.h>
 #include <core/mapi/version.h>
@@ -278,6 +279,9 @@ namespace dialog
 			return true;
 		case ID_OUTLOOKVERSION:
 			OnOutlookVersion();
+			return true;
+		case ID_SELECTTHEME:
+			editor::DisplayThemesDlg(this);
 			return true;
 		}
 		if (HandleAddInMenu(wMenuSelect)) return true;

@@ -77,9 +77,13 @@ namespace registry
 		false,
 		IDS_REGKEY_UI_THEME,
 		{IDS_UI_THEME_SYSTEM, IDS_UI_THEME_LIGHT, IDS_UI_THEME_DARK}};
+	boolRegKey themesEnabled{L"ThemesEnabled", false, false, IDS_THEMES_ENABLED};
+	wstringRegKey activeTheme{L"ActiveTheme", L"standard", false, NULL};
 
 	std::vector<__RegKey*> RegKeys = {
 		&uiTheme,
+		&themesEnabled,
+		&activeTheme,
 		&debugTag,
 		&debugToFile,
 		&debugFileName,

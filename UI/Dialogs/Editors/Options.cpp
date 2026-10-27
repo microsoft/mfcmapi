@@ -13,8 +13,11 @@
 
 namespace dialog::editor
 {
-	static constexpr int ADDIN_APPROVAL_PANE_ID = 30000;
-	static constexpr int ADDIN_DIAGNOSTICS_PANE_ID = 30001;
+	enum OptionFields
+	{
+		ADDIN_APPROVAL,
+		ADDIN_DIAGNOSTICS
+	};
 
 	struct OptionValue
 	{
@@ -95,7 +98,6 @@ namespace dialog::editor
 		else
 		{
 			optionGroups = {
-				{0, {&registry::uiTheme}},
 				{IDS_OPTIONS_ONLINE_CACHE, {&registry::forceMDBOnline, &registry::forceMapiNoCache}},
 				{IDS_OPTIONS_TABLES_DISPLAY, {&registry::doColumnNames, &registry::onlyAdditionalProperties}},
 				{IDS_OPTIONS_ADDINS, {&registry::addInDirectory}},
@@ -111,12 +113,13 @@ namespace dialog::editor
 			}
 			if (advanced && section == IDS_OPTIONS_ADDINS)
 			{
-				AddPane(viewpane::TextPane::CreateMultiLinePane(
-					ADDIN_DIAGNOSTICS_PANE_ID,
-					IDS_OPTIONS_DIAGNOSTICS,
-					addin::GetAddInReport(m_values.at(&registry::addInDirectory).text),
-					true));
-				AddPane(viewpane::AddInApprovalPane::Create(ADDIN_APPROVAL_PANE_ID));
+				AddPane(
+					viewpane::TextPane::CreateMultiLinePane(
+						ADDIN_DIAGNOSTICS,
+						IDS_OPTIONS_DIAGNOSTICS,
+						addin::GetAddInReport(m_values.at(&registry::addInDirectory).text),
+						true));
+				AddPane(viewpane::AddInApprovalPane::Create(ADDIN_APPROVAL));
 			}
 		}
 	}
@@ -129,8 +132,9 @@ namespace dialog::editor
 
 		if (registry::regOptionType::check == regKey->ulRegOptType)
 		{
-			AddPane(viewpane::CheckPane::Create(
-				regKey->uiOptionsPrompt, regKey->uiOptionsPrompt, 0 != value.number, false));
+			AddPane(
+				viewpane::CheckPane::Create(
+					regKey->uiOptionsPrompt, regKey->uiOptionsPrompt, 0 != value.number, false));
 		}
 		else if (registry::regOptionType::string == regKey->ulRegOptType)
 		{
@@ -143,17 +147,19 @@ namespace dialog::editor
 			}
 			else if (regKey == &registry::debugFileName)
 			{
-				AddPane(viewpane::PathPane::Create(
-					regKey->uiOptionsPrompt,
-					regKey->uiOptionsPrompt,
-					viewpane::pathType::fileSave,
-					value.text,
-					L"log"));
+				AddPane(
+					viewpane::PathPane::Create(
+						regKey->uiOptionsPrompt,
+						regKey->uiOptionsPrompt,
+						viewpane::pathType::fileSave,
+						value.text,
+						L"log"));
 			}
 			else
 			{
-				AddPane(viewpane::TextPane::CreateSingleLinePane(
-					regKey->uiOptionsPrompt, regKey->uiOptionsPrompt, value.text, false));
+				AddPane(
+					viewpane::TextPane::CreateSingleLinePane(
+						regKey->uiOptionsPrompt, regKey->uiOptionsPrompt, value.text, false));
 			}
 		}
 		else if (registry::regOptionType::stringHex == regKey->ulRegOptType)
@@ -237,7 +243,6 @@ namespace dialog::editor
 			return;
 		}
 
-		const auto oldTheme = registry::uiTheme.ulCurDWORD;
 		const auto oldUIDiag = registry::uiDiag.ulCurDWORD;
 		const auto oldDebugTag = registry::debugTag.ulCurDWORD;
 
@@ -264,11 +269,7 @@ namespace dialog::editor
 		// Commit our values to the registry
 		registry::WriteToRegistry();
 
-		if (oldTheme != registry::uiTheme.ulCurDWORD)
-		{
-			ui::ApplyThemeToAllWindows();
-		}
-		else if (oldUIDiag != registry::uiDiag.ulCurDWORD)
+		if (oldUIDiag != registry::uiDiag.ulCurDWORD)
 		{
 			ui::RedrawAllWindows();
 		}
@@ -290,7 +291,7 @@ namespace dialog::editor
 		OptionValues values;
 		for (const auto regKey : registry::RegKeys)
 		{
-			if (regKey && regKey->uiOptionsPrompt)
+			if (regKey && regKey->uiOptionsPrompt && regKey != &registry::uiTheme && regKey != &registry::themesEnabled)
 			{
 				values.emplace(regKey, OptionValue{regKey->ulCurDWORD, regKey->szCurSTRING});
 			}

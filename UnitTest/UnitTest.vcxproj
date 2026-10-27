@@ -790,6 +790,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="tests\addintest.cpp" />
+    <ClCompile Include="..\UI\Themes\Theme.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="tests\themetest.cpp" />
+    <ClCompile Include="tests\themeuitestboundary.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="tests\autodiscovertest.cpp" />
     <ClCompile Include="tests\csvtest.cpp" />
     <ClCompile Include="tests\filetest.cpp" />

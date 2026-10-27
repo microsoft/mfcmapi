@@ -1,6 +1,7 @@
 // Common UI functions for MFCMAPI
 #include <StdAfx.h>
 #include <UI/UIFunctions.h>
+#include <UI/Themes/Theme.h>
 #include <windowsx.h>
 #include <UI/RichEditOleCallback.h>
 #include <UI/ViewPane/CheckPane.h>
@@ -27,158 +28,7 @@ namespace ui
 
 #define BORDER_VISIBLEWIDTH 2
 
-	enum class myColor
-	{
-		White,
-		LightGrey,
-		Grey,
-		DarkGrey,
-		Black,
-		Cyan,
-		Magenta,
-		Blue,
-		MedBlue,
-		PaleBlue,
-		Pink,
-		Lavender,
-		Red,
-		Green,
-		Orange,
-		ColorEnd
-	};
-
-	// Keep in sync with enum myColor
-	COLORREF g_Colors[static_cast<int>(myColor::ColorEnd)] = {
-		RGB(0xFF, 0xFF, 0xFF), // cWhite
-		RGB(0xD3, 0xD3, 0xD3), // cLightGrey
-		RGB(0xAD, 0xAC, 0xAE), // cGrey
-		RGB(0x64, 0x64, 0x64), // cDarkGrey
-		RGB(0x00, 0x00, 0x00), // cBlack
-		RGB(0x00, 0xFF, 0xFF), // cCyan
-		RGB(0xFF, 0x00, 0xFF), // cMagenta
-		RGB(0x00, 0x72, 0xC6), // cBlue
-		RGB(0xCD, 0xE6, 0xF7), // cMedBlue
-		RGB(0xE6, 0xF2, 0xFA), // cPaleBlue
-		RGB(0xFF, 0xC0, 0xCB), // cPink
-		RGB(0xE6, 0xE6, 0xFA), // cLavender
-		RGB(0xCD, 0x5C, 0x5C), // cRed
-		RGB(0x00, 0xFF, 0x00), // cGreen
-		RGB(0xFF, 0x7F, 0x50), // cOrange
-	};
-
-	// Explicit dark colors are required because classic system colors do not follow
-	// the Windows application theme.
-	COLORREF g_DarkColors[static_cast<int>(uiColor::UIEnd)] = {
-		RGB(0x20, 0x20, 0x20), // Background
-		RGB(0x2D, 0x2D, 0x30), // BackgroundReadOnly
-		RGB(0x00, 0x72, 0xC6), // Glow
-		RGB(0x09, 0x47, 0x71), // GlowBackground
-		RGB(0xFF, 0xFF, 0xFF), // GlowText
-		RGB(0xD0, 0xD0, 0xD0), // FrameSelected
-		RGB(0x5A, 0x5A, 0x5A), // FrameUnselected
-		RGB(0x26, 0x4F, 0x78), // SelectedBackground
-		RGB(0xC8, 0xC8, 0xC8), // Arrow
-		RGB(0xF1, 0xF1, 0xF1), // Text
-		RGB(0x8A, 0x8A, 0x8A), // TextDisabled
-		RGB(0xD6, 0xD6, 0xD6), // TextReadOnly
-		RGB(0xFF, 0x00, 0xFF), // BitmapTransBack
-		RGB(0x00, 0xFF, 0xFF), // BitmapTransFore
-		RGB(0x00, 0x72, 0xC6), // Status
-		RGB(0xFF, 0xFF, 0xFF), // StatusText
-		RGB(0x09, 0x47, 0x71), // PaneHeaderBackground
-		RGB(0xF1, 0xF1, 0xF1), // PaneHeaderText
-		RGB(0x26, 0x4F, 0x78), // TextHighlightBackground
-		RGB(0xFF, 0xFF, 0xFF), // TextHighlight
-		RGB(0xFF, 0xC0, 0xCB), // TestPink
-		RGB(0xE6, 0xE6, 0xFA), // TestLavender
-		RGB(0xCD, 0x5C, 0x5C), // TestRed
-		RGB(0x00, 0xFF, 0x00), // TestGreen
-		RGB(0xFF, 0x7F, 0x50), // TestOrange
-	};
-
-	// Fixed mapping of UI elements to colors
-	// Will be overridden by system colors when specified in g_SysColors
-	// Keep in sync with enum uiColor
-	// We can swap in cCyan for various entries to test coverage
-	myColor g_FixedColors[static_cast<int>(uiColor::UIEnd)] = {
-		myColor::White, // cBackground
-		myColor::LightGrey, // cBackgroundReadOnly
-		myColor::Blue, // cGlow
-		myColor::PaleBlue, // cGlowBackground
-		myColor::Black, // cGlowText
-		myColor::Black, // cFrameSelected
-		myColor::Grey, // cFrameUnselected
-		myColor::MedBlue, // cSelectedBackground
-		myColor::Grey, // cArrow
-		myColor::Black, // cText
-		myColor::Grey, // cTextDisabled
-		myColor::Black, // cTextReadOnly
-		myColor::Magenta, // cBitmapTransBack
-		myColor::Cyan, // cBitmapTransFore
-		myColor::Blue, // cStatus
-		myColor::White, // cStatusText
-		myColor::PaleBlue, // cPaneHeaderBackground,
-		myColor::Black, // cPaneHeaderText,
-		myColor::MedBlue, // cTextHighlightBackground,
-		myColor::Black, // cTextHighlight,
-		myColor::Pink, // cTestPink,
-		myColor::Lavender, // cTestLavender,
-		myColor::Red, // cTestRed,
-		myColor::Green, // cTestGreen,
-		myColor::Orange, // cTestOrange,
-	};
-
-	// Mapping of UI elements to system colors
-	// NULL entries will get the fixed mapping from g_FixedColors
-	int g_SysColors[static_cast<int>(uiColor::UIEnd)] = {
-		COLOR_WINDOW, // cBackground
-		NULL, // cBackgroundReadOnly
-		NULL, // cGlow
-		NULL, // cGlowBackground
-		NULL, // cGlowText
-		COLOR_WINDOWTEXT, // cFrameSelected
-		COLOR_3DLIGHT, // cFrameUnselected
-		NULL,
-		COLOR_GRAYTEXT, // cArrow
-		COLOR_WINDOWTEXT, // cText
-		COLOR_GRAYTEXT, // cTextDisabled
-		NULL, // cTextReadOnly
-		NULL, // cBitmapTransBack
-		NULL, // cBitmapTransFore
-		NULL, // cStatus
-		NULL, // cStatusText
-	};
-
-	int g_HighContrastSysColors[static_cast<int>(uiColor::UIEnd)] = {
-		COLOR_WINDOW, // Background
-		COLOR_BTNFACE, // BackgroundReadOnly
-		COLOR_HIGHLIGHT, // Glow
-		COLOR_HIGHLIGHT, // GlowBackground
-		COLOR_HIGHLIGHTTEXT, // GlowText
-		COLOR_WINDOWTEXT, // FrameSelected
-		COLOR_GRAYTEXT, // FrameUnselected
-		COLOR_HIGHLIGHT, // SelectedBackground
-		COLOR_WINDOWTEXT, // Arrow
-		COLOR_WINDOWTEXT, // Text
-		COLOR_GRAYTEXT, // TextDisabled
-		COLOR_WINDOWTEXT, // TextReadOnly
-		NULL, // BitmapTransBack
-		NULL, // BitmapTransFore
-		COLOR_HIGHLIGHT, // Status
-		COLOR_HIGHLIGHTTEXT, // StatusText
-		COLOR_BTNFACE, // PaneHeaderBackground
-		COLOR_BTNTEXT, // PaneHeaderText
-		COLOR_HIGHLIGHT, // TextHighlightBackground
-		COLOR_HIGHLIGHTTEXT, // TextHighlight
-		NULL, // TestPink
-		NULL, // TestLavender
-		NULL, // TestRed
-		NULL, // TestGreen
-		NULL, // TestOrange
-	};
-
 	// Mapping of bitmap resources to constants
-	// NULL entries will get the fixed mapping from g_FixedColors
 	int g_BitmapResources[static_cast<int>(uiBitmap::BitmapEnd)] = {
 		IDB_ADVISE, // cNotify,
 		IDB_CLOSE, // cClose,
@@ -191,6 +41,12 @@ namespace ui
 	HPEN g_Pens[static_cast<int>(uiPen::PenEnd)] = {};
 	HBITMAP g_Bitmaps[static_cast<int>(uiBitmap::BitmapEnd)] = {};
 	uiTheme g_EffectiveTheme = uiTheme::Light;
+	const theme::ThemeDefinition* g_ActiveTheme = &theme::GetDefaultTheme();
+
+	const theme::ThemeDefinition* ResolveActiveTheme() noexcept
+	{
+		return &theme::ResolveTheme(registry::activeTheme.szCurSTRING, registry::themesEnabled);
+	}
 
 	_Check_return_ LPMENUENTRY CreateMenuEntry(_In_ const std::wstring& szMenu)
 	{
@@ -678,11 +534,16 @@ namespace ui
 		}
 	}
 
-	void InitializeGDI() noexcept { g_EffectiveTheme = ResolveEffectiveTheme(); }
+	void InitializeGDI() noexcept
+	{
+		g_EffectiveTheme = ResolveEffectiveTheme();
+		g_ActiveTheme = ResolveActiveTheme();
+	}
 
 	void RefreshTheme() noexcept
 	{
 		g_EffectiveTheme = ResolveEffectiveTheme();
+		g_ActiveTheme = ResolveActiveTheme();
 
 		for (auto& brush : g_ThemeBrushes)
 		{
@@ -724,6 +585,8 @@ namespace ui
 	}
 
 	_Check_return_ uiTheme GetEffectiveTheme() noexcept { return g_EffectiveTheme; }
+
+	const theme::ThemeDefinition& GetActiveTheme() noexcept { return *g_ActiveTheme; }
 
 	void StyleScrollHost(_In_ HWND hWnd) noexcept
 	{
@@ -773,6 +636,7 @@ namespace ui
 		const auto isMarkedScrollHost = ::GetProp(hWnd, SCROLL_HOST) != nullptr;
 		const auto isScrollHost = isScrollBar || isMarkedScrollHost;
 		const auto isToolTip = _wcsicmp(className, TOOLTIPS_CLASSW) == 0;
+		const auto scrollBarVisible = (::GetWindowLongPtr(hWnd, GWL_STYLE) & WS_VSCROLL) != 0;
 		auto scrollInfo = SCROLLINFO{};
 		scrollInfo.cbSize = sizeof scrollInfo;
 		scrollInfo.fMask = SIF_RANGE | SIF_PAGE | SIF_POS;
@@ -823,11 +687,9 @@ namespace ui
 		if (preserveScrollInfo)
 		{
 			::SetScrollInfo(hWnd, SB_VERT, &scrollInfo, false);
-			::ShowScrollBar(
-				hWnd,
-				SB_VERT,
-				scrollInfo.nPage && scrollInfo.nPage < static_cast<UINT>(scrollInfo.nMax - scrollInfo.nMin + 1));
 		}
+
+		if (isMarkedScrollHost) ::ShowScrollBar(hWnd, SB_VERT, scrollBarVisible);
 
 		RedrawWindow(hWnd, nullptr, nullptr, RDW_INVALIDATE | RDW_ERASE | RDW_FRAME);
 		return true;
@@ -883,22 +745,7 @@ namespace ui
 
 	_Check_return_ COLORREF MyGetSysColor(const uiColor uc) noexcept
 	{
-		const auto theme = g_EffectiveTheme;
-		if (theme == uiTheme::Dark) return g_DarkColors[static_cast<int>(uc)];
-
-		if (theme == uiTheme::HighContrast)
-		{
-			const auto iSysColor = g_HighContrastSysColors[static_cast<int>(uc)];
-			if (iSysColor) return GetSysColor(iSysColor);
-		}
-
-		// Return a system color if we have one in g_SysColors
-		const auto iSysColor = g_SysColors[static_cast<int>(uc)];
-		if (iSysColor) return GetSysColor(iSysColor);
-
-		// No system color listed in g_SysColors, return a hard coded color
-		const auto mc = static_cast<int>(g_FixedColors[static_cast<int>(uc)]);
-		return g_Colors[mc];
+		return theme::GetColor(GetActiveTheme(), g_EffectiveTheme, uc);
 	}
 
 	_Check_return_ HPEN GetPen(const uiPen up) noexcept
@@ -1033,12 +880,12 @@ namespace ui
 					double red = 0, green = 0, blue = 0, alpha = 0;
 					for (auto sy = static_cast<int>(top); sy < sourceImageSize && sy < std::ceil(bottom); ++sy)
 					{
-						const auto weightY =
-							(std::min)(bottom, static_cast<double>(sy + 1)) - (std::max)(top, static_cast<double>(sy));
+						const auto weightY = (std::min) (bottom, static_cast<double>(sy + 1)) -
+											 (std::max) (top, static_cast<double>(sy));
 						for (auto sx = static_cast<int>(left); sx < sourceImageSize && sx < std::ceil(right); ++sx)
 						{
-							const auto weight = weightY * ((std::min)(right, static_cast<double>(sx + 1)) -
-														   (std::max)(left, static_cast<double>(sx)));
+							const auto weight = weightY * ((std::min) (right, static_cast<double>(sx + 1)) -
+														   (std::max) (left, static_cast<double>(sx)));
 							const auto& pixel = pixels
 								[static_cast<size_t>(sy) * bm.bmWidth +
 								 static_cast<size_t>(image) * static_cast<size_t>(sourceImageSize) + sx];
@@ -2078,7 +1925,7 @@ namespace ui
 			auto rectGutter = rcText;
 			rcText.left += GetSystemMetrics(SM_CXMENUCHECK);
 			rectGutter.right = rcText.left;
-			FillRect(hdc, &rectGutter, GetSysBrush(uiColor::BackgroundReadOnly));
+			FillRect(hdc, &rectGutter, GetSysBrush(uiColor::MenuGutter));
 		}
 
 		auto cBack = uiColor::Background;

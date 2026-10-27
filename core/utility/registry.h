@@ -206,4 +206,6 @@ namespace registry
 	extern wstringRegKey propertyColumnOrder;
 	extern dwordRegKey namedPropBatchSize;
 	extern dwordRegKey uiTheme;
+	extern boolRegKey themesEnabled;
+	extern wstringRegKey activeTheme;
 } // namespace registry
