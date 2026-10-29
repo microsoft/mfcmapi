@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "id": "nature.storm",
+  "name": "Storm - Slate and Lightning",
+  "colors": {
+    "light": {
+      "TextDisabled": { "value": "#5a5a5a", "highContrast": 17 },
+      "Background": {
+        "value": "#F7F9FC",
+        "highContrast": 5
+      },
+      "Glow": {
+        "value": "#475C78",
+        "highContrast": 13
+      },
+      "GlowBackground": {
+        "value": "#496A98",
+        "highContrast": 13
+      },
+      "FrameSelected": {
+        "value": "#826000",
+        "highContrast": 8
+      },
+      "SelectedBackground": {
+        "value": "#857431",
+        "highContrast": 13
+      },
+      "Status": {
+        "value": "#475C78",
+        "highContrast": 13
+      },
+      "PaneHeaderBackground": {
+        "value": "#DEE5EF",
+        "highContrast": 15
+      },
+      "PaneHeaderText": {
+        "value": "#35465F",
+        "highContrast": 18
+      },
+      "TextHighlightBackground": {
+        "value": "#7E660C",
+        "highContrast": 13
+      },
+      "MenuGutter": {
+        "value": "#DEE5EF",
+        "highContrast": 15
+      },
+      "GlowText": {
+        "value": "#FFFFFF",
+        "highContrast": 14
+      },
+      "TextDisabledSelected": {
+        "value": "#010101",
+        "highContrast": 17
+      },
+      "TextHighlight": {
+        "value": "#FFFFFF",
+        "highContrast": 14
+      }
+    },
+    "dark": {
+      "TextDisabled": { "value": "#6b6b6b", "highContrast": 17 },
+      "Background": {
+        "value": "#1B222D",
+        "highContrast": 5
+      },
+      "Glow": {
+        "value": "#B2C7E4",
+        "highContrast": 13
+      },
+      "GlowBackground": {
+        "value": "#8296B8",
+        "highContrast": 13
+      },
+      "FrameSelected": {
+        "value": "#F8DD7E",
+        "highContrast": 8
+      },
+      "SelectedBackground": { "value": "#DED0AA", "highContrast": 17 },
+      "Status": {
+        "value": "#35465F",
+        "highContrast": 13
+      },
+      "PaneHeaderBackground": {
+        "value": "#35465F",
+        "highContrast": 15
+      },
+      "PaneHeaderText": {
+        "value": "White",
+        "highContrast": 18
+      },
+      "TextHighlightBackground": {
+        "value": "#B29138",
+        "highContrast": 13
+      },
+      "MenuGutter": {
+        "value": "#35465F",
+        "highContrast": 15
+      },
+      "GlowText": {
+        "value": "#000000",
+        "highContrast": 14
+      },
+      "TextDisabledSelected": {
+        "value": "#5a5a5a",
+        "highContrast": 17
+      },
+      "TextHighlight": {
+        "value": "#000000",
+        "highContrast": 14
+      }
+    }
+  }
+}

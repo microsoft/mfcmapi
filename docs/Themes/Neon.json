@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "id": "retro.neon",
+  "name": "Neon - Arcade After Hours",
+  "colors": {
+    "light": {
+      "TextDisabled": { "value": "#5a5a5a", "highContrast": 17 },
+      "Background": {
+        "value": "#FFFAFF",
+        "highContrast": 5
+      },
+      "Glow": {
+        "value": "#9D2687",
+        "highContrast": 13
+      },
+      "GlowBackground": {
+        "value": "#B8269C",
+        "highContrast": 13
+      },
+      "FrameSelected": {
+        "value": "#006B78",
+        "highContrast": 8
+      },
+      "SelectedBackground": {
+        "value": "#3E7E83",
+        "highContrast": 13
+      },
+      "Status": {
+        "value": "#6431A0",
+        "highContrast": 13
+      },
+      "PaneHeaderBackground": {
+        "value": "#E9DDF9",
+        "highContrast": 15
+      },
+      "PaneHeaderText": {
+        "value": "#6431A0",
+        "highContrast": 18
+      },
+      "TextHighlightBackground": {
+        "value": "#B8269C",
+        "highContrast": 13
+      },
+      "MenuGutter": {
+        "value": "#CFF2F4",
+        "highContrast": 15
+      },
+      "GlowText": {
+        "value": "#FFFFFF",
+        "highContrast": 14
+      },
+      "TextDisabledSelected": {
+        "value": "#000000",
+        "highContrast": 17
+      },
+      "TextHighlight": {
+        "value": "#FFFFFF",
+        "highContrast": 14
+      }
+    },
+    "dark": {
+      "TextDisabled": { "value": "#8b8b8b", "highContrast": 17 },
+      "Background": {
+        "value": "#1D102C",
+        "highContrast": 5
+      },
+      "Glow": {
+        "value": "#F38BDF",
+        "highContrast": 13
+      },
+      "GlowBackground": {
+        "value": "#D174C1",
+        "highContrast": 13
+      },
+      "FrameSelected": {
+        "value": "#65E5EE",
+        "highContrast": 8
+      },
+      "SelectedBackground": {
+        "value": "#228290",
+        "highContrast": 13
+      },
+      "Status": {
+        "value": "#48276D",
+        "highContrast": 13
+      },
+      "PaneHeaderBackground": {
+        "value": "#48276D",
+        "highContrast": 15
+      },
+      "PaneHeaderText": {
+        "value": "White",
+        "highContrast": 18
+      },
+      "TextHighlightBackground": {
+        "value": "#D174C1",
+        "highContrast": 13
+      },
+      "MenuGutter": {
+        "value": "#15515A",
+        "highContrast": 15
+      },
+      "GlowText": {
+        "value": "#000000",
+        "highContrast": 14
+      },
+      "TextDisabledSelected": {
+        "value": "#ffffff",
+        "highContrast": 17
+      },
+      "TextHighlight": {
+        "value": "#000000",
+        "highContrast": 14
+      }
+    }
+  }
+}

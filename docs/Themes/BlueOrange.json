@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "id": "contrast.blue-orange",
+  "name": "Contrast - Blue and Orange",
+  "colors": {
+    "light": {
+      "TextDisabled": { "value": "#5a5a5a", "highContrast": 17 },
+      "Background": {
+        "value": "#FAFCFF",
+        "highContrast": 5
+      },
+      "Glow": {
+        "value": "#005A8D",
+        "highContrast": 13
+      },
+      "GlowBackground": {
+        "value": "#005A8D",
+        "highContrast": 13
+      },
+      "FrameSelected": {
+        "value": "#9A4800",
+        "highContrast": 8
+      },
+      "FrameUnselected": {
+        "value": "#607080",
+        "highContrast": 17
+      },
+      "SelectedBackground": {
+        "value": "#c05400",
+        "highContrast": 13
+      },
+      "Arrow": {
+        "value": "#005A8D",
+        "highContrast": 8
+      },
+      "Status": {
+        "value": "#005A8D",
+        "highContrast": 13
+      },
+      "PaneHeaderBackground": {
+        "value": "#D7EBF7",
+        "highContrast": 15
+      },
+      "PaneHeaderText": {
+        "value": "#00456D",
+        "highContrast": 18
+      },
+      "TextHighlightBackground": {
+        "value": "#B34E00",
+        "highContrast": 13
+      },
+      "MenuGutter": {
+        "value": "#D7EBF7",
+        "highContrast": 15
+      },
+      "GlowText": {
+        "value": "#FFFFFF",
+        "highContrast": 14
+      },
+      "TextDisabledSelected": {
+        "value": "#000000",
+        "highContrast": 17
+      },
+      "TextHighlight": {
+        "value": "#FFFFFF",
+        "highContrast": 14
+      }
+    },
+    "dark": {
+      "TextDisabled": { "value": "#8b8b8b", "highContrast": 17 },
+      "Background": {
+        "value": "#101D28",
+        "highContrast": 5
+      },
+      "Glow": {
+        "value": "#7BC8F6",
+        "highContrast": 13
+      },
+      "GlowBackground": {
+        "value": "#3C83A8",
+        "highContrast": 13
+      },
+      "FrameSelected": {
+        "value": "#FFBA70",
+        "highContrast": 8
+      },
+      "FrameUnselected": {
+        "value": "#8DADBF",
+        "highContrast": 17
+      },
+      "SelectedBackground": {
+        "value": "#A86734",
+        "highContrast": 13
+      },
+      "Arrow": {
+        "value": "#7BC8F6",
+        "highContrast": 8
+      },
+      "Status": {
+        "value": "#174765",
+        "highContrast": 13
+      },
+      "PaneHeaderBackground": {
+        "value": "#174765",
+        "highContrast": 15
+      },
+      "PaneHeaderText": {
+        "value": "White",
+        "highContrast": 18
+      },
+      "TextHighlightBackground": {
+        "value": "#D38141",
+        "highContrast": 13
+      },
+      "MenuGutter": {
+        "value": "#174765",
+        "highContrast": 15
+      },
+      "GlowText": {
+        "value": "#000000",
+        "highContrast": 14
+      },
+      "TextDisabledSelected": {
+        "value": "#ffffff",
+        "highContrast": 17
+      },
+      "TextHighlight": {
+        "value": "#000000",
+        "highContrast": 14
+      }
+    }
+  }
+}

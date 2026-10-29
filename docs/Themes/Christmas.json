@@ -11,36 +11,46 @@
   },
   "colors": {
     "light": {
+      "TextDisabled": { "value": "#5a5a5a", "highContrast": 17 },
       "Background": { "value": "Snow", "highContrast": 5 },
       "BackgroundReadOnly": { "value": "Honeydew", "highContrast": 15 },
       "Glow": { "value": "DarkGreen", "highContrast": 13 },
-      "GlowBackground": { "value": "Honeydew", "highContrast": 13 },
-      "GlowText": { "value": "DarkGreen", "highContrast": 14 },
+      "GlowBackground": { "value": "#007A00", "highContrast": 13 },
+      "GlowText": { "value": "#FFFFFF", "highContrast": 14 },
+      "TextDisabledSelected": { "value": "#010101", "highContrast": 17 },
       "FrameSelected": { "value": "FireBrick", "highContrast": 8 },
-      "SelectedBackground": { "value": "PaleGreen", "highContrast": 13 },
+      "SelectedBackground": { "value": "#318531", "highContrast": 13 },
       "Arrow": { "value": "DarkGreen", "highContrast": 8 },
       "TextReadOnly": { "value": "DarkGreen", "highContrast": 8 },
       "Status": { "value": "FireBrick", "highContrast": 13 },
       "StatusText": { "value": "White", "highContrast": 14 },
       "PaneHeaderBackground": { "value": "Honeydew", "highContrast": 15 },
       "PaneHeaderText": { "value": "DarkGreen", "highContrast": 18 },
-      "TextHighlightBackground": { "value": "PaleGreen", "highContrast": 13 },
-      "TextHighlight": { "value": "DarkGreen", "highContrast": 14 },
+      "TextHighlightBackground": { "value": "#057A05", "highContrast": 13 },
+      "TextHighlight": { "value": "#FFFFFF", "highContrast": 14 },
       "MenuGutter": { "value": "Honeydew", "highContrast": 15 }
     },
     "dark": {
+      "TextDisabled": {
+        "value": "#6a6a6a",
+        "highContrast": 17
+      },
       "Glow": { "value": "LightGreen", "highContrast": 13 },
-      "GlowBackground": { "value": "DarkGreen", "highContrast": 13 },
-      "GlowText": { "value": "White", "highContrast": 14 },
+      "GlowBackground": { "value": "#00AD00", "highContrast": 13 },
+      "GlowText": { "value": "#000000", "highContrast": 14 },
+      "TextDisabledSelected": { "value": "#5a5a5a", "highContrast": 17 },
       "FrameSelected": { "value": "Gold", "highContrast": 8 },
-      "SelectedBackground": { "value": "Maroon", "highContrast": 13 },
+      "SelectedBackground": {
+        "value": "#FFC2C2",
+        "highContrast": 13
+      },
       "Arrow": { "value": "LightGreen", "highContrast": 8 },
       "Status": { "value": "Maroon", "highContrast": 13 },
       "StatusText": { "value": "White", "highContrast": 14 },
       "PaneHeaderBackground": { "value": "DarkGreen", "highContrast": 15 },
       "PaneHeaderText": { "value": "White", "highContrast": 18 },
-      "TextHighlightBackground": { "value": "Maroon", "highContrast": 13 },
-      "TextHighlight": { "value": "White", "highContrast": 14 },
+      "TextHighlightBackground": { "value": "#FF5E5E", "highContrast": 13 },
+      "TextHighlight": { "value": "#000000", "highContrast": 14 },
       "MenuGutter": { "value": "DarkGreen", "highContrast": 15 }
     }
   }

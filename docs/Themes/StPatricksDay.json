@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "id": "holiday.st-patricks",
+  "name": "St. Patrick's Day - Shamrock",
+  "schedule": {
+    "kind": "dateRange",
+    "start": "03-16",
+    "end": "03-18",
+    "priority": 10
+  },
+  "colors": {
+    "light": {
+      "TextDisabled": { "value": "#5a5a5a", "highContrast": 17 },
+      "Background": {
+        "value": "#F7FFF8",
+        "highContrast": 5
+      },
+      "Glow": {
+        "value": "#146338",
+        "highContrast": 13
+      },
+      "GlowBackground": {
+        "value": "#2A7739",
+        "highContrast": 13
+      },
+      "FrameSelected": {
+        "value": "#805A00",
+        "highContrast": 8
+      },
+      "SelectedBackground": {
+        "value": "#887332",
+        "highContrast": 13
+      },
+      "Status": {
+        "value": "#146338",
+        "highContrast": 13
+      },
+      "PaneHeaderBackground": {
+        "value": "#D7F1DC",
+        "highContrast": 15
+      },
+      "PaneHeaderText": {
+        "value": "#146338",
+        "highContrast": 18
+      },
+      "TextHighlightBackground": {
+        "value": "#81650B",
+        "highContrast": 13
+      },
+      "MenuGutter": {
+        "value": "#D7F1DC",
+        "highContrast": 15
+      },
+      "GlowText": {
+        "value": "#FFFFFF",
+        "highContrast": 14
+      },
+      "TextDisabledSelected": {
+        "value": "#010101",
+        "highContrast": 17
+      },
+      "TextHighlight": {
+        "value": "#FFFFFF",
+        "highContrast": 14
+      }
+    },
+    "dark": {
+      "TextDisabled": { "value": "#8b8b8b", "highContrast": 17 },
+      "Background": {
+        "value": "#11251A",
+        "highContrast": 5
+      },
+      "Glow": {
+        "value": "#87DDA2",
+        "highContrast": 13
+      },
+      "GlowBackground": {
+        "value": "#3AA866",
+        "highContrast": 13
+      },
+      "FrameSelected": {
+        "value": "#F4D479",
+        "highContrast": 8
+      },
+      "SelectedBackground": {
+        "value": "#92722B",
+        "highContrast": 13
+      },
+      "Status": {
+        "value": "#1C5131",
+        "highContrast": 13
+      },
+      "PaneHeaderBackground": {
+        "value": "#1C5131",
+        "highContrast": 15
+      },
+      "PaneHeaderText": {
+        "value": "White",
+        "highContrast": 18
+      },
+      "TextHighlightBackground": {
+        "value": "#B78F36",
+        "highContrast": 13
+      },
+      "MenuGutter": {
+        "value": "#1C5131",
+        "highContrast": 15
+      },
+      "GlowText": {
+        "value": "#000000",
+        "highContrast": 14
+      },
+      "TextDisabledSelected": {
+        "value": "#ffffff",
+        "highContrast": 17
+      },
+      "TextHighlight": {
+        "value": "#000000",
+        "highContrast": 14
+      }
+    }
+  }
+}

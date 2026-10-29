@@ -1,15 +1,23 @@
-# Writing a theme
+# Optional theme files
+
+This directory contains optional theme files. Nothing here is built in or loaded
+by default. To try them, open **Tools > Themes**, choose this directory, enable
+color themes, and select a theme. Other theme files are provided alongside the
+examples below.
+
+## Writing a theme
 
 Start with [Halloween](Halloween.json) or [Christmas](Christmas.json):
 
-Halloween lists every color. Christmas is a sparse example: it overrides selected
-colors and inherits the rest from Standard.
+- Halloween is a complete example with explicit colors for both appearances.
+- Christmas is a sparse example: it overrides selected colors and inherits the
+  rest from Standard.
 
-1. Copy the example to a new `.json` file, saved as UTF-8.
+1. Copy an example to a new `.json` file, saved as UTF-8.
 2. Give it a unique `id` and your own display `name`.
 3. Edit the colors in both the `light` and `dark` palettes.
-4. Change the `schedule`, or remove it if you only want to select the theme yourself.
-5. Open **Tools > Themes**, choose the directory containing your file, and enable
+4. Change the `schedule`, or remove it for a manual-only theme.
+5. In **Tools > Themes**, choose the directory containing your file and enable
    color themes. Select your theme to try it.
 
 After editing a file, click **Reload themes** to see your changes. Keep your files
@@ -49,7 +57,50 @@ to inherit an entire palette. You can omit the bitmap and `Test*` entries.
 An entry you supply still needs `value` and, for visible colors, `highContrast`;
 individual fields within that entry are not inherited.
 
-Choose readable text/background combinations in both light and dark appearances.
+### Disabled menu items
+
+Menus use different palette roles for enabled and disabled commands. `Text` is
+the enabled command color; `TextDisabled` is used when a command is disabled.
+When the pointer highlights a command, enabled text uses `GlowText` on
+`SelectedBackground`, while a disabled command uses `TextDisabledSelected` on
+that same selection fill.
+
+Disabled commands should be recognizable as disabled, but still easy to read.
+Choose disabled colors that are visibly different from their enabled
+counterparts; do not just repeat `Text` or `GlowText`. For example:
+
+```json
+{
+  "Text": { "value": "#202020", "highContrast": 8 },
+  "TextDisabled": { "value": "#606060", "highContrast": 17 },
+  "GlowText": { "value": "#FFFFFF", "highContrast": 14 },
+  "TextDisabledSelected": { "value": "#D2D2D2", "highContrast": 17 }
+}
+```
+
+These are role examples, not a complete palette. Choose values based on your
+own `Background` and `SelectedBackground` colors and check both appearances.
+
+### Recommended contrast
+
+These are recommendations for custom themes, not restrictions imposed when a
+theme file is loaded. Contrast is the ratio between two colors, from `1:1`
+(identical) to `21:1` (black and white). Check every pairing in both palettes.
+
+- Aim for at least **4.5:1** between text and its background, including normal,
+  read-only, selected, hover, status, pane-header, and text-highlight text.
+- For `TextDisabled`, aim for at least **3:1** against `Background`. For
+  `TextDisabledSelected`, aim for at least **4.5:1** against `SelectedBackground`.
+- Make enabled and disabled text clearly different: aim for at least **3:1**
+  between `Text` and `TextDisabled`, and **3:1** between `GlowText` and
+  `TextDisabledSelected`.
+- Aim for at least **3:1** between the background and visual indicators such as
+  selection, hover, text-highlight fills, and the focus indicator.
+
+The bundled themes are checked against these targets by unit tests. Custom
+themes can use different values, but low contrast or nearly identical enabled
+and disabled colors can make text difficult to read or state changes hard to
+notice.
 
 If you change system-color mappings, use these numbers, not RGB values:
 

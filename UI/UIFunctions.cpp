@@ -1935,7 +1935,7 @@ namespace ui
 
 		if (!bHot || bDisabled)
 		{
-			if (bDisabled) cFore = uiColor::TextDisabled;
+			if (bDisabled) cFore = bHot ? uiColor::TextDisabledSelected : uiColor::TextDisabled;
 			FillRect(hdc, &rcText, GetSysBrush(cBack));
 		}
 

@@ -1,0 +1,163 @@
+{
+  "schemaVersion": 1,
+  "id": "pride.rainbow",
+  "name": "Pride - Rainbow",
+  "schedule": {
+    "kind": "dateRange",
+    "start": "06-01",
+    "end": "06-30",
+    "priority": 10
+  },
+  "colors": {
+    "light": {
+      "Background": {
+        "value": "#EAF4EA",
+        "highContrast": 5
+      },
+      "BackgroundReadOnly": {
+        "value": "#DCEBDD",
+        "highContrast": 15
+      },
+      "Text": {
+        "value": "#17231A",
+        "highContrast": 8
+      },
+      "TextReadOnly": {
+        "value": "#17231A",
+        "highContrast": 8
+      },
+      "TextDisabled": { "value": "#6a6a6a", "highContrast": 17 },
+      "Glow": {
+        "value": "#004DFF",
+        "highContrast": 13
+      },
+      "GlowBackground": {
+        "value": "#750787",
+        "highContrast": 13
+      },
+      "GlowText": {
+        "value": "#FFFFFF",
+        "highContrast": 14
+      },
+      "TextDisabledSelected": {
+        "value": "#000000",
+        "highContrast": 17
+      },
+      "FrameSelected": {
+        "value": "#004DFF",
+        "highContrast": 8
+      },
+      "FrameUnselected": {
+        "value": "#008026",
+        "highContrast": 17
+      },
+      "SelectedBackground": {
+        "value": "#346CED",
+        "highContrast": 13
+      },
+      "Status": {
+        "value": "#E40303",
+        "highContrast": 13
+      },
+      "StatusText": {
+        "value": "#FFFFFF",
+        "highContrast": 14
+      },
+      "PaneHeaderBackground": {
+        "value": "#750787",
+        "highContrast": 15
+      },
+      "PaneHeaderText": {
+        "value": "#FFFFFF",
+        "highContrast": 18
+      },
+      "TextHighlightBackground": {
+        "value": "#C45A00",
+        "highContrast": 13
+      },
+      "TextHighlight": {
+        "value": "#000000",
+        "highContrast": 14
+      },
+      "MenuGutter": {
+        "value": "#DCEBDD",
+        "highContrast": 15
+      }
+    },
+    "dark": {
+      "Background": {
+        "value": "#17251C",
+        "highContrast": 5
+      },
+      "BackgroundReadOnly": {
+        "value": "#203428",
+        "highContrast": 15
+      },
+      "Text": {
+        "value": "#FFFFFF",
+        "highContrast": 8
+      },
+      "TextReadOnly": {
+        "value": "#FFFFFF",
+        "highContrast": 8
+      },
+      "TextDisabled": { "value": "#868686", "highContrast": 17 },
+      "Glow": {
+        "value": "#7FA9FF",
+        "highContrast": 13
+      },
+      "GlowBackground": {
+        "value": "#FF8C00",
+        "highContrast": 13
+      },
+      "GlowText": {
+        "value": "#000000",
+        "highContrast": 14
+      },
+      "TextDisabledSelected": {
+        "value": "#686868",
+        "highContrast": 17
+      },
+      "FrameSelected": {
+        "value": "#7FA9FF",
+        "highContrast": 8
+      },
+      "FrameUnselected": {
+        "value": "#8DBA9A",
+        "highContrast": 17
+      },
+      "SelectedBackground": {
+        "value": "#FFED00",
+        "highContrast": 13
+      },
+      "Status": {
+        "value": "#750787",
+        "highContrast": 13
+      },
+      "StatusText": {
+        "value": "#FFFFFF",
+        "highContrast": 14
+      },
+      "PaneHeaderBackground": {
+        "value": "#750787",
+        "highContrast": 15
+      },
+      "PaneHeaderText": {
+        "value": "#FFFFFF",
+        "highContrast": 18
+      },
+      "TextHighlightBackground": {
+        "value": "#C45A00",
+        "highContrast": 13
+      },
+      "TextHighlight": {
+        "value": "#000000",
+        "highContrast": 14
+      },
+      "MenuGutter": {
+        "value": "#203428",
+        "highContrast": 15
+      }
+    }
+  }
+}

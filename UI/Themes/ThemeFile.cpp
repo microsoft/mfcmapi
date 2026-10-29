@@ -25,6 +25,7 @@ namespace ui::theme
 		L"Arrow",
 		L"Text",
 		L"TextDisabled",
+		L"TextDisabledSelected",
 		L"TextReadOnly",
 		L"BitmapTransBack",
 		L"BitmapTransFore",
@@ -115,6 +116,8 @@ namespace ui::theme
 
 	static ThemeColors ReadPalette(const winrt::Windows::Data::Json::JsonObject& object, const ThemeColors& defaults)
 	{
+		Require(object.HasKey(L"TextDisabledSelected"), L"Missing required color role: TextDisabledSelected");
+
 		for (const auto& property : object)
 		{
 			const auto name = property.Key();
@@ -232,6 +235,7 @@ namespace ui::theme
 	{
 		auto catalog = ThemeCatalog{};
 		catalog.themes.assign(builtin::Definitions.begin(), builtin::Definitions.end());
+		const auto firstExternalTheme = catalog.themes.size();
 		if (directory.empty()) return catalog;
 
 		const auto path = std::filesystem::path{directory};
@@ -310,6 +314,14 @@ namespace ui::theme
 
 			catalog.themes.push_back(std::move(theme));
 		}
+
+		std::sort(
+			catalog.themes.begin() + firstExternalTheme,
+			catalog.themes.end(),
+			[](const auto& left, const auto& right) {
+				const auto nameOrder = _wcsicmp(left.name.c_str(), right.name.c_str());
+				return nameOrder == 0 ? left.stableId < right.stableId : nameOrder < 0;
+			});
 
 		return catalog;
 	}

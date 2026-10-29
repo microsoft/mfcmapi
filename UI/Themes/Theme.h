@@ -36,6 +36,7 @@ namespace ui
 		Arrow,
 		Text,
 		TextDisabled,
+		TextDisabledSelected,
 		TextReadOnly,
 		BitmapTransBack,
 		BitmapTransFore,

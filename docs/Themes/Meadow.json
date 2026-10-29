@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "id": "nature.meadow",
+  "name": "Meadow - Wildflowers",
+  "colors": {
+    "light": {
+      "TextDisabled": { "value": "#5a5a5a", "highContrast": 17 },
+      "Background": {
+        "value": "#FCFFF5",
+        "highContrast": 5
+      },
+      "Glow": {
+        "value": "#4C682D",
+        "highContrast": 13
+      },
+      "GlowBackground": {
+        "value": "#557224",
+        "highContrast": 13
+      },
+      "FrameSelected": {
+        "value": "#83518C",
+        "highContrast": 8
+      },
+      "SelectedBackground": {
+        "value": "#995DAB",
+        "highContrast": 13
+      },
+      "Status": {
+        "value": "#4C682D",
+        "highContrast": 13
+      },
+      "PaneHeaderBackground": {
+        "value": "#E2EFCC",
+        "highContrast": 15
+      },
+      "PaneHeaderText": {
+        "value": "#384F20",
+        "highContrast": 18
+      },
+      "TextHighlightBackground": {
+        "value": "#816500",
+        "highContrast": 13
+      },
+      "MenuGutter": {
+        "value": "#EDDDF2",
+        "highContrast": 15
+      },
+      "GlowText": {
+        "value": "#FFFFFF",
+        "highContrast": 14
+      },
+      "TextDisabledSelected": {
+        "value": "#000000",
+        "highContrast": 17
+      },
+      "TextHighlight": {
+        "value": "#FFFFFF",
+        "highContrast": 14
+      }
+    },
+    "dark": {
+      "TextDisabled": { "value": "#8b8b8b", "highContrast": 17 },
+      "Background": {
+        "value": "#1F2618",
+        "highContrast": 5
+      },
+      "Glow": {
+        "value": "#BDD98D",
+        "highContrast": 13
+      },
+      "GlowBackground": {
+        "value": "#79A14F",
+        "highContrast": 13
+      },
+      "FrameSelected": {
+        "value": "#D9AFE4",
+        "highContrast": 8
+      },
+      "SelectedBackground": {
+        "value": "#8D6B94",
+        "highContrast": 13
+      },
+      "Status": {
+        "value": "#3D5128",
+        "highContrast": 13
+      },
+      "PaneHeaderBackground": {
+        "value": "#3D5128",
+        "highContrast": 15
+      },
+      "PaneHeaderText": {
+        "value": "White",
+        "highContrast": 18
+      },
+      "TextHighlightBackground": {
+        "value": "#AF9240",
+        "highContrast": 13
+      },
+      "MenuGutter": {
+        "value": "#593760",
+        "highContrast": 15
+      },
+      "GlowText": {
+        "value": "#000000",
+        "highContrast": 14
+      },
+      "TextDisabledSelected": {
+        "value": "#ffffff",
+        "highContrast": 17
+      },
+      "TextHighlight": {
+        "value": "#000000",
+        "highContrast": 14
+      }
+    }
+  }
+}

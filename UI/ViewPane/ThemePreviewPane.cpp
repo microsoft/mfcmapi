@@ -227,7 +227,7 @@ namespace viewpane
 				drawSample(
 					left,
 					IDS_THEME_PREVIEW_DISABLED,
-					ui::uiColor::BackgroundReadOnly,
+					ui::uiColor::Background,
 					ui::uiColor::TextDisabled,
 					ui::uiColor::FrameUnselected);
 				drawSample(
@@ -260,14 +260,30 @@ namespace viewpane
 					ui::uiColor::TextHighlight,
 					ui::uiColor::FrameUnselected);
 				fillRect(right, getColor(ui::uiColor::Background));
-				auto gutter = right;
-				gutter.right = min(right.right, right.left + rowHeight);
-				fillRect(gutter, getColor(ui::uiColor::MenuGutter));
-				drawText(gutter, L">", ui::uiColor::Arrow);
+				const auto menuEntryHeight = rowHeight / 2;
+				for (auto entry = 0; entry < 2; ++entry)
+				{
+					auto menuEntry = right;
+					menuEntry.top += entry * menuEntryHeight;
+					menuEntry.bottom = entry == 1 ? right.bottom : menuEntry.top + menuEntryHeight;
+					if (entry == 1) fillRect(menuEntry, getColor(ui::uiColor::SelectedBackground));
 
-				auto label = right;
-				label.left = gutter.right;
-				drawText(label, strings::loadstring(IDS_THEME_PREVIEW_MENU), ui::uiColor::Text);
+					auto gutter = menuEntry;
+					gutter.right = min(gutter.right, gutter.left + menuEntryHeight);
+					fillRect(
+						gutter,
+						getColor(entry == 1 ? ui::uiColor::SelectedBackground : ui::uiColor::MenuGutter));
+					drawText(
+						gutter,
+						L">",
+						entry == 0 ? ui::uiColor::Arrow : ui::uiColor::TextDisabledSelected);
+					auto label = menuEntry;
+					label.left = gutter.right;
+					drawText(
+						label,
+						strings::loadstring(entry == 0 ? IDS_THEME_PREVIEW_MENU : IDS_THEME_PREVIEW_DISABLED),
+						entry == 0 ? ui::uiColor::Text : ui::uiColor::TextDisabledSelected);
+				}
 				drawFrame(right, getColor(ui::uiColor::FrameUnselected), 1);
 				break;
 			}
