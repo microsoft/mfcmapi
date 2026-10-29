@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "id": "example.christmas",
+  "name": "Christmas",
+  "schedule": {
+    "kind": "dateRange",
+    "start": "12-20",
+    "end": "12-26",
+    "priority": 10,
+    "seasonal": false
+  },
+  "colors": {
+    "light": {
+      "Background": { "value": "Snow", "highContrast": 5 },
+      "BackgroundReadOnly": { "value": "Honeydew", "highContrast": 15 },
+      "Glow": { "value": "DarkGreen", "highContrast": 13 },
+      "GlowBackground": { "value": "Honeydew", "highContrast": 13 },
+      "GlowText": { "value": "DarkGreen", "highContrast": 14 },
+      "FrameSelected": { "value": "FireBrick", "highContrast": 8 },
+      "SelectedBackground": { "value": "PaleGreen", "highContrast": 13 },
+      "Arrow": { "value": "DarkGreen", "highContrast": 8 },
+      "TextReadOnly": { "value": "DarkGreen", "highContrast": 8 },
+      "Status": { "value": "FireBrick", "highContrast": 13 },
+      "StatusText": { "value": "White", "highContrast": 14 },
+      "PaneHeaderBackground": { "value": "Honeydew", "highContrast": 15 },
+      "PaneHeaderText": { "value": "DarkGreen", "highContrast": 18 },
+      "TextHighlightBackground": { "value": "PaleGreen", "highContrast": 13 },
+      "TextHighlight": { "value": "DarkGreen", "highContrast": 14 },
+      "MenuGutter": { "value": "Honeydew", "highContrast": 15 }
+    },
+    "dark": {
+      "Glow": { "value": "LightGreen", "highContrast": 13 },
+      "GlowBackground": { "value": "DarkGreen", "highContrast": 13 },
+      "GlowText": { "value": "White", "highContrast": 14 },
+      "FrameSelected": { "value": "Gold", "highContrast": 8 },
+      "SelectedBackground": { "value": "Maroon", "highContrast": 13 },
+      "Arrow": { "value": "LightGreen", "highContrast": 8 },
+      "Status": { "value": "Maroon", "highContrast": 13 },
+      "StatusText": { "value": "White", "highContrast": 14 },
+      "PaneHeaderBackground": { "value": "DarkGreen", "highContrast": 15 },
+      "PaneHeaderText": { "value": "White", "highContrast": 18 },
+      "TextHighlightBackground": { "value": "Maroon", "highContrast": 13 },
+      "TextHighlight": { "value": "White", "highContrast": 14 },
+      "MenuGutter": { "value": "DarkGreen", "highContrast": 15 }
+    }
+  }
+}

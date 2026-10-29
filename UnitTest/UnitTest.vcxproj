@@ -793,7 +793,11 @@
     <ClCompile Include="..\UI\Themes\Theme.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="..\UI\Themes\ThemeFile.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="tests\themetest.cpp" />
+    <ClCompile Include="tests\themefiletest.cpp" />
     <ClCompile Include="tests\themeuitestboundary.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>

@@ -41,7 +41,7 @@ namespace ui
 	HPEN g_Pens[static_cast<int>(uiPen::PenEnd)] = {};
 	HBITMAP g_Bitmaps[static_cast<int>(uiBitmap::BitmapEnd)] = {};
 	uiTheme g_EffectiveTheme = uiTheme::Light;
-	const theme::ThemeDefinition* g_ActiveTheme = &theme::GetDefaultTheme();
+	const theme::ThemeDefinition* g_ActiveTheme = nullptr;
 
 	_Check_return_ LPMENUENTRY CreateMenuEntry(_In_ const std::wstring& szMenu)
 	{
@@ -875,12 +875,12 @@ namespace ui
 					double red = 0, green = 0, blue = 0, alpha = 0;
 					for (auto sy = static_cast<int>(top); sy < sourceImageSize && sy < std::ceil(bottom); ++sy)
 					{
-						const auto weightY = (std::min) (bottom, static_cast<double>(sy + 1)) -
-											 (std::max) (top, static_cast<double>(sy));
+						const auto weightY =
+							(std::min)(bottom, static_cast<double>(sy + 1)) - (std::max)(top, static_cast<double>(sy));
 						for (auto sx = static_cast<int>(left); sx < sourceImageSize && sx < std::ceil(right); ++sx)
 						{
-							const auto weight = weightY * ((std::min) (right, static_cast<double>(sx + 1)) -
-														   (std::max) (left, static_cast<double>(sx)));
+							const auto weight = weightY * ((std::min)(right, static_cast<double>(sx + 1)) -
+														   (std::max)(left, static_cast<double>(sx)));
 							const auto& pixel = pixels
 								[static_cast<size_t>(sy) * bm.bmWidth +
 								 static_cast<size_t>(image) * static_cast<size_t>(sourceImageSize) + sx];

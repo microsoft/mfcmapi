@@ -9,6 +9,8 @@ namespace viewpane
 	public:
 		static std::shared_ptr<ThemePreviewPane> Create(int paneID, UINT uidLabel);
 		void SetTheme(const ui::theme::ThemeDefinition& definition, ui::theme::Appearance appearance);
+		void ClearTheme();
+		void SetVisible(bool visible) noexcept { m_visible = visible; }
 		void Initialize(_In_ CWnd* pParent, _In_opt_ HDC hdc) override;
 		HDWP DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height) override;
 		int GetMinWidth() override;
@@ -22,6 +24,8 @@ namespace viewpane
 		void CommitUIValues() override {}
 
 		HWND m_hWndPreview{};
+		bool m_hasTheme{};
+		bool m_visible{true};
 		std::wstring m_themeName;
 		std::array<COLORREF, static_cast<size_t>(ui::uiColor::UIEnd)> m_colors{};
 	};

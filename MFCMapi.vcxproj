@@ -1051,8 +1051,10 @@
     <ClInclude Include="UI\Dialogs\Editors\TagArrayEditor.h" />
     <ClInclude Include="UI\UIFunctions.h" />
     <ClInclude Include="UI\Themes\Theme.h" />
+    <ClInclude Include="UI\Themes\ThemeFile.h" />
     <ClInclude Include="UI\Themes\Colors.h" />
     <ClInclude Include="UI\Themes\BuiltinThemes.h" />
+    <ClInclude Include="UI\Themes\CssNamedColors.h" />
     <ClInclude Include="UI\mapiui.h" />
   </ItemGroup>
   <ItemGroup>
@@ -1152,6 +1154,9 @@
     <ClCompile Include="UI\Dialogs\Editors\TagArrayEditor.cpp" />
     <ClCompile Include="UI\UIFunctions.cpp" />
     <ClCompile Include="UI\Themes\Theme.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="UI\Themes\ThemeFile.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="UI\ViewPane\AddInApprovalPane.cpp" />

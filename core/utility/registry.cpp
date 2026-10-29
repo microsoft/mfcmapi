@@ -80,12 +80,14 @@ namespace registry
 	boolRegKey themesEnabled{L"ThemesEnabled", false, false, IDS_THEMES_ENABLED};
 	boolRegKey automaticThemes{L"AutomaticThemes", false, false, NULL};
 	wstringRegKey activeTheme{L"ActiveTheme", L"standard", false, NULL};
+	wstringRegKey themeDirectory{L"ThemeDirectory", L"", false, NULL};
 
 	std::vector<__RegKey*> RegKeys = {
 		&uiTheme,
 		&themesEnabled,
 		&automaticThemes,
 		&activeTheme,
+		&themeDirectory,
 		&debugTag,
 		&debugToFile,
 		&debugFileName,

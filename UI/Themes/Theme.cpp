@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <UI/Themes/Theme.h>
-#include <UI/Themes/BuiltinThemes.h>
+#include <UI/Themes/ThemeFile.h>
 #include <UI/UIFunctions.h>
 #include <UI/Dialogs/BaseDialog.h>
 #include <core/utility/registry.h>
@@ -169,11 +169,28 @@ namespace ui::theme
 		ApplyThemeToAllWindows();
 	}
 
-	const std::vector<ThemeDefinition>& GetThemes()
+	static ThemeCatalog& GetCatalog()
 	{
-		static const std::vector<ThemeDefinition> themes(builtin::Definitions.begin(), builtin::Definitions.end());
+		static auto catalog = LoadThemeDirectory(registry::themeDirectory.szCurSTRING);
 
-		return themes;
+		return catalog;
+	}
+
+	const std::vector<ThemeDefinition>& GetThemes() { return GetCatalog().themes; }
+
+	const std::vector<ThemeFileError>& GetThemeFileErrors() { return GetCatalog().errors; }
+
+	void ReloadThemes(const std::wstring& directory)
+	{
+		auto replacement = LoadThemeDirectory(directory);
+		auto previous = std::move(GetCatalog());
+		GetCatalog() = std::move(replacement);
+
+		registry::themeDirectory = directory;
+		registry::WriteToRegistry();
+
+		// Keep the old applied definition alive until every window has refreshed.
+		ApplyThemeToAllWindows();
 	}
 
 	const ThemeDefinition* FindTheme(const std::wstring_view stableId)

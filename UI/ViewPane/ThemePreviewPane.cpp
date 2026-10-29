@@ -19,6 +19,7 @@ namespace viewpane
 	void
 	ThemePreviewPane::SetTheme(const ui::theme::ThemeDefinition& definition, const ui::theme::Appearance appearance)
 	{
+		m_hasTheme = true;
 		m_themeName = definition.name;
 		const auto effectiveAppearance = ui::GetEffectiveTheme() == ui::uiTheme::HighContrast
 											 ? ui::uiTheme::HighContrast
@@ -28,6 +29,14 @@ namespace viewpane
 		{
 			m_colors[index] = ui::theme::GetColor(definition, effectiveAppearance, static_cast<ui::uiColor>(index));
 		}
+
+		if (m_hWndPreview) InvalidateRect(m_hWndPreview, nullptr, true);
+	}
+
+	void ThemePreviewPane::ClearTheme()
+	{
+		m_hasTheme = false;
+		m_themeName.clear();
 
 		if (m_hWndPreview) InvalidateRect(m_hWndPreview, nullptr, true);
 	}
@@ -59,6 +68,10 @@ namespace viewpane
 	HDWP
 	ThemePreviewPane::DeferWindowPos(_In_ HDWP hWinPosInfo, const int x, const int y, const int width, const int height)
 	{
+		m_Header.ShowWindow(m_visible ? SW_SHOW : SW_HIDE);
+		::ShowWindow(m_hWndPreview, m_visible ? SW_SHOW : SW_HIDE);
+		if (!m_visible) return hWinPosInfo;
+
 		hWinPosInfo = ViewPane::DeferWindowPos(hWinPosInfo, x, y, width, height);
 
 		return ui::DeferWindowPos(
@@ -71,9 +84,12 @@ namespace viewpane
 			L"ThemePreviewPane::DeferWindowPos");
 	}
 
-	int ThemePreviewPane::GetMinWidth() { return max(ViewPane::GetMinWidth(), 18 * m_iEditHeight); }
+	int ThemePreviewPane::GetMinWidth() { return m_visible ? max(ViewPane::GetMinWidth(), 18 * m_iEditHeight) : 0; }
 
-	int ThemePreviewPane::GetFixedHeight() { return GetHeaderHeight() + 12 * m_iEditHeight + 6 * max(6, m_iMargin); }
+	int ThemePreviewPane::GetFixedHeight()
+	{
+		return m_visible ? GetHeaderHeight() + 12 * m_iEditHeight + 6 * max(6, m_iMargin) : 0;
+	}
 
 	bool ThemePreviewPane::containsWindow(const HWND hWnd) const noexcept
 	{
@@ -126,6 +142,14 @@ namespace viewpane
 
 		auto client = RECT{};
 		GetClientRect(hWnd, &client);
+
+		if (!pane->m_hasTheme)
+		{
+			FillRect(hdc, &client, ui::GetSysBrush(ui::uiColor::Background));
+			EndPaint(hWnd, &paint);
+
+			return 0;
+		}
 
 		const auto fillRect = [hdc](const RECT& rect, const COLORREF color) {
 			const auto brush = CreateSolidBrush(color);

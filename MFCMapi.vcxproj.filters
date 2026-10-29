@@ -378,6 +378,12 @@
     <ClCompile Include="UI\Themes\Theme.cpp">
       <Filter>Source Files\UI\Themes</Filter>
     </ClCompile>
+    <ClCompile Include="UI\Themes\ThemeFile.cpp">
+      <Filter>Source Files\UI\Themes</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Themes\ThemeFile.h">
+      <Filter>Source Files\UI\Themes</Filter>
+    </ClInclude>
     <ClInclude Include="UI\UIFunctions.h">
       <Filter>Source Files\UI</Filter>
     </ClInclude>
@@ -385,6 +391,9 @@
       <Filter>Source Files\UI\Themes</Filter>
     </ClInclude>
     <ClInclude Include="UI\Themes\BuiltinThemes.h">
+      <Filter>Source Files\UI\Themes</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Themes\CssNamedColors.h">
       <Filter>Source Files\UI\Themes</Filter>
     </ClInclude>
     <ClInclude Include="UI\Themes\Colors.h">

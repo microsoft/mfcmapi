@@ -113,12 +113,11 @@ namespace dialog::editor
 			}
 			if (advanced && section == IDS_OPTIONS_ADDINS)
 			{
-				AddPane(
-					viewpane::TextPane::CreateMultiLinePane(
-						ADDIN_DIAGNOSTICS,
-						IDS_OPTIONS_DIAGNOSTICS,
-						addin::GetAddInReport(m_values.at(&registry::addInDirectory).text),
-						true));
+				AddPane(viewpane::TextPane::CreateMultiLinePane(
+					ADDIN_DIAGNOSTICS,
+					IDS_OPTIONS_DIAGNOSTICS,
+					addin::GetAddInReport(m_values.at(&registry::addInDirectory).text),
+					true));
 				AddPane(viewpane::AddInApprovalPane::Create(ADDIN_APPROVAL));
 			}
 		}
@@ -132,9 +131,8 @@ namespace dialog::editor
 
 		if (registry::regOptionType::check == regKey->ulRegOptType)
 		{
-			AddPane(
-				viewpane::CheckPane::Create(
-					regKey->uiOptionsPrompt, regKey->uiOptionsPrompt, 0 != value.number, false));
+			AddPane(viewpane::CheckPane::Create(
+				regKey->uiOptionsPrompt, regKey->uiOptionsPrompt, 0 != value.number, false));
 		}
 		else if (registry::regOptionType::string == regKey->ulRegOptType)
 		{
@@ -147,19 +145,17 @@ namespace dialog::editor
 			}
 			else if (regKey == &registry::debugFileName)
 			{
-				AddPane(
-					viewpane::PathPane::Create(
-						regKey->uiOptionsPrompt,
-						regKey->uiOptionsPrompt,
-						viewpane::pathType::fileSave,
-						value.text,
-						L"log"));
+				AddPane(viewpane::PathPane::Create(
+					regKey->uiOptionsPrompt,
+					regKey->uiOptionsPrompt,
+					viewpane::pathType::fileSave,
+					value.text,
+					L"log"));
 			}
 			else
 			{
-				AddPane(
-					viewpane::TextPane::CreateSingleLinePane(
-						regKey->uiOptionsPrompt, regKey->uiOptionsPrompt, value.text, false));
+				AddPane(viewpane::TextPane::CreateSingleLinePane(
+					regKey->uiOptionsPrompt, regKey->uiOptionsPrompt, value.text, false));
 			}
 		}
 		else if (registry::regOptionType::stringHex == regKey->ulRegOptType)

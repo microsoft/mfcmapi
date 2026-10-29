@@ -17,6 +17,7 @@ namespace viewpane
 		void SetDropDownSelection(_In_ const std::wstring& szText);
 		void SetDropDownSelection(int iSelection);
 		void InsertDropString(_In_ const std::wstring& szText, ULONG ulValue);
+		void ClearDropStrings();
 		_Check_return_ std::wstring GetDropStringUseControl() const;
 		_Check_return_ int GetDropDownSelection() const;
 		_Check_return_ DWORD_PTR GetDropDownSelectionValue() const;

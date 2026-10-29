@@ -209,4 +209,5 @@ namespace registry
 	extern boolRegKey themesEnabled;
 	extern boolRegKey automaticThemes;
 	extern wstringRegKey activeTheme;
+	extern wstringRegKey themeDirectory;
 } // namespace registry

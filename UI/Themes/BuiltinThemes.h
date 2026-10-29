@@ -5,11 +5,9 @@
 namespace ui::theme::builtin
 {
 	// Complete light/dark palettes follow uiColor order.
-	inline constexpr ThemeDefinition Standard = {
+	inline const ThemeDefinition Standard = {
 		L"standard",
 		L"Standard",
-		L"Standard",
-		L"",
 		{ScheduleKind::None, 0, 0, 0, 0},
 		{{{
 			{color::White, COLOR_WINDOW, COLOR_WINDOW}, // Background
@@ -68,15 +66,15 @@ namespace ui::theme::builtin
 			{color::Coral, -1, -1}, // TestOrange
 		}}}};
 
-	inline constexpr std::array<ThemeDefinition, 5> Definitions = {{
+	inline const std::array<ThemeDefinition, 5> Definitions = {{
 		Standard,
 		[] {
 			auto theme = Standard;
 			theme.stableId = L"season.spring";
 			theme.name = L"Spring";
-			theme.category = L"Seasonal";
 			theme.schedule = {ScheduleKind::AnnualDateRange, 3, 1, 5, 31, 0, true};
 
+			theme.light.values[static_cast<size_t>(uiColor::Background)] = {color::Honeydew, -1, COLOR_WINDOW};
 			theme.light.values[static_cast<size_t>(uiColor::Glow)] = {color::DarkGreen, -1, COLOR_HIGHLIGHT};
 			theme.light.values[static_cast<size_t>(uiColor::GlowBackground)] = {color::Honeydew, -1, COLOR_HIGHLIGHT};
 			theme.light.values[static_cast<size_t>(uiColor::GlowText)] = {color::DarkGreen, -1, COLOR_HIGHLIGHTTEXT};
@@ -112,9 +110,9 @@ namespace ui::theme::builtin
 			auto theme = Standard;
 			theme.stableId = L"season.summer";
 			theme.name = L"Summer";
-			theme.category = L"Seasonal";
 			theme.schedule = {ScheduleKind::AnnualDateRange, 6, 1, 8, 31, 0, true};
 
+			theme.light.values[static_cast<size_t>(uiColor::Background)] = {color::Azure, -1, COLOR_WINDOW};
 			theme.light.values[static_cast<size_t>(uiColor::Glow)] = {color::Teal, -1, COLOR_HIGHLIGHT};
 			theme.light.values[static_cast<size_t>(uiColor::GlowBackground)] = {color::Azure, -1, COLOR_HIGHLIGHT};
 			theme.light.values[static_cast<size_t>(uiColor::GlowText)] = {color::MidnightBlue, -1, COLOR_HIGHLIGHTTEXT};
@@ -148,9 +146,9 @@ namespace ui::theme::builtin
 			auto theme = Standard;
 			theme.stableId = L"season.autumn";
 			theme.name = L"Autumn";
-			theme.category = L"Seasonal";
 			theme.schedule = {ScheduleKind::AnnualDateRange, 9, 1, 11, 30, 0, true};
 
+			theme.light.values[static_cast<size_t>(uiColor::Background)] = {color::OldLace, -1, COLOR_WINDOW};
 			theme.light.values[static_cast<size_t>(uiColor::Glow)] = {color::SaddleBrown, -1, COLOR_HIGHLIGHT};
 			theme.light.values[static_cast<size_t>(uiColor::GlowBackground)] = {color::OldLace, -1, COLOR_HIGHLIGHT};
 			theme.light.values[static_cast<size_t>(uiColor::GlowText)] = {color::Maroon, -1, COLOR_HIGHLIGHTTEXT};
@@ -183,9 +181,9 @@ namespace ui::theme::builtin
 			auto theme = Standard;
 			theme.stableId = L"season.winter";
 			theme.name = L"Winter";
-			theme.category = L"Seasonal";
 			theme.schedule = {ScheduleKind::AnnualDateRange, 12, 1, 2, 29, 0, true};
 
+			theme.light.values[static_cast<size_t>(uiColor::Background)] = {color::AliceBlue, -1, COLOR_WINDOW};
 			theme.light.values[static_cast<size_t>(uiColor::Glow)] = {color::RoyalBlue, -1, COLOR_HIGHLIGHT};
 			theme.light.values[static_cast<size_t>(uiColor::GlowBackground)] = {color::AliceBlue, -1, COLOR_HIGHLIGHT};
 			theme.light.values[static_cast<size_t>(uiColor::GlowText)] = {color::MidnightBlue, -1, COLOR_HIGHLIGHTTEXT};

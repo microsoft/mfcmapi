@@ -4,8 +4,10 @@
 #include <UI/ViewPane/ThemePreviewPane.h>
 #include <UI/UIFunctions.h>
 #include <UI/Themes/Theme.h>
+#include <UI/Themes/ThemeFile.h>
 #include <core/addin/mfcmapi.h>
 #include <core/utility/registry.h>
+#include <filesystem>
 
 namespace dialog::editor
 {
@@ -16,13 +18,19 @@ namespace dialog::editor
 
 	private:
 		DECLARE_MESSAGE_MAP()
+		BOOL OnInitDialog() override;
 		afx_msg LRESULT OnThemeChanged(WPARAM wParam, LPARAM lParam);
 		_Check_return_ ULONG HandleChange(UINT nID) override;
 		void UpdatePreview();
 		void ApplySelection(int selection);
+		void PopulateThemes();
+		void OnEditAction1() override;
+		void OnOK() override;
 
 		std::wstring m_selectedTheme;
 		std::shared_ptr<viewpane::ThemePreviewPane> m_previewPane;
+		bool m_reloading{};
+		bool m_initialized{};
 	};
 
 	enum ThemeFields
@@ -30,7 +38,9 @@ namespace dialog::editor
 		THEME_APPEARANCE,
 		THEME_ENABLED,
 		THEME_AUTOMATIC,
+		THEME_DIRECTORY,
 		THEME_SELECTION,
+		THEME_FILE_STATUS,
 		THEME_PREVIEW
 	};
 
@@ -48,7 +58,14 @@ namespace dialog::editor
 	}
 
 	CThemes::CThemes(_In_ CWnd* parent, const std::wstring& selectedTheme)
-		: CEditor(parent, IDS_THEME_SELECTION_TITLE, NULL, CEDITOR_BUTTON_OK),
+		: CEditor(
+			  parent,
+			  IDS_THEME_SELECTION_TITLE,
+			  NULL,
+			  CEDITOR_BUTTON_OK | CEDITOR_BUTTON_ACTION1,
+			  IDS_THEME_RELOAD,
+			  NULL,
+			  NULL),
 		  m_selectedTheme(
 			  ui::theme::FindTheme(selectedTheme) ? selectedTheme : std::wstring(ui::theme::GetDefaultTheme().stableId))
 	{
@@ -70,24 +87,21 @@ namespace dialog::editor
 		AddPane(
 			viewpane::CheckPane::Create(THEME_AUTOMATIC, GetScheduledThemeLabel(), registry::automaticThemes, false));
 
-		const auto& themes = ui::theme::GetThemes();
+		const auto directory = viewpane::PathPane::Create(
+			THEME_DIRECTORY, IDS_THEME_DIRECTORY, viewpane::pathType::directory, registry::themeDirectory.szCurSTRING);
+		directory->SetHelpText(IDS_THEME_DIRECTORY_HELP);
+		AddPane(directory);
+
 		const auto choices =
 			viewpane::DropDownPane::Create(THEME_SELECTION, IDS_THEME_SELECTION_CHOICE, 0, nullptr, true);
-		for (size_t index = 0; index < themes.size(); ++index)
-		{
-			choices->InsertDropString(std::wstring(themes[index].name), static_cast<ULONG>(index));
-		}
-
-		choices->SetDropDownSelection(
-			static_cast<int>(std::distance(
-				themes.begin(), std::find_if(themes.begin(), themes.end(), [this](const auto& definition) {
-					return definition.stableId == m_selectedTheme;
-				}))));
 		AddPane(choices);
 
 		m_previewPane = viewpane::ThemePreviewPane::Create(THEME_PREVIEW, IDS_THEME_PREVIEW);
 		AddPane(m_previewPane);
 
+		AddPane(viewpane::TextPane::CreateMultiLinePane(THEME_FILE_STATUS, IDS_THEME_FILE_STATUS, true));
+
+		PopulateThemes();
 		UpdatePreview();
 	}
 
@@ -95,8 +109,20 @@ namespace dialog::editor
 	ON_MESSAGE(WM_MFCMAPI_THEMECHANGED, OnThemeChanged)
 	END_MESSAGE_MAP()
 
+	BOOL CThemes::OnInitDialog()
+	{
+		const auto result = CEditor::OnInitDialog();
+		m_initialized = true;
+
+		static_cast<void>(OnThemeChanged(0, 0));
+
+		return result;
+	}
+
 	LRESULT CThemes::OnThemeChanged(WPARAM /*wParam*/, LPARAM /*lParam*/)
 	{
+		if (!m_initialized || m_reloading) return 0;
+
 		const auto appearance = std::dynamic_pointer_cast<viewpane::DropDownPane>(GetPane(THEME_APPEARANCE));
 		if (appearance) appearance->SetDropDownSelection(static_cast<int>(registry::uiTheme.ulCurDWORD));
 
@@ -105,29 +131,91 @@ namespace dialog::editor
 		{
 			automatic->SetCheck(registry::automaticThemes);
 			automatic->SetCheckLabel(GetScheduledThemeLabel());
-			OnRecalcLayout();
 		}
+
+		if (!IsDirty(THEME_DIRECTORY)) SetStringW(THEME_DIRECTORY, registry::themeDirectory.szCurSTRING);
 
 		const auto& definition = ui::theme::ResolveTheme(registry::activeTheme.szCurSTRING, true);
 		m_selectedTheme = std::wstring(definition.stableId);
 
-		const auto choices = std::dynamic_pointer_cast<viewpane::DropDownPane>(GetPane(THEME_SELECTION));
-		if (choices)
-		{
-			const auto& themes = ui::theme::GetThemes();
-			const auto selected = std::find_if(themes.begin(), themes.end(), [&definition](const auto& candidate) {
-				return candidate.stableId == definition.stableId;
-			});
-			choices->SetDropDownSelection(static_cast<int>(std::distance(themes.begin(), selected)));
-			UpdatePreview();
-		}
+		PopulateThemes();
+		UpdatePreview();
+		OnRecalcLayout();
 
 		return 0;
+	}
+
+	void CThemes::PopulateThemes()
+	{
+		const auto choices = std::dynamic_pointer_cast<viewpane::DropDownPane>(GetPane(THEME_SELECTION));
+		if (!choices) return;
+
+		choices->ClearDropStrings();
+
+		const auto& themes = ui::theme::GetThemes();
+		auto selection = 0;
+		for (size_t index = 0; index < themes.size(); ++index)
+		{
+			const auto& theme = themes[index];
+			const auto duplicates = std::count_if(
+				themes.begin(), themes.end(), [&theme](const auto& candidate) { return candidate.name == theme.name; });
+			const auto label = duplicates > 1 ? theme.name + L" (" + theme.stableId + L")" : theme.name;
+			choices->InsertDropString(label, static_cast<ULONG>(index));
+
+			if (theme.stableId == m_selectedTheme) selection = static_cast<int>(index);
+		}
+
+		const auto& errors = ui::theme::GetThemeFileErrors();
+		auto status = std::wstring{};
+		for (size_t index = 0; index < errors.size(); ++index)
+		{
+			const auto& error = errors[index];
+			const auto filename = std::filesystem::path{error.path}.filename().wstring();
+
+			choices->InsertDropString(
+				strings::formatmessage(
+					IDS_THEME_FILE_IN_ERROR, filename.empty() ? error.path.c_str() : filename.c_str()),
+				static_cast<ULONG>(themes.size() + index));
+
+			if (!status.empty()) status += L"\r\n";
+			status += error.path + L": " + error.message;
+		}
+
+		choices->SetDropDownSelection(selection);
+		SetStringW(THEME_FILE_STATUS, status);
+		std::dynamic_pointer_cast<viewpane::TextPane>(GetPane(THEME_FILE_STATUS))->SetVisible(!status.empty());
+	}
+
+	void CThemes::OnEditAction1()
+	{
+		m_reloading = true;
+		ui::theme::ReloadThemes(GetStringW(THEME_DIRECTORY));
+		m_reloading = false;
+
+		static_cast<void>(OnThemeChanged(0, 0));
+		OnRecalcLayout();
+	}
+
+	void CThemes::OnOK()
+	{
+		if (IsDirty(THEME_DIRECTORY) && GetStringW(THEME_DIRECTORY) != registry::themeDirectory.szCurSTRING)
+		{
+			OnEditAction1();
+		}
+
+		CEditor::OnOK();
 	}
 
 	_Check_return_ ULONG CThemes::HandleChange(const UINT nID)
 	{
 		const auto paneID = CEditor::HandleChange(nID);
+
+		if (!m_initialized || m_reloading) return paneID;
+
+		if (IsDirty(THEME_DIRECTORY) && GetStringW(THEME_DIRECTORY) != registry::themeDirectory.szCurSTRING)
+		{
+			OnEditAction1();
+		}
 
 		if (paneID == THEME_APPEARANCE)
 		{
@@ -147,8 +235,26 @@ namespace dialog::editor
 		}
 		else if (paneID == THEME_SELECTION)
 		{
-			ApplySelection(GetDropDown(THEME_SELECTION));
+			const auto selection = GetDropDown(THEME_SELECTION);
+			const auto& themes = ui::theme::GetThemes();
+			if (selection >= static_cast<int>(themes.size()))
+			{
+				const auto& errors = ui::theme::GetThemeFileErrors();
+				const auto errorIndex = static_cast<size_t>(selection) - themes.size();
+				if (errorIndex < errors.size())
+				{
+					SetStringW(THEME_FILE_STATUS, errors[errorIndex].path + L": " + errors[errorIndex].message);
+				}
+
+				UpdatePreview();
+				OnRecalcLayout();
+
+				return paneID;
+			}
+
+			ApplySelection(selection);
 			UpdatePreview();
+			OnRecalcLayout();
 		}
 
 		return paneID;
@@ -167,16 +273,22 @@ namespace dialog::editor
 	{
 		const auto selection = GetDropDown(THEME_SELECTION);
 		const auto& themes = ui::theme::GetThemes();
-		const auto selectedTheme = selection >= 0 && selection < static_cast<int>(themes.size())
-									   ? &themes[selection]
-									   : ui::theme::FindTheme(m_selectedTheme);
-		if (!selectedTheme) return;
+		const auto selectedTheme =
+			selection >= 0 && selection < static_cast<int>(themes.size()) ? &themes[selection] : nullptr;
+		m_previewPane->SetVisible(selectedTheme != nullptr);
+		if (!selectedTheme)
+		{
+			m_previewPane->ClearTheme();
+
+			return;
+		}
 
 		const auto& definition = *selectedTheme;
 		const auto appearance =
 			ui::GetEffectiveTheme() == ui::uiTheme::Dark ? ui::theme::Appearance::Dark : ui::theme::Appearance::Light;
 		m_previewPane->SetTheme(definition, appearance);
 	}
+
 	void DisplayThemesDlg(_In_ CWnd* parent)
 	{
 		CThemes themes(parent, registry::activeTheme.szCurSTRING);

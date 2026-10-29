@@ -3,6 +3,7 @@
 #include <Windows.h>
 #include <array>
 #include <chrono>
+#include <string>
 #include <string_view>
 #include <vector>
 
@@ -106,10 +107,8 @@ namespace ui::theme
 
 	struct ThemeDefinition
 	{
-		std::wstring_view stableId;
-		std::wstring_view name;
-		std::wstring_view category;
-		std::wstring_view variant;
+		std::wstring stableId;
+		std::wstring name;
 		Schedule schedule;
 		ThemeColors light;
 		ThemeColors dark;
@@ -142,6 +141,7 @@ namespace ui::theme
 	void SetThemesEnabled(bool enabled);
 	void SetAutomaticThemes(bool enabled);
 	void CycleTheme();
+	void ReloadThemes(const std::wstring& directory);
 	bool TryGetColor(
 		const ThemeDefinition& definition,
 		Appearance appearance,

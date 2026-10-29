@@ -181,6 +181,22 @@ namespace viewpane
 	void DropDownPane::InsertDropString(_In_ const std::wstring& szText, ULONG ulValue)
 	{
 		m_DropList.emplace_back(szText, ulValue);
+
+		if (m_bInitialized)
+		{
+			const auto index = m_DropDown.AddString(strings::wstringTotstring(szText).c_str());
+			m_DropDown.SetItemData(index, ulValue);
+		}
+	}
+
+	void DropDownPane::ClearDropStrings()
+	{
+		m_DropList.clear();
+		m_iDropSelection = CB_ERR;
+		m_iDropSelectionValue = 0;
+		m_lpszSelectionString.clear();
+
+		if (m_bInitialized) m_DropDown.ResetContent();
 	}
 
 	void DropDownPane::CommitUIValues()
