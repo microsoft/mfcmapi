@@ -25,6 +25,7 @@ namespace viewpane
 		_Check_return_ int GetDropDown() const;
 		_Check_return_ DWORD_PTR GetDropDownValue() const;
 		bool containsWindow(HWND hWnd) const noexcept override;
+		bool RouteMouseWheel(const MSG& message) const;
 
 	protected:
 		void SetSelection(DWORD_PTR iSelection);

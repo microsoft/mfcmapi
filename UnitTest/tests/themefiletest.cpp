@@ -129,7 +129,7 @@ namespace themefiletest
 				{ui::uiColor::Text, ui::uiColor::Background, L"text/background", 4.5},
 				{ui::uiColor::TextDisabled, ui::uiColor::Background, L"disabled menu text/background", 3.0},
 				{ui::uiColor::TextDisabledSelected,
-				 ui::uiColor::SelectedBackground,
+				 ui::uiColor::DisabledSelectedBackground,
 				 L"disabled selected menu text/background",
 				 4.5},
 				{ui::uiColor::TextReadOnly, ui::uiColor::BackgroundReadOnly, L"read-only text/background", 4.5},
@@ -213,21 +213,26 @@ namespace themefiletest
 					const auto& colors = appearance == ui::uiTheme::Light ? theme.light : theme.dark;
 					const auto ratio = ContrastRatio(
 						colors.values[static_cast<size_t>(ui::uiColor::TextDisabledSelected)].value,
-						colors.values[static_cast<size_t>(ui::uiColor::SelectedBackground)].value);
+						colors.values[static_cast<size_t>(ui::uiColor::DisabledSelectedBackground)].value);
+					const auto borderContrast = ContrastRatio(
+						colors.values[static_cast<size_t>(ui::uiColor::DisabledSelectedBorder)].value,
+						colors.values[static_cast<size_t>(ui::uiColor::DisabledSelectedBackground)].value);
 					const auto selectedDifference = ContrastRatio(
 						colors.values[static_cast<size_t>(ui::uiColor::TextDisabledSelected)].value,
 						colors.values[static_cast<size_t>(ui::uiColor::GlowText)].value);
 					const auto normalDifference = ContrastRatio(
 						colors.values[static_cast<size_t>(ui::uiColor::TextDisabled)].value,
 						colors.values[static_cast<size_t>(ui::uiColor::Text)].value);
-					if (ratio < 4.5 || selectedDifference < 3.0 || normalDifference < 3.0 ||
+					if (ratio < 4.5 || borderContrast < 3.0 || selectedDifference < 3.0 || normalDifference < 3.0 ||
 						colors.values[static_cast<size_t>(ui::uiColor::TextDisabled)].highContrast ==
 							colors.values[static_cast<size_t>(ui::uiColor::Text)].highContrast ||
 						colors.values[static_cast<size_t>(ui::uiColor::TextDisabledSelected)].highContrast ==
 							colors.values[static_cast<size_t>(ui::uiColor::GlowText)].highContrast)
 					{
 						violations << theme.name << L" (" << (appearance == ui::uiTheme::Light ? L"light" : L"dark")
-								   << L"): enabled/disabled menu text distinction or selected contrast is insufficient\n";
+								   << L"): disabled text/fill " << ratio << L":1, border/fill " << borderContrast
+								   << L":1, selected text difference " << selectedDifference
+								   << L":1, normal text difference " << normalDifference << L":1\n";
 					}
 				}
 			}
@@ -314,10 +319,10 @@ namespace themefiletest
 				"colors": {
 					"light": {
 						"Text": { "value": "#123456", "highContrast": 8 },
-						"TextDisabledSelected": { "value": "#111111", "highContrast": 14 }
+						"SelectedBackground": { "value": "#111111", "highContrast": 13 }
 					},
 					"dark": {
-						"TextDisabledSelected": { "value": "#FFFFFF", "highContrast": 14 }
+						"SelectedBackground": { "value": "#FFFFFF", "highContrast": 13 }
 					}
 				}
 			})";
@@ -331,12 +336,14 @@ namespace themefiletest
 				const auto& dark = theme.dark.values[index];
 				const auto& expectedDark = standard.dark.values[index];
 				const auto& light = theme.light.values[index];
-				if (index == static_cast<size_t>(ui::uiColor::TextDisabledSelected))
+				if (index == static_cast<size_t>(ui::uiColor::SelectedBackground))
 				{
 					Assert::AreEqual(RGB(0xFF, 0xFF, 0xFF), dark.value);
-					Assert::AreEqual(14, dark.highContrast);
+					Assert::AreEqual(-1, dark.system);
+					Assert::AreEqual(13, dark.highContrast);
 					Assert::AreEqual(RGB(0x11, 0x11, 0x11), light.value);
-					Assert::AreEqual(14, light.highContrast);
+					Assert::AreEqual(-1, light.system);
+					Assert::AreEqual(13, light.highContrast);
 				}
 				else
 				{
@@ -361,7 +368,7 @@ namespace themefiletest
 			}
 		}
 
-		TEST_METHOD(SelectedDisabledTextIsRequiredAndCanBeCustomized)
+		TEST_METHOD(DisabledSelectedColorsCanBeCustomized)
 		{
 			const auto json = LR"({
 				"schemaVersion": 1,
@@ -370,11 +377,15 @@ namespace themefiletest
 				"colors": {
 					"light": {
 						"GlowText": { "value": "#123456", "highContrast": 14 },
-						"TextDisabledSelected": { "value": "#ABCDEF", "highContrast": 14 }
+						"TextDisabledSelected": { "value": "#ABCDEF", "highContrast": 14 },
+						"DisabledSelectedBackground": { "value": "#F0F0F0", "highContrast": 15 },
+						"DisabledSelectedBorder": { "value": "#334455", "highContrast": 14 }
 					},
 					"dark": {
 						"GlowText": { "value": "#654321", "highContrast": 14 },
-						"TextDisabledSelected": { "value": "#FEDCBA", "highContrast": 14 }
+						"TextDisabledSelected": { "value": "#FEDCBA", "highContrast": 14 },
+						"DisabledSelectedBackground": { "value": "#101010", "highContrast": 15 },
+						"DisabledSelectedBorder": { "value": "#CCDDEE", "highContrast": 14 }
 					}
 				}
 			})";
@@ -391,9 +402,15 @@ namespace themefiletest
 			Assert::AreEqual(
 				RGB(0xFE, 0xDC, 0xBA),
 				theme.dark.values[static_cast<size_t>(ui::uiColor::TextDisabledSelected)].value);
+			Assert::AreEqual(
+				RGB(0xF0, 0xF0, 0xF0),
+				theme.light.values[static_cast<size_t>(ui::uiColor::DisabledSelectedBackground)].value);
+			Assert::AreEqual(
+				RGB(0xCC, 0xDD, 0xEE),
+				theme.dark.values[static_cast<size_t>(ui::uiColor::DisabledSelectedBorder)].value);
 		}
 
-		TEST_METHOD(SelectedDisabledTextCannotBeOmitted)
+		TEST_METHOD(EmptyPalettesInheritAllStandardColors)
 		{
 			const auto json = LR"({
 				"schemaVersion": 1,
@@ -401,13 +418,25 @@ namespace themefiletest
 				"name": "Missing Disabled Selected",
 				"colors": {
 					"light": {},
-					"dark": { "TextDisabledSelected": { "value": "#FFFFFF", "highContrast": 14 } }
+					"dark": {}
 				}
 			})";
 			auto theme = ui::theme::ThemeDefinition{};
 			auto error = std::wstring{};
-			Assert::IsFalse(ui::theme::ParseThemeFile(json, theme, error));
-			Assert::IsTrue(error.find(L"TextDisabledSelected") != std::wstring::npos);
+			Assert::IsTrue(ui::theme::ParseThemeFile(json, theme, error), error.c_str());
+
+			const auto& standard = ui::theme::GetDefaultTheme();
+			for (const auto appearance : {ui::uiTheme::Light, ui::uiTheme::Dark})
+			{
+				const auto& actual = appearance == ui::uiTheme::Light ? theme.light : theme.dark;
+				const auto& expected = appearance == ui::uiTheme::Light ? standard.light : standard.dark;
+				for (size_t index = 0; index < static_cast<size_t>(ui::uiColor::UIEnd); ++index)
+				{
+					Assert::AreEqual(expected.values[index].value, actual.values[index].value);
+					Assert::AreEqual(expected.values[index].system, actual.values[index].system);
+					Assert::AreEqual(expected.values[index].highContrast, actual.values[index].highContrast);
+				}
+			}
 		}
 
 		TEST_METHOD(InvalidDefinitionsReportErrorsWithoutChangingTheOutput)

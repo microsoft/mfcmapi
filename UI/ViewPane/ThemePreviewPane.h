@@ -26,6 +26,7 @@ namespace viewpane
 		HWND m_hWndPreview{};
 		bool m_hasTheme{};
 		bool m_visible{true};
+		bool m_highContrast{};
 		std::wstring m_themeName;
 		std::array<COLORREF, static_cast<size_t>(ui::uiColor::UIEnd)> m_colors{};
 	};

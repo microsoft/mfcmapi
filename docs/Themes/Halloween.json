@@ -49,6 +49,7 @@
       "FrameSelected": { "value": "Plum", "highContrast": 8 },
       "FrameUnselected": { "value": "Gray", "highContrast": 17 },
       "SelectedBackground": { "value": "#E6C4FF", "highContrast": 13 },
+      "DisabledSelectedBackground": { "value": "#E6C4FF", "highContrast": 15 },
       "Arrow": { "value": "Orange", "highContrast": 8 },
       "Text": { "value": "#F1F1F1", "highContrast": 8 },
       "TextDisabled": { "value": "#6a6a6a", "highContrast": 17 },

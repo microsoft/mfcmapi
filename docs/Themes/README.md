@@ -63,7 +63,7 @@ Menus use different palette roles for enabled and disabled commands. `Text` is
 the enabled command color; `TextDisabled` is used when a command is disabled.
 When the pointer highlights a command, enabled text uses `GlowText` on
 `SelectedBackground`, while a disabled command uses `TextDisabledSelected` on
-that same selection fill.
+`DisabledSelectedBackground` with a one-pixel `DisabledSelectedBorder` outline.
 
 Disabled commands should be recognizable as disabled, but still easy to read.
 Choose disabled colors that are visibly different from their enabled

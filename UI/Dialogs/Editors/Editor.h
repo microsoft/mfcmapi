@@ -140,6 +140,7 @@ namespace dialog::editor
 		// Called to enable/disable buttons based on number of items
 		void UpdateButtons() const;
 		BOOL OnInitDialog() override;
+		BOOL PreTranslateMessage(MSG* message) override;
 		void OnOK() override;
 		void OnRecalcLayout();
 

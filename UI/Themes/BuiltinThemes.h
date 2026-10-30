@@ -18,10 +18,12 @@ namespace ui::theme::builtin
 			{color::Black, COLOR_WINDOWTEXT, COLOR_WINDOWTEXT}, // FrameSelected
 			{color::Gray, COLOR_3DLIGHT, COLOR_GRAYTEXT}, // FrameUnselected
 			{color::custom::HeroSelectionBlue, -1, COLOR_HIGHLIGHT}, // SelectedBackground
+			{color::LightGray, -1, COLOR_BTNFACE}, // DisabledSelectedBackground
+			{color::custom::HeroBlue, -1, COLOR_HIGHLIGHT}, // DisabledSelectedBorder
 			{color::Gray, COLOR_GRAYTEXT, COLOR_WINDOWTEXT}, // Arrow
 			{color::Black, COLOR_WINDOWTEXT, COLOR_WINDOWTEXT}, // Text
 			{color::Gray, COLOR_GRAYTEXT, COLOR_GRAYTEXT}, // TextDisabled
-			{RGB(0x63, 0x63, 0x63), -1, COLOR_GRAYTEXT}, // TextDisabledSelected
+			{RGB(0x5A, 0x5A, 0x5A), -1, COLOR_GRAYTEXT}, // TextDisabledSelected
 			{color::Black, -1, COLOR_WINDOWTEXT}, // TextReadOnly
 			{color::Magenta, -1, -1}, // BitmapTransBack
 			{color::Cyan, -1, -1}, // BitmapTransFore
@@ -47,10 +49,12 @@ namespace ui::theme::builtin
 			{color::LightGray, -1, COLOR_WINDOWTEXT}, // FrameSelected
 			{RGB(0x5A, 0x5A, 0x5A), -1, COLOR_GRAYTEXT}, // FrameUnselected
 			{RGB(0x59, 0x79, 0x98), -1, COLOR_HIGHLIGHT}, // SelectedBackground
+			{color::custom::CharcoalGray, -1, COLOR_BTNFACE}, // DisabledSelectedBackground
+			{color::LightSkyBlue, -1, COLOR_HIGHLIGHT}, // DisabledSelectedBorder
 			{RGB(0xC8, 0xC8, 0xC8), -1, COLOR_WINDOWTEXT}, // Arrow
 			{RGB(0xF1, 0xF1, 0xF1), -1, COLOR_WINDOWTEXT}, // Text
 			{RGB(0x8A, 0x8A, 0x8A), -1, COLOR_GRAYTEXT}, // TextDisabled
-			{color::Black, -1, COLOR_GRAYTEXT}, // TextDisabledSelected
+			{RGB(0x94, 0x94, 0x94), -1, COLOR_GRAYTEXT}, // TextDisabledSelected
 			{RGB(0xD6, 0xD6, 0xD6), -1, COLOR_WINDOWTEXT}, // TextReadOnly
 			{color::Magenta, -1, -1}, // BitmapTransBack
 			{color::Cyan, -1, -1}, // BitmapTransFore
@@ -79,7 +83,7 @@ namespace ui::theme::builtin
 			theme.light.values[static_cast<size_t>(uiColor::Background)] = {color::Honeydew, -1, COLOR_WINDOW};
 			theme.light.values[static_cast<size_t>(uiColor::Glow)] = {color::DarkGreen, -1, COLOR_HIGHLIGHT};
 			theme.light.values[static_cast<size_t>(uiColor::GlowBackground)] = {color::Honeydew, -1, COLOR_HIGHLIGHT};
-			theme.light.values[static_cast<size_t>(uiColor::GlowText)] = {color::DarkGreen, -1, COLOR_HIGHLIGHTTEXT};
+			theme.light.values[static_cast<size_t>(uiColor::GlowText)] = {color::Black, -1, COLOR_HIGHLIGHTTEXT};
 			theme.light.values[static_cast<size_t>(uiColor::FrameSelected)] = {color::SteelBlue, -1, COLOR_WINDOWTEXT};
 			theme.light.values[static_cast<size_t>(uiColor::SelectedBackground)] = {
 				color::PaleGreen, -1, COLOR_HIGHLIGHT};
@@ -108,13 +112,17 @@ namespace ui::theme::builtin
 
 			theme.light.values[static_cast<size_t>(uiColor::GlowText)] = {color::Black, -1, COLOR_HIGHLIGHTTEXT};
 			theme.light.values[static_cast<size_t>(uiColor::TextDisabledSelected)] = {
-				RGB(0x65, 0x65, 0x65), -1, COLOR_GRAYTEXT};
+				RGB(0x5A, 0x5A, 0x5A), -1, COLOR_GRAYTEXT};
 			theme.dark.values[static_cast<size_t>(uiColor::GlowBackground)] = {color::LightGreen, -1, COLOR_HIGHLIGHT};
 			theme.dark.values[static_cast<size_t>(uiColor::GlowText)] = {color::Black, -1, COLOR_HIGHLIGHTTEXT};
 			theme.dark.values[static_cast<size_t>(uiColor::SelectedBackground)] = {
 				color::PaleGreen, -1, COLOR_HIGHLIGHT};
 			theme.dark.values[static_cast<size_t>(uiColor::TextDisabledSelected)] = {
-				RGB(0x65, 0x65, 0x65), -1, COLOR_GRAYTEXT};
+				RGB(0x94, 0x94, 0x94), -1, COLOR_GRAYTEXT};
+			theme.light.values[static_cast<size_t>(uiColor::DisabledSelectedBorder)] =
+				theme.light.values[static_cast<size_t>(uiColor::Glow)];
+			theme.dark.values[static_cast<size_t>(uiColor::DisabledSelectedBorder)] =
+				theme.dark.values[static_cast<size_t>(uiColor::Glow)];
 			return theme;
 		}(),
 		[] {
@@ -152,14 +160,18 @@ namespace ui::theme::builtin
 			theme.dark.values[static_cast<size_t>(uiColor::MenuGutter)] = {color::DarkSlateGray, -1, COLOR_BTNFACE};
 
 			theme.light.values[static_cast<size_t>(uiColor::TextDisabledSelected)] = {
-				color::White, -1, COLOR_GRAYTEXT};
+				RGB(0x5A, 0x5A, 0x5A), -1, COLOR_GRAYTEXT};
 			theme.dark.values[static_cast<size_t>(uiColor::GlowBackground)] = {
 				RGB(0x00, 0x8B, 0x8B), -1, COLOR_HIGHLIGHT};
 			theme.dark.values[static_cast<size_t>(uiColor::GlowText)] = {color::Black, -1, COLOR_HIGHLIGHTTEXT};
 			theme.dark.values[static_cast<size_t>(uiColor::SelectedBackground)] = {
 				RGB(0xE0, 0xFF, 0xFF), -1, COLOR_HIGHLIGHT};
 			theme.dark.values[static_cast<size_t>(uiColor::TextDisabledSelected)] = {
-				RGB(0x5C, 0x5C, 0x5C), -1, COLOR_GRAYTEXT};
+				RGB(0x94, 0x94, 0x94), -1, COLOR_GRAYTEXT};
+			theme.light.values[static_cast<size_t>(uiColor::DisabledSelectedBorder)] =
+				theme.light.values[static_cast<size_t>(uiColor::Glow)];
+			theme.dark.values[static_cast<size_t>(uiColor::DisabledSelectedBorder)] =
+				theme.dark.values[static_cast<size_t>(uiColor::Glow)];
 			return theme;
 		}(),
 		[] {
@@ -197,9 +209,13 @@ namespace ui::theme::builtin
 			theme.dark.values[static_cast<size_t>(uiColor::MenuGutter)] = {color::Maroon, -1, COLOR_BTNFACE};
 
 			theme.light.values[static_cast<size_t>(uiColor::TextDisabledSelected)] = {
-				color::White, -1, COLOR_GRAYTEXT};
+				RGB(0x5A, 0x5A, 0x5A), -1, COLOR_GRAYTEXT};
 			theme.dark.values[static_cast<size_t>(uiColor::TextDisabledSelected)] = {
-				color::Black, -1, COLOR_GRAYTEXT};
+				RGB(0x94, 0x94, 0x94), -1, COLOR_GRAYTEXT};
+			theme.light.values[static_cast<size_t>(uiColor::DisabledSelectedBorder)] =
+				theme.light.values[static_cast<size_t>(uiColor::Glow)];
+			theme.dark.values[static_cast<size_t>(uiColor::DisabledSelectedBorder)] =
+				theme.dark.values[static_cast<size_t>(uiColor::Glow)];
 			return theme;
 		}(),
 		[] {
@@ -240,9 +256,13 @@ namespace ui::theme::builtin
 			theme.dark.values[static_cast<size_t>(uiColor::MenuGutter)] = {color::MidnightBlue, -1, COLOR_BTNFACE};
 
 			theme.light.values[static_cast<size_t>(uiColor::TextDisabledSelected)] = {
-				color::White, -1, COLOR_GRAYTEXT};
+				RGB(0x5A, 0x5A, 0x5A), -1, COLOR_GRAYTEXT};
 			theme.dark.values[static_cast<size_t>(uiColor::TextDisabledSelected)] = {
-				color::Black, -1, COLOR_GRAYTEXT};
+				RGB(0x94, 0x94, 0x94), -1, COLOR_GRAYTEXT};
+			theme.light.values[static_cast<size_t>(uiColor::DisabledSelectedBorder)] =
+				theme.light.values[static_cast<size_t>(uiColor::Glow)];
+			theme.dark.values[static_cast<size_t>(uiColor::DisabledSelectedBorder)] =
+				theme.dark.values[static_cast<size_t>(uiColor::Glow)];
 			return theme;
 		}(),
 	}};

@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "id": "school.purdue",
+  "name": "Purdue",
+  "colors": {
+    "light": {
+      "TextDisabled": { "value": "#5A5A5A", "highContrast": 17 },
+      "Background": { "value": "#FFFCF5", "highContrast": 5 },
+      "BackgroundReadOnly": { "value": "#EBDDBE", "highContrast": 15 },
+      "Glow": { "value": "#8B713D", "highContrast": 13 },
+      "GlowBackground": { "value": "#8B713D", "highContrast": 13 },
+      "FrameSelected": { "value": "#000000", "highContrast": 8 },
+      "SelectedBackground": { "value": "#8B713D", "highContrast": 13 },
+      "Status": { "value": "#000000", "highContrast": 13 },
+      "PaneHeaderBackground": { "value": "#CEB888", "highContrast": 15 },
+      "PaneHeaderText": { "value": "#000000", "highContrast": 18 },
+      "TextHighlightBackground": { "value": "#8B713D", "highContrast": 13 },
+      "MenuGutter": { "value": "#EBDDBE", "highContrast": 15 },
+      "GlowText": { "value": "#FFFFFF", "highContrast": 14 },
+      "TextDisabledSelected": { "value": "#000000", "highContrast": 17 },
+      "TextHighlight": { "value": "#FFFFFF", "highContrast": 14 }
+    },
+    "dark": {
+      "TextDisabled": { "value": "#6A6A6A", "highContrast": 17 },
+      "Background": { "value": "#191713", "highContrast": 5 },
+      "BackgroundReadOnly": { "value": "#302B21", "highContrast": 15 },
+      "Glow": { "value": "#CEB888", "highContrast": 13 },
+      "GlowBackground": { "value": "#9D8550", "highContrast": 13 },
+      "FrameSelected": { "value": "#CEB888", "highContrast": 8 },
+      "SelectedBackground": { "value": "#CEB888", "highContrast": 13 },
+      "Status": { "value": "#000000", "highContrast": 13 },
+      "PaneHeaderBackground": { "value": "#000000", "highContrast": 15 },
+      "PaneHeaderText": { "value": "#CEB888", "highContrast": 18 },
+      "TextHighlightBackground": { "value": "#CEB888", "highContrast": 13 },
+      "MenuGutter": { "value": "#302B21", "highContrast": 15 },
+      "GlowText": { "value": "#000000", "highContrast": 14 },
+      "TextDisabledSelected": { "value": "#FFFFFF", "highContrast": 17 },
+      "TextHighlight": { "value": "#000000", "highContrast": 14 }
+    }
+  }
+}

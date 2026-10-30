@@ -31,19 +31,14 @@
       "MenuGutter": { "value": "Honeydew", "highContrast": 15 }
     },
     "dark": {
-      "TextDisabled": {
-        "value": "#6a6a6a",
-        "highContrast": 17
-      },
+      "TextDisabled": { "value": "#6a6a6a", "highContrast": 17 },
       "Glow": { "value": "LightGreen", "highContrast": 13 },
       "GlowBackground": { "value": "#00AD00", "highContrast": 13 },
       "GlowText": { "value": "#000000", "highContrast": 14 },
       "TextDisabledSelected": { "value": "#5a5a5a", "highContrast": 17 },
       "FrameSelected": { "value": "Gold", "highContrast": 8 },
-      "SelectedBackground": {
-        "value": "#FFC2C2",
-        "highContrast": 13
-      },
+      "SelectedBackground": { "value": "#FFC2C2", "highContrast": 13 },
+      "DisabledSelectedBackground": { "value": "#FFC2C2", "highContrast": 15 },
       "Arrow": { "value": "LightGreen", "highContrast": 8 },
       "Status": { "value": "Maroon", "highContrast": 13 },
       "StatusText": { "value": "White", "highContrast": 14 },

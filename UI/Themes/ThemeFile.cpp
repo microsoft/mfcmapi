@@ -22,6 +22,8 @@ namespace ui::theme
 		L"FrameSelected",
 		L"FrameUnselected",
 		L"SelectedBackground",
+		L"DisabledSelectedBackground",
+		L"DisabledSelectedBorder",
 		L"Arrow",
 		L"Text",
 		L"TextDisabled",
@@ -116,8 +118,6 @@ namespace ui::theme
 
 	static ThemeColors ReadPalette(const winrt::Windows::Data::Json::JsonObject& object, const ThemeColors& defaults)
 	{
-		Require(object.HasKey(L"TextDisabledSelected"), L"Missing required color role: TextDisabledSelected");
-
 		for (const auto& property : object)
 		{
 			const auto name = property.Key();

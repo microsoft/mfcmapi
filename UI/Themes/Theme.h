@@ -33,6 +33,8 @@ namespace ui
 		FrameSelected,
 		FrameUnselected,
 		SelectedBackground,
+		DisabledSelectedBackground,
+		DisabledSelectedBorder,
 		Arrow,
 		Text,
 		TextDisabled,

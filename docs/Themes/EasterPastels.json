@@ -5,113 +5,35 @@
   "colors": {
     "light": {
       "TextDisabled": { "value": "#5a5a5a", "highContrast": 17 },
-      "Background": {
-        "value": "#FFFDF7",
-        "highContrast": 5
-      },
-      "Glow": {
-        "value": "#68418C",
-        "highContrast": 13
-      },
-      "GlowBackground": {
-        "value": "#9334DF",
-        "highContrast": 13
-      },
-      "FrameSelected": {
-        "value": "#356645",
-        "highContrast": 8
-      },
-      "SelectedBackground": {
-        "value": "#4B8050",
-        "highContrast": 13
-      },
-      "Status": {
-        "value": "#68418C",
-        "highContrast": 13
-      },
-      "PaneHeaderBackground": {
-        "value": "#FFF0BD",
-        "highContrast": 15
-      },
-      "PaneHeaderText": {
-        "value": "#68418C",
-        "highContrast": 18
-      },
-      "TextHighlightBackground": {
-        "value": "#C02776",
-        "highContrast": 13
-      },
-      "MenuGutter": {
-        "value": "#EEDFFA",
-        "highContrast": 15
-      },
-      "GlowText": {
-        "value": "#FFFFFF",
-        "highContrast": 14
-      },
-      "TextDisabledSelected": {
-        "value": "#000000",
-        "highContrast": 17
-      },
-      "TextHighlight": {
-        "value": "#FFFFFF",
-        "highContrast": 14
-      }
+      "Background": { "value": "#FFFDF7", "highContrast": 5 },
+      "Glow": { "value": "#68418C", "highContrast": 13 },
+      "GlowBackground": { "value": "#9334DF", "highContrast": 13 },
+      "FrameSelected": { "value": "#356645", "highContrast": 8 },
+      "SelectedBackground": { "value": "#4B8050", "highContrast": 13 },
+      "Status": { "value": "#68418C", "highContrast": 13 },
+      "PaneHeaderBackground": { "value": "#FFF0BD", "highContrast": 15 },
+      "PaneHeaderText": { "value": "#68418C", "highContrast": 18 },
+      "TextHighlightBackground": { "value": "#C02776", "highContrast": 13 },
+      "MenuGutter": { "value": "#EEDFFA", "highContrast": 15 },
+      "GlowText": { "value": "#FFFFFF", "highContrast": 14 },
+      "TextDisabledSelected": { "value": "#000000", "highContrast": 17 },
+      "TextHighlight": { "value": "#FFFFFF", "highContrast": 14 }
     },
     "dark": {
       "TextDisabled": { "value": "#8b8b8b", "highContrast": 17 },
-      "Background": {
-        "value": "#211C29",
-        "highContrast": 5
-      },
-      "Glow": {
-        "value": "#D6B6F3",
-        "highContrast": 13
-      },
-      "GlowBackground": {
-        "value": "#AB88C1",
-        "highContrast": 13
-      },
-      "FrameSelected": {
-        "value": "#A9DEB1",
-        "highContrast": 8
-      },
-      "SelectedBackground": {
-        "value": "#3F845C",
-        "highContrast": 13
-      },
-      "Status": {
-        "value": "#503363",
-        "highContrast": 13
-      },
-      "PaneHeaderBackground": {
-        "value": "#554523",
-        "highContrast": 15
-      },
-      "PaneHeaderText": {
-        "value": "White",
-        "highContrast": 18
-      },
-      "TextHighlightBackground": {
-        "value": "#BC859D",
-        "highContrast": 13
-      },
-      "MenuGutter": {
-        "value": "#503363",
-        "highContrast": 15
-      },
-      "GlowText": {
-        "value": "#000000",
-        "highContrast": 14
-      },
-      "TextDisabledSelected": {
-        "value": "#ffffff",
-        "highContrast": 17
-      },
-      "TextHighlight": {
-        "value": "#000000",
-        "highContrast": 14
-      }
+      "Background": { "value": "#211C29", "highContrast": 5 },
+      "Glow": { "value": "#D6B6F3", "highContrast": 13 },
+      "GlowBackground": { "value": "#AB88C1", "highContrast": 13 },
+      "FrameSelected": { "value": "#A9DEB1", "highContrast": 8 },
+      "SelectedBackground": { "value": "#3F845C", "highContrast": 13 },
+      "Status": { "value": "#503363", "highContrast": 13 },
+      "PaneHeaderBackground": { "value": "#554523", "highContrast": 15 },
+      "PaneHeaderText": { "value": "White", "highContrast": 18 },
+      "TextHighlightBackground": { "value": "#BC859D", "highContrast": 13 },
+      "MenuGutter": { "value": "#503363", "highContrast": 15 },
+      "GlowText": { "value": "#000000", "highContrast": 14 },
+      "TextDisabledSelected": { "value": "#ffffff", "highContrast": 17 },
+      "TextHighlight": { "value": "#000000", "highContrast": 14 }
     }
   }
 }

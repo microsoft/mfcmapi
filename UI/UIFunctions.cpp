@@ -1925,10 +1925,12 @@ namespace ui
 
 		auto cBack = uiColor::Background;
 		auto cFore = uiColor::Text;
+		const auto disabledHighlight =
+			bHot && bDisabled && !lpMenuEntry->m_bOnMenuBar && GetEffectiveTheme() != uiTheme::HighContrast;
 
 		if (bHot)
 		{
-			cBack = uiColor::SelectedBackground;
+			cBack = disabledHighlight ? uiColor::DisabledSelectedBackground : uiColor::SelectedBackground;
 			cFore = uiColor::GlowText;
 			FillRect(hdc, &rcItem, GetSysBrush(cBack));
 		}
@@ -2023,6 +2025,8 @@ namespace ui
 				DeleteObject(bm);
 			}
 		}
+
+		if (disabledHighlight) ::FrameRect(hdc, &rcItem, GetSysBrush(uiColor::DisabledSelectedBorder));
 
 		db.End(hdc);
 		if (!lpMenuEntry->m_bOnMenuBar && lpMenuEntry->m_bHasSubMenu)

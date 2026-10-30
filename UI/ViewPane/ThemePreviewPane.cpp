@@ -25,6 +25,7 @@ namespace viewpane
 											 ? ui::uiTheme::HighContrast
 										 : appearance == ui::theme::Appearance::Dark ? ui::uiTheme::Dark
 																					 : ui::uiTheme::Light;
+		m_highContrast = effectiveAppearance == ui::uiTheme::HighContrast;
 		for (size_t index = 0; index < m_colors.size(); ++index)
 		{
 			m_colors[index] = ui::theme::GetColor(definition, effectiveAppearance, static_cast<ui::uiColor>(index));
@@ -36,6 +37,7 @@ namespace viewpane
 	void ThemePreviewPane::ClearTheme()
 	{
 		m_hasTheme = false;
+		m_highContrast = false;
 		m_themeName.clear();
 
 		if (m_hWndPreview) InvalidateRect(m_hWndPreview, nullptr, true);
@@ -88,7 +90,7 @@ namespace viewpane
 
 	int ThemePreviewPane::GetFixedHeight()
 	{
-		return m_visible ? GetHeaderHeight() + 12 * m_iEditHeight + 6 * max(6, m_iMargin) : 0;
+		return m_visible ? GetHeaderHeight() + 14 * m_iEditHeight + 7 * max(6, m_iMargin) : 0;
 	}
 
 	bool ThemePreviewPane::containsWindow(const HWND hWnd) const noexcept
@@ -201,7 +203,7 @@ namespace viewpane
 
 		const auto columnWidth = max(0, (client.right - 3 * margin) / 2);
 
-		for (auto row = 0; row < 4; ++row)
+		for (auto row = 0; row < 5; ++row)
 		{
 			const auto top = header.bottom + margin + row * (rowHeight + margin);
 			const auto left = RECT{margin, top, margin + columnWidth, top + rowHeight};
@@ -253,37 +255,50 @@ namespace viewpane
 				break;
 			case 3:
 			{
+				auto highlight = left;
+				highlight.right = right.right;
 				drawSample(
-					left,
+					highlight,
 					IDS_THEME_PREVIEW_HIGHLIGHT,
 					ui::uiColor::TextHighlightBackground,
 					ui::uiColor::TextHighlight,
 					ui::uiColor::FrameUnselected);
-				fillRect(right, getColor(ui::uiColor::Background));
+				break;
+			}
+			case 4:
+			{
 				const auto menuEntryHeight = rowHeight / 2;
-				for (auto entry = 0; entry < 2; ++entry)
+				for (auto entry = 0; entry < 4; ++entry)
 				{
-					auto menuEntry = right;
-					menuEntry.top += entry * menuEntryHeight;
-					menuEntry.bottom = entry == 1 ? right.bottom : menuEntry.top + menuEntryHeight;
-					if (entry == 1) fillRect(menuEntry, getColor(ui::uiColor::SelectedBackground));
+					const auto selected = entry >= 2;
+					const auto disabled = entry % 2 == 1;
+					const auto& column = selected ? right : left;
+					auto menuEntry = column;
+					menuEntry.top += (entry % 2) * menuEntryHeight;
+					menuEntry.bottom = disabled ? column.bottom : menuEntry.top + menuEntryHeight;
+					const auto background = !selected ? ui::uiColor::Background
+											: disabled && !pane->m_highContrast
+												? ui::uiColor::DisabledSelectedBackground
+												: ui::uiColor::SelectedBackground;
+					const auto foreground = disabled ? (selected ? ui::uiColor::TextDisabledSelected
+																 : ui::uiColor::TextDisabled)
+													 : (selected ? ui::uiColor::GlowText : ui::uiColor::Text);
+					fillRect(menuEntry, getColor(background));
 
 					auto gutter = menuEntry;
 					gutter.right = min(gutter.right, gutter.left + menuEntryHeight);
-					fillRect(
-						gutter,
-						getColor(entry == 1 ? ui::uiColor::SelectedBackground : ui::uiColor::MenuGutter));
-					drawText(
-						gutter,
-						L">",
-						entry == 0 ? ui::uiColor::Arrow : ui::uiColor::TextDisabledSelected);
+					fillRect(gutter, getColor(selected ? background : ui::uiColor::MenuGutter));
+					drawText(gutter, L">", selected && !disabled ? ui::uiColor::Glow : foreground);
 					auto label = menuEntry;
 					label.left = gutter.right;
 					drawText(
 						label,
-						strings::loadstring(entry == 0 ? IDS_THEME_PREVIEW_MENU : IDS_THEME_PREVIEW_DISABLED),
-						entry == 0 ? ui::uiColor::Text : ui::uiColor::TextDisabledSelected);
+						strings::loadstring(selected ? IDS_THEME_PREVIEW_MENU_SELECTED : IDS_THEME_PREVIEW_MENU),
+						foreground);
+					if (selected && disabled && !pane->m_highContrast)
+						drawFrame(menuEntry, getColor(ui::uiColor::DisabledSelectedBorder), 1);
 				}
+				drawFrame(left, getColor(ui::uiColor::FrameUnselected), 1);
 				drawFrame(right, getColor(ui::uiColor::FrameUnselected), 1);
 				break;
 			}
@@ -292,9 +307,9 @@ namespace viewpane
 
 		auto footer = RECT{
 			margin,
-			header.bottom + 5 * margin + 4 * rowHeight,
+			header.bottom + 6 * margin + 5 * rowHeight,
 			client.right - margin,
-			header.bottom + 5 * margin + 5 * rowHeight};
+			header.bottom + 6 * margin + 6 * rowHeight};
 		fillRect(footer, getColor(ui::uiColor::Status));
 		drawText(footer, L"MFCMAPI", ui::uiColor::StatusText);
 		SelectObject(hdc, oldFont);

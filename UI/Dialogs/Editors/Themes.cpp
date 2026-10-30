@@ -126,6 +126,9 @@ namespace dialog::editor
 		const auto appearance = std::dynamic_pointer_cast<viewpane::DropDownPane>(GetPane(THEME_APPEARANCE));
 		if (appearance) appearance->SetDropDownSelection(static_cast<int>(registry::uiTheme.ulCurDWORD));
 
+		const auto enabled = std::dynamic_pointer_cast<viewpane::CheckPane>(GetPane(THEME_ENABLED));
+		if (enabled) enabled->SetCheck(registry::themesEnabled);
+
 		const auto automatic = std::dynamic_pointer_cast<viewpane::CheckPane>(GetPane(THEME_AUTOMATIC));
 		if (automatic)
 		{

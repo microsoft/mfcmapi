@@ -121,6 +121,20 @@ namespace dialog::editor
 	ON_WM_NCHITTEST()
 	END_MESSAGE_MAP()
 
+	BOOL CEditor::PreTranslateMessage(MSG* message)
+	{
+		if (message && message->message == WM_MOUSEWHEEL)
+		{
+			for (const auto& pane : m_Panes)
+			{
+				const auto dropdown = std::dynamic_pointer_cast<viewpane::DropDownPane>(pane);
+				if (dropdown && dropdown->RouteMouseWheel(*message)) return true;
+			}
+		}
+
+		return CMyDialog::PreTranslateMessage(message);
+	}
+
 	LRESULT CEditor::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		switch (message)
