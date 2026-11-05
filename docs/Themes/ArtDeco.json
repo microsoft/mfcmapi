@@ -4,6 +4,16 @@
   "name": "Art Deco - Emerald and Brass",
   "colors": {
     "light": {
+      "TitleBarBackground": { "value": "#D5B05D", "highContrast": 5 },
+      "TitleBarText": { "value": "#000000", "highContrast": 8 },
+      "TitleBarButton": { "value": "#000000", "highContrast": 8 },
+      "TitleBarButtonHover": { "value": "#FFFFFF", "highContrast": 8 },
+      "ColumnHeaderBackground": { "value": "#F2E3B8", "highContrast": 5 },
+      "ColumnHeaderText": { "value": "#244638", "highContrast": 8 },
+      "ColumnHeaderArrow": { "value": "#244638", "highContrast": 8 },
+      "MenuBackground": { "value": "#FDF8E8", "highContrast": 5 },
+      "MenuText": { "value": "#000000", "highContrast": 8 },
+      "MenuTextDisabled": { "value": "#5A5A5A", "highContrast": 17 },
       "TextDisabled": { "value": "#5a5a5a", "highContrast": 17 },
       "Background": { "value": "#FFFCF1", "highContrast": 5 },
       "Glow": { "value": "#245C4B", "highContrast": 13 },
@@ -20,6 +30,16 @@
       "TextHighlight": { "value": "#FFFFFF", "highContrast": 14 }
     },
     "dark": {
+      "TitleBarBackground": { "value": "#B18C40", "highContrast": 5 },
+      "TitleBarText": { "value": "#000000", "highContrast": 8 },
+      "TitleBarButton": { "value": "#000000", "highContrast": 8 },
+      "TitleBarButtonHover": { "value": "#000000", "highContrast": 8 },
+      "ColumnHeaderBackground": { "value": "#55451F", "highContrast": 5 },
+      "ColumnHeaderText": { "value": "White", "highContrast": 8 },
+      "ColumnHeaderArrow": { "value": "White", "highContrast": 8 },
+      "MenuBackground": { "value": "#1E291F", "highContrast": 5 },
+      "MenuText": { "value": "#F5F5F5", "highContrast": 8 },
+      "MenuTextDisabled": { "value": "#8B8B8B", "highContrast": 17 },
       "TextDisabled": { "value": "#8b8b8b", "highContrast": 17 },
       "Background": { "value": "#14241F", "highContrast": 5 },
       "Glow": { "value": "#9ECBB3", "highContrast": 13 },

@@ -42,7 +42,17 @@ namespace ui::theme
 		L"TestLavender",
 		L"TestRed",
 		L"TestGreen",
-		L"TestOrange"};
+		L"TestOrange",
+		L"TitleBarBackground",
+		L"TitleBarText",
+		L"TitleBarButton",
+		L"TitleBarButtonHover",
+		L"ColumnHeaderBackground",
+		L"ColumnHeaderText",
+		L"ColumnHeaderArrow",
+		L"MenuBackground",
+		L"MenuText",
+		L"MenuTextDisabled"};
 
 	static_assert(std::size(roleNames) == static_cast<size_t>(uiColor::UIEnd));
 
@@ -316,9 +326,7 @@ namespace ui::theme
 		}
 
 		std::sort(
-			catalog.themes.begin() + firstExternalTheme,
-			catalog.themes.end(),
-			[](const auto& left, const auto& right) {
+			catalog.themes.begin() + firstExternalTheme, catalog.themes.end(), [](const auto& left, const auto& right) {
 				const auto nameOrder = _wcsicmp(left.name.c_str(), right.name.c_str());
 				return nameOrder == 0 ? left.stableId < right.stableId : nameOrder < 0;
 			});

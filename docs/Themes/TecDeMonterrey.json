@@ -4,6 +4,16 @@
   "name": "Tec de Monterrey",
   "colors": {
     "light": {
+      "TitleBarBackground": { "value": "#417FB0", "highContrast": 5 },
+      "TitleBarText": { "value": "#000000", "highContrast": 8 },
+      "TitleBarButton": { "value": "#000000", "highContrast": 8 },
+      "TitleBarButtonHover": { "value": "#FFFFFF", "highContrast": 8 },
+      "ColumnHeaderBackground": { "value": "#DCE8FA", "highContrast": 5 },
+      "ColumnHeaderText": { "value": "#082970", "highContrast": 8 },
+      "ColumnHeaderArrow": { "value": "#082970", "highContrast": 8 },
+      "MenuBackground": { "value": "#F4F8FE", "highContrast": 5 },
+      "MenuText": { "value": "#000000", "highContrast": 8 },
+      "MenuTextDisabled": { "value": "#5A5A5A", "highContrast": 17 },
       "TextDisabled": { "value": "#5a5a5a", "highContrast": 17 },
       "Background": { "value": "#F8FBFF", "highContrast": 5 },
       "Glow": { "value": "#082970", "highContrast": 13 },
@@ -22,6 +32,16 @@
       "MenuGutter": { "value": "#E8F0FC", "highContrast": 15 }
     },
     "dark": {
+      "TitleBarBackground": { "value": "#37688E", "highContrast": 5 },
+      "TitleBarText": { "value": "#FFFFFF", "highContrast": 8 },
+      "TitleBarButton": { "value": "#FFFFFF", "highContrast": 8 },
+      "TitleBarButtonHover": { "value": "#FFFFFF", "highContrast": 8 },
+      "ColumnHeaderBackground": { "value": "#17366A", "highContrast": 5 },
+      "ColumnHeaderText": { "value": "#FFFFFF", "highContrast": 8 },
+      "ColumnHeaderArrow": { "value": "#FFFFFF", "highContrast": 8 },
+      "MenuBackground": { "value": "#121E34", "highContrast": 5 },
+      "MenuText": { "value": "#F5F5F5", "highContrast": 8 },
+      "MenuTextDisabled": { "value": "#8B8B8B", "highContrast": 17 },
       "TextDisabled": { "value": "#8b8b8b", "highContrast": 17 },
       "Background": { "value": "#111A2B", "highContrast": 5 },
       "Glow": { "value": "#9BC3FF", "highContrast": 13 },

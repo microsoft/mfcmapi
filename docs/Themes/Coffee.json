@@ -4,6 +4,16 @@
   "name": "Coffee - Espresso and Cream",
   "colors": {
     "light": {
+      "TitleBarBackground": { "value": "#C69A6B", "highContrast": 5 },
+      "TitleBarText": { "value": "#000000", "highContrast": 8 },
+      "TitleBarButton": { "value": "#000000", "highContrast": 8 },
+      "TitleBarButtonHover": { "value": "#FFFFFF", "highContrast": 8 },
+      "ColumnHeaderBackground": { "value": "#EFDDC8", "highContrast": 5 },
+      "ColumnHeaderText": { "value": "#513825", "highContrast": 8 },
+      "ColumnHeaderArrow": { "value": "#513825", "highContrast": 8 },
+      "MenuBackground": { "value": "#FDF5EB", "highContrast": 5 },
+      "MenuText": { "value": "#000000", "highContrast": 8 },
+      "MenuTextDisabled": { "value": "#5A5A5A", "highContrast": 17 },
       "TextDisabled": { "value": "#5a5a5a", "highContrast": 17 },
       "Background": { "value": "#FFF9F1", "highContrast": 5 },
       "Glow": { "value": "#73513B", "highContrast": 13 },
@@ -20,6 +30,16 @@
       "TextHighlight": { "value": "#FFFFFF", "highContrast": 14 }
     },
     "dark": {
+      "TitleBarBackground": { "value": "#9B714D", "highContrast": 5 },
+      "TitleBarText": { "value": "#000000", "highContrast": 8 },
+      "TitleBarButton": { "value": "#000000", "highContrast": 8 },
+      "TitleBarButtonHover": { "value": "#000000", "highContrast": 8 },
+      "ColumnHeaderBackground": { "value": "#55402F", "highContrast": 5 },
+      "ColumnHeaderText": { "value": "White", "highContrast": 8 },
+      "ColumnHeaderArrow": { "value": "White", "highContrast": 8 },
+      "MenuBackground": { "value": "#2D221B", "highContrast": 5 },
+      "MenuText": { "value": "#F5F5F5", "highContrast": 8 },
+      "MenuTextDisabled": { "value": "#8B8B8B", "highContrast": 17 },
       "TextDisabled": { "value": "#8b8b8b", "highContrast": 17 },
       "Background": { "value": "#261D18", "highContrast": 5 },
       "Glow": { "value": "#D8B89A", "highContrast": 13 },

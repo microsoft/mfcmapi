@@ -4,6 +4,16 @@
   "name": "Cherry Blossom - Petal and Branch",
   "colors": {
     "light": {
+      "TitleBarBackground": { "value": "#EDACC8", "highContrast": 5 },
+      "TitleBarText": { "value": "#000000", "highContrast": 8 },
+      "TitleBarButton": { "value": "#000000", "highContrast": 8 },
+      "TitleBarButtonHover": { "value": "#FFFFFF", "highContrast": 8 },
+      "ColumnHeaderBackground": { "value": "#F6DFE9", "highContrast": 5 },
+      "ColumnHeaderText": { "value": "#783853", "highContrast": 8 },
+      "ColumnHeaderArrow": { "value": "#783853", "highContrast": 8 },
+      "MenuBackground": { "value": "#FEF5F8", "highContrast": 5 },
+      "MenuText": { "value": "#000000", "highContrast": 8 },
+      "MenuTextDisabled": { "value": "#5A5A5A", "highContrast": 17 },
       "TextDisabled": { "value": "#5a5a5a", "highContrast": 17 },
       "Background": { "value": "#FFF9FB", "highContrast": 5 },
       "Glow": { "value": "#96496B", "highContrast": 13 },
@@ -20,6 +30,16 @@
       "TextHighlight": { "value": "#FFFFFF", "highContrast": 14 }
     },
     "dark": {
+      "TitleBarBackground": { "value": "#A75E80", "highContrast": 5 },
+      "TitleBarText": { "value": "#FFFFFF", "highContrast": 8 },
+      "TitleBarButton": { "value": "#FFFFFF", "highContrast": 8 },
+      "TitleBarButtonHover": { "value": "#000000", "highContrast": 8 },
+      "ColumnHeaderBackground": { "value": "#61364B", "highContrast": 5 },
+      "ColumnHeaderText": { "value": "White", "highContrast": 8 },
+      "ColumnHeaderArrow": { "value": "White", "highContrast": 8 },
+      "MenuBackground": { "value": "#31212C", "highContrast": 5 },
+      "MenuText": { "value": "#F5F5F5", "highContrast": 8 },
+      "MenuTextDisabled": { "value": "#6F6F6F", "highContrast": 17 },
       "TextDisabled": { "value": "#6b6b6b", "highContrast": 17 },
       "Background": { "value": "#291D26", "highContrast": 5 },
       "Glow": { "value": "#EAB0CB", "highContrast": 13 },

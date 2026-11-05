@@ -4,6 +4,16 @@
   "name": "Pride - Trans Flag",
   "colors": {
     "light": {
+      "TitleBarBackground": { "value": "#F5A9B8", "highContrast": 5 },
+      "TitleBarText": { "value": "#000000", "highContrast": 8 },
+      "TitleBarButton": { "value": "#000000", "highContrast": 8 },
+      "TitleBarButtonHover": { "value": "#FFFFFF", "highContrast": 8 },
+      "ColumnHeaderBackground": { "value": "#D1EFFA", "highContrast": 5 },
+      "ColumnHeaderText": { "value": "#245A71", "highContrast": 8 },
+      "ColumnHeaderArrow": { "value": "#245A71", "highContrast": 8 },
+      "MenuBackground": { "value": "#F8FDFE", "highContrast": 5 },
+      "MenuText": { "value": "#000000", "highContrast": 8 },
+      "MenuTextDisabled": { "value": "#5A5A5A", "highContrast": 17 },
       "TextDisabled": { "value": "#5a5a5a", "highContrast": 17 },
       "Background": { "value": "White", "highContrast": 5 },
       "Glow": { "value": "#286A86", "highContrast": 13 },
@@ -20,6 +30,16 @@
       "TextHighlight": { "value": "#FFFFFF", "highContrast": 14 }
     },
     "dark": {
+      "TitleBarBackground": { "value": "#C77F98", "highContrast": 5 },
+      "TitleBarText": { "value": "#000000", "highContrast": 8 },
+      "TitleBarButton": { "value": "#000000", "highContrast": 8 },
+      "TitleBarButtonHover": { "value": "#000000", "highContrast": 8 },
+      "ColumnHeaderBackground": { "value": "#234E64", "highContrast": 5 },
+      "ColumnHeaderText": { "value": "White", "highContrast": 8 },
+      "ColumnHeaderArrow": { "value": "White", "highContrast": 8 },
+      "MenuBackground": { "value": "#1B2B35", "highContrast": 5 },
+      "MenuText": { "value": "#F5F5F5", "highContrast": 8 },
+      "MenuTextDisabled": { "value": "#727272", "highContrast": 17 },
       "TextDisabled": { "value": "#6d6d6d", "highContrast": 17 },
       "Background": { "value": "#19252D", "highContrast": 5 },
       "Glow": { "value": "#5BCEFA", "highContrast": 13 },

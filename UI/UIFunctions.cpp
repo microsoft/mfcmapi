@@ -99,6 +99,12 @@ namespace ui
 		const UINT nCount = GetMenuItemCount(hMenu);
 		if (nCount == static_cast<UINT>(-1)) return;
 
+		auto menuInfo = MENUINFO{};
+		menuInfo.cbSize = sizeof menuInfo;
+		menuInfo.fMask = MIM_BACKGROUND;
+		menuInfo.hbrBack = GetSysBrush(uiColor::MenuBackground);
+		EC_B_S(SetMenuInfo(hMenu, &menuInfo));
+
 		for (UINT nPosition = 0; nPosition < nCount; nPosition++)
 		{
 			auto menuiteminfo = MENUITEMINFOW{};
@@ -714,9 +720,9 @@ namespace ui
 		{
 			auto menuInfo = MENUINFO{};
 			menuInfo.cbSize = sizeof menuInfo;
-			menuInfo.fMask = MIM_BACKGROUND;
-			menuInfo.hbrBack = GetSysBrush(uiColor::Background);
-			SetMenuInfo(hMenu, &menuInfo);
+			menuInfo.fMask = MIM_BACKGROUND | MIM_APPLYTOSUBMENUS;
+			menuInfo.hbrBack = GetSysBrush(uiColor::MenuBackground);
+			WC_B_S(SetMenuInfo(hMenu, &menuInfo));
 			DrawMenuBar(hWnd);
 		}
 
@@ -1578,7 +1584,7 @@ namespace ui
 		CDoubleBuffer db;
 		db.Begin(hdc, rc);
 
-		FillRect(hdc, &rc, GetSysBrush(bButton ? uiColor::PaneHeaderBackground : uiColor::Background));
+		FillRect(hdc, &rc, GetSysBrush(bButton ? uiColor::PaneHeaderBackground : uiColor::ColumnHeaderBackground));
 
 		POINT tri[3] = {};
 		auto lCenter = LONG{};
@@ -1614,7 +1620,7 @@ namespace ui
 			tri[2].y = lTop;
 		}
 
-		auto uiArrow = uiColor::Arrow;
+		auto uiArrow = uiColor::ColumnHeaderArrow;
 		if (bButton) uiArrow = uiColor::PaneHeaderText;
 		DrawFilledPolygon(hdc, tri, _countof(tri), MyGetSysColor(uiArrow), GetSysBrush(uiArrow));
 
@@ -1643,7 +1649,7 @@ namespace ui
 		db.Begin(hdc, rc);
 
 		RECT rcHeader = rc;
-		FillRect(hdc, &rcHeader, GetSysBrush(uiColor::Background));
+		FillRect(hdc, &rcHeader, GetSysBrush(uiColor::ColumnHeaderBackground));
 
 		if (bSorted)
 		{
@@ -1655,7 +1661,7 @@ namespace ui
 		DrawUITextW(
 			hdc,
 			hdItem.pszText,
-			MyGetSysColor(uiColor::Text),
+			MyGetSysColor(uiColor::ColumnHeaderText),
 			rcText,
 			false,
 			DT_END_ELLIPSIS | DT_SINGLELINE | DT_VCENTER);
@@ -1714,7 +1720,7 @@ namespace ui
 			// If we have visible non occupied header, paint it
 			if (rc.left < rc.right)
 			{
-				FillRect(lvcd->hdc, &rc, GetSysBrush(uiColor::Background));
+				FillRect(lvcd->hdc, &rc, GetSysBrush(uiColor::ColumnHeaderBackground));
 			}
 
 			*pResult = CDRF_DODEFAULT;
@@ -1923,8 +1929,8 @@ namespace ui
 			FillRect(hdc, &rectGutter, GetSysBrush(uiColor::MenuGutter));
 		}
 
-		auto cBack = uiColor::Background;
-		auto cFore = uiColor::Text;
+		auto cBack = uiColor::MenuBackground;
+		auto cFore = uiColor::MenuText;
 		const auto disabledHighlight =
 			bHot && bDisabled && !lpMenuEntry->m_bOnMenuBar && GetEffectiveTheme() != uiTheme::HighContrast;
 
@@ -1937,7 +1943,7 @@ namespace ui
 
 		if (!bHot || bDisabled)
 		{
-			if (bDisabled) cFore = bHot ? uiColor::TextDisabledSelected : uiColor::TextDisabled;
+			if (bDisabled) cFore = bHot ? uiColor::TextDisabledSelected : uiColor::MenuTextDisabled;
 			FillRect(hdc, &rcText, GetSysBrush(cBack));
 		}
 
@@ -2254,7 +2260,18 @@ namespace ui
 		const auto htMax = HTMAXBUTTON == iHitTest;
 		const auto htMin = HTMINBUTTON == iHitTest;
 
-		DrawBitmap(hdc, rcCloseIcon, uiBitmap::Close, htClose, htClose && !bHover ? 2 : 0);
+		const auto foreground = MyGetSysColor(uiColor::TitleBarButton);
+		const auto hoverForeground = MyGetSysColor(uiColor::TitleBarButtonHover);
+		const auto background = MyGetSysColor(uiColor::TitleBarBackground);
+		const auto hoverBackground = MyGetSysColor(uiColor::GlowBackground);
+		DrawBitmap(
+			hdc,
+			rcCloseIcon,
+			uiBitmap::Close,
+			htClose,
+			htClose && !bHover ? 2 : 0,
+			htClose ? hoverForeground : foreground,
+			htClose ? hoverBackground : background);
 		if (registry::uiDiag) ::FrameRect(hdc, &rcCloseIcon, GetSysBrush(uiColor::TestPink));
 
 		if (bMaxBox)
@@ -2264,13 +2281,22 @@ namespace ui
 				rcMaxIcon,
 				IsZoomed(hWnd) ? uiBitmap::Restore : uiBitmap::Maximize,
 				htMax,
-				htMax && !bHover ? 2 : 0);
+				htMax && !bHover ? 2 : 0,
+				htMax ? hoverForeground : foreground,
+				htMax ? hoverBackground : background);
 			if (registry::uiDiag) ::FrameRect(hdc, &rcMaxIcon, GetSysBrush(uiColor::TestPink));
 		}
 
 		if (bMinBox)
 		{
-			DrawBitmap(hdc, rcMinIcon, uiBitmap::Minimize, htMin, htMin && !bHover ? 2 : 0);
+			DrawBitmap(
+				hdc,
+				rcMinIcon,
+				uiBitmap::Minimize,
+				htMin,
+				htMin && !bHover ? 2 : 0,
+				htMin ? hoverForeground : foreground,
+				htMin ? hoverBackground : background);
 			if (registry::uiDiag) ::FrameRect(hdc, &rcMinIcon, GetSysBrush(uiColor::TestPink));
 		}
 
@@ -2381,8 +2407,7 @@ namespace ui
 			LineTo(hdc, rcMenuGutterRight.left, rcClient.top - 1);
 			static_cast<void>(SelectObject(hdc, hpenOld));
 
-			// White out the caption
-			FillRect(hdc, &rcFullCaption, GetSysBrush(uiColor::Background));
+			FillRect(hdc, &rcFullCaption, GetSysBrush(uiColor::TitleBarBackground));
 
 			DrawSystemButtons(hWnd, hdc, HTNOWHERE, false);
 
@@ -2405,15 +2430,15 @@ namespace ui
 					rcIcon.right - rcIcon.left,
 					rcIcon.bottom - rcIcon.top,
 					NULL,
-					GetSysBrush(uiColor::Background),
+					GetSysBrush(uiColor::TitleBarBackground),
 					DI_NORMAL);
 
 				DestroyIcon(hIcon);
 			}
 
 			// Fill in our gutters
-			FillRect(hdc, &rcMenuGutterLeft, GetSysBrush(uiColor::Background));
-			FillRect(hdc, &rcMenuGutterRight, GetSysBrush(uiColor::Background));
+			FillRect(hdc, &rcMenuGutterLeft, GetSysBrush(uiColor::MenuBackground));
+			FillRect(hdc, &rcMenuGutterRight, GetSysBrush(uiColor::MenuBackground));
 			FillRect(hdc, &rcWindowGutterLeft, GetSysBrush(uiColor::Background));
 			FillRect(hdc, &rcWindowGutterRight, GetSysBrush(uiColor::Background));
 
@@ -2445,7 +2470,12 @@ namespace ui
 			const WCHAR szTitle[256] = {};
 			DefWindowProcW(hWnd, WM_GETTEXT, static_cast<WPARAM>(_countof(szTitle)), reinterpret_cast<LPARAM>(szTitle));
 			DrawUITextW(
-				hdc, szTitle, MyGetSysColor(uiColor::Text), rcCaptionText, false, DT_LEFT | DT_SINGLELINE | DT_VCENTER);
+				hdc,
+				szTitle,
+				MyGetSysColor(uiColor::TitleBarText),
+				rcCaptionText,
+				false,
+				DT_LEFT | DT_SINGLELINE | DT_VCENTER);
 
 			// Finally, we paint our border glow if we're not maximized
 			if (!IsZoomed(hWnd))

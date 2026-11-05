@@ -143,11 +143,11 @@ namespace ui::theme
 		ApplyThemeToAllWindows();
 	}
 
-	void CycleTheme()
+	void CycleTheme(const bool reverse)
 	{
 		if (!registry::themesEnabled) return;
 
-		const auto& next = GetNextTheme(ui::GetActiveTheme().stableId);
+		const auto& next = GetNextTheme(ui::GetActiveTheme().stableId, reverse);
 		SetSelectedTheme(next.stableId);
 
 		const auto activeWindow = GetActiveWindow();
@@ -346,13 +346,13 @@ namespace ui::theme
 		return color.value;
 	}
 
-	const ThemeDefinition& GetNextTheme(const std::wstring_view stableId)
+	const ThemeDefinition& GetNextTheme(const std::wstring_view stableId, const bool reverse)
 	{
 		const auto& themes = GetThemes();
 		const auto current = FindTheme(stableId);
 		const auto index = current ? static_cast<size_t>(current - themes.data()) : 0;
 
-		return themes[(index + 1) % themes.size()];
+		return themes[(index + (reverse ? themes.size() - 1 : 1)) % themes.size()];
 	}
 
 	bool TryGetColor(

@@ -4,6 +4,16 @@
   "name": "Autumn Orchard - Apple and Cider",
   "colors": {
     "light": {
+      "TitleBarBackground": { "value": "#E7B75B", "highContrast": 5 },
+      "TitleBarText": { "value": "#000000", "highContrast": 8 },
+      "TitleBarButton": { "value": "#000000", "highContrast": 8 },
+      "TitleBarButtonHover": { "value": "#FFFFFF", "highContrast": 8 },
+      "ColumnHeaderBackground": { "value": "#F5E3B6", "highContrast": 5 },
+      "ColumnHeaderText": { "value": "#733523", "highContrast": 8 },
+      "ColumnHeaderArrow": { "value": "#733523", "highContrast": 8 },
+      "MenuBackground": { "value": "#FEF8E8", "highContrast": 5 },
+      "MenuText": { "value": "#000000", "highContrast": 8 },
+      "MenuTextDisabled": { "value": "#5A5A5A", "highContrast": 17 },
       "TextDisabled": { "value": "#5a5a5a", "highContrast": 17 },
       "Background": { "value": "#FFFCF1", "highContrast": 5 },
       "Glow": { "value": "#8F3535", "highContrast": 13 },
@@ -20,6 +30,16 @@
       "TextHighlight": { "value": "#FFFFFF", "highContrast": 14 }
     },
     "dark": {
+      "TitleBarBackground": { "value": "#A37927", "highContrast": 5 },
+      "TitleBarText": { "value": "#000000", "highContrast": 8 },
+      "TitleBarButton": { "value": "#000000", "highContrast": 8 },
+      "TitleBarButtonHover": { "value": "#000000", "highContrast": 8 },
+      "ColumnHeaderBackground": { "value": "#5D4522", "highContrast": 5 },
+      "ColumnHeaderText": { "value": "White", "highContrast": 8 },
+      "ColumnHeaderArrow": { "value": "White", "highContrast": 8 },
+      "MenuBackground": { "value": "#32261A", "highContrast": 5 },
+      "MenuText": { "value": "#F5F5F5", "highContrast": 8 },
+      "MenuTextDisabled": { "value": "#717171", "highContrast": 17 },
       "TextDisabled": { "value": "#6c6c6c", "highContrast": 17 },
       "Background": { "value": "#2A2019", "highContrast": 5 },
       "Glow": { "value": "#EBA29A", "highContrast": 13 },

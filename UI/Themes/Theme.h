@@ -54,6 +54,16 @@ namespace ui
 		TestRed,
 		TestGreen,
 		TestOrange,
+		TitleBarBackground,
+		TitleBarText,
+		TitleBarButton,
+		TitleBarButtonHover,
+		ColumnHeaderBackground,
+		ColumnHeaderText,
+		ColumnHeaderArrow,
+		MenuBackground,
+		MenuText,
+		MenuTextDisabled,
 		UIEnd
 	};
 } // namespace ui
@@ -137,13 +147,13 @@ namespace ui::theme
 	void StopThemeSchedule() noexcept;
 	void RefreshScheduledTheme() noexcept;
 	COLORREF GetColor(const ThemeDefinition& definition, uiTheme appearance, uiColor role) noexcept;
-	const ThemeDefinition& GetNextTheme(std::wstring_view stableId);
+	const ThemeDefinition& GetNextTheme(std::wstring_view stableId, bool reverse = false);
 	void SetAppearance(uiThemePreference appearance);
 	void ToggleAppearance();
 	void SetSelectedTheme(std::wstring_view stableId);
 	void SetThemesEnabled(bool enabled);
 	void SetAutomaticThemes(bool enabled);
-	void CycleTheme();
+	void CycleTheme(bool reverse = false);
 	void ReloadThemes(const std::wstring& directory);
 	bool TryGetColor(
 		const ThemeDefinition& definition,

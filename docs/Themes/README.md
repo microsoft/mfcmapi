@@ -5,6 +5,10 @@ by default. To try them, open **Tools > Themes**, choose this directory, enable
 color themes, and select a theme. Other theme files are provided alongside the
 examples below.
 
+**Ctrl+Shift+T** selects the next theme; **Ctrl+Shift+R** selects the previous
+theme. Both wrap through the theme list and turn scheduling off. Color themes
+must be enabled. **Ctrl+Shift+D** toggles light/dark appearance.
+
 ## Writing a theme
 
 Start with [Halloween](Halloween.json) or [Christmas](Christmas.json):
@@ -57,29 +61,62 @@ to inherit an entire palette. You can omit the bitmap and `Test*` entries.
 An entry you supply still needs `value` and, for visible colors, `highContrast`;
 individual fields within that entry are not inherited.
 
+Colors never inherit from another role, even if two Standard entries happen to
+have identical values. Standard's appearance remains unchanged.
+
+### Title bars, column headers, and menus
+
+These surfaces have independent roles in each palette:
+
+| Surface | Roles |
+|---|---|
+| Title bar | `TitleBarBackground`, `TitleBarText`, `TitleBarButton`, `TitleBarButtonHover` |
+| Column headers | `ColumnHeaderBackground`, `ColumnHeaderText`, `ColumnHeaderArrow` |
+| Menu bar and popup menus | `MenuBackground`, `MenuText`, `MenuTextDisabled` |
+
+`TitleBarButton` colors the close, maximize/restore, and minimize glyphs.
+Highlighted caption buttons use `TitleBarButtonHover` on `GlowBackground`.
+Column-header colors cover both the labeled columns and unused header area.
+`MenuGutter` still controls the popup icon/checkmark gutter; menu selections keep
+their existing selection roles.
+
+Omitting any of these roles inherits only that role's Standard entry, not the
+theme's `Background`, `Text`, `Arrow`, or any other customized color. Existing
+theme files remain valid. The preview includes these surfaces. Built-in seasons
+use selective accents. Every bundled theme file explicitly defines all ten
+surface roles in both appearances, with coordinated title-bar accents,
+column-header colors, and menu backgrounds. Title-bar accents are selected
+separately from status-bar colors: multicolor themes use another palette color,
+while monochrome themes use a distinct shade. For example, Pride Rainbow has an
+orange title bar above its red status bar in light mode, and a red title bar
+above its violet status bar in dark mode. Christmas pairs a green title bar
+with its red status bar. These are independent literal color values, not
+references to other roles.
+
 ### Disabled menu items
 
-Menus use different palette roles for enabled and disabled commands. `Text` is
-the enabled command color; `TextDisabled` is used when a command is disabled.
+Menus use different palette roles for enabled and disabled commands. `MenuText`
+is the enabled command color; `MenuTextDisabled` is used when a command is disabled.
 When the pointer highlights a command, enabled text uses `GlowText` on
 `SelectedBackground`, while a disabled command uses `TextDisabledSelected` on
 `DisabledSelectedBackground` with a one-pixel `DisabledSelectedBorder` outline.
 
 Disabled commands should be recognizable as disabled, but still easy to read.
 Choose disabled colors that are visibly different from their enabled
-counterparts; do not just repeat `Text` or `GlowText`. For example:
+counterparts; do not just repeat `MenuText` or `GlowText`. For example:
 
 ```json
 {
-  "Text": { "value": "#202020", "highContrast": 8 },
-  "TextDisabled": { "value": "#606060", "highContrast": 17 },
+  "MenuText": { "value": "#202020", "highContrast": 8 },
+  "MenuTextDisabled": { "value": "#606060", "highContrast": 17 },
   "GlowText": { "value": "#FFFFFF", "highContrast": 14 },
   "TextDisabledSelected": { "value": "#D2D2D2", "highContrast": 17 }
 }
 ```
 
 These are role examples, not a complete palette. Choose values based on your
-own `Background` and `SelectedBackground` colors and check both appearances.
+own `MenuBackground`, `SelectedBackground`, and `DisabledSelectedBackground`
+colors and check both appearances.
 
 ### Recommended contrast
 
@@ -88,11 +125,12 @@ theme file is loaded. Contrast is the ratio between two colors, from `1:1`
 (identical) to `21:1` (black and white). Check every pairing in both palettes.
 
 - Aim for at least **4.5:1** between text and its background, including normal,
-  read-only, selected, hover, status, pane-header, and text-highlight text.
-- For `TextDisabled`, aim for at least **3:1** against `Background`. For
-  `TextDisabledSelected`, aim for at least **4.5:1** against `SelectedBackground`.
+  read-only, selected, hover, status, pane-header, title-bar, column-header,
+  menu, and text-highlight text.
+- For `MenuTextDisabled`, aim for at least **3:1** against `MenuBackground`. For
+  `TextDisabledSelected`, aim for at least **4.5:1** against `DisabledSelectedBackground`.
 - Make enabled and disabled text clearly different: aim for at least **3:1**
-  between `Text` and `TextDisabled`, and **3:1** between `GlowText` and
+  between `MenuText` and `MenuTextDisabled`, and **3:1** between `GlowText` and
   `TextDisabledSelected`.
 - Aim for at least **3:1** between the background and visual indicators such as
   selection, hover, text-highlight fills, and the focus indicator.

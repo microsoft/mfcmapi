@@ -4,6 +4,16 @@
   "name": "Watermelon - Picnic",
   "colors": {
     "light": {
+      "TitleBarBackground": { "value": "#E8778B", "highContrast": 5 },
+      "TitleBarText": { "value": "#000000", "highContrast": 8 },
+      "TitleBarButton": { "value": "#000000", "highContrast": 8 },
+      "TitleBarButtonHover": { "value": "#FFFFFF", "highContrast": 8 },
+      "ColumnHeaderBackground": { "value": "#FADDE4", "highContrast": 5 },
+      "ColumnHeaderText": { "value": "#833044", "highContrast": 8 },
+      "ColumnHeaderArrow": { "value": "#833044", "highContrast": 8 },
+      "MenuBackground": { "value": "#FEF6F6", "highContrast": 5 },
+      "MenuText": { "value": "#000000", "highContrast": 8 },
+      "MenuTextDisabled": { "value": "#5A5A5A", "highContrast": 17 },
       "TextDisabled": { "value": "#5a5a5a", "highContrast": 17 },
       "Background": { "value": "#FFFAF9", "highContrast": 5 },
       "Glow": { "value": "#A53B55", "highContrast": 13 },
@@ -20,6 +30,16 @@
       "TextHighlight": { "value": "#FFFFFF", "highContrast": 14 }
     },
     "dark": {
+      "TitleBarBackground": { "value": "#B84C65", "highContrast": 5 },
+      "TitleBarText": { "value": "#FFFFFF", "highContrast": 8 },
+      "TitleBarButton": { "value": "#FFFFFF", "highContrast": 8 },
+      "TitleBarButtonHover": { "value": "#000000", "highContrast": 8 },
+      "ColumnHeaderBackground": { "value": "#703447", "highContrast": 5 },
+      "ColumnHeaderText": { "value": "White", "highContrast": 8 },
+      "ColumnHeaderArrow": { "value": "White", "highContrast": 8 },
+      "MenuBackground": { "value": "#332027", "highContrast": 5 },
+      "MenuText": { "value": "#F5F5F5", "highContrast": 8 },
+      "MenuTextDisabled": { "value": "#8B8B8B", "highContrast": 17 },
       "TextDisabled": { "value": "#8b8b8b", "highContrast": 17 },
       "Background": { "value": "#281D21", "highContrast": 5 },
       "Glow": { "value": "#F3A0B1", "highContrast": 13 },

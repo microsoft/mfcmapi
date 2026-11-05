@@ -4,6 +4,16 @@
   "name": "University of Georgia",
   "colors": {
     "light": {
+      "TitleBarBackground": { "value": "#252525", "highContrast": 5 },
+      "TitleBarText": { "value": "#FFFFFF", "highContrast": 8 },
+      "TitleBarButton": { "value": "#FFFFFF", "highContrast": 8 },
+      "TitleBarButtonHover": { "value": "#FFFFFF", "highContrast": 8 },
+      "ColumnHeaderBackground": { "value": "#FADCE2", "highContrast": 5 },
+      "ColumnHeaderText": { "value": "#242424", "highContrast": 8 },
+      "ColumnHeaderArrow": { "value": "#242424", "highContrast": 8 },
+      "MenuBackground": { "value": "#FEF6F6", "highContrast": 5 },
+      "MenuText": { "value": "#000000", "highContrast": 8 },
+      "MenuTextDisabled": { "value": "#5A5A5A", "highContrast": 17 },
       "TextDisabled": { "value": "#5a5a5a", "highContrast": 17 },
       "Background": { "value": "#FFFAFA", "highContrast": 5 },
       "Glow": { "value": "#BA0C2F", "highContrast": 13 },
@@ -20,6 +30,16 @@
       "TextHighlight": { "value": "#FFFFFF", "highContrast": 14 }
     },
     "dark": {
+      "TitleBarBackground": { "value": "#414141", "highContrast": 5 },
+      "TitleBarText": { "value": "#FFFFFF", "highContrast": 8 },
+      "TitleBarButton": { "value": "#FFFFFF", "highContrast": 8 },
+      "TitleBarButtonHover": { "value": "#000000", "highContrast": 8 },
+      "ColumnHeaderBackground": { "value": "#7D1028", "highContrast": 5 },
+      "ColumnHeaderText": { "value": "White", "highContrast": 8 },
+      "ColumnHeaderArrow": { "value": "White", "highContrast": 8 },
+      "MenuBackground": { "value": "#271519", "highContrast": 5 },
+      "MenuText": { "value": "#F5F5F5", "highContrast": 8 },
+      "MenuTextDisabled": { "value": "#666666", "highContrast": 17 },
       "TextDisabled": { "value": "#646464", "highContrast": 17 },
       "Background": { "value": "#181616", "highContrast": 5 },
       "Glow": { "value": "#FF8BA2", "highContrast": 13 },

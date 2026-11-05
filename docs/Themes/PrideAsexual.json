@@ -4,6 +4,16 @@
   "name": "Pride - Asexual Flag",
   "colors": {
     "light": {
+      "TitleBarBackground": { "value": "#800080", "highContrast": 5 },
+      "TitleBarText": { "value": "#FFFFFF", "highContrast": 8 },
+      "TitleBarButton": { "value": "#FFFFFF", "highContrast": 8 },
+      "TitleBarButtonHover": { "value": "#FFFFFF", "highContrast": 8 },
+      "ColumnHeaderBackground": { "value": "#EBDCF4", "highContrast": 5 },
+      "ColumnHeaderText": { "value": "#64247E", "highContrast": 8 },
+      "ColumnHeaderArrow": { "value": "#64247E", "highContrast": 8 },
+      "MenuBackground": { "value": "#FAF7FD", "highContrast": 5 },
+      "MenuText": { "value": "#000000", "highContrast": 8 },
+      "MenuTextDisabled": { "value": "#5A5A5A", "highContrast": 17 },
       "TextDisabled": { "value": "#5a5a5a", "highContrast": 17 },
       "Background": { "value": "#FDFCFF", "highContrast": 5 },
       "Glow": { "value": "#702A91", "highContrast": 13 },
@@ -20,6 +30,16 @@
       "TextHighlight": { "value": "#FFFFFF", "highContrast": 14 }
     },
     "dark": {
+      "TitleBarBackground": { "value": "#8646A3", "highContrast": 5 },
+      "TitleBarText": { "value": "#FFFFFF", "highContrast": 8 },
+      "TitleBarButton": { "value": "#FFFFFF", "highContrast": 8 },
+      "TitleBarButtonHover": { "value": "#000000", "highContrast": 8 },
+      "ColumnHeaderBackground": { "value": "#512766", "highContrast": 5 },
+      "ColumnHeaderText": { "value": "White", "highContrast": 8 },
+      "ColumnHeaderArrow": { "value": "White", "highContrast": 8 },
+      "MenuBackground": { "value": "#241B2B", "highContrast": 5 },
+      "MenuText": { "value": "#F5F5F5", "highContrast": 8 },
+      "MenuTextDisabled": { "value": "#696969", "highContrast": 17 },
       "TextDisabled": { "value": "#666666", "highContrast": 17 },
       "Background": { "value": "#1C1920", "highContrast": 5 },
       "Glow": { "value": "#D2A0ED", "highContrast": 13 },

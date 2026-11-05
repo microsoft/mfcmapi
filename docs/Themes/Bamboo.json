@@ -4,6 +4,16 @@
   "name": "Bamboo - Jade and Rice Paper",
   "colors": {
     "light": {
+      "TitleBarBackground": { "value": "#B7CE83", "highContrast": 5 },
+      "TitleBarText": { "value": "#000000", "highContrast": 8 },
+      "TitleBarButton": { "value": "#000000", "highContrast": 8 },
+      "TitleBarButtonHover": { "value": "#FFFFFF", "highContrast": 8 },
+      "ColumnHeaderBackground": { "value": "#DFECCD", "highContrast": 5 },
+      "ColumnHeaderText": { "value": "#304E2D", "highContrast": 8 },
+      "ColumnHeaderArrow": { "value": "#304E2D", "highContrast": 8 },
+      "MenuBackground": { "value": "#F6FAEC", "highContrast": 5 },
+      "MenuText": { "value": "#000000", "highContrast": 8 },
+      "MenuTextDisabled": { "value": "#5A5A5A", "highContrast": 17 },
       "TextDisabled": { "value": "#5a5a5a", "highContrast": 17 },
       "Background": { "value": "#FAFCF2", "highContrast": 5 },
       "Glow": { "value": "#3F663B", "highContrast": 13 },
@@ -20,6 +30,16 @@
       "TextHighlight": { "value": "#FFFFFF", "highContrast": 14 }
     },
     "dark": {
+      "TitleBarBackground": { "value": "#78964C", "highContrast": 5 },
+      "TitleBarText": { "value": "#000000", "highContrast": 8 },
+      "TitleBarButton": { "value": "#000000", "highContrast": 8 },
+      "TitleBarButtonHover": { "value": "#000000", "highContrast": 8 },
+      "ColumnHeaderBackground": { "value": "#35502D", "highContrast": 5 },
+      "ColumnHeaderText": { "value": "White", "highContrast": 8 },
+      "ColumnHeaderArrow": { "value": "White", "highContrast": 8 },
+      "MenuBackground": { "value": "#1F2B1D", "highContrast": 5 },
+      "MenuText": { "value": "#F5F5F5", "highContrast": 8 },
+      "MenuTextDisabled": { "value": "#717171", "highContrast": 17 },
       "TextDisabled": { "value": "#6c6c6c", "highContrast": 17 },
       "Background": { "value": "#1B251A", "highContrast": 5 },
       "Glow": { "value": "#ACCF91", "highContrast": 13 },

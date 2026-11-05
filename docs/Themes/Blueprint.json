@@ -4,6 +4,16 @@
   "name": "Blueprint - Engineering Notes",
   "colors": {
     "light": {
+      "TitleBarBackground": { "value": "#527EAB", "highContrast": 5 },
+      "TitleBarText": { "value": "#000000", "highContrast": 8 },
+      "TitleBarButton": { "value": "#000000", "highContrast": 8 },
+      "TitleBarButtonHover": { "value": "#FFFFFF", "highContrast": 8 },
+      "ColumnHeaderBackground": { "value": "#D5E9FA", "highContrast": 5 },
+      "ColumnHeaderText": { "value": "#234E78", "highContrast": 8 },
+      "ColumnHeaderArrow": { "value": "#234E78", "highContrast": 8 },
+      "MenuBackground": { "value": "#F0F7FE", "highContrast": 5 },
+      "MenuText": { "value": "#16314C", "highContrast": 8 },
+      "MenuTextDisabled": { "value": "#898989", "highContrast": 17 },
       "TextDisabled": { "value": "#898989", "highContrast": 17 },
       "Background": { "value": "#F5FAFF", "highContrast": 5 },
       "Text": { "value": "#1D4165", "highContrast": 8 },
@@ -21,6 +31,16 @@
       "TextHighlight": { "value": "#FFFFFF", "highContrast": 14 }
     },
     "dark": {
+      "TitleBarBackground": { "value": "#466F98", "highContrast": 5 },
+      "TitleBarText": { "value": "#FFFFFF", "highContrast": 8 },
+      "TitleBarButton": { "value": "#FFFFFF", "highContrast": 8 },
+      "TitleBarButtonHover": { "value": "#000000", "highContrast": 8 },
+      "ColumnHeaderBackground": { "value": "#285172", "highContrast": 5 },
+      "ColumnHeaderText": { "value": "#E4F3FF", "highContrast": 8 },
+      "ColumnHeaderArrow": { "value": "#E4F3FF", "highContrast": 8 },
+      "MenuBackground": { "value": "#1A3855", "highContrast": 5 },
+      "MenuText": { "value": "#EBF6FF", "highContrast": 8 },
+      "MenuTextDisabled": { "value": "#8B8B8B", "highContrast": 17 },
       "TextDisabled": { "value": "#8b8b8b", "highContrast": 17 },
       "Background": { "value": "#173350", "highContrast": 5 },
       "BackgroundReadOnly": { "value": "#213E59", "highContrast": 15 },

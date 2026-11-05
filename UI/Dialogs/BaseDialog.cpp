@@ -234,8 +234,8 @@ namespace dialog
 		auto mi = MENUINFO{};
 		mi.cbSize = sizeof(MENUINFO);
 		mi.fMask = MIM_BACKGROUND;
-		mi.hbrBack = GetSysBrush(ui::uiColor::Background);
-		SetMenuInfo(hMenu, &mi);
+		mi.hbrBack = GetSysBrush(ui::uiColor::MenuBackground);
+		EC_B_S(SetMenuInfo(hMenu, &mi));
 
 		ui::ConvertMenuOwnerDraw(hMenu, true);
 		UpdateLegacyMenu(hMenu);

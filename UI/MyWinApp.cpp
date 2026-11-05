@@ -53,8 +53,9 @@ namespace ui
 
 	BOOL CMyWinApp::PreTranslateMessage(MSG* pMsg)
 	{
-		if (pMsg && pMsg->message == WM_KEYDOWN && (pMsg->wParam == 'D' || pMsg->wParam == 'T') &&
-			GetKeyState(VK_CONTROL) < 0 && GetKeyState(VK_SHIFT) < 0 && GetKeyState(VK_MENU) >= 0)
+		if (pMsg && pMsg->message == WM_KEYDOWN &&
+			(pMsg->wParam == 'D' || pMsg->wParam == 'T' || pMsg->wParam == 'R') && GetKeyState(VK_CONTROL) < 0 &&
+			GetKeyState(VK_SHIFT) < 0 && GetKeyState(VK_MENU) >= 0)
 		{
 			if (HIWORD(pMsg->lParam) & KF_REPEAT) return true;
 
@@ -64,7 +65,7 @@ namespace ui
 			}
 			else
 			{
-				theme::CycleTheme();
+				theme::CycleTheme(pMsg->wParam == 'R');
 			}
 
 			return true;

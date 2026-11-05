@@ -4,6 +4,16 @@
   "name": "Contrast - Warm Paper",
   "colors": {
     "light": {
+      "TitleBarBackground": { "value": "#D6B970", "highContrast": 5 },
+      "TitleBarText": { "value": "#000000", "highContrast": 8 },
+      "TitleBarButton": { "value": "#000000", "highContrast": 8 },
+      "TitleBarButtonHover": { "value": "#FFFFFF", "highContrast": 8 },
+      "ColumnHeaderBackground": { "value": "#F1DDA4", "highContrast": 5 },
+      "ColumnHeaderText": { "value": "#211A10", "highContrast": 8 },
+      "ColumnHeaderArrow": { "value": "#211A10", "highContrast": 8 },
+      "MenuBackground": { "value": "#FDF4DD", "highContrast": 5 },
+      "MenuText": { "value": "#19140C", "highContrast": 8 },
+      "MenuTextDisabled": { "value": "#676767", "highContrast": 17 },
       "Background": { "value": "#FFF8E7", "highContrast": 5 },
       "BackgroundReadOnly": { "value": "#EFE5CD", "highContrast": 15 },
       "Text": { "value": "#211A10", "highContrast": 8 },
@@ -25,6 +35,16 @@
       "TextHighlight": { "value": "#FFFFFF", "highContrast": 14 }
     },
     "dark": {
+      "TitleBarBackground": { "value": "#9D803D", "highContrast": 5 },
+      "TitleBarText": { "value": "#000000", "highContrast": 8 },
+      "TitleBarButton": { "value": "#000000", "highContrast": 8 },
+      "TitleBarButtonHover": { "value": "#000000", "highContrast": 8 },
+      "ColumnHeaderBackground": { "value": "#443519", "highContrast": 5 },
+      "ColumnHeaderText": { "value": "#FFF1D1", "highContrast": 8 },
+      "ColumnHeaderArrow": { "value": "#FFF1D1", "highContrast": 8 },
+      "MenuBackground": { "value": "#1E180F", "highContrast": 5 },
+      "MenuText": { "value": "#FFF5DD", "highContrast": 8 },
+      "MenuTextDisabled": { "value": "#8C8C8C", "highContrast": 17 },
       "Background": { "value": "#17130D", "highContrast": 5 },
       "BackgroundReadOnly": { "value": "#262016", "highContrast": 15 },
       "Text": { "value": "#FFF1D1", "highContrast": 8 },

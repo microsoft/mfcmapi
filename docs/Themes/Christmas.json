@@ -28,7 +28,17 @@
       "PaneHeaderText": { "value": "DarkGreen", "highContrast": 18 },
       "TextHighlightBackground": { "value": "#057A05", "highContrast": 13 },
       "TextHighlight": { "value": "#FFFFFF", "highContrast": 14 },
-      "MenuGutter": { "value": "Honeydew", "highContrast": 15 }
+      "MenuGutter": { "value": "Honeydew", "highContrast": 15 },
+      "TitleBarBackground": { "value": "#006400", "highContrast": 5 },
+      "TitleBarText": { "value": "#FFFFFF", "highContrast": 8 },
+      "TitleBarButton": { "value": "#FFFFFF", "highContrast": 8 },
+      "TitleBarButtonHover": { "value": "White", "highContrast": 8 },
+      "ColumnHeaderBackground": { "value": "DarkGreen", "highContrast": 5 },
+      "ColumnHeaderText": { "value": "White", "highContrast": 8 },
+      "ColumnHeaderArrow": { "value": "LightGreen", "highContrast": 8 },
+      "MenuBackground": { "value": "Honeydew", "highContrast": 5 },
+      "MenuText": { "value": "Black", "highContrast": 8 },
+      "MenuTextDisabled": { "value": "#5A5A5A", "highContrast": 17 }
     },
     "dark": {
       "TextDisabled": { "value": "#6a6a6a", "highContrast": 17 },
@@ -46,7 +56,17 @@
       "PaneHeaderText": { "value": "White", "highContrast": 18 },
       "TextHighlightBackground": { "value": "#FF5E5E", "highContrast": 13 },
       "TextHighlight": { "value": "#000000", "highContrast": 14 },
-      "MenuGutter": { "value": "DarkGreen", "highContrast": 15 }
+      "MenuGutter": { "value": "DarkGreen", "highContrast": 15 },
+      "TitleBarBackground": { "value": "#245D38", "highContrast": 5 },
+      "TitleBarText": { "value": "#FFFFFF", "highContrast": 8 },
+      "TitleBarButton": { "value": "#FFFFFF", "highContrast": 8 },
+      "TitleBarButtonHover": { "value": "Black", "highContrast": 8 },
+      "ColumnHeaderBackground": { "value": "DarkGreen", "highContrast": 5 },
+      "ColumnHeaderText": { "value": "White", "highContrast": 8 },
+      "ColumnHeaderArrow": { "value": "LightGreen", "highContrast": 8 },
+      "MenuBackground": { "value": "#102010", "highContrast": 5 },
+      "MenuText": { "value": "White", "highContrast": 8 },
+      "MenuTextDisabled": { "value": "#8A8A8A", "highContrast": 17 }
     }
   }
 }

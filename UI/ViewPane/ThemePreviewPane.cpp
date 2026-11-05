@@ -90,7 +90,7 @@ namespace viewpane
 
 	int ThemePreviewPane::GetFixedHeight()
 	{
-		return m_visible ? GetHeaderHeight() + 14 * m_iEditHeight + 7 * max(6, m_iMargin) : 0;
+		return m_visible ? GetHeaderHeight() + 18 * m_iEditHeight + 9 * max(6, m_iMargin) : 0;
 	}
 
 	bool ThemePreviewPane::containsWindow(const HWND hWnd) const noexcept
@@ -196,16 +196,37 @@ namespace viewpane
 
 		fillRect(client, getColor(ui::uiColor::Background));
 
-		auto header = RECT{margin, margin, client.right - margin, margin + rowHeight};
+		const auto title = RECT{margin, margin, client.right - margin, margin + rowHeight};
+		fillRect(title, getColor(ui::uiColor::TitleBarBackground));
+		auto titleText = title;
+		titleText.right -= rowHeight;
+		drawText(titleText, pane->m_themeName, ui::uiColor::TitleBarText);
+		auto titleButton = title;
+		titleButton.left = titleText.right;
+		drawText(titleButton, L"x", ui::uiColor::TitleBarButton);
+
+		auto header = RECT{margin, title.bottom + margin, client.right - margin, title.bottom + margin + rowHeight};
 		fillRect(header, getColor(ui::uiColor::PaneHeaderBackground));
 		drawFrame(header, getColor(ui::uiColor::Glow), 2);
 		drawText(header, pane->m_themeName, ui::uiColor::PaneHeaderText);
+
+		const auto columnHeader =
+			RECT{margin, header.bottom + margin, client.right - margin, header.bottom + margin + rowHeight};
+		drawSample(
+			columnHeader,
+			IDS_THEME_PREVIEW_COLUMN_HEADER,
+			ui::uiColor::ColumnHeaderBackground,
+			ui::uiColor::ColumnHeaderText,
+			ui::uiColor::FrameUnselected);
+		auto columnArrow = columnHeader;
+		columnArrow.left = columnArrow.right - rowHeight;
+		drawText(columnArrow, L"^", ui::uiColor::ColumnHeaderArrow);
 
 		const auto columnWidth = max(0, (client.right - 3 * margin) / 2);
 
 		for (auto row = 0; row < 5; ++row)
 		{
-			const auto top = header.bottom + margin + row * (rowHeight + margin);
+			const auto top = columnHeader.bottom + margin + row * (rowHeight + margin);
 			const auto left = RECT{margin, top, margin + columnWidth, top + rowHeight};
 			const auto right = RECT{left.right + margin, top, client.right - margin, top + rowHeight};
 
@@ -276,13 +297,13 @@ namespace viewpane
 					auto menuEntry = column;
 					menuEntry.top += (entry % 2) * menuEntryHeight;
 					menuEntry.bottom = disabled ? column.bottom : menuEntry.top + menuEntryHeight;
-					const auto background = !selected ? ui::uiColor::Background
+					const auto background = !selected ? ui::uiColor::MenuBackground
 											: disabled && !pane->m_highContrast
 												? ui::uiColor::DisabledSelectedBackground
 												: ui::uiColor::SelectedBackground;
-					const auto foreground = disabled ? (selected ? ui::uiColor::TextDisabledSelected
-																 : ui::uiColor::TextDisabled)
-													 : (selected ? ui::uiColor::GlowText : ui::uiColor::Text);
+					const auto foreground =
+						disabled ? (selected ? ui::uiColor::TextDisabledSelected : ui::uiColor::MenuTextDisabled)
+								 : (selected ? ui::uiColor::GlowText : ui::uiColor::MenuText);
 					fillRect(menuEntry, getColor(background));
 
 					auto gutter = menuEntry;
@@ -307,9 +328,9 @@ namespace viewpane
 
 		auto footer = RECT{
 			margin,
-			header.bottom + 6 * margin + 5 * rowHeight,
+			columnHeader.bottom + 6 * margin + 5 * rowHeight,
 			client.right - margin,
-			header.bottom + 6 * margin + 6 * rowHeight};
+			columnHeader.bottom + 6 * margin + 6 * rowHeight};
 		fillRect(footer, getColor(ui::uiColor::Status));
 		drawText(footer, L"MFCMAPI", ui::uiColor::StatusText);
 		SelectObject(hdc, oldFont);

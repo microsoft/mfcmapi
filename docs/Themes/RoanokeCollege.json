@@ -4,6 +4,16 @@
   "name": "Roanoke College",
   "colors": {
     "light": {
+      "TitleBarBackground": { "value": "#A7A9AC", "highContrast": 5 },
+      "TitleBarText": { "value": "#000000", "highContrast": 8 },
+      "TitleBarButton": { "value": "#000000", "highContrast": 8 },
+      "TitleBarButtonHover": { "value": "#FFFFFF", "highContrast": 8 },
+      "ColumnHeaderBackground": { "value": "#F2DDE5", "highContrast": 5 },
+      "ColumnHeaderText": { "value": "#70082F", "highContrast": 8 },
+      "ColumnHeaderArrow": { "value": "#70082F", "highContrast": 8 },
+      "MenuBackground": { "value": "#FDF6F9", "highContrast": 5 },
+      "MenuText": { "value": "#000000", "highContrast": 8 },
+      "MenuTextDisabled": { "value": "#5A5A5A", "highContrast": 17 },
       "TextDisabled": { "value": "#5a5a5a", "highContrast": 17 },
       "Background": { "value": "#FFFAFC", "highContrast": 5 },
       "Glow": { "value": "#8D0B3D", "highContrast": 13 },
@@ -20,6 +30,16 @@
       "TextHighlight": { "value": "#FFFFFF", "highContrast": 14 }
     },
     "dark": {
+      "TitleBarBackground": { "value": "#83868A", "highContrast": 5 },
+      "TitleBarText": { "value": "#000000", "highContrast": 8 },
+      "TitleBarButton": { "value": "#000000", "highContrast": 8 },
+      "TitleBarButtonHover": { "value": "#000000", "highContrast": 8 },
+      "ColumnHeaderBackground": { "value": "#681D3B", "highContrast": 5 },
+      "ColumnHeaderText": { "value": "White", "highContrast": 8 },
+      "ColumnHeaderArrow": { "value": "White", "highContrast": 8 },
+      "MenuBackground": { "value": "#2C1820", "highContrast": 5 },
+      "MenuText": { "value": "#F5F5F5", "highContrast": 8 },
+      "MenuTextDisabled": { "value": "#696969", "highContrast": 17 },
       "TextDisabled": { "value": "#666666", "highContrast": 17 },
       "Background": { "value": "#21171B", "highContrast": 5 },
       "Glow": { "value": "#E7A8BF", "highContrast": 13 },

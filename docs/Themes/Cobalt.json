@@ -4,6 +4,16 @@
   "name": "Cobalt - Electric Workshop",
   "colors": {
     "light": {
+      "TitleBarBackground": { "value": "#517FCB", "highContrast": 5 },
+      "TitleBarText": { "value": "#000000", "highContrast": 8 },
+      "TitleBarButton": { "value": "#000000", "highContrast": 8 },
+      "TitleBarButtonHover": { "value": "#FFFFFF", "highContrast": 8 },
+      "ColumnHeaderBackground": { "value": "#D8E6FF", "highContrast": 5 },
+      "ColumnHeaderText": { "value": "#173C80", "highContrast": 8 },
+      "ColumnHeaderArrow": { "value": "#173C80", "highContrast": 8 },
+      "MenuBackground": { "value": "#F3F8FF", "highContrast": 5 },
+      "MenuText": { "value": "#000000", "highContrast": 8 },
+      "MenuTextDisabled": { "value": "#5A5A5A", "highContrast": 17 },
       "TextDisabled": { "value": "#5a5a5a", "highContrast": 17 },
       "Background": { "value": "#F8FBFF", "highContrast": 5 },
       "Glow": { "value": "#1D4EA5", "highContrast": 13 },
@@ -20,6 +30,16 @@
       "TextHighlight": { "value": "#FFFFFF", "highContrast": 14 }
     },
     "dark": {
+      "TitleBarBackground": { "value": "#455C9D", "highContrast": 5 },
+      "TitleBarText": { "value": "#FFFFFF", "highContrast": 8 },
+      "TitleBarButton": { "value": "#FFFFFF", "highContrast": 8 },
+      "TitleBarButtonHover": { "value": "#000000", "highContrast": 8 },
+      "ColumnHeaderBackground": { "value": "#1F4071", "highContrast": 5 },
+      "ColumnHeaderText": { "value": "White", "highContrast": 8 },
+      "ColumnHeaderArrow": { "value": "White", "highContrast": 8 },
+      "MenuBackground": { "value": "#122644", "highContrast": 5 },
+      "MenuText": { "value": "#F5F5F5", "highContrast": 8 },
+      "MenuTextDisabled": { "value": "#6F6F6F", "highContrast": 17 },
       "TextDisabled": { "value": "#6b6b6b", "highContrast": 17 },
       "Background": { "value": "#10213C", "highContrast": 5 },
       "Glow": { "value": "#86B5FF", "highContrast": 13 },

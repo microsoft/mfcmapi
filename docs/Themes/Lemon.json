@@ -4,6 +4,16 @@
   "name": "Lemon - Zest and Leaf",
   "colors": {
     "light": {
+      "TitleBarBackground": { "value": "#8BAD3C", "highContrast": 5 },
+      "TitleBarText": { "value": "#000000", "highContrast": 8 },
+      "TitleBarButton": { "value": "#000000", "highContrast": 8 },
+      "TitleBarButtonHover": { "value": "#FFFFFF", "highContrast": 8 },
+      "ColumnHeaderBackground": { "value": "#FFF0AA", "highContrast": 5 },
+      "ColumnHeaderText": { "value": "#5A4900", "highContrast": 8 },
+      "ColumnHeaderArrow": { "value": "#5A4900", "highContrast": 8 },
+      "MenuBackground": { "value": "#FFFDE9", "highContrast": 5 },
+      "MenuText": { "value": "#000000", "highContrast": 8 },
+      "MenuTextDisabled": { "value": "#5A5A5A", "highContrast": 17 },
       "TextDisabled": { "value": "#5a5a5a", "highContrast": 17 },
       "Background": { "value": "#FFFFF4", "highContrast": 5 },
       "Glow": { "value": "#7E6500", "highContrast": 13 },
@@ -20,6 +30,16 @@
       "TextHighlight": { "value": "#FFFFFF", "highContrast": 14 }
     },
     "dark": {
+      "TitleBarBackground": { "value": "#688132", "highContrast": 5 },
+      "TitleBarText": { "value": "#000000", "highContrast": 8 },
+      "TitleBarButton": { "value": "#000000", "highContrast": 8 },
+      "TitleBarButtonHover": { "value": "#000000", "highContrast": 8 },
+      "ColumnHeaderBackground": { "value": "#564B1C", "highContrast": 5 },
+      "ColumnHeaderText": { "value": "White", "highContrast": 8 },
+      "ColumnHeaderArrow": { "value": "White", "highContrast": 8 },
+      "MenuBackground": { "value": "#2D2A16", "highContrast": 5 },
+      "MenuText": { "value": "#F5F5F5", "highContrast": 8 },
+      "MenuTextDisabled": { "value": "#727272", "highContrast": 17 },
       "TextDisabled": { "value": "#6d6d6d", "highContrast": 17 },
       "Background": { "value": "#262415", "highContrast": 5 },
       "Glow": { "value": "#F3DB73", "highContrast": 13 },

@@ -11,9 +11,9 @@ namespace themefiletest
 		return std::filesystem::path{__FILE__}.parent_path().parent_path().parent_path() / L"docs" / L"Themes";
 	}
 
-	static std::wstring ReadExample()
+	static std::wstring ReadExample(const wchar_t* filename = L"Halloween.json")
 	{
-		std::ifstream stream(ExampleDirectory() / L"Halloween.json", std::ios::binary);
+		std::ifstream stream(ExampleDirectory() / filename, std::ios::binary);
 		Assert::IsTrue(stream.good());
 
 		const auto bytes = std::string{std::istreambuf_iterator<char>{stream}, std::istreambuf_iterator<char>{}};
@@ -127,6 +127,16 @@ namespace themefiletest
 			};
 			const ContrastPair textPairs[] = {
 				{ui::uiColor::Text, ui::uiColor::Background, L"text/background", 4.5},
+				{ui::uiColor::TitleBarText, ui::uiColor::TitleBarBackground, L"title bar text/background", 4.5},
+				{ui::uiColor::ColumnHeaderText,
+				 ui::uiColor::ColumnHeaderBackground,
+				 L"column header text/background",
+				 4.5},
+				{ui::uiColor::MenuText, ui::uiColor::MenuBackground, L"menu text/background", 4.5},
+				{ui::uiColor::MenuTextDisabled,
+				 ui::uiColor::MenuBackground,
+				 L"disabled menu text/menu background",
+				 3.0},
 				{ui::uiColor::TextDisabled, ui::uiColor::Background, L"disabled menu text/background", 3.0},
 				{ui::uiColor::TextDisabledSelected,
 				 ui::uiColor::DisabledSelectedBackground,
@@ -139,6 +149,15 @@ namespace themefiletest
 				{ui::uiColor::PaneHeaderText, ui::uiColor::PaneHeaderBackground, L"pane header text/background", 4.5},
 				{ui::uiColor::TextHighlight, ui::uiColor::TextHighlightBackground, L"highlight text/background", 4.5}};
 			const ContrastPair nonTextPairs[] = {
+				{ui::uiColor::TitleBarButton, ui::uiColor::TitleBarBackground, L"title bar button/background", 3.0},
+				{ui::uiColor::TitleBarButtonHover,
+				 ui::uiColor::GlowBackground,
+				 L"title bar button/hover background",
+				 3.0},
+				{ui::uiColor::ColumnHeaderArrow,
+				 ui::uiColor::ColumnHeaderBackground,
+				 L"column header arrow/background",
+				 3.0},
 				{ui::uiColor::FrameSelected, ui::uiColor::Background, L"focus indicator/background", 3.0},
 				{ui::uiColor::GlowBackground, ui::uiColor::Background, L"hover/background", 3.0},
 				{ui::uiColor::SelectedBackground, ui::uiColor::Background, L"selection/background", 3.0},
@@ -160,8 +179,8 @@ namespace themefiletest
 								colors.values[static_cast<size_t>(pair.background)].value);
 							if (ratio < pair.minimum)
 							{
-								violations << theme.name << L" (" << appearanceName << L"): " << pair.description << L" = "
-										   << ratio << L":1; requires " << pair.minimum << L":1\n";
+								violations << theme.name << L" (" << appearanceName << L"): " << pair.description
+										   << L" = " << ratio << L":1; requires " << pair.minimum << L":1\n";
 							}
 						}
 					};
@@ -170,8 +189,8 @@ namespace themefiletest
 					checkPairs(nonTextPairs);
 
 					const auto normalTextDifference = ContrastRatio(
-						colors.values[static_cast<size_t>(ui::uiColor::TextDisabled)].value,
-						colors.values[static_cast<size_t>(ui::uiColor::Text)].value);
+						colors.values[static_cast<size_t>(ui::uiColor::MenuTextDisabled)].value,
+						colors.values[static_cast<size_t>(ui::uiColor::MenuText)].value);
 					if (normalTextDifference < 3.0)
 					{
 						violations << theme.name << L" (" << appearanceName
@@ -189,8 +208,8 @@ namespace themefiletest
 								   << selectedTextDifference << L":1; requires 3:1)\n";
 					}
 
-					if (colors.values[static_cast<size_t>(ui::uiColor::TextDisabled)].highContrast ==
-							colors.values[static_cast<size_t>(ui::uiColor::Text)].highContrast ||
+					if (colors.values[static_cast<size_t>(ui::uiColor::MenuTextDisabled)].highContrast ==
+							colors.values[static_cast<size_t>(ui::uiColor::MenuText)].highContrast ||
 						colors.values[static_cast<size_t>(ui::uiColor::TextDisabledSelected)].highContrast ==
 							colors.values[static_cast<size_t>(ui::uiColor::GlowText)].highContrast)
 					{
@@ -238,6 +257,119 @@ namespace themefiletest
 			}
 
 			Assert::IsTrue(violations.str().empty(), violations.str().c_str());
+		}
+
+		TEST_METHOD(EveryThemeFileExplicitlyDefinesSurfaceColorsInBothAppearances)
+		{
+			for (const auto& entry : std::filesystem::directory_iterator(ExampleDirectory()))
+			{
+				if (!entry.is_regular_file() || entry.path().extension() != L".json") continue;
+
+				const auto json = ReadExample(entry.path().filename().c_str());
+				const auto filename = entry.path().filename().wstring();
+				auto definition = ui::theme::ThemeDefinition{};
+				auto error = std::wstring{};
+				Assert::IsTrue(ui::theme::ParseThemeFile(json, definition, error), error.c_str());
+				for (const auto role :
+					 {L"TitleBarBackground",
+					  L"TitleBarText",
+					  L"TitleBarButton",
+					  L"TitleBarButtonHover",
+					  L"ColumnHeaderBackground",
+					  L"ColumnHeaderText",
+					  L"ColumnHeaderArrow",
+					  L"MenuBackground",
+					  L"MenuText",
+					  L"MenuTextDisabled"})
+				{
+					const auto key = L"\"" + std::wstring(role) + L"\"";
+					const auto message = filename + L": " + role + L" must be explicit in both palettes.";
+					const auto first = json.find(key);
+					Assert::IsTrue(first != std::wstring::npos, message.c_str());
+					const auto second = json.find(key, first + key.size());
+					Assert::IsTrue(second != std::wstring::npos, message.c_str());
+					Assert::IsTrue(json.find(key, second + key.size()) == std::wstring::npos, message.c_str());
+				}
+			}
+		}
+
+		TEST_METHOD(EveryThemeFileCustomizesEveryNewSurfaceInBothAppearances)
+		{
+			const auto catalog = ui::theme::LoadThemeDirectory(ExampleDirectory().wstring());
+			Assert::IsTrue(catalog.errors.empty());
+			const auto& standard = ui::theme::GetDefaultTheme();
+			for (auto index = ui::theme::GetThemes().size(); index < catalog.themes.size(); ++index)
+			{
+				const auto& theme = catalog.themes[index];
+				for (const auto appearance : {ui::uiTheme::Light, ui::uiTheme::Dark})
+				{
+					const auto& palette = appearance == ui::uiTheme::Light ? theme.light : theme.dark;
+					for (const auto role :
+						 {ui::uiColor::TitleBarBackground,
+						  ui::uiColor::ColumnHeaderBackground,
+						  ui::uiColor::MenuBackground})
+					{
+						const auto& colors = appearance == ui::uiTheme::Light ? standard.light : standard.dark;
+						Assert::IsTrue(
+							palette.values[static_cast<size_t>(role)].value !=
+								colors.values[static_cast<size_t>(role)].value,
+							theme.name.c_str());
+					}
+					Assert::IsTrue(
+						ContrastRatio(
+							palette.values[static_cast<size_t>(ui::uiColor::TitleBarButtonHover)].value,
+							palette.values[static_cast<size_t>(ui::uiColor::GlowBackground)].value) >= 3.0);
+					Assert::IsTrue(
+						palette.values[static_cast<size_t>(ui::uiColor::TitleBarBackground)].value !=
+							palette.values[static_cast<size_t>(ui::uiColor::Status)].value,
+						theme.name.c_str());
+				}
+			}
+		}
+
+		TEST_METHOD(RainbowUsesAdditionalFlagColorsForItsTitleBar)
+		{
+			auto theme = ui::theme::ThemeDefinition{};
+			auto error = std::wstring{};
+			Assert::IsTrue(ui::theme::ParseThemeFile(ReadExample(L"PrideRainbow.json"), theme, error), error.c_str());
+			Assert::AreEqual(
+				RGB(0xFF, 0x8C, 0x00), theme.light.values[static_cast<size_t>(ui::uiColor::TitleBarBackground)].value);
+			Assert::AreEqual(RGB(0xE4, 0x03, 0x03), theme.light.values[static_cast<size_t>(ui::uiColor::Status)].value);
+			Assert::AreEqual(
+				RGB(0xE4, 0x03, 0x03), theme.dark.values[static_cast<size_t>(ui::uiColor::TitleBarBackground)].value);
+			Assert::AreEqual(RGB(0x75, 0x07, 0x87), theme.dark.values[static_cast<size_t>(ui::uiColor::Status)].value);
+		}
+
+		TEST_METHOD(BuiltInSurfaceAccentsMeetContrastTargets)
+		{
+			for (const auto& theme : ui::theme::GetThemes())
+			{
+				for (const auto& palette : {theme.light, theme.dark})
+				{
+					const auto check =
+						[&](const ui::uiColor foreground, const ui::uiColor background, const double minimum) {
+							Assert::IsTrue(
+								ContrastRatio(
+									palette.values[static_cast<size_t>(foreground)].value,
+									palette.values[static_cast<size_t>(background)].value) >= minimum,
+								theme.name.c_str());
+						};
+					check(ui::uiColor::TitleBarText, ui::uiColor::TitleBarBackground, 4.5);
+					check(ui::uiColor::TitleBarButton, ui::uiColor::TitleBarBackground, 3.0);
+					check(ui::uiColor::TitleBarButtonHover, ui::uiColor::GlowBackground, 3.0);
+					check(ui::uiColor::ColumnHeaderText, ui::uiColor::ColumnHeaderBackground, 4.5);
+					check(ui::uiColor::ColumnHeaderArrow, ui::uiColor::ColumnHeaderBackground, 3.0);
+					check(ui::uiColor::MenuText, ui::uiColor::MenuBackground, 4.5);
+					check(ui::uiColor::MenuTextDisabled, ui::uiColor::MenuBackground, 3.0);
+					if (theme.stableId != L"standard")
+					{
+						Assert::IsTrue(
+							palette.values[static_cast<size_t>(ui::uiColor::TitleBarBackground)].value !=
+								palette.values[static_cast<size_t>(ui::uiColor::Status)].value,
+							theme.name.c_str());
+					}
+				}
+			}
 		}
 
 		TEST_METHOD(ExamplesLoadAndEventsOverrideSeasonsWithoutShifting)
@@ -368,6 +500,61 @@ namespace themefiletest
 			}
 		}
 
+		TEST_METHOD(SurfaceRolesNeverInheritFromOtherCustomizedRoles)
+		{
+			const auto json = LR"({
+				"schemaVersion": 1,
+				"id": "my.surfaces",
+				"name": "Independent surfaces",
+				"colors": {
+					"light": {
+						"Background": { "value": "#123456", "system": 0, "highContrast": 13 },
+						"Text": { "value": "#654321", "highContrast": 14 },
+						"FrameSelected": { "value": "#ABCDEF", "highContrast": 14 },
+						"Arrow": { "value": "#987654", "highContrast": 14 },
+						"TextDisabled": { "value": "#123123", "highContrast": 14 },
+						"TitleBarBackground": { "value": "#224466", "highContrast": 15 }
+					},
+					"dark": {
+						"Background": { "value": "#654321", "highContrast": 13 },
+						"Text": { "value": "#123456", "highContrast": 14 },
+						"FrameSelected": { "value": "#FEDCBA", "highContrast": 14 },
+						"Arrow": { "value": "#456789", "highContrast": 14 },
+						"TextDisabled": { "value": "#321321", "highContrast": 14 },
+						"ColumnHeaderBackground": { "value": "#446688", "highContrast": 15 }
+					}
+				}
+			})";
+			auto theme = ui::theme::ThemeDefinition{};
+			auto error = std::wstring{};
+			Assert::IsTrue(ui::theme::ParseThemeFile(json, theme, error), error.c_str());
+			const auto& standard = ui::theme::GetDefaultTheme();
+			for (const auto dark : {false, true})
+			{
+				const auto& palette = dark ? theme.dark : theme.light;
+				const auto& defaults = dark ? standard.dark : standard.light;
+				for (auto index = static_cast<size_t>(ui::uiColor::TitleBarBackground);
+					 index < static_cast<size_t>(ui::uiColor::UIEnd);
+					 ++index)
+				{
+					const auto& color = palette.values[index];
+					if (index == static_cast<size_t>(
+									 dark ? ui::uiColor::ColumnHeaderBackground : ui::uiColor::TitleBarBackground))
+					{
+						Assert::AreEqual(dark ? RGB(0x44, 0x66, 0x88) : RGB(0x22, 0x44, 0x66), color.value);
+						Assert::AreEqual(-1, color.system);
+						Assert::AreEqual(15, color.highContrast);
+					}
+					else
+					{
+						Assert::AreEqual(defaults.values[index].value, color.value);
+						Assert::AreEqual(defaults.values[index].system, color.system);
+						Assert::AreEqual(defaults.values[index].highContrast, color.highContrast);
+					}
+				}
+			}
+		}
+
 		TEST_METHOD(DisabledSelectedColorsCanBeCustomized)
 		{
 			const auto json = LR"({
@@ -397,11 +584,9 @@ namespace themefiletest
 				RGB(0xAB, 0xCD, 0xEF),
 				theme.light.values[static_cast<size_t>(ui::uiColor::TextDisabledSelected)].value);
 			Assert::AreEqual(
-				14,
-				theme.light.values[static_cast<size_t>(ui::uiColor::TextDisabledSelected)].highContrast);
+				14, theme.light.values[static_cast<size_t>(ui::uiColor::TextDisabledSelected)].highContrast);
 			Assert::AreEqual(
-				RGB(0xFE, 0xDC, 0xBA),
-				theme.dark.values[static_cast<size_t>(ui::uiColor::TextDisabledSelected)].value);
+				RGB(0xFE, 0xDC, 0xBA), theme.dark.values[static_cast<size_t>(ui::uiColor::TextDisabledSelected)].value);
 			Assert::AreEqual(
 				RGB(0xF0, 0xF0, 0xF0),
 				theme.light.values[static_cast<size_t>(ui::uiColor::DisabledSelectedBackground)].value);

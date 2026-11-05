@@ -4,6 +4,16 @@
   "name": "Blueberry - Jam Jar",
   "colors": {
     "light": {
+      "TitleBarBackground": { "value": "#9376BD", "highContrast": 5 },
+      "TitleBarText": { "value": "#000000", "highContrast": 8 },
+      "TitleBarButton": { "value": "#000000", "highContrast": 8 },
+      "TitleBarButtonHover": { "value": "#FFFFFF", "highContrast": 8 },
+      "ColumnHeaderBackground": { "value": "#E3DFF7", "highContrast": 5 },
+      "ColumnHeaderText": { "value": "#3D366F", "highContrast": 8 },
+      "ColumnHeaderArrow": { "value": "#3D366F", "highContrast": 8 },
+      "MenuBackground": { "value": "#F7F6FE", "highContrast": 5 },
+      "MenuText": { "value": "#000000", "highContrast": 8 },
+      "MenuTextDisabled": { "value": "#5A5A5A", "highContrast": 17 },
       "TextDisabled": { "value": "#5a5a5a", "highContrast": 17 },
       "Background": { "value": "#FBFAFF", "highContrast": 5 },
       "Glow": { "value": "#514A8B", "highContrast": 13 },
@@ -20,6 +30,16 @@
       "TextHighlight": { "value": "#FFFFFF", "highContrast": 14 }
     },
     "dark": {
+      "TitleBarBackground": { "value": "#635198", "highContrast": 5 },
+      "TitleBarText": { "value": "#FFFFFF", "highContrast": 8 },
+      "TitleBarButton": { "value": "#FFFFFF", "highContrast": 8 },
+      "TitleBarButtonHover": { "value": "#000000", "highContrast": 8 },
+      "ColumnHeaderBackground": { "value": "#3F3965", "highContrast": 5 },
+      "ColumnHeaderText": { "value": "White", "highContrast": 8 },
+      "ColumnHeaderArrow": { "value": "White", "highContrast": 8 },
+      "MenuBackground": { "value": "#252238", "highContrast": 5 },
+      "MenuText": { "value": "#F5F5F5", "highContrast": 8 },
+      "MenuTextDisabled": { "value": "#6E6E6E", "highContrast": 17 },
       "TextDisabled": { "value": "#6a6a6a", "highContrast": 17 },
       "Background": { "value": "#201E30", "highContrast": 5 },
       "Glow": { "value": "#B9AFF0", "highContrast": 13 },

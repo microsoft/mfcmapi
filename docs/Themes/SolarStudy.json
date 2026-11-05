@@ -4,6 +4,16 @@
   "name": "Solar Study - Ochre and Petrol",
   "colors": {
     "light": {
+      "TitleBarBackground": { "value": "#BA8B2D", "highContrast": 5 },
+      "TitleBarText": { "value": "#000000", "highContrast": 8 },
+      "TitleBarButton": { "value": "#000000", "highContrast": 8 },
+      "TitleBarButtonHover": { "value": "#FFFFFF", "highContrast": 8 },
+      "ColumnHeaderBackground": { "value": "#F5E5AD", "highContrast": 5 },
+      "ColumnHeaderText": { "value": "#624800", "highContrast": 8 },
+      "ColumnHeaderArrow": { "value": "#624800", "highContrast": 8 },
+      "MenuBackground": { "value": "#FEF6DF", "highContrast": 5 },
+      "MenuText": { "value": "#000000", "highContrast": 8 },
+      "MenuTextDisabled": { "value": "#5A5A5A", "highContrast": 17 },
       "TextDisabled": { "value": "#5a5a5a", "highContrast": 17 },
       "Background": { "value": "#FFF9E8", "highContrast": 5 },
       "Glow": { "value": "#8B6200", "highContrast": 13 },
@@ -20,6 +30,16 @@
       "TextHighlight": { "value": "#FFFFFF", "highContrast": 14 }
     },
     "dark": {
+      "TitleBarBackground": { "value": "#9B7427", "highContrast": 5 },
+      "TitleBarText": { "value": "#000000", "highContrast": 8 },
+      "TitleBarButton": { "value": "#000000", "highContrast": 8 },
+      "TitleBarButtonHover": { "value": "#000000", "highContrast": 8 },
+      "ColumnHeaderBackground": { "value": "#57471D", "highContrast": 5 },
+      "ColumnHeaderText": { "value": "White", "highContrast": 8 },
+      "ColumnHeaderArrow": { "value": "White", "highContrast": 8 },
+      "MenuBackground": { "value": "#1E2D2B", "highContrast": 5 },
+      "MenuText": { "value": "#F5F5F5", "highContrast": 8 },
+      "MenuTextDisabled": { "value": "#737373", "highContrast": 17 },
       "TextDisabled": { "value": "#6e6e6e", "highContrast": 17 },
       "Background": { "value": "#14282D", "highContrast": 5 },
       "Glow": { "value": "#E6C469", "highContrast": 13 },

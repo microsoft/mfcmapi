@@ -39,6 +39,16 @@ namespace ui::theme::builtin
 			{color::IndianRed, -1, -1}, // TestRed
 			{color::Lime, -1, -1}, // TestGreen
 			{color::Coral, -1, -1}, // TestOrange
+			{color::White, COLOR_WINDOW, COLOR_WINDOW}, // TitleBarBackground
+			{color::Black, COLOR_WINDOWTEXT, COLOR_WINDOWTEXT}, // TitleBarText
+			{color::Black, COLOR_WINDOWTEXT, COLOR_WINDOWTEXT}, // TitleBarButton
+			{color::Black, COLOR_WINDOWTEXT, COLOR_WINDOWTEXT}, // TitleBarButtonHover
+			{color::White, COLOR_WINDOW, COLOR_WINDOW}, // ColumnHeaderBackground
+			{color::Black, COLOR_WINDOWTEXT, COLOR_WINDOWTEXT}, // ColumnHeaderText
+			{color::Gray, COLOR_GRAYTEXT, COLOR_WINDOWTEXT}, // ColumnHeaderArrow
+			{color::White, COLOR_WINDOW, COLOR_WINDOW}, // MenuBackground
+			{color::Black, COLOR_WINDOWTEXT, COLOR_WINDOWTEXT}, // MenuText
+			{color::Gray, COLOR_GRAYTEXT, COLOR_GRAYTEXT}, // MenuTextDisabled
 		}}},
 		{{{
 			{RGB(0x20, 0x20, 0x20), -1, COLOR_WINDOW}, // Background
@@ -70,6 +80,16 @@ namespace ui::theme::builtin
 			{color::IndianRed, -1, -1}, // TestRed
 			{color::Lime, -1, -1}, // TestGreen
 			{color::Coral, -1, -1}, // TestOrange
+			{RGB(0x20, 0x20, 0x20), -1, COLOR_WINDOW}, // TitleBarBackground
+			{RGB(0xF1, 0xF1, 0xF1), -1, COLOR_WINDOWTEXT}, // TitleBarText
+			{color::LightGray, -1, COLOR_WINDOWTEXT}, // TitleBarButton
+			{color::LightGray, -1, COLOR_WINDOWTEXT}, // TitleBarButtonHover
+			{RGB(0x20, 0x20, 0x20), -1, COLOR_WINDOW}, // ColumnHeaderBackground
+			{RGB(0xF1, 0xF1, 0xF1), -1, COLOR_WINDOWTEXT}, // ColumnHeaderText
+			{RGB(0xC8, 0xC8, 0xC8), -1, COLOR_WINDOWTEXT}, // ColumnHeaderArrow
+			{RGB(0x20, 0x20, 0x20), -1, COLOR_WINDOW}, // MenuBackground
+			{RGB(0xF1, 0xF1, 0xF1), -1, COLOR_WINDOWTEXT}, // MenuText
+			{RGB(0x8A, 0x8A, 0x8A), -1, COLOR_GRAYTEXT}, // MenuTextDisabled
 		}}}};
 
 	inline const std::array<ThemeDefinition, 5> Definitions = {{
@@ -119,10 +139,30 @@ namespace ui::theme::builtin
 				color::PaleGreen, -1, COLOR_HIGHLIGHT};
 			theme.dark.values[static_cast<size_t>(uiColor::TextDisabledSelected)] = {
 				RGB(0x94, 0x94, 0x94), -1, COLOR_GRAYTEXT};
-			theme.light.values[static_cast<size_t>(uiColor::DisabledSelectedBorder)] =
-				theme.light.values[static_cast<size_t>(uiColor::Glow)];
-			theme.dark.values[static_cast<size_t>(uiColor::DisabledSelectedBorder)] =
-				theme.dark.values[static_cast<size_t>(uiColor::Glow)];
+			theme.light.values[static_cast<size_t>(uiColor::DisabledSelectedBorder)] = {
+				color::DarkGreen, -1, COLOR_HIGHLIGHT};
+			theme.dark.values[static_cast<size_t>(uiColor::DisabledSelectedBorder)] = {
+				color::LightGreen, -1, COLOR_HIGHLIGHT};
+			theme.light.values[static_cast<size_t>(uiColor::TitleBarBackground)] = {
+				RGB(0x31, 0x5D, 0x85), -1, COLOR_WINDOW};
+			theme.light.values[static_cast<size_t>(uiColor::TitleBarText)] = {color::White, -1, COLOR_WINDOWTEXT};
+			theme.light.values[static_cast<size_t>(uiColor::TitleBarButton)] = {color::White, -1, COLOR_WINDOWTEXT};
+			theme.light.values[static_cast<size_t>(uiColor::ColumnHeaderBackground)] = {
+				color::PaleGreen, -1, COLOR_WINDOW};
+			theme.light.values[static_cast<size_t>(uiColor::ColumnHeaderText)] = {
+				color::DarkGreen, -1, COLOR_WINDOWTEXT};
+			theme.light.values[static_cast<size_t>(uiColor::ColumnHeaderArrow)] = {
+				color::DarkGreen, -1, COLOR_WINDOWTEXT};
+			theme.light.values[static_cast<size_t>(uiColor::MenuBackground)] = {color::Honeydew, -1, COLOR_WINDOW};
+			theme.dark.values[static_cast<size_t>(uiColor::TitleBarBackground)] = {
+				RGB(0x3D, 0x4F, 0x87), -1, COLOR_WINDOW};
+			theme.dark.values[static_cast<size_t>(uiColor::MenuBackground)] = {RGB(0x14, 0x23, 0x14), -1, COLOR_WINDOW};
+			theme.dark.values[static_cast<size_t>(uiColor::TitleBarButtonHover)] = {color::Black, -1, COLOR_WINDOWTEXT};
+			theme.dark.values[static_cast<size_t>(uiColor::ColumnHeaderBackground)] = {
+				color::DarkGreen, -1, COLOR_WINDOW};
+			theme.dark.values[static_cast<size_t>(uiColor::ColumnHeaderText)] = {color::White, -1, COLOR_WINDOWTEXT};
+			theme.dark.values[static_cast<size_t>(uiColor::ColumnHeaderArrow)] = {
+				color::LightGreen, -1, COLOR_WINDOWTEXT};
 			return theme;
 		}(),
 		[] {
@@ -168,10 +208,29 @@ namespace ui::theme::builtin
 				RGB(0xE0, 0xFF, 0xFF), -1, COLOR_HIGHLIGHT};
 			theme.dark.values[static_cast<size_t>(uiColor::TextDisabledSelected)] = {
 				RGB(0x94, 0x94, 0x94), -1, COLOR_GRAYTEXT};
-			theme.light.values[static_cast<size_t>(uiColor::DisabledSelectedBorder)] =
-				theme.light.values[static_cast<size_t>(uiColor::Glow)];
-			theme.dark.values[static_cast<size_t>(uiColor::DisabledSelectedBorder)] =
-				theme.dark.values[static_cast<size_t>(uiColor::Glow)];
+			theme.light.values[static_cast<size_t>(uiColor::DisabledSelectedBorder)] = {
+				color::Teal, -1, COLOR_HIGHLIGHT};
+			theme.dark.values[static_cast<size_t>(uiColor::DisabledSelectedBorder)] = {
+				color::Turquoise, -1, COLOR_HIGHLIGHT};
+			theme.light.values[static_cast<size_t>(uiColor::TitleBarBackground)] = {
+				color::SaddleBrown, -1, COLOR_WINDOW};
+			theme.light.values[static_cast<size_t>(uiColor::TitleBarText)] = {color::White, -1, COLOR_WINDOWTEXT};
+			theme.light.values[static_cast<size_t>(uiColor::TitleBarButton)] = {color::White, -1, COLOR_WINDOWTEXT};
+			theme.light.values[static_cast<size_t>(uiColor::ColumnHeaderBackground)] = {
+				color::PowderBlue, -1, COLOR_WINDOW};
+			theme.light.values[static_cast<size_t>(uiColor::ColumnHeaderText)] = {
+				color::MidnightBlue, -1, COLOR_WINDOWTEXT};
+			theme.light.values[static_cast<size_t>(uiColor::ColumnHeaderArrow)] = {color::Teal, -1, COLOR_WINDOWTEXT};
+			theme.light.values[static_cast<size_t>(uiColor::MenuBackground)] = {color::Azure, -1, COLOR_WINDOW};
+			theme.dark.values[static_cast<size_t>(uiColor::TitleBarBackground)] = {
+				RGB(0x75, 0x45, 0x2B), -1, COLOR_WINDOW};
+			theme.dark.values[static_cast<size_t>(uiColor::MenuBackground)] = {RGB(0x14, 0x26, 0x28), -1, COLOR_WINDOW};
+			theme.dark.values[static_cast<size_t>(uiColor::TitleBarButtonHover)] = {color::Black, -1, COLOR_WINDOWTEXT};
+			theme.dark.values[static_cast<size_t>(uiColor::ColumnHeaderBackground)] = {
+				color::DarkSlateGray, -1, COLOR_WINDOW};
+			theme.dark.values[static_cast<size_t>(uiColor::ColumnHeaderText)] = {color::White, -1, COLOR_WINDOWTEXT};
+			theme.dark.values[static_cast<size_t>(uiColor::ColumnHeaderArrow)] = {
+				color::Turquoise, -1, COLOR_WINDOWTEXT};
 			return theme;
 		}(),
 		[] {
@@ -212,10 +271,26 @@ namespace ui::theme::builtin
 				RGB(0x5A, 0x5A, 0x5A), -1, COLOR_GRAYTEXT};
 			theme.dark.values[static_cast<size_t>(uiColor::TextDisabledSelected)] = {
 				RGB(0x94, 0x94, 0x94), -1, COLOR_GRAYTEXT};
-			theme.light.values[static_cast<size_t>(uiColor::DisabledSelectedBorder)] =
-				theme.light.values[static_cast<size_t>(uiColor::Glow)];
-			theme.dark.values[static_cast<size_t>(uiColor::DisabledSelectedBorder)] =
-				theme.dark.values[static_cast<size_t>(uiColor::Glow)];
+			theme.light.values[static_cast<size_t>(uiColor::DisabledSelectedBorder)] = {
+				color::SaddleBrown, -1, COLOR_HIGHLIGHT};
+			theme.dark.values[static_cast<size_t>(uiColor::DisabledSelectedBorder)] = {
+				color::SandyBrown, -1, COLOR_HIGHLIGHT};
+			theme.light.values[static_cast<size_t>(uiColor::TitleBarBackground)] = {
+				RGB(0x31, 0x5D, 0x85), -1, COLOR_WINDOW};
+			theme.light.values[static_cast<size_t>(uiColor::TitleBarText)] = {color::White, -1, COLOR_WINDOWTEXT};
+			theme.light.values[static_cast<size_t>(uiColor::TitleBarButton)] = {color::White, -1, COLOR_WINDOWTEXT};
+			theme.light.values[static_cast<size_t>(uiColor::ColumnHeaderBackground)] = {color::Wheat, -1, COLOR_WINDOW};
+			theme.light.values[static_cast<size_t>(uiColor::ColumnHeaderText)] = {color::Maroon, -1, COLOR_WINDOWTEXT};
+			theme.light.values[static_cast<size_t>(uiColor::ColumnHeaderArrow)] = {
+				color::SaddleBrown, -1, COLOR_WINDOWTEXT};
+			theme.light.values[static_cast<size_t>(uiColor::MenuBackground)] = {color::OldLace, -1, COLOR_WINDOW};
+			theme.dark.values[static_cast<size_t>(uiColor::TitleBarBackground)] = {
+				RGB(0x3F, 0x52, 0x78), -1, COLOR_WINDOW};
+			theme.dark.values[static_cast<size_t>(uiColor::MenuBackground)] = {RGB(0x28, 0x1B, 0x18), -1, COLOR_WINDOW};
+			theme.dark.values[static_cast<size_t>(uiColor::ColumnHeaderBackground)] = {color::Maroon, -1, COLOR_WINDOW};
+			theme.dark.values[static_cast<size_t>(uiColor::ColumnHeaderText)] = {color::White, -1, COLOR_WINDOWTEXT};
+			theme.dark.values[static_cast<size_t>(uiColor::ColumnHeaderArrow)] = {
+				color::SandyBrown, -1, COLOR_WINDOWTEXT};
 			return theme;
 		}(),
 		[] {
@@ -259,10 +334,29 @@ namespace ui::theme::builtin
 				RGB(0x5A, 0x5A, 0x5A), -1, COLOR_GRAYTEXT};
 			theme.dark.values[static_cast<size_t>(uiColor::TextDisabledSelected)] = {
 				RGB(0x94, 0x94, 0x94), -1, COLOR_GRAYTEXT};
-			theme.light.values[static_cast<size_t>(uiColor::DisabledSelectedBorder)] =
-				theme.light.values[static_cast<size_t>(uiColor::Glow)];
-			theme.dark.values[static_cast<size_t>(uiColor::DisabledSelectedBorder)] =
-				theme.dark.values[static_cast<size_t>(uiColor::Glow)];
+			theme.light.values[static_cast<size_t>(uiColor::DisabledSelectedBorder)] = {
+				color::RoyalBlue, -1, COLOR_HIGHLIGHT};
+			theme.dark.values[static_cast<size_t>(uiColor::DisabledSelectedBorder)] = {
+				color::LightSkyBlue, -1, COLOR_HIGHLIGHT};
+			theme.light.values[static_cast<size_t>(uiColor::TitleBarBackground)] = {
+				color::RebeccaPurple, -1, COLOR_WINDOW};
+			theme.light.values[static_cast<size_t>(uiColor::TitleBarText)] = {color::White, -1, COLOR_WINDOWTEXT};
+			theme.light.values[static_cast<size_t>(uiColor::TitleBarButton)] = {color::White, -1, COLOR_WINDOWTEXT};
+			theme.light.values[static_cast<size_t>(uiColor::ColumnHeaderBackground)] = {
+				color::LightSteelBlue, -1, COLOR_WINDOW};
+			theme.light.values[static_cast<size_t>(uiColor::ColumnHeaderText)] = {
+				color::MidnightBlue, -1, COLOR_WINDOWTEXT};
+			theme.light.values[static_cast<size_t>(uiColor::ColumnHeaderArrow)] = {
+				color::MidnightBlue, -1, COLOR_WINDOWTEXT};
+			theme.light.values[static_cast<size_t>(uiColor::MenuBackground)] = {color::AliceBlue, -1, COLOR_WINDOW};
+			theme.dark.values[static_cast<size_t>(uiColor::TitleBarBackground)] = {
+				RGB(0x4F, 0x36, 0x70), -1, COLOR_WINDOW};
+			theme.dark.values[static_cast<size_t>(uiColor::MenuBackground)] = {RGB(0x18, 0x1C, 0x30), -1, COLOR_WINDOW};
+			theme.dark.values[static_cast<size_t>(uiColor::ColumnHeaderBackground)] = {
+				color::MidnightBlue, -1, COLOR_WINDOW};
+			theme.dark.values[static_cast<size_t>(uiColor::ColumnHeaderText)] = {color::White, -1, COLOR_WINDOWTEXT};
+			theme.dark.values[static_cast<size_t>(uiColor::ColumnHeaderArrow)] = {
+				color::LightSkyBlue, -1, COLOR_WINDOWTEXT};
 			return theme;
 		}(),
 	}};
