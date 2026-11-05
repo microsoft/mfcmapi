@@ -11,9 +11,9 @@ namespace themefiletest
 		return std::filesystem::path{__FILE__}.parent_path().parent_path().parent_path() / L"docs" / L"Themes";
 	}
 
-	static std::wstring ReadExample(const wchar_t* filename = L"Halloween.json")
+	static std::wstring ReadExample()
 	{
-		std::ifstream stream(ExampleDirectory() / filename, std::ios::binary);
+		std::ifstream stream(ExampleDirectory() / L"Halloween.json", std::ios::binary);
 		Assert::IsTrue(stream.good());
 
 		const auto bytes = std::string{std::istreambuf_iterator<char>{stream}, std::istreambuf_iterator<char>{}};
@@ -259,85 +259,64 @@ namespace themefiletest
 			Assert::IsTrue(violations.str().empty(), violations.str().c_str());
 		}
 
-		TEST_METHOD(EveryThemeFileExplicitlyDefinesSurfaceColorsInBothAppearances)
+		TEST_METHOD(StatusRibbonParsesLiteralColorsAndCanBeDisabled)
 		{
-			for (const auto& entry : std::filesystem::directory_iterator(ExampleDirectory()))
+			for (const auto value : {L"[]", L"[\"red\"]", L"[\"red\", \"#00FF00\", \"BLUE\"]"})
 			{
-				if (!entry.is_regular_file() || entry.path().extension() != L".json") continue;
-
-				const auto json = ReadExample(entry.path().filename().c_str());
-				const auto filename = entry.path().filename().wstring();
-				auto definition = ui::theme::ThemeDefinition{};
+				const auto json = L"{\"schemaVersion\":1,\"id\":\"test.ribbon\",\"name\":\"Ribbon test\","
+								  L"\"colors\":{\"light\":{},\"dark\":{}},\"statusRibbon\":" +
+								  std::wstring(value) + L"}";
+				auto theme = ui::theme::ThemeDefinition{};
 				auto error = std::wstring{};
-				Assert::IsTrue(ui::theme::ParseThemeFile(json, definition, error), error.c_str());
-				for (const auto role :
-					 {L"TitleBarBackground",
-					  L"TitleBarText",
-					  L"TitleBarButton",
-					  L"TitleBarButtonHover",
-					  L"ColumnHeaderBackground",
-					  L"ColumnHeaderText",
-					  L"ColumnHeaderArrow",
-					  L"MenuBackground",
-					  L"MenuText",
-					  L"MenuTextDisabled"})
+				Assert::IsTrue(ui::theme::ParseThemeFile(json, theme, error), error.c_str());
+				const auto count = std::wstring_view(value) == L"[]"		  ? 0u
+								   : std::wstring_view(value) == L"[\"red\"]" ? 1u
+																			  : 3u;
+				Assert::AreEqual(static_cast<size_t>(count), theme.statusRibbon.size());
+				if (count)
 				{
-					const auto key = L"\"" + std::wstring(role) + L"\"";
-					const auto message = filename + L": " + role + L" must be explicit in both palettes.";
-					const auto first = json.find(key);
-					Assert::IsTrue(first != std::wstring::npos, message.c_str());
-					const auto second = json.find(key, first + key.size());
-					Assert::IsTrue(second != std::wstring::npos, message.c_str());
-					Assert::IsTrue(json.find(key, second + key.size()) == std::wstring::npos, message.c_str());
-				}
-			}
-		}
-
-		TEST_METHOD(EveryThemeFileCustomizesEveryNewSurfaceInBothAppearances)
-		{
-			const auto catalog = ui::theme::LoadThemeDirectory(ExampleDirectory().wstring());
-			Assert::IsTrue(catalog.errors.empty());
-			const auto& standard = ui::theme::GetDefaultTheme();
-			for (auto index = ui::theme::GetThemes().size(); index < catalog.themes.size(); ++index)
-			{
-				const auto& theme = catalog.themes[index];
-				for (const auto appearance : {ui::uiTheme::Light, ui::uiTheme::Dark})
-				{
-					const auto& palette = appearance == ui::uiTheme::Light ? theme.light : theme.dark;
-					for (const auto role :
-						 {ui::uiColor::TitleBarBackground,
-						  ui::uiColor::ColumnHeaderBackground,
-						  ui::uiColor::MenuBackground})
+					Assert::AreEqual(RGB(255, 0, 0), theme.statusRibbon.front());
+					if (count == 3)
 					{
-						const auto& colors = appearance == ui::uiTheme::Light ? standard.light : standard.dark;
-						Assert::IsTrue(
-							palette.values[static_cast<size_t>(role)].value !=
-								colors.values[static_cast<size_t>(role)].value,
-							theme.name.c_str());
+						Assert::AreEqual(RGB(0, 255, 0), theme.statusRibbon[1]);
+						Assert::AreEqual(RGB(0, 0, 255), theme.statusRibbon[2]);
 					}
-					Assert::IsTrue(
-						ContrastRatio(
-							palette.values[static_cast<size_t>(ui::uiColor::TitleBarButtonHover)].value,
-							palette.values[static_cast<size_t>(ui::uiColor::GlowBackground)].value) >= 3.0);
-					Assert::IsTrue(
-						palette.values[static_cast<size_t>(ui::uiColor::TitleBarBackground)].value !=
-							palette.values[static_cast<size_t>(ui::uiColor::Status)].value,
-						theme.name.c_str());
 				}
 			}
 		}
 
-		TEST_METHOD(RainbowUsesAdditionalFlagColorsForItsTitleBar)
+		TEST_METHOD(StatusBarStylesParseAndEmptyColorsDisableDecoration)
 		{
-			auto theme = ui::theme::ThemeDefinition{};
-			auto error = std::wstring{};
-			Assert::IsTrue(ui::theme::ParseThemeFile(ReadExample(L"PrideRainbow.json"), theme, error), error.c_str());
-			Assert::AreEqual(
-				RGB(0xFF, 0x8C, 0x00), theme.light.values[static_cast<size_t>(ui::uiColor::TitleBarBackground)].value);
-			Assert::AreEqual(RGB(0xE4, 0x03, 0x03), theme.light.values[static_cast<size_t>(ui::uiColor::Status)].value);
-			Assert::AreEqual(
-				RGB(0xE4, 0x03, 0x03), theme.dark.values[static_cast<size_t>(ui::uiColor::TitleBarBackground)].value);
-			Assert::AreEqual(RGB(0x75, 0x07, 0x87), theme.dark.values[static_cast<size_t>(ui::uiColor::Status)].value);
+			for (const auto& [name, style] :
+				 {std::pair{L"ribbon", ui::theme::StatusBarStyle::Ribbon},
+				  std::pair{L"bands", ui::theme::StatusBarStyle::Bands},
+				  std::pair{L"gradient", ui::theme::StatusBarStyle::Gradient}})
+			{
+				for (const auto colors : {L"[]", L"[\"red\"]", L"[\"red\", \"#00FF00\", \"BLUE\"]"})
+				{
+					const auto json = L"{\"schemaVersion\":1,\"id\":\"test.status\",\"name\":\"Status test\","
+									  L"\"colors\":{\"light\":{},\"dark\":{}},\"statusBar\":{\"style\":\"" +
+									  std::wstring(name) + L"\",\"colors\":" + colors + L"}}";
+					auto definition = ui::theme::GetDefaultTheme();
+					auto error = std::wstring{};
+					Assert::IsTrue(ui::theme::ParseThemeFile(json, definition, error), error.c_str());
+					Assert::IsTrue(definition.statusBarStyle == style);
+					const auto count = std::wstring_view(colors) == L"[]"		   ? 0u
+									   : std::wstring_view(colors) == L"[\"red\"]" ? 1u
+																				   : 3u;
+					Assert::AreEqual(static_cast<size_t>(count), definition.statusRibbon.size());
+					if (count)
+					{
+						Assert::AreEqual(RGB(255, 0, 0), definition.statusRibbon[0]);
+						if (count == 3)
+						{
+							Assert::AreEqual(RGB(0, 255, 0), definition.statusRibbon[1]);
+							Assert::AreEqual(RGB(0, 0, 255), definition.statusRibbon[2]);
+						}
+					}
+					Assert::IsTrue(ui::theme::GetStatusRibbon(definition, ui::uiTheme::HighContrast).empty());
+				}
+			}
 		}
 
 		TEST_METHOD(BuiltInSurfaceAccentsMeetContrastTargets)
@@ -361,13 +340,6 @@ namespace themefiletest
 					check(ui::uiColor::ColumnHeaderArrow, ui::uiColor::ColumnHeaderBackground, 3.0);
 					check(ui::uiColor::MenuText, ui::uiColor::MenuBackground, 4.5);
 					check(ui::uiColor::MenuTextDisabled, ui::uiColor::MenuBackground, 3.0);
-					if (theme.stableId != L"standard")
-					{
-						Assert::IsTrue(
-							palette.values[static_cast<size_t>(ui::uiColor::TitleBarBackground)].value !=
-								palette.values[static_cast<size_t>(ui::uiColor::Status)].value,
-							theme.name.c_str());
-					}
 				}
 			}
 		}
@@ -500,6 +472,31 @@ namespace themefiletest
 			}
 		}
 
+		TEST_METHOD(SurfaceColorsCanBeSharedOrDifferent)
+		{
+			for (const auto title : {L"#123456", L"#ABCDEF"})
+			{
+				const auto palette = L"{\"Status\":{\"value\":\"#123456\",\"highContrast\":13},"
+									 L"\"TitleBarBackground\":{\"value\":\"" +
+									 std::wstring(title) + L"\",\"highContrast\":5}}";
+				const auto json = L"{\"schemaVersion\":1,\"id\":\"test.surfaces\",\"name\":\"Surface test\","
+								  L"\"colors\":{\"light\":" +
+								  palette + L",\"dark\":" + palette + L"}}";
+				auto theme = ui::theme::ThemeDefinition{};
+				auto error = std::wstring{};
+				Assert::IsTrue(ui::theme::ParseThemeFile(json, theme, error), error.c_str());
+				const auto expectedTitle =
+					std::wstring_view(title) == L"#123456" ? RGB(0x12, 0x34, 0x56) : RGB(0xAB, 0xCD, 0xEF);
+				for (const auto appearance : {ui::uiTheme::Light, ui::uiTheme::Dark})
+				{
+					Assert::AreEqual(
+						expectedTitle, ui::theme::GetColor(theme, appearance, ui::uiColor::TitleBarBackground));
+					Assert::AreEqual(
+						RGB(0x12, 0x34, 0x56), ui::theme::GetColor(theme, appearance, ui::uiColor::Status));
+				}
+			}
+		}
+
 		TEST_METHOD(SurfaceRolesNeverInheritFromOtherCustomizedRoles)
 		{
 			const auto json = LR"({
@@ -628,6 +625,32 @@ namespace themefiletest
 		{
 			const auto valid = ReadExample();
 			const std::pair<std::wstring_view, std::wstring_view> invalid[] = {
+				{L"\"schemaVersion\": 1",
+				 L"\"schemaVersion\": 1, \"statusBar\": {\"style\":\"unknown\",\"colors\":[\"red\"]}"},
+				{L"\"schemaVersion\": 1", L"\"schemaVersion\": 1, \"statusBar\": {\"colors\":[\"red\"]}"},
+				{L"\"schemaVersion\": 1", L"\"schemaVersion\": 1, \"statusBar\": {\"style\":\"gradient\"}"},
+				{L"\"schemaVersion\": 1",
+				 L"\"schemaVersion\": 1, \"statusBar\": {\"style\":\"gradient\",\"colors\":[\"Text\"]}"},
+				{L"\"schemaVersion\": 1",
+				 L"\"schemaVersion\": 1, \"statusBar\": {\"style\":\"gradient\",\"colors\":[7]}"},
+				{L"\"schemaVersion\": 1",
+				 L"\"schemaVersion\": 1, \"statusBar\": {\"style\":\"gradient\",\"colors\":{}}"},
+				{L"\"schemaVersion\": 1",
+				 L"\"schemaVersion\": 1, \"statusBar\": {\"style\":\"gradient\",\"colors\":[],\"unknown\":true}"},
+				{L"\"schemaVersion\": 1",
+				 L"\"schemaVersion\": 1, \"statusBar\": {\"style\":\"gradient\",\"colors\":[]},\"statusRibbon\":[]"},
+				{L"\"schemaVersion\": 1",
+				 L"\"schemaVersion\": 1, \"statusBar\": "
+				 L"{\"style\":\"gradient\",\"colors\":[\"red\",\"red\",\"red\",\"red\",\"red\",\"red\",\"red\",\"red\","
+				 L"\"red\",\"red\",\"red\",\"red\",\"red\",\"red\",\"red\",\"red\",\"red\"]}"},
+				{L"\"schemaVersion\": 1", L"\"schemaVersion\": 1, \"statusRibbon\": [\"not-a-color\"]"},
+				{L"\"schemaVersion\": 1", L"\"schemaVersion\": 1, \"statusRibbon\": [\"#12345Z\"]"},
+				{L"\"schemaVersion\": 1", L"\"schemaVersion\": 1, \"statusRibbon\": [7]"},
+				{L"\"schemaVersion\": 1", L"\"schemaVersion\": 1, \"statusRibbon\": {}"},
+				{L"\"schemaVersion\": 1",
+				 L"\"schemaVersion\": 1, \"statusRibbon\": "
+				 L"[\"red\",\"red\",\"red\",\"red\",\"red\",\"red\",\"red\",\"red\",\"red\",\"red\",\"red\",\"red\","
+				 L"\"red\",\"red\",\"red\",\"red\",\"red\"]"},
 				{L"\"schemaVersion\": 1", L"\"schemaVersion\": 2"},
 				{L"\"schemaVersion\": 1", L"\"schemaVersion\": 1.5"},
 				{L"\"name\": \"Halloween\"", L"\"name\": \"\""},

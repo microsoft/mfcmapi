@@ -151,6 +151,21 @@ namespace ui
 	std::wstring GetLBText(HWND hwnd, int nIndex);
 
 	// Status Bar
+	void DrawStatusRibbon(HDC hdc, const RECT& rect, std::span<const COLORREF> colors, int height);
+	void DrawStatusFill(
+		HDC hdc,
+		const RECT& rect,
+		std::span<const COLORREF> colors,
+		theme::StatusBarStyle style,
+		int ribbonHeight = 5);
+	void DrawStatusText(
+		HDC hdc,
+		const std::wstring& text,
+		const RECT& rect,
+		COLORREF foreground,
+		COLORREF outlineColor,
+		bool outlined,
+		UINT format = DT_LEFT | DT_SINGLELINE | DT_BOTTOM | DT_END_ELLIPSIS);
 	void DrawStatus(
 		HWND hwnd,
 		int iStatusHeight,

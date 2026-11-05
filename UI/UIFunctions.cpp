@@ -1195,34 +1195,161 @@ namespace ui
 		}
 	}
 
+	static void DrawHighlightedListItem(_In_ const NMLVCUSTOMDRAW& draw, const uiColor background)
+	{
+		const auto hwnd = draw.nmcd.hdr.hwndFrom;
+		const auto hdc = draw.nmcd.hdc;
+		const auto item = static_cast<int>(draw.nmcd.dwItemSpec);
+		auto row = RECT{};
+		if (FAILED(WC_B(ListView_GetItemRect(hwnd, item, &row, LVIR_BOUNDS)))) return;
+		auto client = RECT{};
+		if (FAILED(WC_B(GetClientRect(hwnd, &client)))) return;
+		const auto header = WC_D(HWND, ListView_GetHeader(hwnd));
+		if (!header) return;
+		const auto columnCount = Header_GetItemCount(header);
+		if (FAILED(WC_H(columnCount == -1 ? E_FAIL : S_OK))) return;
+		row.left = client.left;
+		row.right = client.right;
+		const auto savedDC = WC_D(int, SaveDC(hdc));
+		if (!savedDC) return;
+		if (!WC_D(int, IntersectClipRect(hdc, row.left, row.top, row.right, row.bottom)))
+		{
+			WC_B_S(RestoreDC(hdc, savedDC));
+			return;
+		}
+
+		WC_D_S(FillRect(hdc, &row, GetSysBrush(background)));
+
+		auto info = LVITEMW{};
+		info.mask = LVIF_IMAGE | LVIF_STATE;
+		info.iItem = item;
+		info.stateMask = LVIS_OVERLAYMASK | LVIS_STATEIMAGEMASK | LVIS_FOCUSED;
+		if (SUCCEEDED(WC_B(SendMessageW(hwnd, LVM_GETITEMW, 0, reinterpret_cast<LPARAM>(&info)))))
+		{
+			auto icon = RECT{};
+			const auto hasIconRect = WC_D(BOOL, ListView_GetItemRect(hwnd, item, &icon, LVIR_ICON));
+			const auto images = ListView_GetImageList(hwnd, LVSIL_SMALL);
+			if (hasIconRect && images && info.iImage >= 0)
+			{
+				int width = 0;
+				int height = 0;
+				if (SUCCEEDED(WC_B(ImageList_GetIconSize(images, &width, &height))))
+				{
+					WC_B_S(ImageList_Draw(
+						images,
+						info.iImage,
+						hdc,
+						icon.left,
+						row.top + (row.bottom - row.top - height) / 2,
+						ILD_TRANSPARENT | (info.state & LVIS_OVERLAYMASK)));
+				}
+			}
+
+			const auto stateImages = ListView_GetImageList(hwnd, LVSIL_STATE);
+			const auto stateImage = (info.state & LVIS_STATEIMAGEMASK) >> 12;
+			if (hasIconRect && stateImages && stateImage)
+			{
+				int width = 0;
+				int height = 0;
+				if (SUCCEEDED(WC_B(ImageList_GetIconSize(stateImages, &width, &height))))
+				{
+					WC_B_S(ImageList_Draw(
+						stateImages,
+						stateImage - 1,
+						hdc,
+						icon.left - width,
+						row.top + (row.bottom - row.top - height) / 2,
+						ILD_TRANSPARENT));
+				}
+			}
+		}
+
+		std::vector<wchar_t> text(256);
+		for (auto column = 0; column < columnCount; ++column)
+		{
+			if (column == 0 && (info.state & LVIS_FOCUSED) && ListView_GetEditControl(hwnd)) continue;
+			auto label = RECT{};
+			if (FAILED(WC_B(Header_GetItemRect(header, column, &label)))) continue;
+			// A zero translation is valid; only a nonzero last error indicates failure.
+			SetLastError(ERROR_SUCCESS);
+			if (!MapWindowPoints(header, hwnd, reinterpret_cast<POINT*>(&label), 2) && FAILED(WC_W32(GetLastError())))
+				continue;
+			label.top = row.top;
+			label.bottom = row.bottom;
+			if (column == 0)
+			{
+				auto firstLabel = RECT{};
+				if (FAILED(WC_B(ListView_GetItemRect(hwnd, item, &firstLabel, LVIR_LABEL)))) continue;
+				label.left = firstLabel.left;
+			}
+
+			label.left += 2;
+			label.right -= 2;
+			if (label.right <= label.left) continue;
+
+			auto value = LVITEMW{};
+			value.iSubItem = column;
+			for (;;)
+			{
+				value.pszText = text.data();
+				value.cchTextMax = static_cast<int>(text.size());
+				const auto length = SendMessageW(hwnd, LVM_GETITEMTEXTW, item, reinterpret_cast<LPARAM>(&value));
+				if (length < value.cchTextMax - 1) break;
+				text.resize(text.size() * 2);
+			}
+
+			auto columnInfo = LVCOLUMNW{};
+			columnInfo.mask = LVCF_FMT;
+			if (FAILED(WC_B(SendMessageW(hwnd, LVM_GETCOLUMNW, column, reinterpret_cast<LPARAM>(&columnInfo)))))
+				continue;
+			const auto alignment = (columnInfo.fmt & LVCFMT_JUSTIFYMASK) == LVCFMT_RIGHT	? DT_RIGHT
+								   : (columnInfo.fmt & LVCFMT_JUSTIFYMASK) == LVCFMT_CENTER ? DT_CENTER
+																							: DT_LEFT;
+			DrawUITextW(
+				hdc,
+				text.data(),
+				MyGetSysColor(uiColor::GlowText),
+				label,
+				false,
+				alignment | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS | DT_NOPREFIX);
+		}
+
+		if ((info.state & LVIS_FOCUSED) && GetFocus() == hwnd &&
+			!(SendMessage(hwnd, WM_QUERYUISTATE, 0, 0) & UISF_HIDEFOCUS))
+		{
+			WC_H_S(SetTextColor(hdc, MyGetSysColor(uiColor::GlowText)) == CLR_INVALID ? E_FAIL : S_OK);
+			WC_H_S(SetBkColor(hdc, MyGetSysColor(background)) == CLR_INVALID ? E_FAIL : S_OK);
+			WC_B_S(DrawFocusRect(hdc, &row));
+		}
+
+		WC_B_S(RestoreDC(hdc, savedDC));
+	}
+
 	void CustomDrawList(_In_ LPNMLVCUSTOMDRAW lvcd, _In_ LRESULT* pResult, const DWORD_PTR iItemCurHover) noexcept
 	{
-		static auto bSelected = false;
 		if (!lvcd) return;
 		const auto iItem = lvcd->nmcd.dwItemSpec;
-
-		// If there's nothing to paint, this is a "fake paint" and we don't want to toggle selection highlight
-		// Toggling selection highlight causes a repaint, so this logic prevents flicker
-		const auto bFakePaint =
-			lvcd->nmcd.rc.bottom == 0 && lvcd->nmcd.rc.top == 0 && lvcd->nmcd.rc.left == 0 && lvcd->nmcd.rc.right == 0;
 
 		switch (lvcd->nmcd.dwDrawStage)
 		{
 		case CDDS_PREPAINT:
-			*pResult = CDRF_NOTIFYITEMDRAW | CDRF_NOTIFYPOSTPAINT;
+			*pResult = CDRF_NOTIFYITEMDRAW;
 			break;
 
 		case CDDS_ITEMPREPAINT:
-			// Let the item draw itself without a selection highlight
-			bSelected = ListView_GetItemState(lvcd->nmcd.hdr.hwndFrom, iItem, LVIS_SELECTED) != 0;
-			if (bSelected && !bFakePaint)
+		{
+			const auto selected = ListView_GetItemState(lvcd->nmcd.hdr.hwndFrom, iItem, LVIS_SELECTED) != 0;
+			if (selected || iItemCurHover == iItem)
 			{
-				// Turn off listview selection highlight
-				ListView_SetItemState(lvcd->nmcd.hdr.hwndFrom, iItem, 0, LVIS_SELECTED)
+				// Explorer selection and hover backgrounds ignore clrTextBk.
+				DrawHighlightedListItem(*lvcd, selected ? uiColor::SelectedBackground : uiColor::GlowBackground);
+				*pResult = CDRF_SKIPDEFAULT;
+				break;
 			}
 
-			*pResult = CDRF_DODEFAULT | CDRF_NOTIFYPOSTPAINT | CDRF_NOTIFYSUBITEMDRAW;
+			*pResult = CDRF_NOTIFYSUBITEMDRAW;
 			break;
+		}
 
 		case CDDS_SUBITEM | CDDS_ITEMPREPAINT:
 		{
@@ -1238,7 +1365,13 @@ namespace ui
 			}
 
 			auto rc = RECT{};
-			GetClientRect(lvcd->nmcd.hdr.hwndFrom, &rc);
+			if (FAILED(WC_B(GetClientRect(lvcd->nmcd.hdr.hwndFrom, &rc))))
+			{
+				if (bResetBottom) lvcd->nmcd.rc.bottom = 0;
+				*pResult = CDRF_SKIPDEFAULT;
+				break;
+			}
+
 			IntersectRect(&rc, &rc, &lvcd->nmcd.rc);
 
 			if (bResetBottom)
@@ -1252,31 +1385,11 @@ namespace ui
 				break;
 			}
 
-			// Turn on listview hover highlight
-			if (bSelected)
-			{
-				lvcd->clrText = MyGetSysColor(uiColor::GlowText);
-				lvcd->clrTextBk = MyGetSysColor(uiColor::SelectedBackground);
-			}
-			else if (iItemCurHover == iItem)
-			{
-				lvcd->clrText = MyGetSysColor(uiColor::GlowText);
-				lvcd->clrTextBk = MyGetSysColor(uiColor::GlowBackground);
-			}
-
+			lvcd->clrText = MyGetSysColor(uiColor::Text);
+			lvcd->clrTextBk = MyGetSysColor(uiColor::Background);
 			*pResult = CDRF_NEWFONT;
 			break;
 		}
-
-		case CDDS_ITEMPOSTPAINT:
-			// And then we'll handle our frame
-			if (bSelected && !bFakePaint)
-			{
-				// Turn on listview selection highlight
-				ListView_SetItemState(lvcd->nmcd.hdr.hwndFrom, iItem, LVIS_SELECTED, LVIS_SELECTED);
-			}
-
-			break;
 
 		default:
 			*pResult = CDRF_DODEFAULT;
@@ -1293,16 +1406,14 @@ namespace ui
 		const auto bSelected = ListView_GetItemState(hWnd, itemID, LVIS_SELECTED) != 0;
 		if (bSelected) return;
 
-		auto rcIcon = RECT{};
 		auto rcLabels = RECT{};
-		ListView_GetItemRect(hWnd, itemID, &rcLabels, LVIR_BOUNDS);
-		ListView_GetItemRect(hWnd, itemID, &rcIcon, LVIR_ICON);
-		rcLabels.left = rcIcon.right;
-		if (rcLabels.left >= rcLabels.right) return;
+		if (FAILED(WC_B(ListView_GetItemRect(hWnd, itemID, &rcLabels, LVIR_BOUNDS)))) return;
 		auto rcClient = RECT{};
-		GetClientRect(hWnd, &rcClient); // Get our client size
+		if (FAILED(WC_B(GetClientRect(hWnd, &rcClient)))) return;
+		rcLabels.left = rcClient.left;
+		rcLabels.right = rcClient.right;
 		IntersectRect(&rcLabels, &rcLabels, &rcClient);
-		RedrawWindow(hWnd, &rcLabels, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
+		WC_B_S(RedrawWindow(hWnd, &rcLabels, nullptr, RDW_INVALIDATE | RDW_UPDATENOW));
 	}
 
 	void DrawTreeItemGlow(_In_ HWND hWnd, _In_ HTREEITEM hItem) noexcept
@@ -1984,9 +2095,7 @@ namespace ui
 				const auto x = rcItem.right - GetSystemMetrics(SM_CXEDGE) - arrowGutter / 2;
 				const auto y = (rcItem.top + rcItem.bottom) / 2;
 				const POINT triangle[] = {{x - arrowWidth, y - arrowHeight}, {x - arrowWidth, y + arrowHeight}, {x, y}};
-				const auto arrowColor = bHot && !bDisabled ? uiColor::Glow : cFore;
-				DrawFilledPolygon(
-					hdc, triangle, _countof(triangle), MyGetSysColor(arrowColor), GetSysBrush(arrowColor));
+				DrawFilledPolygon(hdc, triangle, _countof(triangle), MyGetSysColor(cFore), GetSysBrush(cFore));
 			}
 
 			// Triple buffer the check mark so we can copy it over without the background
@@ -2097,6 +2206,81 @@ namespace ui
 		return false;
 	}
 
+	void DrawStatusRibbon(const HDC hdc, const RECT& rect, const std::span<const COLORREF> colors, const int height)
+	{
+		DrawStatusFill(hdc, rect, colors, theme::StatusBarStyle::Ribbon, height);
+	}
+
+	void DrawStatusFill(
+		const HDC hdc,
+		const RECT& rect,
+		const std::span<const COLORREF> colors,
+		const theme::StatusBarStyle style,
+		const int ribbonHeight)
+	{
+		const auto height = style == theme::StatusBarStyle::Ribbon ? ribbonHeight : rect.bottom - rect.top;
+		for (const auto& band :
+			 theme::LayoutStatusRibbon(colors, rect, height, style == theme::StatusBarStyle::Gradient))
+		{
+			if (style == theme::StatusBarStyle::Gradient)
+			{
+				TRIVERTEX vertices[] = {
+					{band.bounds.left,
+					 band.bounds.top,
+					 static_cast<COLOR16>(GetRValue(band.color) << 8),
+					 static_cast<COLOR16>(GetGValue(band.color) << 8),
+					 static_cast<COLOR16>(GetBValue(band.color) << 8),
+					 0},
+					{band.bounds.right,
+					 band.bounds.bottom,
+					 static_cast<COLOR16>(GetRValue(band.endColor) << 8),
+					 static_cast<COLOR16>(GetGValue(band.endColor) << 8),
+					 static_cast<COLOR16>(GetBValue(band.endColor) << 8),
+					 0}};
+				auto gradient = GRADIENT_RECT{0, 1};
+				WC_B_S(GradientFill(hdc, vertices, 2, &gradient, 1, GRADIENT_FILL_RECT_H));
+				continue;
+			}
+
+			const auto brush = WC_D(HBRUSH, CreateSolidBrush(band.color));
+			if (!brush) continue;
+			WC_D_S(FillRect(hdc, &band.bounds, brush));
+			WC_B_S(DeleteObject(brush));
+		}
+	}
+
+	void DrawStatusText(
+		const HDC hdc,
+		const std::wstring& text,
+		const RECT& rect,
+		const COLORREF foreground,
+		const COLORREF outlineColor,
+		const bool outlined,
+		const UINT format)
+	{
+		if (!outlined || text.empty())
+		{
+			DrawUITextW(hdc, text, foreground, rect, true, format);
+			return;
+		}
+
+		auto textRect = rect;
+		if (FAILED(WC_B(InflateRect(&textRect, -1, -1)))) return;
+		if (textRect.right <= textRect.left || textRect.bottom <= textRect.top) return;
+		for (auto y = -1; y <= 1; ++y)
+		{
+			for (auto x = -1; x <= 1; ++x)
+			{
+				if (!x && !y) continue;
+				auto outlineRect = textRect;
+				if (FAILED(WC_B(OffsetRect(&outlineRect, x, y)))) continue;
+				DrawUITextW(hdc, text, outlineColor, outlineRect, true, format);
+			}
+		}
+
+		DrawUITextW(hdc, text, foreground, textRect, true, format);
+	}
+
 	// Paint the status bar with double buffering to avoid flicker
 	void DrawStatus(
 		HWND hwnd,
@@ -2113,10 +2297,13 @@ namespace ui
 		if (!WC_D(BOOL, GetWindowRect(hwnd, &rcWindow))) return;
 		auto clientBottom = POINT{0, rcStatus.bottom};
 		if (!WC_D(BOOL, ClientToScreen(hwnd, &clientBottom))) return;
+		auto clientOrigin = POINT{};
+		if (!WC_D(BOOL, ClientToScreen(hwnd, &clientOrigin))) return;
 		if (rcStatus.bottom - rcStatus.top > iStatusHeight)
 		{
 			rcStatus.top = rcStatus.bottom - iStatusHeight;
 		}
+
 		auto ps = PAINTSTRUCT{};
 		BeginPaint(hwnd, &ps);
 
@@ -2130,15 +2317,34 @@ namespace ui
 		// Match the nonclient gradient, including the padded bottom border.
 		rcGrad.bottom += rcWindow.bottom - clientBottom.y - BORDER_VISIBLEWIDTH;
 		GradientFillRect(ps.hdc, rcGrad, uiColor::Status);
+		const auto ribbon = theme::GetStatusRibbon(GetActiveTheme(), GetEffectiveTheme());
+		const auto style = GetActiveTheme().statusBarStyle;
+		const auto fullFill = !ribbon.empty() && style != theme::StatusBarStyle::Ribbon;
+		if (!ribbon.empty())
+		{
+			const auto ribbonHeight = min(5, max(0, rcStatus.bottom - rcStatus.top - GetTextHeight(hwnd)));
+			if (fullFill)
+			{
+				rcGrad.left = rcWindow.left + BORDER_VISIBLEWIDTH - clientOrigin.x;
+				rcGrad.right = rcWindow.right - BORDER_VISIBLEWIDTH - clientOrigin.x;
+				DrawStatusFill(ps.hdc, rcGrad, ribbon, style);
+			}
+			else
+			{
+				DrawStatusRibbon(ps.hdc, rcStatus, ribbon, ribbonHeight);
+				rcText.top += ribbonHeight;
+			}
+		}
 
+		const auto crOutline = MyGetSysColor(uiColor::StatusTextOutline);
 		rcText.left = rcText.right - iStatusData2;
-		DrawUITextW(ps.hdc, szStatusData2, crFore, rcText, true, DT_LEFT | DT_SINGLELINE | DT_BOTTOM);
+		DrawStatusText(ps.hdc, szStatusData2, rcText, crFore, crOutline, fullFill, DT_LEFT | DT_SINGLELINE | DT_BOTTOM);
 		rcText.right = rcText.left;
 		rcText.left = rcText.right - iStatusData1;
-		DrawUITextW(ps.hdc, szStatusData1, crFore, rcText, true, DT_LEFT | DT_SINGLELINE | DT_BOTTOM);
+		DrawStatusText(ps.hdc, szStatusData1, rcText, crFore, crOutline, fullFill, DT_LEFT | DT_SINGLELINE | DT_BOTTOM);
 		rcText.right = rcText.left;
 		rcText.left = 0;
-		DrawUITextW(ps.hdc, szStatusInfo, crFore, rcText, true, DT_LEFT | DT_SINGLELINE | DT_BOTTOM | DT_END_ELLIPSIS);
+		DrawStatusText(ps.hdc, szStatusInfo, rcText, crFore, crOutline, fullFill);
 
 		db.End(ps.hdc);
 		EndPaint(hwnd, &ps);
@@ -2455,6 +2661,11 @@ namespace ui
 
 				ExcludeClipRect(hdc, rcStatus.left, rcStatus.top, rcStatus.right, rcStatus.bottom);
 				GradientFillRect(hdc, rcFullStatus, uiColor::Status);
+				const auto colors = theme::GetStatusRibbon(GetActiveTheme(), GetEffectiveTheme());
+				if (!colors.empty() && GetActiveTheme().statusBarStyle != theme::StatusBarStyle::Ribbon)
+				{
+					DrawStatusFill(hdc, rcFullStatus, colors, GetActiveTheme().statusBarStyle);
+				}
 			}
 			else
 			{

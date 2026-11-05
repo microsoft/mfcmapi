@@ -938,7 +938,7 @@ namespace controls
 	void CHierarchyTableTreeCtrl::OnCustomDraw(
 		_In_ NMHDR* pNMHDR,
 		_In_ LRESULT* /*pResult*/,
-		_In_ HTREEITEM /*hItemCurHover*/) noexcept
+		_In_ HTREEITEM hItemCurHover) noexcept
 	{
 		const auto lvcd = reinterpret_cast<LPNMTVCUSTOMDRAW>(pNMHDR);
 		if (!lvcd) return;
@@ -966,11 +966,13 @@ namespace controls
 						auto client = RECT{};
 						GetClientRect(&client);
 						IntersectClipRect(lvcd->nmcd.hdc, client.left, rect.top, client.right, rect.bottom);
-						if (!GetEditControl() || hItem != GetSelectedItem())
+						const auto selected = hItem == GetSelectedItem();
+						if (!GetEditControl() || !selected)
 						{
 							const auto theme = ui::GetEffectiveTheme();
-							const auto color = theme == ui::uiTheme::HighContrast ? lvcd->clrText
-											   : theme == ui::uiTheme::Dark		  ? RGB(0x66, 0xB5, 0xED)
+							const auto highlighted = selected || hItem == hItemCurHover;
+							const auto color = highlighted || theme == ui::uiTheme::HighContrast ? lvcd->clrText
+											   : theme == ui::uiTheme::Dark						 ? RGB(0x66, 0xB5, 0xED)
 																			: ui::MyGetSysColor(ui::uiColor::Glow);
 							rect.left = rect.right + MulDiv(4, GetDeviceCaps(lvcd->nmcd.hdc, LOGPIXELSX), 96);
 							rect.right = rect.left + rect.bottom - rect.top;
@@ -979,10 +981,12 @@ namespace controls
 							ui::DrawBitmap(
 								lvcd->nmcd.hdc, rect, ui::uiBitmap::Notify, false, 0, color, lvcd->clrTextBk);
 						}
+
 						RestoreDC(lvcd->nmcd.hdc, savedDC);
 					}
 				}
 			}
+
 			break;
 		}
 		}

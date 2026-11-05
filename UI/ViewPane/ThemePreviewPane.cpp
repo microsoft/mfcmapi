@@ -26,6 +26,9 @@ namespace viewpane
 										 : appearance == ui::theme::Appearance::Dark ? ui::uiTheme::Dark
 																					 : ui::uiTheme::Light;
 		m_highContrast = effectiveAppearance == ui::uiTheme::HighContrast;
+		const auto ribbon = ui::theme::GetStatusRibbon(definition, effectiveAppearance);
+		m_statusRibbon.assign(ribbon.begin(), ribbon.end());
+		m_statusBarStyle = definition.statusBarStyle;
 		for (size_t index = 0; index < m_colors.size(); ++index)
 		{
 			m_colors[index] = ui::theme::GetColor(definition, effectiveAppearance, static_cast<ui::uiColor>(index));
@@ -39,6 +42,7 @@ namespace viewpane
 		m_hasTheme = false;
 		m_highContrast = false;
 		m_themeName.clear();
+		m_statusRibbon.clear();
 
 		if (m_hWndPreview) InvalidateRect(m_hWndPreview, nullptr, true);
 	}
@@ -332,7 +336,26 @@ namespace viewpane
 			client.right - margin,
 			columnHeader.bottom + 6 * margin + 6 * rowHeight};
 		fillRect(footer, getColor(ui::uiColor::Status));
-		drawText(footer, L"MFCMAPI", ui::uiColor::StatusText);
+		ui::DrawStatusFill(hdc, footer, pane->m_statusRibbon, pane->m_statusBarStyle);
+		const auto fullFill =
+			!pane->m_statusRibbon.empty() && pane->m_statusBarStyle != ui::theme::StatusBarStyle::Ribbon;
+		if (!pane->m_statusRibbon.empty() && !fullFill) footer.top += 5;
+		if (fullFill)
+		{
+			InflateRect(&footer, -margin, 0);
+			ui::DrawStatusText(
+				hdc,
+				L"MFCMAPI",
+				footer,
+				getColor(ui::uiColor::StatusText),
+				getColor(ui::uiColor::StatusTextOutline),
+				true);
+		}
+		else
+		{
+			drawText(footer, L"MFCMAPI", ui::uiColor::StatusText);
+		}
+
 		SelectObject(hdc, oldFont);
 
 		EndPaint(hWnd, &paint);

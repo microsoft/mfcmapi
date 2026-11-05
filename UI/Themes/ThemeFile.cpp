@@ -52,7 +52,8 @@ namespace ui::theme
 		L"ColumnHeaderArrow",
 		L"MenuBackground",
 		L"MenuText",
-		L"MenuTextDisabled"};
+		L"MenuTextDisabled",
+		L"StatusTextOutline"};
 
 	static_assert(std::size(roleNames) == static_cast<size_t>(uiColor::UIEnd));
 
@@ -192,7 +193,8 @@ namespace ui::theme
 			}
 			else
 			{
-				CheckKeys(object, {L"schemaVersion", L"id", L"name", L"schedule", L"colors"});
+				CheckKeys(
+					object, {L"schemaVersion", L"id", L"name", L"schedule", L"colors", L"statusRibbon", L"statusBar"});
 				Require(object.GetNamedNumber(L"schemaVersion") == 1, L"Unsupported schema version.");
 
 				auto theme = ThemeDefinition{};
@@ -204,6 +206,41 @@ namespace ui::theme
 				CheckKeys(palettes, {L"light", L"dark"});
 				theme.light = ReadPalette(palettes.GetNamedObject(L"light"), builtin::Standard.light);
 				theme.dark = ReadPalette(palettes.GetNamedObject(L"dark"), builtin::Standard.dark);
+				theme.statusRibbon = builtin::Standard.statusRibbon;
+				theme.statusBarStyle = builtin::Standard.statusBarStyle;
+				Require(
+					!object.HasKey(L"statusBar") || !object.HasKey(L"statusRibbon"),
+					L"Use either statusBar or statusRibbon, not both.");
+				if (object.HasKey(L"statusBar"))
+				{
+					const auto statusBar = object.GetNamedObject(L"statusBar");
+					CheckKeys(statusBar, {L"style", L"colors"});
+					const auto style = statusBar.GetNamedString(L"style");
+					Require(
+						style == L"ribbon" || style == L"bands" || style == L"gradient",
+						L"Status bar style must be ribbon, bands, or gradient.");
+					theme.statusBarStyle = style == L"gradient" ? StatusBarStyle::Gradient
+										   : style == L"bands"	? StatusBarStyle::Bands
+																: StatusBarStyle::Ribbon;
+					const auto colors = statusBar.GetNamedArray(L"colors");
+					Require(colors.Size() <= 16, L"Status bar supports at most 16 colors.");
+					theme.statusRibbon.clear();
+					for (const auto& color : colors)
+					{
+						theme.statusRibbon.push_back(ParseColor(color.GetString()));
+					}
+				}
+
+				if (object.HasKey(L"statusRibbon"))
+				{
+					const auto ribbon = object.GetNamedArray(L"statusRibbon");
+					Require(ribbon.Size() <= 16, L"Status ribbon supports at most 16 colors.");
+					theme.statusRibbon.clear();
+					for (const auto& color : ribbon)
+					{
+						theme.statusRibbon.push_back(ParseColor(color.GetString()));
+					}
+				}
 
 				if (object.HasKey(L"schedule"))
 				{

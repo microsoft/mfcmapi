@@ -5,6 +5,7 @@
 #include <chrono>
 #include <string>
 #include <string_view>
+#include <span>
 #include <vector>
 
 namespace ui
@@ -64,6 +65,7 @@ namespace ui
 		MenuBackground,
 		MenuText,
 		MenuTextDisabled,
+		StatusTextOutline,
 		UIEnd
 	};
 } // namespace ui
@@ -118,6 +120,13 @@ namespace ui::theme
 		std::array<ThemeColor, static_cast<size_t>(uiColor::UIEnd)> values;
 	};
 
+	enum class StatusBarStyle
+	{
+		Ribbon,
+		Bands,
+		Gradient
+	};
+
 	struct ThemeDefinition
 	{
 		std::wstring stableId;
@@ -125,7 +134,20 @@ namespace ui::theme
 		Schedule schedule;
 		ThemeColors light;
 		ThemeColors dark;
+		std::vector<COLORREF> statusRibbon{};
+		StatusBarStyle statusBarStyle = StatusBarStyle::Ribbon;
 	};
+
+	struct StatusRibbonBand
+	{
+		RECT bounds;
+		COLORREF color;
+		COLORREF endColor;
+	};
+
+	std::span<const COLORREF> GetStatusRibbon(const ThemeDefinition& definition, uiTheme appearance) noexcept;
+	std::vector<StatusRibbonBand>
+	LayoutStatusRibbon(std::span<const COLORREF> colors, const RECT& rect, int height, bool gradient = false);
 
 	const std::vector<ThemeDefinition>& GetThemes();
 	const ThemeDefinition* FindTheme(std::wstring_view stableId);

@@ -28,6 +28,8 @@ namespace viewpane
 		bool m_visible{true};
 		bool m_highContrast{};
 		std::wstring m_themeName;
+		std::vector<COLORREF> m_statusRibbon;
+		ui::theme::StatusBarStyle m_statusBarStyle = ui::theme::StatusBarStyle::Ribbon;
 		std::array<COLORREF, static_cast<size_t>(ui::uiColor::UIEnd)> m_colors{};
 	};
 } // namespace viewpane

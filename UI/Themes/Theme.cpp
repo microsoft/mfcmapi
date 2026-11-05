@@ -346,6 +346,33 @@ namespace ui::theme
 		return color.value;
 	}
 
+	std::span<const COLORREF> GetStatusRibbon(const ThemeDefinition& definition, const uiTheme appearance) noexcept
+	{
+		if (appearance == uiTheme::HighContrast) return {};
+		return definition.statusRibbon;
+	}
+
+	std::vector<StatusRibbonBand>
+	LayoutStatusRibbon(const std::span<const COLORREF> colors, const RECT& rect, const int height, const bool gradient)
+	{
+		std::vector<StatusRibbonBand> bands;
+		if (colors.empty() || height <= 0 || rect.right <= rect.left || rect.bottom <= rect.top) return bands;
+
+		const auto width = static_cast<long long>(rect.right) - rect.left;
+		const auto segments = gradient && colors.size() > 1 ? colors.size() - 1 : colors.size();
+		const auto count = static_cast<long long>(segments);
+		const auto bottom = rect.top + min(height, rect.bottom - rect.top);
+		for (size_t index = 0; index < segments; ++index)
+		{
+			const auto left = rect.left + static_cast<LONG>(width * static_cast<long long>(index) / count);
+			const auto right = rect.left + static_cast<LONG>(width * static_cast<long long>(index + 1) / count);
+			const auto endColor = gradient && colors.size() > 1 ? colors[index + 1] : colors[index];
+			if (right > left) bands.push_back({{left, rect.top, right, bottom}, colors[index], endColor});
+		}
+
+		return bands;
+	}
+
 	const ThemeDefinition& GetNextTheme(const std::wstring_view stableId, const bool reverse)
 	{
 		const auto& themes = GetThemes();

@@ -49,6 +49,7 @@ namespace ui::theme::builtin
 			{color::White, COLOR_WINDOW, COLOR_WINDOW}, // MenuBackground
 			{color::Black, COLOR_WINDOWTEXT, COLOR_WINDOWTEXT}, // MenuText
 			{color::Gray, COLOR_GRAYTEXT, COLOR_GRAYTEXT}, // MenuTextDisabled
+			{color::Black, -1, COLOR_WINDOWTEXT}, // StatusTextOutline
 		}}},
 		{{{
 			{RGB(0x20, 0x20, 0x20), -1, COLOR_WINDOW}, // Background
@@ -90,6 +91,7 @@ namespace ui::theme::builtin
 			{RGB(0x20, 0x20, 0x20), -1, COLOR_WINDOW}, // MenuBackground
 			{RGB(0xF1, 0xF1, 0xF1), -1, COLOR_WINDOWTEXT}, // MenuText
 			{RGB(0x8A, 0x8A, 0x8A), -1, COLOR_GRAYTEXT}, // MenuTextDisabled
+			{color::Black, -1, COLOR_WINDOWTEXT}, // StatusTextOutline
 		}}}};
 
 	inline const std::array<ThemeDefinition, 5> Definitions = {{

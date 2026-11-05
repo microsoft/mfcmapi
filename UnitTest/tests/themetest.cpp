@@ -211,6 +211,23 @@ TEST_METHOD(UnknownIdsAreNotFound)
 	Assert::IsNull(ui::theme::FindTheme(L""));
 }
 
+TEST_METHOD(StatusRibbonIsOptInAndHiddenInHighContrast)
+{
+	auto theme = ui::theme::GetDefaultTheme();
+	Assert::IsTrue(theme.statusRibbon.empty());
+	Assert::IsTrue(ui::theme::GetStatusRibbon(theme, ui::uiTheme::Light).empty());
+	theme.statusRibbon = {RGB(255, 0, 0), RGB(0, 255, 0), RGB(0, 0, 255)};
+	for (const auto appearance : {ui::uiTheme::Light, ui::uiTheme::Dark})
+	{
+		const auto colors = ui::theme::GetStatusRibbon(theme, appearance);
+		Assert::AreEqual(size_t{3}, colors.size());
+		Assert::AreEqual(theme.statusRibbon[0], colors[0]);
+		Assert::AreEqual(theme.statusRibbon[2], colors[2]);
+	}
+
+	Assert::IsTrue(ui::theme::GetStatusRibbon(theme, ui::uiTheme::HighContrast).empty());
+}
+
 TEST_METHOD(InvalidColorRolesAndAppearancesAreRejected)
 {
 	auto color = COLORREF{};

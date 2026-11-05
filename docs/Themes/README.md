@@ -85,13 +85,56 @@ theme's `Background`, `Text`, `Arrow`, or any other customized color. Existing
 theme files remain valid. The preview includes these surfaces. Built-in seasons
 use selective accents. Every bundled theme file explicitly defines all ten
 surface roles in both appearances, with coordinated title-bar accents,
-column-header colors, and menu backgrounds. Title-bar accents are selected
-separately from status-bar colors: multicolor themes use another palette color,
-while monochrome themes use a distinct shade. For example, Pride Rainbow has an
-orange title bar above its red status bar in light mode, and a red title bar
-above its violet status bar in dark mode. Christmas pairs a green title bar
-with its red status bar. These are independent literal color values, not
+column-header colors, and menu backgrounds. Title-bar accents can be selected
+separately from status-bar colors. Pride Rainbow keeps the window restrained:
+off-white or charcoal work areas, purple title bars, orange menu gutters, faint
+violet header tints, blue selection highlights, and muted green and gold interaction accents. Its saturated
+rainbow is concentrated in the status gradient. Christmas pairs a green title
+bar with its red status bar. These are independent literal color values, not
 references to other roles.
+
+Selected list rows paint `GlowText` on `SelectedBackground`; hovered rows paint
+`GlowText` on `GlowBackground`. Both paint the matching pair together rather
+than mixing theme text with a native Windows highlight background.
+Tree notification markers use the row's text color when selected or hovered,
+keeping their normal accent color when unhighlighted.
+Submenu arrows use the menu item's text color, including selected and disabled states.
+
+### Optional multicolor status bar
+
+Pride Rainbow tries a full-height horizontal rainbow gradient. Status messages
+use `StatusText` with a thin, one-pixel `StatusTextOutline` directly on the gradient,
+without solid backplates. The outline defaults to Standard's explicit black entry
+in both appearances; it never inherits from another role. The preview uses the
+same treatment. Other bundled themes, including Standard, remain unchanged.
+
+To opt in, add a top-level `statusBar` object (not inside `colors`):
+
+```json
+"statusBar": {
+  "style": "gradient",
+  "colors": ["#E40303", "#FF8C00", "#FFED00", "#008026", "#004DFF", "#750787"]
+}
+```
+
+Change `style` and reload themes to compare:
+
+- `gradient`: smooth horizontal transitions between evenly spaced color stops,
+  filling the whole status bar and its bottom/side borders.
+- `bands`: equal-width, crisp color blocks filling that same area.
+- `ribbon`: crisp bands along the top edge, up to five pixels high, leaving room
+  for text on the original status background.
+
+Colors are explicit CSS names or six-digit hex values, ordered left to right.
+Up to 16 colors are accepted. A single color produces a solid fill; an empty
+array disables the decoration. Colors are shared between appearances, and High
+Contrast disables the decoration and outlined text treatment.
+
+Omitting the decoration inherits Standard's undecorated status bar, never
+colors from another role. The original top-level `statusRibbon` array is still
+accepted as shorthand for `ribbon`; do not specify both forms.
+For now, only Pride Rainbow opts in so its appearance can be evaluated before
+extending the treatment to other themes.
 
 ### Disabled menu items
 
