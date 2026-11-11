@@ -2,6 +2,10 @@
   "schemaVersion": 1,
   "id": "nature.northern-lights",
   "name": "Northern Lights - Aurora",
+  "statusBar": {
+    "style": "gradient",
+    "colors": ["#12304A", "#006955", "#69408E"]
+  },
   "colors": {
     "light": {
       "TitleBarBackground": { "value": "#69408E", "highContrast": 5 },

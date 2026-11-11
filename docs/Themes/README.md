@@ -1,24 +1,30 @@
-# Optional theme files
+# Installing, creating, and modifying themes
 
-This directory contains optional theme files. Nothing here is built in or loaded
-by default. To try them, open **Tools > Themes**, choose this directory, enable
-color themes, and select a theme. Other theme files are provided alongside the
-examples below.
+Use a JSON theme file to customize colors for light and dark appearances and,
+optionally, choose dates when your theme is selected automatically.
 
+## Installing themes
+
+Put your theme `.json` files together in a directory, or use this directory to
+try the provided themes. Theme files are not loaded by default.
+
+1. Open **Tools > Themes** and choose the directory containing your theme files.
+2. Enable color themes and select a theme.
+3. After adding or editing files, click **Reload themes**.
+
+Keep theme files directly in the chosen directory, not in subdirectories.
 **Ctrl+Shift+T** selects the next theme; **Ctrl+Shift+R** selects the previous
-theme. Both wrap through the theme list and turn scheduling off. Color themes
-must be enabled. **Ctrl+Shift+D** toggles light/dark appearance.
+theme. Both wrap through the list and turn scheduling off. **Ctrl+Shift+D**
+toggles light/dark appearance.
 
 ## Writing a theme
 
-Start with [Halloween](Halloween.json) or [Christmas](Christmas.json):
-
-- Halloween is a complete example with explicit colors for both appearances.
-- Christmas is a sparse example: it overrides selected colors and inherits the
-  rest from Standard.
+Copy an existing theme, such as [Halloween](Halloween.json), as a starting point.
+Remove color entries you do not want to customize; omitted entries use Standard.
 
 1. Copy an example to a new `.json` file, saved as UTF-8.
-2. Give it a unique `id` and your own display `name`.
+2. For a new theme, give it a unique `id` and your own display `name`. When modifying
+   an existing theme, keep its `id`.
 3. Edit the colors in both the `light` and `dark` palettes.
 4. Change the `schedule`, or remove it for a manual-only theme.
 5. In **Tools > Themes**, choose the directory containing your file and enable
@@ -26,6 +32,7 @@ Start with [Halloween](Halloween.json) or [Christmas](Christmas.json):
 
 After editing a file, click **Reload themes** to see your changes. Keep your files
 directly in the chosen directory, not in subdirectories.
+Use **Ctrl+Shift+D** to check both light and dark appearances.
 
 ## Theme information
 
@@ -37,6 +44,7 @@ examples. JSON field names and theme IDs are case-sensitive.
 | `id` | Required unique identifier, such as `my.spring`. Keep it unchanged when updating your theme. Do not reuse a built-in theme's ID. |
 | `name` | Required display name shown in the theme list. |
 | `colors` | Required `light` and `dark` objects. Include only the color entries you want to customize. |
+| `statusBar` | Optional gradient, bands, or ribbon for the status bar. |
 | `schedule` | Optional dates when your theme should be selected automatically. |
 
 ## Colors
@@ -62,7 +70,28 @@ An entry you supply still needs `value` and, for visible colors, `highContrast`;
 individual fields within that entry are not inherited.
 
 Colors never inherit from another role, even if two Standard entries happen to
-have identical values. Standard's appearance remains unchanged.
+have identical values. Set each role you want to change explicitly.
+
+### Choosing color roles
+
+Edit these roles in each appearance's palette. Change foreground and background
+pairs together so text and indicators remain readable.
+
+| What you want to change | Roles |
+|---|---|
+| Main content | `Background`, `Text` |
+| Read-only fields | `BackgroundReadOnly`, `TextReadOnly` |
+| Disabled text | `TextDisabled` |
+| Selected list rows and enabled menu items | `SelectedBackground`, `GlowText` |
+| Hovered rows | `GlowBackground`, `GlowText` |
+| Focused and unfocused frames | `FrameSelected`, `FrameUnselected` |
+| Normal arrows and notification accents | `Arrow`, `Glow` |
+| Solid status bar and message text | `Status`, `StatusText` |
+| Pane headings | `PaneHeaderBackground`, `PaneHeaderText` |
+| Text highlights | `TextHighlightBackground`, `TextHighlight` |
+
+`GlowText` is shared by selection and hover, so check it against both fills.
+Tree notification markers use the row's text color when selected or hovered.
 
 ### Title bars, column headers, and menus
 
@@ -77,38 +106,18 @@ These surfaces have independent roles in each palette:
 `TitleBarButton` colors the close, maximize/restore, and minimize glyphs.
 Highlighted caption buttons use `TitleBarButtonHover` on `GlowBackground`.
 Column-header colors cover both the labeled columns and unused header area.
-`MenuGutter` still controls the popup icon/checkmark gutter; menu selections keep
-their existing selection roles.
+Use `MenuGutter` to color the popup icon/checkmark gutter. Selected menu items
+use the selection roles described below.
 
 Omitting any of these roles inherits only that role's Standard entry, not the
-theme's `Background`, `Text`, `Arrow`, or any other customized color. Existing
-theme files remain valid. The preview includes these surfaces. Built-in seasons
-use selective accents. Every bundled theme file explicitly defines all ten
-surface roles in both appearances, with coordinated title-bar accents,
-column-header colors, and menu backgrounds. Title-bar accents can be selected
-separately from status-bar colors. Pride Rainbow keeps the window restrained:
-off-white or charcoal work areas, purple title bars, orange menu gutters, faint
-violet header tints, blue selection highlights, and muted green and gold interaction accents. Its saturated
-rainbow is concentrated in the status gradient. Christmas pairs a green title
-bar with its red status bar. These are independent literal color values, not
-references to other roles.
-
-Selected list rows paint `GlowText` on `SelectedBackground`; hovered rows paint
-`GlowText` on `GlowBackground`. Both paint the matching pair together rather
-than mixing theme text with a native Windows highlight background.
-Tree notification markers use the row's text color when selected or hovered,
-keeping their normal accent color when unhighlighted.
-Submenu arrows use the menu item's text color, including selected and disabled states.
+theme's `Background`, `Text`, `Arrow`, or any other customized color. Title-bar
+and status-bar colors can be chosen independently. Submenu arrows use the menu
+item's text color, so check them in normal, selected, and disabled states.
 
 ### Optional multicolor status bar
 
-Pride Rainbow tries a full-height horizontal rainbow gradient. Status messages
-use `StatusText` with a thin, one-pixel `StatusTextOutline` directly on the gradient,
-without solid backplates. The outline defaults to Standard's explicit black entry
-in both appearances; it never inherits from another role. The preview uses the
-same treatment. Other bundled themes, including Standard, remain unchanged.
-
-To opt in, add a top-level `statusBar` object (not inside `colors`):
+To add a horizontal gradient, include a top-level `statusBar` object (not inside
+`colors`):
 
 ```json
 "statusBar": {
@@ -130,11 +139,15 @@ Up to 16 colors are accepted. A single color produces a solid fill; an empty
 array disables the decoration. Colors are shared between appearances, and High
 Contrast disables the decoration and outlined text treatment.
 
+Full-height gradients and bands draw `StatusText` with a one-pixel
+`StatusTextOutline`, without solid backplates. The outline inherits Standard's
+black entry when omitted. Choose text and outline colors that contrast with each
+other and remain readable across the whole fill in both appearances, not just
+at the color stops.
+
 Omitting the decoration inherits Standard's undecorated status bar, never
 colors from another role. The original top-level `statusRibbon` array is still
 accepted as shorthand for `ribbon`; do not specify both forms.
-For now, only Pride Rainbow opts in so its appearance can be evaluated before
-extending the treatment to other themes.
 
 ### Disabled menu items
 
@@ -178,10 +191,11 @@ theme file is loaded. Contrast is the ratio between two colors, from `1:1`
 - Aim for at least **3:1** between the background and visual indicators such as
   selection, hover, text-highlight fills, and the focus indicator.
 
-The bundled themes are checked against these targets by unit tests. Custom
-themes can use different values, but low contrast or nearly identical enabled
-and disabled colors can make text difficult to read or state changes hard to
-notice.
+Low contrast or nearly identical enabled and disabled colors can make text
+difficult to read or state changes hard to notice. Check these states in the
+theme preview and in actual controls after reloading your theme.
+
+### System-color mappings
 
 If you change system-color mappings, use these numbers, not RGB values:
 
@@ -200,6 +214,9 @@ Visible color entries require a `highContrast` mapping; the bitmap and `Test*`
 entries do not.
 
 ## Schedules
+
+Add a top-level `schedule` to select your theme during an annual date range.
+Omit it for a manual-only theme.
 
 ```json
 "schedule": {
@@ -222,14 +239,8 @@ Selecting a theme yourself turns scheduling off.
   six months in the Southern Hemisphere, based on the Windows country/region
   setting. Leave it `false` for holidays and other fixed-date events.
 
-For example, to make your own Spring theme take precedence over built-in Spring,
-use a unique ID such as `my.spring`, dates `03-01` through `05-31`, priority `10`,
-and `seasonal: true`. Built-in Spring remains available in the theme list.
-
 ## Fixing errors
 
 If your file appears as **in error**, select it and read **Theme file errors**.
 Check for invalid JSON, misspelled field or color names, incomplete color entries,
 or a duplicate ID. Fix the file and click **Reload themes**.
-
-A broken file does not prevent other themes from loading.

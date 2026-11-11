@@ -2,6 +2,10 @@
   "schemaVersion": 1,
   "id": "pride.bisexual",
   "name": "Pride - Bisexual Flag",
+  "statusBar": {
+    "style": "gradient",
+    "colors": ["#D60270", "#9B4F96", "#0038A8"]
+  },
   "colors": {
     "light": {
       "TitleBarBackground": { "value": "#D60270", "highContrast": 5 },

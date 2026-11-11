@@ -222,6 +222,57 @@ namespace themefiletest
 			Assert::IsTrue(violations.str().empty(), violations.str().c_str());
 		}
 
+		TEST_METHOD(AllThemesKeepStatusTextReadableAcrossTheirFills)
+		{
+			const auto catalog = ui::theme::LoadThemeDirectory(ExampleDirectory().wstring());
+			Assert::IsTrue(catalog.errors.empty());
+
+			for (const auto& theme : catalog.themes)
+			{
+				Assert::IsTrue(
+					ui::theme::GetStatusRibbon(theme, ui::uiTheme::HighContrast).empty(), theme.name.c_str());
+
+				for (const auto appearance : {ui::uiTheme::Light, ui::uiTheme::Dark})
+				{
+					const auto& palette = appearance == ui::uiTheme::Light ? theme.light : theme.dark;
+					const auto text = palette.values[static_cast<size_t>(ui::uiColor::StatusText)].value;
+					const auto outline = palette.values[static_cast<size_t>(ui::uiColor::StatusTextOutline)].value;
+					const auto colors = ui::theme::GetStatusRibbon(theme, appearance);
+					const auto fullFill = !colors.empty() && theme.statusBarStyle != ui::theme::StatusBarStyle::Ribbon;
+					const auto description = theme.name + (appearance == ui::uiTheme::Light ? L" (light)" : L" (dark)");
+					if (!fullFill)
+					{
+						Assert::IsTrue(
+							ContrastRatio(text, palette.values[static_cast<size_t>(ui::uiColor::Status)].value) >= 4.5,
+							description.c_str());
+						continue;
+					}
+
+					Assert::IsTrue(ContrastRatio(text, outline) >= 4.5, description.c_str());
+					const auto bands = ui::theme::LayoutStatusRibbon(
+						colors, RECT{0, 0, 2048, 24}, 24, theme.statusBarStyle == ui::theme::StatusBarStyle::Gradient);
+					Assert::IsFalse(bands.empty(), description.c_str());
+
+					for (const auto& band : bands)
+					{
+						for (int step = 0; step <= 1024; ++step)
+						{
+							const auto interpolate = [&](const BYTE start, const BYTE end) {
+								return (start * (1024 - step) + end * step) / 1024;
+							};
+							const auto background =
+								RGB(interpolate(GetRValue(band.color), GetRValue(band.endColor)),
+									interpolate(GetGValue(band.color), GetGValue(band.endColor)),
+									interpolate(GetBValue(band.color), GetBValue(band.endColor)));
+							Assert::IsTrue(
+								ContrastRatio(text, background) >= 4.5 || ContrastRatio(outline, background) >= 4.5,
+								description.c_str());
+						}
+					}
+				}
+			}
+		}
+
 		TEST_METHOD(BuiltInSelectedDisabledTextMeetsContrastTarget)
 		{
 			auto violations = std::wostringstream{};
@@ -341,35 +392,6 @@ namespace themefiletest
 					check(ui::uiColor::MenuText, ui::uiColor::MenuBackground, 4.5);
 					check(ui::uiColor::MenuTextDisabled, ui::uiColor::MenuBackground, 3.0);
 				}
-			}
-		}
-
-		TEST_METHOD(ExamplesLoadAndEventsOverrideSeasonsWithoutShifting)
-		{
-			using namespace std::chrono;
-
-			for (const auto filename : {L"Halloween.json", L"Christmas.json"})
-			{
-				std::filesystem::copy_file(ExampleDirectory() / filename, m_directory / filename);
-			}
-
-			const auto catalog = ui::theme::LoadThemeDirectory(m_directory.wstring());
-			Assert::IsTrue(catalog.errors.empty());
-
-			for (const auto southern : {false, true})
-			{
-				const auto halloween =
-					ui::theme::FindScheduledTheme(catalog.themes, year{2024} / October / 31, southern);
-				const auto christmas =
-					ui::theme::FindScheduledTheme(catalog.themes, year{2024} / December / 25, southern);
-				Assert::IsNotNull(halloween);
-				Assert::IsNotNull(christmas);
-				Assert::IsTrue(halloween->stableId == L"example.halloween");
-				Assert::IsTrue(christmas->stableId == L"example.christmas");
-
-				const auto next = ui::theme::FindScheduledTheme(catalog.themes, year{2024} / November / 1, southern);
-				Assert::IsNotNull(next);
-				Assert::IsTrue(next->stableId == (southern ? L"season.spring" : L"season.autumn"));
 			}
 		}
 

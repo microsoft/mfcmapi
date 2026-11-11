@@ -2,6 +2,10 @@
   "schemaVersion": 1,
   "id": "holiday.halloween-midnight",
   "name": "Halloween - Midnight Spell",
+  "statusBar": {
+    "style": "gradient",
+    "colors": ["#663399", "#29242E", "#A34800"]
+  },
   "colors": {
     "light": {
       "TextDisabled": { "value": "#5a5a5a", "highContrast": 17 },

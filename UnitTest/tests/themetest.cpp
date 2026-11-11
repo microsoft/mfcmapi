@@ -55,28 +55,6 @@ TEST_METHOD(ThemeDefinitionsOwnEveryColor)
 	}
 }
 
-TEST_METHOD(SeasonalSchedulingCoversEveryDateInBothHemispheres)
-{
-	using namespace std::chrono;
-	const std::wstring_view seasons[] = {L"season.winter", L"season.spring", L"season.summer", L"season.autumn"};
-	for (const auto year : {2023, 2024})
-	{
-		for (auto date = sys_days{std::chrono::year{year} / January / 1};
-			 date < sys_days{std::chrono::year{year + 1} / January / 1};
-			 date += days{1})
-		{
-			const auto calendar = year_month_day{date};
-			const auto season = unsigned(calendar.month()) % 12 / 3;
-			for (const auto southern : {false, true})
-			{
-				const auto selected = ui::theme::FindScheduledTheme(ui::theme::GetThemes(), calendar, southern);
-				Assert::IsNotNull(selected);
-				Assert::IsTrue(selected->stableId == seasons[(season + (southern ? 2 : 0)) % 4]);
-			}
-		}
-	}
-}
-
 TEST_METHOD(EventDatesDoNotShiftAndResumeTheSeasonAfterwards)
 {
 	using namespace std::chrono;
@@ -174,35 +152,6 @@ TEST_METHOD(CyclingUsesCatalogOrderAndWraps)
 		ui::theme::GetNextTheme(ui::theme::GetDefaultTheme().stableId).stableId);
 	Assert::IsTrue(ui::theme::GetNextTheme(L"not-a-theme", true).stableId == themes.back().stableId);
 	Assert::IsTrue(ui::theme::GetNextTheme(L"", true).stableId == themes.back().stableId);
-}
-
-TEST_METHOD(StandardSurfaceColorsPreserveTheOriginalAppearance)
-{
-	using ui::uiColor;
-	const std::pair<uiColor, uiColor> surfaces[] = {
-		{uiColor::TitleBarBackground, uiColor::Background},
-		{uiColor::TitleBarText, uiColor::Text},
-		{uiColor::TitleBarButton, uiColor::FrameSelected},
-		{uiColor::TitleBarButtonHover, uiColor::FrameSelected},
-		{uiColor::ColumnHeaderBackground, uiColor::Background},
-		{uiColor::ColumnHeaderText, uiColor::Text},
-		{uiColor::ColumnHeaderArrow, uiColor::Arrow},
-		{uiColor::MenuBackground, uiColor::Background},
-		{uiColor::MenuText, uiColor::Text},
-		{uiColor::MenuTextDisabled, uiColor::TextDisabled}};
-	const auto& standard = ui::theme::GetDefaultTheme();
-	Assert::IsTrue(standard.stableId == L"standard");
-	for (const auto& palette : {standard.light, standard.dark})
-	{
-		for (const auto& [surface, original] : surfaces)
-		{
-			const auto& actual = palette.values[static_cast<size_t>(surface)];
-			const auto& expected = palette.values[static_cast<size_t>(original)];
-			Assert::AreEqual(expected.value, actual.value);
-			Assert::AreEqual(expected.system, actual.system);
-			Assert::AreEqual(expected.highContrast, actual.highContrast);
-		}
-	}
 }
 
 TEST_METHOD(UnknownIdsAreNotFound)

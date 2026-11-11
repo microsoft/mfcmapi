@@ -2,6 +2,10 @@
   "schemaVersion": 1,
   "id": "nature.sunset",
   "name": "Sunset - Apricot Sky",
+  "statusBar": {
+    "style": "gradient",
+    "colors": ["#633A7D", "#B3444F", "#956000"]
+  },
   "colors": {
     "light": {
       "TitleBarBackground": { "value": "#7B4F91", "highContrast": 5 },
