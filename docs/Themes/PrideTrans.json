@@ -2,6 +2,10 @@
   "schemaVersion": 1,
   "id": "pride.trans",
   "name": "Pride - Trans Flag",
+  "statusBar": {
+    "style": "gradient",
+    "colors": ["#5BCEFA", "#F5A9B8", "#FFFFFF", "#F5A9B8", "#5BCEFA"]
+  },
   "colors": {
     "light": {
       "TitleBarBackground": { "value": "#F5A9B8", "highContrast": 5 },

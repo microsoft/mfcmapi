@@ -313,7 +313,7 @@ namespace viewpane
 					auto gutter = menuEntry;
 					gutter.right = min(gutter.right, gutter.left + menuEntryHeight);
 					fillRect(gutter, getColor(selected ? background : ui::uiColor::MenuGutter));
-					drawText(gutter, L">", selected && !disabled ? ui::uiColor::Glow : foreground);
+					drawText(gutter, L">", foreground);
 					auto label = menuEntry;
 					label.left = gutter.right;
 					drawText(
@@ -349,7 +349,8 @@ namespace viewpane
 				footer,
 				getColor(ui::uiColor::StatusText),
 				getColor(ui::uiColor::StatusTextOutline),
-				true);
+				true,
+				DT_LEFT | DT_SINGLELINE | DT_VCENTER | DT_END_ELLIPSIS);
 		}
 		else
 		{
