@@ -165,8 +165,7 @@ namespace viewpane
 		const auto combo = m_DropDown.GetSafeHwnd();
 		const auto focus = ::GetFocus();
 		if (!combo || message.message != WM_MOUSEWHEEL || (focus != combo && !::IsChild(combo, focus)) ||
-			message.hwnd == combo || ::IsChild(combo, message.hwnd) ||
-			::SendMessage(combo, CB_GETDROPPEDSTATE, 0, 0))
+			message.hwnd == combo || ::IsChild(combo, message.hwnd) || ::SendMessage(combo, CB_GETDROPPEDSTATE, 0, 0))
 			return false;
 
 		::SendMessage(combo, message.message, message.wParam, message.lParam);

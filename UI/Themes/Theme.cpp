@@ -303,6 +303,7 @@ namespace ui::theme
 
 		return sys_days{end} - sys_days{start} + days{1};
 	}
+
 	const ThemeDefinition* FindScheduledTheme(
 		const std::vector<ThemeDefinition>& themes,
 		const std::chrono::year_month_day date,

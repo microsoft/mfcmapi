@@ -290,6 +290,7 @@ namespace viewpane
 					ui::uiColor::FrameUnselected);
 				break;
 			}
+
 			case 4:
 			{
 				const auto menuEntryHeight = rowHeight / 2;
@@ -323,6 +324,7 @@ namespace viewpane
 					if (selected && disabled && !pane->m_highContrast)
 						drawFrame(menuEntry, getColor(ui::uiColor::DisabledSelectedBorder), 1);
 				}
+
 				drawFrame(left, getColor(ui::uiColor::FrameUnselected), 1);
 				drawFrame(right, getColor(ui::uiColor::FrameUnselected), 1);
 				break;

@@ -115,6 +115,7 @@ namespace themefiletest
 			{
 				errors += error.path + L": " + error.message + L"\n";
 			}
+
 			Assert::IsTrue(catalog.errors.empty(), errors.c_str());
 			Assert::AreEqual(fileCount, catalog.themes.size() - ui::theme::GetThemes().size());
 
@@ -365,6 +366,7 @@ namespace themefiletest
 							Assert::AreEqual(RGB(0, 0, 255), definition.statusRibbon[2]);
 						}
 					}
+
 					Assert::IsTrue(ui::theme::GetStatusRibbon(definition, ui::uiTheme::HighContrast).empty());
 				}
 			}
