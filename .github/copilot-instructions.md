@@ -46,6 +46,14 @@
 - Then check the same files:
   `& .\scripts\clang.ps1 -Check -Files @('UI\UIFunctions.cpp')`
   Replace the example path with the actual changed C/C++ paths.
+- Before opening or updating a PR with C/C++ changes, clang checks must pass for
+  every C/C++ file changed by the complete PR, not just the latest edits. Fix
+  formatting failures before proceeding.
+- Code changes must also pass one representative Release build, normally
+  `Release_Unicode|x64`, including affected application and unit-test targets.
+  A Debug build alone is insufficient: Release optimization can expose additional
+  warnings and link failures. One local Release configuration is enough; leave
+  the remaining build matrix to CI.
 - Run the smallest relevant existing build/tests for code changes. Formatting,
   line-ending checks, and EC/WC usage are separate requirements; a successful
   build does not replace them.

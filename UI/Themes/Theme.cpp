@@ -56,10 +56,10 @@ namespace ui::theme
 		midnight.wDay = static_cast<WORD>(static_cast<unsigned int>(tomorrow.day()));
 
 		auto utcMidnight = SYSTEMTIME{};
-		if (!WC_B(TzSpecificLocalTimeToSystemTime(nullptr, &midnight, &utcMidnight))) return;
+		if (FAILED(WC_B(TzSpecificLocalTimeToSystemTime(nullptr, &midnight, &utcMidnight)))) return;
 
 		auto deadline = FILETIME{};
-		if (!WC_B(SystemTimeToFileTime(&utcMidnight, &deadline))) return;
+		if (FAILED(WC_B(SystemTimeToFileTime(&utcMidnight, &deadline)))) return;
 
 		auto now = FILETIME{};
 		GetSystemTimeAsFileTime(&now);
