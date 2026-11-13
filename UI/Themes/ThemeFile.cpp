@@ -2,6 +2,7 @@
 #include <UI/Themes/ThemeFile.h>
 #include <UI/Themes/BuiltinThemes.h>
 #include <UI/Themes/CssNamedColors.h>
+#include <core/utility/error.h>
 #include <winrt/Windows.Data.Json.h>
 #include <winrt/Windows.Foundation.Collections.h>
 #include <roapi.h>
@@ -57,12 +58,54 @@ namespace ui::theme
 
 	static_assert(std::size(roleNames) == static_cast<size_t>(uiColor::UIEnd));
 
-	static void Require(const bool condition, const std::wstring& message)
+	using JsonObject = winrt::Windows::Data::Json::JsonObject;
+	using JsonArray = winrt::Windows::Data::Json::JsonArray;
+
+	template <typename Call> static bool ReadJsonApi(Call&& call, const std::wstring_view context, std::wstring& error)
 	{
-		if (!condition) throw winrt::hresult_invalid_argument(message);
+		try
+		{
+			call();
+		} catch (const winrt::hresult_error& exception)
+		{
+			error = std::wstring(context) + L": " + exception.message().c_str();
+			return false;
+		}
+
+		return true;
 	}
 
-	static COLORREF ParseColor(const std::wstring_view text)
+	static bool
+	ReadObject(const JsonObject& object, const std::wstring_view key, JsonObject& value, std::wstring& error)
+	{
+		return ReadJsonApi([&] { value = object.GetNamedObject(key); }, key, error);
+	}
+
+	static bool
+	ReadString(const JsonObject& object, const std::wstring_view key, std::wstring& value, std::wstring& error)
+	{
+		return ReadJsonApi([&] { value = object.GetNamedString(key); }, key, error);
+	}
+
+	static bool HasKey(const JsonObject& object, const std::wstring_view key, bool& present, std::wstring& error)
+	{
+		return ReadJsonApi([&] { present = object.HasKey(key); }, key, error);
+	}
+
+	static bool ReadKeys(const JsonObject& object, std::vector<std::wstring>& keys, std::wstring& error)
+	{
+		return ReadJsonApi(
+			[&] {
+				for (const auto& property : object)
+				{
+					keys.emplace_back(property.Key());
+				}
+			},
+			L"Object fields",
+			error);
+	}
+
+	static bool ParseColor(const std::wstring_view text, COLORREF& value, std::wstring& error)
 	{
 		DWORD rgb = 0;
 		if (text.size() == 7 && text[0] == L'#')
@@ -70,9 +113,12 @@ namespace ui::theme
 			for (const auto digit : text.substr(1))
 			{
 				const auto lower = towlower(digit);
-				Require(
-					(lower >= L'0' && lower <= L'9') || (lower >= L'a' && lower <= L'f'),
-					L"Invalid hex color: " + std::wstring(text));
+				if (!((lower >= L'0' && lower <= L'9') || (lower >= L'a' && lower <= L'f')))
+				{
+					error = L"Invalid hex color: " + std::wstring(text);
+					return false;
+				}
+
 				rgb = (rgb << 4) | (lower <= L'9' ? lower - L'0' : lower - L'a' + 10);
 			}
 		}
@@ -82,200 +128,418 @@ namespace ui::theme
 				return _wcsnicmp(text.data(), color.first.data(), text.size()) == 0 &&
 					   text.size() == color.first.size();
 			});
-			Require(found != std::end(namedColors), L"Unknown color: " + std::wstring(text));
+			if (found == std::end(namedColors))
+			{
+				error = L"Unknown color: " + std::wstring(text);
+				return false;
+			}
+
 			rgb = found->second;
 		}
 
-		return RGB((rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, rgb & 0xFF);
+		value = RGB((rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, rgb & 0xFF);
+		return true;
 	}
 
-	static void CheckKeys(
-		const winrt::Windows::Data::Json::JsonObject& object,
-		const std::initializer_list<std::wstring_view> allowed)
+	static bool
+	CheckKeys(const JsonObject& object, const std::initializer_list<std::wstring_view> allowed, std::wstring& error)
 	{
-		for (const auto& property : object)
+		auto keys = std::vector<std::wstring>{};
+		if (!ReadKeys(object, keys, error)) return false;
+
+		for (const auto& key : keys)
 		{
-			const auto name = property.Key();
-			const std::wstring_view key = name;
-			Require(
-				std::find(allowed.begin(), allowed.end(), key) != allowed.end(),
-				L"Unknown field: " + std::wstring(key));
+			if (std::find(allowed.begin(), allowed.end(), key) == allowed.end())
+			{
+				error = L"Unknown field: " + key;
+				return false;
+			}
 		}
+
+		return true;
 	}
 
-	static int ReadInteger(
-		const winrt::Windows::Data::Json::JsonObject& object,
+	static bool ReadInteger(
+		const JsonObject& object,
 		const std::wstring_view key,
 		const int minimum,
-		const int maximum)
+		const int maximum,
+		int& value,
+		std::wstring& error)
 	{
-		const auto number = object.GetNamedNumber(key);
-		Require(
-			std::isfinite(number) && number >= minimum && number <= maximum && std::floor(number) == number,
-			L"Invalid integer: " + std::wstring(key));
+		double number{};
+		if (!ReadJsonApi([&] { number = object.GetNamedNumber(key); }, key, error)) return false;
 
-		return static_cast<int>(number);
-	}
-
-	static int ReadSystemColor(const winrt::Windows::Data::Json::JsonObject& object, const std::wstring_view key)
-	{
-		if (!object.HasKey(key)) return -1;
-
-		const auto index = ReadInteger(object, key, -1, COLOR_MENUBAR);
-		Require(index != 25, L"Invalid system color index: 25");
-
-		return index;
-	}
-
-	static ThemeColors ReadPalette(const winrt::Windows::Data::Json::JsonObject& object, const ThemeColors& defaults)
-	{
-		for (const auto& property : object)
+		if (!std::isfinite(number) || number < minimum || number > maximum || std::floor(number) != number)
 		{
-			const auto name = property.Key();
-			const std::wstring_view role = name;
-			Require(
-				std::find(std::begin(roleNames), std::end(roleNames), role) != std::end(roleNames),
-				L"Unknown color role: " + std::wstring(role));
+			error = L"Invalid integer: " + std::wstring(key);
+			return false;
 		}
 
-		auto colors = defaults;
+		value = static_cast<int>(number);
+		return true;
+	}
+
+	static bool ReadSystemColor(const JsonObject& object, const std::wstring_view key, int& value, std::wstring& error)
+	{
+		bool present{};
+		if (!HasKey(object, key, present, error)) return false;
+
+		value = -1;
+		if (!present) return true;
+
+		if (!ReadInteger(object, key, -1, COLOR_MENUBAR, value, error)) return false;
+
+		if (value == 25)
+		{
+			error = L"Invalid system color index: 25";
+			return false;
+		}
+
+		return true;
+	}
+
+	static bool
+	ReadPalette(const JsonObject& object, const ThemeColors& defaults, ThemeColors& colors, std::wstring& error)
+	{
+		auto keys = std::vector<std::wstring>{};
+		if (!ReadKeys(object, keys, error)) return false;
+
+		for (const auto& role : keys)
+		{
+			if (std::find(std::begin(roleNames), std::end(roleNames), role) == std::end(roleNames))
+			{
+				error = L"Unknown color role: " + role;
+				return false;
+			}
+		}
+
+		colors = defaults;
 		for (size_t index = 0; index < std::size(roleNames); ++index)
 		{
 			const auto role = roleNames[index];
-			if (!object.HasKey(role)) continue;
+			if (std::find(keys.begin(), keys.end(), role) == keys.end()) continue;
 
-			const auto entry = object.GetNamedObject(role);
-			CheckKeys(entry, {L"value", L"system", L"highContrast"});
-			colors.values[index] = {
-				ParseColor(entry.GetNamedString(L"value")),
-				ReadSystemColor(entry, L"system"),
-				ReadSystemColor(entry, L"highContrast")};
+			auto entry = JsonObject{nullptr};
+			auto text = std::wstring{};
+			auto& color = colors.values[index];
+			if (!ReadObject(object, role, entry, error) ||
+				!CheckKeys(entry, {L"value", L"system", L"highContrast"}, error) ||
+				!ReadString(entry, L"value", text, error) || !ParseColor(text, color.value, error) ||
+				!ReadSystemColor(entry, L"system", color.system, error) ||
+				!ReadSystemColor(entry, L"highContrast", color.highContrast, error))
+			{
+				error = std::wstring(role) + L": " + error;
+				return false;
+			}
 
-			Require(
-				builtin::Standard.light.values[index].highContrast < 0 || colors.values[index].highContrast >= 0,
-				L"Missing High Contrast system color for role: " + std::wstring(role));
+			if (builtin::Standard.light.values[index].highContrast >= 0 && color.highContrast < 0)
+			{
+				error = L"Missing High Contrast system color for role: " + std::wstring(role);
+				return false;
+			}
 		}
 
-		return colors;
+		return true;
 	}
 
-	static std::pair<unsigned int, unsigned int> ReadDate(const std::wstring_view text)
+	static bool
+	ReadDate(const std::wstring_view text, std::pair<unsigned int, unsigned int>& value, std::wstring& error)
 	{
-		Require(text.size() == 5 && text[2] == L'-', L"Schedule dates must use MM-DD.");
+		if (text.size() != 5 || text[2] != L'-')
+		{
+			error = L"Schedule dates must use MM-DD.";
+			return false;
+		}
+
 		for (const auto index : {0, 1, 3, 4})
 		{
-			Require(text[index] >= L'0' && text[index] <= L'9', L"Schedule dates must use MM-DD.");
+			if (text[index] < L'0' || text[index] > L'9')
+			{
+				error = L"Schedule dates must use MM-DD.";
+				return false;
+			}
 		}
 
 		const auto month = static_cast<unsigned int>((text[0] - L'0') * 10 + text[1] - L'0');
 		const auto day = static_cast<unsigned int>((text[3] - L'0') * 10 + text[4] - L'0');
-		Require(
-			(std::chrono::year{2000} / std::chrono::month{month} / std::chrono::day{day}).ok(),
-			L"Invalid schedule date: " + std::wstring(text));
+		if (!(std::chrono::year{2000} / std::chrono::month{month} / std::chrono::day{day}).ok())
+		{
+			error = L"Invalid schedule date: " + std::wstring(text);
+			return false;
+		}
 
-		return {month, day};
+		value = {month, day};
+		return true;
+	}
+
+	static bool ReadPaletteObject(
+		const JsonObject& palettes,
+		const std::wstring_view key,
+		const ThemeColors& defaults,
+		ThemeColors& colors,
+		std::wstring& error)
+	{
+		auto object = JsonObject{nullptr};
+		if (!ReadObject(palettes, key, object, error) || !ReadPalette(object, defaults, colors, error))
+		{
+			error = L"colors." + std::wstring(key) + L": " + error;
+			return false;
+		}
+
+		return true;
+	}
+
+	static bool ReadColorArray(
+		const JsonObject& object,
+		const std::wstring_view key,
+		std::vector<COLORREF>& colors,
+		std::wstring& error)
+	{
+		auto array = JsonArray{nullptr};
+		if (!ReadJsonApi([&] { array = object.GetNamedArray(key); }, key, error)) return false;
+
+		uint32_t size{};
+		if (!ReadJsonApi([&] { size = array.Size(); }, key, error)) return false;
+
+		if (size > 16)
+		{
+			error = std::wstring(key) + L" supports at most 16 colors.";
+			return false;
+		}
+
+		colors.clear();
+		for (uint32_t index = 0; index < size; ++index)
+		{
+			const auto context = std::wstring(key) + L"[" + std::to_wstring(index) + L"]";
+			auto text = std::wstring{};
+			if (!ReadJsonApi([&] { text = array.GetStringAt(index); }, context, error)) return false;
+
+			COLORREF color{};
+			if (!ParseColor(text, color, error))
+			{
+				error = context + L": " + error;
+				return false;
+			}
+
+			colors.push_back(color);
+		}
+
+		return true;
+	}
+
+	static bool ReadStatusBar(const JsonObject& object, ThemeDefinition& theme, std::wstring& error)
+	{
+		auto statusBar = JsonObject{nullptr};
+		auto style = std::wstring{};
+		if (!ReadObject(object, L"statusBar", statusBar, error) ||
+			!CheckKeys(statusBar, {L"style", L"colors"}, error) || !ReadString(statusBar, L"style", style, error))
+		{
+			return false;
+		}
+
+		if (style != L"ribbon" && style != L"bands" && style != L"gradient")
+		{
+			error = L"Status bar style must be ribbon, bands, or gradient.";
+			return false;
+		}
+
+		theme.statusBarStyle = style == L"gradient" ? StatusBarStyle::Gradient
+							   : style == L"bands"	? StatusBarStyle::Bands
+													: StatusBarStyle::Ribbon;
+		return ReadColorArray(statusBar, L"colors", theme.statusRibbon, error);
+	}
+
+	static bool ReadSchedule(const JsonObject& object, ThemeDefinition& theme, std::wstring& error)
+	{
+		auto schedule = JsonObject{nullptr};
+		auto kind = std::wstring{};
+		if (!ReadObject(object, L"schedule", schedule, error) ||
+			!CheckKeys(schedule, {L"kind", L"start", L"end", L"priority", L"seasonal"}, error) ||
+			!ReadString(schedule, L"kind", kind, error))
+		{
+			return false;
+		}
+
+		if (kind != L"dateRange")
+		{
+			error = L"Unknown schedule kind.";
+			return false;
+		}
+
+		auto start = std::pair<unsigned int, unsigned int>{};
+		auto end = std::pair<unsigned int, unsigned int>{};
+		for (const auto& field : {std::pair{L"start", &start}, std::pair{L"end", &end}})
+		{
+			auto text = std::wstring{};
+			if (!ReadString(schedule, field.first, text, error) || !ReadDate(text, *field.second, error))
+			{
+				error = std::wstring(field.first) + L": " + error;
+				return false;
+			}
+		}
+
+		int priority{};
+		bool seasonal{};
+		bool present{};
+		if (!HasKey(schedule, L"priority", present, error)) return false;
+
+		if (present && !ReadInteger(schedule, L"priority", INT_MIN, INT_MAX, priority, error)) return false;
+
+		if (!HasKey(schedule, L"seasonal", present, error)) return false;
+
+		if (present && !ReadJsonApi([&] { seasonal = schedule.GetNamedBoolean(L"seasonal"); }, L"seasonal", error))
+		{
+			return false;
+		}
+
+		theme.schedule = {
+			ScheduleKind::AnnualDateRange, start.first, start.second, end.first, end.second, priority, seasonal};
+		return true;
+	}
+
+	static bool ReadDefinition(const JsonObject& object, ThemeDefinition& theme, std::wstring& error)
+	{
+		if (!CheckKeys(
+				object,
+				{L"schemaVersion", L"id", L"name", L"schedule", L"colors", L"statusRibbon", L"statusBar"},
+				error))
+		{
+			return false;
+		}
+
+		double version{};
+		if (!ReadJsonApi([&] { version = object.GetNamedNumber(L"schemaVersion"); }, L"schemaVersion", error))
+			return false;
+
+		if (version != 1)
+		{
+			error = L"Unsupported schema version.";
+			return false;
+		}
+
+		if (!ReadString(object, L"id", theme.stableId, error) || !ReadString(object, L"name", theme.name, error))
+			return false;
+
+		if (theme.stableId.empty() || theme.name.empty())
+		{
+			error = L"Theme id and name must not be empty.";
+			return false;
+		}
+
+		auto palettes = JsonObject{nullptr};
+		if (!ReadObject(object, L"colors", palettes, error) || !CheckKeys(palettes, {L"light", L"dark"}, error) ||
+			!ReadPaletteObject(palettes, L"light", builtin::Standard.light, theme.light, error) ||
+			!ReadPaletteObject(palettes, L"dark", builtin::Standard.dark, theme.dark, error))
+		{
+			return false;
+		}
+
+		theme.statusRibbon = builtin::Standard.statusRibbon;
+		theme.statusBarStyle = builtin::Standard.statusBarStyle;
+		bool hasStatusBar{};
+		bool hasRibbon{};
+		bool hasSchedule{};
+		if (!HasKey(object, L"statusBar", hasStatusBar, error) || !HasKey(object, L"statusRibbon", hasRibbon, error) ||
+			!HasKey(object, L"schedule", hasSchedule, error))
+		{
+			return false;
+		}
+
+		if (hasStatusBar && hasRibbon)
+		{
+			error = L"Use either statusBar or statusRibbon, not both.";
+			return false;
+		}
+
+		if (hasStatusBar && !ReadStatusBar(object, theme, error))
+		{
+			error = L"statusBar: " + error;
+			return false;
+		}
+
+		if (hasRibbon && !ReadColorArray(object, L"statusRibbon", theme.statusRibbon, error)) return false;
+
+		if (hasSchedule && !ReadSchedule(object, theme, error))
+		{
+			error = L"schedule: " + error;
+			return false;
+		}
+
+		return true;
 	}
 
 	bool ParseThemeFile(const std::wstring_view json, ThemeDefinition& definition, std::wstring& error)
 	{
-		const auto initialized = RoInitialize(RO_INIT_SINGLETHREADED);
-		auto success = false;
 		error.clear();
-
-		try
+		const auto initialized = RoInitialize(RO_INIT_SINGLETHREADED);
+		if (FAILED(initialized) && initialized != RPC_E_CHANGED_MODE)
 		{
-			winrt::check_hresult(initialized == RPC_E_CHANGED_MODE ? S_OK : initialized);
-
-			auto object = winrt::Windows::Data::Json::JsonObject{nullptr};
-			if (!winrt::Windows::Data::Json::JsonObject::TryParse(json, object))
-			{
-				error = L"Invalid JSON. Expected a theme object.";
-			}
-			else
-			{
-				CheckKeys(
-					object, {L"schemaVersion", L"id", L"name", L"schedule", L"colors", L"statusRibbon", L"statusBar"});
-				Require(object.GetNamedNumber(L"schemaVersion") == 1, L"Unsupported schema version.");
-
-				auto theme = ThemeDefinition{};
-				theme.stableId = object.GetNamedString(L"id");
-				theme.name = object.GetNamedString(L"name");
-				Require(!theme.stableId.empty() && !theme.name.empty(), L"Theme id and name must not be empty.");
-
-				const auto palettes = object.GetNamedObject(L"colors");
-				CheckKeys(palettes, {L"light", L"dark"});
-				theme.light = ReadPalette(palettes.GetNamedObject(L"light"), builtin::Standard.light);
-				theme.dark = ReadPalette(palettes.GetNamedObject(L"dark"), builtin::Standard.dark);
-				theme.statusRibbon = builtin::Standard.statusRibbon;
-				theme.statusBarStyle = builtin::Standard.statusBarStyle;
-				Require(
-					!object.HasKey(L"statusBar") || !object.HasKey(L"statusRibbon"),
-					L"Use either statusBar or statusRibbon, not both.");
-				if (object.HasKey(L"statusBar"))
-				{
-					const auto statusBar = object.GetNamedObject(L"statusBar");
-					CheckKeys(statusBar, {L"style", L"colors"});
-					const auto style = statusBar.GetNamedString(L"style");
-					Require(
-						style == L"ribbon" || style == L"bands" || style == L"gradient",
-						L"Status bar style must be ribbon, bands, or gradient.");
-					theme.statusBarStyle = style == L"gradient" ? StatusBarStyle::Gradient
-										   : style == L"bands"	? StatusBarStyle::Bands
-																: StatusBarStyle::Ribbon;
-					const auto colors = statusBar.GetNamedArray(L"colors");
-					Require(colors.Size() <= 16, L"Status bar supports at most 16 colors.");
-					theme.statusRibbon.clear();
-					for (const auto& color : colors)
-					{
-						theme.statusRibbon.push_back(ParseColor(color.GetString()));
-					}
-				}
-
-				if (object.HasKey(L"statusRibbon"))
-				{
-					const auto ribbon = object.GetNamedArray(L"statusRibbon");
-					Require(ribbon.Size() <= 16, L"Status ribbon supports at most 16 colors.");
-					theme.statusRibbon.clear();
-					for (const auto& color : ribbon)
-					{
-						theme.statusRibbon.push_back(ParseColor(color.GetString()));
-					}
-				}
-
-				if (object.HasKey(L"schedule"))
-				{
-					const auto schedule = object.GetNamedObject(L"schedule");
-					CheckKeys(schedule, {L"kind", L"start", L"end", L"priority", L"seasonal"});
-					Require(schedule.GetNamedString(L"kind") == L"dateRange", L"Unknown schedule kind.");
-
-					const auto start = ReadDate(schedule.GetNamedString(L"start"));
-					const auto end = ReadDate(schedule.GetNamedString(L"end"));
-					theme.schedule = {
-						ScheduleKind::AnnualDateRange,
-						start.first,
-						start.second,
-						end.first,
-						end.second,
-						schedule.HasKey(L"priority") ? ReadInteger(schedule, L"priority", INT_MIN, INT_MAX) : 0,
-						schedule.HasKey(L"seasonal") ? schedule.GetNamedBoolean(L"seasonal") : false};
-				}
-
-				definition = std::move(theme);
-				success = true;
-			}
-		} catch (const winrt::hresult_error& exception)
-		{
-			error = exception.message();
+			WC_H_S(initialized);
+			error = L"Could not initialize the theme JSON runtime: " +
+					std::wstring(winrt::hresult_error{initialized}.message());
+			return false;
 		}
 
-		if (SUCCEEDED(initialized))
+		struct RuntimeCleanup
 		{
-			// Cached factories must be released before WinRT can unload their implementation.
-			winrt::clear_factory_cache();
-			RoUninitialize();
+			bool uninitialize;
+			~RuntimeCleanup()
+			{
+				if (uninitialize)
+				{
+					// Cached factories must be released before WinRT can unload their implementation.
+					winrt::clear_factory_cache();
+					RoUninitialize();
+				}
+			}
+		} cleanup{SUCCEEDED(initialized)};
+
+		auto object = JsonObject{nullptr};
+		bool parsed{};
+		if (!ReadJsonApi([&] { parsed = JsonObject::TryParse(json, object); }, L"JSON", error)) return false;
+
+		if (!parsed)
+		{
+			error = L"Invalid JSON. Expected a theme object.";
+			return false;
 		}
 
-		return success;
+		auto theme = ThemeDefinition{};
+		if (!ReadDefinition(object, theme, error)) return false;
+
+		definition = std::move(theme);
+		return true;
+	}
+
+	static bool ReadUtf8(const std::string& bytes, std::wstring& text, std::wstring& error)
+	{
+		text.clear();
+		if (bytes.empty()) return true;
+
+		if (bytes.size() > INT_MAX)
+		{
+			error = L"Theme file is too large to decode as UTF-8.";
+			return false;
+		}
+
+		const auto size = static_cast<int>(bytes.size());
+		const auto length =
+			WC_D(int, MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, bytes.data(), size, nullptr, 0));
+		if (!length)
+		{
+			error = L"Could not decode theme file as UTF-8.";
+			return false;
+		}
+
+		text.resize(length);
+		if (!WC_D(int, MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, bytes.data(), size, text.data(), length)))
+		{
+			error = L"Could not decode theme file as UTF-8.";
+			return false;
+		}
+
+		return true;
 	}
 
 	ThemeCatalog LoadThemeDirectory(const std::wstring& directory)
@@ -321,31 +585,26 @@ namespace ui::theme
 			auto message = std::wstring{};
 			auto theme = ThemeDefinition{};
 
-			try
+			std::ifstream stream(file, std::ios::binary);
+			if (!stream)
 			{
-				std::ifstream stream(file, std::ios::binary);
-				if (!stream)
-				{
-					catalog.errors.push_back({file.wstring(), L"Could not open theme file."});
-					continue;
-				}
+				catalog.errors.push_back({file.wstring(), L"Could not open theme file."});
+				continue;
+			}
 
-				auto bytes = std::string{std::istreambuf_iterator<char>{stream}, std::istreambuf_iterator<char>{}};
-				if (stream.bad())
-				{
-					catalog.errors.push_back({file.wstring(), L"Could not read theme file."});
-					continue;
-				}
-
-				if (bytes.starts_with("\xEF\xBB\xBF")) bytes.erase(0, 3);
-				if (!ParseThemeFile(winrt::to_hstring(bytes), theme, message))
-				{
-					catalog.errors.push_back({file.wstring(), message});
-					continue;
-				}
-			} catch (const winrt::hresult_error& exception)
+			auto bytes = std::string{std::istreambuf_iterator<char>{stream}, std::istreambuf_iterator<char>{}};
+			if (stream.bad())
 			{
-				catalog.errors.push_back({file.wstring(), exception.message().c_str()});
+				catalog.errors.push_back({file.wstring(), L"Could not read theme file."});
+				continue;
+			}
+
+			if (bytes.starts_with("\xEF\xBB\xBF")) bytes.erase(0, 3);
+
+			auto json = std::wstring{};
+			if (!ReadUtf8(bytes, json, message) || !ParseThemeFile(json, theme, message))
+			{
+				catalog.errors.push_back({file.wstring(), message});
 				continue;
 			}
 
