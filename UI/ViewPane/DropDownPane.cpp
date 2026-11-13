@@ -160,6 +160,18 @@ namespace viewpane
 		return DefSubclassProc(hWnd, message, wParam, lParam);
 	}
 
+	bool DropDownPane::RouteMouseWheel(const MSG& message) const
+	{
+		const auto combo = m_DropDown.GetSafeHwnd();
+		const auto focus = ::GetFocus();
+		if (!combo || message.message != WM_MOUSEWHEEL || (focus != combo && !::IsChild(combo, focus)) ||
+			message.hwnd == combo || ::IsChild(combo, message.hwnd) || ::SendMessage(combo, CB_GETDROPPEDSTATE, 0, 0))
+			return false;
+
+		::SendMessage(combo, message.message, message.wParam, message.lParam);
+		return true;
+	}
+
 	void DropDownPane::Initialize(_In_ CWnd* pParent, _In_ HDC hdc)
 	{
 		CreateControl(pParent, hdc);
@@ -181,6 +193,22 @@ namespace viewpane
 	void DropDownPane::InsertDropString(_In_ const std::wstring& szText, ULONG ulValue)
 	{
 		m_DropList.emplace_back(szText, ulValue);
+
+		if (m_bInitialized)
+		{
+			const auto index = m_DropDown.AddString(strings::wstringTotstring(szText).c_str());
+			m_DropDown.SetItemData(index, ulValue);
+		}
+	}
+
+	void DropDownPane::ClearDropStrings()
+	{
+		m_DropList.clear();
+		m_iDropSelection = CB_ERR;
+		m_iDropSelectionValue = 0;
+		m_lpszSelectionString.clear();
+
+		if (m_bInitialized) m_DropDown.ResetContent();
 	}
 
 	void DropDownPane::CommitUIValues()

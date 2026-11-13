@@ -17,6 +17,7 @@
 #include <UI/Dialogs/ContentsTable/MainDlg.h>
 #include <UI/Dialogs/Editors/DbgView.h>
 #include <UI/Dialogs/Editors/Options.h>
+#include <UI/Dialogs/Editors/Themes.h>
 #include <Windows.h>
 #include <malloc.h>
 #include <core/mapi/version.h>
@@ -233,8 +234,8 @@ namespace dialog
 		auto mi = MENUINFO{};
 		mi.cbSize = sizeof(MENUINFO);
 		mi.fMask = MIM_BACKGROUND;
-		mi.hbrBack = GetSysBrush(ui::uiColor::Background);
-		SetMenuInfo(hMenu, &mi);
+		mi.hbrBack = GetSysBrush(ui::uiColor::MenuBackground);
+		EC_B_S(SetMenuInfo(hMenu, &mi));
 
 		ui::ConvertMenuOwnerDraw(hMenu, true);
 		UpdateLegacyMenu(hMenu);
@@ -278,6 +279,9 @@ namespace dialog
 			return true;
 		case ID_OUTLOOKVERSION:
 			OnOutlookVersion();
+			return true;
+		case ID_SELECTTHEME:
+			editor::DisplayThemesDlg(this);
 			return true;
 		}
 		if (HandleAddInMenu(wMenuSelect)) return true;

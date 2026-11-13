@@ -8,6 +8,9 @@
     <Filter Include="Source Files\UI">
       <UniqueIdentifier>{26979dfe-c4a7-434b-8635-acbd45f82c20}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\UI\Themes">
+      <UniqueIdentifier>{d81796bd-c657-40f8-a622-120de9d4f487}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source Files\UI\Controls">
       <UniqueIdentifier>{fc8aafdb-214c-4e97-881b-13babb46ca4a}</UniqueIdentifier>
     </Filter>
@@ -97,6 +100,9 @@
       <Filter>Source Files\UI\Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="UI\ViewPane\TreePane.h">
+      <Filter>Source Files\UI\ViewPane</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\ViewPane\ThemePreviewPane.h">
       <Filter>Source Files\UI\ViewPane</Filter>
     </ClInclude>
     <ClInclude Include="UI\ViewPane\SplitterPane.h">
@@ -210,6 +216,9 @@
       <Filter>Source Files\UI\Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="UI\ViewPane\TreePane.cpp">
+      <Filter>Source Files\UI\ViewPane</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\ViewPane\ThemePreviewPane.cpp">
       <Filter>Source Files\UI\ViewPane</Filter>
     </ClCompile>
     <ClCompile Include="UI\ViewPane\SplitterPane.cpp">
@@ -366,8 +375,29 @@
     <ClCompile Include="UI\UIFunctions.cpp">
       <Filter>Source Files\UI</Filter>
     </ClCompile>
+    <ClCompile Include="UI\Themes\Theme.cpp">
+      <Filter>Source Files\UI\Themes</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Themes\ThemeFile.cpp">
+      <Filter>Source Files\UI\Themes</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Themes\ThemeFile.h">
+      <Filter>Source Files\UI\Themes</Filter>
+    </ClInclude>
     <ClInclude Include="UI\UIFunctions.h">
       <Filter>Source Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Themes\Theme.h">
+      <Filter>Source Files\UI\Themes</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Themes\BuiltinThemes.h">
+      <Filter>Source Files\UI\Themes</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Themes\CssNamedColors.h">
+      <Filter>Source Files\UI\Themes</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Themes\Colors.h">
+      <Filter>Source Files\UI\Themes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -516,7 +546,13 @@
     <ClCompile Include="UI\Dialogs\Editors\Options.cpp">
       <Filter>Source Files\UI\Dialogs\Editors</Filter>
     </ClCompile>
+    <ClCompile Include="UI\Dialogs\Editors\Themes.cpp">
+      <Filter>Source Files\UI\Dialogs\Editors</Filter>
+    </ClCompile>
     <ClInclude Include="UI\Dialogs\Editors\Options.h">
+      <Filter>Source Files\UI\Dialogs\Editors</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Dialogs\Editors\Themes.h">
       <Filter>Source Files\UI\Dialogs\Editors</Filter>
     </ClInclude>
     <ClCompile Include="UI\Dialogs\Editors\PropertySelector.cpp">

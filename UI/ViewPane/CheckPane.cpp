@@ -87,6 +87,31 @@ namespace viewpane
 		return hWinPosInfo;
 	}
 
+	void CheckPane::SetCheck(const bool checked)
+	{
+		m_bCheckValue = checked;
+		if (m_Check.GetSafeHwnd()) m_Check.SetCheck(checked ? BST_CHECKED : BST_UNCHECKED);
+	}
+
+	void CheckPane::SetCheckLabel(const std::wstring& label)
+	{
+		m_szLabel = label;
+		if (!m_Check.GetSafeHwnd()) return;
+
+		::SetWindowTextW(m_Check.GetSafeHwnd(), m_szLabel.c_str());
+
+		const auto hdc = WC_D(HDC, ::GetDC(m_Check.GetSafeHwnd()));
+		if (!hdc) return;
+
+		const auto oldFont = SelectObject(hdc, ui::GetUIFont());
+		const auto sizeText = ui::GetTextExtentPoint32(hdc, m_szLabel);
+		SelectObject(hdc, oldFont);
+		::ReleaseDC(m_Check.GetSafeHwnd(), hdc);
+
+		const auto check = GetSystemMetrics(SM_CXMENUCHECK);
+		m_iLabelWidth = check + check / 5 + sizeText.cx;
+	}
+
 	void CheckPane::CommitUIValues()
 	{
 		m_bCheckValue = 0 != m_Check.GetCheck();

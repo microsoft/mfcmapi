@@ -1,6 +1,7 @@
 // Common UI functions for MFCMAPI
 #include <StdAfx.h>
 #include <UI/UIFunctions.h>
+#include <UI/Themes/Theme.h>
 #include <windowsx.h>
 #include <UI/RichEditOleCallback.h>
 #include <UI/ViewPane/CheckPane.h>
@@ -27,158 +28,7 @@ namespace ui
 
 #define BORDER_VISIBLEWIDTH 2
 
-	enum class myColor
-	{
-		White,
-		LightGrey,
-		Grey,
-		DarkGrey,
-		Black,
-		Cyan,
-		Magenta,
-		Blue,
-		MedBlue,
-		PaleBlue,
-		Pink,
-		Lavender,
-		Red,
-		Green,
-		Orange,
-		ColorEnd
-	};
-
-	// Keep in sync with enum myColor
-	COLORREF g_Colors[static_cast<int>(myColor::ColorEnd)] = {
-		RGB(0xFF, 0xFF, 0xFF), // cWhite
-		RGB(0xD3, 0xD3, 0xD3), // cLightGrey
-		RGB(0xAD, 0xAC, 0xAE), // cGrey
-		RGB(0x64, 0x64, 0x64), // cDarkGrey
-		RGB(0x00, 0x00, 0x00), // cBlack
-		RGB(0x00, 0xFF, 0xFF), // cCyan
-		RGB(0xFF, 0x00, 0xFF), // cMagenta
-		RGB(0x00, 0x72, 0xC6), // cBlue
-		RGB(0xCD, 0xE6, 0xF7), // cMedBlue
-		RGB(0xE6, 0xF2, 0xFA), // cPaleBlue
-		RGB(0xFF, 0xC0, 0xCB), // cPink
-		RGB(0xE6, 0xE6, 0xFA), // cLavender
-		RGB(0xCD, 0x5C, 0x5C), // cRed
-		RGB(0x00, 0xFF, 0x00), // cGreen
-		RGB(0xFF, 0x7F, 0x50), // cOrange
-	};
-
-	// Explicit dark colors are required because classic system colors do not follow
-	// the Windows application theme.
-	COLORREF g_DarkColors[static_cast<int>(uiColor::UIEnd)] = {
-		RGB(0x20, 0x20, 0x20), // Background
-		RGB(0x2D, 0x2D, 0x30), // BackgroundReadOnly
-		RGB(0x00, 0x72, 0xC6), // Glow
-		RGB(0x09, 0x47, 0x71), // GlowBackground
-		RGB(0xFF, 0xFF, 0xFF), // GlowText
-		RGB(0xD0, 0xD0, 0xD0), // FrameSelected
-		RGB(0x5A, 0x5A, 0x5A), // FrameUnselected
-		RGB(0x26, 0x4F, 0x78), // SelectedBackground
-		RGB(0xC8, 0xC8, 0xC8), // Arrow
-		RGB(0xF1, 0xF1, 0xF1), // Text
-		RGB(0x8A, 0x8A, 0x8A), // TextDisabled
-		RGB(0xD6, 0xD6, 0xD6), // TextReadOnly
-		RGB(0xFF, 0x00, 0xFF), // BitmapTransBack
-		RGB(0x00, 0xFF, 0xFF), // BitmapTransFore
-		RGB(0x00, 0x72, 0xC6), // Status
-		RGB(0xFF, 0xFF, 0xFF), // StatusText
-		RGB(0x09, 0x47, 0x71), // PaneHeaderBackground
-		RGB(0xF1, 0xF1, 0xF1), // PaneHeaderText
-		RGB(0x26, 0x4F, 0x78), // TextHighlightBackground
-		RGB(0xFF, 0xFF, 0xFF), // TextHighlight
-		RGB(0xFF, 0xC0, 0xCB), // TestPink
-		RGB(0xE6, 0xE6, 0xFA), // TestLavender
-		RGB(0xCD, 0x5C, 0x5C), // TestRed
-		RGB(0x00, 0xFF, 0x00), // TestGreen
-		RGB(0xFF, 0x7F, 0x50), // TestOrange
-	};
-
-	// Fixed mapping of UI elements to colors
-	// Will be overridden by system colors when specified in g_SysColors
-	// Keep in sync with enum uiColor
-	// We can swap in cCyan for various entries to test coverage
-	myColor g_FixedColors[static_cast<int>(uiColor::UIEnd)] = {
-		myColor::White, // cBackground
-		myColor::LightGrey, // cBackgroundReadOnly
-		myColor::Blue, // cGlow
-		myColor::PaleBlue, // cGlowBackground
-		myColor::Black, // cGlowText
-		myColor::Black, // cFrameSelected
-		myColor::Grey, // cFrameUnselected
-		myColor::MedBlue, // cSelectedBackground
-		myColor::Grey, // cArrow
-		myColor::Black, // cText
-		myColor::Grey, // cTextDisabled
-		myColor::Black, // cTextReadOnly
-		myColor::Magenta, // cBitmapTransBack
-		myColor::Cyan, // cBitmapTransFore
-		myColor::Blue, // cStatus
-		myColor::White, // cStatusText
-		myColor::PaleBlue, // cPaneHeaderBackground,
-		myColor::Black, // cPaneHeaderText,
-		myColor::MedBlue, // cTextHighlightBackground,
-		myColor::Black, // cTextHighlight,
-		myColor::Pink, // cTestPink,
-		myColor::Lavender, // cTestLavender,
-		myColor::Red, // cTestRed,
-		myColor::Green, // cTestGreen,
-		myColor::Orange, // cTestOrange,
-	};
-
-	// Mapping of UI elements to system colors
-	// NULL entries will get the fixed mapping from g_FixedColors
-	int g_SysColors[static_cast<int>(uiColor::UIEnd)] = {
-		COLOR_WINDOW, // cBackground
-		NULL, // cBackgroundReadOnly
-		NULL, // cGlow
-		NULL, // cGlowBackground
-		NULL, // cGlowText
-		COLOR_WINDOWTEXT, // cFrameSelected
-		COLOR_3DLIGHT, // cFrameUnselected
-		NULL,
-		COLOR_GRAYTEXT, // cArrow
-		COLOR_WINDOWTEXT, // cText
-		COLOR_GRAYTEXT, // cTextDisabled
-		NULL, // cTextReadOnly
-		NULL, // cBitmapTransBack
-		NULL, // cBitmapTransFore
-		NULL, // cStatus
-		NULL, // cStatusText
-	};
-
-	int g_HighContrastSysColors[static_cast<int>(uiColor::UIEnd)] = {
-		COLOR_WINDOW, // Background
-		COLOR_BTNFACE, // BackgroundReadOnly
-		COLOR_HIGHLIGHT, // Glow
-		COLOR_HIGHLIGHT, // GlowBackground
-		COLOR_HIGHLIGHTTEXT, // GlowText
-		COLOR_WINDOWTEXT, // FrameSelected
-		COLOR_GRAYTEXT, // FrameUnselected
-		COLOR_HIGHLIGHT, // SelectedBackground
-		COLOR_WINDOWTEXT, // Arrow
-		COLOR_WINDOWTEXT, // Text
-		COLOR_GRAYTEXT, // TextDisabled
-		COLOR_WINDOWTEXT, // TextReadOnly
-		NULL, // BitmapTransBack
-		NULL, // BitmapTransFore
-		COLOR_HIGHLIGHT, // Status
-		COLOR_HIGHLIGHTTEXT, // StatusText
-		COLOR_BTNFACE, // PaneHeaderBackground
-		COLOR_BTNTEXT, // PaneHeaderText
-		COLOR_HIGHLIGHT, // TextHighlightBackground
-		COLOR_HIGHLIGHTTEXT, // TextHighlight
-		NULL, // TestPink
-		NULL, // TestLavender
-		NULL, // TestRed
-		NULL, // TestGreen
-		NULL, // TestOrange
-	};
-
 	// Mapping of bitmap resources to constants
-	// NULL entries will get the fixed mapping from g_FixedColors
 	int g_BitmapResources[static_cast<int>(uiBitmap::BitmapEnd)] = {
 		IDB_ADVISE, // cNotify,
 		IDB_CLOSE, // cClose,
@@ -191,6 +41,7 @@ namespace ui
 	HPEN g_Pens[static_cast<int>(uiPen::PenEnd)] = {};
 	HBITMAP g_Bitmaps[static_cast<int>(uiBitmap::BitmapEnd)] = {};
 	uiTheme g_EffectiveTheme = uiTheme::Light;
+	const theme::ThemeDefinition* g_ActiveTheme = nullptr;
 
 	_Check_return_ LPMENUENTRY CreateMenuEntry(_In_ const std::wstring& szMenu)
 	{
@@ -247,6 +98,12 @@ namespace ui
 	{
 		const UINT nCount = GetMenuItemCount(hMenu);
 		if (nCount == static_cast<UINT>(-1)) return;
+
+		auto menuInfo = MENUINFO{};
+		menuInfo.cbSize = sizeof menuInfo;
+		menuInfo.fMask = MIM_BACKGROUND;
+		menuInfo.hbrBack = GetSysBrush(uiColor::MenuBackground);
+		EC_B_S(SetMenuInfo(hMenu, &menuInfo));
 
 		for (UINT nPosition = 0; nPosition < nCount; nPosition++)
 		{
@@ -678,11 +535,16 @@ namespace ui
 		}
 	}
 
-	void InitializeGDI() noexcept { g_EffectiveTheme = ResolveEffectiveTheme(); }
+	void InitializeGDI() noexcept
+	{
+		g_EffectiveTheme = ResolveEffectiveTheme();
+		g_ActiveTheme = &theme::ResolveActiveTheme();
+	}
 
 	void RefreshTheme() noexcept
 	{
 		g_EffectiveTheme = ResolveEffectiveTheme();
+		g_ActiveTheme = &theme::ResolveActiveTheme();
 
 		for (auto& brush : g_ThemeBrushes)
 		{
@@ -724,6 +586,8 @@ namespace ui
 	}
 
 	_Check_return_ uiTheme GetEffectiveTheme() noexcept { return g_EffectiveTheme; }
+
+	const theme::ThemeDefinition& GetActiveTheme() noexcept { return *g_ActiveTheme; }
 
 	void StyleScrollHost(_In_ HWND hWnd) noexcept
 	{
@@ -773,6 +637,7 @@ namespace ui
 		const auto isMarkedScrollHost = ::GetProp(hWnd, SCROLL_HOST) != nullptr;
 		const auto isScrollHost = isScrollBar || isMarkedScrollHost;
 		const auto isToolTip = _wcsicmp(className, TOOLTIPS_CLASSW) == 0;
+		const auto scrollBarVisible = (::GetWindowLongPtr(hWnd, GWL_STYLE) & WS_VSCROLL) != 0;
 		auto scrollInfo = SCROLLINFO{};
 		scrollInfo.cbSize = sizeof scrollInfo;
 		scrollInfo.fMask = SIF_RANGE | SIF_PAGE | SIF_POS;
@@ -823,11 +688,9 @@ namespace ui
 		if (preserveScrollInfo)
 		{
 			::SetScrollInfo(hWnd, SB_VERT, &scrollInfo, false);
-			::ShowScrollBar(
-				hWnd,
-				SB_VERT,
-				scrollInfo.nPage && scrollInfo.nPage < static_cast<UINT>(scrollInfo.nMax - scrollInfo.nMin + 1));
 		}
+
+		if (isMarkedScrollHost) ::ShowScrollBar(hWnd, SB_VERT, scrollBarVisible);
 
 		RedrawWindow(hWnd, nullptr, nullptr, RDW_INVALIDATE | RDW_ERASE | RDW_FRAME);
 		return true;
@@ -857,9 +720,9 @@ namespace ui
 		{
 			auto menuInfo = MENUINFO{};
 			menuInfo.cbSize = sizeof menuInfo;
-			menuInfo.fMask = MIM_BACKGROUND;
-			menuInfo.hbrBack = GetSysBrush(uiColor::Background);
-			SetMenuInfo(hMenu, &menuInfo);
+			menuInfo.fMask = MIM_BACKGROUND | MIM_APPLYTOSUBMENUS;
+			menuInfo.hbrBack = GetSysBrush(uiColor::MenuBackground);
+			WC_B_S(SetMenuInfo(hMenu, &menuInfo));
 			DrawMenuBar(hWnd);
 		}
 
@@ -883,22 +746,7 @@ namespace ui
 
 	_Check_return_ COLORREF MyGetSysColor(const uiColor uc) noexcept
 	{
-		const auto theme = g_EffectiveTheme;
-		if (theme == uiTheme::Dark) return g_DarkColors[static_cast<int>(uc)];
-
-		if (theme == uiTheme::HighContrast)
-		{
-			const auto iSysColor = g_HighContrastSysColors[static_cast<int>(uc)];
-			if (iSysColor) return GetSysColor(iSysColor);
-		}
-
-		// Return a system color if we have one in g_SysColors
-		const auto iSysColor = g_SysColors[static_cast<int>(uc)];
-		if (iSysColor) return GetSysColor(iSysColor);
-
-		// No system color listed in g_SysColors, return a hard coded color
-		const auto mc = static_cast<int>(g_FixedColors[static_cast<int>(uc)]);
-		return g_Colors[mc];
+		return theme::GetColor(GetActiveTheme(), g_EffectiveTheme, uc);
 	}
 
 	_Check_return_ HPEN GetPen(const uiPen up) noexcept
@@ -1347,34 +1195,161 @@ namespace ui
 		}
 	}
 
+	static void DrawHighlightedListItem(_In_ const NMLVCUSTOMDRAW& draw, const uiColor background)
+	{
+		const auto hwnd = draw.nmcd.hdr.hwndFrom;
+		const auto hdc = draw.nmcd.hdc;
+		const auto item = static_cast<int>(draw.nmcd.dwItemSpec);
+		auto row = RECT{};
+		if (FAILED(WC_B(ListView_GetItemRect(hwnd, item, &row, LVIR_BOUNDS)))) return;
+		auto client = RECT{};
+		if (FAILED(WC_B(GetClientRect(hwnd, &client)))) return;
+		const auto header = WC_D(HWND, ListView_GetHeader(hwnd));
+		if (!header) return;
+		const auto columnCount = Header_GetItemCount(header);
+		if (FAILED(WC_H(columnCount == -1 ? E_FAIL : S_OK))) return;
+		row.left = client.left;
+		row.right = client.right;
+		const auto savedDC = WC_D(int, SaveDC(hdc));
+		if (!savedDC) return;
+		if (!WC_D(int, IntersectClipRect(hdc, row.left, row.top, row.right, row.bottom)))
+		{
+			WC_B_S(RestoreDC(hdc, savedDC));
+			return;
+		}
+
+		WC_D_S(FillRect(hdc, &row, GetSysBrush(background)));
+
+		auto info = LVITEMW{};
+		info.mask = LVIF_IMAGE | LVIF_STATE;
+		info.iItem = item;
+		info.stateMask = LVIS_OVERLAYMASK | LVIS_STATEIMAGEMASK | LVIS_FOCUSED;
+		if (SUCCEEDED(WC_B(SendMessageW(hwnd, LVM_GETITEMW, 0, reinterpret_cast<LPARAM>(&info)))))
+		{
+			auto icon = RECT{};
+			const auto hasIconRect = WC_D(BOOL, ListView_GetItemRect(hwnd, item, &icon, LVIR_ICON));
+			const auto images = ListView_GetImageList(hwnd, LVSIL_SMALL);
+			if (hasIconRect && images && info.iImage >= 0)
+			{
+				int width = 0;
+				int height = 0;
+				if (SUCCEEDED(WC_B(ImageList_GetIconSize(images, &width, &height))))
+				{
+					WC_B_S(ImageList_Draw(
+						images,
+						info.iImage,
+						hdc,
+						icon.left,
+						row.top + (row.bottom - row.top - height) / 2,
+						ILD_TRANSPARENT | (info.state & LVIS_OVERLAYMASK)));
+				}
+			}
+
+			const auto stateImages = ListView_GetImageList(hwnd, LVSIL_STATE);
+			const auto stateImage = (info.state & LVIS_STATEIMAGEMASK) >> 12;
+			if (hasIconRect && stateImages && stateImage)
+			{
+				int width = 0;
+				int height = 0;
+				if (SUCCEEDED(WC_B(ImageList_GetIconSize(stateImages, &width, &height))))
+				{
+					WC_B_S(ImageList_Draw(
+						stateImages,
+						stateImage - 1,
+						hdc,
+						icon.left - width,
+						row.top + (row.bottom - row.top - height) / 2,
+						ILD_TRANSPARENT));
+				}
+			}
+		}
+
+		std::vector<wchar_t> text(256);
+		for (auto column = 0; column < columnCount; ++column)
+		{
+			if (column == 0 && (info.state & LVIS_FOCUSED) && ListView_GetEditControl(hwnd)) continue;
+			auto label = RECT{};
+			if (FAILED(WC_B(Header_GetItemRect(header, column, &label)))) continue;
+			// A zero translation is valid; only a nonzero last error indicates failure.
+			SetLastError(ERROR_SUCCESS);
+			if (!MapWindowPoints(header, hwnd, reinterpret_cast<POINT*>(&label), 2) && FAILED(WC_W32(GetLastError())))
+				continue;
+			label.top = row.top;
+			label.bottom = row.bottom;
+			if (column == 0)
+			{
+				auto firstLabel = RECT{};
+				if (FAILED(WC_B(ListView_GetItemRect(hwnd, item, &firstLabel, LVIR_LABEL)))) continue;
+				label.left = firstLabel.left;
+			}
+
+			label.left += 2;
+			label.right -= 2;
+			if (label.right <= label.left) continue;
+
+			auto value = LVITEMW{};
+			value.iSubItem = column;
+			for (;;)
+			{
+				value.pszText = text.data();
+				value.cchTextMax = static_cast<int>(text.size());
+				const auto length = SendMessageW(hwnd, LVM_GETITEMTEXTW, item, reinterpret_cast<LPARAM>(&value));
+				if (length < value.cchTextMax - 1) break;
+				text.resize(text.size() * 2);
+			}
+
+			auto columnInfo = LVCOLUMNW{};
+			columnInfo.mask = LVCF_FMT;
+			if (FAILED(WC_B(SendMessageW(hwnd, LVM_GETCOLUMNW, column, reinterpret_cast<LPARAM>(&columnInfo)))))
+				continue;
+			const auto alignment = (columnInfo.fmt & LVCFMT_JUSTIFYMASK) == LVCFMT_RIGHT	? DT_RIGHT
+								   : (columnInfo.fmt & LVCFMT_JUSTIFYMASK) == LVCFMT_CENTER ? DT_CENTER
+																							: DT_LEFT;
+			DrawUITextW(
+				hdc,
+				text.data(),
+				MyGetSysColor(uiColor::GlowText),
+				label,
+				false,
+				alignment | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS | DT_NOPREFIX);
+		}
+
+		if ((info.state & LVIS_FOCUSED) && GetFocus() == hwnd &&
+			!(SendMessage(hwnd, WM_QUERYUISTATE, 0, 0) & UISF_HIDEFOCUS))
+		{
+			WC_H_S(SetTextColor(hdc, MyGetSysColor(uiColor::GlowText)) == CLR_INVALID ? E_FAIL : S_OK);
+			WC_H_S(SetBkColor(hdc, MyGetSysColor(background)) == CLR_INVALID ? E_FAIL : S_OK);
+			WC_B_S(DrawFocusRect(hdc, &row));
+		}
+
+		WC_B_S(RestoreDC(hdc, savedDC));
+	}
+
 	void CustomDrawList(_In_ LPNMLVCUSTOMDRAW lvcd, _In_ LRESULT* pResult, const DWORD_PTR iItemCurHover) noexcept
 	{
-		static auto bSelected = false;
 		if (!lvcd) return;
 		const auto iItem = lvcd->nmcd.dwItemSpec;
-
-		// If there's nothing to paint, this is a "fake paint" and we don't want to toggle selection highlight
-		// Toggling selection highlight causes a repaint, so this logic prevents flicker
-		const auto bFakePaint =
-			lvcd->nmcd.rc.bottom == 0 && lvcd->nmcd.rc.top == 0 && lvcd->nmcd.rc.left == 0 && lvcd->nmcd.rc.right == 0;
 
 		switch (lvcd->nmcd.dwDrawStage)
 		{
 		case CDDS_PREPAINT:
-			*pResult = CDRF_NOTIFYITEMDRAW | CDRF_NOTIFYPOSTPAINT;
+			*pResult = CDRF_NOTIFYITEMDRAW;
 			break;
 
 		case CDDS_ITEMPREPAINT:
-			// Let the item draw itself without a selection highlight
-			bSelected = ListView_GetItemState(lvcd->nmcd.hdr.hwndFrom, iItem, LVIS_SELECTED) != 0;
-			if (bSelected && !bFakePaint)
+		{
+			const auto selected = ListView_GetItemState(lvcd->nmcd.hdr.hwndFrom, iItem, LVIS_SELECTED) != 0;
+			if (selected || iItemCurHover == iItem)
 			{
-				// Turn off listview selection highlight
-				ListView_SetItemState(lvcd->nmcd.hdr.hwndFrom, iItem, 0, LVIS_SELECTED)
+				// Explorer selection and hover backgrounds ignore clrTextBk.
+				DrawHighlightedListItem(*lvcd, selected ? uiColor::SelectedBackground : uiColor::GlowBackground);
+				*pResult = CDRF_SKIPDEFAULT;
+				break;
 			}
 
-			*pResult = CDRF_DODEFAULT | CDRF_NOTIFYPOSTPAINT | CDRF_NOTIFYSUBITEMDRAW;
+			*pResult = CDRF_NOTIFYSUBITEMDRAW;
 			break;
+		}
 
 		case CDDS_SUBITEM | CDDS_ITEMPREPAINT:
 		{
@@ -1390,7 +1365,13 @@ namespace ui
 			}
 
 			auto rc = RECT{};
-			GetClientRect(lvcd->nmcd.hdr.hwndFrom, &rc);
+			if (FAILED(WC_B(GetClientRect(lvcd->nmcd.hdr.hwndFrom, &rc))))
+			{
+				if (bResetBottom) lvcd->nmcd.rc.bottom = 0;
+				*pResult = CDRF_SKIPDEFAULT;
+				break;
+			}
+
 			IntersectRect(&rc, &rc, &lvcd->nmcd.rc);
 
 			if (bResetBottom)
@@ -1404,31 +1385,11 @@ namespace ui
 				break;
 			}
 
-			// Turn on listview hover highlight
-			if (bSelected)
-			{
-				lvcd->clrText = MyGetSysColor(uiColor::GlowText);
-				lvcd->clrTextBk = MyGetSysColor(uiColor::SelectedBackground);
-			}
-			else if (iItemCurHover == iItem)
-			{
-				lvcd->clrText = MyGetSysColor(uiColor::GlowText);
-				lvcd->clrTextBk = MyGetSysColor(uiColor::GlowBackground);
-			}
-
+			lvcd->clrText = MyGetSysColor(uiColor::Text);
+			lvcd->clrTextBk = MyGetSysColor(uiColor::Background);
 			*pResult = CDRF_NEWFONT;
 			break;
 		}
-
-		case CDDS_ITEMPOSTPAINT:
-			// And then we'll handle our frame
-			if (bSelected && !bFakePaint)
-			{
-				// Turn on listview selection highlight
-				ListView_SetItemState(lvcd->nmcd.hdr.hwndFrom, iItem, LVIS_SELECTED, LVIS_SELECTED);
-			}
-
-			break;
 
 		default:
 			*pResult = CDRF_DODEFAULT;
@@ -1445,16 +1406,14 @@ namespace ui
 		const auto bSelected = ListView_GetItemState(hWnd, itemID, LVIS_SELECTED) != 0;
 		if (bSelected) return;
 
-		auto rcIcon = RECT{};
 		auto rcLabels = RECT{};
-		ListView_GetItemRect(hWnd, itemID, &rcLabels, LVIR_BOUNDS);
-		ListView_GetItemRect(hWnd, itemID, &rcIcon, LVIR_ICON);
-		rcLabels.left = rcIcon.right;
-		if (rcLabels.left >= rcLabels.right) return;
+		if (FAILED(WC_B(ListView_GetItemRect(hWnd, itemID, &rcLabels, LVIR_BOUNDS)))) return;
 		auto rcClient = RECT{};
-		GetClientRect(hWnd, &rcClient); // Get our client size
+		if (FAILED(WC_B(GetClientRect(hWnd, &rcClient)))) return;
+		rcLabels.left = rcClient.left;
+		rcLabels.right = rcClient.right;
 		IntersectRect(&rcLabels, &rcLabels, &rcClient);
-		RedrawWindow(hWnd, &rcLabels, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
+		WC_B_S(RedrawWindow(hWnd, &rcLabels, nullptr, RDW_INVALIDATE | RDW_UPDATENOW));
 	}
 
 	void DrawTreeItemGlow(_In_ HWND hWnd, _In_ HTREEITEM hItem) noexcept
@@ -1736,7 +1695,7 @@ namespace ui
 		CDoubleBuffer db;
 		db.Begin(hdc, rc);
 
-		FillRect(hdc, &rc, GetSysBrush(bButton ? uiColor::PaneHeaderBackground : uiColor::Background));
+		FillRect(hdc, &rc, GetSysBrush(bButton ? uiColor::PaneHeaderBackground : uiColor::ColumnHeaderBackground));
 
 		POINT tri[3] = {};
 		auto lCenter = LONG{};
@@ -1772,7 +1731,7 @@ namespace ui
 			tri[2].y = lTop;
 		}
 
-		auto uiArrow = uiColor::Arrow;
+		auto uiArrow = uiColor::ColumnHeaderArrow;
 		if (bButton) uiArrow = uiColor::PaneHeaderText;
 		DrawFilledPolygon(hdc, tri, _countof(tri), MyGetSysColor(uiArrow), GetSysBrush(uiArrow));
 
@@ -1801,7 +1760,7 @@ namespace ui
 		db.Begin(hdc, rc);
 
 		RECT rcHeader = rc;
-		FillRect(hdc, &rcHeader, GetSysBrush(uiColor::Background));
+		FillRect(hdc, &rcHeader, GetSysBrush(uiColor::ColumnHeaderBackground));
 
 		if (bSorted)
 		{
@@ -1813,7 +1772,7 @@ namespace ui
 		DrawUITextW(
 			hdc,
 			hdItem.pszText,
-			MyGetSysColor(uiColor::Text),
+			MyGetSysColor(uiColor::ColumnHeaderText),
 			rcText,
 			false,
 			DT_END_ELLIPSIS | DT_SINGLELINE | DT_VCENTER);
@@ -1872,7 +1831,7 @@ namespace ui
 			// If we have visible non occupied header, paint it
 			if (rc.left < rc.right)
 			{
-				FillRect(lvcd->hdc, &rc, GetSysBrush(uiColor::Background));
+				FillRect(lvcd->hdc, &rc, GetSysBrush(uiColor::ColumnHeaderBackground));
 			}
 
 			*pResult = CDRF_DODEFAULT;
@@ -2078,22 +2037,24 @@ namespace ui
 			auto rectGutter = rcText;
 			rcText.left += GetSystemMetrics(SM_CXMENUCHECK);
 			rectGutter.right = rcText.left;
-			FillRect(hdc, &rectGutter, GetSysBrush(uiColor::BackgroundReadOnly));
+			FillRect(hdc, &rectGutter, GetSysBrush(uiColor::MenuGutter));
 		}
 
-		auto cBack = uiColor::Background;
-		auto cFore = uiColor::Text;
+		auto cBack = uiColor::MenuBackground;
+		auto cFore = uiColor::MenuText;
+		const auto disabledHighlight =
+			bHot && bDisabled && !lpMenuEntry->m_bOnMenuBar && GetEffectiveTheme() != uiTheme::HighContrast;
 
 		if (bHot)
 		{
-			cBack = uiColor::SelectedBackground;
+			cBack = disabledHighlight ? uiColor::DisabledSelectedBackground : uiColor::SelectedBackground;
 			cFore = uiColor::GlowText;
 			FillRect(hdc, &rcItem, GetSysBrush(cBack));
 		}
 
 		if (!bHot || bDisabled)
 		{
-			if (bDisabled) cFore = uiColor::TextDisabled;
+			if (bDisabled) cFore = bHot ? uiColor::TextDisabledSelected : uiColor::MenuTextDisabled;
 			FillRect(hdc, &rcText, GetSysBrush(cBack));
 		}
 
@@ -2134,9 +2095,7 @@ namespace ui
 				const auto x = rcItem.right - GetSystemMetrics(SM_CXEDGE) - arrowGutter / 2;
 				const auto y = (rcItem.top + rcItem.bottom) / 2;
 				const POINT triangle[] = {{x - arrowWidth, y - arrowHeight}, {x - arrowWidth, y + arrowHeight}, {x, y}};
-				const auto arrowColor = bHot && !bDisabled ? uiColor::Glow : cFore;
-				DrawFilledPolygon(
-					hdc, triangle, _countof(triangle), MyGetSysColor(arrowColor), GetSysBrush(arrowColor));
+				DrawFilledPolygon(hdc, triangle, _countof(triangle), MyGetSysColor(cFore), GetSysBrush(cFore));
 			}
 
 			// Triple buffer the check mark so we can copy it over without the background
@@ -2181,6 +2140,8 @@ namespace ui
 				DeleteObject(bm);
 			}
 		}
+
+		if (disabledHighlight) ::FrameRect(hdc, &rcItem, GetSysBrush(uiColor::DisabledSelectedBorder));
 
 		db.End(hdc);
 		if (!lpMenuEntry->m_bOnMenuBar && lpMenuEntry->m_bHasSubMenu)
@@ -2245,6 +2206,81 @@ namespace ui
 		return false;
 	}
 
+	void DrawStatusRibbon(const HDC hdc, const RECT& rect, const std::span<const COLORREF> colors, const int height)
+	{
+		DrawStatusFill(hdc, rect, colors, theme::StatusBarStyle::Ribbon, height);
+	}
+
+	void DrawStatusFill(
+		const HDC hdc,
+		const RECT& rect,
+		const std::span<const COLORREF> colors,
+		const theme::StatusBarStyle style,
+		const int ribbonHeight)
+	{
+		const auto height = style == theme::StatusBarStyle::Ribbon ? ribbonHeight : rect.bottom - rect.top;
+		for (const auto& band :
+			 theme::LayoutStatusRibbon(colors, rect, height, style == theme::StatusBarStyle::Gradient))
+		{
+			if (style == theme::StatusBarStyle::Gradient)
+			{
+				TRIVERTEX vertices[] = {
+					{band.bounds.left,
+					 band.bounds.top,
+					 static_cast<COLOR16>(GetRValue(band.color) << 8),
+					 static_cast<COLOR16>(GetGValue(band.color) << 8),
+					 static_cast<COLOR16>(GetBValue(band.color) << 8),
+					 0},
+					{band.bounds.right,
+					 band.bounds.bottom,
+					 static_cast<COLOR16>(GetRValue(band.endColor) << 8),
+					 static_cast<COLOR16>(GetGValue(band.endColor) << 8),
+					 static_cast<COLOR16>(GetBValue(band.endColor) << 8),
+					 0}};
+				auto gradient = GRADIENT_RECT{0, 1};
+				WC_B_S(GradientFill(hdc, vertices, 2, &gradient, 1, GRADIENT_FILL_RECT_H));
+				continue;
+			}
+
+			const auto brush = WC_D(HBRUSH, CreateSolidBrush(band.color));
+			if (!brush) continue;
+			WC_D_S(FillRect(hdc, &band.bounds, brush));
+			WC_B_S(DeleteObject(brush));
+		}
+	}
+
+	void DrawStatusText(
+		const HDC hdc,
+		const std::wstring& text,
+		const RECT& rect,
+		const COLORREF foreground,
+		const COLORREF outlineColor,
+		const bool outlined,
+		const UINT format)
+	{
+		if (!outlined || text.empty())
+		{
+			DrawUITextW(hdc, text, foreground, rect, true, format);
+			return;
+		}
+
+		auto textRect = rect;
+		if (FAILED(WC_B(InflateRect(&textRect, -1, -1)))) return;
+		if (textRect.right <= textRect.left || textRect.bottom <= textRect.top) return;
+		for (auto y = -1; y <= 1; ++y)
+		{
+			for (auto x = -1; x <= 1; ++x)
+			{
+				if (!x && !y) continue;
+				auto outlineRect = textRect;
+				if (FAILED(WC_B(OffsetRect(&outlineRect, x, y)))) continue;
+				DrawUITextW(hdc, text, outlineColor, outlineRect, true, format);
+			}
+		}
+
+		DrawUITextW(hdc, text, foreground, textRect, true, format);
+	}
+
 	// Paint the status bar with double buffering to avoid flicker
 	void DrawStatus(
 		HWND hwnd,
@@ -2261,10 +2297,13 @@ namespace ui
 		if (!WC_D(BOOL, GetWindowRect(hwnd, &rcWindow))) return;
 		auto clientBottom = POINT{0, rcStatus.bottom};
 		if (!WC_D(BOOL, ClientToScreen(hwnd, &clientBottom))) return;
+		auto clientOrigin = POINT{};
+		if (!WC_D(BOOL, ClientToScreen(hwnd, &clientOrigin))) return;
 		if (rcStatus.bottom - rcStatus.top > iStatusHeight)
 		{
 			rcStatus.top = rcStatus.bottom - iStatusHeight;
 		}
+
 		auto ps = PAINTSTRUCT{};
 		BeginPaint(hwnd, &ps);
 
@@ -2278,15 +2317,34 @@ namespace ui
 		// Match the nonclient gradient, including the padded bottom border.
 		rcGrad.bottom += rcWindow.bottom - clientBottom.y - BORDER_VISIBLEWIDTH;
 		GradientFillRect(ps.hdc, rcGrad, uiColor::Status);
+		const auto ribbon = theme::GetStatusRibbon(GetActiveTheme(), GetEffectiveTheme());
+		const auto style = GetActiveTheme().statusBarStyle;
+		const auto fullFill = !ribbon.empty() && style != theme::StatusBarStyle::Ribbon;
+		if (!ribbon.empty())
+		{
+			const auto ribbonHeight = min(5, max(0, rcStatus.bottom - rcStatus.top - GetTextHeight(hwnd)));
+			if (fullFill)
+			{
+				rcGrad.left = rcWindow.left + BORDER_VISIBLEWIDTH - clientOrigin.x;
+				rcGrad.right = rcWindow.right - BORDER_VISIBLEWIDTH - clientOrigin.x;
+				DrawStatusFill(ps.hdc, rcGrad, ribbon, style);
+			}
+			else
+			{
+				DrawStatusRibbon(ps.hdc, rcStatus, ribbon, ribbonHeight);
+				rcText.top += ribbonHeight;
+			}
+		}
 
+		const auto crOutline = MyGetSysColor(uiColor::StatusTextOutline);
 		rcText.left = rcText.right - iStatusData2;
-		DrawUITextW(ps.hdc, szStatusData2, crFore, rcText, true, DT_LEFT | DT_SINGLELINE | DT_BOTTOM);
+		DrawStatusText(ps.hdc, szStatusData2, rcText, crFore, crOutline, fullFill, DT_LEFT | DT_SINGLELINE | DT_BOTTOM);
 		rcText.right = rcText.left;
 		rcText.left = rcText.right - iStatusData1;
-		DrawUITextW(ps.hdc, szStatusData1, crFore, rcText, true, DT_LEFT | DT_SINGLELINE | DT_BOTTOM);
+		DrawStatusText(ps.hdc, szStatusData1, rcText, crFore, crOutline, fullFill, DT_LEFT | DT_SINGLELINE | DT_BOTTOM);
 		rcText.right = rcText.left;
 		rcText.left = 0;
-		DrawUITextW(ps.hdc, szStatusInfo, crFore, rcText, true, DT_LEFT | DT_SINGLELINE | DT_BOTTOM | DT_END_ELLIPSIS);
+		DrawStatusText(ps.hdc, szStatusInfo, rcText, crFore, crOutline, fullFill);
 
 		db.End(ps.hdc);
 		EndPaint(hwnd, &ps);
@@ -2408,7 +2466,18 @@ namespace ui
 		const auto htMax = HTMAXBUTTON == iHitTest;
 		const auto htMin = HTMINBUTTON == iHitTest;
 
-		DrawBitmap(hdc, rcCloseIcon, uiBitmap::Close, htClose, htClose && !bHover ? 2 : 0);
+		const auto foreground = MyGetSysColor(uiColor::TitleBarButton);
+		const auto hoverForeground = MyGetSysColor(uiColor::TitleBarButtonHover);
+		const auto background = MyGetSysColor(uiColor::TitleBarBackground);
+		const auto hoverBackground = MyGetSysColor(uiColor::GlowBackground);
+		DrawBitmap(
+			hdc,
+			rcCloseIcon,
+			uiBitmap::Close,
+			htClose,
+			htClose && !bHover ? 2 : 0,
+			htClose ? hoverForeground : foreground,
+			htClose ? hoverBackground : background);
 		if (registry::uiDiag) ::FrameRect(hdc, &rcCloseIcon, GetSysBrush(uiColor::TestPink));
 
 		if (bMaxBox)
@@ -2418,13 +2487,22 @@ namespace ui
 				rcMaxIcon,
 				IsZoomed(hWnd) ? uiBitmap::Restore : uiBitmap::Maximize,
 				htMax,
-				htMax && !bHover ? 2 : 0);
+				htMax && !bHover ? 2 : 0,
+				htMax ? hoverForeground : foreground,
+				htMax ? hoverBackground : background);
 			if (registry::uiDiag) ::FrameRect(hdc, &rcMaxIcon, GetSysBrush(uiColor::TestPink));
 		}
 
 		if (bMinBox)
 		{
-			DrawBitmap(hdc, rcMinIcon, uiBitmap::Minimize, htMin, htMin && !bHover ? 2 : 0);
+			DrawBitmap(
+				hdc,
+				rcMinIcon,
+				uiBitmap::Minimize,
+				htMin,
+				htMin && !bHover ? 2 : 0,
+				htMin ? hoverForeground : foreground,
+				htMin ? hoverBackground : background);
 			if (registry::uiDiag) ::FrameRect(hdc, &rcMinIcon, GetSysBrush(uiColor::TestPink));
 		}
 
@@ -2535,8 +2613,7 @@ namespace ui
 			LineTo(hdc, rcMenuGutterRight.left, rcClient.top - 1);
 			static_cast<void>(SelectObject(hdc, hpenOld));
 
-			// White out the caption
-			FillRect(hdc, &rcFullCaption, GetSysBrush(uiColor::Background));
+			FillRect(hdc, &rcFullCaption, GetSysBrush(uiColor::TitleBarBackground));
 
 			DrawSystemButtons(hWnd, hdc, HTNOWHERE, false);
 
@@ -2559,15 +2636,15 @@ namespace ui
 					rcIcon.right - rcIcon.left,
 					rcIcon.bottom - rcIcon.top,
 					NULL,
-					GetSysBrush(uiColor::Background),
+					GetSysBrush(uiColor::TitleBarBackground),
 					DI_NORMAL);
 
 				DestroyIcon(hIcon);
 			}
 
 			// Fill in our gutters
-			FillRect(hdc, &rcMenuGutterLeft, GetSysBrush(uiColor::Background));
-			FillRect(hdc, &rcMenuGutterRight, GetSysBrush(uiColor::Background));
+			FillRect(hdc, &rcMenuGutterLeft, GetSysBrush(uiColor::MenuBackground));
+			FillRect(hdc, &rcMenuGutterRight, GetSysBrush(uiColor::MenuBackground));
 			FillRect(hdc, &rcWindowGutterLeft, GetSysBrush(uiColor::Background));
 			FillRect(hdc, &rcWindowGutterRight, GetSysBrush(uiColor::Background));
 
@@ -2584,6 +2661,11 @@ namespace ui
 
 				ExcludeClipRect(hdc, rcStatus.left, rcStatus.top, rcStatus.right, rcStatus.bottom);
 				GradientFillRect(hdc, rcFullStatus, uiColor::Status);
+				const auto colors = theme::GetStatusRibbon(GetActiveTheme(), GetEffectiveTheme());
+				if (!colors.empty() && GetActiveTheme().statusBarStyle != theme::StatusBarStyle::Ribbon)
+				{
+					DrawStatusFill(hdc, rcFullStatus, colors, GetActiveTheme().statusBarStyle);
+				}
 			}
 			else
 			{
@@ -2599,7 +2681,12 @@ namespace ui
 			const WCHAR szTitle[256] = {};
 			DefWindowProcW(hWnd, WM_GETTEXT, static_cast<WPARAM>(_countof(szTitle)), reinterpret_cast<LPARAM>(szTitle));
 			DrawUITextW(
-				hdc, szTitle, MyGetSysColor(uiColor::Text), rcCaptionText, false, DT_LEFT | DT_SINGLELINE | DT_VCENTER);
+				hdc,
+				szTitle,
+				MyGetSysColor(uiColor::TitleBarText),
+				rcCaptionText,
+				false,
+				DT_LEFT | DT_SINGLELINE | DT_VCENTER);
 
 			// Finally, we paint our border glow if we're not maximized
 			if (!IsZoomed(hWnd))
