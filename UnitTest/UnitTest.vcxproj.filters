@@ -101,6 +101,9 @@
     <ClCompile Include="tests\filetest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="tests\errortest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="tests\propertytest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

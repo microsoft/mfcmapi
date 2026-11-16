@@ -64,6 +64,7 @@ namespace error
 	// Function to convert error codes to their names
 	std::wstring ErrorNameFromErrorCode(ULONG hrErr);
 
+	// Called only after an API reports failure; a missing last-error code must not become S_OK.
 	_Check_return_ HRESULT
 	CheckWin32Error(bool bDisplayDialog, _In_z_ LPCSTR szFile, int iLine, _In_z_ LPCSTR szFunction);
 
@@ -322,10 +323,11 @@ namespace error
 #define EC_H_IGNORE(__ignore, fnx) \
 	error::CheckMe([&]() -> HRESULT { \
 		const auto __hRes = (fnx); \
-		error::LogFunctionCall(__hRes, __ignore, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
-		return std::contains(__ignore, __hRes) ? S_OK : __hRes; \
+		const auto __hrIgnore = (__ignore); \
+		error::LogFunctionCall(__hRes, __hrIgnore, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
+		return std::contains(__hrIgnore, __hRes) ? S_OK : __hRes; \
 	}())
-#define EC_H_GETPROPS(fnx) EC_H_IGNORE(std::list<HRESULT> MAPI_W_ERRORS_RETURNED, fnx)
+#define EC_H_GETPROPS(fnx) EC_H_IGNORE(std::list<HRESULT>{MAPI_W_ERRORS_RETURNED}, fnx)
 
 // Execute a function, log and swallow the HRESULT
 // MAPI's GetProps call will return MAPI_W_ERRORS_RETURNED if even one prop fails
@@ -351,8 +353,9 @@ namespace error
 #define WC_H_IGNORE(__ignore, fnx) \
 	error::CheckMe([&]() -> HRESULT { \
 		const auto __hRes = (fnx); \
-		error::LogFunctionCall(__hRes, __ignore, false, true, false, NULL, #fnx, __FILE__, __LINE__); \
-		return std::contains(__ignore, __hRes) ? S_OK : __hRes; \
+		const auto __hrIgnore = (__ignore); \
+		error::LogFunctionCall(__hRes, __hrIgnore, false, true, false, NULL, #fnx, __FILE__, __LINE__); \
+		return std::contains(__hrIgnore, __hRes) ? S_OK : __hRes; \
 	}())
 #define WC_H_GETPROPS(fnx) WC_H_IGNORE(std::list<HRESULT>{MAPI_W_ERRORS_RETURNED}, fnx)
 
