@@ -12,6 +12,9 @@ try the provided themes. Theme files are not loaded by default.
 2. Enable color themes and select a theme.
 3. After adding or editing files, click **Reload themes**.
 
+If a file cannot be loaded, the Themes dialog shows its path and error details.
+Correct the reported field or file problem, then reload. Other valid files still load.
+
 Keep theme files directly in the chosen directory, not in subdirectories.
 **Ctrl+Shift+T** selects the next theme; **Ctrl+Shift+R** selects the previous
 theme. Both wrap through the list and turn scheduling off. **Ctrl+Shift+D**

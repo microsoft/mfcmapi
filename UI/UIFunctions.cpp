@@ -2264,21 +2264,19 @@ namespace ui
 			return;
 		}
 
-		auto textRect = rect;
-		if (FAILED(WC_B(InflateRect(&textRect, -1, -1)))) return;
-		if (textRect.right <= textRect.left || textRect.bottom <= textRect.top) return;
+		if (rect.right <= rect.left || rect.bottom <= rect.top) return;
 		for (auto y = -1; y <= 1; ++y)
 		{
 			for (auto x = -1; x <= 1; ++x)
 			{
 				if (!x && !y) continue;
-				auto outlineRect = textRect;
+				auto outlineRect = rect;
 				if (FAILED(WC_B(OffsetRect(&outlineRect, x, y)))) continue;
 				DrawUITextW(hdc, text, outlineColor, outlineRect, true, format);
 			}
 		}
 
-		DrawUITextW(hdc, text, foreground, textRect, true, format);
+		DrawUITextW(hdc, text, foreground, rect, true, format);
 	}
 
 	// Paint the status bar with double buffering to avoid flicker

@@ -3,6 +3,8 @@
 #include <UI/Themes/ThemeFile.h>
 #include <filesystem>
 #include <fstream>
+#include <future>
+#include <roapi.h>
 
 namespace themefiletest
 {
@@ -27,6 +29,34 @@ namespace themefiletest
 		Assert::IsTrue(position != std::wstring::npos);
 
 		text.replace(position, before.size(), after);
+	}
+
+	static void
+	AssertSameDefinition(const ui::theme::ThemeDefinition& expected, const ui::theme::ThemeDefinition& actual)
+	{
+		Assert::IsTrue(expected.stableId == actual.stableId);
+		Assert::IsTrue(expected.name == actual.name);
+		Assert::IsTrue(expected.schedule.kind == actual.schedule.kind);
+		Assert::AreEqual(expected.schedule.startMonth, actual.schedule.startMonth);
+		Assert::AreEqual(expected.schedule.startDay, actual.schedule.startDay);
+		Assert::AreEqual(expected.schedule.endMonth, actual.schedule.endMonth);
+		Assert::AreEqual(expected.schedule.endDay, actual.schedule.endDay);
+		Assert::AreEqual(expected.schedule.priority, actual.schedule.priority);
+		Assert::AreEqual(expected.schedule.seasonal, actual.schedule.seasonal);
+		Assert::IsTrue(expected.statusBarStyle == actual.statusBarStyle);
+		Assert::IsTrue(expected.statusRibbon == actual.statusRibbon);
+		for (const auto& palettes :
+			 {std::pair{&expected.light, &actual.light}, std::pair{&expected.dark, &actual.dark}})
+		{
+			for (size_t index = 0; index < palettes.first->values.size(); ++index)
+			{
+				const auto& first = palettes.first->values[index];
+				const auto& second = palettes.second->values[index];
+				Assert::AreEqual(first.value, second.value);
+				Assert::AreEqual(first.system, second.system);
+				Assert::AreEqual(first.highContrast, second.highContrast);
+			}
+		}
 	}
 
 	static double RelativeLuminance(const COLORREF color)
@@ -695,7 +725,7 @@ namespace themefiletest
 				{L"\"dark\": {", L"\"missing\": {"}};
 
 			auto theme = ui::theme::GetDefaultTheme();
-			const auto originalId = theme.stableId;
+			const auto original = theme;
 			for (const auto& change : invalid)
 			{
 				auto json = valid;
@@ -704,7 +734,7 @@ namespace themefiletest
 				auto error = std::wstring{};
 				Assert::IsFalse(ui::theme::ParseThemeFile(json, theme, error));
 				Assert::IsFalse(error.empty());
-				Assert::IsTrue(theme.stableId == originalId);
+				AssertSameDefinition(original, theme);
 			}
 
 			for (const auto text : {L"{broken", L"random characters", L"", L"[]", L"null"})
@@ -712,7 +742,121 @@ namespace themefiletest
 				auto error = std::wstring{};
 				Assert::IsFalse(ui::theme::ParseThemeFile(text, theme, error));
 				Assert::IsTrue(error == L"Invalid JSON. Expected a theme object.");
-				Assert::IsTrue(theme.stableId == originalId);
+				AssertSameDefinition(original, theme);
+			}
+		}
+
+		TEST_METHOD(MissingAndWrongTypeFieldsReportTheirContextAndPreserveTheTheme)
+		{
+			const auto valid = std::wstring{
+				LR"({"schemaVersion": 1, "id": "test.errors", "name": "Errors",)"
+				LR"("colors": {"light": {"Background": {"value": "OldLace", "highContrast": 5}}, "dark": {}},)"
+				LR"("schedule": {"kind": "dateRange", "start": "10-25", "end": "10-31", "priority": 10, "seasonal": false}})"};
+			struct InvalidField
+			{
+				std::wstring_view before;
+				std::wstring_view after;
+				std::wstring_view context;
+			};
+			const InvalidField invalid[] = {
+				{L"\"schemaVersion\": 1,", L"", L"schemaVersion"},
+				{L"\"schemaVersion\": 1", L"\"schemaVersion\": false", L"schemaVersion"},
+				{L"\"id\": \"test.errors\",", L"", L"id"},
+				{L"\"name\": \"Errors\",", L"", L"name"},
+				{L"\"name\": \"Errors\"", L"\"name\": []", L"name"},
+				{LR"("colors": {"light": {"Background": {"value": "OldLace", "highContrast": 5}}, "dark": {}})",
+				 L"\"colors\": null",
+				 L"colors"},
+				{LR"("light": {"Background": {"value": "OldLace", "highContrast": 5}})", L"\"light\": []", L"light"},
+				{L"\"dark\": {}", L"\"dark\": null", L"dark"},
+				{LR"("Background": {"value": "OldLace", "highContrast": 5})", L"\"Background\": null", L"Background"},
+				{L"\"value\": \"OldLace\",", L"", L"value"},
+				{L"\"value\": \"OldLace\"", L"\"value\": false", L"value"},
+				{L"\"highContrast\": 5", L"\"highContrast\": \"5\"", L"highContrast"},
+				{L"\"schemaVersion\": 1", L"\"schemaVersion\": 1, \"statusBar\": null", L"statusBar"},
+				{L"\"schemaVersion\": 1", L"\"schemaVersion\": 1, \"statusBar\": {}", L"style"},
+				{L"\"schemaVersion\": 1", L"\"schemaVersion\": 1, \"statusBar\": {\"style\":\"gradient\"}", L"colors"},
+				{L"\"schemaVersion\": 1",
+				 L"\"schemaVersion\": 1, \"statusBar\": {\"style\":\"gradient\",\"colors\":[false]}",
+				 L"colors[0]"},
+				{L"\"schemaVersion\": 1", L"\"schemaVersion\": 1, \"statusRibbon\": [null]", L"statusRibbon[0]"},
+				{L"\"kind\": \"dateRange\",", L"", L"kind"},
+				{L"\"start\": \"10-25\",", L"", L"start"},
+				{L"\"end\": \"10-31\"", L"\"end\": 1031", L"end"},
+				{L"\"priority\": 10", L"\"priority\": null", L"priority"},
+				{L"\"seasonal\": false", L"\"seasonal\": \"false\"", L"seasonal"}};
+
+			auto theme = ui::theme::ThemeDefinition{};
+			auto error = std::wstring{};
+			Assert::IsTrue(ui::theme::ParseThemeFile(valid, theme, error), error.c_str());
+			const auto original = theme;
+			for (const auto& field : invalid)
+			{
+				auto json = valid;
+				Replace(json, field.before, field.after);
+				Assert::IsFalse(ui::theme::ParseThemeFile(json, theme, error));
+				Assert::IsTrue(error.find(field.context) != std::wstring::npos, error.c_str());
+				AssertSameDefinition(original, theme);
+			}
+
+			Assert::IsTrue(ui::theme::ParseThemeFile(valid, theme, error), error.c_str());
+			Assert::IsTrue(error.empty());
+			AssertSameDefinition(original, theme);
+		}
+
+		TEST_METHOD(ParsingBalancesRuntimeInitializationOnSuccessAndFailure)
+		{
+			const auto valid = ReadExample();
+			for (const auto mode : {RO_INIT_SINGLETHREADED, RO_INIT_MULTITHREADED})
+			{
+				std::async(std::launch::async, [&valid, mode] {
+					auto theme = ui::theme::ThemeDefinition{};
+					auto error = std::wstring{};
+					Assert::IsFalse(ui::theme::ParseThemeFile(L"{broken", theme, error));
+					Assert::IsTrue(ui::theme::ParseThemeFile(valid, theme, error), error.c_str());
+
+					const auto initialized = RoInitialize(mode);
+					Assert::AreEqual<HRESULT>(S_OK, initialized);
+					struct RuntimeCleanup
+					{
+						~RuntimeCleanup() { RoUninitialize(); }
+					} cleanup;
+
+					for (int iteration = 0; iteration < 3; ++iteration)
+					{
+						Assert::IsFalse(ui::theme::ParseThemeFile(L"{broken", theme, error));
+						Assert::IsFalse(error.empty());
+						Assert::IsTrue(ui::theme::ParseThemeFile(valid, theme, error), error.c_str());
+						Assert::IsTrue(error.empty());
+					}
+
+					const auto stillInitialized = RoInitialize(mode);
+					if (SUCCEEDED(stillInitialized)) RoUninitialize();
+
+					Assert::AreEqual<HRESULT>(S_FALSE, stillInitialized);
+				}).get();
+			}
+		}
+
+		TEST_METHOD(MalformedUtf8ReportsEncodingErrorsWithoutBlockingOtherFiles)
+		{
+			WriteFile(m_directory / L"valid.json", ReadExample());
+			const std::string invalid[] = {"\xFF\xFE\xFF", "\xC3", "\xC0\xAF", "\xED\xA0\x80"};
+			for (size_t index = 0; index < std::size(invalid); ++index)
+			{
+				std::ofstream stream(m_directory / (std::to_wstring(index) + L".json"), std::ios::binary);
+				stream << invalid[index];
+				Assert::IsTrue(stream.good());
+			}
+
+			const auto baseline = ui::theme::LoadThemeDirectory(L"");
+			const auto catalog = ui::theme::LoadThemeDirectory(m_directory.wstring());
+			Assert::AreEqual(baseline.themes.size() + 1, catalog.themes.size());
+			Assert::AreEqual(std::size(invalid), catalog.errors.size());
+			for (const auto& error : catalog.errors)
+			{
+				Assert::IsFalse(error.path.empty());
+				Assert::IsTrue(error.message.find(L"UTF-8") != std::wstring::npos, error.message.c_str());
 			}
 		}
 
@@ -740,6 +884,16 @@ namespace themefiletest
 			const auto loaded = ui::theme::LoadThemeDirectory(m_directory.wstring());
 			Assert::AreEqual(baseline.themes.size() + 1, loaded.themes.size());
 			Assert::AreEqual(size_t{4}, loaded.errors.size());
+			for (const auto& error : loaded.errors)
+			{
+				Assert::IsFalse(error.path.empty());
+				Assert::IsFalse(error.message.empty());
+				if (std::filesystem::path{error.path}.filename() == L"05-invalid-utf8.json")
+				{
+					Assert::IsTrue(error.message.find(L"UTF-8") != std::wstring::npos, error.message.c_str());
+				}
+			}
+
 			Assert::IsTrue(loaded.themes.back().stableId == L"example.halloween");
 			Assert::IsTrue(baseline.errors.empty());
 			Assert::IsTrue(ui::theme::LoadThemeDirectory(L"relative").errors.size() == 1);
