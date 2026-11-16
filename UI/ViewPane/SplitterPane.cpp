@@ -182,11 +182,11 @@ namespace viewpane
 
 		if (collapsed())
 		{
-			WC_B_S(m_lpSplitter->ShowWindow(SW_HIDE));
+			m_lpSplitter->ShowWindow(SW_HIDE);
 		}
 		else
 		{
-			WC_B_S(m_lpSplitter->ShowWindow(SW_SHOW));
+			m_lpSplitter->ShowWindow(SW_SHOW);
 			hWinPosInfo = ui::DeferWindowPos(
 				hWinPosInfo,
 				m_lpSplitter->GetSafeHwnd(),

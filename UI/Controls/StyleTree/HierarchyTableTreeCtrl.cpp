@@ -470,7 +470,7 @@ namespace controls
 		item.pszText = szText;
 		item.cchTextMax = _countof(szText);
 		item.hItem = GetSelectedItem();
-		WC_B_S(::SendMessage(m_hWnd, TVM_GETITEMW, 0, reinterpret_cast<LPARAM>(&item)));
+		WC_H_S(::SendMessage(m_hWnd, TVM_GETITEMW, 0, reinterpret_cast<LPARAM>(&item)) ? S_OK : E_FAIL);
 		m_lpHostDlg->UpdateTitleBarText(szText);
 
 		if (lpMAPIContainer) lpMAPIContainer->Release();
@@ -823,7 +823,7 @@ namespace controls
 			item.mask = TVIF_TEXT;
 			item.pszText = const_cast<LPWSTR>(szText.c_str());
 			item.hItem = hModifyItem;
-			EC_B_S(::SendMessage(m_hWnd, TVM_SETITEMW, 0, reinterpret_cast<LPARAM>(&item)));
+			EC_H_S(::SendMessage(m_hWnd, TVM_SETITEMW, 0, reinterpret_cast<LPARAM>(&item)) ? S_OK : E_FAIL);
 
 			const auto lpData = GetSortListData(hModifyItem);
 			if (lpData)

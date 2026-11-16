@@ -204,7 +204,7 @@ namespace controls::sortlistctrl
 			lvHitTestInfo.pt.x = GET_X_LPARAM(lParam);
 			lvHitTestInfo.pt.y = GET_Y_LPARAM(lParam);
 
-			WC_B_S(::SendMessage(m_hWnd, LVM_HITTEST, 0, reinterpret_cast<LPARAM>(&lvHitTestInfo)));
+			::SendMessage(m_hWnd, LVM_HITTEST, 0, reinterpret_cast<LPARAM>(&lvHitTestInfo));
 			// Hover highlight
 			if (lvHitTestInfo.flags & LVHT_ONITEM)
 			{

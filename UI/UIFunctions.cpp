@@ -953,7 +953,9 @@ namespace ui
 	void FormatRichEdit(_In_ HWND hWnd, const std::function<void()>& format) noexcept
 	{
 		IRichEditOle* richEdit = nullptr;
-		if (FAILED(WC_B(::SendMessage(hWnd, EM_GETOLEINTERFACE, 0, reinterpret_cast<LPARAM>(&richEdit))))) return;
+		if (FAILED(
+				WC_H(::SendMessage(hWnd, EM_GETOLEINTERFACE, 0, reinterpret_cast<LPARAM>(&richEdit)) ? S_OK : E_FAIL)))
+			return;
 		ITextDocument* document = nullptr;
 		const auto queried = WC_H(richEdit->QueryInterface(IID_PPV_ARGS(&document)));
 		richEdit->Release();
@@ -979,8 +981,9 @@ namespace ui
 
 	void SetRichEditCharacterFormat(_In_ HWND hWnd, _In_ CHARFORMAT2& cf) noexcept
 	{
-		FormatRichEdit(
-			hWnd, [&]() { WC_B_S(::SendMessage(hWnd, EM_SETCHARFORMAT, SCF_ALL, reinterpret_cast<LPARAM>(&cf))); });
+		FormatRichEdit(hWnd, [&]() {
+			WC_H_S(::SendMessage(hWnd, EM_SETCHARFORMAT, SCF_ALL, reinterpret_cast<LPARAM>(&cf)) ? S_OK : E_FAIL);
+		});
 	}
 
 	void ClearEditFormatting(_In_ HWND hWnd, const bool bReadOnly) noexcept
@@ -1224,7 +1227,7 @@ namespace ui
 		info.mask = LVIF_IMAGE | LVIF_STATE;
 		info.iItem = item;
 		info.stateMask = LVIS_OVERLAYMASK | LVIS_STATEIMAGEMASK | LVIS_FOCUSED;
-		if (SUCCEEDED(WC_B(SendMessageW(hwnd, LVM_GETITEMW, 0, reinterpret_cast<LPARAM>(&info)))))
+		if (SUCCEEDED(WC_H(SendMessageW(hwnd, LVM_GETITEMW, 0, reinterpret_cast<LPARAM>(&info)) ? S_OK : E_FAIL)))
 		{
 			auto icon = RECT{};
 			const auto hasIconRect = WC_D(BOOL, ListView_GetItemRect(hwnd, item, &icon, LVIR_ICON));
@@ -1300,7 +1303,8 @@ namespace ui
 
 			auto columnInfo = LVCOLUMNW{};
 			columnInfo.mask = LVCF_FMT;
-			if (FAILED(WC_B(SendMessageW(hwnd, LVM_GETCOLUMNW, column, reinterpret_cast<LPARAM>(&columnInfo)))))
+			if (FAILED(WC_H(
+					SendMessageW(hwnd, LVM_GETCOLUMNW, column, reinterpret_cast<LPARAM>(&columnInfo)) ? S_OK : E_FAIL)))
 				continue;
 			const auto alignment = (columnInfo.fmt & LVCFMT_JUSTIFYMASK) == LVCFMT_RIGHT	? DT_RIGHT
 								   : (columnInfo.fmt & LVCFMT_JUSTIFYMASK) == LVCFMT_CENTER ? DT_CENTER

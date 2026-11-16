@@ -295,8 +295,7 @@ namespace viewpane
 		// not all dropdowns will support this!
 		if (CB_ERR == iSelect)
 		{
-			EC_B_S(::SendMessage(
-				m_DropDown.m_hWnd, WM_SETTEXT, NULL, reinterpret_cast<LPARAM>(static_cast<LPCTSTR>(text.c_str()))));
+			EC_B_S(::SetWindowText(m_DropDown.m_hWnd, text.c_str()));
 		}
 	}
 

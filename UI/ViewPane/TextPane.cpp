@@ -206,14 +206,14 @@ namespace viewpane
 
 		if (collapsed())
 		{
-			WC_B_S(m_EditBox.ShowWindow(SW_HIDE));
+			m_EditBox.ShowWindow(SW_HIDE);
 
 			hWinPosInfo = ui::DeferWindowPos(
 				hWinPosInfo, m_EditBox.GetSafeHwnd(), x, curY, width, 0, L"TextPane::DeferWindowPos::editbox");
 		}
 		else
 		{
-			WC_B_S(m_EditBox.ShowWindow(SW_SHOW));
+			m_EditBox.ShowWindow(SW_SHOW);
 
 			hWinPosInfo = ui::DeferWindowPos(
 				hWinPosInfo,
@@ -261,7 +261,10 @@ namespace viewpane
 			if (m_bMultiline)
 			{
 				LONG stops = 16; // 16 dialog template units. Default is 32.
-				EC_B_S(::SendMessage(m_EditBox.m_hWnd, EM_SETTABSTOPS, WPARAM{1}, reinterpret_cast<LPARAM>(&stops)));
+				EC_H_S(
+					::SendMessage(m_EditBox.m_hWnd, EM_SETTABSTOPS, WPARAM{1}, reinterpret_cast<LPARAM>(&stops))
+						? S_OK
+						: E_FAIL);
 
 				// Remove the awful autoselect of the edit control that scrolls to the end of multiline text
 				::PostMessage(m_EditBox.m_hWnd, EM_SETSEL, static_cast<WPARAM>(0), static_cast<LPARAM>(0));
