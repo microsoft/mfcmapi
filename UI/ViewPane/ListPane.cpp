@@ -163,7 +163,7 @@ namespace viewpane
 		curY += GetHeaderHeight();
 
 		const auto cmdShow = collapsed() ? SW_HIDE : SW_SHOW;
-		WC_B_S(m_List.ShowWindow(cmdShow));
+		m_List.ShowWindow(cmdShow);
 		auto listHeight = height - (curY - y);
 		// Space for buttons if needed
 		if (!m_bReadOnly) listHeight -= m_iLargeHeightMargin + m_iButtonHeight;
@@ -180,7 +180,7 @@ namespace viewpane
 
 			for (auto iButton = 0; iButton < NUMLISTBUTTONS; iButton++)
 			{
-				WC_B_S(m_ButtonArray[iButton].ShowWindow(cmdShow));
+				m_ButtonArray[iButton].ShowWindow(cmdShow);
 				hWinPosInfo = EC_D(
 					HDWP,
 					::DeferWindowPos(
@@ -281,13 +281,13 @@ namespace viewpane
 			case IDD_LISTMOVEDOWN:
 			case IDD_LISTMOVETOTOP:
 			case IDD_LISTMOVEUP:
-				EC_B_S(m_ButtonArray[iButton].EnableWindow(ulNumItems >= 2));
+				m_ButtonArray[iButton].EnableWindow(ulNumItems >= 2);
 				break;
 			case IDD_LISTDELETE:
-				EC_B_S(m_ButtonArray[iButton].EnableWindow(ulNumItems >= 1));
+				m_ButtonArray[iButton].EnableWindow(ulNumItems >= 1);
 				break;
 			case IDD_LISTEDIT:
-				EC_B_S(m_ButtonArray[iButton].EnableWindow(ulNumItems >= 1));
+				m_ButtonArray[iButton].EnableWindow(ulNumItems >= 1);
 				break;
 			}
 		}

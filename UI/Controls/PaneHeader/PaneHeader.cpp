@@ -53,7 +53,7 @@ namespace controls
 
 		// Necessary for TAB to work. Without this, all TABS get stuck on the control
 		// instead of passing to the children.
-		EC_B_S(ModifyStyleEx(0, WS_EX_CONTROLPARENT));
+		ModifyStyleEx(0, WS_EX_CONTROLPARENT);
 
 		const auto sizeText = ui::GetTextExtentPoint32(hdc, m_szLabel);
 		m_iLabelWidth = sizeText.cx;
@@ -235,7 +235,7 @@ namespace controls
 				cmdShow = SW_SHOW;
 			}
 
-			WC_B_S(::ShowWindow(m_rightLabel.GetSafeHwnd(), cmdShow));
+			::ShowWindow(m_rightLabel.GetSafeHwnd(), cmdShow);
 
 			if (!m_bCollapsed && m_nIDAction && m_actionButtonWidth)
 			{
@@ -255,7 +255,7 @@ namespace controls
 				cmdShow = SW_HIDE;
 			}
 
-			WC_B_S(::ShowWindow(m_actionButton.GetSafeHwnd(), cmdShow));
+			::ShowWindow(m_actionButton.GetSafeHwnd(), cmdShow);
 
 			output::DebugPrint(output::dbgLevel::Draw, L"PaneHeader::DeferWindowPos end\n");
 			EC_B_S(EndDeferWindowPos(hWinPosInfo));

@@ -70,8 +70,8 @@ namespace controls::sortlistctrl
 				m_ti.hinst = AfxGetInstanceHandle();
 				m_ti.lpszText = const_cast<LPWSTR>(L"");
 
-				EC_B_S(::SendMessage(m_hwndTip, TTM_ADDTOOL, 0, LPARAM(&m_ti)));
-				EC_B_S(::SendMessage(m_hwndTip, TTM_SETMAXTIPWIDTH, 0, LPARAM(500)));
+				EC_H_S(::SendMessage(m_hwndTip, TTM_ADDTOOL, 0, LPARAM(&m_ti)) ? S_OK : E_FAIL);
+				::SendMessage(m_hwndTip, TTM_SETMAXTIPWIDTH, 0, LPARAM(500));
 			}
 		}
 	}
@@ -97,7 +97,7 @@ namespace controls::sortlistctrl
 				{
 					if (!(hdHitTestInfo.flags & HHT_ONHEADER) || hdHitTestInfo.iItem != m_iTooltipColumn)
 					{
-						EC_B_S(::SendMessage(m_hwndTip, TTM_TRACKACTIVATE, false, reinterpret_cast<LPARAM>(&m_ti)));
+						::SendMessage(m_hwndTip, TTM_TRACKACTIVATE, false, reinterpret_cast<LPARAM>(&m_ti));
 						m_bTooltipDisplayed = false;
 						m_iTooltipColumn = -1;
 					}
@@ -138,14 +138,14 @@ namespace controls::sortlistctrl
 					if (lpHeaderData)
 					{
 						EC_B_S(::GetCursorPos(&hdHitTestInfo.pt));
-						EC_B_S(::SendMessage(
+						::SendMessage(
 							m_hwndTip,
 							TTM_TRACKPOSITION,
 							0,
-							MAKELPARAM((DWORD_PTR) hdHitTestInfo.pt.x + 10, (DWORD_PTR) hdHitTestInfo.pt.y + 20)));
+							MAKELPARAM((DWORD_PTR) hdHitTestInfo.pt.x + 10, (DWORD_PTR) hdHitTestInfo.pt.y + 20));
 
 						m_ti.lpszText = const_cast<LPWSTR>(lpHeaderData->szTipString.c_str());
-						EC_B_S(::SendMessage(m_hwndTip, TTM_SETTOOLINFOW, true, reinterpret_cast<LPARAM>(&m_ti)));
+						::SendMessage(m_hwndTip, TTM_SETTOOLINFOW, true, reinterpret_cast<LPARAM>(&m_ti));
 						// Ask for notification when the mouse leaves the control
 						TRACKMOUSEEVENT tmEvent = {0};
 						tmEvent.cbSize = sizeof(TRACKMOUSEEVENT);
@@ -154,7 +154,7 @@ namespace controls::sortlistctrl
 						EC_B_S(TrackMouseEvent(&tmEvent));
 
 						// Turn on the tooltip
-						EC_B_S(::SendMessage(m_hwndTip, TTM_TRACKACTIVATE, true, reinterpret_cast<LPARAM>(&m_ti)));
+						::SendMessage(m_hwndTip, TTM_TRACKACTIVATE, true, reinterpret_cast<LPARAM>(&m_ti));
 						m_bTooltipDisplayed = true;
 						m_iTooltipColumn = hdHitTestInfo.iItem;
 					}
@@ -163,7 +163,7 @@ namespace controls::sortlistctrl
 			}
 			case WM_MOUSELEAVE:
 				// We were displaying a tooltip, but we're now off of the header. Turn it off.
-				EC_B_S(::SendMessage(m_hwndTip, TTM_TRACKACTIVATE, false, reinterpret_cast<LPARAM>(&m_ti)));
+				::SendMessage(m_hwndTip, TTM_TRACKACTIVATE, false, reinterpret_cast<LPARAM>(&m_ti));
 				m_bTooltipDisplayed = false;
 				m_iTooltipColumn = -1;
 				return NULL;

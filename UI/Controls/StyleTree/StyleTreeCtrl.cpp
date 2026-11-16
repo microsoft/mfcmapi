@@ -74,7 +74,7 @@ namespace controls
 			tvHitTestInfo.pt.x = GET_X_LPARAM(lParam);
 			tvHitTestInfo.pt.y = GET_Y_LPARAM(lParam);
 
-			WC_B_S(::SendMessage(m_hWnd, TVM_HITTEST, 0, reinterpret_cast<LPARAM>(&tvHitTestInfo)));
+			::SendMessage(m_hWnd, TVM_HITTEST, 0, reinterpret_cast<LPARAM>(&tvHitTestInfo));
 			if (tvHitTestInfo.hItem)
 			{
 				// If this is a new glow, clean up the old glow and track for leaving the control

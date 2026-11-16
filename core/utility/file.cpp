@@ -172,11 +172,14 @@ namespace file
 					UINT cbTranslate = 0;
 
 					// Read the list of languages and code pages.
-					EC_B_S(VerQueryValueW(
-						pbData.data(),
-						L"\\VarFileInfo\\Translation", // STRING_OK
-						reinterpret_cast<LPVOID*>(&lpTranslate),
-						&cbTranslate));
+					if (!VerQueryValueW(
+							pbData.data(),
+							L"\\VarFileInfo\\Translation", // STRING_OK
+							reinterpret_cast<LPVOID*>(&lpTranslate),
+							&cbTranslate))
+					{
+						return versionStrings;
+					}
 
 					// Read the file description for each language and code page.
 					if (lpTranslate)
@@ -196,11 +199,14 @@ namespace file
 								auto szVerString = strings::loadstring(iVerString);
 								auto szQueryString = szSubBlock + szVerString;
 
-								EC_B_S(VerQueryValueW(
-									static_cast<const void*>(pbData.data()),
-									szQueryString.c_str(),
-									reinterpret_cast<void**>(&lpszVer),
-									&cchVer));
+								if (!VerQueryValueW(
+										static_cast<const void*>(pbData.data()),
+										szQueryString.c_str(),
+										reinterpret_cast<void**>(&lpszVer),
+										&cchVer))
+								{
+									continue;
+								}
 
 								if (cchVer && lpszVer)
 								{

@@ -55,7 +55,7 @@ namespace viewpane
 		hWinPosInfo = EC_D(HDWP, ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height));
 		curY += GetHeaderHeight();
 
-		WC_B_S(m_Tree.ShowWindow(collapsed() ? SW_HIDE : SW_SHOW));
+		m_Tree.ShowWindow(collapsed() ? SW_HIDE : SW_SHOW);
 		hWinPosInfo = ui::DeferWindowPos(
 			hWinPosInfo, m_Tree.GetSafeHwnd(), x, curY, width, height - (curY - y), L"TreePane::DeferWindowPos::tree");
 

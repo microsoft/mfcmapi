@@ -136,7 +136,7 @@ namespace viewpane
 			hWinPosInfo = EC_D(HDWP, m_Splitter->DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y)));
 		}
 
-		WC_B_S(m_DropDown.ShowWindow(collapsed() ? SW_HIDE : SW_SHOW));
+		m_DropDown.ShowWindow(collapsed() ? SW_HIDE : SW_SHOW);
 		m_Splitter->ShowWindow(collapsed() || !m_bHasData ? SW_HIDE : SW_SHOW);
 		return hWinPosInfo;
 	}
@@ -250,11 +250,17 @@ namespace viewpane
 			AddChildren(root, item);
 		}
 
-		WC_B_S(::SendMessage(
-			m_TreePane->m_Tree.GetSafeHwnd(),
-			TVM_EXPAND,
-			static_cast<WPARAM>(TVE_EXPAND),
-			reinterpret_cast<LPARAM>(root)));
+		if (!data->getChildren().empty())
+		{
+			WC_H_S(
+				::SendMessage(
+					m_TreePane->m_Tree.GetSafeHwnd(),
+					TVM_EXPAND,
+					static_cast<WPARAM>(TVE_EXPAND),
+					reinterpret_cast<LPARAM>(root))
+					? S_OK
+					: E_FAIL);
+		}
 	}
 
 	void SmartViewPane::ItemSelected(HTREEITEM hItem)

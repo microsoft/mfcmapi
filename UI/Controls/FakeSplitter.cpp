@@ -54,7 +54,7 @@ namespace controls
 
 		// Necessary for TAB to work. Without this, all TABS get stuck on the fake splitter control
 		// instead of passing to the children. Haven't tested with nested splitters.
-		EC_B_S(ModifyStyleEx(0, WS_EX_CONTROLPARENT));
+		ModifyStyleEx(0, WS_EX_CONTROLPARENT);
 
 		// Load split cursors
 		m_hSplitCursorV = EC_D(HCURSOR, ::LoadCursor(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDC_SPLITV)));
