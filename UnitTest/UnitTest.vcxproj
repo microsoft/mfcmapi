@@ -804,6 +804,7 @@
     <ClCompile Include="tests\autodiscovertest.cpp" />
     <ClCompile Include="tests\csvtest.cpp" />
     <ClCompile Include="tests\filetest.cpp" />
+    <ClCompile Include="tests\errortest.cpp" />
     <ClCompile Include="tests\flagtest.cpp" />
     <ClCompile Include="tests\globalcachetest.cpp" />
     <ClCompile Include="tests\proptagTest.cpp" />

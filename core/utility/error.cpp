@@ -63,8 +63,17 @@ namespace error
 	CheckWin32Error(bool bDisplayDialog, _In_z_ LPCSTR szFile, int iLine, _In_z_ LPCSTR szFunction)
 	{
 		const auto dwErr = GetLastError();
-		const auto hRes = HRESULT_FROM_WIN32(dwErr);
-		LogFunctionCall(hRes, {}, bDisplayDialog, false, true, dwErr, szFunction, szFile, iLine);
+		const auto hRes = dwErr ? HRESULT_FROM_WIN32(dwErr) : E_FAIL;
+		LogFunctionCall(
+			hRes,
+			{},
+			bDisplayDialog,
+			false,
+			dwErr != ERROR_SUCCESS,
+			dwErr ? dwErr : IDS_API_FAILED_NO_ERROR,
+			szFunction,
+			szFile,
+			iLine);
 		return hRes;
 	}
 
