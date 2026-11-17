@@ -5,10 +5,16 @@ optionally, choose dates when your theme is selected automatically.
 
 ## Installing themes
 
-Put your theme `.json` files together in a directory, or use this directory to
-try the provided themes. Theme files are not loaded by default.
+Download `MFCMAPI.themes.<version>.zip` from the
+[release page](https://github.com/microsoft/mfcmapi/releases/latest) and extract it.
+The package works with both 32-bit and 64-bit MFCMAPI and contains a `Themes`
+directory with the provided themes and this guide.
 
-1. Open **Tools > Themes** and choose the directory containing your theme files.
+You can also use this directory from a source checkout, or put your own theme
+`.json` files together in a directory. Theme files are not loaded by default.
+
+1. Open **Tools > Themes** and choose the extracted `Themes` directory, or the
+   directory containing your own theme files.
 2. Enable color themes and select a theme.
 3. After adding or editing files, click **Reload themes**.
 

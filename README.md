@@ -49,6 +49,13 @@ Here, `<version>` is the release version. Run `MFCMapi.exe` from the extracted f
 
 Matching PDB archives for debugging are also available on the release page. Match the release and architecture when downloading these files.
 
+### Optional color themes
+
+Download `MFCMAPI.themes.<version>.zip` from the same release page and extract it.
+The theme package works with both 32-bit and 64-bit MFCMAPI. Open **Tools > Themes**,
+choose the extracted `Themes` directory, and enable color themes.
+See the [theme guide](docs/Themes/README.md) for installation and customization.
+
 ## Dependencies
 
 - **MAPI:** Accessing profiles and mailboxes requires an installed MAPI implementation, normally supplied by classic Outlook. New Outlook for Windows does not supply classic Outlook's MAPI implementation. Match MFCMAPI/MrMAPI's architecture to the installed MAPI provider.
