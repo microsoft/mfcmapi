@@ -291,9 +291,8 @@ namespace viewpane
 		auto text = strings::wstringTotstring(m_lpszSelectionString);
 		const auto iSelect = m_DropDown.SelectString(0, text.c_str());
 
-		// if we can't select, try pushing the text in there
-		// not all dropdowns will support this!
-		if (CB_ERR == iSelect)
+		// Only editable dropdowns support text that is not in the list.
+		if (CB_ERR == iSelect && !m_bReadOnly)
 		{
 			EC_B_S(::SetWindowText(m_DropDown.m_hWnd, text.c_str()));
 		}
