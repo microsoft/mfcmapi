@@ -3,6 +3,10 @@
 Generates and validates WinGet manifests for a published MFCMAPI release.
 .DESCRIPTION
 Requires winget on PATH and installs or updates WingetCreate through WinGet.
+Requires GitHub CLI (gh) on PATH, signed in to the same GitHub account used by
+WingetCreate. Every run syncs that account's existing winget-pkgs fork with
+microsoft/winget-pkgs without forcing or discarding divergent commits.
+If no fork exists, syncing is skipped; WingetCreate can create it on submission.
 No applicable WingetCreate update is a normal result.
 Runs WingetCreate's GitHub OAuth sign-in flow and caches credentials before
 retrieving manifests. Follow the sign-in instructions displayed by WingetCreate.
@@ -10,8 +14,9 @@ Uses GitHub's latest published stable MFCMAPI release unless ReleaseTag is speci
 not a local build. Downloads the x86 and x64 executable ZIPs through WingetCreate,
 generates user-scope manifests, and validates them with winget validate.
 
-Without Submit, no public GitHub changes are made. Network requests, downloads,
-and normal tool telemetry can still occur. Generated manifests are retained locally;
+Without Submit, the only public GitHub change is syncing an existing fork.
+Network requests, downloads, and normal tool telemetry can still occur.
+Generated manifests are retained locally;
 the script prints their location and a command to submit them after review.
 
 Submission is opt-in and uses the credentials cached during sign-in,
@@ -54,6 +59,49 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
+
+$gh = Get-Command gh.exe -ErrorAction SilentlyContinue
+if (-not $gh) {
+    throw "Install GitHub CLI (gh) and run 'gh auth login' with the same account used by WingetCreate."
+}
+
+$forkQuery = @'
+query {
+  viewer {
+    login
+    repository(name: "winget-pkgs") {
+      nameWithOwner
+      isFork
+      parent {
+        nameWithOwner
+        defaultBranchRef { name }
+      }
+    }
+  }
+}
+'@
+$forkResponse = & $gh api graphql -f "query=$forkQuery"
+if ($LASTEXITCODE -ne 0) {
+    throw "Cannot inspect the WinGet fork. Run 'gh auth login' with the same account used by WingetCreate, then retry."
+}
+$viewer = ($forkResponse | ConvertFrom-Json).data.viewer
+$fork = $viewer.repository
+if ($null -ne $fork) {
+    if (-not $fork.isFork -or $null -eq $fork.parent -or $fork.parent.nameWithOwner -ine "microsoft/winget-pkgs") {
+        throw "'$($fork.nameWithOwner)' is not a fork of microsoft/winget-pkgs. No sync was attempted."
+    }
+    if ($null -eq $fork.parent.defaultBranchRef) {
+        throw "microsoft/winget-pkgs has no default branch. No sync was attempted."
+    }
+    Write-Host "Syncing $($fork.nameWithOwner) with microsoft/winget-pkgs..."
+    & $gh repo sync $fork.nameWithOwner --source microsoft/winget-pkgs --branch $fork.parent.defaultBranchRef.name
+    if ($LASTEXITCODE -ne 0) {
+        throw "WinGet fork sync failed with exit code $LASTEXITCODE. Resolve the fork's state and retry; this script never forces a sync."
+    }
+}
+else {
+    Write-Host "No winget-pkgs fork exists for $($viewer.login). WingetCreate can create one when submitting."
+}
 
 $winget = Get-Command winget.exe -ErrorAction SilentlyContinue
 if (-not $winget) {
