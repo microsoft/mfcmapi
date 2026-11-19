@@ -80,9 +80,9 @@ query {
   }
 }
 '@
-$forkResponse = & $gh api graphql -f "query=$forkQuery"
+$forkResponse = @{ query = $forkQuery } | ConvertTo-Json -Compress | & $gh api graphql --input -
 if ($LASTEXITCODE -ne 0) {
-    throw "Cannot inspect the WinGet fork. Run 'gh auth login' with the same account used by WingetCreate, then retry."
+    throw "Cannot inspect the WinGet fork (gh exit code $LASTEXITCODE). Review the gh error above. If authentication failed, run 'gh auth login' with the same account used by WingetCreate, then retry."
 }
 $viewer = ($forkResponse | ConvertFrom-Json).data.viewer
 $fork = $viewer.repository
