@@ -4,7 +4,7 @@
 #include <core/utility/output.h>
 #include <core/utility/registry.h>
 #include <core/utility/strings.h>
-#include <cstring>
+#include <span>
 
 namespace errortest
 {
@@ -443,10 +443,15 @@ namespace errortest
 		TEST_METHOD(MapiErrorFormattingRespectsAnsiAndUnicodePayloads)
 		{
 			// MAPIERROR uses LPTSTR even when its strings contain ANSI bytes.
-			TCHAR ansiError[sizeof("Provider error")]{};
-			TCHAR ansiComponent[sizeof("Test component")]{};
-			std::memcpy(ansiError, "Provider error", sizeof("Provider error"));
-			std::memcpy(ansiComponent, "Test component", sizeof("Test component"));
+			constexpr char ansiErrorText[] = "Provider error";
+			constexpr char ansiComponentText[] = "Test component";
+			TCHAR ansiError[sizeof(ansiErrorText)]{};
+			TCHAR ansiComponent[sizeof(ansiComponentText)]{};
+			const auto errorBytes = std::as_bytes(std::span{ansiErrorText});
+			const auto componentBytes = std::as_bytes(std::span{ansiComponentText});
+			std::copy(errorBytes.begin(), errorBytes.end(), std::as_writable_bytes(std::span{ansiError}).begin());
+			std::copy(
+				componentBytes.begin(), componentBytes.end(), std::as_writable_bytes(std::span{ansiComponent}).begin());
 			wchar_t unicodeError[] = L"Provider \u00E9rror";
 			wchar_t unicodeComponent[] = L"Test component";
 			const MAPIERROR ansi{2, ansiError, ansiComponent, static_cast<ULONG>(MAPI_E_NOT_FOUND), 0x123};

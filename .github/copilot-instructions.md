@@ -42,6 +42,18 @@
   Preserve their documented semantics and use the repository's error-reporting
   helpers for actual failures.
 
+## Character encoding and byte copies
+
+- Do not reinterpret `char*` as `wchar_t*` or `LPTSTR` to treat narrow bytes as
+  wide characters. Use the API's matching string type or an explicit encoding
+  conversion; validate conversions and their errors. For APIs whose documented
+  format distinguishes ANSI and Unicode payloads, preserve that distinction
+  without pretending ANSI bytes are a valid wide string.
+- Do not introduce `memcpy` or `std::memcpy`; DevSkim flags these calls.
+  Prefer bounded ranges and standard algorithms when their source and
+  destination sizes are established, or use `memcpy_s` and check its result.
+  Do not hide unsafe conversions or copies merely to silence a scanner.
+
 ## Formatting and validation
 
 - Follow [.editorconfig](../.editorconfig) and [.clang-format](../.clang-format).
