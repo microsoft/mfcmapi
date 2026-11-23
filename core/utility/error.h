@@ -1,6 +1,10 @@
 #pragma once
+#include <span>
+#include <type_traits>
+#include <utility>
 
 // Here's an index of error macros and functions for use throughout MFCMAPI
+// HRESULT-producing wrappers return HRESULT; test them with FAILED/SUCCEEDED.
 // EC_H - Execute a function, log and return the HRESULT
 //        Will display dialog on error
 // WC_H - Execute a function, log and return the HRESULT
@@ -18,19 +22,23 @@
 // EC_W32 - does the same as EC_H, wrapping the result of the function call in HRESULT_FROM_WIN32
 // WC_W32 - does the same as WC_H, wrapping the result of the function call in HRESULT_FROM_WIN32
 
-// EC_B - Similar to EC_H, but for Boolean functions, using CheckWin32Error to set failure in hRes
-// WC_B - Similar to WC_H, but for Boolean functions, using CheckWin32Error to set failure in hRes
+// EC_B - Wrap a bool/BOOL function; return S_OK on success or a captured last-error failure
+// WC_B - Same return contract as EC_B, without an error dialog
+//        Both return HRESULT, not BOOL; use FAILED/SUCCEEDED
 
-// EC_D - Similar to EC_B, but preserves the result in _ret so it can be used later
-// WC_D - Similar to WC_B, but preserves the result in _ret so it can be used later
+// EC_D - Wrap a zero-failure function; log errors and return the native result as _TYPE
+// WC_D - Same return contract as EC_D, without an error dialog
 
-// EC_H_GETPROPS - EC_H tuned for GetProps. Tosses all MAPI_W_ERRORS_RETURNED warnings.
-// WC_H_GETPROPS - WC_H tuned for GetProps. Tosses all MAPI_W_ERRORS_RETURNED warnings.
+// EC_H_GETPROPS - Accept MAPI_W_ERRORS_RETURNED without diagnostics and return S_OK for it
+// WC_H_GETPROPS - Same return contract as EC_H_GETPROPS, without an error dialog
+//                Callers must still check individual properties for errors
 
-// EC_H_CANCEL - EC_H tuned for functions which may be cancelled. Logs but does not display cancel errors.
-//               No WC* macro needed here as WC_H already has the desired behavior.
+// EC_H_CANCEL - Log cancellation without a dialog and return S_OK; preserve other HRESULTs
+//               WC_H logs without a dialog but does not normalize cancellation to S_OK
 
-// EC_D_DIALOG - EC_H tuned for dialog functions that support CommDlgExtendedError
+// EC_D_DIALOG - Log dialog errors using CommDlgExtendedError and return the native command ID
+
+// _S variants discard the result, not the diagnostics
 
 // EC_PROBLEMARRAY - logs and displays dialog for any errors in a LPSPropProblemArray
 // EC_MAPIERR - logs and displays dialog for any errors in a LPMAPIERROR
@@ -46,6 +54,79 @@ namespace std
 
 namespace error
 {
+	// Defaults: no dialog/trace, resource messages, and unchanged ignored results.
+	enum class Flags : unsigned
+	{
+		None = 0,
+		ShowDialog = 1 << 0,
+		TraceMapi = 1 << 1,
+		SystemMessage = 1 << 2,
+		AcceptIgnored = 1 << 3
+	};
+	DEFINE_ENUM_FLAG_OPERATORS(Flags)
+
+	struct CallSite
+	{
+		LPCSTR expression;
+		LPCSTR file;
+		int line;
+	};
+
+	struct Diagnostic
+	{
+		Flags flags = Flags::None;
+		UINT message = 0;
+	};
+
+	_Check_return_ HRESULT ReportResult(
+		HRESULT hRes,
+		const Diagnostic& diagnostic,
+		const CallSite& site,
+		std::span<const HRESULT> ignored = {});
+	_Check_return_ HRESULT
+	ReportResult(HRESULT hRes, const Diagnostic& diagnostic, const CallSite& site, const std::list<HRESULT>& ignored);
+	void ReportResult_S(
+		HRESULT hRes,
+		const Diagnostic& diagnostic,
+		const CallSite& site,
+		std::span<const HRESULT> ignored = {});
+	void
+	ReportResult_S(HRESULT hRes, const Diagnostic& diagnostic, const CallSite& site, const std::list<HRESULT>& ignored);
+	_Check_return_ HRESULT CheckCancelled(HRESULT hRes, const CallSite& site);
+	void CheckCancelled_S(HRESULT hRes, const CallSite& site);
+
+	_Check_return_ HRESULT CheckWin32(DWORD result, Flags flags, const CallSite& site);
+
+	constexpr HRESULT LastErrorToHRESULT(const DWORD lastError) noexcept
+	{
+		return lastError == ERROR_SUCCESS ? E_FAIL : HRESULT_FROM_WIN32(lastError);
+	}
+
+	void LogWin32Failure(DWORD lastError, Flags flags, const CallSite& site);
+
+	// These helpers require a documented zero-failure/GetLastError API contract.
+	template <typename Call>
+		requires(std::is_same_v<std::invoke_result_t<Call>, bool> || std::is_same_v<std::invoke_result_t<Call>, BOOL>)
+	_Check_return_ HRESULT CheckBool(Call&& call, const Flags flags, const CallSite& site)
+	{
+		if (std::forward<Call>(call)()) return S_OK;
+
+		const auto lastError = GetLastError();
+		LogWin32Failure(lastError, flags, site);
+		return LastErrorToHRESULT(lastError);
+	}
+
+	template <typename Call>
+		requires(std::is_same_v<std::invoke_result_t<Call>, bool> || std::is_same_v<std::invoke_result_t<Call>, BOOL>)
+	void CheckBool_S(Call&& call, const Flags flags, const CallSite& site)
+	{
+		if (!std::forward<Call>(call)())
+		{
+			const auto lastError = GetLastError();
+			LogWin32Failure(lastError, flags, site);
+		}
+	}
+
 	extern std::function<void(const std::wstring& errString)> displayError;
 
 	void LogFunctionCall(
@@ -64,7 +145,6 @@ namespace error
 	// Function to convert error codes to their names
 	std::wstring ErrorNameFromErrorCode(ULONG hrErr);
 
-	// Called only after an API reports failure; a missing last-error code must not become S_OK.
 	_Check_return_ HRESULT
 	CheckWin32Error(bool bDisplayDialog, _In_z_ LPCSTR szFile, int iLine, _In_z_ LPCSTR szFunction);
 
@@ -75,8 +155,6 @@ namespace error
 		LPCWSTR lpszName;
 	};
 	typedef ERROR_ARRAY_ENTRY* LPERROR_ARRAY_ENTRY;
-
-	inline _Check_return_ constexpr HRESULT CheckMe(const HRESULT hRes) noexcept { return hRes; }
 
 	std::wstring ProblemArrayToString(_In_ const SPropProblemArray& problems);
 	std::wstring MAPIErrToString(ULONG ulFlags, _In_ const MAPIERROR& err);
@@ -94,169 +172,93 @@ namespace error
 
 // Execute a function, log and return the HRESULT
 // Will display dialog on error
-#define EC_H(fnx) \
-	error::CheckMe([&]() -> HRESULT { \
-		const auto __hRes = (fnx); \
-		error::LogFunctionCall(__hRes, {}, true, false, false, NULL, #fnx, __FILE__, __LINE__); \
-		return __hRes; \
-	}())
+#define EC_H(fnx) error::ReportResult((fnx), {error::Flags::ShowDialog}, {#fnx, __FILE__, __LINE__})
 
 // Execute a function, log and swallow the HRESULT
 // Will display dialog on error
-#define EC_H_S(fnx) \
-	[&]() -> void { \
-		const auto __hRes = (fnx); \
-		error::LogFunctionCall(__hRes, {}, true, false, false, NULL, #fnx, __FILE__, __LINE__); \
-	}()
+#define EC_H_S(fnx) error::ReportResult_S((fnx), {error::Flags::ShowDialog}, {#fnx, __FILE__, __LINE__})
 
 // Execute a function, log and return the HRESULT
 // Will not display an error dialog
-#define WC_H(fnx) \
-	error::CheckMe([&]() -> HRESULT { \
-		const auto __hRes = (fnx); \
-		error::LogFunctionCall(__hRes, {}, false, false, false, NULL, #fnx, __FILE__, __LINE__); \
-		return __hRes; \
-	}())
+#define WC_H(fnx) error::ReportResult((fnx), {}, {#fnx, __FILE__, __LINE__})
 
 // Execute a function, log and swallow the HRESULT
 // Will not display an error dialog
-#define WC_H_S(fnx) \
-	[&]() -> void { \
-		const auto __hRes = (fnx); \
-		error::LogFunctionCall(__hRes, {}, false, false, false, NULL, #fnx, __FILE__, __LINE__); \
-	}()
+#define WC_H_S(fnx) error::ReportResult_S((fnx), {}, {#fnx, __FILE__, __LINE__})
 
 // Execute a function, log and return the HRESULT
 // Logs a MAPI call trace under output::dbgLevel::MAPIFunctions
 // Will display dialog on error
 #define EC_MAPI(fnx) \
-	error::CheckMe([&]() -> HRESULT { \
-		const auto __hRes = (fnx); \
-		error::LogFunctionCall(__hRes, {}, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
-		return __hRes; \
-	}())
+	error::ReportResult((fnx), {error::Flags::ShowDialog | error::Flags::TraceMapi}, {#fnx, __FILE__, __LINE__})
 
 // Execute a function, log and swallow the HRESULT
 // Logs a MAPI call trace under output::dbgLevel::MAPIFunctions
 // Will display dialog on error
 #define EC_MAPI_S(fnx) \
-	[&]() -> void { \
-		const auto __hRes = (fnx); \
-		error::LogFunctionCall(__hRes, {}, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
-	}()
+	error::ReportResult_S((fnx), {error::Flags::ShowDialog | error::Flags::TraceMapi}, {#fnx, __FILE__, __LINE__})
 
 // Execute a function, log and return the HRESULT
 // Logs a MAPI call trace under output::dbgLevel::MAPIFunctions
 // Will not display an error dialog
-#define WC_MAPI(fnx) \
-	error::CheckMe([&]() -> HRESULT { \
-		const auto __hRes = (fnx); \
-		error::LogFunctionCall(__hRes, {}, false, true, false, NULL, #fnx, __FILE__, __LINE__); \
-		return __hRes; \
-	}())
+#define WC_MAPI(fnx) error::ReportResult((fnx), {error::Flags::TraceMapi}, {#fnx, __FILE__, __LINE__})
 
 // Execute a function, log and swallow the HRESULT
 // Logs a MAPI call trace under output::dbgLevel::MAPIFunctions
 // Will not display an error dialog
-#define WC_MAPI_S(fnx) \
-	[&]() -> void { \
-		const auto __hRes = (fnx); \
-		error::LogFunctionCall(__hRes, {}, false, true, false, NULL, #fnx, __FILE__, __LINE__); \
-	}()
+#define WC_MAPI_S(fnx) error::ReportResult_S((fnx), {error::Flags::TraceMapi}, {#fnx, __FILE__, __LINE__})
 
 // Execute a function, log error with uidErrorMessage, and return the HRESULT
 // Will display dialog on error
 #define EC_H_MSG(uidErrorMsg, fnx) \
-	error::CheckMe([&]() -> HRESULT { \
-		const auto __hRes = (fnx); \
-		error::LogFunctionCall(__hRes, {}, true, false, false, uidErrorMsg, #fnx, __FILE__, __LINE__); \
-		return __hRes; \
-	}())
+	error::ReportResult((fnx), {error::Flags::ShowDialog, (uidErrorMsg)}, {#fnx, __FILE__, __LINE__})
 
 // Execute a function, log error with uidErrorMessage, and return the HRESULT
 // Will not display an error dialog
 #define WC_H_MSG(uidErrorMsg, fnx) \
-	error::CheckMe([&]() -> HRESULT { \
-		const auto __hRes = (fnx); \
-		error::LogFunctionCall(__hRes, {}, false, false, false, uidErrorMsg, #fnx, __FILE__, __LINE__); \
-		return __hRes; \
-	}())
+	error::ReportResult((fnx), {error::Flags::None, (uidErrorMsg)}, {#fnx, __FILE__, __LINE__})
 
 // Execute a function, log error with uidErrorMessage, and swallow the HRESULT
 // Will not display an error dialog
 #define WC_H_MSG_S(uidErrorMsg, fnx) \
-	[&]() -> void { \
-		const auto __hRes = (fnx); \
-		error::LogFunctionCall(__hRes, {}, false, false, false, uidErrorMsg, #fnx, __FILE__, __LINE__); \
-	}()
+	error::ReportResult_S((fnx), {error::Flags::None, (uidErrorMsg)}, {#fnx, __FILE__, __LINE__})
 
 // Execute a W32 function which returns ERROR_SUCCESS on success, log error, and return HRESULT_FROM_WIN32
 // Will display dialog on error
-#define EC_W32(fnx) \
-	error::CheckMe([&]() -> HRESULT { \
-		const auto __hRes = HRESULT_FROM_WIN32(fnx); \
-		error::LogFunctionCall(__hRes, {}, true, false, false, NULL, #fnx, __FILE__, __LINE__); \
-		return __hRes; \
-	}())
+#define EC_W32(fnx) error::CheckWin32((fnx), error::Flags::ShowDialog, {#fnx, __FILE__, __LINE__})
 
 // Execute a W32 function which returns ERROR_SUCCESS on success, log error, and swallow error
 // Will display dialog on error
 #define EC_W32_S(fnx) \
-	[&]() -> void { \
-		const auto __hRes = HRESULT_FROM_WIN32(fnx); \
-		error::LogFunctionCall(__hRes, {}, true, false, false, NULL, #fnx, __FILE__, __LINE__); \
-	}()
+	error::ReportResult_S(HRESULT_FROM_WIN32(fnx), {error::Flags::ShowDialog}, {#fnx, __FILE__, __LINE__})
 
 // Execute a W32 function which returns ERROR_SUCCESS on success, log error, and return HRESULT_FROM_WIN32
 // Will not display an error dialog
-#define WC_W32(fnx) \
-	error::CheckMe([&]() -> HRESULT { \
-		const auto __hRes = HRESULT_FROM_WIN32(fnx); \
-		error::LogFunctionCall(__hRes, {}, false, false, false, NULL, #fnx, __FILE__, __LINE__); \
-		return __hRes; \
-	}())
+#define WC_W32(fnx) error::CheckWin32((fnx), error::Flags::None, {#fnx, __FILE__, __LINE__})
 
 // Execute a W32 function which returns ERROR_SUCCESS on success, log error, and swallow error
 // Will not display an error dialog
-#define WC_W32_S(fnx) \
-	[&]() -> void { \
-		const auto __hRes = HRESULT_FROM_WIN32(fnx); \
-		error::LogFunctionCall(__hRes, {}, false, false, false, NULL, #fnx, __FILE__, __LINE__); \
-	}()
+#define WC_W32_S(fnx) error::ReportResult_S(HRESULT_FROM_WIN32(fnx), {}, {#fnx, __FILE__, __LINE__})
 
-// Execute a bool/BOOL function, log error, and return CheckWin32Error(HRESULT)
+// Execute a bool/BOOL function; return S_OK on success or a captured last-error failure
+// Returns HRESULT, not BOOL; use FAILED/SUCCEEDED
 // Will display dialog on error
-#define EC_B(fnx) \
-	error::CheckMe( \
-		[&]() -> HRESULT { return !(fnx) ? error::CheckWin32Error(true, __FILE__, __LINE__, #fnx) : S_OK; }())
+#define EC_B(fnx) error::CheckBool([&]() { return (fnx); }, error::Flags::ShowDialog, {#fnx, __FILE__, __LINE__})
 
 // Execute a bool/BOOL function, log error, and swallow error
 // Will display dialog on error
-#define EC_B_S(fnx) \
-	[&]() -> void { \
-		if (!(fnx)) \
-		{ \
-			static_cast<void>(error::CheckWin32Error(true, __FILE__, __LINE__, #fnx)); \
-		} \
-	}()
+#define EC_B_S(fnx) error::CheckBool_S([&]() { return (fnx); }, error::Flags::ShowDialog, {#fnx, __FILE__, __LINE__})
 
-// Execute a bool/BOOL function, log error, and return CheckWin32Error(HRESULT)
+// Execute a bool/BOOL function; return S_OK on success or a captured last-error failure
+// Returns HRESULT, not BOOL; use FAILED/SUCCEEDED
 // Will not display an error dialog
-#define WC_B(fnx) \
-	error::CheckMe( \
-		[&]() -> HRESULT { return !(fnx) ? error::CheckWin32Error(false, __FILE__, __LINE__, #fnx) : S_OK; }())
+#define WC_B(fnx) error::CheckBool([&]() { return (fnx); }, error::Flags::None, {#fnx, __FILE__, __LINE__})
 
 // Execute a bool/BOOL function, log error, and swallow error
 // Will not display an error dialog
-#define WC_B_S(fnx) \
-	[&]() -> void { \
-		if (!(fnx)) \
-		{ \
-			static_cast<void>(error::CheckWin32Error(false, __FILE__, __LINE__, #fnx)); \
-		} \
-	}()
+#define WC_B_S(fnx) error::CheckBool_S([&]() { return (fnx); }, error::Flags::None, {#fnx, __FILE__, __LINE__})
 
-// Execute a function which returns 0 on error, log error, and return result
+// Execute a function which returns 0 on error, log error, and return the native result as _TYPE
 // Will display dialog on error
 #define EC_D(_TYPE, fnx) \
 	[&]() -> _TYPE { \
@@ -268,7 +270,7 @@ namespace error
 		return __ret; \
 	}()
 
-// Execute a function which returns 0 on error, log error, and return CheckWin32Error(HRESULT)
+// Execute a function which returns 0 on error, log error, and return the native result as _TYPE
 // Will not display an error dialog
 #define WC_D(_TYPE, fnx) \
 	[&]() -> _TYPE { \
@@ -296,81 +298,51 @@ namespace error
 // Logs a MAPI call trace under output::dbgLevel::MAPIFunctions
 // Will display dialog on error
 #define EC_H_IGNORE_RET_MAPI(__ignore, fnx) \
-	error::CheckMe([&]() -> HRESULT { \
-		const auto __hRes = (fnx); \
-		error::LogFunctionCall(__hRes, __ignore, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
-		return __hRes; \
-	}())
+	error::ReportResult( \
+		(fnx), {error::Flags::ShowDialog | error::Flags::TraceMapi}, {#fnx, __FILE__, __LINE__}, (__ignore))
 
 // Execute a function, log and return the HRESULT
 // Does not log/display on error if it matches __ignore
 // Does not suppress __ignore as return value so caller can check it
 // Will not display an error dialog
-#define WC_H_IGNORE_RET(__ignore, fnx) \
-	error::CheckMe([&]() -> HRESULT { \
-		const auto __hRes = (fnx); \
-		error::LogFunctionCall(__hRes, __ignore, false, false, false, NULL, #fnx, __FILE__, __LINE__); \
-		return __hRes; \
-	}())
+#define WC_H_IGNORE_RET(__ignore, fnx) error::ReportResult((fnx), {}, {#fnx, __FILE__, __LINE__}, (__ignore))
 
 // Execute a function, log and return the HRESULT
-// MAPI's GetProps call will return MAPI_W_ERRORS_RETURNED if even one prop fails
-// This is annoying, so this macro tosses those warnings.
-// We have to check each prop before we use it anyway, so we don't lose anything here.
-// Using this macro, all we have to check is that we got a props array back
+// Suppress diagnostics for results in __ignore and normalize them to S_OK
 // Logs a MAPI call trace under output::dbgLevel::MAPIFunctions
 // Will display dialog on error
 #define EC_H_IGNORE(__ignore, fnx) \
-	error::CheckMe([&]() -> HRESULT { \
-		const auto __hRes = (fnx); \
-		const auto __hrIgnore = (__ignore); \
-		error::LogFunctionCall(__hRes, __hrIgnore, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
-		return std::contains(__hrIgnore, __hRes) ? S_OK : __hRes; \
-	}())
+	error::ReportResult( \
+		(fnx), \
+		{error::Flags::ShowDialog | error::Flags::TraceMapi | error::Flags::AcceptIgnored}, \
+		{#fnx, __FILE__, __LINE__}, \
+		(__ignore))
 #define EC_H_GETPROPS(fnx) EC_H_IGNORE(std::list<HRESULT>{MAPI_W_ERRORS_RETURNED}, fnx)
 
 // Execute a function, log and swallow the HRESULT
-// MAPI's GetProps call will return MAPI_W_ERRORS_RETURNED if even one prop fails
-// This is annoying, so this macro tosses those warnings.
-// We have to check each prop before we use it anyway, so we don't lose anything here.
-// Using this macro, all we have to check is that we got a props array back
+// Suppress diagnostics for results in __ignore
 // Logs a MAPI call trace under output::dbgLevel::MAPIFunctions
 // Will display dialog on error
 #define EC_H_IGNORE_S(__ignore, fnx) \
-	[&]() -> void { \
-		const auto __hRes = (fnx); \
-		error::LogFunctionCall(__hRes, __ignore, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
-	}()
+	error::ReportResult_S( \
+		(fnx), {error::Flags::ShowDialog | error::Flags::TraceMapi}, {#fnx, __FILE__, __LINE__}, (__ignore))
 #define EC_H_GETPROPS_S(fnx) EC_H_IGNORE_S(std::list<HRESULT>{MAPI_W_ERRORS_RETURNED}, fnx)
 
 // Execute a function, log and return the HRESULT
-// MAPI's GetProps call will return MAPI_W_ERRORS_RETURNED if even one prop fails
-// This is annoying, so this macro tosses those warnings.
-// We have to check each prop before we use it anyway, so we don't lose anything here.
-// Using this macro, all we have to check is that we got a props array back
+// Suppress diagnostics for results in __ignore and normalize them to S_OK
 // Logs a MAPI call trace under output::dbgLevel::MAPIFunctions
 // Will not display an error dialog
 #define WC_H_IGNORE(__ignore, fnx) \
-	error::CheckMe([&]() -> HRESULT { \
-		const auto __hRes = (fnx); \
-		const auto __hrIgnore = (__ignore); \
-		error::LogFunctionCall(__hRes, __hrIgnore, false, true, false, NULL, #fnx, __FILE__, __LINE__); \
-		return std::contains(__hrIgnore, __hRes) ? S_OK : __hRes; \
-	}())
+	error::ReportResult( \
+		(fnx), {error::Flags::TraceMapi | error::Flags::AcceptIgnored}, {#fnx, __FILE__, __LINE__}, (__ignore))
 #define WC_H_GETPROPS(fnx) WC_H_IGNORE(std::list<HRESULT>{MAPI_W_ERRORS_RETURNED}, fnx)
 
 // Execute a function, log and swallow the HRESULT
-// MAPI's GetProps call will return MAPI_W_ERRORS_RETURNED if even one prop fails
-// This is annoying, so this macro tosses those warnings.
-// We have to check each prop before we use it anyway, so we don't lose anything here.
-// Using this macro, all we have to check is that we got a props array back
+// Suppress diagnostics for results in __ignore
 // Logs a MAPI call trace under output::dbgLevel::MAPIFunctions
 // Will not display an error dialog
 #define WC_H_IGNORE_S(__ignore, fnx) \
-	[&]() -> void { \
-		const auto __hRes = (fnx); \
-		error::LogFunctionCall(__hRes, __ignore, false, true, false, NULL, #fnx, __FILE__, __LINE__); \
-	}()
+	error::ReportResult_S((fnx), {error::Flags::TraceMapi}, {#fnx, __FILE__, __LINE__}, (__ignore))
 #define WC_H_GETPROPS_S(fnx) WC_H_IGNORE_S(std::list<HRESULT>{MAPI_W_ERRORS_RETURNED}, fnx)
 
 // Execute a function, log and return the HRESULT
@@ -379,18 +351,7 @@ namespace error
 // I don't consider these to be errors.
 // Logs a MAPI call trace under output::dbgLevel::MAPIFunctions
 // Will display dialog on error
-#define EC_H_CANCEL(fnx) \
-	error::CheckMe([&]() -> HRESULT { \
-		const auto __hRes = (fnx); \
-		if (__hRes == MAPI_E_USER_CANCEL || __hRes == MAPI_E_CANCEL) \
-		{ \
-			error::LogFunctionCall(__hRes, {}, false, true, false, IDS_USERCANCELLED, #fnx, __FILE__, __LINE__); \
-			return S_OK; \
-		} \
-		else \
-			error::LogFunctionCall(__hRes, {}, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
-		return __hRes; \
-	}())
+#define EC_H_CANCEL(fnx) error::CheckCancelled((fnx), {#fnx, __FILE__, __LINE__})
 
 // Execute a function, log and swallow the HRESULT
 // Logs a MAPI call trace under output::dbgLevel::MAPIFunctions
@@ -398,14 +359,7 @@ namespace error
 // I don't consider these to be errors.
 // Logs a MAPI call trace under output::dbgLevel::MAPIFunctions
 // Will display dialog on error
-#define EC_H_CANCEL_S(fnx) \
-	[&]() -> void { \
-		const auto __hRes = (fnx); \
-		if (__hRes == MAPI_E_USER_CANCEL || __hRes == MAPI_E_CANCEL) \
-			error::LogFunctionCall(__hRes, {}, false, true, false, IDS_USERCANCELLED, #fnx, __FILE__, __LINE__); \
-		else \
-			error::LogFunctionCall(__hRes, {}, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
-	}()
+#define EC_H_CANCEL_S(fnx) error::CheckCancelled_S((fnx), {#fnx, __FILE__, __LINE__})
 
 // Execute a function, log and return the command ID
 // Designed to check return values from dialog functions, primarily DoModal

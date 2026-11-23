@@ -30,9 +30,14 @@
 - Match the wrapper to the API's documented return contract: `_H` for HRESULT,
   `_MAPI` for MAPI HRESULT, `_W32` for Win32 error codes, `_B` for BOOL success,
   and `_D(TYPE, ...)` when the native result is needed and zero means failure.
-- `EC_B` and `WC_B` return **HRESULT**, not BOOL. Check them with
-  `FAILED`/`SUCCEEDED`; never Boolean truth tests. `EC_D`/`WC_D` preserve the
-  native result. Use the `_S` variants when only logging is needed.
+- HRESULT-producing EC/WC families return `HRESULT`, not BOOL.
+  Use `FAILED`/`SUCCEEDED` to test failure/success, including nonzero success
+  warnings. Do not use `if (hRes)` or `!hRes` as success/failure checks.
+  `EC_D`/`WC_D` preserve the native result. Use `_S` variants, which return void,
+  when only logging is needed.
+- `_B` requires a zero-failure API with documented `GetLastError` support.
+  Failure with last error zero reports `E_FAIL` and a missing-error diagnostic.
+  For Boolean failure without last-error support, use `_H(call ? S_OK : E_FAIL)`.
 - Do not blindly wrap APIs for which zero, false, or null is a valid result.
   Preserve their documented semantics and use the repository's error-reporting
   helpers for actual failures.
