@@ -4,6 +4,7 @@
 #include <core/utility/output.h>
 #include <core/utility/registry.h>
 #include <core/utility/strings.h>
+#include <cstring>
 
 namespace errortest
 {
@@ -441,16 +442,14 @@ namespace errortest
 
 		TEST_METHOD(MapiErrorFormattingRespectsAnsiAndUnicodePayloads)
 		{
-			char ansiError[] = "Provider error";
-			char ansiComponent[] = "Test component";
+			// MAPIERROR uses LPTSTR even when its strings contain ANSI bytes.
+			TCHAR ansiError[sizeof("Provider error")]{};
+			TCHAR ansiComponent[sizeof("Test component")]{};
+			std::memcpy(ansiError, "Provider error", sizeof("Provider error"));
+			std::memcpy(ansiComponent, "Test component", sizeof("Test component"));
 			wchar_t unicodeError[] = L"Provider \u00E9rror";
 			wchar_t unicodeComponent[] = L"Test component";
-			const MAPIERROR ansi{
-				2,
-				reinterpret_cast<LPTSTR>(ansiError),
-				reinterpret_cast<LPTSTR>(ansiComponent),
-				static_cast<ULONG>(MAPI_E_NOT_FOUND),
-				0x123};
+			const MAPIERROR ansi{2, ansiError, ansiComponent, static_cast<ULONG>(MAPI_E_NOT_FOUND), 0x123};
 			const MAPIERROR unicode{
 				2,
 				reinterpret_cast<LPTSTR>(unicodeError),
