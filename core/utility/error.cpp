@@ -10,6 +10,57 @@ namespace error
 {
 	std::function<void(const std::wstring& errString)> displayError;
 
+	template <typename IgnoreRange>
+	static HRESULT
+	ReportResultImpl(const HRESULT hRes, const Diagnostic& diagnostic, const CallSite& site, const IgnoreRange& ignored)
+	{
+		if (fIsSet(output::dbgLevel::MAPIFunctions) && (diagnostic.flags & Flags::TraceMapi) == Flags::TraceMapi)
+		{
+			const auto szFunctionString = strings::formatmessage(IDS_FUNCTION, site.file, site.line, site.expression);
+
+			output::Output(output::dbgLevel::MAPIFunctions, nullptr, true, szFunctionString);
+			output::Output(output::dbgLevel::MAPIFunctions, nullptr, false, L"\n");
+		}
+
+		// Check if we have no work to do
+		if (hRes == S_OK) return hRes;
+
+		const auto showDialog = (diagnostic.flags & Flags::ShowDialog) == Flags::ShowDialog;
+		const auto report = (showDialog && displayError) || fIsSet(output::dbgLevel::HRes);
+		const auto accept = (diagnostic.flags & Flags::AcceptIgnored) == Flags::AcceptIgnored;
+		if (!report && !accept) return hRes;
+		if (std::find(ignored.begin(), ignored.end(), hRes) != ignored.end()) return accept ? S_OK : hRes;
+		if (!report) return hRes;
+
+		// Get our error message if we have one
+		const auto szErrorMsg = (diagnostic.flags & Flags::SystemMessage) == Flags::SystemMessage
+									? strings::formatmessagesys(diagnostic.message)
+								: diagnostic.message ? strings::loadstring(diagnostic.message)
+													 : L"";
+
+		const auto szErrString = strings::formatmessage(
+			FAILED(hRes) ? IDS_ERRFORMATSTRING : IDS_WARNFORMATSTRING,
+			szErrorMsg.c_str(),
+			ErrorNameFromErrorCode(hRes).c_str(),
+			hRes,
+			site.expression,
+			site.file,
+			site.line);
+
+		if (fIsSet(output::dbgLevel::HRes))
+		{
+			output::Output(output::dbgLevel::HRes, nullptr, true, strings::StripCarriage(szErrString));
+			output::Output(output::dbgLevel::HRes, nullptr, false, L"\n");
+		}
+
+		if (showDialog && displayError)
+		{
+			displayError(szErrString);
+		}
+
+		return hRes;
+	}
+
 	void LogFunctionCall(
 		HRESULT hRes,
 		std::list<HRESULT> hrIgnore,
@@ -21,42 +72,79 @@ namespace error
 		_In_z_ LPCSTR szFile,
 		int iLine)
 	{
-		if (fIsSet(output::dbgLevel::MAPIFunctions) && bMAPICall)
-		{
-			const auto szFunctionString = strings::formatmessage(IDS_FUNCTION, szFile, iLine, szFunction);
-
-			output::Output(output::dbgLevel::MAPIFunctions, nullptr, true, szFunctionString);
-			output::Output(output::dbgLevel::MAPIFunctions, nullptr, false, L"\n");
-		}
-
-		// Check if we have no work to do
-		if (hRes == S_OK || std::contains(hrIgnore, hRes)) return;
-		if (!(bShowDialog && displayError) && !fIsSet(output::dbgLevel::HRes)) return;
-
-		// Get our error message if we have one
-		const auto szErrorMsg = bSystemCall	  ? strings::formatmessagesys(uidErrorMsg)
-								: uidErrorMsg ? strings::loadstring(uidErrorMsg)
-											  : L"";
-
-		const auto szErrString = strings::formatmessage(
-			FAILED(hRes) ? IDS_ERRFORMATSTRING : IDS_WARNFORMATSTRING,
-			szErrorMsg.c_str(),
-			ErrorNameFromErrorCode(hRes).c_str(),
+		ReportResultImpl(
 			hRes,
-			szFunction,
-			szFile,
-			iLine);
+			{(bShowDialog ? Flags::ShowDialog : Flags::None) | (bMAPICall ? Flags::TraceMapi : Flags::None) |
+				 (bSystemCall ? Flags::SystemMessage : Flags::None),
+			 uidErrorMsg},
+			{szFunction, szFile, iLine},
+			hrIgnore);
+	}
 
-		if (fIsSet(output::dbgLevel::HRes))
-		{
-			output::Output(output::dbgLevel::HRes, nullptr, true, strings::StripCarriage(szErrString));
-			output::Output(output::dbgLevel::HRes, nullptr, false, L"\n");
-		}
+	HRESULT ReportResult(
+		const HRESULT hRes,
+		const Diagnostic& diagnostic,
+		const CallSite& site,
+		const std::span<const HRESULT> ignored)
+	{
+		return ReportResultImpl(hRes, diagnostic, site, ignored);
+	}
 
-		if (bShowDialog && displayError)
-		{
-			displayError(szErrString);
-		}
+	HRESULT
+	ReportResult(
+		const HRESULT hRes,
+		const Diagnostic& diagnostic,
+		const CallSite& site,
+		const std::list<HRESULT>& ignored)
+	{
+		return ReportResultImpl(hRes, diagnostic, site, ignored);
+	}
+
+	void ReportResult_S(
+		const HRESULT hRes,
+		const Diagnostic& diagnostic,
+		const CallSite& site,
+		const std::span<const HRESULT> ignored)
+	{
+		ReportResultImpl(hRes, {diagnostic.flags & ~Flags::AcceptIgnored, diagnostic.message}, site, ignored);
+	}
+
+	void ReportResult_S(
+		const HRESULT hRes,
+		const Diagnostic& diagnostic,
+		const CallSite& site,
+		const std::list<HRESULT>& ignored)
+	{
+		ReportResultImpl(hRes, {diagnostic.flags & ~Flags::AcceptIgnored, diagnostic.message}, site, ignored);
+	}
+
+	static bool IsCancelled(const HRESULT hRes) noexcept { return hRes == MAPI_E_USER_CANCEL || hRes == MAPI_E_CANCEL; }
+
+	void CheckCancelled_S(const HRESULT hRes, const CallSite& site)
+	{
+		const auto diagnostic = IsCancelled(hRes) ? Diagnostic{Flags::TraceMapi, IDS_USERCANCELLED}
+												  : Diagnostic{Flags::ShowDialog | Flags::TraceMapi};
+		ReportResult_S(hRes, diagnostic, site);
+	}
+
+	HRESULT CheckCancelled(const HRESULT hRes, const CallSite& site)
+	{
+		CheckCancelled_S(hRes, site);
+		return IsCancelled(hRes) ? S_OK : hRes;
+	}
+
+	HRESULT CheckWin32(const DWORD result, const Flags flags, const CallSite& site)
+	{
+		const auto message = (flags & Flags::SystemMessage) == Flags::SystemMessage ? result : 0;
+		return ReportResult(HRESULT_FROM_WIN32(result), {flags, message}, site);
+	}
+
+	void LogWin32Failure(const DWORD lastError, const Flags flags, const CallSite& site)
+	{
+		const auto diagnostic = lastError == ERROR_SUCCESS
+									? Diagnostic{flags & ~Flags::SystemMessage, IDS_API_FAILED_NO_ERROR}
+									: Diagnostic{flags | Flags::SystemMessage, lastError};
+		ReportResult_S(LastErrorToHRESULT(lastError), diagnostic, site);
 	}
 
 	_Check_return_ HRESULT
