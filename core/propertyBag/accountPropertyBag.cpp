@@ -11,7 +11,7 @@ namespace propertybag
 		m_lpAccount = mapi::safe_cast<LPOLKACCOUNT>(lpAccount);
 	}
 
-	accountPropertyBag ::~accountPropertyBag()
+	accountPropertyBag::~accountPropertyBag()
 	{
 		if (m_lpAccount) m_lpAccount->Release();
 		m_lpAccount = nullptr;
