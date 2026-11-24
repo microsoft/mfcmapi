@@ -1,0 +1,9 @@
+Extended Rule Condition
+	NamedPropertyInformation
+		Number of named props = 0x0001
+		Named prop size = 0x00000000
+		Invalid named properties
+	Restriction
+	|	rt = 0x0 = RES_AND
+	|	resAnd
+	|	|	cRes = 0x00000000

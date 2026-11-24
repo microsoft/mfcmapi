@@ -1,0 +1,17 @@
+Extended Rule Action
+	NamedPropertyInformation
+		Number of named props = 0x0000
+	RuleVersion: 0x00000001
+	NoOfActions: 0x00000002
+	ActionBlocks[0]
+		ActionLength: 0x0000000B
+		ActionType: 0x7F = 127
+		ActionFlavor: 0x00000000
+		ActionFlags: 0x00000000
+		RawActionData
+			cb: 2 lpb: DEAD
+	ActionBlocks[1]
+		ActionLength: 0x00000009
+		ActionType: OP_MARK_AS_READ = 11
+		ActionFlavor: 0x00000000
+		ActionFlags: 0x00000000

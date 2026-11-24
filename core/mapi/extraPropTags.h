@@ -18,7 +18,6 @@ enum __NonPropFlag
 	flagRestrictionType,
 	flagBitmask,
 	flagRelop,
-	flagActionType,
 	flagBounceCode,
 	flagOPReply,
 	flagOpForward,

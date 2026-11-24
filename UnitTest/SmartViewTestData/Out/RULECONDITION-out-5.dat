@@ -1,0 +1,5 @@
+Rule Condition
+	Restriction
+	|	rt = 0x0 = RES_AND
+	|	resAnd
+	|	|	cRes = 0x00000000

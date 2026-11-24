@@ -1,0 +1,10 @@
+Rule Action
+	NoOfActions: 0x00000001
+	ActionBlocks[0]
+		ActionLength: 0x0000000D
+		Truncated action
+		ActionType: 0x7F = 127
+		ActionFlavor: 0x00000000
+		ActionFlags: 0x00000000
+		RawActionData
+			cb: 2 lpb: DEAD

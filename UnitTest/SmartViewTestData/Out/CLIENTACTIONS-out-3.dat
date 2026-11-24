@@ -1,0 +1,13 @@
+Client Actions
+	RuleAction[0]
+		NoOfActions: 0x00000001
+		ActionBlocks[0]
+			ActionLength: 0x00000009
+			ActionType: OP_MARK_AS_READ = 11
+			ActionFlavor: 0x00000000
+			ActionFlags: 0x00000000
+	RuleAction[1]
+		Truncated action count
+	Invalid or truncated rule action
+	Unparsed client actions
+		cb: 1 lpb: FF

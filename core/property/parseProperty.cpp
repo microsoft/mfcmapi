@@ -523,7 +523,8 @@ namespace property
 	{
 		std::wstring szProp;
 		std::wstring szAltProp;
-		auto szFlags = flags::InterpretFlags(flagActionType, action.acttype);
+		auto szFlags =
+			action.acttype ? flags::InterpretFlags(PROP_ID(PR_RULE_ACTION_TYPE), action.acttype) : std::wstring{L"0x0"};
 		auto szFlags2 = flags::InterpretFlags(flagRuleFlag, action.ulFlags);
 		auto actstring = strings::formatmessage(
 			IDS_ACTION,

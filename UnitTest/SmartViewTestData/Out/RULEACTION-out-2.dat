@@ -1,0 +1,7 @@
+Rule Action
+	NoOfActions: 0x00000001
+	ActionBlocks[0]
+		ActionLength: 0x00000009
+		ActionType: 0x0 = 0
+		ActionFlavor: 0x00000000
+		ActionFlags: 0x00000000

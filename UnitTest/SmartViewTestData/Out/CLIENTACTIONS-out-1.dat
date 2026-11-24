@@ -1,0 +1,18 @@
+Client Actions
+	RuleAction[0]
+		NoOfActions: 0x00000001
+		ActionBlocks[0]
+			ActionLength: 0x0000000B
+			ActionType: OP_DEFER_ACTION = 5
+			ActionFlavor: 0x00000000
+			ActionFlags: 0x00000000
+			ActionDataDefer
+				deferBytes
+					cb: 2 lpb: DEAD
+	RuleAction[1]
+		NoOfActions: 0x00000001
+		ActionBlocks[0]
+			ActionLength: 0x00000009
+			ActionType: OP_MARK_AS_READ = 11
+			ActionFlavor: 0x00000000
+			ActionFlags: 0x00000000

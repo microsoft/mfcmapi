@@ -880,6 +880,7 @@
     <ClInclude Include="smartview\decodeEntryID.h" />
     <ClInclude Include="smartview\encodeEntryID.h" />
     <ClInclude Include="smartview\RuleAction.h" />
+    <ClInclude Include="smartview\ClientActions.h" />
     <ClInclude Include="smartview\ConversationIndex.h" />
     <ClInclude Include="smartview\EntryIdStruct.h" />
     <ClInclude Include="smartview\EntryList.h" />
@@ -978,6 +979,7 @@
     <ClCompile Include="smartview\decodeEntryID.cpp" />
     <ClCompile Include="smartview\encodeEntryID.cpp" />
     <ClCompile Include="smartview\RuleAction.cpp" />
+    <ClCompile Include="smartview\ClientActions.cpp" />
     <ClCompile Include="smartview\ConversationIndex.cpp" />
     <ClCompile Include="smartview\EntryIdStruct.cpp" />
     <ClCompile Include="smartview\EntryList.cpp" />

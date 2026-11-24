@@ -1,0 +1,5 @@
+Rule Condition
+	Restriction
+	|	rt = 0x8 = RES_EXIST
+	|	resExist
+	|	|	PropTag = 0x80000003 (PT_LONG)

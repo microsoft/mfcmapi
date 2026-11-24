@@ -13,6 +13,15 @@ namespace flagtest
 
 		TEST_CLASS_INITIALIZE(initialize) { unittest::init(); }
 
+		TEST_METHOD(RuleActionTypeDescribesDeferredErrors)
+		{
+			unittest::AreEqualEx(L"Not specific to an action", flags::InterpretFlags(PROP_ID(PR_RULE_ACTION_TYPE), 0));
+			unittest::AreEqualEx(L"OP_MOVE", flags::InterpretFlags(PROP_ID(PR_RULE_ACTION_TYPE), OP_MOVE));
+			unittest::AreEqualEx(
+				L"OP_MARK_AS_READ", flags::InterpretFlags(PROP_ID(PR_RULE_ACTION_TYPE), OP_MARK_AS_READ));
+			unittest::AreEqualEx(L"0xFF", flags::InterpretFlags(PROP_ID(PR_RULE_ACTION_TYPE), 0xFF));
+		}
+
 		TEST_METHOD(Test_InterpretFlags)
 		{
 			// flagVALUE
