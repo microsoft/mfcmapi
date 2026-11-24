@@ -145,6 +145,20 @@ namespace controls::sortlistctrl
 		case WM_MFCMAPI_THEMECHANGED:
 			if (m_ImageList.GetSafeHandle()) RefreshImages();
 			break;
+		case WM_HSCROLL:
+		case WM_MOUSEHWHEEL:
+		case LVM_SCROLL:
+		{
+			const auto result = CListCtrl::WindowProc(message, wParam, lParam);
+			if (message != LVM_SCROLL || wParam)
+			{
+				// The native scroll optimization can retain pixels from a custom-drawn highlighted row.
+				WC_H_S(::RedrawWindow(m_hWnd, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW) ? S_OK : E_FAIL);
+			}
+
+			return result;
+		}
+
 		case WM_NCPAINT:
 		case WM_PAINT:
 		{
@@ -237,6 +251,7 @@ namespace controls::sortlistctrl
 					ui::DrawListItemGlow(m_hWnd, iItemCur);
 				}
 			}
+
 			break;
 		}
 		case WM_MOUSELEAVE:
@@ -246,6 +261,7 @@ namespace controls::sortlistctrl
 				m_iItemCurHover = -1;
 				ui::DrawListItemGlow(m_hWnd, iItemCur);
 			}
+
 			break;
 		}
 		return CListCtrl::WindowProc(message, wParam, lParam);

@@ -1198,7 +1198,7 @@ namespace ui
 		}
 	}
 
-	static void DrawHighlightedListItem(_In_ const NMLVCUSTOMDRAW& draw, const uiColor background)
+	static void DrawListItem(_In_ const NMLVCUSTOMDRAW& draw, const uiColor background, const uiColor foreground)
 	{
 		const auto hwnd = draw.nmcd.hdr.hwndFrom;
 		const auto hdc = draw.nmcd.hdc;
@@ -1215,7 +1215,8 @@ namespace ui
 		row.right = client.right;
 		const auto savedDC = WC_D(int, SaveDC(hdc));
 		if (!savedDC) return;
-		if (!WC_D(int, IntersectClipRect(hdc, row.left, row.top, row.right, row.bottom)))
+		const auto clip = WC_D(int, IntersectClipRect(hdc, row.left, row.top, row.right, row.bottom));
+		if (!clip || clip == NULLREGION)
 		{
 			WC_B_S(RestoreDC(hdc, savedDC));
 			return;
@@ -1283,12 +1284,19 @@ namespace ui
 			{
 				auto firstLabel = RECT{};
 				if (FAILED(WC_B(ListView_GetItemRect(hwnd, item, &firstLabel, LVIR_LABEL)))) continue;
-				label.left = firstLabel.left;
+				// The label bounds already exclude the icon; retain the two-pixel text inset.
+				label.left = firstLabel.left + 2;
+			}
+			else
+			{
+				// Measured approximation of native subitem padding, in system edge units.
+				label.left += 3 * GetSystemMetrics(SM_CXEDGE);
 			}
 
-			label.left += 2;
+			// Keep text and ellipsis two pixels clear of the column edge.
 			label.right -= 2;
 			if (label.right <= label.left) continue;
+			if (!RectVisible(hdc, &label)) continue;
 
 			auto value = LVITEMW{};
 			value.iSubItem = column;
@@ -1312,7 +1320,7 @@ namespace ui
 			DrawUITextW(
 				hdc,
 				text.data(),
-				MyGetSysColor(uiColor::GlowText),
+				MyGetSysColor(foreground),
 				label,
 				false,
 				alignment | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS | DT_NOPREFIX);
@@ -1321,7 +1329,7 @@ namespace ui
 		if ((info.state & LVIS_FOCUSED) && GetFocus() == hwnd &&
 			!(SendMessage(hwnd, WM_QUERYUISTATE, 0, 0) & UISF_HIDEFOCUS))
 		{
-			WC_H_S(SetTextColor(hdc, MyGetSysColor(uiColor::GlowText)) == CLR_INVALID ? E_FAIL : S_OK);
+			WC_H_S(SetTextColor(hdc, MyGetSysColor(foreground)) == CLR_INVALID ? E_FAIL : S_OK);
 			WC_H_S(SetBkColor(hdc, MyGetSysColor(background)) == CLR_INVALID ? E_FAIL : S_OK);
 			WC_B_S(DrawFocusRect(hdc, &row));
 		}
@@ -1343,55 +1351,14 @@ namespace ui
 		case CDDS_ITEMPREPAINT:
 		{
 			const auto selected = ListView_GetItemState(lvcd->nmcd.hdr.hwndFrom, iItem, LVIS_SELECTED) != 0;
-			if (selected || iItemCurHover == iItem)
-			{
-				// Explorer selection and hover backgrounds ignore clrTextBk.
-				DrawHighlightedListItem(*lvcd, selected ? uiColor::SelectedBackground : uiColor::GlowBackground);
-				*pResult = CDRF_SKIPDEFAULT;
-				break;
-			}
-
-			*pResult = CDRF_NOTIFYSUBITEMDRAW;
-			break;
-		}
-
-		case CDDS_SUBITEM | CDDS_ITEMPREPAINT:
-		{
-			// Big speedup - we skip painting if the target rectangle is outside the client area
-
-			// On some systems, top/bottom will both be zero, but not left/right. We want to consider those
-			// as if they had positive area, so bump bottom to 1 and remember to reset it after.
-			auto bResetBottom = false;
-			if (0 == lvcd->nmcd.rc.top && 0 == lvcd->nmcd.rc.bottom)
-			{
-				lvcd->nmcd.rc.bottom = 1;
-				bResetBottom = true;
-			}
-
-			auto rc = RECT{};
-			if (FAILED(WC_B(GetClientRect(lvcd->nmcd.hdr.hwndFrom, &rc))))
-			{
-				if (bResetBottom) lvcd->nmcd.rc.bottom = 0;
-				*pResult = CDRF_SKIPDEFAULT;
-				break;
-			}
-
-			IntersectRect(&rc, &rc, &lvcd->nmcd.rc);
-
-			if (bResetBottom)
-			{
-				lvcd->nmcd.rc.bottom = 0;
-			}
-
-			if (IsRectEmpty(&rc))
-			{
-				*pResult = CDRF_SKIPDEFAULT;
-				break;
-			}
-
-			lvcd->clrText = MyGetSysColor(uiColor::Text);
-			lvcd->clrTextBk = MyGetSysColor(uiColor::Background);
-			*pResult = CDRF_NEWFONT;
+			const auto hovered = iItemCurHover == iItem;
+			const auto background = selected  ? uiColor::SelectedBackground
+									: hovered ? uiColor::GlowBackground
+											  : uiColor::Background;
+			const auto foreground = selected || hovered ? uiColor::GlowText : uiColor::Text;
+			// Keep text layout and truncation identical when selection or hover changes.
+			DrawListItem(*lvcd, background, foreground);
+			*pResult = CDRF_SKIPDEFAULT;
 			break;
 		}
 
@@ -1685,10 +1652,9 @@ namespace ui
 				tri[2].y = (rcTriangle.top + rcTriangle.bottom) / 2;
 			}
 
-			const auto cEdge = bGlow ? uiColor::Glow : foreground;
-			const auto cFill = bGlow ? uiColor::Glow : bExpanded ? foreground : background;
+			const auto cFill = bGlow || bExpanded ? foreground : background;
 
-			DrawFilledPolygon(hdc, tri, _countof(tri), MyGetSysColor(cEdge), GetSysBrush(cFill));
+			DrawFilledPolygon(hdc, tri, _countof(tri), MyGetSysColor(foreground), GetSysBrush(cFill));
 		}
 	}
 
