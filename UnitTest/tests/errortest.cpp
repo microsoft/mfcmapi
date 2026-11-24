@@ -10,6 +10,17 @@ namespace errortest
 {
 	static constexpr error::CallSite site{"TestApi()", "error-contract-test.cpp", 123};
 
+	template <typename Result> constexpr void CheckHResultMacroArguments()
+	{
+		constexpr auto accepted = std::is_same_v<Result, HRESULT>;
+		static_assert(requires(Result result) { WC_H(result); } == accepted);
+		static_assert(requires(Result result) { WC_H_S(result); } == accepted);
+		static_assert(requires(Result result) { WC_H_IGNORE(std::list<HRESULT>{}, result); } == accepted);
+		static_assert(requires(Result result) { WC_H_IGNORE_S(std::list<HRESULT>{}, result); } == accepted);
+		static_assert(requires(Result result) { EC_H_CANCEL(result); } == accepted);
+		static_assert(requires(Result result) { EC_H_CANCEL_S(result); } == accepted);
+	}
+
 	class TestFormContainer final : public IMAPIFormContainer
 	{
 	public:
@@ -529,6 +540,9 @@ namespace errortest
 
 		TEST_METHOD(HResultMacrosKeepResultDiscardAndNativeContracts)
 		{
+			CheckHResultMacroArguments<HRESULT>();
+			CheckHResultMacroArguments<BOOL>();
+			CheckHResultMacroArguments<bool>();
 			const std::list<HRESULT> ignored{E_FAIL};
 			static_assert(std::is_same_v<decltype(EC_H(S_OK)), HRESULT>);
 			static_assert(std::is_same_v<decltype(WC_H(S_OK)), HRESULT>);
@@ -536,6 +550,8 @@ namespace errortest
 			static_assert(std::is_same_v<decltype(WC_MAPI(S_OK)), HRESULT>);
 			static_assert(std::is_same_v<decltype(EC_B(TRUE)), HRESULT>);
 			static_assert(std::is_same_v<decltype(WC_B(TRUE)), HRESULT>);
+			static_assert(std::is_same_v<decltype(EC_BOOL(TRUE)), HRESULT>);
+			static_assert(std::is_same_v<decltype(WC_BOOL(TRUE)), HRESULT>);
 			static_assert(std::is_same_v<decltype(EC_W32(ERROR_SUCCESS)), HRESULT>);
 			static_assert(std::is_same_v<decltype(WC_W32(ERROR_SUCCESS)), HRESULT>);
 			static_assert(std::is_same_v<decltype(EC_H_MSG(0, S_OK)), HRESULT>);
@@ -764,7 +780,7 @@ namespace errortest
 			{
 				for (const auto lastError : {ERROR_SUCCESS, ERROR_ACCESS_DENIED})
 				{
-					for (const auto showDialog : {false, true})
+					for (auto variant = 0; variant < 4; ++variant)
 					{
 						auto calls = 0;
 						const auto invoke = [&]() -> BOOL {
@@ -774,16 +790,30 @@ namespace errortest
 						};
 						m_messages.clear();
 						m_output.clear();
-						if (showDialog)
+						auto hRes = S_OK;
+						switch (variant)
 						{
+						case 0:
+							hRes = EC_BOOL(invoke());
+							break;
+						case 1:
+							hRes = WC_BOOL(invoke());
+							break;
+						case 2:
 							EC_BOOL_S(invoke());
-						}
-						else
-						{
+							break;
+						case 3:
 							WC_BOOL_S(invoke());
+							break;
 						}
 
 						Assert::AreEqual(1, calls);
+						if (variant < 2)
+						{
+							Assert::AreEqual<HRESULT>(raw ? S_OK : E_FAIL, hRes);
+						}
+
+						const auto showDialog = variant % 2 == 0;
 						Assert::AreEqual(raw != FALSE, m_output.empty());
 						Assert::AreEqual(showDialog && raw == FALSE ? size_t{1} : size_t{0}, m_messages.size());
 						if (raw == FALSE)

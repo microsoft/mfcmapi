@@ -70,7 +70,7 @@ namespace controls::sortlistctrl
 				m_ti.hinst = AfxGetInstanceHandle();
 				m_ti.lpszText = const_cast<LPWSTR>(L"");
 
-				EC_H_S(::SendMessage(m_hwndTip, TTM_ADDTOOL, 0, LPARAM(&m_ti)) ? S_OK : E_FAIL);
+				EC_BOOL_S(::SendMessage(m_hwndTip, TTM_ADDTOOL, 0, LPARAM(&m_ti)));
 				::SendMessage(m_hwndTip, TTM_SETMAXTIPWIDTH, 0, LPARAM(500));
 			}
 		}

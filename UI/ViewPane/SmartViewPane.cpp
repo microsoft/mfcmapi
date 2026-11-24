@@ -252,14 +252,11 @@ namespace viewpane
 
 		if (!data->getChildren().empty())
 		{
-			WC_H_S(
-				::SendMessage(
-					m_TreePane->m_Tree.GetSafeHwnd(),
-					TVM_EXPAND,
-					static_cast<WPARAM>(TVE_EXPAND),
-					reinterpret_cast<LPARAM>(root))
-					? S_OK
-					: E_FAIL);
+			WC_BOOL_S(::SendMessage(
+				m_TreePane->m_Tree.GetSafeHwnd(),
+				TVM_EXPAND,
+				static_cast<WPARAM>(TVE_EXPAND),
+				reinterpret_cast<LPARAM>(root)));
 		}
 	}
 

@@ -261,10 +261,7 @@ namespace viewpane
 			if (m_bMultiline)
 			{
 				LONG stops = 16; // 16 dialog template units. Default is 32.
-				EC_H_S(
-					::SendMessage(m_EditBox.m_hWnd, EM_SETTABSTOPS, WPARAM{1}, reinterpret_cast<LPARAM>(&stops))
-						? S_OK
-						: E_FAIL);
+				EC_BOOL_S(::SendMessage(m_EditBox.m_hWnd, EM_SETTABSTOPS, WPARAM{1}, reinterpret_cast<LPARAM>(&stops)));
 
 				// Remove the awful autoselect of the edit control that scrolls to the end of multiline text
 				::PostMessage(m_EditBox.m_hWnd, EM_SETSEL, static_cast<WPARAM>(0), static_cast<LPARAM>(0));
