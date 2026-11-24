@@ -1283,10 +1283,13 @@ namespace ui
 			{
 				auto firstLabel = RECT{};
 				if (FAILED(WC_B(ListView_GetItemRect(hwnd, item, &firstLabel, LVIR_LABEL)))) continue;
-				label.left = firstLabel.left;
+				label.left = firstLabel.left + 2;
+			}
+			else
+			{
+				label.left += 3 * GetSystemMetrics(SM_CXEDGE);
 			}
 
-			label.left += 2;
 			label.right -= 2;
 			if (label.right <= label.left) continue;
 
