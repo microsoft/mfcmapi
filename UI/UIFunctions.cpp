@@ -692,7 +692,7 @@ namespace ui
 
 		if (isMarkedScrollHost) ::ShowScrollBar(hWnd, SB_VERT, scrollBarVisible);
 
-		WC_H_S(RedrawWindow(hWnd, nullptr, nullptr, RDW_INVALIDATE | RDW_ERASE | RDW_FRAME) ? S_OK : E_FAIL);
+		WC_BOOL_S(RedrawWindow(hWnd, nullptr, nullptr, RDW_INVALIDATE | RDW_ERASE | RDW_FRAME));
 		return true;
 	}
 
@@ -727,11 +727,8 @@ namespace ui
 		}
 
 		EnumChildWindows(hWnd, ApplyThemeToChild, 0);
-		WC_H_S(
-			RedrawWindow(
-				hWnd, nullptr, nullptr, RDW_ERASE | RDW_FRAME | RDW_INVALIDATE | RDW_ALLCHILDREN | RDW_UPDATENOW)
-				? S_OK
-				: E_FAIL);
+		WC_BOOL_S(RedrawWindow(
+			hWnd, nullptr, nullptr, RDW_ERASE | RDW_FRAME | RDW_INVALIDATE | RDW_ALLCHILDREN | RDW_UPDATENOW));
 	}
 
 	BOOL CALLBACK ApplyThemeToTopLevelWindow(_In_ HWND hWnd, LPARAM /*lParam*/) noexcept
@@ -1108,7 +1105,7 @@ namespace ui
 		case WM_SETFOCUS:
 		case WM_KILLFOCUS:
 			// Trigger WM_NCPAINT so we can get an updated frame reflecting focus status
-			WC_H_S(::RedrawWindow(hWnd, nullptr, nullptr, RDW_FRAME | RDW_INVALIDATE | RDW_ERASENOW) ? S_OK : E_FAIL);
+			WC_BOOL_S(::RedrawWindow(hWnd, nullptr, nullptr, RDW_FRAME | RDW_INVALIDATE | RDW_ERASENOW));
 			break;
 		case WM_ENABLE:
 		{
@@ -1116,7 +1113,7 @@ namespace ui
 			const auto background = bReadOnly || !wParam ? uiColor::BackgroundReadOnly : uiColor::Background;
 			static_cast<void>(::SendMessage(hWnd, EM_SETBKGNDCOLOR, 0, MyGetSysColor(background)));
 			UpdateEditTextColor(hWnd, bReadOnly);
-			WC_H_S(::RedrawWindow(hWnd, nullptr, nullptr, RDW_FRAME | RDW_INVALIDATE | RDW_ERASENOW) ? S_OK : E_FAIL);
+			WC_BOOL_S(::RedrawWindow(hWnd, nullptr, nullptr, RDW_FRAME | RDW_INVALIDATE | RDW_ERASENOW));
 			break;
 		}
 		case WM_NCPAINT:
@@ -1388,7 +1385,7 @@ namespace ui
 		rcLabels.left = rcClient.left;
 		rcLabels.right = rcClient.right;
 		IntersectRect(&rcLabels, &rcLabels, &rcClient);
-		WC_H_S(RedrawWindow(hWnd, &rcLabels, nullptr, RDW_INVALIDATE | RDW_UPDATENOW) ? S_OK : E_FAIL);
+		WC_BOOL_S(RedrawWindow(hWnd, &rcLabels, nullptr, RDW_INVALIDATE | RDW_UPDATENOW));
 	}
 
 	void DrawTreeItemGlow(_In_ HWND hWnd, _In_ HTREEITEM hItem) noexcept

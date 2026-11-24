@@ -26,6 +26,9 @@
 // WC_B - Same return contract as EC_B, without an error dialog
 //        Both return HRESULT, not BOOL; use FAILED/SUCCEEDED
 
+// EC_BOOL_S - Log a bool/BOOL failure as E_FAIL without consulting GetLastError; discard the result
+// WC_BOOL_S - Same contract as EC_BOOL_S, without an error dialog
+
 // EC_D - Wrap a zero-failure function; log errors and return the native result as _TYPE
 // WC_D - Same return contract as EC_D, without an error dialog
 
@@ -257,6 +260,15 @@ namespace error
 // Execute a bool/BOOL function, log error, and swallow error
 // Will not display an error dialog
 #define WC_B_S(fnx) error::CheckBool_S([&]() { return (fnx); }, error::Flags::None, {#fnx, __FILE__, __LINE__})
+
+// Execute a bool/BOOL function without last-error support; log E_FAIL on failure and swallow the result
+// Will display dialog on error
+#define EC_BOOL_S(fnx) \
+	error::ReportResult_S((fnx) ? S_OK : E_FAIL, {error::Flags::ShowDialog}, {#fnx, __FILE__, __LINE__})
+
+// Execute a bool/BOOL function without last-error support; log E_FAIL on failure and swallow the result
+// Will not display an error dialog
+#define WC_BOOL_S(fnx) error::ReportResult_S((fnx) ? S_OK : E_FAIL, {}, {#fnx, __FILE__, __LINE__})
 
 // Execute a function which returns 0 on error, log error, and return the native result as _TYPE
 // Will display dialog on error

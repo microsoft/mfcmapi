@@ -153,7 +153,7 @@ namespace controls::sortlistctrl
 			if (message != LVM_SCROLL || wParam)
 			{
 				// The native scroll optimization can retain pixels from a custom-drawn highlighted row.
-				WC_H_S(::RedrawWindow(m_hWnd, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW) ? S_OK : E_FAIL);
+				WC_BOOL_S(::RedrawWindow(m_hWnd, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW));
 			}
 
 			return result;

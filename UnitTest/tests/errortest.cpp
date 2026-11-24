@@ -557,6 +557,8 @@ namespace errortest
 			static_assert(std::is_void_v<decltype(WC_W32_S(ERROR_SUCCESS))>);
 			static_assert(std::is_void_v<decltype(EC_B_S(TRUE))>);
 			static_assert(std::is_void_v<decltype(WC_B_S(TRUE))>);
+			static_assert(std::is_void_v<decltype(EC_BOOL_S(TRUE))>);
+			static_assert(std::is_void_v<decltype(WC_BOOL_S(TRUE))>);
 			static_assert(std::is_void_v<decltype(EC_H_IGNORE_S(ignored, S_OK))>);
 			static_assert(std::is_void_v<decltype(WC_H_IGNORE_S(ignored, S_OK))>);
 			static_assert(std::is_void_v<decltype(EC_H_GETPROPS_S(S_OK))>);
@@ -744,6 +746,57 @@ namespace errortest
 							if (!success && tag != 0)
 							{
 								Assert::IsTrue(m_output.find(strings::StripCarriage(message)) != std::wstring::npos);
+							}
+						}
+					}
+				}
+			}
+		}
+
+		TEST_METHOD(BoolOnlyMacrosIgnoreLastErrorAndEvaluateOnce)
+		{
+			registry::debugTag = static_cast<DWORD>(output::dbgLevel::HRes);
+			const auto failureName = error::ErrorNameFromErrorCode(static_cast<ULONG>(E_FAIL));
+			const auto missingErrorMessage = strings::loadstring(IDS_API_FAILED_NO_ERROR);
+			Assert::IsFalse(failureName.empty());
+			Assert::IsFalse(missingErrorMessage.empty());
+			for (const auto raw : {FALSE, TRUE, BOOL{7}})
+			{
+				for (const auto lastError : {ERROR_SUCCESS, ERROR_ACCESS_DENIED})
+				{
+					for (const auto showDialog : {false, true})
+					{
+						auto calls = 0;
+						const auto invoke = [&]() -> BOOL {
+							++calls;
+							SetLastError(lastError);
+							return raw;
+						};
+						m_messages.clear();
+						m_output.clear();
+						if (showDialog)
+						{
+							EC_BOOL_S(invoke());
+						}
+						else
+						{
+							WC_BOOL_S(invoke());
+						}
+
+						Assert::AreEqual(1, calls);
+						Assert::AreEqual(raw != FALSE, m_output.empty());
+						Assert::AreEqual(showDialog && raw == FALSE ? size_t{1} : size_t{0}, m_messages.size());
+						if (raw == FALSE)
+						{
+							Assert::IsTrue(m_output.find(failureName) != std::wstring::npos);
+							Assert::IsTrue(m_output.find(L"invoke()") != std::wstring::npos);
+							Assert::IsTrue(m_output.find(L"errortest.cpp") != std::wstring::npos);
+							Assert::IsTrue(
+								m_output.find(strings::StripCarriage(missingErrorMessage)) == std::wstring::npos);
+							if (showDialog)
+							{
+								Assert::IsTrue(m_messages[0].find(failureName) != std::wstring::npos);
+								Assert::IsTrue(m_messages[0].find(missingErrorMessage) == std::wstring::npos);
 							}
 						}
 					}

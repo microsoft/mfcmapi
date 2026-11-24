@@ -37,7 +37,8 @@
   when only logging is needed.
 - `_B` requires a zero-failure API with documented `GetLastError` support.
   Failure with last error zero reports `E_FAIL` and a missing-error diagnostic.
-  For Boolean failure without last-error support, use `_H(call ? S_OK : E_FAIL)`.
+  For Boolean APIs without last-error support, use `EC_BOOL_S`/`WC_BOOL_S`;
+  these report `E_FAIL` on false and discard the result without consulting last error.
 - Do not blindly wrap APIs for which zero, false, or null is a valid result.
   Preserve their documented semantics and use the repository's error-reporting
   helpers for actual failures.
