@@ -129,7 +129,7 @@ namespace themefiletest
 
 		TEST_METHOD_CLEANUP(RemoveDirectory) { std::filesystem::remove_all(m_directory); }
 
-		TEST_METHOD(EveryThemeFileLoadsAndMeetsContrastTargets)
+		TEST_METHOD(AllThemesLoadAndMeetContrastTargets)
 		{
 			size_t fileCount = 0;
 			for (const auto& entry : std::filesystem::directory_iterator(ExampleDirectory()))
@@ -180,6 +180,12 @@ namespace themefiletest
 				{ui::uiColor::PaneHeaderText, ui::uiColor::PaneHeaderBackground, L"pane header text/background", 4.5},
 				{ui::uiColor::TextHighlight, ui::uiColor::TextHighlightBackground, L"highlight text/background", 4.5}};
 			const ContrastPair nonTextPairs[] = {
+				{ui::uiColor::DisabledSelectedBorder,
+				 ui::uiColor::DisabledSelectedBackground,
+				 L"disabled selected border/background",
+				 3.0},
+				{ui::uiColor::TextDisabled, ui::uiColor::Text, L"disabled/enabled text", 3.0},
+				{ui::uiColor::GlowText, ui::uiColor::Text, L"highlighted/normal row text", 3.0},
 				{ui::uiColor::TitleBarButton, ui::uiColor::TitleBarBackground, L"title bar button/background", 3.0},
 				{ui::uiColor::TitleBarButtonHover,
 				 ui::uiColor::GlowBackground,
@@ -195,9 +201,8 @@ namespace themefiletest
 				{ui::uiColor::TextHighlightBackground, ui::uiColor::Background, L"text highlight/background", 3.0}};
 
 			auto violations = std::wostringstream{};
-			for (auto index = ui::theme::GetThemes().size(); index < catalog.themes.size(); ++index)
+			for (const auto& theme : catalog.themes)
 			{
-				const auto& theme = catalog.themes[index];
 				for (const auto appearance : {ui::uiTheme::Light, ui::uiTheme::Dark})
 				{
 					const auto& colors = appearance == ui::uiTheme::Light ? theme.light : theme.dark;
@@ -241,6 +246,8 @@ namespace themefiletest
 
 					if (colors.values[static_cast<size_t>(ui::uiColor::MenuTextDisabled)].highContrast ==
 							colors.values[static_cast<size_t>(ui::uiColor::MenuText)].highContrast ||
+						colors.values[static_cast<size_t>(ui::uiColor::TextDisabled)].highContrast ==
+							colors.values[static_cast<size_t>(ui::uiColor::Text)].highContrast ||
 						colors.values[static_cast<size_t>(ui::uiColor::TextDisabledSelected)].highContrast ==
 							colors.values[static_cast<size_t>(ui::uiColor::GlowText)].highContrast)
 					{
@@ -304,43 +311,6 @@ namespace themefiletest
 			}
 		}
 
-		TEST_METHOD(BuiltInSelectedDisabledTextMeetsContrastTarget)
-		{
-			auto violations = std::wostringstream{};
-			for (const auto& theme : ui::theme::GetThemes())
-			{
-				for (const auto appearance : {ui::uiTheme::Light, ui::uiTheme::Dark})
-				{
-					const auto& colors = appearance == ui::uiTheme::Light ? theme.light : theme.dark;
-					const auto ratio = ContrastRatio(
-						colors.values[static_cast<size_t>(ui::uiColor::TextDisabledSelected)].value,
-						colors.values[static_cast<size_t>(ui::uiColor::DisabledSelectedBackground)].value);
-					const auto borderContrast = ContrastRatio(
-						colors.values[static_cast<size_t>(ui::uiColor::DisabledSelectedBorder)].value,
-						colors.values[static_cast<size_t>(ui::uiColor::DisabledSelectedBackground)].value);
-					const auto selectedDifference = ContrastRatio(
-						colors.values[static_cast<size_t>(ui::uiColor::TextDisabledSelected)].value,
-						colors.values[static_cast<size_t>(ui::uiColor::GlowText)].value);
-					const auto normalDifference = ContrastRatio(
-						colors.values[static_cast<size_t>(ui::uiColor::TextDisabled)].value,
-						colors.values[static_cast<size_t>(ui::uiColor::Text)].value);
-					if (ratio < 4.5 || borderContrast < 3.0 || selectedDifference < 3.0 || normalDifference < 3.0 ||
-						colors.values[static_cast<size_t>(ui::uiColor::TextDisabled)].highContrast ==
-							colors.values[static_cast<size_t>(ui::uiColor::Text)].highContrast ||
-						colors.values[static_cast<size_t>(ui::uiColor::TextDisabledSelected)].highContrast ==
-							colors.values[static_cast<size_t>(ui::uiColor::GlowText)].highContrast)
-					{
-						violations << theme.name << L" (" << (appearance == ui::uiTheme::Light ? L"light" : L"dark")
-								   << L"): disabled text/fill " << ratio << L":1, border/fill " << borderContrast
-								   << L":1, selected text difference " << selectedDifference
-								   << L":1, normal text difference " << normalDifference << L":1\n";
-					}
-				}
-			}
-
-			Assert::IsTrue(violations.str().empty(), violations.str().c_str());
-		}
-
 		TEST_METHOD(StatusRibbonParsesLiteralColorsAndCanBeDisabled)
 		{
 			for (const auto value : {L"[]", L"[\"red\"]", L"[\"red\", \"#00FF00\", \"BLUE\"]"})
@@ -398,31 +368,6 @@ namespace themefiletest
 					}
 
 					Assert::IsTrue(ui::theme::GetStatusRibbon(definition, ui::uiTheme::HighContrast).empty());
-				}
-			}
-		}
-
-		TEST_METHOD(BuiltInSurfaceAccentsMeetContrastTargets)
-		{
-			for (const auto& theme : ui::theme::GetThemes())
-			{
-				for (const auto& palette : {theme.light, theme.dark})
-				{
-					const auto check =
-						[&](const ui::uiColor foreground, const ui::uiColor background, const double minimum) {
-							Assert::IsTrue(
-								ContrastRatio(
-									palette.values[static_cast<size_t>(foreground)].value,
-									palette.values[static_cast<size_t>(background)].value) >= minimum,
-								theme.name.c_str());
-						};
-					check(ui::uiColor::TitleBarText, ui::uiColor::TitleBarBackground, 4.5);
-					check(ui::uiColor::TitleBarButton, ui::uiColor::TitleBarBackground, 3.0);
-					check(ui::uiColor::TitleBarButtonHover, ui::uiColor::GlowBackground, 3.0);
-					check(ui::uiColor::ColumnHeaderText, ui::uiColor::ColumnHeaderBackground, 4.5);
-					check(ui::uiColor::ColumnHeaderArrow, ui::uiColor::ColumnHeaderBackground, 3.0);
-					check(ui::uiColor::MenuText, ui::uiColor::MenuBackground, 4.5);
-					check(ui::uiColor::MenuTextDisabled, ui::uiColor::MenuBackground, 3.0);
 				}
 			}
 		}

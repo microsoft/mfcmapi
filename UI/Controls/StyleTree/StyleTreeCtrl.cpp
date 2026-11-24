@@ -363,7 +363,7 @@ namespace controls
 	{
 		*pResult = 0;
 		// Expansion after scrolling can reuse stale pixels; redraw the completed layout.
-		WC_B_S(::RedrawWindow(m_hWnd, nullptr, nullptr, RDW_INVALIDATE | RDW_ERASE | RDW_FRAME));
+		WC_BOOL_S(::RedrawWindow(m_hWnd, nullptr, nullptr, RDW_INVALIDATE | RDW_ERASE | RDW_FRAME));
 	}
 
 	void StyleTreeCtrl::Refresh()

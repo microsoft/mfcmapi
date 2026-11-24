@@ -100,6 +100,16 @@ pairs together so text and indicators remain readable.
 | Text highlights | `TextHighlightBackground`, `TextHighlight` |
 
 `GlowText` is shared by selection and hover, so check it against both fills.
+Use at least 4.5:1 text contrast on both fills, with room above that minimum
+for small list text. Saturated dark fills with light text in light mode, and
+light fills with dark text in dark mode, can make highlighted rows clearer.
+Keep highlighted text distinct from normal `Text` too, with at least 3:1
+contrast between those foregrounds, so both text and fill identify the state.
+Keep both `GlowBackground` and `SelectedBackground` visibly different from
+`Background` in both appearances; aim for at least 3:1 contrast between each
+highlighted fill and the normal background.
+Tree expansion triangles always use the row's text color; a collapsed triangle
+fills when hovered rather than switching to an accent color.
 Tree notification markers use the row's text color when selected or hovered.
 
 ### Title bars, column headers, and menus

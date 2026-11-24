@@ -353,7 +353,7 @@ namespace controls
 		::PostMessage(m_hWndParent, WM_COMMAND, IDD_RECALCLAYOUT, NULL);
 
 		// When we toggle because of VK_ENTER, we don't redraw - signal one just in case
-		::RedrawWindow(m_CollapseButton.m_hWnd, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
+		WC_BOOL_S(::RedrawWindow(m_CollapseButton.m_hWnd, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW));
 	}
 
 	void PaneHeader::SetMargins(

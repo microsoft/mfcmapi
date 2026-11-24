@@ -537,7 +537,7 @@ namespace dialog
 	void CBaseDialog::OnActivate(const UINT nState, _In_ CWnd* pWndOther, const BOOL bMinimized)
 	{
 		CMyDialog::OnActivate(nState, pWndOther, bMinimized);
-		if (nState == 1 && !bMinimized) EC_B_S(RedrawWindow());
+		if (nState == 1 && !bMinimized) EC_BOOL_S(RedrawWindow());
 	}
 
 	void CBaseDialog::SetStatusWidths() noexcept
@@ -584,7 +584,7 @@ namespace dialog
 		rcStatus.top = rcStatus.bottom - GetStatusHeight();
 
 		// Tell the window it needs to paint
-		::RedrawWindow(m_hWnd, &rcStatus, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
+		WC_BOOL_S(::RedrawWindow(m_hWnd, &rcStatus, nullptr, RDW_INVALIDATE | RDW_UPDATENOW));
 	}
 
 	void CBaseDialog::OnSize(const UINT nType, const int cx, const int cy)
@@ -606,7 +606,7 @@ namespace dialog
 		// Repaint the status bar and its nonclient gutters after resize layout completes.
 		if (nType != SIZE_MINIMIZED)
 		{
-			WC_B_S(::RedrawWindow(m_hWnd, nullptr, nullptr, RDW_INVALIDATE | RDW_FRAME | RDW_NOCHILDREN));
+			WC_BOOL_S(::RedrawWindow(m_hWnd, nullptr, nullptr, RDW_INVALIDATE | RDW_FRAME | RDW_NOCHILDREN));
 		}
 	}
 

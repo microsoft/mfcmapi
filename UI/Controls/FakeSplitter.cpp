@@ -322,7 +322,7 @@ namespace controls
 			SetPercent(flNewPercent);
 
 			// Force child windows to refresh now
-			EC_B_S(RedrawWindow(nullptr, nullptr, RDW_ALLCHILDREN | RDW_UPDATENOW));
+			EC_BOOL_S(RedrawWindow(nullptr, nullptr, RDW_ALLCHILDREN | RDW_UPDATENOW));
 		}
 	}
 
@@ -336,7 +336,7 @@ namespace controls
 
 		// make sure no updates are pending
 		// CSplitterWnd does this...not sure why
-		EC_B_S(RedrawWindow(nullptr, nullptr, RDW_ALLCHILDREN | RDW_UPDATENOW));
+		EC_BOOL_S(RedrawWindow(nullptr, nullptr, RDW_ALLCHILDREN | RDW_UPDATENOW));
 
 		// set tracking state and appropriate cursor
 		m_bTracking = true;

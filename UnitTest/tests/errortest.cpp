@@ -10,6 +10,17 @@ namespace errortest
 {
 	static constexpr error::CallSite site{"TestApi()", "error-contract-test.cpp", 123};
 
+	template <typename Result> constexpr void CheckHResultMacroArguments()
+	{
+		constexpr auto accepted = std::is_same_v<Result, HRESULT>;
+		static_assert(requires(Result result) { WC_H(result); } == accepted);
+		static_assert(requires(Result result) { WC_H_S(result); } == accepted);
+		static_assert(requires(Result result) { WC_H_IGNORE(std::list<HRESULT>{}, result); } == accepted);
+		static_assert(requires(Result result) { WC_H_IGNORE_S(std::list<HRESULT>{}, result); } == accepted);
+		static_assert(requires(Result result) { EC_H_CANCEL(result); } == accepted);
+		static_assert(requires(Result result) { EC_H_CANCEL_S(result); } == accepted);
+	}
+
 	class TestFormContainer final : public IMAPIFormContainer
 	{
 	public:
@@ -529,6 +540,9 @@ namespace errortest
 
 		TEST_METHOD(HResultMacrosKeepResultDiscardAndNativeContracts)
 		{
+			CheckHResultMacroArguments<HRESULT>();
+			CheckHResultMacroArguments<BOOL>();
+			CheckHResultMacroArguments<bool>();
 			const std::list<HRESULT> ignored{E_FAIL};
 			static_assert(std::is_same_v<decltype(EC_H(S_OK)), HRESULT>);
 			static_assert(std::is_same_v<decltype(WC_H(S_OK)), HRESULT>);
@@ -536,6 +550,8 @@ namespace errortest
 			static_assert(std::is_same_v<decltype(WC_MAPI(S_OK)), HRESULT>);
 			static_assert(std::is_same_v<decltype(EC_B(TRUE)), HRESULT>);
 			static_assert(std::is_same_v<decltype(WC_B(TRUE)), HRESULT>);
+			static_assert(std::is_same_v<decltype(EC_BOOL(TRUE)), HRESULT>);
+			static_assert(std::is_same_v<decltype(WC_BOOL(TRUE)), HRESULT>);
 			static_assert(std::is_same_v<decltype(EC_W32(ERROR_SUCCESS)), HRESULT>);
 			static_assert(std::is_same_v<decltype(WC_W32(ERROR_SUCCESS)), HRESULT>);
 			static_assert(std::is_same_v<decltype(EC_H_MSG(0, S_OK)), HRESULT>);
@@ -557,6 +573,8 @@ namespace errortest
 			static_assert(std::is_void_v<decltype(WC_W32_S(ERROR_SUCCESS))>);
 			static_assert(std::is_void_v<decltype(EC_B_S(TRUE))>);
 			static_assert(std::is_void_v<decltype(WC_B_S(TRUE))>);
+			static_assert(std::is_void_v<decltype(EC_BOOL_S(TRUE))>);
+			static_assert(std::is_void_v<decltype(WC_BOOL_S(TRUE))>);
 			static_assert(std::is_void_v<decltype(EC_H_IGNORE_S(ignored, S_OK))>);
 			static_assert(std::is_void_v<decltype(WC_H_IGNORE_S(ignored, S_OK))>);
 			static_assert(std::is_void_v<decltype(EC_H_GETPROPS_S(S_OK))>);
@@ -744,6 +762,71 @@ namespace errortest
 							if (!success && tag != 0)
 							{
 								Assert::IsTrue(m_output.find(strings::StripCarriage(message)) != std::wstring::npos);
+							}
+						}
+					}
+				}
+			}
+		}
+
+		TEST_METHOD(BoolOnlyMacrosIgnoreLastErrorAndEvaluateOnce)
+		{
+			registry::debugTag = static_cast<DWORD>(output::dbgLevel::HRes);
+			const auto failureName = error::ErrorNameFromErrorCode(static_cast<ULONG>(E_FAIL));
+			const auto missingErrorMessage = strings::loadstring(IDS_API_FAILED_NO_ERROR);
+			Assert::IsFalse(failureName.empty());
+			Assert::IsFalse(missingErrorMessage.empty());
+			for (const auto raw : {FALSE, TRUE, BOOL{7}})
+			{
+				for (const auto lastError : {ERROR_SUCCESS, ERROR_ACCESS_DENIED})
+				{
+					for (auto variant = 0; variant < 4; ++variant)
+					{
+						auto calls = 0;
+						const auto invoke = [&]() -> BOOL {
+							++calls;
+							SetLastError(lastError);
+							return raw;
+						};
+						m_messages.clear();
+						m_output.clear();
+						auto hRes = S_OK;
+						switch (variant)
+						{
+						case 0:
+							hRes = EC_BOOL(invoke());
+							break;
+						case 1:
+							hRes = WC_BOOL(invoke());
+							break;
+						case 2:
+							EC_BOOL_S(invoke());
+							break;
+						case 3:
+							WC_BOOL_S(invoke());
+							break;
+						}
+
+						Assert::AreEqual(1, calls);
+						if (variant < 2)
+						{
+							Assert::AreEqual<HRESULT>(raw ? S_OK : E_FAIL, hRes);
+						}
+
+						const auto showDialog = variant % 2 == 0;
+						Assert::AreEqual(raw != FALSE, m_output.empty());
+						Assert::AreEqual(showDialog && raw == FALSE ? size_t{1} : size_t{0}, m_messages.size());
+						if (raw == FALSE)
+						{
+							Assert::IsTrue(m_output.find(failureName) != std::wstring::npos);
+							Assert::IsTrue(m_output.find(L"invoke()") != std::wstring::npos);
+							Assert::IsTrue(m_output.find(L"errortest.cpp") != std::wstring::npos);
+							Assert::IsTrue(
+								m_output.find(strings::StripCarriage(missingErrorMessage)) == std::wstring::npos);
+							if (showDialog)
+							{
+								Assert::IsTrue(m_messages[0].find(failureName) != std::wstring::npos);
+								Assert::IsTrue(m_messages[0].find(missingErrorMessage) == std::wstring::npos);
 							}
 						}
 					}

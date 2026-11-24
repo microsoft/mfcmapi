@@ -692,7 +692,7 @@ namespace ui
 
 		if (isMarkedScrollHost) ::ShowScrollBar(hWnd, SB_VERT, scrollBarVisible);
 
-		RedrawWindow(hWnd, nullptr, nullptr, RDW_INVALIDATE | RDW_ERASE | RDW_FRAME);
+		WC_BOOL_S(RedrawWindow(hWnd, nullptr, nullptr, RDW_INVALIDATE | RDW_ERASE | RDW_FRAME));
 		return true;
 	}
 
@@ -727,7 +727,8 @@ namespace ui
 		}
 
 		EnumChildWindows(hWnd, ApplyThemeToChild, 0);
-		RedrawWindow(hWnd, nullptr, nullptr, RDW_ERASE | RDW_FRAME | RDW_INVALIDATE | RDW_ALLCHILDREN | RDW_UPDATENOW);
+		WC_BOOL_S(RedrawWindow(
+			hWnd, nullptr, nullptr, RDW_ERASE | RDW_FRAME | RDW_INVALIDATE | RDW_ALLCHILDREN | RDW_UPDATENOW));
 	}
 
 	BOOL CALLBACK ApplyThemeToTopLevelWindow(_In_ HWND hWnd, LPARAM /*lParam*/) noexcept
@@ -953,9 +954,7 @@ namespace ui
 	void FormatRichEdit(_In_ HWND hWnd, const std::function<void()>& format) noexcept
 	{
 		IRichEditOle* richEdit = nullptr;
-		if (FAILED(
-				WC_H(::SendMessage(hWnd, EM_GETOLEINTERFACE, 0, reinterpret_cast<LPARAM>(&richEdit)) ? S_OK : E_FAIL)))
-			return;
+		if (FAILED(WC_BOOL(::SendMessage(hWnd, EM_GETOLEINTERFACE, 0, reinterpret_cast<LPARAM>(&richEdit))))) return;
 		ITextDocument* document = nullptr;
 		const auto queried = WC_H(richEdit->QueryInterface(IID_PPV_ARGS(&document)));
 		richEdit->Release();
@@ -981,9 +980,8 @@ namespace ui
 
 	void SetRichEditCharacterFormat(_In_ HWND hWnd, _In_ CHARFORMAT2& cf) noexcept
 	{
-		FormatRichEdit(hWnd, [&]() {
-			WC_H_S(::SendMessage(hWnd, EM_SETCHARFORMAT, SCF_ALL, reinterpret_cast<LPARAM>(&cf)) ? S_OK : E_FAIL);
-		});
+		FormatRichEdit(
+			hWnd, [&]() { WC_BOOL_S(::SendMessage(hWnd, EM_SETCHARFORMAT, SCF_ALL, reinterpret_cast<LPARAM>(&cf))); });
 	}
 
 	void ClearEditFormatting(_In_ HWND hWnd, const bool bReadOnly) noexcept
@@ -1104,7 +1102,7 @@ namespace ui
 		case WM_SETFOCUS:
 		case WM_KILLFOCUS:
 			// Trigger WM_NCPAINT so we can get an updated frame reflecting focus status
-			::RedrawWindow(hWnd, nullptr, nullptr, RDW_FRAME | RDW_INVALIDATE | RDW_ERASENOW);
+			WC_BOOL_S(::RedrawWindow(hWnd, nullptr, nullptr, RDW_FRAME | RDW_INVALIDATE | RDW_ERASENOW));
 			break;
 		case WM_ENABLE:
 		{
@@ -1112,7 +1110,7 @@ namespace ui
 			const auto background = bReadOnly || !wParam ? uiColor::BackgroundReadOnly : uiColor::Background;
 			static_cast<void>(::SendMessage(hWnd, EM_SETBKGNDCOLOR, 0, MyGetSysColor(background)));
 			UpdateEditTextColor(hWnd, bReadOnly);
-			::RedrawWindow(hWnd, nullptr, nullptr, RDW_FRAME | RDW_INVALIDATE | RDW_ERASENOW);
+			WC_BOOL_S(::RedrawWindow(hWnd, nullptr, nullptr, RDW_FRAME | RDW_INVALIDATE | RDW_ERASENOW));
 			break;
 		}
 		case WM_NCPAINT:
@@ -1198,7 +1196,7 @@ namespace ui
 		}
 	}
 
-	static void DrawHighlightedListItem(_In_ const NMLVCUSTOMDRAW& draw, const uiColor background)
+	static void DrawListItem(_In_ const NMLVCUSTOMDRAW& draw, const uiColor background, const uiColor foreground)
 	{
 		const auto hwnd = draw.nmcd.hdr.hwndFrom;
 		const auto hdc = draw.nmcd.hdc;
@@ -1215,7 +1213,8 @@ namespace ui
 		row.right = client.right;
 		const auto savedDC = WC_D(int, SaveDC(hdc));
 		if (!savedDC) return;
-		if (!WC_D(int, IntersectClipRect(hdc, row.left, row.top, row.right, row.bottom)))
+		const auto clip = WC_D(int, IntersectClipRect(hdc, row.left, row.top, row.right, row.bottom));
+		if (!clip || clip == NULLREGION)
 		{
 			WC_B_S(RestoreDC(hdc, savedDC));
 			return;
@@ -1227,7 +1226,7 @@ namespace ui
 		info.mask = LVIF_IMAGE | LVIF_STATE;
 		info.iItem = item;
 		info.stateMask = LVIS_OVERLAYMASK | LVIS_STATEIMAGEMASK | LVIS_FOCUSED;
-		if (SUCCEEDED(WC_H(SendMessageW(hwnd, LVM_GETITEMW, 0, reinterpret_cast<LPARAM>(&info)) ? S_OK : E_FAIL)))
+		if (SUCCEEDED(WC_BOOL(SendMessageW(hwnd, LVM_GETITEMW, 0, reinterpret_cast<LPARAM>(&info)))))
 		{
 			auto icon = RECT{};
 			const auto hasIconRect = WC_D(BOOL, ListView_GetItemRect(hwnd, item, &icon, LVIR_ICON));
@@ -1283,12 +1282,19 @@ namespace ui
 			{
 				auto firstLabel = RECT{};
 				if (FAILED(WC_B(ListView_GetItemRect(hwnd, item, &firstLabel, LVIR_LABEL)))) continue;
-				label.left = firstLabel.left;
+				// The label bounds already exclude the icon; retain the two-pixel text inset.
+				label.left = firstLabel.left + 2;
+			}
+			else
+			{
+				// Measured approximation of native subitem padding, in system edge units.
+				label.left += 3 * GetSystemMetrics(SM_CXEDGE);
 			}
 
-			label.left += 2;
+			// Keep text and ellipsis two pixels clear of the column edge.
 			label.right -= 2;
 			if (label.right <= label.left) continue;
+			if (!RectVisible(hdc, &label)) continue;
 
 			auto value = LVITEMW{};
 			value.iSubItem = column;
@@ -1303,8 +1309,7 @@ namespace ui
 
 			auto columnInfo = LVCOLUMNW{};
 			columnInfo.mask = LVCF_FMT;
-			if (FAILED(WC_H(
-					SendMessageW(hwnd, LVM_GETCOLUMNW, column, reinterpret_cast<LPARAM>(&columnInfo)) ? S_OK : E_FAIL)))
+			if (FAILED(WC_BOOL(SendMessageW(hwnd, LVM_GETCOLUMNW, column, reinterpret_cast<LPARAM>(&columnInfo)))))
 				continue;
 			const auto alignment = (columnInfo.fmt & LVCFMT_JUSTIFYMASK) == LVCFMT_RIGHT	? DT_RIGHT
 								   : (columnInfo.fmt & LVCFMT_JUSTIFYMASK) == LVCFMT_CENTER ? DT_CENTER
@@ -1312,7 +1317,7 @@ namespace ui
 			DrawUITextW(
 				hdc,
 				text.data(),
-				MyGetSysColor(uiColor::GlowText),
+				MyGetSysColor(foreground),
 				label,
 				false,
 				alignment | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS | DT_NOPREFIX);
@@ -1321,7 +1326,7 @@ namespace ui
 		if ((info.state & LVIS_FOCUSED) && GetFocus() == hwnd &&
 			!(SendMessage(hwnd, WM_QUERYUISTATE, 0, 0) & UISF_HIDEFOCUS))
 		{
-			WC_H_S(SetTextColor(hdc, MyGetSysColor(uiColor::GlowText)) == CLR_INVALID ? E_FAIL : S_OK);
+			WC_H_S(SetTextColor(hdc, MyGetSysColor(foreground)) == CLR_INVALID ? E_FAIL : S_OK);
 			WC_H_S(SetBkColor(hdc, MyGetSysColor(background)) == CLR_INVALID ? E_FAIL : S_OK);
 			WC_B_S(DrawFocusRect(hdc, &row));
 		}
@@ -1343,55 +1348,14 @@ namespace ui
 		case CDDS_ITEMPREPAINT:
 		{
 			const auto selected = ListView_GetItemState(lvcd->nmcd.hdr.hwndFrom, iItem, LVIS_SELECTED) != 0;
-			if (selected || iItemCurHover == iItem)
-			{
-				// Explorer selection and hover backgrounds ignore clrTextBk.
-				DrawHighlightedListItem(*lvcd, selected ? uiColor::SelectedBackground : uiColor::GlowBackground);
-				*pResult = CDRF_SKIPDEFAULT;
-				break;
-			}
-
-			*pResult = CDRF_NOTIFYSUBITEMDRAW;
-			break;
-		}
-
-		case CDDS_SUBITEM | CDDS_ITEMPREPAINT:
-		{
-			// Big speedup - we skip painting if the target rectangle is outside the client area
-
-			// On some systems, top/bottom will both be zero, but not left/right. We want to consider those
-			// as if they had positive area, so bump bottom to 1 and remember to reset it after.
-			auto bResetBottom = false;
-			if (0 == lvcd->nmcd.rc.top && 0 == lvcd->nmcd.rc.bottom)
-			{
-				lvcd->nmcd.rc.bottom = 1;
-				bResetBottom = true;
-			}
-
-			auto rc = RECT{};
-			if (FAILED(WC_B(GetClientRect(lvcd->nmcd.hdr.hwndFrom, &rc))))
-			{
-				if (bResetBottom) lvcd->nmcd.rc.bottom = 0;
-				*pResult = CDRF_SKIPDEFAULT;
-				break;
-			}
-
-			IntersectRect(&rc, &rc, &lvcd->nmcd.rc);
-
-			if (bResetBottom)
-			{
-				lvcd->nmcd.rc.bottom = 0;
-			}
-
-			if (IsRectEmpty(&rc))
-			{
-				*pResult = CDRF_SKIPDEFAULT;
-				break;
-			}
-
-			lvcd->clrText = MyGetSysColor(uiColor::Text);
-			lvcd->clrTextBk = MyGetSysColor(uiColor::Background);
-			*pResult = CDRF_NEWFONT;
+			const auto hovered = iItemCurHover == iItem;
+			const auto background = selected  ? uiColor::SelectedBackground
+									: hovered ? uiColor::GlowBackground
+											  : uiColor::Background;
+			const auto foreground = selected || hovered ? uiColor::GlowText : uiColor::Text;
+			// Keep text layout and truncation identical when selection or hover changes.
+			DrawListItem(*lvcd, background, foreground);
+			*pResult = CDRF_SKIPDEFAULT;
 			break;
 		}
 
@@ -1417,7 +1381,7 @@ namespace ui
 		rcLabels.left = rcClient.left;
 		rcLabels.right = rcClient.right;
 		IntersectRect(&rcLabels, &rcLabels, &rcClient);
-		WC_B_S(RedrawWindow(hWnd, &rcLabels, nullptr, RDW_INVALIDATE | RDW_UPDATENOW));
+		WC_BOOL_S(RedrawWindow(hWnd, &rcLabels, nullptr, RDW_INVALIDATE | RDW_UPDATENOW));
 	}
 
 	void DrawTreeItemGlow(_In_ HWND hWnd, _In_ HTREEITEM hItem) noexcept
@@ -1685,10 +1649,9 @@ namespace ui
 				tri[2].y = (rcTriangle.top + rcTriangle.bottom) / 2;
 			}
 
-			const auto cEdge = bGlow ? uiColor::Glow : foreground;
-			const auto cFill = bGlow ? uiColor::Glow : bExpanded ? foreground : background;
+			const auto cFill = bGlow || bExpanded ? foreground : background;
 
-			DrawFilledPolygon(hdc, tri, _countof(tri), MyGetSysColor(cEdge), GetSysBrush(cFill));
+			DrawFilledPolygon(hdc, tri, _countof(tri), MyGetSysColor(foreground), GetSysBrush(cFill));
 		}
 	}
 

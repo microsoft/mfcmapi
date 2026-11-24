@@ -26,6 +26,9 @@
 // WC_B - Same return contract as EC_B, without an error dialog
 //        Both return HRESULT, not BOOL; use FAILED/SUCCEEDED
 
+// EC_BOOL - Wrap a bool/BOOL without GetLastError; return S_OK on success or E_FAIL
+// WC_BOOL - Same return contract as EC_BOOL, without an error dialog
+
 // EC_D - Wrap a zero-failure function; log errors and return the native result as _TYPE
 // WC_D - Same return contract as EC_D, without an error dialog
 
@@ -94,6 +97,20 @@ namespace error
 	ReportResult_S(HRESULT hRes, const Diagnostic& diagnostic, const CallSite& site, const std::list<HRESULT>& ignored);
 	_Check_return_ HRESULT CheckCancelled(HRESULT hRes, const CallSite& site);
 	void CheckCancelled_S(HRESULT hRes, const CallSite& site);
+
+	// A Boolean false must not be interpreted as HRESULT success.
+	template <typename Result, typename Ignored = std::list<HRESULT>>
+		requires(std::is_same_v<Result, bool> || std::is_same_v<Result, BOOL>)
+	HRESULT ReportResult(Result, const Diagnostic&, const CallSite&, const Ignored& = {}) = delete;
+	template <typename Result, typename Ignored = std::list<HRESULT>>
+		requires(std::is_same_v<Result, bool> || std::is_same_v<Result, BOOL>)
+	void ReportResult_S(Result, const Diagnostic&, const CallSite&, const Ignored& = {}) = delete;
+	template <typename Result>
+		requires(std::is_same_v<Result, bool> || std::is_same_v<Result, BOOL>)
+	HRESULT CheckCancelled(Result, const CallSite&) = delete;
+	template <typename Result>
+		requires(std::is_same_v<Result, bool> || std::is_same_v<Result, BOOL>)
+	void CheckCancelled_S(Result, const CallSite&) = delete;
 
 	_Check_return_ HRESULT CheckWin32(DWORD result, Flags flags, const CallSite& site);
 
@@ -257,6 +274,23 @@ namespace error
 // Execute a bool/BOOL function, log error, and swallow error
 // Will not display an error dialog
 #define WC_B_S(fnx) error::CheckBool_S([&]() { return (fnx); }, error::Flags::None, {#fnx, __FILE__, __LINE__})
+
+// Execute a bool/BOOL function without last-error support; return S_OK on success or E_FAIL
+// Will display dialog on error
+#define EC_BOOL(fnx) error::ReportResult((fnx) ? S_OK : E_FAIL, {error::Flags::ShowDialog}, {#fnx, __FILE__, __LINE__})
+
+// Execute a bool/BOOL function without last-error support; log E_FAIL on failure and swallow the result
+// Will display dialog on error
+#define EC_BOOL_S(fnx) \
+	error::ReportResult_S((fnx) ? S_OK : E_FAIL, {error::Flags::ShowDialog}, {#fnx, __FILE__, __LINE__})
+
+// Execute a bool/BOOL function without last-error support; return S_OK on success or E_FAIL
+// Will not display an error dialog
+#define WC_BOOL(fnx) error::ReportResult((fnx) ? S_OK : E_FAIL, {}, {#fnx, __FILE__, __LINE__})
+
+// Execute a bool/BOOL function without last-error support; log E_FAIL on failure and swallow the result
+// Will not display an error dialog
+#define WC_BOOL_S(fnx) error::ReportResult_S((fnx) ? S_OK : E_FAIL, {}, {#fnx, __FILE__, __LINE__})
 
 // Execute a function which returns 0 on error, log error, and return the native result as _TYPE
 // Will display dialog on error
