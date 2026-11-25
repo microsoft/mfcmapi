@@ -18,8 +18,7 @@ namespace addin
 	ReadImageValue(_In_reads_bytes_(cbImage) const BYTE* image, size_t cbImage, size_t offset, T& value)
 	{
 		if (!image || !IsRangeValid(cbImage, offset, sizeof(T))) return false;
-		memcpy(&value, image + offset, sizeof(T));
-		return true;
+		return memcpy_s(&value, sizeof(T), image + offset, sizeof(T)) == 0;
 	}
 
 	static _Check_return_ bool MapRva(
