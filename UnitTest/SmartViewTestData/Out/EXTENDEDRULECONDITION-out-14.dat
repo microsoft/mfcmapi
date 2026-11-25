@@ -1,0 +1,12 @@
+Extended Rule Condition
+	NamedPropertyInformation
+		Number of named props = 0x0001
+		Named prop size = 0x00000011
+		Named Prop 0x0000
+			PropID = 0x8000
+			Kind = 0xFF
+			Guid = {00000000-0000-0000-0000-000000000000}
+	Restriction
+	|	rt = 0x0 = RES_AND
+	|	resAnd
+	|	|	cRes = 0x00000000

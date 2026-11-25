@@ -154,6 +154,7 @@ enum class parserType
 	ACEMESSAGE,
 	ACEFB,
 	NTSD,
+	CLIENTACTIONS,
 	END // This must be the end of the enum
 };
 

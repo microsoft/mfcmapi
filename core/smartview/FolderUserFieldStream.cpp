@@ -6,7 +6,7 @@
 
 namespace smartview
 {
-	void FolderFieldDefinition ::parse()
+	void FolderFieldDefinition::parse()
 	{
 		FieldType = blockT<DWORD>::parse(parser);
 		FieldNameLength = blockT<WORD>::parse(parser);
@@ -36,7 +36,7 @@ namespace smartview
 		}
 	}
 
-	void FolderFieldDefinition ::parseBlocks()
+	void FolderFieldDefinition::parseBlocks()
 	{
 		if (unicode)
 		{

@@ -1,5 +1,6 @@
 #pragma once
 #include <core/smartview/block/block.h>
+#include <core/smartview/block/blockBytes.h>
 #include <core/smartview/RestrictionStruct.h>
 #include <core/smartview/block/blockStringW.h>
 #include <core/smartview/block/blockT.h>
@@ -40,6 +41,7 @@ namespace smartview
 	{
 	public:
 		ActionBlock(bool bExtended) : m_bExtended(bExtended) {}
+		bool isValid() const noexcept { return ActionLength->isSet() && !invalidLength && !truncated; }
 
 	private:
 		void parse() override;
@@ -51,6 +53,9 @@ namespace smartview
 		std::shared_ptr<blockT<DWORD>> ActionFlavor = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> ActionFlags = emptyT<DWORD>();
 		std::shared_ptr<ActionData> ActionData;
+		std::shared_ptr<blockBytes> RawActionData = emptyBB();
+		bool invalidLength{};
+		bool truncated{};
 	};
 
 	// [MS-OXORULE] 2.2.5 RuleAction Structure
@@ -59,6 +64,7 @@ namespace smartview
 	{
 	public:
 		RuleAction(bool bExtended) : m_bExtended(bExtended) {}
+		bool isValid() const noexcept { return valid; }
 
 	private:
 		void parse() override;
@@ -69,5 +75,9 @@ namespace smartview
 		std::shared_ptr<blockT<DWORD>> RuleVersion = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> NoOfActions = emptyT<DWORD>();
 		std::vector<std::shared_ptr<ActionBlock>> ActionBlocks;
+		std::shared_ptr<blockBytes> remainingActionBytes = emptyBB();
+		bool truncatedActions{};
+		bool valid{};
 	};
+
 } // namespace smartview

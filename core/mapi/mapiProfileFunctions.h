@@ -1,7 +1,7 @@
 // Stand alone MAPI profile functions
 #pragma once
 
-namespace mapi ::profile
+namespace mapi::profile
 {
 	_Check_return_ HRESULT HrMAPIProfileExists(_In_ LPPROFADMIN lpProfAdmin, _In_ const std::wstring& lpszProfileName);
 

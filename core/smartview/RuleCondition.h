@@ -1,6 +1,7 @@
 #pragma once
 #include <core/smartview/block/block.h>
 #include <core/smartview/RestrictionStruct.h>
+#include <core/smartview/block/blockBytes.h>
 #include <core/smartview/block/blockStringW.h>
 #include <core/smartview/block/blockT.h>
 
@@ -23,6 +24,7 @@ namespace smartview
 	{
 	public:
 		PropertyName(std::shared_ptr<blockT<WORD>> _PropId) : PropId(_PropId) {}
+		bool isComplete() const noexcept;
 
 	private:
 		void parse() override;
@@ -37,6 +39,7 @@ namespace smartview
 		std::shared_ptr<blockT<DWORD>> LID = emptyT<DWORD>();
 		std::shared_ptr<blockT<BYTE>> NameSize = emptyT<BYTE>();
 		std::shared_ptr<blockStringW> Name = emptySW();
+		bool nameTerminated = false;
 	};
 
 	// [MS-OXORULE] 2.2.4.2 NamedPropertyInformation Structure
@@ -46,6 +49,9 @@ namespace smartview
 	//
 	class NamedPropertyInformation : public block
 	{
+	public:
+		bool hasKnownEnd() const noexcept { return knownEnd; }
+
 	private:
 		void parse() override;
 		void parseBlocks() override;
@@ -54,6 +60,9 @@ namespace smartview
 		std::vector<std::shared_ptr<blockT<WORD>>> PropId;
 		std::shared_ptr<blockT<DWORD>> NamedPropertiesSize = emptyT<DWORD>();
 		std::vector<std::shared_ptr<PropertyName>> PropertyName;
+		std::shared_ptr<blockBytes> remainingBytes = emptyBB();
+		bool knownEnd = false;
+		bool invalidProperties = false;
 	};
 
 	class RuleCondition : public block

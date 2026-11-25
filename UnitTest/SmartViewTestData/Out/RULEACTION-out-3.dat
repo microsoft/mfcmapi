@@ -1,0 +1,13 @@
+Rule Action
+	NoOfActions: 0x00000001
+	ActionBlocks[0]
+		ActionLength: 0x00000011
+		ActionType: OP_MOVE = 1
+		ActionFlavor: 0x00000000
+		ActionFlags: 0x00000000
+		ActionDataMove
+			FolderInThisStore: true
+			StoreEIDSize: 0x0003
+			StoreEIDBytes
+				cb: 3 lpb: AABBCC
+			FolderEIDSize: 0x0000

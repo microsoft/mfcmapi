@@ -1,0 +1,12 @@
+Rule Action
+	NoOfActions: 0x00000002
+	ActionBlocks[0]
+		ActionLength: 0x00000003
+		Invalid action length
+		RawActionData
+			cb: 3 lpb: AABBCC
+	ActionBlocks[1]
+		ActionLength: 0x00000009
+		ActionType: OP_MARK_AS_READ = 11
+		ActionFlavor: 0x00000000
+		ActionFlags: 0x00000000

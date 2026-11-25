@@ -810,6 +810,7 @@
     <ClCompile Include="tests\proptagTest.cpp" />
     <ClCompile Include="tests\blockPVtest.cpp" />
     <ClCompile Include="tests\blocktest.cpp" />
+    <ClCompile Include="tests\ruleactiontest.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>

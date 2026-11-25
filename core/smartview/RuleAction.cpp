@@ -109,13 +109,14 @@ namespace smartview
 			{
 				addChild(FolderInThisStore, L"FolderInThisStore: %1!ws!", *FolderInThisStore ? L"true" : L"false");
 				addChild(StoreEIDSize, L"StoreEIDSize: 0x%1!04X!", StoreEIDSize->getData());
+				// https://learn.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxorule/78bc6a96-f94c-43c6-afd3-7f8c39a2340c
 				if (*FolderInThisStore)
 				{
-					addChild(StoreEID, L"StoreEID");
+					addLabeledChild(L"StoreEIDBytes", StoreEIDBytes);
 				}
 				else
 				{
-					addLabeledChild(L"StoreEIDBytes", StoreEIDBytes);
+					addChild(StoreEID, L"StoreEID");
 				}
 
 				addChild(FolderEIDSize, L"FolderEIDSize: 0x%1!04X!", FolderEIDSize->getData());
@@ -383,7 +384,7 @@ namespace smartview
 		return ret;
 	}
 
-	void ActionBlock ::parse()
+	void ActionBlock::parse()
 	{
 		if (m_bExtended)
 		{
@@ -394,31 +395,50 @@ namespace smartview
 			ActionLength = blockT<DWORD>::parse<WORD>(parser);
 		}
 
+		// https://learn.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxorule/0c74ec4f-896d-425e-9e6d-20c531fe83ce
+		const auto headerSize = sizeof BYTE + 2 * sizeof DWORD;
+		invalidLength = !ActionLength->isSet() || *ActionLength < headerSize;
+		truncated = ActionLength->isSet() && *ActionLength > parser->getSize();
+
+		if (!ActionLength->isSet()) return;
+
+		if (invalidLength)
+		{
+			RawActionData =
+				blockBytes::parse(parser, (std::min)(static_cast<size_t>(*ActionLength), parser->getSize()));
+			return;
+		}
+
+		parser->setCap(*ActionLength);
 		ActionType = blockT<BYTE>::parse(parser);
 		ActionFlavor = blockT<DWORD>::parse(parser);
 		ActionFlags = blockT<DWORD>::parse(parser);
-		const auto headerSize = sizeof BYTE + 2 * sizeof DWORD;
-
-		// ActionLength includes the size of ActionType, ActionFlavor and Action Flags
-		if (*ActionLength > headerSize)
+		if (*ActionLength > headerSize && ActionFlags->isSet())
 		{
 			ActionData = getActionDataParser(*ActionType, m_bExtended);
 			if (ActionData)
 			{
 				ActionData->block::parse(parser, *ActionLength - headerSize, true);
 			}
+			else
+			{
+				RawActionData = blockBytes::parse(parser, parser->getSize());
+			}
 		}
+
+		if (truncated && parser->getSize()) RawActionData = blockBytes::parse(parser, parser->getSize());
+		parser->clearCap();
 	}
 
-	void ActionBlock ::parseBlocks()
+	void ActionBlock::parseBlocks()
 	{
 		setText(L"ActionBlock");
 		addChild(ActionLength, L"ActionLength: 0x%1!08X!", ActionLength->getData());
-		addChild(
-			ActionType,
-			L"ActionType: %1!ws! = %2!d!",
-			flags::InterpretFlags(flagActionType, ActionType->getData()).c_str(),
-			ActionType->getData());
+		if (invalidLength) addHeader(L"Invalid action length");
+		if (truncated) addHeader(L"Truncated action");
+		const auto typeName =
+			*ActionType ? flags::InterpretFlags(PROP_ID(PR_RULE_ACTION_TYPE), *ActionType) : std::wstring{L"0x0"};
+		addChild(ActionType, L"ActionType: %1!ws! = %2!d!", typeName.c_str(), ActionType->getData());
 
 		switch (*ActionType)
 		{
@@ -444,30 +464,43 @@ namespace smartview
 
 		addChild(ActionFlags, L"ActionFlags: 0x%1!08X!", ActionFlags->getData());
 		addChild(ActionData);
+		addLabeledChild(L"RawActionData", RawActionData);
 	}
 
-	void RuleAction ::parse()
+	void RuleAction::parse()
 	{
 		if (m_bExtended)
 		{
 			namedPropertyInformation = block::parse<NamedPropertyInformation>(parser, 0, false);
+			if (!namedPropertyInformation->hasKnownEnd()) return;
 			RuleVersion = blockT<DWORD>::parse(parser);
 		}
 
+		// https://learn.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxorule/a31c67b8-405e-4c4f-bfda-e5be0091041a
 		NoOfActions = m_bExtended ? blockT<DWORD>::parse(parser) : blockT<DWORD>::parse<WORD>(parser);
-		if (*NoOfActions < _MaxEntriesSmall)
+		if (NoOfActions->isSet() && *NoOfActions && *NoOfActions < _MaxEntriesSmall)
 		{
+			valid = true;
 			ActionBlocks.reserve(*NoOfActions);
 			for (DWORD i = 0; i < *NoOfActions; i++)
 			{
+				if (parser->getSize() < (m_bExtended ? sizeof(DWORD) : sizeof(WORD)))
+				{
+					truncatedActions = true;
+					valid = false;
+					remainingActionBytes = blockBytes::parse(parser, parser->getSize());
+					break;
+				}
+
 				auto actionBlock = std::make_shared<ActionBlock>(m_bExtended);
 				actionBlock->block::parse(parser, false);
 				ActionBlocks.push_back(actionBlock);
+				if (!actionBlock->isValid()) valid = false;
 			}
 		}
 	}
 
-	void RuleAction ::parseBlocks()
+	void RuleAction::parseBlocks()
 	{
 		setText(m_bExtended ? L"Extended Rule Action" : L"Rule Action");
 		if (m_bExtended)
@@ -477,10 +510,20 @@ namespace smartview
 		}
 
 		addChild(NoOfActions, L"NoOfActions: 0x%1!08X!", NoOfActions->getData());
+		if (!NoOfActions->isSet())
+			addHeader(L"Truncated action count");
+		else if (!*NoOfActions)
+			addHeader(L"Invalid action count");
+		else if (*NoOfActions >= _MaxEntriesSmall)
+			addHeader(L"Action count exceeds parsing limit");
+		if (truncatedActions) addHeader(L"Truncated action list");
 		auto i = 0;
 		for (const auto& actionBlock : ActionBlocks)
 		{
 			addChild(actionBlock, L"ActionBlocks[%1!d!]", i++);
 		}
+
+		addLabeledChild(L"Remaining action bytes", remainingActionBytes);
 	}
+
 } // namespace smartview

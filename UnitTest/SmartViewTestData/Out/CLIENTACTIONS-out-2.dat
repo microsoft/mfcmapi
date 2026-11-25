@@ -1,0 +1,7 @@
+Client Actions
+	RuleAction[0]
+		NoOfActions: 0x00000000
+		Invalid action count
+	Invalid or truncated rule action
+	Unparsed client actions
+		cb: 13 lpb: 010009000B0000000000000000
