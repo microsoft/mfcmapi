@@ -20,6 +20,7 @@
 #include <core/interpret/flags.h>
 #include <core/mapi/processor/dumpStore.h>
 #include <core/mapi/mapiFunctions.h>
+#include <core/mapi/mapiRuleFunctions.h>
 #include <core/mapi/mapiOutput.h>
 
 namespace dialog

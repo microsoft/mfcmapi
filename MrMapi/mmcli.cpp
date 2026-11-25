@@ -35,6 +35,7 @@ namespace cli
 	option switchBinary{L"Binary", cmdmodeSmartView, 0, 0, OPT_NOOPT};
 	option switchAcl{L"Acl", cmdmodeAcls, 0, 0, OPT_INITALL | OPT_NEEDFOLDER};
 	option switchRule{L"Rules", cmdmodeRules, 0, 0, OPT_INITALL | OPT_NEEDFOLDER};
+	option switchRulesJson{L"RulesJson", cmdmodeRules, 1, 1, OPT_INITALL | OPT_NEEDFOLDER};
 	option switchContents{L"Contents", cmdmodeContents, 0, 0, OPT_INITALL};
 	option switchAssociatedContents{L"HiddenContents", cmdmodeContents, 0, 0, OPT_INITALL};
 	option switchMoreProperties{L"MoreProperties", cmdmodeUnknown, 0, 0, OPT_NOOPT};
@@ -101,6 +102,7 @@ namespace cli
 		&switchBinary,
 		&switchAcl,
 		&switchRule,
+		&switchRulesJson,
 		&switchContents,
 		&switchAssociatedContents,
 		&switchMoreProperties,
@@ -203,6 +205,11 @@ namespace cli
 		wprintf_s(
 			L"   MrMAPI -%ws [-%ws <profile>] [-%ws <folder>]\n",
 			switchRule.name(),
+			switchProfile.name(),
+			switchFolder.name());
+		wprintf_s(
+			L"   MrMAPI -%ws <file> [-%ws <profile>] [-%ws <folder>]\n",
+			switchRulesJson.name(),
 			switchProfile.name(),
 			switchFolder.name());
 		wprintf_s(
@@ -613,6 +620,26 @@ namespace cli
 
 	void PostParseCheck(OPTIONS& options)
 	{
+		if (switchRulesJson.isSet())
+		{
+			auto valid = options.mode == cmdmodeRules && !switchRulesJson[0].empty() && switchUnswitched.empty();
+			if (switchVersion.isSet() && switchVersion[0] == L"0") valid = false;
+			for (const auto option : g_options)
+			{
+				if (option->isSet() && option != &switchRulesJson && option != &switchRule &&
+					option != &switchProfile && option != &switchFolder && option != &switchMailbox &&
+					option != &switchNoAddins && option != &switchVerbose && option != &switchOnline &&
+					option != &switchVersion)
+					valid = false;
+			}
+
+			if (!valid)
+			{
+				wprintf_s(L"Invalid -RulesJson request: supply an output file and a rules folder.\n");
+				options.mode = cmdmodeHelp;
+			}
+		}
+
 		if (switchEntryID.isSet() && options.mode != cmdmodeHelpFull)
 		{
 			const auto& hex = switchEntryID[0];

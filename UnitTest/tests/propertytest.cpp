@@ -22,6 +22,21 @@ namespace propertytest
 
 		TEST_CLASS_INITIALIZE(initialize) { unittest::init(); }
 
+		TEST_METHOD(ActionFormattingUsesActionTypeNamesWithoutTheDeferredErrorZeroMeaning)
+		{
+			ACTION action{};
+			ACTIONS actions{};
+			actions.cActions = 1;
+			actions.lpAction = &action;
+
+			action.acttype = OP_DELETE;
+			Assert::IsTrue(property::ActionsToString(actions).find(L"OP_DELETE") != std::wstring::npos);
+			action.acttype = static_cast<ACTTYPE>(0);
+			const auto text = property::ActionsToString(actions);
+			Assert::IsTrue(text.find(L"Not specific to an action") == std::wstring::npos);
+			Assert::IsTrue(text.find(L"lpAction->acttype = 0x00000000 = 0x0") != std::wstring::npos);
+		}
+
 		TEST_METHOD(Test_attribute)
 		{
 			auto attribute = property::Attribute(L"this", L"that");

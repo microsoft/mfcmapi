@@ -344,7 +344,15 @@ int wmain(_In_ int argc, _In_count_(argc) wchar_t* argv[])
 				DoAcls(lpFolder);
 				break;
 			case cli::cmdmodeRules:
-				DoRules(lpFolder);
+				if (cli::switchRulesJson.isSet())
+				{
+					hRes = DoRulesReport(lpFolder, cli::switchRulesJson[0]);
+				}
+				else
+				{
+					DoRules(lpFolder);
+				}
+
 				break;
 			case cli::cmdmodeErr:
 				DoErrorParse();

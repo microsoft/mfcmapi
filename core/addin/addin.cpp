@@ -29,29 +29,26 @@ std::vector<_AddIn> g_lpMyAddins;
 
 namespace addin
 {
-	namespace
+	struct AddInDiagnostic
 	{
-		struct AddInDiagnostic
-		{
-			std::wstring path;
-			UINT status;
-			DWORD error{};
-		};
-		std::vector<AddInDiagnostic> diagnostics;
-		std::wstring scannedDirectory;
-		DWORD scanError{};
-		bool scanned{};
+		std::wstring path;
+		UINT status;
+		DWORD error{};
+	};
+	static std::vector<AddInDiagnostic> diagnostics;
+	static std::wstring scannedDirectory;
+	static DWORD scanError{};
+	static bool scanned{};
 
-		void RecordDiagnostic(const std::wstring& path, UINT status, DWORD error = ERROR_SUCCESS)
-		{
-			const auto existing = std::find_if(
-				diagnostics.begin(), diagnostics.end(), [&path](const auto& entry) { return entry.path == path; });
-			if (existing != diagnostics.end())
-				*existing = {path, status, error};
-			else
-				diagnostics.push_back({path, status, error});
-		}
-	} // namespace
+	static void RecordDiagnostic(const std::wstring& path, UINT status, DWORD error = ERROR_SUCCESS)
+	{
+		const auto existing = std::find_if(
+			diagnostics.begin(), diagnostics.end(), [&path](const auto& entry) { return entry.path == path; });
+		if (existing != diagnostics.end())
+			*existing = {path, status, error};
+		else
+			diagnostics.push_back({path, status, error});
+	}
 
 	std::wstring GetAddInReport() { return GetAddInReport(registry::addInDirectory.szCurSTRING); }
 
@@ -225,161 +222,153 @@ namespace addin
 		output::DebugPrint(output::dbgLevel::AddInPlumbing, L"Done loading AddIn\n");
 	}
 
-	namespace
-	{
-		constexpr auto APPROVAL_LIST = L"AddInApprovalList"; // STRING_OK
-		constexpr auto DENIAL_LIST = L"AddInDenialList"; // STRING_OK
-		constexpr auto LIST_SEPARATOR = L";"; // STRING_OK
+	constexpr auto APPROVAL_LIST = L"AddInApprovalList"; // STRING_OK
+	constexpr auto DENIAL_LIST = L"AddInDenialList"; // STRING_OK
+	constexpr auto LIST_SEPARATOR = L";"; // STRING_OK
 
-		void ReadList(_In_ HKEY rootKey, _In_ const std::wstring& valueName, _Out_ std::vector<std::wstring>& values)
+	static void ReadList(_In_ HKEY rootKey, _In_ const std::wstring& valueName, _Out_ std::vector<std::wstring>& values)
+	{
+		const auto serialized = registry::ReadStringFromRegistry(rootKey, valueName);
+		size_t start = 0;
+		while (start < serialized.size())
 		{
-			const auto serialized = registry::ReadStringFromRegistry(rootKey, valueName);
-			size_t start = 0;
-			while (start < serialized.size())
+			const auto end = serialized.find(L';', start);
+			const auto length = end == std::wstring::npos ? serialized.size() - start : end - start;
+			if (length) values.emplace_back(serialized.substr(start, length));
+			if (end == std::wstring::npos) break;
+			start = end + 1;
+		}
+	}
+
+	class CApprovalCache final
+	{
+	public:
+		CApprovalCache() : m_rootKey(registry::CreateRootKey())
+		{
+			if (m_rootKey)
 			{
-				const auto end = serialized.find(L';', start);
-				const auto length = end == std::wstring::npos ? serialized.size() - start : end - start;
-				if (length) values.emplace_back(serialized.substr(start, length));
-				if (end == std::wstring::npos) break;
-				start = end + 1;
+				ReadList(m_rootKey, APPROVAL_LIST, m_approved);
+				ReadList(m_rootKey, DENIAL_LIST, m_denied);
 			}
 		}
 
-		class CApprovalCache final
+		~CApprovalCache()
 		{
-		public:
-			CApprovalCache() : m_rootKey(registry::CreateRootKey())
+			if (m_rootKey) EC_W32_S(RegCloseKey(m_rootKey));
+		}
+
+		bool IsApproved(_In_ const std::wstring& hash) const { return Contains(m_approved, hash); }
+		bool IsDenied(_In_ const std::wstring& hash) const { return Contains(m_denied, hash); }
+
+		void Add(_In_ const std::wstring& hash, bool approved)
+		{
+			auto& target = approved ? m_approved : m_denied;
+			auto& other = approved ? m_denied : m_approved;
+			if (!Contains(target, hash)) target.push_back(hash);
+			other.erase(
+				std::remove_if(
+					other.begin(),
+					other.end(),
+					[&hash](const auto& value) { return strings::compareInsensitive(value, hash); }),
+				other.end());
+			m_dirty = true;
+		}
+
+		_Check_return_ bool Save()
+		{
+			if (!m_dirty) return true;
+			if (!m_rootKey) return false;
+			return WriteList(APPROVAL_LIST, m_approved) && WriteList(DENIAL_LIST, m_denied);
+		}
+
+	private:
+		static bool Contains(const std::vector<std::wstring>& values, const std::wstring& hash)
+		{
+			return std::any_of(values.cbegin(), values.cend(), [&hash](const auto& value) {
+				return strings::compareInsensitive(value, hash);
+			});
+		}
+
+		bool WriteList(const std::wstring& valueName, const std::vector<std::wstring>& values)
+		{
+			if (values.empty())
 			{
-				if (m_rootKey)
-				{
-					ReadList(m_rootKey, APPROVAL_LIST, m_approved);
-					ReadList(m_rootKey, DENIAL_LIST, m_denied);
-				}
-			}
-
-			~CApprovalCache()
-			{
-				if (m_rootKey) EC_W32_S(RegCloseKey(m_rootKey));
-			}
-
-			bool IsApproved(_In_ const std::wstring& hash) const { return Contains(m_approved, hash); }
-			bool IsDenied(_In_ const std::wstring& hash) const { return Contains(m_denied, hash); }
-
-			void Add(_In_ const std::wstring& hash, bool approved)
-			{
-				auto& target = approved ? m_approved : m_denied;
-				auto& other = approved ? m_denied : m_approved;
-				if (!Contains(target, hash)) target.push_back(hash);
-				other.erase(
-					std::remove_if(
-						other.begin(),
-						other.end(),
-						[&hash](const auto& value) { return strings::compareInsensitive(value, hash); }),
-					other.end());
-				m_dirty = true;
-			}
-
-			_Check_return_ bool Save()
-			{
-				if (!m_dirty) return true;
-				if (!m_rootKey) return false;
-				return WriteList(APPROVAL_LIST, m_approved) && WriteList(DENIAL_LIST, m_denied);
-			}
-
-		private:
-			static bool Contains(const std::vector<std::wstring>& values, const std::wstring& hash)
-			{
-				return std::any_of(values.cbegin(), values.cend(), [&hash](const auto& value) {
-					return strings::compareInsensitive(value, hash);
-				});
-			}
-
-			bool WriteList(const std::wstring& valueName, const std::vector<std::wstring>& values)
-			{
-				if (values.empty())
-				{
-					const auto result = RegDeleteValueW(m_rootKey, valueName.c_str());
-					if (result == ERROR_SUCCESS || result == ERROR_FILE_NOT_FOUND) return true;
-					output::DebugPrint(
-						output::dbgLevel::Generic,
-						L"RegDeleteValueW(%ws) failed with %u\n",
-						valueName.c_str(),
-						static_cast<DWORD>(result));
-					return false;
-				}
-
-				std::wstring serialized;
-				for (const auto& value : values)
-				{
-					serialized += value;
-					serialized += LIST_SEPARATOR;
-				}
-
-				if (serialized.size() >= MAXDWORD / sizeof(WCHAR))
-				{
-					output::DebugPrint(output::dbgLevel::Generic, L"Add-in decision cache is too large to store\n");
-					return false;
-				}
-
-				const auto cbValue = static_cast<DWORD>((serialized.size() + 1) * sizeof(WCHAR));
-				const auto result = RegSetValueExW(
-					m_rootKey,
-					valueName.c_str(),
-					0,
-					REG_SZ,
-					reinterpret_cast<const BYTE*>(serialized.c_str()),
-					cbValue);
-				if (result == ERROR_SUCCESS) return true;
+				const auto result = RegDeleteValueW(m_rootKey, valueName.c_str());
+				if (result == ERROR_SUCCESS || result == ERROR_FILE_NOT_FOUND) return true;
 				output::DebugPrint(
 					output::dbgLevel::Generic,
-					L"RegSetValueExW(%ws) failed with %u\n",
+					L"RegDeleteValueW(%ws) failed with %u\n",
 					valueName.c_str(),
 					static_cast<DWORD>(result));
 				return false;
 			}
 
-			HKEY m_rootKey{};
-			std::vector<std::wstring> m_approved;
-			std::vector<std::wstring> m_denied;
-			bool m_dirty{};
-		};
-
-		struct CPendingAddIn
-		{
-			AddInApprovalCandidate approval;
-			std::wstring path;
-			std::unique_ptr<CAddInFile> file;
-		};
-
-		void LoadApprovedAddIn(_In_ const std::wstring& path)
-		{
-			const auto flags = LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LOAD_LIBRARY_SEARCH_DEFAULT_DIRS;
-			const auto hMod = LoadLibraryExW(path.c_str(), nullptr, flags);
-			if (!hMod)
+			std::wstring serialized;
+			for (const auto& value : values)
 			{
-				const auto error = GetLastError();
-				RecordDiagnostic(path, IDS_ADDINREPORTLOADFAILED, error);
-				output::DebugPrint(
-					output::dbgLevel::AddInPlumbing, L"LoadLibraryExW(\"%ws\") failed with %u\n", path.c_str(), error);
-				return;
+				serialized += value;
+				serialized += LIST_SEPARATOR;
 			}
 
-			const auto pfnLoadAddIn = GetFunction<LPLOADADDIN>(hMod, szLoadAddIn);
-			if (pfnLoadAddIn && GetAddinVersion(hMod) == MFCMAPI_HEADER_CURRENT_VERSION)
+			if (serialized.size() >= MAXDWORD / sizeof(WCHAR))
 			{
-				g_lpMyAddins.emplace_back();
-				LoadSingleAddIn(g_lpMyAddins.back(), hMod, pfnLoadAddIn);
-				RecordDiagnostic(path, IDS_ADDINREPORTLOADED);
+				output::DebugPrint(output::dbgLevel::Generic, L"Add-in decision cache is too large to store\n");
+				return false;
 			}
-			else
-			{
-				RecordDiagnostic(path, IDS_ADDINREPORTINCOMPATIBLEAPI);
-				output::DebugPrint(
-					output::dbgLevel::AddInPlumbing, L"Approved DLL no longer has a compatible add-in export\n");
-				FreeLibrary(hMod);
-			}
+
+			const auto cbValue = static_cast<DWORD>((serialized.size() + 1) * sizeof(WCHAR));
+			const auto result = RegSetValueExW(
+				m_rootKey, valueName.c_str(), 0, REG_SZ, reinterpret_cast<const BYTE*>(serialized.c_str()), cbValue);
+			if (result == ERROR_SUCCESS) return true;
+			output::DebugPrint(
+				output::dbgLevel::Generic,
+				L"RegSetValueExW(%ws) failed with %u\n",
+				valueName.c_str(),
+				static_cast<DWORD>(result));
+			return false;
 		}
-	} // namespace
+
+		HKEY m_rootKey{};
+		std::vector<std::wstring> m_approved;
+		std::vector<std::wstring> m_denied;
+		bool m_dirty{};
+	};
+
+	struct CPendingAddIn
+	{
+		AddInApprovalCandidate approval;
+		std::wstring path;
+		std::unique_ptr<CAddInFile> file;
+	};
+
+	static void LoadApprovedAddIn(_In_ const std::wstring& path)
+	{
+		const auto flags = LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LOAD_LIBRARY_SEARCH_DEFAULT_DIRS;
+		const auto hMod = LoadLibraryExW(path.c_str(), nullptr, flags);
+		if (!hMod)
+		{
+			const auto error = GetLastError();
+			RecordDiagnostic(path, IDS_ADDINREPORTLOADFAILED, error);
+			output::DebugPrint(
+				output::dbgLevel::AddInPlumbing, L"LoadLibraryExW(\"%ws\") failed with %u\n", path.c_str(), error);
+			return;
+		}
+
+		const auto pfnLoadAddIn = GetFunction<LPLOADADDIN>(hMod, szLoadAddIn);
+		if (pfnLoadAddIn && GetAddinVersion(hMod) == MFCMAPI_HEADER_CURRENT_VERSION)
+		{
+			g_lpMyAddins.emplace_back();
+			LoadSingleAddIn(g_lpMyAddins.back(), hMod, pfnLoadAddIn);
+			RecordDiagnostic(path, IDS_ADDINREPORTLOADED);
+		}
+		else
+		{
+			RecordDiagnostic(path, IDS_ADDINREPORTINCOMPATIBLEAPI);
+			output::DebugPrint(
+				output::dbgLevel::AddInPlumbing, L"Approved DLL no longer has a compatible add-in export\n");
+			FreeLibrary(hMod);
+		}
+	}
 
 	_Check_return_ bool ClearAddInApprovalCache()
 	{

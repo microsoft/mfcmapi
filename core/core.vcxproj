@@ -849,6 +849,7 @@
     <ClInclude Include="mapi\mapiOutput.h" />
     <ClInclude Include="mapi\mapiProfileFunctions.h" />
     <ClInclude Include="mapi\mapiProgress.h" />
+    <ClInclude Include="mapi\mapiRuleFunctions.h" />
     <ClInclude Include="mapi\mapiStoreFunctions.h" />
     <ClInclude Include="mapi\processor\dumpStore.h" />
     <ClInclude Include="mapi\processor\mapiProcessor.h" />
@@ -959,6 +960,7 @@
     <ClCompile Include="mapi\mapiOutput.cpp" />
     <ClCompile Include="mapi\mapiProfileFunctions.cpp" />
     <ClCompile Include="mapi\mapiProgress.cpp" />
+    <ClCompile Include="mapi\mapiRuleFunctions.cpp" />
     <ClCompile Include="mapi\mapiStoreFunctions.cpp" />
     <ClCompile Include="mapi\processor\dumpStore.cpp" />
     <ClCompile Include="mapi\processor\mapiProcessor.cpp" />

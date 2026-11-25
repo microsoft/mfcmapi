@@ -77,6 +77,12 @@
     <ClCompile Include="..\MrMapi\mmcli.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\MrMapi\MMRules.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\MrMapi\MMAcls.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\MrMapi\MMEntryID.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

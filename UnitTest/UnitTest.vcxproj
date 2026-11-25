@@ -827,6 +827,12 @@
     <ClCompile Include="..\MrMapi\MMEntryID.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="..\MrMapi\MMRules.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\MrMapi\MMAcls.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\MrMapi\MMSmartView.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>

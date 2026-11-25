@@ -28,18 +28,15 @@
 #pragma comment(linker, "/export:PpropFindProp=TestPpropFindProp")
 #endif
 
-namespace
-{
-	union Buffer {
-		Buffer* next;
-		std::max_align_t alignment;
-	};
+union Buffer {
+	Buffer* next;
+	std::max_align_t alignment;
+};
 
-	Buffer* buffers{};
-	ULONG invalidFrees{};
-	ULONG freedRowSets{};
-	std::vector<ULONG> freedPropertyTags;
-} // namespace
+static Buffer* buffers{};
+static ULONG invalidFrees{};
+static ULONG freedRowSets{};
+static std::vector<ULONG> freedPropertyTags;
 
 extern "C" SCODE STDAPICALLTYPE TestMAPIAllocateBuffer(ULONG size, LPVOID* result)
 {

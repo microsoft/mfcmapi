@@ -17,6 +17,7 @@ namespace cli
 	extern option switchBinary;
 	extern option switchAcl;
 	extern option switchRule;
+	extern option switchRulesJson;
 	extern option switchContents;
 	extern option switchAssociatedContents;
 	extern option switchMoreProperties;

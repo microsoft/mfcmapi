@@ -15,35 +15,31 @@
 
 namespace smartviewfile
 {
-	namespace
+	using File = std::unique_ptr<FILE, decltype(&output::CloseFile)>;
+
+	static HRESULT Failure(const wchar_t* message, HRESULT result)
 	{
-		using File = std::unique_ptr<FILE, decltype(&output::CloseFile)>;
+		wprintf_s(L"SmartView: %ws (0x%08lX).\n", message, result);
+		return WC_H(result);
+	}
 
-		HRESULT Failure(const wchar_t* message, HRESULT result)
-		{
-			wprintf_s(L"SmartView: %ws (0x%08lX).\n", message, result);
-			return WC_H(result);
-		}
+	static HRESULT PrepareOutput(FILE* input, FILE* outputFile)
+	{
+		BY_HANDLE_FILE_INFORMATION inputInfo{};
+		BY_HANDLE_FILE_INFORMATION outputInfo{};
+		if (!GetFileInformationByHandle(reinterpret_cast<HANDLE>(_get_osfhandle(_fileno(input))), &inputInfo) ||
+			!GetFileInformationByHandle(reinterpret_cast<HANDLE>(_get_osfhandle(_fileno(outputFile))), &outputInfo))
+			return Failure(L"Cannot identify input and output files", HRESULT_FROM_WIN32(GetLastError()));
 
-		HRESULT PrepareOutput(FILE* input, FILE* outputFile)
-		{
-			BY_HANDLE_FILE_INFORMATION inputInfo{};
-			BY_HANDLE_FILE_INFORMATION outputInfo{};
-			if (!GetFileInformationByHandle(reinterpret_cast<HANDLE>(_get_osfhandle(_fileno(input))), &inputInfo) ||
-				!GetFileInformationByHandle(reinterpret_cast<HANDLE>(_get_osfhandle(_fileno(outputFile))), &outputInfo))
-				return Failure(L"Cannot identify input and output files", HRESULT_FROM_WIN32(GetLastError()));
+		if (inputInfo.dwVolumeSerialNumber == outputInfo.dwVolumeSerialNumber &&
+			inputInfo.nFileIndexHigh == outputInfo.nFileIndexHigh &&
+			inputInfo.nFileIndexLow == outputInfo.nFileIndexLow)
+			return Failure(L"Input and output must be different files", HRESULT_FROM_WIN32(ERROR_INVALID_PARAMETER));
 
-			if (inputInfo.dwVolumeSerialNumber == outputInfo.dwVolumeSerialNumber &&
-				inputInfo.nFileIndexHigh == outputInfo.nFileIndexHigh &&
-				inputInfo.nFileIndexLow == outputInfo.nFileIndexLow)
-				return Failure(
-					L"Input and output must be different files", HRESULT_FROM_WIN32(ERROR_INVALID_PARAMETER));
-
-			if (_chsize_s(_fileno(outputFile), 0) || _fseeki64(outputFile, 0, SEEK_SET))
-				return Failure(L"Cannot prepare output file", HRESULT_FROM_WIN32(ERROR_WRITE_FAULT));
-			return S_OK;
-		}
-	} // namespace
+		if (_chsize_s(_fileno(outputFile), 0) || _fseeki64(outputFile, 0, SEEK_SET))
+			return Failure(L"Cannot prepare output file", HRESULT_FROM_WIN32(ERROR_WRITE_FAULT));
+		return S_OK;
+	}
 
 	const InputOperations& DefaultInputOperations()
 	{
