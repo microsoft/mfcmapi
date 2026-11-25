@@ -1,5 +1,6 @@
 #include <StdAfx.h>
 #include <UI/Controls/SortList/SortListCtrl.h>
+#include <UI/Controls/SortList/TableLoad.h>
 #include <UI/Controls/SortList/SortHeader.h>
 #include <core/utility/strings.h>
 #include <UI/UIFunctions.h>
@@ -298,19 +299,7 @@ namespace controls::sortlistctrl
 	_Check_return_ sortlistdata::sortListData*
 	CSortListCtrl::InsertRow(int iRow, const std::wstring& szText, int iIndent, sortIcon iImage) const
 	{
-		auto lpData = new (std::nothrow) sortlistdata::sortListData();
-
-		LVITEMW lvItem = {0};
-		lvItem.iItem = iRow;
-		lvItem.iSubItem = 0;
-		lvItem.mask = LVIF_TEXT | LVIF_PARAM | LVIF_INDENT | LVIF_IMAGE;
-		lvItem.pszText = const_cast<LPWSTR>(szText.c_str());
-		lvItem.iIndent = iIndent;
-		lvItem.iImage = static_cast<int>(iImage);
-		lvItem.lParam = reinterpret_cast<LPARAM>(lpData);
-		::SendMessage(m_hWnd, LVM_INSERTITEMW, 0, reinterpret_cast<LPARAM>(&lvItem));
-
-		return lpData;
+		return InsertSortListRow(m_hWnd, iRow, szText, iIndent, static_cast<int>(iImage));
 	}
 
 	void CSortListCtrl::MySetRedraw(bool bRedraw)

@@ -3,8 +3,6 @@
 #include <core/utility/csv.h>
 #include <CommCtrl.h>
 
-#pragma comment(lib, "comctl32.lib")
-
 namespace csvtest
 {
 	csv::Table Snapshot(HWND list)

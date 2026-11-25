@@ -1397,6 +1397,8 @@ IDS_LOADINGITEMS "Loading items: %1!d! out of %2!d!"
 IDS_ESCSTOPLOADING "Hit Esc to stop loading contents table."
 IDS_TABLELOADCANCELLED "Contents table load cancelled"
 IDS_TABLELOADED "Contents table loaded"
+IDS_TABLELOADFAILED "Contents table load failed; results may be incomplete"
+IDS_TABLELOADLIMITED "Contents table load limited; results may be incomplete"
 IDS_PERCENTLOADED "%1!ws!: %2!d!%% done."
 
 // Action strings

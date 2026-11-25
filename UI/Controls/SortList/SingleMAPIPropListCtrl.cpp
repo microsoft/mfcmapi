@@ -461,11 +461,10 @@ namespace controls::sortlistctrl
 		}
 
 		auto lpData = InsertRow(iRow, L"", 0, image);
+		if (!lpData) return;
+
 		// Data used to refer to specific property tags. See GetSelectedPropTag.
-		if (lpData)
-		{
-			sortlistdata::propModelData::init(lpData, model);
-		}
+		sortlistdata::propModelData::init(lpData, model);
 
 		SetItemText(iRow, columns::pcPROPBESTGUESS, model->name());
 		SetItemText(iRow, columns::pcPROPOTHERNAMES, model->otherName());

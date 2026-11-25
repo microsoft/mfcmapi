@@ -10,8 +10,6 @@
 #include <fstream>
 #include <cmath>
 
-#pragma comment(lib, "runtimeobject.lib")
-
 namespace ui::theme
 {
 	static constexpr std::wstring_view roleNames[] = {

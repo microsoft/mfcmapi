@@ -6,6 +6,7 @@
 #include <core/utility/error.h>
 #include <core/utility/output.h>
 #include <core/utility/registry.h>
+#include <UI/Controls/SortList/TableLoad.h>
 #include <fcntl.h>
 #include <io.h>
 #include <cstddef>
@@ -162,7 +163,11 @@ namespace mapioutputtest
 		}
 		HRESULT STDMETHODCALLTYPE SeekRowApprox(ULONG, ULONG) override { return MAPI_E_NO_SUPPORT; }
 		HRESULT STDMETHODCALLTYPE QueryPosition(ULONG*, ULONG*, ULONG*) override { return MAPI_E_NO_SUPPORT; }
-		HRESULT STDMETHODCALLTYPE FindRow(LPSRestriction, BOOKMARK, ULONG) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE FindRow(LPSRestriction, BOOKMARK, ULONG) override
+		{
+			++findCount;
+			return findResult;
+		}
 		HRESULT STDMETHODCALLTYPE Restrict(LPSRestriction, ULONG) override { return MAPI_E_NO_SUPPORT; }
 		HRESULT STDMETHODCALLTYPE CreateBookmark(BOOKMARK*) override { return MAPI_E_NO_SUPPORT; }
 		HRESULT STDMETHODCALLTYPE FreeBookmark(BOOKMARK) override { return MAPI_E_NO_SUPPORT; }
@@ -219,6 +224,7 @@ namespace mapioutputtest
 		}
 
 		ULONG queryCount{};
+		ULONG findCount{};
 		ULONG seekCount{};
 		ULONG position{};
 		ULONG failOnQuery{};
@@ -228,6 +234,7 @@ namespace mapioutputtest
 		LONG expectedRequested{20};
 		ULONG expectedFlags{};
 		HRESULT queryResult{MAPI_E_CALL_FAILED};
+		HRESULT findResult{MAPI_E_NO_SUPPORT};
 		HRESULT columnsResult{S_OK};
 		std::vector<ULONG> columns;
 		HRESULT seekResult{S_OK};
@@ -467,6 +474,152 @@ namespace mapioutputtest
 			Assert::AreEqual(size_t{2}, m_errors.size());
 			Assert::AreEqual(0UL, table.queryCount);
 			Assert::AreEqual(0UL, table.queryColumnsCount);
+		}
+
+		TEST_METHOD(TableLoadKeepsInsertedRowsAndFreesRejectedRows)
+		{
+			using namespace controls::sortlistctrl;
+			auto table = TestTable(3, 3, true);
+			table.expectedRequested = 3;
+			LPSPropValue inserted = nullptr;
+			ULONG added{};
+			const auto result = LoadTableRows(
+				&table,
+				restrictionType::none,
+				nullptr,
+				0,
+				3,
+				[] { return false; },
+				[] {},
+				[&inserted](ULONG index, SRow& row) {
+					if (index == 1) return E_FAIL;
+					inserted = row.lpProps;
+					return S_OK;
+				},
+				added);
+			Assert::IsTrue(result == TableLoadResult::failed);
+			Assert::AreEqual(1UL, added);
+			Assert::IsNotNull(inserted);
+			Assert::AreEqual(numberTag, inserted[1].ulPropTag);
+			Assert::AreEqual(size_t{4}, freedPropertyTags.size());
+			Assert::AreEqual(1UL, freedRowSets);
+			MAPIFreeBuffer(inserted);
+		}
+
+		TEST_METHOD(TableLoadCompletesAcrossShortBatches)
+		{
+			using namespace controls::sortlistctrl;
+			auto table = TestTable(3, 2, true);
+			table.expectedRequested = 2;
+			std::vector<LPSPropValue> inserted;
+			ULONG added{};
+			const auto result = LoadTableRows(
+				&table,
+				restrictionType::none,
+				nullptr,
+				0,
+				2,
+				[] { return false; },
+				[] {},
+				[&inserted](ULONG index, SRow& row) {
+					Assert::AreEqual(inserted.size(), static_cast<size_t>(index));
+					inserted.push_back(row.lpProps);
+					return S_OK;
+				},
+				added);
+			Assert::IsTrue(result == TableLoadResult::complete);
+			Assert::AreEqual(3UL, added);
+			Assert::AreEqual(3UL, table.queryCount);
+			Assert::AreEqual(3UL, freedRowSets);
+			Assert::IsTrue(freedPropertyTags.empty());
+			for (const auto props : inserted)
+				MAPIFreeBuffer(props);
+		}
+
+		TEST_METHOD(TableLoadReportsLimitedAndProviderFailures)
+		{
+			using namespace controls::sortlistctrl;
+			auto table = TestTable(3, 2, true);
+			table.expectedRequested = 2;
+			std::vector<LPSPropValue> inserted;
+			ULONG added{};
+			const auto add = [&inserted](ULONG, SRow& row) {
+				inserted.push_back(row.lpProps);
+				return S_OK;
+			};
+			const auto result = LoadTableRows(
+				&table, restrictionType::none, nullptr, 2, 2, [] { return false; }, [] {}, add, added);
+			Assert::IsTrue(result == TableLoadResult::limited);
+			Assert::AreEqual(2UL, added);
+			Assert::AreEqual(1UL, table.queryCount);
+			for (const auto props : inserted)
+				MAPIFreeBuffer(props);
+			inserted.clear();
+			table.position = 0;
+			table.queryCount = 0;
+			table.failOnQuery = 1;
+			table.returnRowsOnFailure = true;
+			const auto failed = LoadTableRows(
+				&table, restrictionType::none, nullptr, 0, 2, [] { return false; }, [] {}, add, added);
+			Assert::IsTrue(failed == TableLoadResult::failed);
+			Assert::AreEqual(0UL, added);
+			Assert::IsTrue(inserted.empty());
+			Assert::AreEqual(size_t{4}, freedPropertyTags.size());
+		}
+
+		TEST_METHOD(TableLoadCancellationKeepsOnlyTransferredRows)
+		{
+			using namespace controls::sortlistctrl;
+			auto table = TestTable(2, 2, true);
+			table.expectedRequested = 2;
+			bool cancelled = false;
+			LPSPropValue inserted = nullptr;
+			ULONG added{};
+			const auto result = LoadTableRows(
+				&table,
+				restrictionType::none,
+				nullptr,
+				0,
+				2,
+				[&cancelled] { return cancelled; },
+				[] {},
+				[&cancelled, &inserted](ULONG, SRow& row) {
+					inserted = row.lpProps;
+					cancelled = true;
+					return S_OK;
+				},
+				added);
+			Assert::IsTrue(result == TableLoadResult::cancelled);
+			Assert::AreEqual(1UL, added);
+			Assert::IsNotNull(inserted);
+			Assert::AreEqual(size_t{2}, freedPropertyTags.size());
+			MAPIFreeBuffer(inserted);
+		}
+
+		TEST_METHOD(TableLoadDistinguishesFindRowEndAndFailure)
+		{
+			using namespace controls::sortlistctrl;
+			auto table = TestTable(0, 1);
+			SRestriction filter{};
+			ULONG added{};
+			const auto run = [&] {
+				return LoadTableRows(
+					&table,
+					restrictionType::findrow,
+					&filter,
+					0,
+					1,
+					[] { return false; },
+					[] {},
+					[](ULONG, SRow&) { return S_OK; },
+					added);
+			};
+			table.findResult = MAPI_E_NOT_FOUND;
+			Assert::IsTrue(run() == TableLoadResult::complete);
+			table.findResult = MAPI_E_NO_ACCESS;
+			Assert::IsTrue(run() == TableLoadResult::failed);
+			Assert::AreEqual(2UL, table.findCount);
+			Assert::AreEqual(0UL, table.queryCount);
 		}
 		TEST_METHOD(Test_TableRowIndicesShortBatches) { CheckTable(41, 7); }
 		TEST_METHOD(Test_TableRowIndicesSingleRowBatches) { CheckTable(21, 1); }
