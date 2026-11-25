@@ -16,115 +16,112 @@
 #pragma comment(linker, "/export:WrapCompressedRTFStreamEx=TestRtfWrapCompressedRTFStreamEx")
 #endif
 
-namespace
+static HRESULT initializeResult{S_OK};
+static HRESULT wrapResult{S_OK};
+static ULONG initializeCalls{};
+static ULONG uninitializeCalls{};
+static ULONG wrapCalls{};
+static ULONG wrapFlags{};
+static ULONG wrapInCodePage{};
+static ULONG wrapOutCodePage{};
+static ULONG wrapStreamFlags{};
+static bool nullWrappedStream{};
+static std::vector<BYTE> wrappedInput;
+static std::vector<BYTE> wrappedOutput;
+
+class TestRtfStream final : public IStream
 {
-	HRESULT initializeResult{S_OK};
-	HRESULT wrapResult{S_OK};
-	ULONG initializeCalls{};
-	ULONG uninitializeCalls{};
-	ULONG wrapCalls{};
-	ULONG wrapFlags{};
-	ULONG wrapInCodePage{};
-	ULONG wrapOutCodePage{};
-	ULONG wrapStreamFlags{};
-	bool nullWrappedStream{};
-	std::vector<BYTE> wrappedInput;
-	std::vector<BYTE> wrappedOutput;
-
-	class TestRtfStream final : public IStream
+public:
+	TestRtfStream() { Assert::AreEqual(S_OK, CreateStreamOnHGlobal(nullptr, true, &m_stream)); }
+	~TestRtfStream()
 	{
-	public:
-		TestRtfStream() { Assert::AreEqual(S_OK, CreateStreamOnHGlobal(nullptr, true, &m_stream)); }
-		~TestRtfStream()
+		m_stream->Release();
+		if (target) target->Release();
+	}
+	HRESULT STDMETHODCALLTYPE QueryInterface(REFIID, void** object) override
+	{
+		*object = nullptr;
+		return E_NOINTERFACE;
+	}
+	ULONG STDMETHODCALLTYPE AddRef() override { return ++m_refs; }
+	ULONG STDMETHODCALLTYPE Release() override
+	{
+		const auto refs = --m_refs;
+		if (!refs) delete this;
+		return refs;
+	}
+	HRESULT STDMETHODCALLTYPE Read(void* buffer, ULONG count, ULONG* read) override
+	{
+		if (FAILED(readResult)) return readResult;
+		return m_stream->Read(buffer, count, read);
+	}
+	HRESULT STDMETHODCALLTYPE Write(const void* buffer, ULONG count, ULONG* written) override
+	{
+		if (FAILED(writeResult)) return writeResult;
+		if (shortWrite && count) --count;
+		return m_stream->Write(buffer, count, written);
+	}
+	HRESULT STDMETHODCALLTYPE Seek(LARGE_INTEGER move, DWORD origin, ULARGE_INTEGER* position) override
+	{
+		return m_stream->Seek(move, origin, position);
+	}
+	HRESULT STDMETHODCALLTYPE SetSize(ULARGE_INTEGER size) override
+	{
+		if (FAILED(sizeResult)) return sizeResult;
+		return m_stream->SetSize(size);
+	}
+	HRESULT STDMETHODCALLTYPE CopyTo(IStream*, ULARGE_INTEGER, ULARGE_INTEGER*, ULARGE_INTEGER*) override
+	{
+		return E_NOTIMPL;
+	}
+	HRESULT STDMETHODCALLTYPE Commit(DWORD flags) override
+	{
+		++commits;
+		if (FAILED(commitResult)) return commitResult;
+		if (target)
 		{
-			m_stream->Release();
-			if (target) target->Release();
-		}
-		HRESULT STDMETHODCALLTYPE QueryInterface(REFIID, void** object) override
-		{
-			*object = nullptr;
-			return E_NOINTERFACE;
-		}
-		ULONG STDMETHODCALLTYPE AddRef() override { return ++m_refs; }
-		ULONG STDMETHODCALLTYPE Release() override
-		{
-			const auto refs = --m_refs;
-			if (!refs) delete this;
-			return refs;
-		}
-		HRESULT STDMETHODCALLTYPE Read(void* buffer, ULONG count, ULONG* read) override
-		{
-			if (FAILED(readResult)) return readResult;
-			return m_stream->Read(buffer, count, read);
-		}
-		HRESULT STDMETHODCALLTYPE Write(const void* buffer, ULONG count, ULONG* written) override
-		{
-			if (FAILED(writeResult)) return writeResult;
-			if (shortWrite && count) --count;
-			return m_stream->Write(buffer, count, written);
-		}
-		HRESULT STDMETHODCALLTYPE Seek(LARGE_INTEGER move, DWORD origin, ULARGE_INTEGER* position) override
-		{
-			return m_stream->Seek(move, origin, position);
-		}
-		HRESULT STDMETHODCALLTYPE SetSize(ULARGE_INTEGER size) override
-		{
-			if (FAILED(sizeResult)) return sizeResult;
-			return m_stream->SetSize(size);
-		}
-		HRESULT STDMETHODCALLTYPE CopyTo(IStream*, ULARGE_INTEGER, ULARGE_INTEGER*, ULARGE_INTEGER*) override
-		{
-			return E_NOTIMPL;
-		}
-		HRESULT STDMETHODCALLTYPE Commit(DWORD flags) override
-		{
-			++commits;
-			if (FAILED(commitResult)) return commitResult;
-			if (target)
-			{
-				STATSTG stat{};
-				auto hRes = m_stream->Stat(&stat, STATFLAG_NONAME);
-				if (FAILED(hRes)) return hRes;
-				wrappedInput.resize(static_cast<size_t>(stat.cbSize.QuadPart));
-				hRes = m_stream->Seek({}, STREAM_SEEK_SET, nullptr);
-				if (SUCCEEDED(hRes))
-					hRes = m_stream->Read(wrappedInput.data(), static_cast<ULONG>(wrappedInput.size()), nullptr);
-				if (SUCCEEDED(hRes))
-					hRes = target->Write(wrappedOutput.data(), static_cast<ULONG>(wrappedOutput.size()), nullptr);
-				return hRes;
-			}
-
-			return m_stream->Commit(flags);
-		}
-		HRESULT STDMETHODCALLTYPE Revert() override { return E_NOTIMPL; }
-		HRESULT STDMETHODCALLTYPE LockRegion(ULARGE_INTEGER, ULARGE_INTEGER, DWORD) override { return E_NOTIMPL; }
-		HRESULT STDMETHODCALLTYPE UnlockRegion(ULARGE_INTEGER, ULARGE_INTEGER, DWORD) override { return E_NOTIMPL; }
-		HRESULT STDMETHODCALLTYPE Stat(STATSTG* stat, DWORD flags) override
-		{
-			const auto hRes = m_stream->Stat(stat, flags);
-			if (SUCCEEDED(hRes) && advertisedSize) stat->cbSize.QuadPart = advertisedSize;
+			STATSTG stat{};
+			auto hRes = m_stream->Stat(&stat, STATFLAG_NONAME);
+			if (FAILED(hRes)) return hRes;
+			wrappedInput.resize(static_cast<size_t>(stat.cbSize.QuadPart));
+			hRes = m_stream->Seek({}, STREAM_SEEK_SET, nullptr);
+			if (SUCCEEDED(hRes))
+				hRes = m_stream->Read(wrappedInput.data(), static_cast<ULONG>(wrappedInput.size()), nullptr);
+			if (SUCCEEDED(hRes))
+				hRes = target->Write(wrappedOutput.data(), static_cast<ULONG>(wrappedOutput.size()), nullptr);
 			return hRes;
 		}
-		HRESULT STDMETHODCALLTYPE Clone(IStream**) override { return E_NOTIMPL; }
 
-		LPSTREAM target{};
-		HRESULT readResult{S_OK};
-		HRESULT writeResult{S_OK};
-		HRESULT sizeResult{S_OK};
-		HRESULT commitResult{S_OK};
-		bool shortWrite{};
-		ULONG commits{};
-		ULONGLONG advertisedSize{};
+		return m_stream->Commit(flags);
+	}
+	HRESULT STDMETHODCALLTYPE Revert() override { return E_NOTIMPL; }
+	HRESULT STDMETHODCALLTYPE LockRegion(ULARGE_INTEGER, ULARGE_INTEGER, DWORD) override { return E_NOTIMPL; }
+	HRESULT STDMETHODCALLTYPE UnlockRegion(ULARGE_INTEGER, ULARGE_INTEGER, DWORD) override { return E_NOTIMPL; }
+	HRESULT STDMETHODCALLTYPE Stat(STATSTG* stat, DWORD flags) override
+	{
+		const auto hRes = m_stream->Stat(stat, flags);
+		if (SUCCEEDED(hRes) && advertisedSize) stat->cbSize.QuadPart = advertisedSize;
+		return hRes;
+	}
+	HRESULT STDMETHODCALLTYPE Clone(IStream**) override { return E_NOTIMPL; }
 
-	private:
-		ULONG m_refs{1};
-		LPSTREAM m_stream{};
-	};
+	LPSTREAM target{};
+	HRESULT readResult{S_OK};
+	HRESULT writeResult{S_OK};
+	HRESULT sizeResult{S_OK};
+	HRESULT commitResult{S_OK};
+	bool shortWrite{};
+	ULONG commits{};
+	ULONGLONG advertisedSize{};
 
-	HRESULT compressionWriteResult{S_OK};
-	HRESULT compressionCommitResult{S_OK};
-	bool compressionShortWrite{};
-} // namespace
+private:
+	ULONG m_refs{1};
+	LPSTREAM m_stream{};
+};
+
+static HRESULT compressionWriteResult{S_OK};
+static HRESULT compressionCommitResult{S_OK};
+static bool compressionShortWrite{};
 
 extern "C" HRESULT STDAPICALLTYPE TestRtfMAPIInitialize(LPVOID)
 {

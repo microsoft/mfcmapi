@@ -1,11 +1,6 @@
 #pragma once
 #include <UI/Dialogs/ContentsTable/ContentsTableDlg.h>
 
-namespace
-{
-	class CMapiObjects;
-}
-
 namespace dialog
 {
 	class CRecipientsDlg : public CContentsTableDlg

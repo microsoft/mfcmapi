@@ -166,8 +166,6 @@ namespace mapi
 		bool bMove,
 		bool bSingleCall,
 		_In_ HWND hWnd);
-	_Check_return_ HRESULT
-	CopyFolderRules(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LPMAPIFOLDER lpDestFolder, bool bReplace);
 	_Check_return_ LPSRestriction CreatePropertyStringRestriction(
 		ULONG ulPropTag,
 		_In_ const std::wstring& szString,

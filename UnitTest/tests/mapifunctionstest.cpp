@@ -2,14 +2,22 @@
 #include <UnitTest/UnitTest.h>
 #include <core/mapi/mapiABFunctions.h>
 #include <core/mapi/mapiBinaryFunctions.h>
+#include <core/mapi/mapiFunctions.h>
+#include <core/mapi/mapiRuleFunctions.h>
 #include <core/mapi/mapiMemory.h>
 #include <core/mapi/mapiStoreFunctions.h>
+#include <core/mapi/processor/mapiProcessor.h>
 #include <core/mapi/interfaces.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/mapi/columnTags.h>
 #include <core/interpret/guid.h>
 #include <core/utility/strings.h>
 #include <core/utility/error.h>
+#include <MrMapi/MMRules.h>
+#include <winrt/Windows.Data.Json.h>
+#include <winrt/Windows.Foundation.Collections.h>
+#include <roapi.h>
+#include <fstream>
 #include <stdexcept>
 #include <thread>
 
@@ -441,6 +449,7 @@ namespace mapifunctionstest
 		HRESULT STDMETHODCALLTYPE GetStatus(ULONG*, ULONG*) override { return MAPI_E_NO_SUPPORT; }
 		HRESULT STDMETHODCALLTYPE SetColumns(LPSPropTagArray tags, ULONG flags) override
 		{
+			if (onSetColumns) return onSetColumns(tags, flags);
 			Assert::AreEqual(1UL, tags->cValues);
 			Assert::AreEqual(static_cast<ULONG>(PR_ENTRYID), tags->aulPropTag[0]);
 			Assert::AreEqual(0UL, flags);
@@ -448,13 +457,22 @@ namespace mapifunctionstest
 		}
 
 		HRESULT STDMETHODCALLTYPE QueryColumns(ULONG, LPSPropTagArray*) override { return MAPI_E_NO_SUPPORT; }
-		HRESULT STDMETHODCALLTYPE GetRowCount(ULONG, ULONG*) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE GetRowCount(ULONG flags, ULONG* count) override
+		{
+			if (onGetRowCount) return onGetRowCount(flags, count);
+			return MAPI_E_NO_SUPPORT;
+		}
 		HRESULT STDMETHODCALLTYPE SeekRow(BOOKMARK, LONG, LONG*) override { return MAPI_E_NO_SUPPORT; }
 		HRESULT STDMETHODCALLTYPE SeekRowApprox(ULONG, ULONG) override { return MAPI_E_NO_SUPPORT; }
 		HRESULT STDMETHODCALLTYPE QueryPosition(ULONG*, ULONG*, ULONG*) override { return MAPI_E_NO_SUPPORT; }
-		HRESULT STDMETHODCALLTYPE FindRow(LPSRestriction, BOOKMARK, ULONG) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE FindRow(LPSRestriction restriction, BOOKMARK bookmark, ULONG flags) override
+		{
+			if (onFindRow) return onFindRow(restriction, bookmark, flags);
+			return MAPI_E_NO_SUPPORT;
+		}
 		HRESULT STDMETHODCALLTYPE Restrict(LPSRestriction restriction, ULONG flags) override
 		{
+			if (onRestrict) return onRestrict(restriction, flags);
 			Assert::AreEqual(0UL, flags);
 			Assert::AreEqual(static_cast<ULONG>(RES_PROPERTY), restriction->rt);
 			Assert::AreEqual(static_cast<ULONG>(RELOP_EQ), restriction->res.resProperty.relop);
@@ -470,6 +488,7 @@ namespace mapifunctionstest
 		HRESULT STDMETHODCALLTYPE QuerySortOrder(LPSSortOrderSet*) override { return MAPI_E_NO_SUPPORT; }
 		HRESULT STDMETHODCALLTYPE QueryRows(LONG requested, ULONG flags, LPSRowSet* rows) override
 		{
+			if (onQueryRows) return onQueryRows(requested, flags, rows);
 			++queryCalls;
 			Assert::AreEqual(20L, requested);
 			Assert::AreEqual(0UL, flags);
@@ -628,6 +647,11 @@ namespace mapifunctionstest
 		std::function<HRESULT(LPSPropTagArray, ULONG, ULONG*, LPSPropValue*)> onGetProps;
 		std::function<HRESULT(ULONG, LPMAPINAMEID*, ULONG, LPSPropTagArray*)> onGetIDs;
 		std::function<HRESULT(ULONG, LPENTRYID, LPCIID, ULONG, ULONG*, LPUNKNOWN*)> onOpenEntry;
+		std::function<HRESULT(LPSPropTagArray, ULONG)> onSetColumns;
+		std::function<HRESULT(ULONG, ULONG*)> onGetRowCount;
+		std::function<HRESULT(LPSRestriction, ULONG)> onRestrict;
+		std::function<HRESULT(LPSRestriction, BOOKMARK, ULONG)> onFindRow;
+		std::function<HRESULT(LONG, ULONG, LPSRowSet*)> onQueryRows;
 		HRESULT result{S_OK};
 		ULONG calls{};
 		ULONG_PTR owner{};
@@ -672,43 +696,480 @@ namespace mapifunctionstest
 		ULONG m_refs{1};
 	};
 
-	namespace
+	static std::vector<BYTE> OneOff(bool unicode)
 	{
-		std::vector<BYTE> OneOff(bool unicode)
+		std::vector<BYTE> bytes(24);
+		Assert::AreEqual(0, memcpy_s(bytes.data() + 4, bytes.size() - 4, &guid::muidOOP, sizeof(GUID)));
+		const DWORD flags = unicode ? MAPI_UNICODE : 0;
+		Assert::AreEqual(0, memcpy_s(bytes.data() + 20, bytes.size() - 20, &flags, sizeof(flags)));
+		if (unicode)
 		{
-			std::vector<BYTE> bytes(24);
-			Assert::AreEqual(0, memcpy_s(bytes.data() + 4, bytes.size() - 4, &guid::muidOOP, sizeof(GUID)));
-			const DWORD flags = unicode ? MAPI_UNICODE : 0;
-			Assert::AreEqual(0, memcpy_s(bytes.data() + 20, bytes.size() - 20, &flags, sizeof(flags)));
-			if (unicode)
+			const wchar_t values[] = L"Alice\0SMTP\0alice@example.test";
+			const auto begin = reinterpret_cast<const BYTE*>(values);
+			bytes.insert(bytes.end(), begin, begin + sizeof(values));
+		}
+		else
+		{
+			const char values[] = "Alice\0SMTP\0alice@example.test";
+			const auto begin = reinterpret_cast<const BYTE*>(values);
+			bytes.insert(bytes.end(), begin, begin + sizeof(values));
+		}
+		return bytes;
+	}
+
+	static std::vector<BYTE> Wrapped(const std::vector<BYTE>& embedded)
+	{
+		std::vector<BYTE> bytes(21);
+		Assert::AreEqual(0, memcpy_s(bytes.data() + 4, bytes.size() - 4, &guid::WAB_GUID, sizeof(GUID)));
+		bytes[20] = 0x85;
+		bytes.insert(bytes.end(), embedded.begin(), embedded.end());
+		return bytes;
+	}
+
+	static mapi::binary::BinaryTableRow Decode(std::vector<BYTE>& bytes)
+	{
+		return mapi::binary::DecodeEntryID({static_cast<ULONG>(bytes.size()), bytes.data()});
+	}
+
+	class TestRulesModifyTable final : public IExchangeModifyTable
+	{
+	public:
+		HRESULT STDMETHODCALLTYPE QueryInterface(REFIID, void** object) override
+		{
+			*object = nullptr;
+			return E_NOINTERFACE;
+		}
+		ULONG STDMETHODCALLTYPE AddRef() override { return 2; }
+		ULONG STDMETHODCALLTYPE Release() override { return 1; }
+		HRESULT STDMETHODCALLTYPE GetLastError(HRESULT, ULONG, LPMAPIERROR*) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE GetTable(ULONG flags, LPMAPITABLE* result) override
+		{
+			Assert::AreEqual(0UL, flags);
+			*result = table;
+			if (table) table->AddRef();
+			return S_OK;
+		}
+		HRESULT STDMETHODCALLTYPE ModifyTable(ULONG flags, LPROWLIST rows) override
+		{
+			++modifyCalls;
+			Assert::AreEqual(0UL, flags);
+			Assert::AreEqual(1UL, rows->cEntries);
+			Assert::AreEqual(static_cast<ULONG>(ROW_MODIFY), rows->aEntries[0].ulRowFlags);
+			Assert::AreEqual(2UL, rows->aEntries[0].cValues);
+			values[0] = rows->aEntries[0].rgPropVals[0];
+			values[1] = rows->aEntries[0].rgPropVals[1];
+			return modifyResult;
+		}
+		LPMAPITABLE table{};
+		ULONG modifyCalls{};
+		HRESULT modifyResult{S_OK};
+		SPropValue values[2]{};
+	};
+
+	class TestContentsFolder final : public IMAPIFolder
+	{
+	public:
+		explicit TestContentsFolder(LPMAPITABLE contents) : table(contents) {}
+		HRESULT STDMETHODCALLTYPE QueryInterface(REFIID, void** object) override
+		{
+			*object = nullptr;
+			return E_NOINTERFACE;
+		}
+		ULONG STDMETHODCALLTYPE AddRef() override { return ++refs; }
+		ULONG STDMETHODCALLTYPE Release() override { return --refs; }
+		HRESULT STDMETHODCALLTYPE GetLastError(HRESULT, ULONG, LPMAPIERROR*) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE SaveChanges(ULONG) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE GetProps(LPSPropTagArray, ULONG, ULONG*, LPSPropValue*) override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE GetPropList(ULONG, LPSPropTagArray*) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE
+		OpenProperty(ULONG tag, LPCIID iid, ULONG interfaceOptions, ULONG flags, LPUNKNOWN* result) override
+		{
+			if (onOpenProperty) return onOpenProperty(tag, iid, interfaceOptions, flags, result);
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE SetProps(ULONG, LPSPropValue, LPSPropProblemArray*) override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE DeleteProps(LPSPropTagArray, LPSPropProblemArray*) override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE
+		CopyTo(ULONG, LPCIID, LPSPropTagArray, ULONG_PTR, LPMAPIPROGRESS, LPCIID, LPVOID, ULONG, LPSPropProblemArray*)
+			override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE
+		CopyProps(LPSPropTagArray, ULONG_PTR, LPMAPIPROGRESS, LPCIID, LPVOID, ULONG, LPSPropProblemArray*) override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE GetNamesFromIDs(LPSPropTagArray*, LPGUID, ULONG, ULONG*, LPMAPINAMEID**) override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE GetIDsFromNames(ULONG, LPMAPINAMEID*, ULONG, LPSPropTagArray*) override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE GetContentsTable(ULONG, LPMAPITABLE* result) override
+		{
+			*result = table;
+			table->AddRef();
+			return S_OK;
+		}
+		HRESULT STDMETHODCALLTYPE GetHierarchyTable(ULONG, LPMAPITABLE*) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE OpenEntry(ULONG, LPENTRYID, LPCIID, ULONG, ULONG*, LPUNKNOWN*) override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE SetSearchCriteria(LPSRestriction, LPENTRYLIST, ULONG) override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE GetSearchCriteria(ULONG, LPSRestriction*, LPENTRYLIST*, ULONG*) override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE CreateMessage(LPCIID, ULONG, LPMESSAGE*) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE CopyMessages(LPENTRYLIST, LPCIID, LPVOID, ULONG_PTR, LPMAPIPROGRESS, ULONG) override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE DeleteMessages(LPENTRYLIST, ULONG_PTR, LPMAPIPROGRESS, ULONG) override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE CreateFolder(ULONG, LPTSTR, LPTSTR, LPCIID, ULONG, LPMAPIFOLDER*) override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE
+		CopyFolder(ULONG, LPENTRYID, LPCIID, LPVOID, LPTSTR, ULONG_PTR, LPMAPIPROGRESS, ULONG) override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE DeleteFolder(ULONG, LPENTRYID, ULONG_PTR, LPMAPIPROGRESS, ULONG) override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE SetReadFlags(LPENTRYLIST, ULONG_PTR, LPMAPIPROGRESS, ULONG) override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE GetMessageStatus(ULONG, LPENTRYID, ULONG, ULONG*) override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE SetMessageStatus(ULONG, LPENTRYID, ULONG, ULONG, ULONG*) override
+		{
+			return MAPI_E_NO_SUPPORT;
+		}
+		HRESULT STDMETHODCALLTYPE SaveContentsSort(LPSSortOrderSet, ULONG) override { return MAPI_E_NO_SUPPORT; }
+		HRESULT STDMETHODCALLTYPE EmptyFolder(ULONG_PTR, LPMAPIPROGRESS, ULONG) override { return MAPI_E_NO_SUPPORT; }
+		std::function<HRESULT(ULONG, LPCIID, ULONG, ULONG, LPUNKNOWN*)> onOpenProperty;
+		LPMAPITABLE table;
+		ULONG refs{1};
+	};
+
+	class TestContentsProcessor final : public mapi::processor::mapiProcessor
+	{
+	public:
+		ULONG begins{};
+
+	private:
+		void BeginContentsTableWork(ULONG, ULONG) override { ++begins; }
+	};
+
+	TEST_CLASS(contentsprocessortest)
+	{
+	public:
+		static const bool dummy_var = true;
+		TEST_CLASS_INITIALIZE(initialize) { unittest::init(); }
+
+		TEST_METHOD(ContentsRestrictionFailureDoesNotProcessOrLeakTable)
+		{
+			TestAddressBook table;
+			TestContentsFolder folder(static_cast<IMAPITable*>(&table));
+			TestMailboxStore store;
+			SRestriction restriction{};
+			restriction.rt = RES_EXIST;
+			restriction.res.resExist.ulPropTag = PR_MESSAGE_CLASS_W;
+			table.onSetColumns = [](LPSPropTagArray, ULONG) { return S_OK; };
+			ULONG queries = 0;
+			table.onQueryRows = [&queries](LONG, ULONG, LPSRowSet* rows) {
+				++queries;
+				*rows = nullptr;
+				return S_OK;
+			};
+			table.onGetRowCount = [](ULONG, ULONG* count) {
+				*count = 0;
+				return S_OK;
+			};
+			HRESULT restrictResult = MAPI_E_NO_SUPPORT;
+			table.onRestrict = [&restriction, &restrictResult](LPSRestriction actual, ULONG flags) {
+				Assert::IsTrue(actual == &restriction);
+				Assert::AreEqual(static_cast<ULONG>(TBL_BATCH), flags);
+				return restrictResult;
+			};
 			{
-				const wchar_t values[] = L"Alice\0SMTP\0alice@example.test";
-				const auto begin = reinterpret_cast<const BYTE*>(values);
-				bytes.insert(bytes.end(), begin, begin + sizeof(values));
+				TestContentsProcessor processor;
+				processor.InitMDB(static_cast<IMsgStore*>(&store));
+				processor.InitFolder(&folder);
+				processor.InitFolderContentsRestriction(&restriction);
+				processor.ProcessFolders(false, true, false);
+				Assert::AreEqual(0UL, processor.begins);
+				Assert::AreEqual(0UL, queries);
+				Assert::AreEqual(1UL, table.References());
 			}
-			else
+
+			restrictResult = S_OK;
 			{
-				const char values[] = "Alice\0SMTP\0alice@example.test";
-				const auto begin = reinterpret_cast<const BYTE*>(values);
-				bytes.insert(bytes.end(), begin, begin + sizeof(values));
+				TestContentsProcessor processor;
+				processor.InitMDB(static_cast<IMsgStore*>(&store));
+				processor.InitFolder(&folder);
+				processor.InitFolderContentsRestriction(&restriction);
+				processor.ProcessFolders(false, true, false);
+				Assert::AreEqual(1UL, processor.begins);
+				Assert::AreEqual(1UL, queries);
+				Assert::AreEqual(1UL, table.References());
 			}
-			return bytes;
 		}
 
-		std::vector<BYTE> Wrapped(const std::vector<BYTE>& embedded)
+		TEST_METHOD(ContentsColumnFailureReleasesTable)
 		{
-			std::vector<BYTE> bytes(21);
-			Assert::AreEqual(0, memcpy_s(bytes.data() + 4, bytes.size() - 4, &guid::WAB_GUID, sizeof(GUID)));
-			bytes[20] = 0x85;
-			bytes.insert(bytes.end(), embedded.begin(), embedded.end());
-			return bytes;
+			TestAddressBook table;
+			TestContentsFolder folder(static_cast<IMAPITable*>(&table));
+			TestMailboxStore store;
+			table.onSetColumns = [](LPSPropTagArray, ULONG) { return MAPI_E_NO_SUPPORT; };
+			TestContentsProcessor processor;
+			processor.InitMDB(static_cast<IMsgStore*>(&store));
+			processor.InitFolder(&folder);
+			processor.ProcessFolders(true, false, false);
+
+			Assert::AreEqual(0UL, processor.begins);
+			Assert::AreEqual(1UL, table.References());
+		}
+	};
+
+	TEST_CLASS(rulereporttest)
+	{
+	public:
+		static const bool dummy_var = true;
+		TEST_CLASS_INITIALIZE(initialize) { unittest::init(); }
+		TEST_METHOD_INITIALIZE(initializeMemory) { m_memory = std::make_unique<unittest::testMapiMemory>(); }
+		TEST_METHOD_CLEANUP(cleanupMemory) { m_memory.reset(); }
+
+		TEST_METHOD(RuleReportPreservesValuesAndPropertyErrors)
+		{
+			SPropValue props[4] = {};
+			props[0].ulPropTag = PR_RULE_ID;
+			props[0].Value.li.QuadPart = 42;
+			props[1].ulPropTag = CHANGE_PROP_TYPE(PR_RULE_NAME, PT_UNICODE);
+			wchar_t name[] = L"Rule \"one\"\n";
+			props[1].Value.lpszW = name;
+			props[2].ulPropTag = CHANGE_PROP_TYPE(PR_RULE_PROVIDER, PT_ERROR);
+			props[2].Value.err = MAPI_E_NO_ACCESS;
+			props[3].ulPropTag = PR_RULE_STATE;
+			props[3].Value.ul = ST_ENABLED | ST_ERROR;
+			const SRow row = {0, 4, props};
+			const auto report = mapi::DescribeRuleReportRow(row);
+
+			Assert::AreEqual(S_OK, report.id.status);
+			Assert::AreEqual(std::wstring(L"0x000000000000002A"), report.id.raw);
+			Assert::AreEqual(std::wstring(name), report.name.raw);
+			Assert::AreEqual(MAPI_E_NO_ACCESS, report.provider.status);
+			Assert::AreEqual(MAPI_E_NOT_FOUND, report.sequence.status);
+			Assert::AreEqual(std::wstring(L"0x00000003"), report.state.raw);
+			Assert::IsTrue(report.state.decoded.find(L"ST_ENABLED") != std::wstring::npos);
+			Assert::IsTrue(report.state.decoded.find(L"ST_ERROR") != std::wstring::npos);
 		}
 
-		mapi::binary::BinaryTableRow Decode(std::vector<BYTE>& bytes)
+		TEST_METHOD(RuleReportRejectsMalformedRowsAndPropertyTypes)
 		{
-			return mapi::binary::DecodeEntryID({static_cast<ULONG>(bytes.size()), bytes.data()});
+			const SRow malformed = {0, 1, nullptr};
+			Assert::AreEqual(MAPI_E_INVALID_PARAMETER, mapi::DescribeRuleReportRow(malformed).id.status);
+			SPropValue props[2] = {};
+			props[0].ulPropTag = CHANGE_PROP_TYPE(PR_RULE_NAME, PT_LONG);
+			props[1].ulPropTag = CHANGE_PROP_TYPE(PR_RULE_PROVIDER, PT_UNICODE);
+			const SRow row = {0, 2, props};
+			const auto report = mapi::DescribeRuleReportRow(row);
+			Assert::AreEqual(MAPI_E_INVALID_TYPE, report.name.status);
+			Assert::AreEqual(MAPI_E_INVALID_PARAMETER, report.provider.status);
+			Assert::AreEqual(MAPI_E_NOT_FOUND, report.id.status);
 		}
-	} // namespace
+
+		TEST_METHOD(RuleReportReadsBatchesAndSurfacesIncompleteResults)
+		{
+			TestAddressBook table;
+			table.onSetColumns = [](LPSPropTagArray tags, ULONG flags) {
+				Assert::AreEqual(5UL, tags->cValues);
+				Assert::AreEqual(CHANGE_PROP_TYPE(PR_RULE_NAME, PT_UNICODE), tags->aulPropTag[1]);
+				Assert::AreEqual(0UL, flags);
+				return S_OK;
+			};
+			ULONG calls = 0;
+			HRESULT lastResult = S_OK;
+			table.onQueryRows = [&calls, &lastResult](LONG, ULONG, LPSRowSet* batch) {
+				++calls;
+				if (calls > 1 && FAILED(lastResult)) return lastResult;
+				*batch = mapi::allocate<LPSRowSet>(CbNewSRowSet(1));
+				if (!*batch) return MAPI_E_NOT_ENOUGH_MEMORY;
+				(*batch)->cRows = calls == 1 ? 1 : 0;
+				if (calls == 1)
+				{
+					auto& row = (*batch)->aRow[0];
+					row.cValues = 1;
+					row.lpProps = mapi::allocate<LPSPropValue>(sizeof(SPropValue));
+					if (!row.lpProps) return MAPI_E_NOT_ENOUGH_MEMORY;
+					row.lpProps[0].ulPropTag = PR_RULE_ID;
+					row.lpProps[0].Value.li.QuadPart = 42;
+				}
+
+				return calls > 1 ? lastResult : S_OK;
+			};
+			std::vector<mapi::RuleReportRow> rows;
+			Assert::AreEqual(S_OK, mapi::ReadRuleReportRows(&table, rows));
+			Assert::AreEqual(size_t{1}, rows.size());
+			Assert::AreEqual(std::wstring(L"0x000000000000002A"), rows[0].id.raw);
+			calls = 0;
+			lastResult = MAPI_E_NO_ACCESS;
+			Assert::AreEqual(MAPI_E_NO_ACCESS, mapi::ReadRuleReportRows(&table, rows));
+			Assert::AreEqual(size_t{1}, rows.size());
+			calls = 0;
+			lastResult = MAPI_W_ERRORS_RETURNED;
+			Assert::AreEqual(static_cast<HRESULT>(MAPI_W_ERRORS_RETURNED), mapi::ReadRuleReportRows(&table, rows));
+			Assert::AreEqual(size_t{1}, rows.size());
+			table.onSetColumns = [](LPSPropTagArray, ULONG) { return MAPI_E_NO_SUPPORT; };
+			Assert::AreEqual(MAPI_E_NO_SUPPORT, mapi::ReadRuleReportRows(&table, rows));
+			Assert::IsTrue(rows.empty());
+		}
+
+		TEST_METHOD(RuleReportJsonPreservesUnicodeAndExplicitErrors)
+		{
+			using namespace winrt::Windows::Data::Json;
+			const auto initialized = RoInitialize(RO_INIT_SINGLETHREADED);
+			Assert::IsTrue(SUCCEEDED(initialized) || initialized == RPC_E_CHANGED_MODE);
+			mapi::RuleReportRow row;
+			row.name.status = S_OK;
+			row.name.raw = L"Quote \" slash \\ newline\n\u00E9 \U0001F600 {a:[b,c]}";
+			row.provider.status = MAPI_E_NO_ACCESS;
+			row.state.status = S_OK;
+			row.state.raw = L"0x00000001";
+			row.state.decoded = L"ST_ENABLED";
+			std::string bytes;
+			Assert::AreEqual(S_OK, FormatRulesReport({row}, MAPI_E_NO_ACCESS, bytes));
+			Assert::AreEqual(size_t{0}, bytes.rfind("{\n  \"schemaVersion\": 1,\n  \"scope\"", 0));
+			Assert::IsTrue(bytes.find("\n        \"value\": null") != std::string::npos);
+			Assert::IsTrue(bytes.back() == '\n');
+			const auto report = JsonObject::Parse(winrt::to_hstring(bytes));
+			Assert::IsFalse(report.GetNamedBoolean(L"complete"));
+			Assert::AreEqual(std::wstring(L"0x80070005"), std::wstring(report.GetNamedString(L"tableStatus")));
+			const auto item = report.GetNamedArray(L"rules").GetObjectAt(0);
+			Assert::AreEqual(row.name.raw, std::wstring(item.GetNamedObject(L"name").GetNamedString(L"value")));
+			Assert::AreEqual(
+				std::wstring(L"0x80070005"), std::wstring(item.GetNamedObject(L"provider").GetNamedString(L"status")));
+			Assert::IsFalse(item.GetNamedObject(L"state").HasKey(L"status"));
+			Assert::IsTrue(item.GetNamedObject(L"provider").GetNamedValue(L"value").ValueType() == JsonValueType::Null);
+			Assert::AreEqual(
+				std::wstring(L"ST_ENABLED"), std::wstring(item.GetNamedObject(L"state").GetNamedString(L"decoded")));
+			Assert::AreEqual(
+				std::wstring(L"PR_RULE_STATE"),
+				std::wstring(item.GetNamedObject(L"state").GetNamedString(L"property")));
+			Assert::AreEqual(
+				std::wstring(L"0x66770003"), std::wstring(item.GetNamedObject(L"state").GetNamedString(L"tag")));
+			Assert::AreEqual(
+				std::wstring(L"0x66740014"), std::wstring(item.GetNamedObject(L"id").GetNamedString(L"tag")));
+			Assert::AreEqual(
+				std::wstring(L"PR_RULE_NAME"), std::wstring(item.GetNamedObject(L"name").GetNamedString(L"property")));
+			Assert::AreEqual(
+				std::wstring(L"0x6682001F"), std::wstring(item.GetNamedObject(L"name").GetNamedString(L"tag")));
+			Assert::AreEqual(
+				std::wstring(L"0x6681001F"), std::wstring(item.GetNamedObject(L"provider").GetNamedString(L"tag")));
+			Assert::AreEqual(
+				std::wstring(L"0x66760003"), std::wstring(item.GetNamedObject(L"sequence").GetNamedString(L"tag")));
+			Assert::AreEqual(S_OK, FormatRulesReport({}, S_OK, bytes));
+			Assert::IsTrue(bytes.find("\"rules\": []") != std::string::npos);
+			const auto empty = JsonObject::Parse(winrt::to_hstring(bytes));
+			Assert::IsTrue(empty.GetNamedBoolean(L"complete"));
+			Assert::IsFalse(empty.HasKey(L"tableStatus"));
+			Assert::AreEqual(0U, empty.GetNamedArray(L"rules").Size());
+			row.name.raw = std::wstring(1, static_cast<wchar_t>(0xD800));
+			Assert::IsTrue(FAILED(FormatRulesReport({row}, S_OK, bytes)));
+			Assert::IsTrue(bytes.empty());
+			if (SUCCEEDED(initialized)) RoUninitialize();
+		}
+
+		TEST_METHOD(RuleReportWritesAndReportsProviderAndFileFailures)
+		{
+			using namespace winrt::Windows::Data::Json;
+			const auto initialized = RoInitialize(RO_INIT_SINGLETHREADED);
+			Assert::IsTrue(SUCCEEDED(initialized) || initialized == RPC_E_CHANGED_MODE);
+			wchar_t directory[MAX_PATH] = {};
+			wchar_t path[MAX_PATH] = {};
+			Assert::IsTrue(GetTempPathW(MAX_PATH, directory) != 0);
+			Assert::IsTrue(GetTempFileNameW(directory, L"rpt", 0, path) != 0);
+			struct Cleanup
+			{
+				const wchar_t* path;
+				~Cleanup() { WC_B_S(DeleteFileW(path)); }
+			} cleanup{path};
+			TestAddressBook table;
+			TestRulesModifyTable exchange;
+			exchange.table = &table;
+			TestContentsFolder folder(&table);
+			folder.onOpenProperty = [&exchange](ULONG tag, LPCIID iid, ULONG, ULONG flags, LPUNKNOWN* result) {
+				Assert::AreEqual(PR_RULES_TABLE, tag);
+				Assert::IsTrue(IsEqualIID(*iid, IID_IExchangeModifyTable) != FALSE);
+				Assert::AreEqual(static_cast<ULONG>(MAPI_DEFERRED_ERRORS), flags);
+				*result = static_cast<IExchangeModifyTable*>(&exchange);
+				exchange.AddRef();
+				return S_OK;
+			};
+			table.onSetColumns = [](LPSPropTagArray, ULONG) { return S_OK; };
+			table.onQueryRows = [](LONG, ULONG, LPSRowSet* batch) {
+				*batch = mapi::allocate<LPSRowSet>(CbNewSRowSet(1));
+				if (!*batch) return MAPI_E_NOT_ENOUGH_MEMORY;
+				(*batch)->cRows = 0;
+				return S_OK;
+			};
+			Assert::AreEqual(S_OK, DoRulesReport(&folder, path));
+			Assert::AreEqual(1UL, table.References());
+			std::ifstream stream(path, std::ios::binary);
+			std::string bytes{std::istreambuf_iterator<char>{stream}, std::istreambuf_iterator<char>{}};
+			stream.close();
+			Assert::IsTrue(JsonObject::Parse(winrt::to_hstring(bytes)).GetNamedBoolean(L"complete"));
+			table.onSetColumns = [](LPSPropTagArray, ULONG) { return MAPI_E_NO_ACCESS; };
+			Assert::AreEqual(MAPI_E_NO_ACCESS, DoRulesReport(&folder, path));
+			std::ifstream partialStream(path, std::ios::binary);
+			bytes.assign(std::istreambuf_iterator<char>{partialStream}, std::istreambuf_iterator<char>{});
+			partialStream.close();
+			Assert::IsFalse(JsonObject::Parse(winrt::to_hstring(bytes)).GetNamedBoolean(L"complete"));
+			table.onSetColumns = [](LPSPropTagArray, ULONG) { return MAPI_W_PARTIAL_COMPLETION; };
+			Assert::AreEqual(MAPI_E_CALL_FAILED, DoRulesReport(&folder, path));
+			std::ifstream warningStream(path, std::ios::binary);
+			bytes.assign(std::istreambuf_iterator<char>{warningStream}, std::istreambuf_iterator<char>{});
+			warningStream.close();
+			const auto warningReport = JsonObject::Parse(winrt::to_hstring(bytes));
+			Assert::IsFalse(warningReport.GetNamedBoolean(L"complete"));
+			Assert::AreEqual(
+				strings::format(L"0x%08X", MAPI_W_PARTIAL_COMPLETION),
+				std::wstring(warningReport.GetNamedString(L"tableStatus")));
+			folder.onOpenProperty = [](ULONG, LPCIID, ULONG, ULONG, LPUNKNOWN*) { return MAPI_E_NO_SUPPORT; };
+			Assert::AreEqual(MAPI_E_NO_SUPPORT, DoRulesReport(&folder, path));
+			Assert::AreEqual(MAPI_E_NOT_FOUND, DoRulesReport(nullptr, path));
+			Assert::IsTrue(FAILED(DoRulesReport(&folder, directory)));
+			if (SUCCEEDED(initialized)) RoUninitialize();
+		}
+
+	private:
+		std::unique_ptr<unittest::testMapiMemory> m_memory;
+	};
 
 	TEST_CLASS(entryidtest)
 	{

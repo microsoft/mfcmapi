@@ -10,13 +10,10 @@
 #pragma comment(linker, "/export:HrGetAutoDiscoverXML=TestHrGetAutoDiscoverXML")
 #endif
 
-namespace
-{
-	IStream* response{};
-	HRESULT responseResult{S_OK};
-	ULONG requests{};
-	std::wstring requestedAddress;
-} // namespace
+static IStream* response{};
+static HRESULT responseResult{S_OK};
+static ULONG requests{};
+static std::wstring requestedAddress;
 
 extern "C" HRESULT STDAPICALLTYPE
 TestHrGetAutoDiscoverXML(LPCWSTR address, LPCWSTR password, HANDLE cancel, ULONG flags, IStream** stream)

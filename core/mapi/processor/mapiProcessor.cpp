@@ -331,7 +331,14 @@ namespace mapi::processor
 		if (SUCCEEDED(hRes) && lpContentsTable && m_lpResFolderContents)
 		{
 			output::outputRestriction(output::dbgLevel::Generic, nullptr, m_lpResFolderContents, nullptr);
-			WC_MAPI_S(lpContentsTable->Restrict(m_lpResFolderContents, TBL_BATCH));
+			hRes = WC_MAPI(lpContentsTable->Restrict(m_lpResFolderContents, TBL_BATCH));
+			if (FAILED(hRes))
+			{
+				output::DebugPrint(
+					output::dbgLevel::Console,
+					L"Contents table restriction failed (0x%08X); table was not processed.\n",
+					hRes);
+			}
 		}
 
 		if (SUCCEEDED(hRes) && lpContentsTable && m_lpSort)
@@ -403,9 +410,9 @@ namespace mapi::processor
 			}
 
 			if (lpRows) FreeProws(lpRows);
-			lpContentsTable->Release();
 		}
 
+		if (lpContentsTable) lpContentsTable->Release();
 		EndContentsTableWork();
 	}
 

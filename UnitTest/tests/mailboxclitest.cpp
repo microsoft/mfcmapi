@@ -91,6 +91,30 @@ TEST_METHOD(CommandsWithoutMailboxKeepExistingValidation)
 	Assert::AreEqual(std::wstring(L"0"), cli::switchStore[0]);
 }
 
+TEST_METHOD(RulesJsonRequiresItsOwnPathAndAllowsEitherSwitchOrder)
+{
+	for (const auto& args :
+		 {std::vector<std::wstring>{L"-Rules", L"-RulesJson", L"report.json"},
+		  std::vector<std::wstring>{L"-RulesJson", L"report.json", L"-Rules"},
+		  std::vector<std::wstring>{L"-RulesJson", L"report.json"}})
+	{
+		ClearOptions();
+		const auto options = Parse(args);
+		Assert::AreEqual(static_cast<int>(cli::cmdmodeRules), options.mode);
+		Assert::IsTrue(cli::switchRulesJson.isSet());
+		Assert::AreEqual(std::wstring(L"report.json"), cli::switchRulesJson[0]);
+	}
+
+	ClearOptions();
+	Assert::AreEqual(
+		static_cast<int>(cli::cmdmodeHelp), Parse({L"-RulesJson", L"report.json", L"-Output", L"other"}).mode);
+	ClearOptions();
+	Assert::AreEqual(
+		static_cast<int>(cli::cmdmodeHelp), Parse({L"-RulesJson", L"report.json", L"-Version", L"0"}).mode);
+	ClearOptions();
+	Assert::AreEqual(static_cast<int>(cli::cmdmodeHelp), Parse({L"-RulesJson"}).mode);
+}
+
 TEST_METHOD(EntryIDRequestsWithoutMailboxKeepExistingValidation)
 {
 	const auto options = Parse({L"-EntryID", L"00AB", L"-Profile", L"Service", L"-Store", L"0", L"PR_SUBJECT_W"});

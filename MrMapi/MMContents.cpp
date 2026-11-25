@@ -100,6 +100,8 @@ void DoContents(LPMDB lpMDB, LPMAPIFOLDER lpFolder)
 	SRestriction sResMessageClass[2] = {};
 	SPropValue sPropValue[2] = {};
 	LPSRestriction lpRes = nullptr;
+	const auto szSubject = cli::switchSubject[0];
+	const auto szMessageClass = cli::switchMessageClass[0];
 	if (!cli::switchSubject.empty() || !cli::switchMessageClass.empty())
 	{
 		// RES_AND
@@ -110,7 +112,6 @@ void DoContents(LPMDB lpMDB, LPMAPIFOLDER lpFolder)
 		//     RES_EXIST - PR_MESSAGE_CLASS_W
 		//     RES_CONTENT - lpszMessageClass
 		auto i = 0;
-		const auto szSubject = cli::switchSubject[0];
 		if (!szSubject.empty())
 		{
 			sResMiddle[i].rt = RES_AND;
@@ -127,7 +128,6 @@ void DoContents(LPMDB lpMDB, LPMAPIFOLDER lpFolder)
 			i++;
 		}
 
-		const auto szMessageClass = cli::switchMessageClass[0];
 		if (!szMessageClass.empty())
 		{
 			sResMiddle[i].rt = RES_AND;

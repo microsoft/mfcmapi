@@ -6,157 +6,152 @@
 
 namespace addin
 {
-	namespace
+	static _Check_return_ bool IsRangeValid(size_t imageSize, size_t offset, size_t cb)
 	{
-		_Check_return_ bool IsRangeValid(size_t imageSize, size_t offset, size_t cb)
+		return offset <= imageSize && cb <= imageSize - offset;
+	}
+
+	static _Check_return_ size_t MinSize(size_t first, size_t second) { return first < second ? first : second; }
+
+	template <typename T>
+	static _Check_return_ bool
+	ReadImageValue(_In_reads_bytes_(cbImage) const BYTE* image, size_t cbImage, size_t offset, T& value)
+	{
+		if (!image || !IsRangeValid(cbImage, offset, sizeof(T))) return false;
+		memcpy(&value, image + offset, sizeof(T));
+		return true;
+	}
+
+	static _Check_return_ bool MapRva(
+		_In_reads_bytes_(cbImage) const BYTE* image,
+		size_t cbImage,
+		DWORD rva,
+		size_t cbRequired,
+		DWORD sizeOfHeaders,
+		size_t sectionTable,
+		WORD sectionCount,
+		_Out_ size_t& fileOffset,
+		_Out_ size_t& cbAvailable)
+	{
+		if (rva < sizeOfHeaders && IsRangeValid(cbImage, rva, cbRequired))
 		{
-			return offset <= imageSize && cb <= imageSize - offset;
+			fileOffset = rva;
+			cbAvailable = MinSize(static_cast<size_t>(sizeOfHeaders - rva), cbImage - rva);
+			return cbRequired <= cbAvailable;
 		}
 
-		_Check_return_ size_t MinSize(size_t first, size_t second) { return first < second ? first : second; }
-
-		template <typename T>
-		_Check_return_ bool
-		ReadImageValue(_In_reads_bytes_(cbImage) const BYTE* image, size_t cbImage, size_t offset, T& value)
+		for (WORD i = 0; i < sectionCount; ++i)
 		{
-			if (!image || !IsRangeValid(cbImage, offset, sizeof(T))) return false;
-			memcpy(&value, image + offset, sizeof(T));
-			return true;
+			IMAGE_SECTION_HEADER section = {};
+			const auto offset = sectionTable + static_cast<size_t>(i) * sizeof(section);
+			if (!ReadImageValue(image, cbImage, offset, section)) return false;
+			if (rva < section.VirtualAddress) continue;
+
+			const auto delta = static_cast<uint64_t>(rva) - section.VirtualAddress;
+			if (delta >= section.SizeOfRawData) continue;
+			if (cbRequired > section.SizeOfRawData - delta) return false;
+
+			const auto rawOffset = static_cast<uint64_t>(section.PointerToRawData) + delta;
+			if (rawOffset > (std::numeric_limits<size_t>::max)()) return false;
+			fileOffset = static_cast<size_t>(rawOffset);
+			cbAvailable = MinSize(
+				static_cast<size_t>(section.SizeOfRawData - delta), fileOffset <= cbImage ? cbImage - fileOffset : 0);
+			return IsRangeValid(cbImage, fileOffset, cbRequired) && cbRequired <= cbAvailable;
 		}
 
-		_Check_return_ bool MapRva(
-			_In_reads_bytes_(cbImage) const BYTE* image,
-			size_t cbImage,
-			DWORD rva,
-			size_t cbRequired,
-			DWORD sizeOfHeaders,
-			size_t sectionTable,
-			WORD sectionCount,
-			_Out_ size_t& fileOffset,
-			_Out_ size_t& cbAvailable)
+		return false;
+	}
+
+	static _Check_return_ bool HasExport(
+		_In_reads_bytes_(cbImage) const BYTE* image,
+		size_t cbImage,
+		size_t optionalHeader,
+		WORD optionalHeaderSize,
+		WORD sectionCount,
+		size_t sectionTable,
+		WORD magic)
+	{
+		IMAGE_DATA_DIRECTORY exportDirectory = {};
+		DWORD sizeOfHeaders = 0;
+
+		if (magic == IMAGE_NT_OPTIONAL_HDR32_MAGIC)
 		{
-			if (rva < sizeOfHeaders && IsRangeValid(cbImage, rva, cbRequired))
-			{
-				fileOffset = rva;
-				cbAvailable = MinSize(static_cast<size_t>(sizeOfHeaders - rva), cbImage - rva);
-				return cbRequired <= cbAvailable;
-			}
-
-			for (WORD i = 0; i < sectionCount; ++i)
-			{
-				IMAGE_SECTION_HEADER section = {};
-				const auto offset = sectionTable + static_cast<size_t>(i) * sizeof(section);
-				if (!ReadImageValue(image, cbImage, offset, section)) return false;
-				if (rva < section.VirtualAddress) continue;
-
-				const auto delta = static_cast<uint64_t>(rva) - section.VirtualAddress;
-				if (delta >= section.SizeOfRawData) continue;
-				if (cbRequired > section.SizeOfRawData - delta) return false;
-
-				const auto rawOffset = static_cast<uint64_t>(section.PointerToRawData) + delta;
-				if (rawOffset > (std::numeric_limits<size_t>::max)()) return false;
-				fileOffset = static_cast<size_t>(rawOffset);
-				cbAvailable = MinSize(
-					static_cast<size_t>(section.SizeOfRawData - delta),
-					fileOffset <= cbImage ? cbImage - fileOffset : 0);
-				return IsRangeValid(cbImage, fileOffset, cbRequired) && cbRequired <= cbAvailable;
-			}
-
+			IMAGE_OPTIONAL_HEADER32 header = {};
+			if (optionalHeaderSize < sizeof(header) || !ReadImageValue(image, cbImage, optionalHeader, header))
+				return false;
+			if (header.NumberOfRvaAndSizes <= IMAGE_DIRECTORY_ENTRY_EXPORT) return false;
+			exportDirectory = header.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT];
+			sizeOfHeaders = header.SizeOfHeaders;
+		}
+		else if (magic == IMAGE_NT_OPTIONAL_HDR64_MAGIC)
+		{
+			IMAGE_OPTIONAL_HEADER64 header = {};
+			if (optionalHeaderSize < sizeof(header) || !ReadImageValue(image, cbImage, optionalHeader, header))
+				return false;
+			if (header.NumberOfRvaAndSizes <= IMAGE_DIRECTORY_ENTRY_EXPORT) return false;
+			exportDirectory = header.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT];
+			sizeOfHeaders = header.SizeOfHeaders;
+		}
+		else
+		{
 			return false;
 		}
 
-		_Check_return_ bool HasExport(
-			_In_reads_bytes_(cbImage) const BYTE* image,
-			size_t cbImage,
-			size_t optionalHeader,
-			WORD optionalHeaderSize,
-			WORD sectionCount,
-			size_t sectionTable,
-			WORD magic)
-		{
-			IMAGE_DATA_DIRECTORY exportDirectory = {};
-			DWORD sizeOfHeaders = 0;
-
-			if (magic == IMAGE_NT_OPTIONAL_HDR32_MAGIC)
-			{
-				IMAGE_OPTIONAL_HEADER32 header = {};
-				if (optionalHeaderSize < sizeof(header) || !ReadImageValue(image, cbImage, optionalHeader, header))
-					return false;
-				if (header.NumberOfRvaAndSizes <= IMAGE_DIRECTORY_ENTRY_EXPORT) return false;
-				exportDirectory = header.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT];
-				sizeOfHeaders = header.SizeOfHeaders;
-			}
-			else if (magic == IMAGE_NT_OPTIONAL_HDR64_MAGIC)
-			{
-				IMAGE_OPTIONAL_HEADER64 header = {};
-				if (optionalHeaderSize < sizeof(header) || !ReadImageValue(image, cbImage, optionalHeader, header))
-					return false;
-				if (header.NumberOfRvaAndSizes <= IMAGE_DIRECTORY_ENTRY_EXPORT) return false;
-				exportDirectory = header.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT];
-				sizeOfHeaders = header.SizeOfHeaders;
-			}
-			else
-			{
-				return false;
-			}
-
-			if (!exportDirectory.VirtualAddress || exportDirectory.Size < sizeof(IMAGE_EXPORT_DIRECTORY)) return false;
-			size_t exportOffset = 0;
-			size_t cbAvailable = 0;
-			if (!MapRva(
-					image,
-					cbImage,
-					exportDirectory.VirtualAddress,
-					sizeof(IMAGE_EXPORT_DIRECTORY),
-					sizeOfHeaders,
-					sectionTable,
-					sectionCount,
-					exportOffset,
-					cbAvailable) ||
-				exportDirectory.Size > cbAvailable)
-				return false;
-
-			IMAGE_EXPORT_DIRECTORY exports = {};
-			if (!ReadImageValue(image, cbImage, exportOffset, exports)) return false;
-			if (!exports.NumberOfNames) return false;
-
-			const auto nameTableBytes = static_cast<uint64_t>(exports.NumberOfNames) * sizeof(DWORD);
-			if (nameTableBytes > (std::numeric_limits<size_t>::max)()) return false;
-
-			size_t namesOffset = 0;
-			if (!MapRva(
-					image,
-					cbImage,
-					exports.AddressOfNames,
-					static_cast<size_t>(nameTableBytes),
-					sizeOfHeaders,
-					sectionTable,
-					sectionCount,
-					namesOffset,
-					cbAvailable))
-				return false;
-
-			for (DWORD i = 0; i < exports.NumberOfNames; ++i)
-			{
-				DWORD nameRva = 0;
-				if (!ReadImageValue(image, cbImage, namesOffset + static_cast<size_t>(i) * sizeof(DWORD), nameRva))
-					return false;
-
-				size_t nameOffset = 0;
-				if (!MapRva(
-						image, cbImage, nameRva, 1, sizeOfHeaders, sectionTable, sectionCount, nameOffset, cbAvailable))
-					return false;
-
-				const auto nameEnd = static_cast<const BYTE*>(memchr(image + nameOffset, 0, cbAvailable));
-				if (!nameEnd) return false;
-				const auto nameLength = static_cast<size_t>(nameEnd - (image + nameOffset));
-				if (nameLength == sizeof("LoadAddIn") - 1 && !memcmp(image + nameOffset, "LoadAddIn", nameLength))
-					return true;
-			}
-
+		if (!exportDirectory.VirtualAddress || exportDirectory.Size < sizeof(IMAGE_EXPORT_DIRECTORY)) return false;
+		size_t exportOffset = 0;
+		size_t cbAvailable = 0;
+		if (!MapRva(
+				image,
+				cbImage,
+				exportDirectory.VirtualAddress,
+				sizeof(IMAGE_EXPORT_DIRECTORY),
+				sizeOfHeaders,
+				sectionTable,
+				sectionCount,
+				exportOffset,
+				cbAvailable) ||
+			exportDirectory.Size > cbAvailable)
 			return false;
+
+		IMAGE_EXPORT_DIRECTORY exports = {};
+		if (!ReadImageValue(image, cbImage, exportOffset, exports)) return false;
+		if (!exports.NumberOfNames) return false;
+
+		const auto nameTableBytes = static_cast<uint64_t>(exports.NumberOfNames) * sizeof(DWORD);
+		if (nameTableBytes > (std::numeric_limits<size_t>::max)()) return false;
+
+		size_t namesOffset = 0;
+		if (!MapRva(
+				image,
+				cbImage,
+				exports.AddressOfNames,
+				static_cast<size_t>(nameTableBytes),
+				sizeOfHeaders,
+				sectionTable,
+				sectionCount,
+				namesOffset,
+				cbAvailable))
+			return false;
+
+		for (DWORD i = 0; i < exports.NumberOfNames; ++i)
+		{
+			DWORD nameRva = 0;
+			if (!ReadImageValue(image, cbImage, namesOffset + static_cast<size_t>(i) * sizeof(DWORD), nameRva))
+				return false;
+
+			size_t nameOffset = 0;
+			if (!MapRva(image, cbImage, nameRva, 1, sizeOfHeaders, sectionTable, sectionCount, nameOffset, cbAvailable))
+				return false;
+
+			const auto nameEnd = static_cast<const BYTE*>(memchr(image + nameOffset, 0, cbAvailable));
+			if (!nameEnd) return false;
+			const auto nameLength = static_cast<size_t>(nameEnd - (image + nameOffset));
+			if (nameLength == sizeof("LoadAddIn") - 1 && !memcmp(image + nameOffset, "LoadAddIn", nameLength))
+				return true;
 		}
-	} // namespace
+
+		return false;
+	}
 
 	_Check_return_ bool
 	IsCompatibleBitness(_In_reads_bytes_(cbImage) const BYTE* image, size_t cbImage, bool processIs64Bit)
