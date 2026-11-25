@@ -32,6 +32,12 @@
     <ClCompile Include="tests\csvtest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="tests\sortlisttest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\UI\Controls\SortList\TableLoad.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="tests\guidtest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

@@ -82,12 +82,12 @@ namespace controls::sortlistctrl
 
 		void AddColumn(UINT uidHeaderName, ULONG ulCurHeaderCol, ULONG ulCurTagArrayRow, ULONG ulPropTag);
 		void AddColumns(_In_ LPSPropTagArray lpCurColTagArray);
-		void AddItemToListBox(int iRow, _In_ LPSRow lpsRowToAdd);
+		_Check_return_ bool AddItemToListBox(int iRow, _In_ LPSRow lpsRowToAdd);
 		_Check_return_ HRESULT DoExpandCollapse();
 		_Check_return_ int FindRow(_In_ const SBinary& instance) const;
 		_Check_return_ int GetNextSelectedItemNum(_Inout_opt_ int* iCurItem) const;
 		void LoadContentsTableIntoView();
-		void RefreshItem(int iRow, _In_ LPSRow lpsRowData, bool bItemExists);
+		_Check_return_ bool RefreshItem(int iRow, _In_ LPSRow lpsRowData, bool bItemExists);
 		void SelectAll();
 		void SetRowStrings(int iRow, _In_ LPSRow lpsRowData);
 

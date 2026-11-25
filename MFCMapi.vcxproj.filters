@@ -135,6 +135,9 @@
     <ClInclude Include="UI\Controls\SortList\SortListCtrl.h">
       <Filter>Source Files\UI\Controls\SortList</Filter>
     </ClInclude>
+    <ClInclude Include="UI\Controls\SortList\TableLoad.h">
+      <Filter>Source Files\UI\Controls\SortList</Filter>
+    </ClInclude>
     <ClInclude Include="UI\Controls\StyleTree\StyleTreeCtrl.h">
       <Filter>Source Files\UI\Controls\StyleTree</Filter>
     </ClInclude>
@@ -242,6 +245,9 @@
       <Filter>Source Files\UI\Controls\SortList</Filter>
     </ClCompile>
     <ClCompile Include="UI\Controls\SortList\SortListCtrl.cpp">
+      <Filter>Source Files\UI\Controls\SortList</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Controls\SortList\TableLoad.cpp">
       <Filter>Source Files\UI\Controls\SortList</Filter>
     </ClCompile>
     <ClCompile Include="UI\OnNotify.cpp">

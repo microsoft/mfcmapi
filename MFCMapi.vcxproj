@@ -325,6 +325,11 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Fuzz|x64'">
     <LibraryPath>$(VC_ReferencesPath_VC_x64);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
+  <ItemDefinitionGroup>
+    <Link>
+      <AdditionalDependencies>runtimeobject.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
@@ -959,6 +964,7 @@
   <ItemGroup>
     <ClInclude Include="UI\Controls\SortList\SortHeader.h" />
     <ClInclude Include="UI\Controls\SortList\SortListCtrl.h" />
+    <ClInclude Include="UI\Controls\SortList\TableLoad.h" />
     <ClInclude Include="UI\Controls\PaneHeader\PaneHeader.h" />
     <ClInclude Include="UI\Dialogs\Editors\restriction\ResExistEditor.h" />
     <ClInclude Include="UI\Dialogs\Editors\restriction\ResSubResEditor.h" />
@@ -1076,6 +1082,7 @@
     <ClCompile Include="UI\addinui.cpp" />
     <ClCompile Include="UI\Controls\SortList\SortHeader.cpp" />
     <ClCompile Include="UI\Controls\SortList\SortListCtrl.cpp" />
+    <ClCompile Include="UI\Controls\SortList\TableLoad.cpp" />
     <ClCompile Include="UI\Controls\PaneHeader\PaneHeader.cpp" />
     <ClCompile Include="UI\Dialogs\Editors\restriction\ResExistEditor.cpp" />
     <ClCompile Include="UI\Dialogs\Editors\propeditor\ipropeditor.cpp" />

@@ -260,7 +260,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup>
     <Link>
-      <AdditionalDependencies>ole32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ole32.lib;comctl32.lib;runtimeobject.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -803,6 +803,10 @@
     </ClCompile>
     <ClCompile Include="tests\autodiscovertest.cpp" />
     <ClCompile Include="tests\csvtest.cpp" />
+    <ClCompile Include="tests\sortlisttest.cpp" />
+    <ClCompile Include="..\UI\Controls\SortList\TableLoad.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="tests\filetest.cpp" />
     <ClCompile Include="tests\errortest.cpp" />
     <ClCompile Include="tests\flagtest.cpp" />

@@ -1,5 +1,6 @@
 #include <StdAfx.h>
 #include <UI/Controls/SortList/ContentsTableListCtrl.h>
+#include <UI/Controls/SortList/TableLoad.h>
 #include <core/sortlistdata/sortListData.h>
 #include <core/mapi/cache/mapiObjects.h>
 #include <UI/UIFunctions.h>
@@ -519,8 +520,9 @@ namespace controls::sortlistctrl
 		ULONG ulTotal = 0;
 		const ULONG ulThrottleLevel = registry::throttleLevel;
 		const auto rowCount = ulThrottleLevel ? ulThrottleLevel : CContentsTableListCtrl::NUMROWSPERLOOP;
-		LPSRowSet pRows = nullptr;
 		ULONG iCurListBoxRow = 0;
+		auto loadFailed = false;
+		auto loadLimited = false;
 
 		static_cast<void>(::SendMessage(hWndHost, WM_MFCMAPI_CLEARSINGLEMAPIPROPLIST, NULL, NULL));
 		auto szCount = std::to_wstring(lpListCtrl->GetItemCount());
@@ -530,15 +532,17 @@ namespace controls::sortlistctrl
 		// potentially lengthy op - check abort before and after
 		if (!lpListCtrl->bAbortLoad())
 		{
-			WC_H_S(lpListCtrl->ApplyRestriction());
+			const auto hRes = WC_H(lpListCtrl->ApplyRestriction());
+			loadFailed = FAILED(hRes) && lpListCtrl->GetRestrictionType() == restrictionType::normal;
 		}
 
-		if (!lpListCtrl->bAbortLoad()) // only check abort once for this group of ops
+		if (!lpListCtrl->bAbortLoad() && !loadFailed) // only check abort once for this group of ops
 		{
 			// go to the first row
-			EC_MAPI_S(lpContentsTable->SeekRow(BOOKMARK_BEGINNING, 0, nullptr));
+			const auto seekResult = EC_MAPI(lpContentsTable->SeekRow(BOOKMARK_BEGINNING, 0, nullptr));
+			loadFailed = FAILED(seekResult);
 
-			EC_MAPI_S(lpContentsTable->GetRowCount(NULL, &ulTotal));
+			if (!loadFailed) EC_MAPI_S(lpContentsTable->GetRowCount(NULL, &ulTotal));
 
 			output::DebugPrintEx(
 				output::dbgLevel::Generic, CLASS, L"ThreadFuncLoadTable", L"ulTotal = 0x%X\n", ulTotal);
@@ -552,88 +556,54 @@ namespace controls::sortlistctrl
 
 		const auto lpRes = lpListCtrl->GetRestriction();
 		const auto resType = lpListCtrl->GetRestrictionType();
-		// get rows and add them to the list
-		while (true)
+		if (!loadFailed)
 		{
-			if (lpListCtrl->bAbortLoad()) break;
-			auto hRes = S_OK;
-			dialog::CBaseDialog::UpdateStatus(hWndHost, statusPane::infoText, strings::loadstring(IDS_ESCSTOPLOADING));
-			if (pRows) FreeProws(pRows);
-			pRows = nullptr;
-			if (resType == restrictionType::findrow && lpRes)
-			{
-				output::DebugPrintEx(
-					output::dbgLevel::Generic, CLASS, L"DoFindRows", L"running FindRow with restriction:\n");
-				output::outputRestriction(output::dbgLevel::Generic, nullptr, lpRes, nullptr);
-
-				if (lpListCtrl->bAbortLoad()) break;
-				hRes = WC_MAPI(lpContentsTable->FindRow(const_cast<LPSRestriction>(lpRes), BOOKMARK_CURRENT, NULL));
-				if (FAILED(hRes)) break;
-
-				if (lpListCtrl->bAbortLoad()) break;
-				hRes = mapi::QueryRowsWithDiagnostics(lpContentsTable, 1, NULL, &pRows);
-			}
-			else
-			{
-				output::DebugPrintEx(
-					output::dbgLevel::Generic,
-					CLASS,
-					L"ThreadFuncLoadTable",
-					L"Calling QueryRows. Asking for 0x%X rows.\n",
-					rowCount);
-				// Pull back a sizable block of rows to add to the list box
-				if (lpListCtrl->bAbortLoad()) break;
-				hRes = mapi::QueryRowsWithDiagnostics(lpContentsTable, rowCount, NULL, &pRows);
-			}
-
-			if (FAILED(hRes) || !pRows || !pRows->cRows) break;
-
-			output::DebugPrintEx(
-				output::dbgLevel::Generic, CLASS, L"ThreadFuncLoadTable", L"Got this many rows: 0x%X\n", pRows->cRows);
-
-			for (ULONG iCurPropRow = 0; iCurPropRow < pRows->cRows; iCurPropRow++)
-			{
-				if (lpListCtrl->bAbortLoad()) break;
-				if (ulTotal)
-				{
+			const auto result = LoadTableRows(
+				lpContentsTable,
+				resType,
+				lpRes,
+				ulThrottleLevel,
+				rowCount,
+				[lpListCtrl] { return lpListCtrl->bAbortLoad(); },
+				[hWndHost] {
 					dialog::CBaseDialog::UpdateStatus(
-						hWndHost,
-						statusPane::data2,
-						strings::formatmessage(IDS_LOADINGITEMS, iCurListBoxRow + 1, ulTotal));
-				}
+						hWndHost, statusPane::infoText, strings::loadstring(IDS_ESCSTOPLOADING));
+				},
+				[hWndHost, lpListCtrl, ulTotal](ULONG index, SRow& row) {
+					if (ulTotal)
+					{
+						dialog::CBaseDialog::UpdateStatus(
+							hWndHost, statusPane::data2, strings::formatmessage(IDS_LOADINGITEMS, index + 1, ulTotal));
+					}
 
-				output::DebugPrintEx(
-					output::dbgLevel::Generic,
-					CLASS,
-					L"ThreadFuncLoadTable",
-					L"Asking to add %p to %u\n",
-					&pRows->aRow[iCurPropRow],
-					iCurListBoxRow);
-				hRes = WC_H(static_cast<HRESULT>(::SendMessage(
-					lpListCtrl->m_hWnd,
-					WM_MFCMAPI_THREADADDITEM,
-					iCurListBoxRow,
-					reinterpret_cast<LPARAM>(&pRows->aRow[iCurPropRow]))));
-				if (FAILED(hRes)) continue;
-
-				// We've handed this row off to the control, so wipe it from the array.
-				pRows->aRow[iCurPropRow].cValues = 0;
-				pRows->aRow[iCurPropRow].lpProps = nullptr;
-				iCurListBoxRow++;
-			}
-
-			// We've removed some or all rows from the array. FreeProws will free the rest, as well as the parent array.
-			FreeProws(pRows);
-			pRows = nullptr;
-
-			if (ulThrottleLevel && iCurListBoxRow >= ulThrottleLevel)
-				break; // Only render ulThrottleLevel rows if throttle is on
+					output::DebugPrintEx(
+						output::dbgLevel::Generic,
+						CLASS,
+						L"ThreadFuncLoadTable",
+						L"Asking to add %p to %u\n",
+						&row,
+						index);
+					return WC_H(static_cast<HRESULT>(::SendMessage(
+						lpListCtrl->m_hWnd, WM_MFCMAPI_THREADADDITEM, index, reinterpret_cast<LPARAM>(&row))));
+				},
+				iCurListBoxRow);
+			loadFailed = result == TableLoadResult::failed;
+			loadLimited = result == TableLoadResult::limited;
 		}
 
-		if (lpListCtrl->bAbortLoad())
+		if (loadFailed)
+		{
+			dialog::CBaseDialog::UpdateStatus(hWndHost, statusPane::infoText, strings::loadstring(IDS_TABLELOADFAILED));
+		}
+		else if (lpListCtrl->bAbortLoad())
 		{
 			dialog::CBaseDialog::UpdateStatus(
 				hWndHost, statusPane::infoText, strings::loadstring(IDS_TABLELOADCANCELLED));
+		}
+		else if (loadLimited)
+		{
+			dialog::CBaseDialog::UpdateStatus(
+				hWndHost, statusPane::infoText, strings::loadstring(IDS_TABLELOADLIMITED));
 		}
 		else
 		{
@@ -646,7 +616,6 @@ namespace controls::sortlistctrl
 		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"ThreadFuncLoadTable", L"Releasing pointers.\n");
 
 		// Bunch of cleanup
-		if (pRows) FreeProws(pRows);
 		if (lpContentsTable) lpContentsTable->Release();
 		if (lpListCtrl) lpListCtrl->Release();
 		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"ThreadFuncLoadTable", L"Pointers released.\n");
@@ -883,7 +852,7 @@ namespace controls::sortlistctrl
 		return ulImage;
 	}
 
-	void CContentsTableListCtrl::RefreshItem(int iRow, _In_ LPSRow lpsRowData, bool bItemExists)
+	_Check_return_ bool CContentsTableListCtrl::RefreshItem(int iRow, _In_ LPSRow lpsRowData, bool bItemExists)
 	{
 		sortlistdata::sortListData* lpData = nullptr;
 
@@ -909,16 +878,19 @@ namespace controls::sortlistctrl
 			// Do this last so that our row can't get sorted before we're done!
 			lpData->setFullyLoaded(true);
 		}
+
+		return lpData != nullptr;
 	}
 
 	// Crack open the given SPropValue and render it to the given row in the list.
-	void CContentsTableListCtrl::AddItemToListBox(int iRow, _In_ LPSRow lpsRowToAdd)
+	_Check_return_ bool CContentsTableListCtrl::AddItemToListBox(int iRow, _In_ LPSRow lpsRowToAdd)
 	{
 		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"AddItemToListBox", L"item %d\n", iRow);
 
-		RefreshItem(iRow, lpsRowToAdd, false);
+		if (!RefreshItem(iRow, lpsRowToAdd, false)) return false;
 
 		if (m_lpHostDlg) m_lpHostDlg->UpdateStatusBarText(statusPane::data1, IDS_STATUSTEXTNUMITEMS, GetItemCount());
+		return true;
 	}
 
 	void CContentsTableListCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -1427,7 +1399,12 @@ namespace controls::sortlistctrl
 					for (ULONG i = 0; i < lpRowSet->cRows; i++)
 					{
 						// add the item to the NEXT slot
-						AddItemToListBox(iItem + i + 1, &lpRowSet->aRow[i]);
+						if (!AddItemToListBox(iItem + i + 1, &lpRowSet->aRow[i]))
+						{
+							hRes = EC_H(E_FAIL);
+							break;
+						}
+
 						// Since we handed the props off to the list box, null it out of the row set
 						// so we don't free it later with FreeProws
 						lpRowSet->aRow[i].lpProps = nullptr;
@@ -1435,6 +1412,12 @@ namespace controls::sortlistctrl
 				}
 
 				FreeProws(lpRowSet);
+				if (FAILED(hRes))
+				{
+					RefreshTable();
+					return hRes;
+				}
+
 				contents->setRowType(TBL_EXPANDED_CATEGORY);
 				lvItem.iImage = static_cast<int>(sortIcon::nodeExpanded);
 				bDidWork = true;
@@ -1518,9 +1501,7 @@ namespace controls::sortlistctrl
 			L"Received message to add %p to row %d\n",
 			lpsRow,
 			iNewRow);
-		AddItemToListBox(iNewRow, lpsRow);
-
-		return S_OK;
+		return AddItemToListBox(iNewRow, lpsRow) ? S_OK : E_FAIL;
 	}
 
 	// WM_MFCMAPI_ADDITEM
@@ -1542,17 +1523,24 @@ namespace controls::sortlistctrl
 			iNewRow = FindRow(mapi::getBin(tab->propPrior)) + 1;
 		}
 
-		// We make this copy here and pass it in to AddItemToListBox, where it is grabbed by sortListData::InitializeContents to be part of the item data
-		// The mem will be freed when the item data is cleaned up - do not free here
+		// A successful insertion transfers this copy to the item data.
 		SRow NewRow = {};
 		NewRow.cValues = tab->row.cValues;
 		NewRow.ulAdrEntryPad = tab->row.ulAdrEntryPad;
-		const auto hRes =
-			EC_MAPI(ScDupPropset(tab->row.cValues, tab->row.lpProps, MAPIAllocateBuffer, &NewRow.lpProps));
+		auto hRes = EC_MAPI(ScDupPropset(tab->row.cValues, tab->row.lpProps, MAPIAllocateBuffer, &NewRow.lpProps));
+		if (FAILED(hRes))
+		{
+			if (NewRow.lpProps) MAPIFreeBuffer(NewRow.lpProps);
+			return hRes;
+		}
 
 		output::DebugPrintEx(
 			output::dbgLevel::Generic, CLASS, L"msgOnAddItem", L"Received message to add row to row %d\n", iNewRow);
-		AddItemToListBox(iNewRow, &NewRow);
+		if (!AddItemToListBox(iNewRow, &NewRow))
+		{
+			MAPIFreeBuffer(NewRow.lpProps);
+			hRes = EC_H(E_FAIL);
+		}
 
 		return hRes;
 	}
@@ -1605,14 +1593,17 @@ namespace controls::sortlistctrl
 				iItem,
 				&tab->row);
 
-			// We make this copy here and pass it in to RefreshItem, where it is grabbed by sortListData::InitializeContents to be part of the item data
-			// The mem will be freed when the item data is cleaned up - do not free here
+			// A successful refresh transfers this copy to the item data.
 			SRow NewRow = {};
 			NewRow.cValues = tab->row.cValues;
 			NewRow.ulAdrEntryPad = tab->row.ulAdrEntryPad;
 			hRes = EC_MAPI(ScDupPropset(tab->row.cValues, tab->row.lpProps, MAPIAllocateBuffer, &NewRow.lpProps));
 
-			RefreshItem(iItem, &NewRow, true);
+			if (FAILED(hRes) || !RefreshItem(iItem, &NewRow, true))
+			{
+				if (NewRow.lpProps) MAPIFreeBuffer(NewRow.lpProps);
+				if (SUCCEEDED(hRes)) hRes = EC_H(E_FAIL);
+			}
 		}
 
 		return hRes;

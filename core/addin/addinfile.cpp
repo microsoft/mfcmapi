@@ -4,8 +4,6 @@
 #include <cstring>
 #include <limits>
 
-#pragma comment(lib, "Advapi32.lib")
-
 namespace addin
 {
 	namespace
